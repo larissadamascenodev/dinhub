@@ -38,14 +38,7 @@ const STATUS_CONFIG = {
 const fmt = (v: number) => v.toLocaleString("pt-BR", { style: "currency", currency: "BRL", minimumFractionDigits: 2 });
 
 const ProximosEventos = memo(({ events, onVerTodos }: Props) => (
-  <div
-    className="rounded-2xl overflow-hidden"
-    style={{
-      background: "linear-gradient(145deg, hsl(225 20% 10%) 0%, hsl(225 22% 6%) 100%)",
-      boxShadow: "0 4px 24px -4px rgba(0,0,0,0.6), inset 0 1px 0 0 rgba(255,255,255,0.04)",
-      border: "1px solid hsl(225 14% 16% / 0.5)",
-    }}
-  >
+  <div className="rounded-xl border border-border/30 bg-card shadow-[0_2px_8px_-2px_rgba(0,0,0,0.4),inset_0_1px_0_0_rgba(255,255,255,0.03)] overflow-hidden">
     {/* Header */}
     <div className="flex items-center justify-between px-4 pt-4 pb-2">
       <div className="flex items-center gap-2">
@@ -93,23 +86,16 @@ const ProximosEventos = memo(({ events, onVerTodos }: Props) => (
             transition={{ delay: i * 0.04 }}
             className="flex gap-3"
           >
-            {/* Timeline dot */}
+            {/* Timeline dot — neutral line, colored dot */}
             <div className="flex flex-col items-center pt-1">
-              <div className={`w-3 h-3 rounded-full ${cfg.dotColor} ring-2 ring-card`} style={{ boxShadow: "0 0 6px hsl(var(--primary) / 0.2)" }} />
-              {!isLast && <div className="w-px flex-1 mt-1" style={{ background: "linear-gradient(180deg, hsl(225 14% 18%) 0%, hsl(225 14% 12%) 100%)" }} />}
+              <div className={`w-3 h-3 rounded-full ${cfg.dotColor} ring-2 ring-card`} />
+              {!isLast && <div className="w-px flex-1 bg-border/40 mt-1" />}
             </div>
 
             {/* Content */}
             <div className="flex-1 pb-4">
               <p className="text-[11px] text-muted-foreground mb-1.5 font-medium">{ev.date}</p>
-              <div
-                className="rounded-xl p-3 flex items-center justify-between"
-                style={{
-                  background: "hsl(225 20% 8% / 0.6)",
-                  border: "1px solid hsl(225 14% 16% / 0.3)",
-                  boxShadow: "inset 0 1px 0 0 rgba(255,255,255,0.02)",
-                }}
-              >
+              <div className="rounded-xl border border-border/20 bg-card/60 p-3 flex items-center justify-between shadow-[0_1px_4px_-1px_rgba(0,0,0,0.15),inset_0_1px_0_0_rgba(255,255,255,0.02)]">
                 <div className="flex items-center gap-2.5 min-w-0">
                   <p className="text-sm font-semibold text-foreground truncate">{ev.name}</p>
                   <span className={`text-[10px] font-semibold px-2 py-0.5 rounded-full whitespace-nowrap ${cfg.bg} ${cfg.text} border ${cfg.border}`}>
@@ -154,13 +140,9 @@ const MiniCalendar = memo(() => {
           key={`${d.label}-${d.day}`}
           className={`flex flex-col items-center py-2 rounded-xl text-xs transition-all ${
             d.isToday
-              ? "text-primary-foreground font-bold"
+              ? "bg-primary text-primary-foreground font-bold shadow-md shadow-primary/15"
               : "text-muted-foreground hover:bg-secondary"
           }`}
-          style={d.isToday ? {
-            background: "linear-gradient(135deg, hsl(152 50% 48%) 0%, hsl(165 55% 38%) 100%)",
-            boxShadow: "0 4px 12px -2px hsl(152 45% 45% / 0.3)",
-          } : undefined}
         >
           <span className="text-[10px] mb-0.5">{d.label}</span>
           <span className="text-sm font-medium">{d.day}</span>
