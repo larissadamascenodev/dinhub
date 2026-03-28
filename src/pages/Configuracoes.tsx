@@ -30,7 +30,15 @@ const Configuracoes = () => {
   const [activeTab, setActiveTab] = useState<"conta" | "config">("conta");
   const [uploadingAvatar, setUploadingAvatar] = useState(false);
   const [previewUrl, setPreviewUrl] = useState<string | null>(null);
-  const [botPersonality, setBotPersonality] = useState<"casual" | "assessor">("casual");
+  const [botPersonality, setBotPersonalityState] = useState<"casual" | "assessor">(() => {
+    const saved = localStorage.getItem("bot_personality");
+    return saved === "assessor" ? "assessor" : "casual";
+  });
+
+  const setBotPersonality = (value: "casual" | "assessor") => {
+    setBotPersonalityState(value);
+    localStorage.setItem("bot_personality", value);
+  };
 
   const displayName = profile?.display_name || user?.email?.split("@")[0] || "Usuário";
   const email = user?.email ?? "";
