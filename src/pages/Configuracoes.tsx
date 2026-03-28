@@ -212,7 +212,7 @@ const Configuracoes = () => {
       <motion.div
         initial={{ opacity: 0, y: 12 }}
         animate={{ opacity: 1, y: 0 }}
-        className="rounded-2xl bg-card/60 border border-border/20 p-5"
+        className="rounded-2xl bg-card/60 border border-border/20 p-4"
       >
         <div className="flex items-start gap-4">
           {/* Avatar */}
