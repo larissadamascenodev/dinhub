@@ -172,7 +172,7 @@ const NovaTransacaoModal = ({ open, onClose, onSuccess }: Props) => {
             <div
               className="mx-5 mb-4 rounded-xl p-5 text-center cursor-text"
               style={{
-                background: type === "income"
+                background: type === "receita"
                   ? "hsl(150 100% 45% / 0.06)"
                   : "hsl(0 60% 50% / 0.06)",
                 border: `1px solid ${type === "receita" ? "hsl(150 100% 45% / 0.15)" : "hsl(0 60% 50% / 0.15)"}`,
