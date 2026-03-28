@@ -91,7 +91,11 @@ export type Database = {
           created_at: string
           date: string
           id: string
+          installments: number | null
           name: string
+          observation: string | null
+          payment_method: string
+          recurrence_type: string
           status: string
           type: string
           updated_at: string
@@ -104,7 +108,11 @@ export type Database = {
           created_at?: string
           date?: string
           id?: string
+          installments?: number | null
           name: string
+          observation?: string | null
+          payment_method?: string
+          recurrence_type?: string
           status?: string
           type: string
           updated_at?: string
@@ -117,7 +125,11 @@ export type Database = {
           created_at?: string
           date?: string
           id?: string
+          installments?: number | null
           name?: string
+          observation?: string | null
+          payment_method?: string
+          recurrence_type?: string
           status?: string
           type?: string
           updated_at?: string
