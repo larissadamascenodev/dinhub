@@ -171,7 +171,7 @@ const TransacoesRecentes = memo(({ transactions, onDelete }: Props) => {
                     delay: i * 0.05,
                   }}
                 >
-                  <TxCard tx={tx} />
+                  <TxCard tx={tx} onDelete={onDelete} />
                 </motion.div>
               ))}
             </div>
