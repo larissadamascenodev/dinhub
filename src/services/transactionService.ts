@@ -167,6 +167,7 @@ export interface CreditCardInput {
   closing_day: number;
   due_day: number;
   color?: string | null;
+  last_four_digits?: string | null;
 }
 
 export async function getCreditCards() {
