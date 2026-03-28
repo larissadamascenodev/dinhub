@@ -1,5 +1,5 @@
 import { memo } from "react";
-import { Calendar, ChevronRight, Check, Clock, AlertTriangle } from "lucide-react";
+import { Calendar, ChevronRight, Check, Clock } from "lucide-react";
 import { motion } from "framer-motion";
 import type { FinanceEvent } from "@/types/finance";
 
@@ -11,39 +11,53 @@ interface Props {
 const STATUS_CONFIG = {
   pago: {
     label: "Pago",
-    bg: "bg-primary/10",
-    text: "text-primary",
-    border: "border-primary/20",
     dotColor: "bg-primary",
+    badgeBg: "bg-primary/15",
+    badgeText: "text-primary",
+    badgeBorder: "border-primary/30",
+    iconBg: "bg-primary/15",
+    iconColor: "text-primary",
     Icon: Check,
   },
   pendente: {
     label: "A pagar",
-    bg: "bg-warning/10",
-    text: "text-warning",
-    border: "border-warning/20",
     dotColor: "bg-warning",
+    badgeBg: "bg-warning/15",
+    badgeText: "text-warning",
+    badgeBorder: "border-warning/30",
+    iconBg: "bg-warning/15",
+    iconColor: "text-warning",
     Icon: Clock,
   },
   atrasado: {
     label: "Atrasado",
-    bg: "bg-destructive/10",
-    text: "text-destructive",
-    border: "border-destructive/20",
     dotColor: "bg-destructive",
-    Icon: AlertTriangle,
+    badgeBg: "bg-destructive/15",
+    badgeText: "text-destructive",
+    badgeBorder: "border-destructive/30",
+    iconBg: "bg-destructive/15",
+    iconColor: "text-destructive",
+    Icon: Clock,
   },
 };
 
-const fmt = (v: number) => v.toLocaleString("pt-BR", { style: "currency", currency: "BRL", minimumFractionDigits: 2 });
+const fmt = (v: number) =>
+  v.toLocaleString("pt-BR", { style: "currency", currency: "BRL", minimumFractionDigits: 2 });
 
 const ProximosEventos = memo(({ events, onVerTodos }: Props) => (
-  <div className="rounded-xl border border-border/20 shadow-[0_2px_8px_-2px_rgba(0,0,0,0.4),inset_0_1px_0_0_rgba(255,255,255,0.03)] overflow-hidden" style={{ background: "linear-gradient(145deg, hsl(220 18% 9% / 0.9) 0%, hsl(220 20% 5% / 0.95) 100%)" }}>
+  <div
+    className="rounded-xl border border-border/20 shadow-[0_2px_8px_-2px_rgba(0,0,0,0.4),inset_0_1px_0_0_rgba(255,255,255,0.03)] overflow-hidden"
+    style={{
+      background: "linear-gradient(145deg, hsl(220 18% 9% / 0.9) 0%, hsl(220 20% 5% / 0.95) 100%)",
+    }}
+  >
     {/* Header */}
     <div className="flex items-center justify-between px-4 pt-4 pb-2">
       <div className="flex items-center gap-2">
         <Calendar className="w-3.5 h-3.5 text-muted-foreground" />
-        <h3 className="text-[10px] font-semibold text-muted-foreground uppercase tracking-widest">Próximos Eventos</h3>
+        <h3 className="text-[10px] font-semibold text-muted-foreground uppercase tracking-widest">
+          Próximos Eventos
+        </h3>
       </div>
       <button
         onClick={onVerTodos}
@@ -71,42 +85,52 @@ const ProximosEventos = memo(({ events, onVerTodos }: Props) => (
       ))}
     </div>
 
-    {/* Timeline */}
-    <div className="px-4 pb-4">
+    {/* Event cards */}
+    <div className="px-4 pb-4 space-y-2.5">
       {events.map((ev, i) => {
         const cfg = STATUS_CONFIG[ev.status];
         const StatusIcon = cfg.Icon;
-        const isLast = i === events.length - 1;
 
         return (
           <motion.div
             key={ev.id}
-            initial={{ opacity: 0 }}
-            animate={{ opacity: 1 }}
+            initial={{ opacity: 0, y: 6 }}
+            animate={{ opacity: 1, y: 0 }}
             transition={{ delay: i * 0.04 }}
-            className="flex gap-3"
+            className="flex items-center gap-3"
           >
-            {/* Timeline dot — neutral line, colored dot */}
-            <div className="flex flex-col items-center pt-1">
-              <div className={`w-3 h-3 rounded-full ${cfg.dotColor} ring-2 ring-card`} />
-              {!isLast && <div className="w-px flex-1 bg-border/40 mt-1" />}
+            {/* Timeline dot */}
+            <div className="flex flex-col items-center self-stretch">
+              <div className={`w-3 h-3 rounded-full ${cfg.dotColor} ring-2 ring-background flex-shrink-0 mt-4`} />
+              {i < events.length - 1 && <div className="w-px flex-1 bg-border/40 mt-1" />}
             </div>
 
-            {/* Content */}
-            <div className="flex-1 pb-4">
-              <p className="text-[11px] text-muted-foreground mb-1.5 font-medium">{ev.date}</p>
-              <div className="rounded-xl border border-border/20 bg-card/60 p-3 flex items-center justify-between shadow-[0_1px_4px_-1px_rgba(0,0,0,0.15),inset_0_1px_0_0_rgba(255,255,255,0.02)]">
-                <div className="flex items-center gap-2.5 min-w-0">
-                  <p className="text-sm font-semibold text-foreground truncate">{ev.name}</p>
-                  <span className={`text-[10px] font-semibold px-2 py-0.5 rounded-full whitespace-nowrap ${cfg.bg} ${cfg.text} border ${cfg.border}`}>
+            {/* Card */}
+            <div
+              className="flex-1 rounded-2xl border border-border/20 px-4 py-3 flex items-center justify-between"
+              style={{
+                background: "linear-gradient(145deg, hsl(220 18% 9% / 0.85) 0%, hsl(220 20% 5% / 0.9) 100%)",
+                boxShadow: "0 2px 8px -2px rgba(0,0,0,0.3), inset 0 1px 0 0 rgba(255,255,255,0.03)",
+              }}
+            >
+              {/* Left: date, name, badge */}
+              <div className="min-w-0">
+                <p className="text-[11px] text-muted-foreground/50 mb-0.5">{ev.date}</p>
+                <div className="flex items-center gap-2">
+                  <p className="text-sm font-bold text-foreground truncate">{ev.name}</p>
+                  <span
+                    className={`text-[10px] font-semibold px-2 py-0.5 rounded-full whitespace-nowrap border ${cfg.badgeBg} ${cfg.badgeText} ${cfg.badgeBorder}`}
+                  >
                     {cfg.label}
                   </span>
                 </div>
-                <div className="flex items-center gap-2 shrink-0 ml-2">
-                  <p className="text-sm font-bold text-foreground tabular-nums">{fmt(ev.amount)}</p>
-                  <div className={`w-7 h-7 rounded-full flex items-center justify-center ${cfg.bg}`}>
-                    <StatusIcon className={`h-3.5 w-3.5 ${cfg.text}`} />
-                  </div>
+              </div>
+
+              {/* Right: amount + icon */}
+              <div className="flex items-center gap-2 shrink-0 ml-3">
+                <p className="text-sm font-bold text-foreground tabular-nums">{fmt(ev.amount)}</p>
+                <div className={`w-7 h-7 rounded-full flex items-center justify-center ${cfg.iconBg}`}>
+                  <StatusIcon className={`h-3.5 w-3.5 ${cfg.iconColor}`} />
                 </div>
               </div>
             </div>
