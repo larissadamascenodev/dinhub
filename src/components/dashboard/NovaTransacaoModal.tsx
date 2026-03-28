@@ -627,6 +627,7 @@ const NovaTransacaoModal = ({ open, onClose, onSuccess, initialType = "despesa" 
                         </motion.div>
                       )}
                     </>
+                    )
                   ) : (
                     /* Cartão de crédito mode */
                     <div className="space-y-2">
