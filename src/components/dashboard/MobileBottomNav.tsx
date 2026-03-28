@@ -43,7 +43,11 @@ const MobileBottomNav = memo(() => {
                     <motion.div
                       whileTap={{ scale: 0.9 }}
                       animate={isOpen ? { rotate: 45 } : { rotate: 0 }}
-                      className="w-[44px] h-[44px] rounded-full bg-primary shadow-lg shadow-primary/30 flex items-center justify-center"
+                      className="w-[44px] h-[44px] rounded-full flex items-center justify-center backdrop-blur-sm border border-primary/30"
+                      style={{
+                        background: "linear-gradient(160deg, hsl(150 100% 45% / 0.15) 0%, hsl(150 100% 45% / 0.08) 100%)",
+                        boxShadow: "0 4px 16px -4px hsl(150 100% 45% / 0.3), inset 0 1px 0 rgba(255,255,255,0.06)",
+                      }}
                     >
                       {isOpen ? (
                         <X className="w-5 h-5 text-primary-foreground" />
