@@ -132,10 +132,27 @@ export async function getAccounts() {
   return data ?? [];
 }
 
-export async function createAccount(name: string, userId: string, type: "checking" | "cash" | "savings" = "checking") {
+export async function createAccount(
+  userId: string,
+  input: {
+    name: string;
+    type?: "checking" | "cash" | "savings";
+    initial_balance?: number;
+    color?: string | null;
+  }
+) {
+  const balance = input.initial_balance ?? 0;
   const { data, error } = await supabase
     .from("accounts")
-    .insert({ user_id: userId, name, type, is_default: false } as any)
+    .insert({
+      user_id: userId,
+      name: input.name,
+      type: input.type ?? "checking",
+      is_default: false,
+      initial_balance: balance,
+      current_balance: balance,
+      color: input.color ?? null,
+    } as any)
     .select()
     .single();
 
