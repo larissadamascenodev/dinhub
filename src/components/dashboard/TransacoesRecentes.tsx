@@ -26,17 +26,18 @@ const formatDate = () => {
   return `${day} de ${months[now.getMonth()]}`;
 };
 
-const TransactionRow = ({ tx, index }: { tx: Transaction; index: number }) => {
+const NotificationCard = ({ tx }: { tx: Transaction }) => {
   const isReceita = tx.type === "receita";
   const cfg = CATEGORY_CONFIG[tx.category] || { icon: Wallet, color: "#6b7280" };
   const Icon = cfg.icon;
 
   return (
-    <motion.div
-      initial={{ opacity: 0, y: 6 }}
-      animate={{ opacity: 1, y: 0 }}
-      transition={{ delay: index * 0.04 }}
-      className="flex items-center gap-3 px-4 py-3.5 border-b border-border/15 last:border-b-0"
+    <div
+      className="flex items-center gap-3 px-4 py-3 rounded-2xl border border-border/20"
+      style={{
+        background: "linear-gradient(145deg, hsl(220 18% 9% / 0.85) 0%, hsl(220 20% 5% / 0.9) 100%)",
+        boxShadow: "0 2px 8px -2px rgba(0,0,0,0.3), inset 0 1px 0 0 rgba(255,255,255,0.03)",
+      }}
     >
       {/* Category icon */}
       <div
@@ -65,16 +66,15 @@ const TransactionRow = ({ tx, index }: { tx: Transaction; index: number }) => {
           {isReceita ? "Receita" : "Despesa"}
         </p>
       </div>
-    </motion.div>
+    </div>
   );
 };
 
 const TransacoesRecentes = memo(({ transactions, onVerTodas }: Props) => {
   const [expanded, setExpanded] = useState(false);
   const visible = transactions.slice(0, 7);
-  const initialCount = 3;
-  const showTx = expanded ? visible : visible.slice(0, initialCount);
-  const hasMore = visible.length > initialCount;
+  const topTx = visible[0];
+  const restTx = visible.slice(1);
 
   if (transactions.length === 0) {
     return (
@@ -86,7 +86,7 @@ const TransacoesRecentes = memo(({ transactions, onVerTodas }: Props) => {
   }
 
   return (
-    <div>
+    <div className="relative">
       {/* Header */}
       <div className="flex items-center justify-between mb-3">
         <div className="flex items-center gap-2">
@@ -103,29 +103,76 @@ const TransacoesRecentes = memo(({ transactions, onVerTodas }: Props) => {
         </span>
       </div>
 
-      {/* List card */}
+      {/* Stack area */}
       <div
-        className="rounded-2xl border border-border/20 overflow-hidden"
-        style={{
-          background: "linear-gradient(145deg, hsl(220 18% 9% / 0.85) 0%, hsl(220 20% 5% / 0.9) 100%)",
-          boxShadow: "0 2px 8px -2px rgba(0,0,0,0.3), inset 0 1px 0 0 rgba(255,255,255,0.03)",
-        }}
+        className="relative cursor-pointer"
+        onClick={() => setExpanded(!expanded)}
+        style={{ paddingBottom: !expanded && restTx.length > 0 ? `${Math.min(restTx.length, 3) * 8 + 12}px` : 0 }}
       >
-        {showTx.map((tx, index) => (
-          <TransactionRow key={tx.id} tx={tx} index={index} />
-        ))}
+        {/* Stacked background cards */}
+        <AnimatePresence>
+          {!expanded && restTx.length > 0 && (
+            <>
+              {restTx.slice(0, 3).map((_, i) => (
+                <motion.div
+                  key={`stack-${i}`}
+                  initial={{ opacity: 0 }}
+                  animate={{ opacity: 1 }}
+                  exit={{ opacity: 0, scale: 0.95 }}
+                  className="absolute left-0 right-0 rounded-2xl border border-border/10"
+                  style={{
+                    top: `${(i + 1) * 8}px`,
+                    transform: `scale(${1 - (i + 1) * 0.03})`,
+                    zIndex: 3 - i,
+                    height: "58px",
+                    background: "linear-gradient(145deg, hsl(220 18% 9% / 0.85) 0%, hsl(220 20% 5% / 0.9) 100%)",
+                    filter: `brightness(${1 - (i + 1) * 0.06})`,
+                  }}
+                />
+              ))}
+            </>
+          )}
+        </AnimatePresence>
+
+        {/* Top card */}
+        <motion.div layout className="relative z-10">
+          <NotificationCard tx={topTx} />
+        </motion.div>
+
+        {/* Expand indicator */}
+        {!expanded && restTx.length > 0 && (
+          <div className="absolute -bottom-1 left-1/2 -translate-x-1/2 z-20">
+            <ChevronDown className="w-4 h-4 text-muted-foreground/40" />
+          </div>
+        )}
       </div>
 
-      {/* Show more / less */}
-      {hasMore && (
-        <button
-          onClick={() => setExpanded(!expanded)}
-          className="w-full mt-2 flex items-center justify-center gap-1 py-2 text-[11px] text-muted-foreground/60 hover:text-foreground transition-colors"
-        >
-          <span>{expanded ? "Ver menos" : `Ver mais (${visible.length - initialCount})`}</span>
-          <ChevronDown className={`w-3.5 h-3.5 transition-transform ${expanded ? "rotate-180" : ""}`} />
-        </button>
-      )}
+      {/* Expanded list */}
+      <AnimatePresence>
+        {expanded && (
+          <motion.div
+            initial={{ height: 0, opacity: 0 }}
+            animate={{ height: "auto", opacity: 1 }}
+            exit={{ height: 0, opacity: 0 }}
+            transition={{ type: "spring", stiffness: 350, damping: 30 }}
+            className="overflow-hidden mt-2"
+          >
+            <div className="space-y-2">
+              {restTx.map((tx, index) => (
+                <motion.div
+                  key={tx.id}
+                  initial={{ opacity: 0, y: -6 }}
+                  animate={{ opacity: 1, y: 0 }}
+                  exit={{ opacity: 0, y: -6 }}
+                  transition={{ delay: index * 0.04 }}
+                >
+                  <NotificationCard tx={tx} />
+                </motion.div>
+              ))}
+            </div>
+          </motion.div>
+        )}
+      </AnimatePresence>
     </div>
   );
 });
