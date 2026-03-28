@@ -185,7 +185,7 @@ const NovaTransacaoModal = ({ open, onClose, onSuccess }: Props) => {
                 initial={{ scale: 1.05 }}
                 animate={{ scale: 1 }}
                 className={`font-display text-3xl md:text-4xl font-bold tabular-nums tracking-tight ${
-                  type === "income" ? "text-primary" : "text-destructive"
+                  type === "receita" ? "text-primary" : "text-destructive"
                 }`}
               >
                 R$ {formatCurrency(amountCents)}
