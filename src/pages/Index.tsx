@@ -42,7 +42,13 @@ const Index = () => {
           <div className="space-y-4">
             {/* Saldo + Receita/Despesa */}
             <div>
-              <div className="flex justify-end mb-2" style={{ paddingLeft: "calc(58.33% + 0.375rem)" }}>
+              <div className="flex items-center justify-between mb-2">
+                <div>
+                  <h1 className="font-display text-lg font-bold leading-tight">
+                    {greeting}, <span className="text-foreground/70">Olá</span>
+                  </h1>
+                  <p className="text-[10px] text-muted-foreground">{dateStr}</p>
+                </div>
                 <MonthSelector selectedMonth={selectedMonth} selectedYear={selectedYear} onMonthChange={handleMonthChange} />
               </div>
               <motion.div initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }} className="grid grid-cols-[1.4fr_1fr] gap-3">
