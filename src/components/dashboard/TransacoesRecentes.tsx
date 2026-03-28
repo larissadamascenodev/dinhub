@@ -99,34 +99,27 @@ const TransacoesRecentes = memo(({ transactions }: Props) => {
         {/* Stacked ghost cards */}
         <AnimatePresence>
           {!expanded && restTx.length > 0 &&
-            restTx.slice(0, STACK_COUNT).map((tx, i) => {
-              const isR = tx.type === "receita";
-              return (
-                <motion.div
-                  key={`stack-${i}`}
-                  className="absolute left-0 right-0 rounded-[14px]"
-                  initial={{ top: 0, opacity: 0, scale: 1 }}
-                  animate={{
-                    top: (i + 1) * STACK_OFFSET,
-                    opacity: 1 - (i + 1) * 0.2,
-                    scale: 1 - (i + 1) * STACK_SCALE_STEP,
-                  }}
-                  exit={{ top: 0, opacity: 0, scale: 1 }}
-                  transition={{ type: "spring", stiffness: 500, damping: 35, delay: i * 0.03 }}
-                  style={{
-                    height: "56px",
-                    transformOrigin: "top center",
-                    zIndex: STACK_COUNT - i,
-                    background: isR
-                      ? `hsl(150 100% 45% / ${0.04 - i * 0.005})`
-                      : `hsl(0 60% 50% / ${0.04 - i * 0.005})`,
-                    border: isR
-                      ? "1px solid hsl(150 100% 45% / 0.12)"
-                      : "1px solid hsl(0 60% 50% / 0.12)",
-                  }}
-                />
-              );
-            })
+            restTx.slice(0, STACK_COUNT).map((_, i) => (
+              <motion.div
+                key={`stack-${i}`}
+                className="absolute left-0 right-0 rounded-[14px]"
+                initial={{ top: 0, opacity: 0, scale: 1 }}
+                animate={{
+                  top: (i + 1) * STACK_OFFSET,
+                  opacity: 1 - (i + 1) * 0.2,
+                  scale: 1 - (i + 1) * STACK_SCALE_STEP,
+                }}
+                exit={{ top: 0, opacity: 0, scale: 1 }}
+                transition={{ type: "spring", stiffness: 500, damping: 35, delay: i * 0.03 }}
+                style={{
+                  height: "56px",
+                  transformOrigin: "top center",
+                  zIndex: STACK_COUNT - i,
+                  background: `linear-gradient(145deg, hsl(220 18% ${8 - i}% / 0.9) 0%, hsl(220 20% ${4 - i * 0.5}% / 0.95) 100%)`,
+                  border: "1px solid hsl(220 12% 16% / 0.2)",
+                }}
+              />
+            ))
           }
         </AnimatePresence>
 
