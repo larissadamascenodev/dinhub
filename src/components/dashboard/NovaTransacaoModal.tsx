@@ -805,8 +805,7 @@ const NovaTransacaoModal = ({ open, onClose, onSuccess, initialType = "despesa" 
                       onClick={() => {
                         const name = categorySearch.trim() || prompt("Nome da nova categoria:");
                         if (name) {
-                          setNewCategoryName(name);
-                          handleCreateCategory();
+                          handleCreateCategory(name);
                         }
                       }}
                       className="flex items-center gap-1 text-xs text-primary font-medium hover:opacity-80"
