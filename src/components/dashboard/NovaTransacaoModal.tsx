@@ -609,12 +609,106 @@ const NovaTransacaoModal = ({ open, onClose, onSuccess, initialType = "despesa" 
                   ) : (
                     /* Cartão de crédito mode */
                     <div className="space-y-2">
-                      <div className="rounded-xl border border-border/20 bg-muted/30 p-3 text-center">
-                        <CreditCard className="w-5 h-5 text-muted-foreground mx-auto mb-1" />
-                        <p className="text-xs text-muted-foreground">
-                          Em breve: cadastre seus cartões de crédito
-                        </p>
-                      </div>
+                      {creditCards.length > 0 ? (
+                        <Select value={creditCardId} onValueChange={setCreditCardId}>
+                          <SelectTrigger className="bg-muted/30 border-border/20 h-11 rounded-xl">
+                            <SelectValue placeholder="Selecionar cartão" />
+                          </SelectTrigger>
+                          <SelectContent>
+                            {creditCards.map((card) => (
+                              <SelectItem key={card.id} value={card.id}>
+                                <div className="flex items-center gap-2">
+                                  <CreditCard className="w-3.5 h-3.5 text-muted-foreground" />
+                                  <span>{card.name}</span>
+                                  <span className="text-[10px] text-muted-foreground ml-1">
+                                    Fecha dia {card.closing_day} · Vence dia {card.due_day}
+                                  </span>
+                                </div>
+                              </SelectItem>
+                            ))}
+                          </SelectContent>
+                        </Select>
+                      ) : (
+                        <div className="rounded-xl border border-border/20 bg-muted/30 p-3 text-center">
+                          <CreditCard className="w-5 h-5 text-muted-foreground mx-auto mb-1" />
+                          <p className="text-xs text-muted-foreground">Nenhum cartão cadastrado</p>
+                        </div>
+                      )}
+
+                      {!showNewCard ? (
+                        <button
+                          type="button"
+                          onClick={() => setShowNewCard(true)}
+                          className="flex items-center gap-1 text-[11px] text-primary font-medium hover:opacity-80 mt-1"
+                        >
+                          <Plus className="w-3 h-3" />
+                          Cadastrar cartão
+                        </button>
+                      ) : (
+                        <motion.div
+                          initial={{ height: 0, opacity: 0 }}
+                          animate={{ height: "auto", opacity: 1 }}
+                          className="space-y-2 mt-1 overflow-hidden"
+                        >
+                          <Input
+                            placeholder="Nome do cartão (ex: Nubank)"
+                            value={newCardName}
+                            onChange={(e) => setNewCardName(e.target.value)}
+                            className="bg-muted/30 border-border/20 h-9 text-sm rounded-xl"
+                          />
+                          <Input
+                            placeholder="Limite (ex: 5000)"
+                            type="number"
+                            value={newCardLimit}
+                            onChange={(e) => setNewCardLimit(e.target.value)}
+                            className="bg-muted/30 border-border/20 h-9 text-sm rounded-xl"
+                          />
+                          <div className="flex gap-2">
+                            <div className="flex-1">
+                              <Label className="text-[10px] text-muted-foreground">Fecha dia</Label>
+                              <Input
+                                type="number"
+                                min={1}
+                                max={31}
+                                value={newCardClosingDay}
+                                onChange={(e) => setNewCardClosingDay(e.target.value)}
+                                className="bg-muted/30 border-border/20 h-9 text-sm rounded-xl"
+                              />
+                            </div>
+                            <div className="flex-1">
+                              <Label className="text-[10px] text-muted-foreground">Vence dia</Label>
+                              <Input
+                                type="number"
+                                min={1}
+                                max={31}
+                                value={newCardDueDay}
+                                onChange={(e) => setNewCardDueDay(e.target.value)}
+                                className="bg-muted/30 border-border/20 h-9 text-sm rounded-xl"
+                              />
+                            </div>
+                          </div>
+                          <div className="flex gap-2">
+                            <Button
+                              type="button"
+                              size="sm"
+                              onClick={handleCreateCreditCard}
+                              disabled={!newCardName.trim() || !newCardLimit}
+                              className="h-9 px-3 text-xs rounded-xl flex-1"
+                            >
+                              Cadastrar
+                            </Button>
+                            <Button
+                              type="button"
+                              size="sm"
+                              variant="outline"
+                              onClick={() => { setShowNewCard(false); setNewCardName(""); setNewCardLimit(""); }}
+                              className="h-9 px-3 text-xs rounded-xl"
+                            >
+                              <X className="w-3 h-3" />
+                            </Button>
+                          </div>
+                        </motion.div>
+                      )}
                     </div>
                   )}
                 </div>
