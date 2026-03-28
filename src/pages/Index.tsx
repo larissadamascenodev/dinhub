@@ -1,6 +1,6 @@
 import { useState, useCallback, useMemo } from "react";
 import { motion } from "framer-motion";
-import DashboardHeader from "@/components/dashboard/DashboardHeader";
+import DashboardHeader, { useGreeting } from "@/components/dashboard/DashboardHeader";
 import MobileBottomNav from "@/components/dashboard/MobileBottomNav";
 import SaldoCard from "@/components/dashboard/SaldoCard";
 import ReceitasDespesasCards from "@/components/dashboard/ReceitasDespesasCards";
