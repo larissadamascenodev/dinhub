@@ -1,6 +1,6 @@
 import { memo, useMemo, useState } from "react";
 import { ChevronRight, Check, Clock, AlertTriangle, Calendar } from "lucide-react";
-import { motion } from "framer-motion";
+import { motion, AnimatePresence } from "framer-motion";
 import type { FinanceEvent } from "@/types/finance";
 
 interface Props {
@@ -27,7 +27,58 @@ const parseDayFromDate = (dateStr: string): number | null => {
 
 const STATUS_PRIORITY: Record<string, number> = { atrasado: 3, pendente: 2, pago: 1, recebido: 1 };
 
+/* ── Event Card ── */
+const EventCard = ({ ev, index }: { ev: FinanceEvent; index: number }) => {
+  const cfg = STATUS_CONFIG[ev.status];
+  const StatusIcon = cfg.Icon;
+  const a = cfg.accent;
+
+  return (
+    <motion.div
+      initial={{ opacity: 0, y: 6 }}
+      animate={{ opacity: 1, y: 0 }}
+      transition={{ delay: index * 0.05, type: "spring", stiffness: 400, damping: 30 }}
+      className="relative flex items-center gap-3 px-4 py-3 rounded-[14px] bg-card/90 backdrop-blur-xl border border-border/30 shadow-2xl shadow-black/40 overflow-hidden cursor-pointer group"
+    >
+      {/* Accent line */}
+      <div
+        className="absolute left-0 top-0 bottom-0 w-[3px]"
+        style={{ background: `hsl(${a})`, boxShadow: `0 0 8px hsl(${a} / 0.3)` }}
+      />
+
+      {/* Status icon */}
+      <div
+        className="w-8 h-8 rounded-full flex items-center justify-center flex-shrink-0"
+        style={{ background: `hsl(${a} / 0.1)` }}
+      >
+        <StatusIcon className={`w-3.5 h-3.5 ${cfg.textColor}`} />
+      </div>
+
+      {/* Info */}
+      <div className="flex-1 min-w-0">
+        <p className="text-[13px] font-semibold text-foreground truncate">{ev.name}</p>
+        <p className="text-[10px] text-muted-foreground/40 mt-px">{ev.date}</p>
+      </div>
+
+      {/* Amount + status */}
+      <div className="text-right shrink-0">
+        <p className="text-[13px] font-bold tabular-nums text-foreground">{fmt(ev.amount)}</p>
+        <span
+          className="text-[9px] font-semibold uppercase tracking-wider"
+          style={{ color: `hsl(${a})` }}
+        >
+          {cfg.label}
+        </span>
+      </div>
+    </motion.div>
+  );
+};
+
+/* ── Main Component ── */
 const ProximosEventos = memo(({ events, selectedMonth, selectedYear, onVerTodos }: Props) => {
+  const [showAll, setShowAll] = useState(false);
+  const visibleEvents = showAll ? events : events.slice(0, 3);
+
   const dayStatusMap = useMemo(() => {
     const map = new Map<number, { accent: string; priority: number }>();
     for (const ev of events) {
@@ -44,126 +95,66 @@ const ProximosEventos = memo(({ events, selectedMonth, selectedYear, onVerTodos 
   }, [events]);
 
   return (
-    <div
-      className="rounded-2xl bg-card/90 backdrop-blur-xl border border-border/30 shadow-2xl shadow-black/40 overflow-hidden"
-    >
+    <div className="space-y-2.5">
       {/* Header */}
-      <div className="flex items-center justify-between px-5 pt-5 pb-3">
-        <div className="flex items-center gap-2.5">
-          <div
-            className="w-9 h-9 rounded-xl flex items-center justify-center"
-            style={{
-              background: "hsl(150 100% 45% / 0.08)",
-              border: "1px solid hsl(150 100% 45% / 0.15)",
-            }}
-          >
-            <Calendar className="w-4 h-4 text-primary" />
-          </div>
-          <div>
-            <h3 className="text-sm font-bold text-foreground tracking-tight">Próximos Eventos</h3>
-            <p className="text-[10px] text-muted-foreground/50">{events.length} eventos este mês</p>
-          </div>
+      <div className="flex items-center justify-between">
+        <div className="flex items-center gap-2">
+          <Calendar className="w-3.5 h-3.5 text-muted-foreground/50" />
+          <h3 className="text-[11px] font-semibold text-muted-foreground/60 uppercase tracking-widest">
+            Próximos Eventos
+          </h3>
         </div>
-        <button
-          onClick={onVerTodos}
-          className="text-[11px] text-muted-foreground/60 hover:text-primary transition-all flex items-center gap-0.5 font-medium px-2.5 py-1 rounded-lg hover:bg-white/[0.03]"
-        >
-          Ver todos
-          <ChevronRight className="w-3.5 h-3.5" />
-        </button>
+        <span className="text-[10px] text-muted-foreground/40 font-medium">
+          {events.length} eventos
+        </span>
       </div>
 
-      {/* Mini Calendar */}
-      <MiniCalendar dayStatusMap={dayStatusMap} selectedMonth={selectedMonth} selectedYear={selectedYear} />
-
-      {/* Legend */}
-      <div className="flex items-center justify-center gap-6 px-5 pb-4">
-        {[
-          { label: "Pago", accent: "150 100% 45%" },
-          { label: "Pendente", accent: "40 80% 50%" },
-          { label: "Atrasado", accent: "0 60% 50%" },
-        ].map((s) => (
-          <span key={s.label} className="flex items-center gap-1.5 text-[10px] text-muted-foreground/60 font-medium">
-            <span
-              className="w-2 h-2 rounded-full"
-              style={{ background: `hsl(${s.accent})`, boxShadow: `0 0 6px hsl(${s.accent} / 0.5)` }}
-            />
-            {s.label}
-          </span>
-        ))}
-      </div>
-
-      {/* Divider */}
-      <div className="mx-5">
-        <div className="h-px" style={{ background: "linear-gradient(90deg, transparent, hsl(220 15% 25% / 0.3), transparent)" }} />
+      {/* Mini Calendar Card */}
+      <div className="rounded-[14px] bg-card/90 backdrop-blur-xl border border-border/30 shadow-2xl shadow-black/40 overflow-hidden py-4">
+        <MiniCalendar dayStatusMap={dayStatusMap} selectedMonth={selectedMonth} selectedYear={selectedYear} />
+        
+        {/* Legend */}
+        <div className="flex items-center justify-center gap-5 px-4 pt-2">
+          {[
+            { label: "Pago", accent: "150 100% 45%" },
+            { label: "Pendente", accent: "40 80% 50%" },
+            { label: "Atrasado", accent: "0 60% 50%" },
+          ].map((s) => (
+            <span key={s.label} className="flex items-center gap-1.5 text-[9px] text-muted-foreground/50 font-medium">
+              <span
+                className="w-1.5 h-1.5 rounded-full"
+                style={{ background: `hsl(${s.accent})`, boxShadow: `0 0 4px hsl(${s.accent} / 0.5)` }}
+              />
+              {s.label}
+            </span>
+          ))}
+        </div>
       </div>
 
       {/* Event Cards */}
-      <div className="px-4 py-4 space-y-1.5">
-        {events.map((ev, i) => {
-          const cfg = STATUS_CONFIG[ev.status];
-          const StatusIcon = cfg.Icon;
-          const a = cfg.accent;
-
-          return (
-            <motion.div
-              key={ev.id}
-              initial={{ opacity: 0, y: 4 }}
-              animate={{ opacity: 1, y: 0 }}
-              transition={{ delay: i * 0.04, duration: 0.3 }}
-              className="group relative rounded-xl overflow-hidden p-3 flex items-center justify-between cursor-pointer transition-all duration-300"
-              style={{
-                background: `hsl(${a} / 0.04)`,
-                border: `1px solid hsl(${a} / 0.1)`,
-                boxShadow: "inset 0 1px 0 0 rgba(255,255,255,0.02)",
-              }}
-              onMouseEnter={(e) => {
-                e.currentTarget.style.background = `hsl(${a} / 0.08)`;
-                e.currentTarget.style.borderColor = `hsl(${a} / 0.18)`;
-              }}
-              onMouseLeave={(e) => {
-                e.currentTarget.style.background = `hsl(${a} / 0.04)`;
-                e.currentTarget.style.borderColor = `hsl(${a} / 0.1)`;
-              }}
-            >
-              {/* Full-height accent line */}
-              <div
-                className="absolute left-0 top-0 bottom-0 w-[3px] rounded-l-xl"
-                style={{ background: `hsl(${a})`, boxShadow: `0 0 8px hsl(${a} / 0.4)` }}
-              />
-
-              {/* Left */}
-              <div className="flex items-center gap-2.5 min-w-0 pl-1.5">
-                <div
-                  className="w-8 h-8 rounded-lg flex items-center justify-center flex-shrink-0"
-                  style={{ background: `hsl(${a} / 0.1)`, border: `1px solid hsl(${a} / 0.12)` }}
-                >
-                  <StatusIcon className={`w-3.5 h-3.5 ${cfg.textColor}`} />
-                </div>
-                <div className="min-w-0">
-                  <p className="text-[13px] font-semibold text-foreground/90 truncate">{ev.name}</p>
-                  <p className="text-[10px] text-muted-foreground/40">{ev.date}</p>
-                </div>
-              </div>
-
-              {/* Right */}
-              <div className="flex items-center gap-2 shrink-0 ml-3">
-                <div className="text-right">
-                  <p className="text-[13px] font-bold text-foreground tabular-nums">{fmt(ev.amount)}</p>
-                  <span className={`text-[9px] font-semibold ${cfg.textColor} opacity-80 uppercase tracking-wider`}>
-                    {cfg.label}
-                  </span>
-                </div>
-              </div>
-            </motion.div>
-          );
-        })}
+      <div className="space-y-1.5">
+        <AnimatePresence mode="sync">
+          {visibleEvents.map((ev, i) => (
+            <EventCard key={ev.id} ev={ev} index={i} />
+          ))}
+        </AnimatePresence>
       </div>
+
+      {/* Show more / less */}
+      {events.length > 3 && (
+        <button
+          onClick={() => setShowAll(!showAll)}
+          className="w-full flex items-center justify-center gap-1 text-[10px] text-muted-foreground/40 hover:text-muted-foreground/60 transition-colors py-1.5 rounded-lg hover:bg-white/[0.02]"
+        >
+          <ChevronRight className={`w-3 h-3 transition-transform ${showAll ? "rotate-90" : ""}`} />
+          {showAll ? "Ver menos" : `Ver todos (${events.length})`}
+        </button>
+      )}
     </div>
   );
 });
 
-// Mini calendar
+/* ── Mini Calendar ── */
 interface MiniCalendarProps {
   dayStatusMap: Map<number, { accent: string; priority: number }>;
   selectedMonth: number;
@@ -217,7 +208,7 @@ const MiniCalendar = memo(({ dayStatusMap, selectedMonth, selectedYear }: MiniCa
   const days = weeks[clampedIdx];
 
   return (
-    <div className="px-5 mb-3">
+    <div className="px-4">
       <motion.div
         key={`${selectedMonth}-${selectedYear}-${clampedIdx}`}
         initial={{ opacity: 0, x: 20 }}
