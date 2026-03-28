@@ -18,6 +18,7 @@ const Index = () => {
   const data = useMemo(() => SAMPLE_DATA, []);
   const handleNovaTransacao = useCallback(() => {}, []);
   const { greeting, dateStr } = useGreeting();
+  const userName = "Larissa"; // TODO: substituir pelo nome do usuário autenticado
 
   const handleMonthChange = (month: number, year: number) => {
     setSelectedMonth(month);
@@ -44,7 +45,7 @@ const Index = () => {
             <div className="flex items-center justify-between mb-3">
               <div>
                 <h1 className="font-display text-lg font-bold leading-tight">
-                  {greeting}, <span className="text-foreground/70">Olá</span>
+                   {greeting}, <span className="text-foreground/70">{userName}</span>
                 </h1>
                 <p className="text-[10px] text-muted-foreground">{dateStr}</p>
               </div>
@@ -82,7 +83,7 @@ const Index = () => {
           <div className="flex items-center justify-between mb-3">
             <div>
               <h1 className="font-display text-lg font-bold leading-tight">
-                {greeting}, <span className="text-foreground/70">Olá</span>
+                {greeting}, <span className="text-foreground/70">{userName}</span>
               </h1>
               <p className="text-[10px] text-muted-foreground">{dateStr}</p>
             </div>
@@ -106,7 +107,7 @@ const Index = () => {
           <div className="flex items-center justify-between">
             <div>
               <h1 className="font-display text-base font-bold leading-tight">
-                {greeting}, <span className="text-foreground/70">Olá</span>
+                {greeting}, <span className="text-foreground/70">{userName}</span>
               </h1>
               <p className="text-[10px] text-muted-foreground">{dateStr}</p>
             </div>
