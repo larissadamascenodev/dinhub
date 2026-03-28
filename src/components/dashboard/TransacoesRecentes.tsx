@@ -130,23 +130,25 @@ const TransacoesRecentes = memo(({ transactions, onVerTodas }: Props) => {
         <AnimatePresence>
           {!expanded && restTx.length > 0 && (
             <>
-              {restTx.slice(0, 3).map((_, i) => (
-                <motion.div
-                  key={`stack-${i}`}
-                  initial={{ opacity: 0 }}
-                  animate={{ opacity: 1 }}
-                  exit={{ opacity: 0, scale: 0.95 }}
-                  className={`absolute left-0 right-0 ${CARD_CLASS}`}
-                  style={{
-                    top: `${(i + 1) * 8}px`,
-                    transform: `scale(${1 - (i + 1) * 0.03})`,
-                    zIndex: 3 - i,
-                    height: "58px",
-                    background: CARD_STYLE.background,
-                    filter: `brightness(${1 - (i + 1) * 0.06})`,
-                  }}
-                />
-              ))}
+              {restTx.slice(0, 3).map((_, i) => {
+                const darken = (i + 1) * 4;
+                return (
+                  <motion.div
+                    key={`stack-${i}`}
+                    initial={{ opacity: 0 }}
+                    animate={{ opacity: 1 }}
+                    exit={{ opacity: 0, scale: 0.95 }}
+                    className="absolute left-0 right-0 rounded-xl border border-border/20"
+                    style={{
+                      top: `${(i + 1) * 8}px`,
+                      transform: `scale(${1 - (i + 1) * 0.03})`,
+                      zIndex: 3 - i,
+                      height: "58px",
+                      background: `hsl(222 20% ${Math.max(8 - darken, 2)}%)`,
+                    }}
+                  />
+                );
+              })}
             </>
           )}
         </AnimatePresence>
