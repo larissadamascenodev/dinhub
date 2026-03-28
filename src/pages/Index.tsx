@@ -118,6 +118,14 @@ const Index = () => {
             </div>
             <MonthSelector selectedMonth={selectedMonth} selectedYear={selectedYear} onMonthChange={handleMonthChange} />
           </div>
+          {profile && !isOnboardingComplete && (
+            <OnboardingCard
+              profile={profile}
+              onUpdateName={updateDisplayName}
+              onGoToAccounts={() => navigate("/gestao")}
+              onCreateTransaction={handleNovaTransacao}
+            />
+          )}
           <SaldoCard saldoAtual={saldoMes} saldoPrevisto={balanco} onNovaTransacao={handleNovaTransacao} />
           <ReceitasDespesasCards receitas={receitas} despesas={despesas} />
           <BalancoCard balanco={balanco} />
