@@ -84,6 +84,14 @@ const Index = () => {
               </div>
               <MonthSelector selectedMonth={selectedMonth} selectedYear={selectedYear} onMonthChange={handleMonthChange} />
             </div>
+            {profile && !isOnboardingComplete && (
+              <OnboardingCard
+                profile={profile}
+                onUpdateName={updateDisplayName}
+                onGoToAccounts={() => navigate("/gestao")}
+                onCreateTransaction={handleNovaTransacao}
+              />
+            )}
             <div>
               <motion.div initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }} className="grid grid-cols-[1.4fr_1fr] gap-3">
                 <SaldoCard saldoAtual={saldoMes} saldoPrevisto={balanco} onNovaTransacao={handleNovaTransacao} />
