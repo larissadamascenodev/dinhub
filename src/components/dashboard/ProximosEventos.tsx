@@ -196,17 +196,17 @@ const ProximosEventos = memo(({ events, selectedMonth, selectedYear }: Props) =>
                 transition={{ delay: gi * 0.05, type: "spring", stiffness: 400, damping: 30 }}
               >
                 {/* Day marker */}
-                <div className="flex items-center gap-2 mb-1 -ml-5">
+                <div className="flex items-center gap-1.5 mb-0.5 -ml-5">
                   <div
-                    className={`w-4 h-4 rounded-full flex items-center justify-center z-10 shrink-0 ${
-                      isToday ? "bg-primary shadow-[0_0_8px_hsl(150_100%_45%/0.4)]" : "bg-card border border-border/40"
+                    className={`w-3.5 h-3.5 rounded-full flex items-center justify-center z-10 shrink-0 ${
+                      isToday ? "bg-primary shadow-[0_0_6px_hsl(150_100%_45%/0.4)]" : "bg-card border border-border/40"
                     }`}
                   >
-                    <span className={`text-[7px] font-bold ${isToday ? "text-background" : "text-muted-foreground/50"}`}>
+                    <span className={`text-[6px] font-bold ${isToday ? "text-background" : "text-muted-foreground/50"}`}>
                       {day}
                     </span>
                   </div>
-                  <span className="text-[9px] text-muted-foreground/25 font-medium">
+                  <span className="text-[8px] text-muted-foreground/25 font-medium">
                     {day} {MONTH_SHORT[selectedMonth]}
                     {isToday && <span className="text-primary ml-1">· Hoje</span>}
                   </span>
