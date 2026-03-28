@@ -115,6 +115,9 @@ const TransacoesRecentes = memo(({ transactions, onVerTodas }: Props) => {
             Transações Recentes
           </h3>
         </div>
+        <span className="text-[10px] font-semibold text-muted-foreground bg-muted/30 px-2 py-0.5 rounded-full">
+          {transactions.length}
+        </span>
       </div>
 
       {/* Stack area */}
