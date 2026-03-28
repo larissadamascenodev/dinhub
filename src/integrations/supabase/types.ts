@@ -92,6 +92,7 @@ export type Database = {
           date: string
           id: string
           name: string
+          status: string
           type: string
           updated_at: string
           user_id: string
@@ -104,6 +105,7 @@ export type Database = {
           date?: string
           id?: string
           name: string
+          status?: string
           type: string
           updated_at?: string
           user_id: string
@@ -116,6 +118,7 @@ export type Database = {
           date?: string
           id?: string
           name?: string
+          status?: string
           type?: string
           updated_at?: string
           user_id?: string
