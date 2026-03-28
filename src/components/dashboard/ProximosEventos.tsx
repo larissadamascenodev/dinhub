@@ -25,7 +25,7 @@ const parseDayFromDate = (dateStr: string): number | null => {
   return match ? parseInt(match[1], 10) : null;
 };
 
-const WEEK_LABELS = ["D", "S", "T", "Q", "Q", "S", "S"];
+const WEEK_LABELS = ["Dom", "Seg", "Ter", "Qua", "Qui", "Sex", "Sáb"];
 const MONTH_SHORT = ["jan", "fev", "mar", "abr", "mai", "jun", "jul", "ago", "set", "out", "nov", "dez"];
 const STATUS_PRIORITY: Record<string, number> = { atrasado: 3, pendente: 2, pago: 1, recebido: 1 };
 
