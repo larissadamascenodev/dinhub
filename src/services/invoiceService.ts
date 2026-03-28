@@ -41,14 +41,32 @@ export async function getInvoices(cardId: string, month?: number, year?: number)
 }
 
 export async function getInvoiceItems(invoiceId: string) {
-  const { data, error } = await supabase
+  // Get items
+  const { data: items, error } = await supabase
     .from("invoice_items" as any)
     .select("*")
     .eq("invoice_id", invoiceId)
     .order("installment_number", { ascending: true });
 
   if (error) throw error;
-  return (data ?? []) as unknown as InvoiceItem[];
+  const typedItems = (items ?? []) as unknown as InvoiceItem[];
+
+  // Get related transaction names
+  const txIds = [...new Set(typedItems.map((i) => i.transaction_id))];
+  if (txIds.length === 0) return [];
+
+  const { data: txs } = await supabase
+    .from("transactions")
+    .select("id, name, category")
+    .in("id", txIds);
+
+  const txMap = new Map((txs ?? []).map((t: any) => [t.id, t]));
+
+  return typedItems.map((item) => ({
+    ...item,
+    transaction_name: (txMap.get(item.transaction_id) as any)?.name ?? "Transação",
+    transaction_category: (txMap.get(item.transaction_id) as any)?.category ?? "",
+  }));
 }
 
 export async function payInvoice(invoiceId: string, accountId: string) {
