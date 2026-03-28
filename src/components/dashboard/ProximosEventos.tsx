@@ -208,7 +208,7 @@ const ProximosEventos = memo(({ events, selectedMonth, selectedYear }: Props) =>
                         border: "1px solid hsl(150 100% 45% / 0.25)",
                       }}
                     >
-                      <span className="text-[11px] font-bold text-primary">
+                      <span className="text-[12px] font-bold text-primary">
                         Hoje, {WEEK_FULL[new Date(selectedYear, selectedMonth, day).getDay()]}, {day} De {MONTH_FULL[selectedMonth]}
                       </span>
                     </div>
@@ -218,7 +218,7 @@ const ProximosEventos = memo(({ events, selectedMonth, selectedYear }: Props) =>
                     <div className="w-3.5 h-3.5 rounded-full bg-card border border-border/40 flex items-center justify-center z-10 shrink-0">
                       <span className="text-[6px] font-bold text-muted-foreground/50">{day}</span>
                     </div>
-                    <span className="text-[9px] text-muted-foreground/30 font-medium">
+                    <span className="text-[11px] text-muted-foreground/40 font-medium">
                       {WEEK_FULL[new Date(selectedYear, selectedMonth, day).getDay()]}, {day} {MONTH_SHORT[selectedMonth]}
                     </span>
                   </div>
@@ -237,28 +237,31 @@ const ProximosEventos = memo(({ events, selectedMonth, selectedYear }: Props) =>
                         initial={{ opacity: 0, y: 4 }}
                         animate={{ opacity: 1, y: 0 }}
                         transition={{ delay: gi * 0.05 + i * 0.03 }}
-                        className="flex items-center gap-2.5 rounded-xl px-3 py-2 cursor-pointer transition-all"
+                        className="flex items-center gap-3 rounded-xl px-3.5 py-3 cursor-pointer transition-all"
                         style={{
                           background: `hsl(${a} / 0.05)`,
                           border: `1px solid hsl(${a} / 0.1)`,
                         }}
                       >
                         <div
-                          className="w-5 h-5 rounded-md flex items-center justify-center shrink-0"
+                          className="w-8 h-8 rounded-lg flex items-center justify-center shrink-0"
                           style={{ background: `hsl(${a} / 0.12)` }}
                         >
-                          <StatusIcon className="w-2.5 h-2.5" style={{ color: `hsl(${a})` }} />
+                          <StatusIcon className="w-3.5 h-3.5" style={{ color: `hsl(${a})` }} />
                         </div>
 
-                        <p className="flex-1 text-[11px] font-semibold text-foreground/80 truncate">{ev.name}</p>
+                        <div className="flex-1 min-w-0">
+                          <p className="text-[13px] font-semibold text-foreground/90 truncate">{ev.name}</p>
+                          <p className="text-[10px] text-muted-foreground/50 mt-0.5">{ev.category}</p>
+                        </div>
 
-                        <div className="flex items-center gap-1.5 shrink-0">
-                          <span className="text-[8px] font-semibold uppercase" style={{ color: `hsl(${a} / 0.5)` }}>
-                            {cfg.label}
-                          </span>
-                          <p className="text-[11px] font-bold tabular-nums" style={{ color: `hsl(${a})` }}>
+                        <div className="flex flex-col items-end shrink-0">
+                          <p className="text-[13px] font-bold tabular-nums" style={{ color: `hsl(${a})` }}>
                             {fmt(ev.amount)}
                           </p>
+                          <span className="text-[9px] font-semibold uppercase mt-0.5" style={{ color: `hsl(${a} / 0.6)` }}>
+                            {cfg.label}
+                          </span>
                         </div>
                       </motion.div>
                     );
