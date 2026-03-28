@@ -32,11 +32,25 @@ const Index = () => {
   const { profile, refetch: refetchProfile, updateDisplayName, isOnboardingComplete } = useProfile();
   const handleNovaTransacao = useCallback(() => setShowTypeChooser(true), []);
 
-  // Listen for desktop nav "Nova transação" button
+  // Listen for nav "Nova transação" direct type selection
   useEffect(() => {
-    const handler = () => setShowTypeChooser(true);
-    window.addEventListener("open-nova-transacao", handler);
-    return () => window.removeEventListener("open-nova-transacao", handler);
+    const handleDirect = (e: Event) => {
+      const detail = (e as CustomEvent).detail;
+      if (detail?.type === "receita" || detail?.type === "despesa") {
+        setModalType(detail.type);
+        setShowModal(true);
+      }
+    };
+    const handleScanner = () => {
+      // TODO: implement scanner functionality
+      console.log("Scanner opened");
+    };
+    window.addEventListener("open-nova-transacao-direct", handleDirect);
+    window.addEventListener("open-scanner", handleScanner);
+    return () => {
+      window.removeEventListener("open-nova-transacao-direct", handleDirect);
+      window.removeEventListener("open-scanner", handleScanner);
+    };
   }, []);
   const handleTypeSelected = useCallback((type: "receita" | "despesa") => {
     setModalType(type);

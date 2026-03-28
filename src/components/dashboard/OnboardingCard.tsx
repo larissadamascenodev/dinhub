@@ -43,12 +43,22 @@ const OnboardingCard = ({ profile, onUpdateName, onGoToAccounts, onCreateTransac
     },
   ];
 
-  const completedCount = steps.filter((s) => s.done).length;
-  const allDone = completedCount === steps.length;
+  // Sort: completed first, pending after
+  const sortedSteps = [...steps].sort((a, b) => {
+    if (a.done && !b.done) return -1;
+    if (!a.done && b.done) return 1;
+    return 0;
+  });
+
+  const completedCount = sortedSteps.filter((s) => s.done).length;
+  const allDone = completedCount === sortedSteps.length;
 
   if (allDone) return null;
 
-  const step = steps[currentStep];
+  // Auto-focus on first pending step
+  const firstPendingIndex = sortedSteps.findIndex((s) => !s.done);
+  const activeStep = Math.max(0, Math.min(currentStep, sortedSteps.length - 1));
+  const step = sortedSteps[activeStep >= 0 ? activeStep : firstPendingIndex];
 
   const handleSaveName = async () => {
     if (!name.trim()) return;
@@ -70,17 +80,17 @@ const OnboardingCard = ({ profile, onUpdateName, onGoToAccounts, onCreateTransac
           <Rocket className="w-3 h-3 text-primary" />
         </div>
         <p className="text-xs font-bold text-foreground flex-1">Complete sua conta</p>
-        <span className="text-[9px] text-muted-foreground">{completedCount}/{steps.length}</span>
+        <span className="text-[9px] text-muted-foreground">{completedCount}/{sortedSteps.length}</span>
       </div>
 
       {/* Progress dots */}
       <div className="flex gap-1 mb-2.5">
-        {steps.map((s, i) => (
+        {sortedSteps.map((s, i) => (
           <div
             key={s.id}
             className={cn(
               "h-1 rounded-full flex-1 transition-all",
-              s.done ? "bg-primary" : i === currentStep ? "bg-primary/40" : "bg-muted/30"
+              s.done ? "bg-primary" : i === activeStep ? "bg-primary/40" : "bg-muted/30"
             )}
           />
         ))}
@@ -133,8 +143,8 @@ const OnboardingCard = ({ profile, onUpdateName, onGoToAccounts, onCreateTransac
         </AnimatePresence>
 
         <button
-          onClick={() => setCurrentStep((p) => Math.min(steps.length - 1, p + 1))}
-          disabled={currentStep === steps.length - 1}
+          onClick={() => setCurrentStep((p) => Math.min(sortedSteps.length - 1, p + 1))}
+          disabled={activeStep === sortedSteps.length - 1}
           className="w-6 h-6 rounded-lg flex items-center justify-center text-muted-foreground hover:text-foreground disabled:opacity-20 transition-all shrink-0"
         >
           <ChevronRight className="w-3.5 h-3.5" />

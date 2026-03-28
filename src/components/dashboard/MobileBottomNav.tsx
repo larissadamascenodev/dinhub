@@ -1,5 +1,5 @@
 import { memo, useState } from "react";
-import { Home, ArrowLeftRight, Bot, User, Plus, X } from "lucide-react";
+import { Home, ArrowLeftRight, Bot, User, Plus, X, TrendingUp, TrendingDown, Camera } from "lucide-react";
 import { motion, AnimatePresence } from "framer-motion";
 import { useNavigate, useLocation } from "react-router-dom";
 
@@ -16,6 +16,15 @@ const MobileBottomNav = memo(() => {
   const navigate = useNavigate();
   const location = useLocation();
 
+  const handleOption = (type: "receita" | "despesa" | "scanner") => {
+    setIsOpen(false);
+    if (type === "scanner") {
+      window.dispatchEvent(new CustomEvent("open-scanner"));
+    } else {
+      window.dispatchEvent(new CustomEvent("open-nova-transacao-direct", { detail: { type } }));
+    }
+  };
+
   return (
     <>
       {/* Backdrop */}
@@ -31,11 +40,59 @@ const MobileBottomNav = memo(() => {
         )}
       </AnimatePresence>
 
+      {/* Floating action options */}
+      <AnimatePresence>
+        {isOpen && (
+          <div className="fixed bottom-[90px] left-0 right-0 z-50 flex justify-center md:hidden">
+            <motion.div
+              initial={{ opacity: 0, y: 16, scale: 0.9 }}
+              animate={{ opacity: 1, y: 0, scale: 1 }}
+              exit={{ opacity: 0, y: 16, scale: 0.9 }}
+              transition={{ type: "spring", stiffness: 350, damping: 25 }}
+              className="flex gap-3"
+            >
+              <motion.button
+                whileTap={{ scale: 0.9 }}
+                onClick={() => handleOption("receita")}
+                className="flex flex-col items-center gap-1.5 w-20 py-3 rounded-xl bg-card border border-border/30 shadow-xl"
+              >
+                <div className="w-10 h-10 rounded-lg bg-primary/15 flex items-center justify-center">
+                  <TrendingUp className="w-5 h-5 text-primary" />
+                </div>
+                <span className="text-[10px] font-bold text-foreground">Receita</span>
+              </motion.button>
+
+              <motion.button
+                whileTap={{ scale: 0.9 }}
+                onClick={() => handleOption("despesa")}
+                className="flex flex-col items-center gap-1.5 w-20 py-3 rounded-xl bg-card border border-border/30 shadow-xl"
+              >
+                <div className="w-10 h-10 rounded-lg bg-destructive/15 flex items-center justify-center">
+                  <TrendingDown className="w-5 h-5 text-destructive" />
+                </div>
+                <span className="text-[10px] font-bold text-foreground">Despesa</span>
+              </motion.button>
+
+              <motion.button
+                whileTap={{ scale: 0.9 }}
+                onClick={() => handleOption("scanner")}
+                className="flex flex-col items-center gap-1.5 w-20 py-3 rounded-xl bg-card border border-border/30 shadow-xl"
+              >
+                <div className="w-10 h-10 rounded-lg bg-muted/20 flex items-center justify-center">
+                  <Camera className="w-5 h-5 text-muted-foreground" />
+                </div>
+                <span className="text-[10px] font-bold text-foreground">Scanner</span>
+              </motion.button>
+            </motion.div>
+          </div>
+        )}
+      </AnimatePresence>
+
       {/* Bottom Nav Bar */}
       <div className="fixed bottom-0 left-0 right-0 z-50 flex justify-center px-8 pb-4 md:hidden">
         <nav className="w-full max-w-[340px] rounded-2xl bg-card/90 backdrop-blur-xl border border-border/30 shadow-2xl shadow-black/40">
           <div className="flex items-center justify-around h-[58px] px-2">
-            {navItems.map((item, idx) => {
+            {navItems.map((item) => {
               if (item.isCenter) {
                 return (
                   <button
