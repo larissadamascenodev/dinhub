@@ -26,32 +26,32 @@ const formatDate = () => {
   return `${day} de ${months[now.getMonth()]}`;
 };
 
-/* ── Shared card style matching SaldoCard, BalancoCard, etc. ── */
-const CARD_STYLE = {
-  background: "linear-gradient(135deg, hsl(var(--primary) / 0.06) 0%, transparent 60%)",
-  border: undefined as undefined,
-};
-const CARD_CLASS =
-  "rounded-xl border border-border/20 bg-card shadow-[0_2px_8px_-2px_rgba(0,0,0,0.4),inset_0_1px_0_0_rgba(255,255,255,0.06)]";
-
 const NotificationCard = ({ tx }: { tx: Transaction }) => {
   const isReceita = tx.type === "receita";
   const Icon = CATEGORY_ICONS[tx.category] || Wallet;
 
+  /* Accent colors based on type */
+  const accent = isReceita ? "142 71% 55%" : "0 72% 55%";
+
   return (
     <div
-      className={`${CARD_CLASS} flex items-center gap-3 px-4 py-3`}
-      style={{ background: CARD_STYLE.background }}
+      className="flex items-center gap-3 px-4 py-3 rounded-xl border"
+      style={{
+        background: `linear-gradient(135deg, hsl(${accent} / 0.07) 0%, hsl(var(--card)) 50%)`,
+        borderColor: `hsl(${accent} / 0.15)`,
+        boxShadow: `0 2px 8px -2px rgba(0,0,0,0.4), inset 0 1px 0 0 rgba(255,255,255,0.05), 0 0 20px -8px hsl(${accent} / 0.1)`,
+      }}
     >
       {/* Icon */}
       <div
         className="w-10 h-10 rounded-xl flex items-center justify-center flex-shrink-0"
         style={{
-          background: "hsl(var(--primary) / 0.12)",
-          border: "1px solid hsl(var(--primary) / 0.18)",
+          background: `hsl(${accent} / 0.12)`,
+          border: `1px solid hsl(${accent} / 0.22)`,
+          boxShadow: `0 0 12px hsl(${accent} / 0.08)`,
         }}
       >
-        <Icon className="w-5 h-5 text-primary" />
+        <Icon className="w-5 h-5" style={{ color: `hsl(${accent})` }} />
       </div>
 
       {/* Name + date */}
@@ -60,7 +60,7 @@ const NotificationCard = ({ tx }: { tx: Transaction }) => {
           {tx.name}
         </p>
         <p className="text-[11px] text-muted-foreground/50 mt-0.5">
-          {tx.category} {formatDate()}
+          {tx.category} · {formatDate()}
         </p>
       </div>
 
@@ -69,16 +69,15 @@ const NotificationCard = ({ tx }: { tx: Transaction }) => {
         <p
           className="text-[14px] font-bold tabular-nums tracking-tight"
           style={{
-            color: isReceita ? "hsl(142 71% 55%)" : "hsl(0 72% 55%)",
+            color: `hsl(${accent})`,
+            textShadow: `0 0 16px hsl(${accent} / 0.3)`,
           }}
         >
           {isReceita ? "+" : "-"}{fmt(tx.amount)}
         </p>
         <p
           className="text-[9px] font-medium mt-0.5"
-          style={{
-            color: isReceita ? "hsl(142 71% 55% / 0.6)" : "hsl(0 72% 55% / 0.6)",
-          }}
+          style={{ color: `hsl(${accent} / 0.55)` }}
         >
           {isReceita ? "Receita" : "Despesa"}
         </p>
@@ -95,12 +94,17 @@ const TransacoesRecentes = memo(({ transactions, onVerTodas }: Props) => {
 
   if (transactions.length === 0) {
     return (
-      <div className={`${CARD_CLASS} p-6 text-center`} style={{ background: CARD_STYLE.background }}>
+      <div
+        className="rounded-xl border border-border/20 bg-card p-6 text-center"
+        style={{ background: "linear-gradient(135deg, hsl(var(--primary) / 0.06) 0%, transparent 60%)" }}
+      >
         <Bell className="w-6 h-6 text-muted-foreground/20 mx-auto mb-2" />
         <p className="text-xs text-muted-foreground/50">Nenhuma transação ainda</p>
       </div>
     );
   }
+
+  const topAccent = topTx.type === "receita" ? "142 71% 55%" : "0 72% 55%";
 
   return (
     <div className="relative">
@@ -130,25 +134,24 @@ const TransacoesRecentes = memo(({ transactions, onVerTodas }: Props) => {
         <AnimatePresence>
           {!expanded && restTx.length > 0 && (
             <>
-              {restTx.slice(0, 3).map((_, i) => {
-                const darken = (i + 1) * 4;
-                return (
-                  <motion.div
-                    key={`stack-${i}`}
-                    initial={{ opacity: 0 }}
-                    animate={{ opacity: 1 }}
-                    exit={{ opacity: 0, scale: 0.95 }}
-                    className="absolute left-0 right-0 rounded-xl border border-border/20"
-                    style={{
-                      top: `${(i + 1) * 8}px`,
-                      transform: `scale(${1 - (i + 1) * 0.03})`,
-                      zIndex: 3 - i,
-                      height: "58px",
-                      background: `hsl(222 20% ${Math.max(8 - darken, 2)}%)`,
-                    }}
-                  />
-                );
-              })}
+              {restTx.slice(0, 3).map((_, i) => (
+                <motion.div
+                  key={`stack-${i}`}
+                  initial={{ opacity: 0 }}
+                  animate={{ opacity: 1 }}
+                  exit={{ opacity: 0, scale: 0.95 }}
+                  className="absolute left-0 right-0 rounded-xl"
+                  style={{
+                    top: `${(i + 1) * 8}px`,
+                    transform: `scale(${1 - (i + 1) * 0.03})`,
+                    zIndex: 3 - i,
+                    height: "58px",
+                    background: `linear-gradient(135deg, hsl(${topAccent} / ${0.04 - i * 0.01}) 0%, hsl(var(--card)) 50%)`,
+                    border: `1px solid hsl(${topAccent} / ${0.1 - i * 0.03})`,
+                    filter: `brightness(${1 - (i + 1) * 0.05})`,
+                  }}
+                />
+              ))}
             </>
           )}
         </AnimatePresence>
@@ -158,7 +161,7 @@ const TransacoesRecentes = memo(({ transactions, onVerTodas }: Props) => {
           <NotificationCard tx={topTx} />
         </motion.div>
 
-        {/* Expand badge */}
+        {/* Expand indicator */}
         {!expanded && restTx.length > 0 && (
           <div className="absolute -bottom-1 left-1/2 -translate-x-1/2 z-20">
             <ChevronDown className="w-4 h-4 text-muted-foreground/40" />
