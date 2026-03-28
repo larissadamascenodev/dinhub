@@ -99,7 +99,7 @@ const Index = () => {
 
           <BalancoCard balanco={balanco} />
           <MicroInteracoesCard gastosHoje={data.gastosHoje} mediaGastosDiarios={data.mediaGastosDiarios} />
-          <GastosPorCategoria categories={data.categories} />
+          
           <TransacoesRecentes transactions={data.transactions} />
           <ProximosEventos events={data.events} />
         </div>
