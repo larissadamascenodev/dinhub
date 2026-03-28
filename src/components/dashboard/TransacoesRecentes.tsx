@@ -22,7 +22,7 @@ const formatDate = () => {
 };
 
 const TxCard = ({ tx, onDelete }: { tx: Transaction; onDelete?: (id: string) => void }) => {
-  const isReceita = tx.type === "receita" || tx.type === "income";
+  const isReceita = tx.type === "receita";
   const Icon = isReceita ? ArrowUpRight : ArrowDownRight;
 
   const handleDelete = async (e: React.MouseEvent) => {
