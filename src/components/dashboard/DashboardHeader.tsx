@@ -18,11 +18,11 @@ export const useGreeting = () => {
 };
 
 const NAV_ITEMS = [
-  { label: "Dashboard", icon: LayoutDashboard, active: true },
-  { label: "Transações", icon: ArrowLeftRight, active: false },
-  { label: "Carteira", icon: Wallet, active: false },
-  { label: "Bot Finance", icon: Bot, active: false },
-  { label: "Perfil", icon: User, active: false },
+  { label: "Dashboard", icon: LayoutDashboard, path: "/" },
+  { label: "Transações", icon: ArrowLeftRight, path: "/" },
+  { label: "Carteira", icon: Wallet, path: "/gestao" },
+  { label: "Bot Finance", icon: Bot, path: "/" },
+  { label: "Perfil", icon: User, path: "/configuracoes" },
 ];
 
 const DashboardHeader = memo(({ profile }: { profile?: { display_name: string | null } | null }) => {
