@@ -385,7 +385,6 @@ const FaturaCartao = () => {
             </motion.div>
           )}
         </AnimatePresence>
-      </div>
     </div>
   );
 };
