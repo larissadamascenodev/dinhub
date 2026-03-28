@@ -26,11 +26,22 @@ const NAV_ITEMS = [
 ];
 
 const DashboardHeader = memo(({ profile }: { profile?: { display_name: string | null } | null }) => {
-  const { user } = useAuth();
+  const { signOut, user } = useAuth();
+  const navigate = useNavigate();
   const initial = (profile?.display_name ?? user?.email ?? "U").charAt(0).toUpperCase();
   const displayName = profile?.display_name || user?.email?.split("@")[0] || "Usuário";
   const email = user?.email ?? "";
   const plan = "Free";
+  const [menuOpen, setMenuOpen] = useState(false);
+  const menuRef = useRef<HTMLDivElement>(null);
+
+  useEffect(() => {
+    const handler = (e: MouseEvent) => {
+      if (menuRef.current && !menuRef.current.contains(e.target as Node)) setMenuOpen(false);
+    };
+    document.addEventListener("mousedown", handler);
+    return () => document.removeEventListener("mousedown", handler);
+  }, []);
   return (
     <>
       {/* Desktop Top Bar */}
