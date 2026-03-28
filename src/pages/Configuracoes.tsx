@@ -3,7 +3,7 @@ import { motion } from "framer-motion";
 import {
   User, Pencil, Star, Flame, Target, TrendingUp, Swords, Trophy,
   Shield, Crown, Upload, FileText, Smartphone, MessageCircle, Trash2, LogOut,
-  Bell, Globe, HelpCircle, Headphones, FileCheck, ChevronRight, Wallet, CreditCard, Settings,
+  Bell, Globe, HelpCircle, Headphones, FileCheck, ChevronRight, Wallet, Settings,
 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -176,42 +176,23 @@ const Configuracoes = () => {
         </div>
       </motion.div>
 
-      {/* ═══ Contas & Cartões summary cards ═══ */}
-      <div className="grid grid-cols-2 gap-3">
-        <motion.button
-          initial={{ opacity: 0, y: 12 }}
-          animate={{ opacity: 1, y: 0 }}
-          transition={{ delay: 0.05 }}
-          onClick={() => navigate("/gestao")}
-          className="glass-card rounded-2xl p-5 flex flex-col gap-4 hover:bg-card/80 transition-all text-left group min-h-[120px] relative"
-        >
-          <div className="w-12 h-12 rounded-2xl bg-primary/15 flex items-center justify-center shrink-0">
-            <Wallet className="w-6 h-6 text-primary" />
-          </div>
-          <div className="flex-1 min-w-0 flex flex-col justify-end">
-            <p className="text-base font-bold text-foreground">Contas</p>
-            <p className="text-xs text-muted-foreground">Bancárias</p>
-          </div>
-          <ChevronRight className="absolute top-4 right-4 w-4 h-4 text-muted-foreground group-hover:text-foreground transition-colors shrink-0" />
-        </motion.button>
-
-        <motion.button
-          initial={{ opacity: 0, y: 12 }}
-          animate={{ opacity: 1, y: 0 }}
-          transition={{ delay: 0.1 }}
-          onClick={() => navigate("/gestao")}
-          className="glass-card rounded-2xl p-5 flex flex-col gap-4 hover:bg-card/80 transition-all text-left group min-h-[120px] relative"
-        >
-          <div className="w-12 h-12 rounded-2xl bg-primary/15 flex items-center justify-center shrink-0">
-            <CreditCard className="w-6 h-6 text-primary" />
-          </div>
-          <div className="flex-1 min-w-0 flex flex-col justify-end">
-            <p className="text-base font-bold text-foreground">Cartões</p>
-            <p className="text-xs text-muted-foreground">Crédito</p>
-          </div>
-          <ChevronRight className="absolute top-4 right-4 w-4 h-4 text-muted-foreground group-hover:text-foreground transition-colors shrink-0" />
-        </motion.button>
-      </div>
+      {/* ═══ Carteira Card ═══ */}
+      <motion.button
+        initial={{ opacity: 0, y: 12 }}
+        animate={{ opacity: 1, y: 0 }}
+        transition={{ delay: 0.05 }}
+        onClick={() => navigate("/gestao")}
+        className="glass-card rounded-2xl p-5 w-full flex items-center gap-4 hover:bg-card/80 transition-all text-left group"
+      >
+        <div className="w-12 h-12 rounded-2xl bg-primary/15 flex items-center justify-center shrink-0">
+          <Wallet className="w-6 h-6 text-primary" />
+        </div>
+        <div className="flex-1 min-w-0">
+          <p className="text-base font-bold text-foreground">Carteira</p>
+          <p className="text-xs text-muted-foreground">Contas e Cartões de Crédito</p>
+        </div>
+        <ChevronRight className="w-5 h-5 text-muted-foreground group-hover:text-foreground transition-colors shrink-0" />
+      </motion.button>
 
       {/* ═══ Feature Cards Grid ═══ */}
       <div className="grid grid-cols-2 gap-3">
@@ -248,14 +229,21 @@ const Configuracoes = () => {
       </motion.div>
 
       {/* ═══ Tabs: Conta / Configurações ═══ */}
-      <div className="grid grid-cols-2 gap-2">
+      <div className="relative rounded-xl bg-card/60 border border-border/20 p-1 flex">
+        <motion.div
+          className="absolute top-1 bottom-1 rounded-lg bg-primary"
+          initial={false}
+          animate={{
+            left: activeTab === "conta" ? "4px" : "50%",
+            width: "calc(50% - 4px)",
+          }}
+          transition={{ type: "spring", stiffness: 350, damping: 30 }}
+        />
         <button
           onClick={() => setActiveTab("conta")}
           className={cn(
-            "h-12 rounded-xl text-sm font-bold flex items-center justify-center gap-2 transition-all duration-200",
-            activeTab === "conta"
-              ? "bg-primary text-primary-foreground"
-              : "bg-card/60 border border-border/20 text-muted-foreground hover:text-foreground"
+            "relative z-10 flex-1 h-10 rounded-lg text-sm font-bold flex items-center justify-center gap-2 transition-colors duration-200",
+            activeTab === "conta" ? "text-primary-foreground" : "text-muted-foreground hover:text-foreground"
           )}
         >
           <User className="w-4 h-4" /> Conta
@@ -263,10 +251,8 @@ const Configuracoes = () => {
         <button
           onClick={() => setActiveTab("config")}
           className={cn(
-            "h-12 rounded-xl text-sm font-bold flex items-center justify-center gap-2 transition-all duration-200",
-            activeTab === "config"
-              ? "bg-primary text-primary-foreground"
-              : "bg-card/60 border border-border/20 text-muted-foreground hover:text-foreground"
+            "relative z-10 flex-1 h-10 rounded-lg text-sm font-bold flex items-center justify-center gap-2 transition-colors duration-200",
+            activeTab === "config" ? "text-primary-foreground" : "text-muted-foreground hover:text-foreground"
           )}
         >
           <Settings className="w-4 h-4" /> Configurações
