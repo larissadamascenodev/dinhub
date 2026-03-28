@@ -45,10 +45,10 @@ const MobileBottomNav = memo(() => {
         {isOpen && (
           <div className="fixed bottom-[90px] left-0 right-0 z-50 flex justify-center md:hidden">
             <motion.div
-              initial={{ opacity: 0, y: 12 }}
-              animate={{ opacity: 1, y: 0 }}
-              exit={{ opacity: 0, y: 12 }}
-              transition={{ duration: 0.15 }}
+              initial={{ opacity: 0, y: 8, scale: 0.9 }}
+              animate={{ opacity: 1, y: 0, scale: 1 }}
+              exit={{ opacity: 0, y: 8, scale: 0.9 }}
+              transition={{ type: "spring", stiffness: 400, damping: 25 }}
               className="flex gap-1.5 p-1.5 rounded-xl bg-card/95 backdrop-blur-2xl border border-border/15 shadow-2xl shadow-black/40"
             >
               <motion.button
