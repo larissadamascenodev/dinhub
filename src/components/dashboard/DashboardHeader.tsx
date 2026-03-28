@@ -2,16 +2,8 @@ import { memo, useMemo } from "react";
 import { LayoutDashboard, ArrowLeftRight, Wallet, Bot, User, Bell, Flame, PiggyBank } from "lucide-react";
 import { motion } from "framer-motion";
 
-const NAV_ITEMS = [
-  { label: "Dashboard", icon: LayoutDashboard, active: true },
-  { label: "Transações", icon: ArrowLeftRight, active: false },
-  { label: "Carteira", icon: Wallet, active: false },
-  { label: "Bot Finance", icon: Bot, active: false },
-  { label: "Perfil", icon: User, active: false },
-];
-
-const DashboardHeader = memo(() => {
-  const { greeting, dateStr } = useMemo(() => {
+export const useGreeting = () => {
+  return useMemo(() => {
     const now = new Date();
     const hour = now.getHours();
     let g = "Bom dia";
@@ -21,6 +13,17 @@ const DashboardHeader = memo(() => {
     const months = ["janeiro", "fevereiro", "março", "abril", "maio", "junho", "julho", "agosto", "setembro", "outubro", "novembro", "dezembro"];
     return { greeting: g, dateStr: `${days[now.getDay()]}, ${now.getDate()} de ${months[now.getMonth()]}` };
   }, []);
+};
+
+const NAV_ITEMS = [
+  { label: "Dashboard", icon: LayoutDashboard, active: true },
+  { label: "Transações", icon: ArrowLeftRight, active: false },
+  { label: "Carteira", icon: Wallet, active: false },
+  { label: "Bot Finance", icon: Bot, active: false },
+  { label: "Perfil", icon: User, active: false },
+];
+
+const DashboardHeader = memo(() => {
 
   return (
     <>
@@ -88,13 +91,7 @@ const DashboardHeader = memo(() => {
         </div>
       </header>
 
-      {/* Greeting */}
-      <motion.div initial={{ opacity: 0, y: -10 }} animate={{ opacity: 1, y: 0 }} className="mb-1 md:mb-2">
-        <h1 className="font-display text-xl md:text-2xl font-bold leading-tight">
-          {greeting}, <span className="text-foreground/70">Olá</span>
-        </h1>
-        <p className="text-xs text-muted-foreground mt-0.5">{dateStr}</p>
-      </motion.div>
+      
     </>
   );
 });
