@@ -262,8 +262,8 @@ const NovaTransacaoModal = ({ open, onClose, onSuccess }: Props) => {
                   type="submit"
                   disabled={submitting || amountCents === 0}
                   className="w-full h-12 font-semibold text-sm"
-                  style={{ background: type === "income" ? "var(--gradient-primary)" : undefined }}
-                  variant={type === "expense" ? "destructive" : "default"}
+                  style={{ background: type === "receita" ? "var(--gradient-primary)" : undefined }}
+                  variant={type === "despesa" ? "destructive" : "default"}
                 >
                   {submitting ? (
                     <span className="animate-pulse">Salvando...</span>
