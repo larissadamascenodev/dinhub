@@ -236,9 +236,11 @@ export type Database = {
           credit_card_id: string | null
           date: string
           id: string
+          installment_current: number | null
           installments: number | null
           name: string
           observation: string | null
+          parent_transaction_id: string | null
           payment_method: string
           recurrence_type: string
           status: string
@@ -254,9 +256,11 @@ export type Database = {
           credit_card_id?: string | null
           date?: string
           id?: string
+          installment_current?: number | null
           installments?: number | null
           name: string
           observation?: string | null
+          parent_transaction_id?: string | null
           payment_method?: string
           recurrence_type?: string
           status?: string
@@ -272,9 +276,11 @@ export type Database = {
           credit_card_id?: string | null
           date?: string
           id?: string
+          installment_current?: number | null
           installments?: number | null
           name?: string
           observation?: string | null
+          parent_transaction_id?: string | null
           payment_method?: string
           recurrence_type?: string
           status?: string
@@ -295,6 +301,13 @@ export type Database = {
             columns: ["credit_card_id"]
             isOneToOne: false
             referencedRelation: "credit_cards"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "transactions_parent_transaction_id_fkey"
+            columns: ["parent_transaction_id"]
+            isOneToOne: false
+            referencedRelation: "transactions"
             referencedColumns: ["id"]
           },
         ]

@@ -11,6 +11,7 @@ export interface CreateTransactionInput {
   payment_method?: "conta" | "cartao";
   recurrence_type?: "unica" | "parcelado" | "fixa";
   installments?: number | null;
+  installment_current?: number | null;
   observation?: string | null;
   credit_card_id?: string | null;
 }
@@ -37,6 +38,7 @@ export async function createTransaction(input: CreateTransactionInput, userId: s
       payment_method: input.payment_method ?? "conta",
       recurrence_type: input.recurrence_type ?? "unica",
       installments: input.installments ?? null,
+      installment_current: input.installment_current ?? null,
       observation: input.observation ?? null,
       credit_card_id: input.payment_method === "cartao" ? (input.credit_card_id ?? null) : null,
     } as any)
