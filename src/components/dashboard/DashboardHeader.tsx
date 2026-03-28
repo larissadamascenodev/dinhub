@@ -1,5 +1,5 @@
 import { memo, useMemo, useState, useRef, useEffect } from "react";
-import { LayoutDashboard, ArrowLeftRight, Wallet, Bot, User, Bell, Flame, PiggyBank, Settings, LogOut } from "lucide-react";
+import { LayoutDashboard, ArrowLeftRight, Plus, Bot, User, Bell, Flame, PiggyBank, Settings, LogOut } from "lucide-react";
 import { useAuth } from "@/contexts/AuthContext";
 import { useNavigate, useLocation } from "react-router-dom";
 import { motion, AnimatePresence } from "framer-motion";
