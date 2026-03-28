@@ -17,7 +17,7 @@ const BalancoCard = memo(({ balanco }: Props) => {
       initial={{ opacity: 0, y: 8 }}
       animate={{ opacity: 1, y: 0 }}
       transition={{ delay: 0.15 }}
-      className="cursor-pointer rounded-xl border border-border/20 p-3 md:p-4 shadow-[0_2px_8px_-2px_rgba(0,0,0,0.4),inset_0_1px_0_0_rgba(255,255,255,0.03)] overflow-hidden relative"
+      className={cn("cursor-pointer rounded-xl border p-3 md:p-4 shadow-[0_2px_8px_-2px_rgba(0,0,0,0.4),inset_0_1px_0_0_rgba(255,255,255,0.03)] overflow-hidden relative", isPositive ? "border-primary/10" : "border-destructive/10")}
       style={{ background: "linear-gradient(145deg, hsl(220 18% 9% / 0.9) 0%, hsl(220 20% 5% / 0.95) 100%)" }}
     >
       <div className="relative flex items-center justify-between gap-3">
