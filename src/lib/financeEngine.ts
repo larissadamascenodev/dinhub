@@ -100,7 +100,7 @@ function aggregate(transactions: RawTransaction[]) {
   let expense = 0;
   for (const t of transactions) {
     const amt = Number(t.amount);
-    if (t.type === "income" || t.type === "receita") {
+    if (t.type === "receita") {
       income += amt;
     } else {
       expense += amt;
