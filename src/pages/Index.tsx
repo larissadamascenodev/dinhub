@@ -40,17 +40,19 @@ const Index = () => {
         <div className="hidden lg:grid lg:grid-cols-[1fr_340px] gap-5">
           {/* LEFT COLUMN */}
           <div className="space-y-4">
+            {/* Greeting + Month selector */}
+            <div className="flex items-center justify-between mb-3">
+              <div>
+                <h1 className="font-display text-lg font-bold leading-tight">
+                  {greeting}, <span className="text-foreground/70">Olá</span>
+                </h1>
+                <p className="text-[10px] text-muted-foreground">{dateStr}</p>
+              </div>
+              <MonthSelector selectedMonth={selectedMonth} selectedYear={selectedYear} onMonthChange={handleMonthChange} />
+            </div>
+
             {/* Saldo + Receita/Despesa */}
             <div>
-              <div className="flex items-center justify-between mb-2">
-                <div>
-                  <h1 className="font-display text-lg font-bold leading-tight">
-                    {greeting}, <span className="text-foreground/70">Olá</span>
-                  </h1>
-                  <p className="text-[10px] text-muted-foreground">{dateStr}</p>
-                </div>
-                <MonthSelector selectedMonth={selectedMonth} selectedYear={selectedYear} onMonthChange={handleMonthChange} />
-              </div>
               <motion.div initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }} className="grid grid-cols-[1.4fr_1fr] gap-3">
                 <SaldoCard saldoAtual={saldoMes} saldoPrevisto={balanco} onNovaTransacao={handleNovaTransacao} />
                 <ReceitasDespesasCards receitas={receitas} despesas={despesas} />
