@@ -5,49 +5,53 @@ import { motion, AnimatePresence } from "framer-motion";
 interface Props {
   gastosHoje: number;
   mediaGastosDiarios: number;
+  status?: "safe" | "warning" | "danger";
 }
 
 const buckets = {
   zero: {
-    msgs: ["Hoje tá tranquilo até agora", "Nenhum gasto registrado hoje"],
+    msgs: ["Hoje tá tranquilo até agora 😌", "Nenhum gasto registrado hoje ✨"],
     icon: PartyPopper,
     iconClass: "text-primary",
   },
   saving: {
-    msgs: ["Hoje você tá no controle", "Economia real hoje, parabéns"],
+    msgs: ["Hoje você tá no controle 💪", "Economia real hoje, parabéns 🎉"],
     icon: TrendingDown,
     iconClass: "text-primary",
   },
   below: {
-    msgs: ["Tá indo bem hoje, continua assim", "Ritmo saudável hoje"],
+    msgs: ["Tudo sob controle 👍", "Ritmo saudável hoje 🧘"],
     icon: Smile,
     iconClass: "text-primary",
   },
   above: {
-    msgs: ["Cuidado, o ritmo subiu um pouco", "Um pouco acima da média hoje"],
+    msgs: ["Cuidado, o ritmo subiu um pouco ⚠️", "Um pouco acima da média hoje 📊"],
     icon: Meh,
     iconClass: "text-warning",
   },
   high: {
-    msgs: ["Hoje você tá gastando mais que o normal", "Calma… desse jeito o mês sente"],
+    msgs: ["Hoje você acelerou nos gastos 👀", "Calma… desse jeito o mês sente 🔥"],
     icon: AlertTriangle,
     iconClass: "text-destructive",
   },
 };
 
+function generateDailyMessage(gastosHoje: number, mediaGastosDiarios: number): keyof typeof buckets {
+  if (gastosHoje === 0) return "zero";
+  const variacao = mediaGastosDiarios > 0
+    ? ((gastosHoje - mediaGastosDiarios) / mediaGastosDiarios) * 100
+    : 0;
+  if (variacao > 20) return "high";
+  if (variacao > 0) return "above";
+  if (variacao > -20) return "below";
+  return "saving";
+}
+
 const MicroInteracoesCard = memo(({ gastosHoje, mediaGastosDiarios }: Props) => {
-  const bucket = useMemo(() => {
-    const variacao = mediaGastosDiarios > 0 ? ((gastosHoje - mediaGastosDiarios) / mediaGastosDiarios) * 100 : 0;
-    return gastosHoje === 0
-      ? "zero" as const
-      : variacao > 20
-        ? "high" as const
-        : variacao > 0
-          ? "above" as const
-          : variacao > -20
-            ? "below" as const
-            : "saving" as const;
-  }, [gastosHoje, mediaGastosDiarios]);
+  const bucket = useMemo(
+    () => generateDailyMessage(gastosHoje, mediaGastosDiarios),
+    [gastosHoje, mediaGastosDiarios]
+  );
 
   const cfg = buckets[bucket];
   const Icon = cfg.icon;
@@ -69,8 +73,13 @@ const MicroInteracoesCard = memo(({ gastosHoje, mediaGastosDiarios }: Props) => 
       animate={{ opacity: 1, y: 0 }}
       className="flex items-center gap-3 rounded-xl px-4 py-2.5 cursor-pointer transition-all border border-primary/20 backdrop-blur-sm overflow-hidden"
       style={{
-        background: "hsl(150 100% 45% / 0.06)",
+        background: bucket === "high" || bucket === "above"
+          ? "hsl(0 60% 50% / 0.06)"
+          : "hsl(150 100% 45% / 0.06)",
         boxShadow: "0 2px 8px -2px rgba(0,0,0,0.4), inset 0 1px 0 0 hsl(150 100% 45% / 0.08)",
+        borderColor: bucket === "high" || bucket === "above"
+          ? "hsl(0 60% 50% / 0.2)"
+          : undefined,
       }}
     >
       <motion.div
