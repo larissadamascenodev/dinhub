@@ -19,12 +19,19 @@ import type { FinanceEvent } from "@/types/finance";
 const Index = () => {
   const [selectedMonth, setSelectedMonth] = useState(new Date().getMonth());
   const [selectedYear, setSelectedYear] = useState(new Date().getFullYear());
+  const [showTypeChooser, setShowTypeChooser] = useState(false);
   const [showModal, setShowModal] = useState(false);
+  const [modalType, setModalType] = useState<"receita" | "despesa">("despesa");
   const [selectedEvent, setSelectedEvent] = useState<FinanceEvent | null>(null);
   const [showPayModal, setShowPayModal] = useState(false);
   const { user } = useAuth();
   const { data, loading, refetch } = useFinanceData(selectedMonth, selectedYear);
-  const handleNovaTransacao = useCallback(() => setShowModal(true), []);
+  const handleNovaTransacao = useCallback(() => setShowTypeChooser(true), []);
+  const handleTypeSelected = useCallback((type: "receita" | "despesa") => {
+    setModalType(type);
+    setShowTypeChooser(false);
+    setShowModal(true);
+  }, []);
   const { greeting, dateStr } = useGreeting();
   const userName = user?.email?.split("@")[0] ?? "Usuário";
 
