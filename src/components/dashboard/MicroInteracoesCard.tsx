@@ -1,55 +1,99 @@
 import { memo, useMemo } from "react";
-import { Zap, ChevronUp } from "lucide-react";
+import { Smile, Meh, AlertTriangle, PartyPopper, TrendingDown } from "lucide-react";
+import { motion } from "framer-motion";
 
 interface Props {
   gastosHoje: number;
   mediaGastosDiarios: number;
 }
 
-const fmt = (v: number) => v.toLocaleString("pt-BR", { style: "currency", currency: "BRL" });
+const buckets = {
+  zero: {
+    msgs: ["Hoje tá tranquilo até agora 😄", "Nenhum gasto registrado hoje 🎉"],
+    icon: PartyPopper,
+    bg: "hsl(var(--primary) / 0.08)",
+    border: "hsl(var(--primary) / 0.18)",
+    iconColor: "hsl(var(--primary))",
+  },
+  saving: {
+    msgs: ["Hoje você tá no controle 💰", "Economia real hoje, parabéns 🚀"],
+    icon: TrendingDown,
+    bg: "hsl(var(--primary) / 0.08)",
+    border: "hsl(var(--primary) / 0.18)",
+    iconColor: "hsl(var(--primary))",
+  },
+  below: {
+    msgs: ["Tá indo bem hoje, continua assim 👏", "Ritmo saudável hoje 😊"],
+    icon: Smile,
+    bg: "hsl(var(--primary) / 0.06)",
+    border: "hsl(var(--primary) / 0.15)",
+    iconColor: "hsl(var(--primary))",
+  },
+  above: {
+    msgs: ["Cuidado, o ritmo subiu um pouco ⚠️", "Um pouco acima da média hoje 👀"],
+    icon: Meh,
+    bg: "hsl(45 93% 47% / 0.08)",
+    border: "hsl(45 93% 47% / 0.18)",
+    iconColor: "hsl(45, 93%, 47%)",
+  },
+  high: {
+    msgs: ["Hoje você tá gastando mais que o normal 👀", "Calma… desse jeito o mês sente 😅"],
+    icon: AlertTriangle,
+    bg: "hsl(var(--destructive) / 0.08)",
+    border: "hsl(var(--destructive) / 0.18)",
+    iconColor: "hsl(var(--destructive))",
+  },
+};
 
 const MicroInteracoesCard = memo(({ gastosHoje, mediaGastosDiarios }: Props) => {
-  const { message, pct } = useMemo(() => {
-    const p = mediaGastosDiarios > 0 ? (gastosHoje / mediaGastosDiarios) * 100 : 0;
-    let m: string;
-    if (gastosHoje === 0) m = "Saldo intacto 🤑";
-    else if (p < 50) m = "Dia tranquilo hoje 😎";
-    else if (p < 80) m = "Tá controlado, mas fica de olho 👌";
-    else if (p < 120) m = "Hoje já deu uma escapadinha 👀";
-    else m = "Cuidado hoje hein… 🚨";
-    return { message: m, pct: Math.round(p) };
+  const { bucket, msg } = useMemo(() => {
+    const variacao = mediaGastosDiarios > 0 ? ((gastosHoje - mediaGastosDiarios) / mediaGastosDiarios) * 100 : 0;
+    const b =
+      gastosHoje === 0
+        ? "zero" as const
+        : variacao > 20
+          ? "high" as const
+          : variacao > 0
+            ? "above" as const
+            : variacao > -20
+              ? "below" as const
+              : "saving" as const;
+    const cfg = buckets[b];
+    const m = cfg.msgs[new Date().getDate() % cfg.msgs.length];
+    return { bucket: b, msg: m };
   }, [gastosHoje, mediaGastosDiarios]);
 
+  const cfg = buckets[bucket];
+  const Icon = cfg.icon;
+
   return (
-    <div className="fp-card p-5">
-      <div className="flex items-center justify-between mb-4">
-        <div className="flex items-center gap-2 text-[11px] font-semibold uppercase tracking-widest text-muted-foreground">
-          <Zap className="h-4 w-4 text-primary" />
-          Hoje
-        </div>
-        <ChevronUp className="h-4 w-4 text-muted-foreground/50 cursor-pointer hover:text-foreground transition-colors" />
-      </div>
-
-      <div className="flex items-end justify-between mb-4">
-        <div>
-          <p className="text-3xl font-extrabold fp-text-red tracking-tight">{fmt(gastosHoje)}</p>
-          <p className="text-xs text-muted-foreground mt-1">gastos hoje</p>
-        </div>
-        <div className="text-right">
-          <p className="text-xs text-muted-foreground">ainda pode gastar</p>
-          <p className="text-xl font-bold text-foreground mt-0.5">
-            {fmt(Math.max(0, mediaGastosDiarios - gastosHoje))}
-          </p>
-        </div>
-      </div>
-
-      <div className="pt-3 border-t border-border">
-        <p className="text-sm font-semibold text-foreground">{message}</p>
-        <p className="text-xs text-muted-foreground mt-1">
-          ~{pct}% vs média
-        </p>
-      </div>
-    </div>
+    <motion.div
+      initial={{ opacity: 0, y: 6 }}
+      animate={{ opacity: 1, y: 0 }}
+      className="flex items-center gap-3 rounded-xl px-4 py-2.5 cursor-pointer transition-all"
+      style={{
+        background: cfg.bg,
+        border: `1px solid ${cfg.border}`,
+        boxShadow: `0 0 12px -4px ${cfg.border}`,
+      }}
+    >
+      <motion.div
+        key={bucket}
+        initial={{ scale: 0.8, opacity: 0 }}
+        animate={{ scale: 1, opacity: 1 }}
+        transition={{ type: "spring", stiffness: 400, damping: 20 }}
+      >
+        <Icon className="w-4 h-4 shrink-0" style={{ color: cfg.iconColor }} />
+      </motion.div>
+      <motion.p
+        key={msg}
+        initial={{ opacity: 0, x: 6 }}
+        animate={{ opacity: 1, x: 0 }}
+        className="text-xs text-foreground/80 leading-snug"
+      >
+        {msg}
+      </motion.p>
+    </motion.div>
   );
 });
 

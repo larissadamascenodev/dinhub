@@ -1,37 +1,50 @@
 import { memo } from "react";
-import { Wallet, Plus } from "lucide-react";
+import { Scale, Plus } from "lucide-react";
+import { motion } from "framer-motion";
 
 interface SaldoCardProps {
   saldoAtual: number;
   saldoPrevisto: number;
   onNovaTransacao?: () => void;
+  mobile?: boolean;
 }
 
-const fmt = (v: number) => v.toLocaleString("pt-BR", { style: "currency", currency: "BRL" });
+const fmt = (v: number) => v.toLocaleString("pt-BR", { style: "currency", currency: "BRL", minimumFractionDigits: 2 });
 
-const SaldoCard = memo(({ saldoAtual, saldoPrevisto, onNovaTransacao }: SaldoCardProps) => (
-  <div className="fp-card p-5">
-    <div className="flex items-center justify-between mb-4">
-      <div className="flex items-center gap-2 text-muted-foreground text-xs font-semibold uppercase tracking-widest">
-        <Wallet className="h-4 w-4 text-primary" />
-        Saldo do mês
+const SaldoCard = memo(({ saldoAtual, saldoPrevisto, onNovaTransacao, mobile }: SaldoCardProps) => (
+  <div
+    className={`rounded-xl border border-border/20 bg-card shadow-[0_2px_8px_-2px_rgba(0,0,0,0.4),inset_0_1px_0_0_rgba(255,255,255,0.06)] flex flex-col justify-between ${mobile ? "p-4" : "p-5"}`}
+    style={{ background: "linear-gradient(135deg, hsl(var(--primary) / 0.06) 0%, transparent 60%)" }}
+  >
+    <div>
+      <div className="flex items-center justify-between mb-2">
+        <div className="flex items-center gap-1.5">
+          <Scale className="w-3.5 h-3.5 text-muted-foreground" />
+          <span className="text-[10px] text-muted-foreground uppercase tracking-[0.15em] font-semibold">Saldo do mês</span>
+        </div>
+        <button
+          onClick={onNovaTransacao}
+          className="flex items-center gap-1 px-2.5 py-1 rounded-lg text-[10px] font-semibold text-primary border border-primary/20 hover:border-primary/40 transition-all"
+          style={{ background: "linear-gradient(135deg, hsl(var(--primary) / 0.10) 0%, transparent 60%)" }}
+        >
+          <Plus className="w-3 h-3" />
+          Nova transação
+        </button>
       </div>
-      <button
-        onClick={onNovaTransacao}
-        className="flex items-center gap-1.5 px-3.5 py-2 rounded-xl border border-primary/30 text-primary text-xs font-semibold hover:bg-primary/10 transition-all duration-200"
+      <motion.p
+        key={saldoAtual}
+        initial={{ opacity: 0 }}
+        animate={{ opacity: 1 }}
+        className={`font-display ${mobile ? "text-2xl" : "text-4xl"} font-bold tracking-tight tabular-nums leading-none ${saldoAtual >= 0 ? "text-foreground" : "text-destructive"}`}
       >
-        <Plus className="h-3.5 w-3.5" />
-        Nova transação
-      </button>
+        {fmt(saldoAtual)}
+      </motion.p>
+      <div className="mt-4 flex items-center gap-2">
+        <div className={`w-1 h-1 rounded-full ${saldoPrevisto >= 0 ? "bg-primary" : "bg-destructive"} animate-pulse`} />
+        <span className="text-[10px] text-muted-foreground/60">Previsto ao final do mês</span>
+        <span className={`text-[13px] font-semibold tabular-nums tracking-tight ${saldoPrevisto >= 0 ? "text-primary/80" : "text-destructive/80"}`}>{fmt(saldoPrevisto)}</span>
+      </div>
     </div>
-    <p className="text-4xl font-extrabold text-foreground tracking-tight leading-none">
-      {fmt(saldoAtual)}
-    </p>
-    <p className="text-sm text-muted-foreground mt-2.5 flex items-center gap-2">
-      <span className="w-2 h-2 rounded-full fp-bg-green inline-block" />
-      Previsto ao final do mês
-      <span className="font-semibold text-foreground">{fmt(saldoPrevisto)}</span>
-    </p>
   </div>
 ));
 

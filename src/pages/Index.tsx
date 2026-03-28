@@ -1,5 +1,5 @@
 import { useState, useCallback, useMemo } from "react";
-import { useIsMobile } from "@/hooks/use-mobile";
+import { motion } from "framer-motion";
 import DashboardHeader from "@/components/dashboard/DashboardHeader";
 import MobileBottomNav from "@/components/dashboard/MobileBottomNav";
 import SaldoCard from "@/components/dashboard/SaldoCard";
@@ -9,102 +9,105 @@ import MicroInteracoesCard from "@/components/dashboard/MicroInteracoesCard";
 import TransacoesRecentes from "@/components/dashboard/TransacoesRecentes";
 import GastosPorCategoria from "@/components/dashboard/GastosPorCategoria";
 import ProximosEventos from "@/components/dashboard/ProximosEventos";
-import MobileToggle from "@/components/dashboard/MobileToggle";
+import MonthSelector from "@/components/dashboard/MonthSelector";
 import { SAMPLE_DATA } from "@/types/finance";
 
-const MonthTabs = () => {
-  const months = ["Jan", "Fev", "Mar", "Abr", "Mai"];
-  const active = "Mar";
-  return (
-    <div className="hidden md:flex items-center gap-1 mb-5">
-      {months.map((m) => (
-        <button
-          key={m}
-          className={`px-4 py-1.5 rounded-lg text-xs font-semibold transition-all ${
-            m === active
-              ? "bg-primary text-primary-foreground shadow-md shadow-primary/20"
-              : "text-muted-foreground hover:text-foreground hover:bg-secondary"
-          }`}
-        >
-          {m}
-        </button>
-      ))}
-    </div>
-  );
-};
-
 const Index = () => {
-  const isMobile = useIsMobile();
-  const [mobileTab, setMobileTab] = useState<"transacoes" | "eventos">("transacoes");
+  const [selectedMonth, setSelectedMonth] = useState(new Date().getMonth());
+  const [selectedYear, setSelectedYear] = useState(new Date().getFullYear());
   const data = useMemo(() => SAMPLE_DATA, []);
   const handleNovaTransacao = useCallback(() => {}, []);
 
+  const handleMonthChange = (month: number, year: number) => {
+    setSelectedMonth(month);
+    setSelectedYear(year);
+  };
+
+  const receitas = data.receitas;
+  const despesas = data.despesas;
+  const balanco = receitas - despesas;
+  const saldoMes = data.saldoAtual;
+
   return (
     <div className="dark min-h-screen bg-background text-foreground">
-      <div className="max-w-7xl mx-auto px-4 md:px-6 pt-4 md:pt-5 pb-24 md:pb-8">
+      <div className="max-w-7xl mx-auto px-4 md:px-6 pt-0 pb-24 md:pb-8">
         <DashboardHeader />
-        <MonthTabs />
 
-        {/* Main grid: left content + right sidebar */}
-        <div className="grid grid-cols-1 lg:grid-cols-[1fr_360px] gap-5 items-start">
-          {/* Left column */}
-          <div className="flex flex-col gap-4">
-            <div className="grid grid-cols-1 md:grid-cols-[1fr_auto] gap-4 items-start">
-              <div className="flex flex-col gap-4">
-                <SaldoCard
-                  saldoAtual={data.saldoAtual}
-                  saldoPrevisto={data.saldoPrevisto}
-                  onNovaTransacao={handleNovaTransacao}
-                />
+        {/* ══════════════════════════════════════════════════
+            DESKTOP LAYOUT (>= 1024px) — 2 columns
+            ══════════════════════════════════════════════════ */}
+        <div className="hidden lg:grid lg:grid-cols-[1fr_340px] gap-5">
+          {/* LEFT COLUMN */}
+          <div className="space-y-4">
+            {/* Saldo + Receita/Despesa */}
+            <div>
+              <div className="flex justify-end mb-2" style={{ paddingLeft: "calc(58.33% + 0.375rem)" }}>
+                <MonthSelector selectedMonth={selectedMonth} selectedYear={selectedYear} onMonthChange={handleMonthChange} />
               </div>
-              <div className="hidden md:flex flex-col gap-3 w-[220px]">
-                <ReceitasDespesasCards receitas={data.receitas} despesas={data.despesas} />
-              </div>
+              <motion.div initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }} className="grid grid-cols-[1.4fr_1fr] gap-3">
+                <SaldoCard saldoAtual={saldoMes} saldoPrevisto={balanco} onNovaTransacao={handleNovaTransacao} />
+                <ReceitasDespesasCards receitas={receitas} despesas={despesas} />
+              </motion.div>
             </div>
 
-            {/* Mobile: receitas/despesas inline */}
-            <div className="md:hidden">
-              <ReceitasDespesasCards receitas={data.receitas} despesas={data.despesas} />
+            {/* Balanço */}
+            <BalancoCard balanco={balanco} />
+
+            {/* Daily behavior */}
+            <MicroInteracoesCard gastosHoje={data.gastosHoje} mediaGastosDiarios={data.mediaGastosDiarios} />
+
+            {/* Grid: Transações + Categorias */}
+            <div className="grid grid-cols-2 gap-4">
+              <TransacoesRecentes transactions={data.transactions} />
+              <GastosPorCategoria categories={data.categories} />
             </div>
-
-            <BalancoCard balanco={data.balanco} />
-            <MicroInteracoesCard
-              gastosHoje={data.gastosHoje}
-              mediaGastosDiarios={data.mediaGastosDiarios}
-            />
-
-            {/* Mobile toggle */}
-            {isMobile && (
-              <MobileToggle activeTab={mobileTab} onTabChange={setMobileTab} />
-            )}
-
-            {/* Desktop: always show */}
-            {!isMobile && (
-              <>
-                <TransacoesRecentes transactions={data.transactions} />
-                <GastosPorCategoria categories={data.categories} />
-              </>
-            )}
-
-            {/* Mobile: conditional */}
-            {isMobile && mobileTab === "transacoes" && (
-              <>
-                <TransacoesRecentes transactions={data.transactions} />
-                <GastosPorCategoria categories={data.categories} />
-              </>
-            )}
-
-            {isMobile && mobileTab === "eventos" && (
-              <ProximosEventos events={data.events} />
-            )}
           </div>
 
-          {/* Right sidebar (desktop) */}
-          {!isMobile && (
-            <div>
-              <ProximosEventos events={data.events} />
-            </div>
-          )}
+          {/* RIGHT COLUMN (sidebar) */}
+          <div className="space-y-4">
+            <ProximosEventos events={data.events} />
+          </div>
+        </div>
+
+        {/* ══════════════════════════════════════════════════
+            TABLET LAYOUT (768px – 1024px)
+            ══════════════════════════════════════════════════ */}
+        <div className="hidden md:block lg:hidden space-y-4">
+          <div className="flex justify-end">
+            <MonthSelector selectedMonth={selectedMonth} selectedYear={selectedYear} onMonthChange={handleMonthChange} />
+          </div>
+
+          <SaldoCard saldoAtual={saldoMes} saldoPrevisto={balanco} onNovaTransacao={handleNovaTransacao} />
+          <ReceitasDespesasCards receitas={receitas} despesas={despesas} />
+          <BalancoCard balanco={balanco} />
+          <MicroInteracoesCard gastosHoje={data.gastosHoje} mediaGastosDiarios={data.mediaGastosDiarios} />
+
+          <div className="grid grid-cols-2 gap-4">
+            <TransacoesRecentes transactions={data.transactions} />
+            <GastosPorCategoria categories={data.categories} />
+          </div>
+
+          <ProximosEventos events={data.events} />
+        </div>
+
+        {/* ══════════════════════════════════════════════════
+            MOBILE LAYOUT (< 768px)
+            ══════════════════════════════════════════════════ */}
+        <div className="md:hidden space-y-3">
+          <div className="flex justify-end">
+            <MonthSelector selectedMonth={selectedMonth} selectedYear={selectedYear} onMonthChange={handleMonthChange} />
+          </div>
+
+          <motion.div initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }} className="space-y-3">
+            <SaldoCard saldoAtual={saldoMes} saldoPrevisto={balanco} onNovaTransacao={handleNovaTransacao} mobile />
+            <ReceitasDespesasCards receitas={receitas} despesas={despesas} mobile />
+          </motion.div>
+
+          <BalancoCard balanco={balanco} />
+          <MicroInteracoesCard gastosHoje={data.gastosHoje} mediaGastosDiarios={data.mediaGastosDiarios} />
+          <GastosPorCategoria categories={data.categories} />
+          <TransacoesRecentes transactions={data.transactions} />
+          <ProximosEventos events={data.events} />
         </div>
       </div>
 
