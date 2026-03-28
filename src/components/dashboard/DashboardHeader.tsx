@@ -1,7 +1,8 @@
-import { memo, useMemo } from "react";
-import { LayoutDashboard, ArrowLeftRight, Wallet, Bot, User, Bell, Flame, PiggyBank } from "lucide-react";
+import { memo, useMemo, useState, useRef, useEffect } from "react";
+import { LayoutDashboard, ArrowLeftRight, Wallet, Bot, User, Bell, Flame, PiggyBank, Settings, LogOut } from "lucide-react";
 import { useAuth } from "@/contexts/AuthContext";
-import { motion } from "framer-motion";
+import { useNavigate } from "react-router-dom";
+import { motion, AnimatePresence } from "framer-motion";
 
 export const useGreeting = () => {
   return useMemo(() => {
@@ -25,11 +26,22 @@ const NAV_ITEMS = [
 ];
 
 const DashboardHeader = memo(({ profile }: { profile?: { display_name: string | null } | null }) => {
-  const { user } = useAuth();
+  const { signOut, user } = useAuth();
+  const navigate = useNavigate();
   const initial = (profile?.display_name ?? user?.email ?? "U").charAt(0).toUpperCase();
   const displayName = profile?.display_name || user?.email?.split("@")[0] || "Usuário";
   const email = user?.email ?? "";
   const plan = "Free";
+  const [menuOpen, setMenuOpen] = useState(false);
+  const menuRef = useRef<HTMLDivElement>(null);
+
+  useEffect(() => {
+    const handler = (e: MouseEvent) => {
+      if (menuRef.current && !menuRef.current.contains(e.target as Node)) setMenuOpen(false);
+    };
+    document.addEventListener("mousedown", handler);
+    return () => document.removeEventListener("mousedown", handler);
+  }, []);
   return (
     <>
       {/* Desktop Top Bar */}
@@ -72,18 +84,51 @@ const DashboardHeader = memo(({ profile }: { profile?: { display_name: string | 
           <button className="text-muted-foreground hover:text-foreground transition-colors">
             <Bell className="h-4 w-4" />
           </button>
-          {/* Profile chip */}
-          <div className="flex items-center gap-2 bg-card/80 border border-border/20 rounded-2xl px-2.5 py-1.5">
-            <div className="w-7 h-7 rounded-full bg-primary/20 flex items-center justify-center text-primary text-xs font-bold shrink-0">
-              {initial}
-            </div>
-            <div className="flex flex-col leading-tight">
-              <div className="flex items-center gap-1.5">
-                <span className="text-[11px] font-semibold text-foreground truncate max-w-[100px]">{displayName}</span>
-                <span className="px-1.5 py-px rounded bg-primary/15 text-primary text-[8px] font-bold uppercase tracking-wide shrink-0">{plan}</span>
+          {/* Profile chip + dropdown */}
+          <div className="relative" ref={menuRef}>
+            <button
+              onClick={() => setMenuOpen((v) => !v)}
+              className="flex items-center gap-2 bg-card/80 border border-border/20 rounded-2xl px-2.5 py-1.5 hover:bg-card transition-colors cursor-pointer"
+            >
+              <div className="w-7 h-7 rounded-full bg-primary/20 flex items-center justify-center text-primary text-xs font-bold shrink-0">
+                {initial}
               </div>
-              <span className="text-[9px] text-muted-foreground truncate max-w-[120px]">{email}</span>
-            </div>
+              <div className="flex flex-col leading-tight">
+                <div className="flex items-center gap-1.5">
+                  <span className="text-[11px] font-semibold text-foreground truncate max-w-[100px]">{displayName}</span>
+                  <span className="px-1.5 py-px rounded bg-primary/15 text-primary text-[8px] font-bold uppercase tracking-wide shrink-0">{plan}</span>
+                </div>
+                <span className="text-[9px] text-muted-foreground truncate max-w-[120px]">{email}</span>
+              </div>
+            </button>
+
+            <AnimatePresence>
+              {menuOpen && (
+                <motion.div
+                  initial={{ opacity: 0, y: 4, scale: 0.95 }}
+                  animate={{ opacity: 1, y: 0, scale: 1 }}
+                  exit={{ opacity: 0, y: 4, scale: 0.95 }}
+                  transition={{ duration: 0.15 }}
+                  className="absolute right-0 top-full mt-2 w-48 bg-card border border-border/20 rounded-xl shadow-xl shadow-black/20 overflow-hidden z-50"
+                >
+                  <button
+                    onClick={() => { setMenuOpen(false); navigate("/configuracoes"); }}
+                    className="flex items-center gap-2.5 w-full px-4 py-2.5 text-xs text-foreground hover:bg-muted/30 transition-colors"
+                  >
+                    <Settings className="w-3.5 h-3.5 text-muted-foreground" />
+                    Configurações
+                  </button>
+                  <div className="h-px bg-border/10" />
+                  <button
+                    onClick={() => { setMenuOpen(false); signOut(); }}
+                    className="flex items-center gap-2.5 w-full px-4 py-2.5 text-xs text-destructive hover:bg-destructive/10 transition-colors"
+                  >
+                    <LogOut className="w-3.5 h-3.5" />
+                    Sair da conta
+                  </button>
+                </motion.div>
+              )}
+            </AnimatePresence>
           </div>
         </div>
       </div>
