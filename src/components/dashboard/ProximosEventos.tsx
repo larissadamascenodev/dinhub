@@ -198,6 +198,7 @@ const ProximosEventos = memo(({ events, selectedMonth, selectedYear, onVerTodos 
             const StatusIcon = cfg.Icon;
             const isPaidOrReceived = ev.status === "pago" || ev.status === "recebido";
 
+            return (
               <motion.div
                 key={ev.id}
                 initial={{ opacity: 0, y: 8 }}
