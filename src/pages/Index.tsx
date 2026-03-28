@@ -123,7 +123,7 @@ const Index = () => {
           <MicroInteracoesCard gastosHoje={data.gastosHoje} mediaGastosDiarios={data.mediaGastosDiarios} />
           
           <TransacoesRecentes transactions={data.transactions} />
-          <div className="-mt-1">
+          <div className="-mt-3">
             <ProximosEventos events={data.events} selectedMonth={selectedMonth} selectedYear={selectedYear} />
           </div>
         </div>
