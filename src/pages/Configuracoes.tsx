@@ -183,16 +183,16 @@ const Configuracoes = () => {
           animate={{ opacity: 1, y: 0 }}
           transition={{ delay: 0.05 }}
           onClick={() => navigate("/gestao")}
-          className="rounded-xl bg-card/60 border border-border/20 p-4 flex items-center gap-3 hover:bg-card/80 transition-colors text-left group"
+          className="glass-card rounded-2xl p-5 flex flex-col gap-4 hover:bg-card/80 transition-all text-left group min-h-[120px] relative"
         >
-          <div className="w-10 h-10 rounded-xl bg-primary/10 flex items-center justify-center shrink-0">
-            <Wallet className="w-5 h-5 text-primary" />
+          <div className="w-12 h-12 rounded-2xl bg-primary/15 flex items-center justify-center shrink-0">
+            <Wallet className="w-6 h-6 text-primary" />
           </div>
-          <div className="flex-1 min-w-0">
-            <p className="text-sm font-bold text-foreground">Contas</p>
-            <p className="text-[11px] text-muted-foreground">Bancárias</p>
+          <div className="flex-1 min-w-0 flex flex-col justify-end">
+            <p className="text-base font-bold text-foreground">Contas</p>
+            <p className="text-xs text-muted-foreground">Bancárias</p>
           </div>
-          <ChevronRight className="w-4 h-4 text-muted-foreground group-hover:text-foreground transition-colors shrink-0" />
+          <ChevronRight className="absolute top-4 right-4 w-4 h-4 text-muted-foreground group-hover:text-foreground transition-colors shrink-0" />
         </motion.button>
 
         <motion.button
@@ -200,16 +200,16 @@ const Configuracoes = () => {
           animate={{ opacity: 1, y: 0 }}
           transition={{ delay: 0.1 }}
           onClick={() => navigate("/gestao")}
-          className="rounded-xl bg-card/60 border border-border/20 p-4 flex items-center gap-3 hover:bg-card/80 transition-colors text-left group"
+          className="glass-card rounded-2xl p-5 flex flex-col gap-4 hover:bg-card/80 transition-all text-left group min-h-[120px] relative"
         >
-          <div className="w-10 h-10 rounded-xl bg-primary/10 flex items-center justify-center shrink-0">
-            <CreditCard className="w-5 h-5 text-primary" />
+          <div className="w-12 h-12 rounded-2xl bg-primary/15 flex items-center justify-center shrink-0">
+            <CreditCard className="w-6 h-6 text-primary" />
           </div>
-          <div className="flex-1 min-w-0">
-            <p className="text-sm font-bold text-foreground">Cartões</p>
-            <p className="text-[11px] text-muted-foreground">Crédito</p>
+          <div className="flex-1 min-w-0 flex flex-col justify-end">
+            <p className="text-base font-bold text-foreground">Cartões</p>
+            <p className="text-xs text-muted-foreground">Crédito</p>
           </div>
-          <ChevronRight className="w-4 h-4 text-muted-foreground group-hover:text-foreground transition-colors shrink-0" />
+          <ChevronRight className="absolute top-4 right-4 w-4 h-4 text-muted-foreground group-hover:text-foreground transition-colors shrink-0" />
         </motion.button>
       </div>
 
