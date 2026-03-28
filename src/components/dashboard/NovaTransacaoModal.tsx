@@ -100,7 +100,7 @@ const NovaTransacaoModal = ({ open, onClose, onSuccess }: Props) => {
         user.id
       );
       toast.success("Boa! Já registrei isso aqui 🎯", {
-        description: `${type === "income" ? "Receita" : "Despesa"} de R$ ${formatCurrency(amountCents)}`,
+        description: `${type === "receita" ? "Receita" : "Despesa"} de R$ ${formatCurrency(amountCents)}`,
       });
       onSuccess();
       onClose();
