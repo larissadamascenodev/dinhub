@@ -61,19 +61,6 @@ const Configuracoes = () => {
     setEditModalOpen(true);
   };
 
-  const handleAvatarChange = async (e: React.ChangeEvent<HTMLInputElement>) => {
-    const file = e.target.files?.[0];
-    if (!file) return;
-    setUploadingAvatar(true);
-    try {
-      await uploadAvatar(file);
-      toast.success("Foto atualizada!");
-    } catch {
-      toast.error("Erro ao enviar foto");
-    } finally {
-      setUploadingAvatar(false);
-    }
-  };
 
   const handleLogout = async () => {
     await supabase.auth.signOut();
