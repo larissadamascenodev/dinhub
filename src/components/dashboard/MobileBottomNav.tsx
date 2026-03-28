@@ -30,7 +30,14 @@ const MobileBottomNav = memo(() => {
 
       {/* Bottom Nav Bar */}
       <div className="fixed bottom-0 left-0 right-0 z-50 flex justify-center px-8 pb-4 md:hidden">
-        <nav className="w-full max-w-[300px] rounded-2xl bg-card/90 backdrop-blur-xl border border-border/30 shadow-2xl shadow-black/40">
+        <nav
+          className="w-full max-w-[300px] rounded-2xl backdrop-blur-xl"
+          style={{
+            background: "linear-gradient(145deg, hsl(225 20% 10% / 0.95) 0%, hsl(225 22% 6% / 0.95) 100%)",
+            border: "1px solid hsl(225 14% 16% / 0.5)",
+            boxShadow: "0 -4px 30px -4px rgba(0,0,0,0.6), inset 0 1px 0 0 rgba(255,255,255,0.05)",
+          }}
+        >
           <div className="flex items-center justify-around h-[52px] px-1">
             {navItems.map((item, idx) => {
               if (item.isCenter) {
@@ -43,7 +50,11 @@ const MobileBottomNav = memo(() => {
                     <motion.div
                       whileTap={{ scale: 0.9 }}
                       animate={isOpen ? { rotate: 45 } : { rotate: 0 }}
-                      className="w-[42px] h-[42px] rounded-xl bg-primary shadow-lg shadow-primary/30 flex items-center justify-center"
+                      className="w-[42px] h-[42px] rounded-xl flex items-center justify-center"
+                      style={{
+                        background: "linear-gradient(135deg, hsl(152 50% 48%) 0%, hsl(165 55% 38%) 100%)",
+                        boxShadow: "0 4px 16px -2px hsl(152 45% 45% / 0.35)",
+                      }}
                     >
                       {isOpen ? (
                         <X className="w-5 h-5 text-primary-foreground" />

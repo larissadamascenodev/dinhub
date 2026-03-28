@@ -29,7 +29,15 @@ const MonthSelector = memo(({ selectedMonth, selectedYear, onMonthChange }: Prop
   const activeIndex = isMobile ? 1 : 2;
 
   return (
-    <div className="flex items-center bg-card/60 backdrop-blur-xl border border-border/15 rounded-2xl px-1.5 py-0.5 shadow-lg shadow-black/10">
+    <div
+      className="flex items-center rounded-2xl px-1.5 py-0.5"
+      style={{
+        background: "linear-gradient(145deg, hsl(225 20% 10% / 0.8) 0%, hsl(225 22% 7% / 0.8) 100%)",
+        backdropFilter: "blur(16px)",
+        border: "1px solid hsl(225 14% 16% / 0.4)",
+        boxShadow: "0 4px 16px -4px rgba(0,0,0,0.4)",
+      }}
+    >
       <div className="flex items-center gap-0.5">
         {months.map((item, index) => {
           const isActive = index === activeIndex;
@@ -48,7 +56,7 @@ const MonthSelector = memo(({ selectedMonth, selectedYear, onMonthChange }: Prop
               onClick={() => onMonthChange(item.month, item.year)}
               className={`relative px-2.5 py-1 rounded-xl text-[11px] font-semibold whitespace-nowrap transition-colors duration-200 ${
                 isActive
-                  ? "text-primary"
+                  ? "text-primary-foreground"
                   : isCurrent
                   ? "text-primary/70"
                   : "text-muted-foreground/50 hover:text-foreground/80"
@@ -57,9 +65,12 @@ const MonthSelector = memo(({ selectedMonth, selectedYear, onMonthChange }: Prop
               {isActive && (
                 <motion.div
                   layoutId="month-active-bg"
-                  className="absolute inset-0 rounded-xl bg-primary/15 border border-primary/20 shadow-[0_0_10px_-3px_hsl(var(--primary)/0.25)]"
+                  className="absolute inset-0 rounded-xl"
+                  style={{
+                    background: "linear-gradient(135deg, hsl(152 50% 48%) 0%, hsl(165 55% 38%) 100%)",
+                    boxShadow: "0 2px 8px -2px hsl(152 45% 45% / 0.3)",
+                  }}
                   transition={{ type: "spring", stiffness: 400, damping: 28 }}
-                  style={{ zIndex: 0 }}
                 />
               )}
               <span className="relative z-10">
@@ -72,7 +83,8 @@ const MonthSelector = memo(({ selectedMonth, selectedYear, onMonthChange }: Prop
                 <motion.span
                   initial={{ scale: 0 }}
                   animate={{ scale: 1 }}
-                  className="absolute -bottom-0.5 left-1/2 -translate-x-1/2 w-1 h-1 rounded-full bg-primary shadow-[0_0_4px_hsl(var(--primary)/0.5)]"
+                  className="absolute -bottom-0.5 left-1/2 -translate-x-1/2 w-1 h-1 rounded-full bg-primary"
+                  style={{ boxShadow: "0 0 4px hsl(152 45% 45% / 0.5)" }}
                 />
               )}
             </motion.button>
