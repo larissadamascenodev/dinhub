@@ -265,7 +265,7 @@ const Configuracoes = () => {
         animate={{ opacity: 1, y: 0 }}
         transition={{ delay: 0.05 }}
         onClick={() => navigate("/gestao")}
-        className="relative overflow-hidden rounded-2xl border border-primary/20 backdrop-blur-xl shadow-2xl shadow-black/40 p-4 w-full flex items-center gap-4 hover:border-primary/30 transition-all text-left group"
+        className="relative overflow-hidden rounded-2xl border border-primary/20 backdrop-blur-xl shadow-2xl shadow-black/40 p-3.5 w-full flex items-center gap-3 hover:border-primary/30 transition-all text-left group"
         style={{
           background: "linear-gradient(160deg, hsl(150 100% 45% / 0.08) 0%, hsl(150 100% 45% / 0.03) 100%)",
         }}
