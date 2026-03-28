@@ -8,7 +8,7 @@ interface SaldoCardProps {
   mobile?: boolean;
 }
 
-const SaldoCard = memo(({ saldoAtual, saldoPrevisto, onNovaTransacao, mobile }: SaldoCardProps) => {
+const SaldoCard = memo(({ saldoAtual, saldoPrevisto, mobile }: SaldoCardProps) => {
   const animatedSaldo = useFormattedCounter(saldoAtual);
   const animatedPrevisto = useFormattedCounter(saldoPrevisto);
 
