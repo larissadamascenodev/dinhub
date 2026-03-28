@@ -79,7 +79,7 @@ const TransacoesRecentes = memo(({ transactions }: Props) => {
           </h3>
         </div>
         <span className="text-[10px] text-muted-foreground/40 font-medium">
-          {transactions.length} itens
+          {expanded ? `${transactions.length} itens` : restTx.length > 0 ? `+${restTx.length} transações` : `${transactions.length} itens`}
         </span>
       </div>
 
