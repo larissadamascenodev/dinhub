@@ -42,7 +42,7 @@ const Index = () => {
     refetchProfile();
   }, [refetch, refetchProfile]);
   const { greeting, dateStr } = useGreeting();
-  const userName = profile?.display_name || user?.email?.split("@")[0] ?? "Usuário";
+  const userName = profile?.display_name || (user?.email?.split("@")[0] ?? "Usuário");
 
   const handleMonthChange = (month: number, year: number) => {
     setSelectedMonth(month);
