@@ -1,5 +1,5 @@
 import { memo, useMemo, useState } from "react";
-import { Check, Clock, AlertTriangle, ChevronRight } from "lucide-react";
+import { Check, Clock, AlertTriangle, ChevronRight, CalendarDays } from "lucide-react";
 import { motion } from "framer-motion";
 import type { FinanceEvent } from "@/types/finance";
 
