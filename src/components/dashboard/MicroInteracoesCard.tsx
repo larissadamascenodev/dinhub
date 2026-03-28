@@ -89,7 +89,7 @@ const MicroInteracoesCard = memo(({ gastosHoje, mediaGastosDiarios }: Props) => 
             animate={{ opacity: 1, y: 0 }}
             exit={{ opacity: 0, y: -12 }}
             transition={{ duration: 0.35, ease: "easeInOut" }}
-            className="text-xs text-primary/90 leading-snug font-medium absolute inset-0 whitespace-nowrap"
+            className="text-xs text-foreground leading-snug font-medium absolute inset-0 whitespace-nowrap"
           >
             {msgs[msgIdx]}
           </motion.p>
