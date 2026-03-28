@@ -130,7 +130,7 @@ const Index = () => {
               onCreateTransaction={handleNovaTransacao}
             />
           )}
-          <SaldoCard saldoAtual={saldoMes} saldoPrevisto={balanco} onNovaTransacao={handleNovaTransacao} />
+          <SaldoCard saldoAtual={saldoMes} saldoPrevisto={balanco} />
           <ReceitasDespesasCards receitas={receitas} despesas={despesas} />
           <BalancoCard balanco={balanco} />
           <MicroInteracoesCard gastosHoje={data.gastosHoje} mediaGastosDiarios={data.mediaGastosDiarios} />
