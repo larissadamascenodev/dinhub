@@ -68,7 +68,7 @@ const STACK_OFFSET = 10;
 const STACK_SCALE_STEP = 0.03;
 const STACK_COUNT = 4;
 
-const TransacoesRecentes = memo(({ transactions }: Props) => {
+const TransacoesRecentes = memo(({ transactions, onDelete }: Props) => {
   const [expanded, setExpanded] = useState(false);
   const visible = transactions.slice(0, 7);
   const topTx = visible[0];
