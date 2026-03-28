@@ -138,19 +138,43 @@ const ProximosEventos = memo(({ events, selectedMonth, selectedYear, onVerTodos 
           {days.map((d, i) => {
             const dimmed = !d.inMonth;
             const dayEvent = d.inMonth ? dayStatusMap.get(d.day) : undefined;
-            const isPast = d.inMonth && !d.isToday && new Date(selectedYear, d.month, d.day) < today;
 
-            // Determine dot color based on status logic
-            let dotColor: string | undefined;
-            if (dayEvent && !dimmed) {
-              if (isPast || d.isToday) {
-                // Past/today: green if paid/received, red if not
-                const isPaid = dayEvent.status === "pago" || dayEvent.status === "recebido";
-                dotColor = isPaid ? "hsl(150 100% 45%)" : "hsl(0 60% 50%)";
+            // Circle style based on event status
+            let circleStyle: React.CSSProperties;
+            if (d.isToday) {
+              circleStyle = {
+                background: "linear-gradient(160deg, hsl(150 100% 45% / 0.2) 0%, hsl(150 100% 45% / 0.1) 100%)",
+                border: "1px solid hsl(150 100% 45% / 0.3)",
+                color: "hsl(150 100% 45%)",
+                boxShadow: "0 0 12px hsl(150 100% 45% / 0.3)",
+              };
+            } else if (dayEvent && !dimmed) {
+              const s = dayEvent.status;
+              if (s === "pago" || s === "recebido") {
+                circleStyle = {
+                  background: "linear-gradient(160deg, hsl(150 100% 45% / 0.2) 0%, hsl(150 100% 45% / 0.1) 100%)",
+                  border: "1px solid hsl(150 100% 45% / 0.3)",
+                  color: "hsl(150 100% 45%)",
+                  boxShadow: "0 0 8px hsl(150 100% 45% / 0.2)",
+                };
+              } else if (s === "atrasado") {
+                circleStyle = {
+                  background: "linear-gradient(160deg, hsl(0 60% 50% / 0.2) 0%, hsl(0 60% 50% / 0.1) 100%)",
+                  border: "1px solid hsl(0 60% 50% / 0.3)",
+                  color: "hsl(0 60% 50%)",
+                  boxShadow: "0 0 8px hsl(0 60% 50% / 0.2)",
+                };
               } else {
-                // Future: yellow for pending
-                dotColor = "hsl(40 80% 50%)";
+                // pendente
+                circleStyle = {
+                  background: "linear-gradient(160deg, hsl(40 80% 50% / 0.2) 0%, hsl(40 80% 50% / 0.1) 100%)",
+                  border: "1px solid hsl(40 80% 50% / 0.3)",
+                  color: "hsl(40 80% 50%)",
+                  boxShadow: "0 0 8px hsl(40 80% 50% / 0.2)",
+                };
               }
+            } else {
+              circleStyle = { color: "hsl(var(--muted-foreground) / 0.4)" };
             }
 
             return (
@@ -162,28 +186,11 @@ const ProximosEventos = memo(({ events, selectedMonth, selectedYear, onVerTodos 
                   {DAY_INITIALS[d.dow]}
                 </span>
                 <div
-                  className="w-8 h-8 rounded-full flex items-center justify-center text-sm font-bold transition-all relative"
-                  style={
-                    d.isToday
-                      ? {
-                          background: "linear-gradient(160deg, hsl(150 100% 45% / 0.2) 0%, hsl(150 100% 45% / 0.1) 100%)",
-                          border: "1px solid hsl(150 100% 45% / 0.3)",
-                          color: "hsl(150 100% 45%)",
-                          boxShadow: "0 0 12px hsl(150 100% 45% / 0.3)",
-                        }
-                      : isPast
-                        ? { color: "hsl(var(--muted-foreground) / 0.3)" }
-                        : { color: "hsl(var(--muted-foreground) / 0.6)" }
-                  }
+                  className="w-8 h-8 rounded-full flex items-center justify-center text-sm font-bold transition-all"
+                  style={circleStyle}
                 >
                   {d.day}
                 </div>
-                {dotColor && (
-                  <span
-                    className="w-1.5 h-1.5 rounded-full mt-1"
-                    style={{ background: dotColor }}
-                  />
-                )}
               </div>
             );
           })}
