@@ -24,10 +24,10 @@ const TxCard = ({ tx }: { tx: Transaction }) => {
 
   return (
     <div
-      className="relative flex items-center gap-3 px-4 py-3 rounded-[14px] overflow-hidden"
+      className="relative flex items-center gap-3 px-4 py-3 rounded-[14px] overflow-hidden border border-border/10 backdrop-blur-sm"
       style={{
-        background: "hsl(220 17% 10%)",
-        boxShadow: "0 1px 3px rgba(0,0,0,0.3), inset 0 1px 0 rgba(255,255,255,0.04)",
+        background: "linear-gradient(160deg, hsl(220 15% 14% / 0.6) 0%, hsl(220 18% 8% / 0.75) 50%, hsl(220 20% 4% / 0.9) 100%)",
+        boxShadow: "0 4px 12px -4px rgba(0,0,0,0.5), inset 0 1px 0 rgba(255,255,255,0.04)",
       }}
     >
       <div
@@ -128,9 +128,9 @@ const TransacoesRecentes = memo(({ transactions }: Props) => {
                   height: "56px",
                   transformOrigin: "top center",
                   zIndex: STACK_COUNT - i,
-                  background: `hsl(220 17% ${10 - (i + 1) * 1.2}%)`,
-                  border: "1px solid hsl(220 14% 15%)",
-                  boxShadow: "0 1px 2px rgba(0,0,0,0.2)",
+                  background: `linear-gradient(160deg, hsl(220 15% ${13 - (i + 1) * 1.5}% / 0.6) 0%, hsl(220 18% ${7 - i}% / 0.75) 50%, hsl(220 20% ${3 - i * 0.5}% / 0.9) 100%)`,
+                  border: "1px solid hsl(220 12% 16% / 0.3)",
+                  boxShadow: "0 1px 3px rgba(0,0,0,0.2)",
                 }}
               />
             ))
