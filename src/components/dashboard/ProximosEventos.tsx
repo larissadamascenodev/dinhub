@@ -218,7 +218,7 @@ const ProximosEventos = memo(({ events, selectedMonth, selectedYear }: Props) =>
                     <div className="w-3.5 h-3.5 rounded-full bg-card border border-border/40 flex items-center justify-center z-10 shrink-0">
                       <span className="text-[6px] font-bold text-muted-foreground/50">{day}</span>
                     </div>
-                    <span className="text-[9px] text-muted-foreground/30 font-medium">
+                    <span className="text-[11px] text-muted-foreground/40 font-medium">
                       {WEEK_FULL[new Date(selectedYear, selectedMonth, day).getDay()]}, {day} {MONTH_SHORT[selectedMonth]}
                     </span>
                   </div>
