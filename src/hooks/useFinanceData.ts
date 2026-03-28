@@ -52,7 +52,7 @@ export function useFinanceData(selectedMonth: number, selectedYear: number) {
           month: "short",
         }),
         amount: Number(t.amount),
-        type: (t.type === "income" ? "receita" : t.type === "expense" ? "despesa" : t.type) as Transaction["type"],
+        type: t.type as Transaction["type"],
       }));
 
       // Map events for UI
