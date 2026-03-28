@@ -20,7 +20,7 @@ export const useGreeting = () => {
 const NAV_ITEMS = [
   { label: "Dashboard", icon: LayoutDashboard, path: "/" },
   { label: "Transações", icon: ArrowLeftRight, path: "/transacoes" },
-  { label: "Carteira", icon: Wallet, path: "/gestao" },
+  { label: "Nova transação", icon: Plus, path: "/nova-transacao", isAction: true },
   { label: "Bot Finance", icon: Bot, path: "/bot" },
   { label: "Perfil", icon: User, path: "/configuracoes" },
 ];
