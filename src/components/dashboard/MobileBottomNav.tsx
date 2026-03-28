@@ -50,9 +50,9 @@ const MobileBottomNav = memo(() => {
                       }}
                     >
                       {isOpen ? (
-                        <X className="w-5 h-5 text-primary-foreground" />
+                        <X className="w-5 h-5 text-primary drop-shadow-[0_0_6px_hsl(150_100%_45%/0.6)]" />
                       ) : (
-                        <Plus className="w-5 h-5 text-primary-foreground" />
+                        <Plus className="w-5 h-5 text-primary drop-shadow-[0_0_6px_hsl(150_100%_45%/0.6)]" />
                       )}
                     </motion.div>
                   </button>
