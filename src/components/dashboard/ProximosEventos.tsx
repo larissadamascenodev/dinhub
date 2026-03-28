@@ -143,7 +143,7 @@ const ProximosEventos = memo(({ events, selectedMonth, selectedYear }: Props) =>
                     : {}
                 }
               >
-                <span className={`text-[9px] mb-0.5 ${d.isToday ? "opacity-90 font-bold" : eventInfo ? "opacity-60" : "text-muted-foreground/30"}`}>
+                <span className={`text-[8px] mb-0.5 ${d.isToday ? "opacity-90 font-bold" : eventInfo ? "opacity-60" : "text-muted-foreground/30"}`}>
                   {d.label}
                 </span>
                 <span
