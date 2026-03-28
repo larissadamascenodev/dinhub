@@ -366,13 +366,13 @@ const Configuracoes = () => {
       </motion.div>
 
       {/* ═══ Tabs: Conta / Configurações ═══ */}
-      <div className="relative rounded-xl bg-card/90 backdrop-blur-xl border border-border/30 shadow-lg shadow-black/30 p-[3px] flex">
+      <div className="relative rounded-xl bg-card/90 backdrop-blur-xl border border-border/30 shadow-lg shadow-black/30 flex overflow-hidden">
         <motion.div
-          className="absolute top-[3px] bottom-[3px] rounded-[10px] bg-primary/15 border border-primary/40"
+          className="absolute inset-y-0 rounded-xl bg-primary/15 border border-primary/40"
           initial={false}
           animate={{
-            left: activeTab === "conta" ? "3px" : "calc(50% + 0px)",
-            width: "calc(50% - 3px)",
+            left: activeTab === "conta" ? "0px" : "50%",
+            width: "50%",
           }}
           transition={{ type: "spring", stiffness: 350, damping: 30 }}
         />
