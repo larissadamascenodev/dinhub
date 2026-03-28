@@ -1,32 +1,25 @@
 import { memo } from "react";
 
-interface MobileToggleProps {
+interface Props {
   activeTab: "transacoes" | "eventos";
   onTabChange: (tab: "transacoes" | "eventos") => void;
 }
 
-const MobileToggle = memo(({ activeTab, onTabChange }: MobileToggleProps) => (
-  <div className="flex rounded-xl bg-secondary p-1 gap-1">
-    <button
-      onClick={() => onTabChange("transacoes")}
-      className={`flex-1 py-2.5 text-sm font-medium rounded-lg transition-all duration-200 ${
-        activeTab === "transacoes"
-          ? "bg-primary text-primary-foreground shadow-sm"
-          : "text-muted-foreground hover:text-foreground"
-      }`}
-    >
-      Transações
-    </button>
-    <button
-      onClick={() => onTabChange("eventos")}
-      className={`flex-1 py-2.5 text-sm font-medium rounded-lg transition-all duration-200 ${
-        activeTab === "eventos"
-          ? "bg-primary text-primary-foreground shadow-sm"
-          : "text-muted-foreground hover:text-foreground"
-      }`}
-    >
-      Próximos Eventos
-    </button>
+const MobileToggle = memo(({ activeTab, onTabChange }: Props) => (
+  <div className="fp-card p-1 flex gap-1">
+    {(["transacoes", "eventos"] as const).map((tab) => (
+      <button
+        key={tab}
+        onClick={() => onTabChange(tab)}
+        className={`flex-1 py-2.5 text-sm font-semibold rounded-xl transition-all duration-250 ${
+          activeTab === tab
+            ? "bg-primary text-primary-foreground shadow-lg shadow-primary/25"
+            : "text-muted-foreground hover:text-foreground"
+        }`}
+      >
+        {tab === "transacoes" ? "Transações" : "Próximos Eventos"}
+      </button>
+    ))}
   </div>
 ));
 

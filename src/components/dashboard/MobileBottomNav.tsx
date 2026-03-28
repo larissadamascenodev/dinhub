@@ -10,14 +10,14 @@ const ITEMS = [
 ];
 
 const MobileBottomNav = memo(() => (
-  <div className="md:hidden fixed bottom-0 left-0 right-0 z-50 border-t border-border bg-card/95 backdrop-blur-md px-4 py-2 flex items-center justify-around">
+  <div className="md:hidden fixed bottom-0 left-0 right-0 z-50 border-t border-border bg-card/95 backdrop-blur-xl px-2 pb-[env(safe-area-inset-bottom)] flex items-end justify-around">
     {ITEMS.map((item) => {
       const Icon = item.icon;
       if (item.isCenter) {
         return (
           <button
             key="center"
-            className="w-12 h-12 rounded-2xl bg-primary text-primary-foreground flex items-center justify-center shadow-lg -mt-5"
+            className="w-14 h-14 rounded-2xl bg-primary text-primary-foreground flex items-center justify-center shadow-xl shadow-primary/30 -mt-5 transition-transform active:scale-95"
           >
             <Icon className="h-6 w-6" />
           </button>
@@ -26,7 +26,7 @@ const MobileBottomNav = memo(() => (
       return (
         <button
           key={item.label}
-          className={`flex flex-col items-center gap-0.5 text-[10px] py-1 ${
+          className={`flex flex-col items-center gap-0.5 py-2 px-3 text-[10px] ${
             item.active ? "text-primary" : "text-muted-foreground"
           }`}
         >

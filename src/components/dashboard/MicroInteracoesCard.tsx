@@ -1,51 +1,52 @@
 import { memo, useMemo } from "react";
 import { Zap, ChevronUp } from "lucide-react";
 
-interface MicroInteracoesProps {
+interface Props {
   gastosHoje: number;
   mediaGastosDiarios: number;
 }
 
-const MicroInteracoesCard = memo(({ gastosHoje, mediaGastosDiarios }: MicroInteracoesProps) => {
-  const { message, percentVsMedia } = useMemo(() => {
-    const pct = mediaGastosDiarios > 0 ? (gastosHoje / mediaGastosDiarios) * 100 : 0;
-    let msg: string;
-    if (gastosHoje === 0) msg = "Saldo intacto 🤑";
-    else if (pct < 50) msg = "Dia tranquilo hoje 😎";
-    else if (pct < 80) msg = "Tá controlado, mas fica de olho 👌";
-    else if (pct < 120) msg = "Hoje já deu uma escapadinha 👀";
-    else msg = "Cuidado hoje hein… 🚨";
-    return { message: msg, percentVsMedia: Math.round(pct) };
+const fmt = (v: number) => v.toLocaleString("pt-BR", { style: "currency", currency: "BRL" });
+
+const MicroInteracoesCard = memo(({ gastosHoje, mediaGastosDiarios }: Props) => {
+  const { message, pct } = useMemo(() => {
+    const p = mediaGastosDiarios > 0 ? (gastosHoje / mediaGastosDiarios) * 100 : 0;
+    let m: string;
+    if (gastosHoje === 0) m = "Saldo intacto 🤑";
+    else if (p < 50) m = "Dia tranquilo hoje 😎";
+    else if (p < 80) m = "Tá controlado, mas fica de olho 👌";
+    else if (p < 120) m = "Hoje já deu uma escapadinha 👀";
+    else m = "Cuidado hoje hein… 🚨";
+    return { message: m, pct: Math.round(p) };
   }, [gastosHoje, mediaGastosDiarios]);
 
-  const fmt = (v: number) =>
-    v.toLocaleString("pt-BR", { style: "currency", currency: "BRL" });
-
   return (
-    <div className="rounded-2xl border border-border bg-card p-5 card-glow transition-all duration-300">
-      <div className="flex items-center justify-between mb-3">
-        <div className="flex items-center gap-2 text-muted-foreground text-sm font-medium uppercase tracking-wider">
+    <div className="fp-card p-5">
+      <div className="flex items-center justify-between mb-4">
+        <div className="flex items-center gap-2 text-[11px] font-semibold uppercase tracking-widest text-muted-foreground">
           <Zap className="h-4 w-4 text-primary" />
           Hoje
         </div>
-        <ChevronUp className="h-4 w-4 text-muted-foreground" />
+        <ChevronUp className="h-4 w-4 text-muted-foreground/50 cursor-pointer hover:text-foreground transition-colors" />
       </div>
-      <div className="flex items-end justify-between mb-3">
+
+      <div className="flex items-end justify-between mb-4">
         <div>
-          <p className="text-2xl font-bold text-finanpro-red">{fmt(gastosHoje)}</p>
-          <p className="text-xs text-muted-foreground mt-0.5">gastos hoje</p>
+          <p className="text-3xl font-extrabold fp-text-red tracking-tight">{fmt(gastosHoje)}</p>
+          <p className="text-xs text-muted-foreground mt-1">gastos hoje</p>
         </div>
         <div className="text-right">
-          <p className="text-sm text-muted-foreground">ainda pode gastar</p>
-          <p className="text-lg font-bold text-foreground">
+          <p className="text-xs text-muted-foreground">ainda pode gastar</p>
+          <p className="text-xl font-bold text-foreground mt-0.5">
             {fmt(Math.max(0, mediaGastosDiarios - gastosHoje))}
           </p>
         </div>
       </div>
+
       <div className="pt-3 border-t border-border">
-        <p className="text-sm font-medium text-foreground">{message}</p>
-        <p className="text-xs text-muted-foreground mt-0.5">
-          ~{percentVsMedia}% vs média
+        <p className="text-sm font-semibold text-foreground">{message}</p>
+        <p className="text-xs text-muted-foreground mt-1">
+          ~{pct}% vs média
         </p>
       </div>
     </div>
