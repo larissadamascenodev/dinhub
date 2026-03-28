@@ -1,5 +1,5 @@
 import { memo, useMemo, useState, useRef, useEffect } from "react";
-import { LayoutDashboard, ArrowLeftRight, Plus, Bot, User, Bell, Flame, PiggyBank, Settings, LogOut } from "lucide-react";
+import { LayoutDashboard, ArrowLeftRight, Plus, Bot, User, Bell, Flame, PiggyBank, Settings, LogOut, TrendingUp, TrendingDown, Camera } from "lucide-react";
 import { useAuth } from "@/contexts/AuthContext";
 import { useNavigate, useLocation } from "react-router-dom";
 import { motion, AnimatePresence } from "framer-motion";
@@ -34,15 +34,28 @@ const DashboardHeader = memo(({ profile }: { profile?: { display_name: string | 
   const email = user?.email ?? "";
   const plan = "Free";
   const [menuOpen, setMenuOpen] = useState(false);
+  const [transacaoMenuOpen, setTransacaoMenuOpen] = useState(false);
   const menuRef = useRef<HTMLDivElement>(null);
+  const transacaoRef = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
     const handler = (e: MouseEvent) => {
       if (menuRef.current && !menuRef.current.contains(e.target as Node)) setMenuOpen(false);
+      if (transacaoRef.current && !transacaoRef.current.contains(e.target as Node)) setTransacaoMenuOpen(false);
     };
     document.addEventListener("mousedown", handler);
     return () => document.removeEventListener("mousedown", handler);
   }, []);
+
+  const handleTransacaoOption = (type: "receita" | "despesa" | "scanner") => {
+    setTransacaoMenuOpen(false);
+    if (type === "scanner") {
+      window.dispatchEvent(new CustomEvent("open-scanner"));
+    } else {
+      window.dispatchEvent(new CustomEvent("open-nova-transacao-direct", { detail: { type } }));
+    }
+  };
+
   return (
     <>
       {/* Desktop Top Bar */}
@@ -65,20 +78,55 @@ const DashboardHeader = memo(({ profile }: { profile?: { display_name: string | 
 
             if (isAction) {
               return (
-                <button
-                  key={item.label}
-                  onClick={() => {
-                    // Dispatch custom event so Index can open the transaction modal
-                    window.dispatchEvent(new CustomEvent("open-nova-transacao"));
-                  }}
-                  className="relative -my-1 mx-1 flex items-center gap-1.5 px-4 py-2.5 rounded-xl text-xs font-bold transition-all bg-primary/15 border border-primary/30 text-primary hover:bg-primary/25"
-                  style={{
-                    boxShadow: "0 2px 12px -2px hsl(150 100% 45% / 0.3)",
-                  }}
-                >
-                  <Icon className="w-4 h-4" />
-                  <span>{item.label}</span>
-                </button>
+                <div key={item.label} className="relative" ref={transacaoRef}>
+                  <button
+                    onClick={() => setTransacaoMenuOpen((v) => !v)}
+                    className="relative -my-1 mx-1 flex items-center gap-1.5 px-4 py-2.5 rounded-xl text-xs font-bold transition-all bg-primary/15 border border-primary/30 text-primary hover:bg-primary/25"
+                    style={{
+                      boxShadow: "0 2px 12px -2px hsl(150 100% 45% / 0.3)",
+                    }}
+                  >
+                    <Icon className="w-4 h-4" />
+                    <span>{item.label}</span>
+                  </button>
+
+                  {/* Dropdown */}
+                  <AnimatePresence>
+                    {transacaoMenuOpen && (
+                      <motion.div
+                        initial={{ opacity: 0, y: -4, scale: 0.95 }}
+                        animate={{ opacity: 1, y: 0, scale: 1 }}
+                        exit={{ opacity: 0, y: -4, scale: 0.95 }}
+                        transition={{ duration: 0.15 }}
+                        className="absolute left-1/2 -translate-x-1/2 top-full mt-2 bg-card border border-border/20 rounded-xl shadow-xl shadow-black/30 overflow-hidden z-50 min-w-[160px]"
+                      >
+                        <button
+                          onClick={() => handleTransacaoOption("receita")}
+                          className="flex items-center gap-2.5 w-full px-4 py-2.5 text-xs font-medium text-foreground hover:bg-primary/10 transition-colors"
+                        >
+                          <TrendingUp className="w-3.5 h-3.5 text-primary" />
+                          Receita
+                        </button>
+                        <div className="h-px bg-border/10" />
+                        <button
+                          onClick={() => handleTransacaoOption("despesa")}
+                          className="flex items-center gap-2.5 w-full px-4 py-2.5 text-xs font-medium text-foreground hover:bg-destructive/10 transition-colors"
+                        >
+                          <TrendingDown className="w-3.5 h-3.5 text-destructive" />
+                          Despesa
+                        </button>
+                        <div className="h-px bg-border/10" />
+                        <button
+                          onClick={() => handleTransacaoOption("scanner")}
+                          className="flex items-center gap-2.5 w-full px-4 py-2.5 text-xs font-medium text-foreground hover:bg-muted/20 transition-colors"
+                        >
+                          <Camera className="w-3.5 h-3.5 text-muted-foreground" />
+                          Scanner
+                        </button>
+                      </motion.div>
+                    )}
+                  </AnimatePresence>
+                </div>
               );
             }
 
@@ -88,8 +136,8 @@ const DashboardHeader = memo(({ profile }: { profile?: { display_name: string | 
                 onClick={() => navigate(item.path)}
                 className={`relative flex items-center gap-1.5 px-4 py-2 rounded-xl text-xs font-medium transition-all duration-300 ${
                   isActive
-                    ? "bg-primary/15 text-primary"
-                    : "text-muted-foreground hover:text-foreground hover:bg-muted/20"
+                    ? "text-primary"
+                    : "text-muted-foreground hover:text-foreground"
                 }`}
               >
                 <Icon className="w-3.5 h-3.5" />
