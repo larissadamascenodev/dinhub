@@ -129,7 +129,7 @@ const GestaoFinanceira = () => {
   const totalUsed = creditCards.reduce((sum, c) => sum + Number(c.used_limit), 0);
 
   return (
-    <div className="max-w-lg mx-auto pt-2 pb-8">
+    <div className="pt-2 pb-8">
       {/* Title */}
       <h1 className="text-xl font-bold text-foreground mb-6">Gestão Financeira</h1>
 

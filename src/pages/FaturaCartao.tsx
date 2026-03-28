@@ -171,7 +171,7 @@ const FaturaCartao = () => {
   }
 
   return (
-    <div className="max-w-lg mx-auto pt-2 pb-8">
+    <div className="pt-2 pb-8">
       {/* Title */}
       <div className="flex items-center gap-3 mb-6">
         <div className="flex-1">
