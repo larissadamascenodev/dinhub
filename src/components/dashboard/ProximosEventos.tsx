@@ -26,7 +26,9 @@ const parseDayFromDate = (dateStr: string): number | null => {
 };
 
 const WEEK_LABELS = ["Dom", "Seg", "Ter", "Qua", "Qui", "Sex", "Sáb"];
+const WEEK_FULL = ["Domingo", "Segunda", "Terça", "Quarta", "Quinta", "Sexta", "Sábado"];
 const MONTH_SHORT = ["jan", "fev", "mar", "abr", "mai", "jun", "jul", "ago", "set", "out", "nov", "dez"];
+const MONTH_FULL = ["Janeiro", "Fevereiro", "Março", "Abril", "Maio", "Junho", "Julho", "Agosto", "Setembro", "Outubro", "Novembro", "Dezembro"];
 const STATUS_PRIORITY: Record<string, number> = { atrasado: 3, pendente: 2, pago: 1, recebido: 1 };
 
 const getMonthWeeks = (month: number, year: number) => {
@@ -126,7 +128,7 @@ const ProximosEventos = memo(({ events, selectedMonth, selectedYear }: Props) =>
             return (
               <div
                 key={`${d.day}-${d.month}-${i}`}
-                className={`flex flex-col items-center py-1.5 rounded-xl text-xs transition-all relative ${dimmed ? "opacity-20" : ""}`}
+                className={`flex flex-col items-center py-2.5 px-1 rounded-2xl text-xs transition-all relative ${dimmed ? "opacity-20" : ""}`}
                 style={
                   d.isToday
                     ? {
@@ -143,18 +145,18 @@ const ProximosEventos = memo(({ events, selectedMonth, selectedYear }: Props) =>
                     : {}
                 }
               >
-                <span className={`text-[8px] mb-0.5 ${d.isToday ? "opacity-90 font-bold" : eventInfo ? "opacity-60" : "text-muted-foreground/30"}`}>
+                <span className={`text-[8px] mb-1 ${d.isToday ? "opacity-90 font-bold" : eventInfo ? "opacity-60" : "text-muted-foreground/30"}`}>
                   {d.label}
                 </span>
                 <span
-                  className={`text-sm leading-none ${d.isToday ? "font-extrabold" : eventInfo ? "font-semibold" : "font-medium text-muted-foreground/50"}`}
+                  className={`text-base leading-none ${d.isToday ? "font-extrabold" : eventInfo ? "font-semibold" : "font-medium text-muted-foreground/50"}`}
                   style={!d.isToday && eventInfo ? { color: `hsl(${eventInfo.accent})` } : {}}
                 >
                   {d.day}
                 </span>
                 {eventInfo && !d.isToday && (
                   <span
-                    className="absolute bottom-0.5 w-1 h-1 rounded-full"
+                    className="absolute bottom-1 w-1 h-1 rounded-full"
                     style={{ background: `hsl(${eventInfo.accent})`, boxShadow: `0 0 4px hsl(${eventInfo.accent} / 0.5)` }}
                   />
                 )}
@@ -195,25 +197,35 @@ const ProximosEventos = memo(({ events, selectedMonth, selectedYear }: Props) =>
                 animate={{ opacity: 1, x: 0 }}
                 transition={{ delay: gi * 0.05, type: "spring", stiffness: 400, damping: 30 }}
               >
-                {/* Day marker */}
-                <div className="flex items-center gap-1.5 mb-0.5 -ml-5">
-                  <div
-                    className={`w-3.5 h-3.5 rounded-full flex items-center justify-center z-10 shrink-0 ${
-                      isToday ? "bg-primary shadow-[0_0_6px_hsl(150_100%_45%/0.4)]" : "bg-card border border-border/40"
-                    }`}
-                  >
-                    <span className={`text-[6px] font-bold ${isToday ? "text-background" : "text-muted-foreground/50"}`}>
-                      {day}
+                {/* Day marker - styled like reference for today */}
+                {isToday ? (
+                  <div className="flex items-center gap-2 mb-1 -ml-5">
+                    <div className="w-3.5 h-3.5 rounded-full bg-primary shadow-[0_0_8px_hsl(150_100%_45%/0.5)] z-10 shrink-0" />
+                    <div
+                      className="flex-1 rounded-full px-3 py-1.5"
+                      style={{
+                        background: "hsl(150 100% 45% / 0.1)",
+                        border: "1px solid hsl(150 100% 45% / 0.25)",
+                      }}
+                    >
+                      <span className="text-[11px] font-bold text-primary">
+                        Hoje, {WEEK_FULL[new Date(selectedYear, selectedMonth, day).getDay()]}, {day} De {MONTH_FULL[selectedMonth]}
+                      </span>
+                    </div>
+                  </div>
+                ) : (
+                  <div className="flex items-center gap-1.5 mb-1 -ml-5">
+                    <div className="w-3.5 h-3.5 rounded-full bg-card border border-border/40 flex items-center justify-center z-10 shrink-0">
+                      <span className="text-[6px] font-bold text-muted-foreground/50">{day}</span>
+                    </div>
+                    <span className="text-[9px] text-muted-foreground/30 font-medium">
+                      {WEEK_FULL[new Date(selectedYear, selectedMonth, day).getDay()]}, {day} {MONTH_SHORT[selectedMonth]}
                     </span>
                   </div>
-                  <span className="text-[8px] text-muted-foreground/25 font-medium">
-                    {day} {MONTH_SHORT[selectedMonth]}
-                    {isToday && <span className="text-primary ml-1">· Hoje</span>}
-                  </span>
-                </div>
+                )}
 
                 {/* Events */}
-                <div className="space-y-0.5">
+                <div className="space-y-1">
                   {evs.map((ev, i) => {
                     const cfg = STATUS_CONFIG[ev.status];
                     const a = cfg.accent;
@@ -225,26 +237,26 @@ const ProximosEventos = memo(({ events, selectedMonth, selectedYear }: Props) =>
                         initial={{ opacity: 0, y: 4 }}
                         animate={{ opacity: 1, y: 0 }}
                         transition={{ delay: gi * 0.05 + i * 0.03 }}
-                        className="flex items-center gap-2 rounded-lg px-2.5 py-1.5 cursor-pointer transition-all"
+                        className="flex items-center gap-2.5 rounded-xl px-3 py-2 cursor-pointer transition-all"
                         style={{
                           background: `hsl(${a} / 0.05)`,
                           border: `1px solid hsl(${a} / 0.1)`,
                         }}
                       >
                         <div
-                          className="w-4 h-4 rounded flex items-center justify-center shrink-0"
+                          className="w-5 h-5 rounded-md flex items-center justify-center shrink-0"
                           style={{ background: `hsl(${a} / 0.12)` }}
                         >
-                          <StatusIcon className="w-2 h-2" style={{ color: `hsl(${a})` }} />
+                          <StatusIcon className="w-2.5 h-2.5" style={{ color: `hsl(${a})` }} />
                         </div>
 
-                        <p className="flex-1 text-[10px] font-semibold text-foreground/80 truncate">{ev.name}</p>
+                        <p className="flex-1 text-[11px] font-semibold text-foreground/80 truncate">{ev.name}</p>
 
                         <div className="flex items-center gap-1.5 shrink-0">
-                          <span className="text-[7px] font-semibold uppercase" style={{ color: `hsl(${a} / 0.5)` }}>
+                          <span className="text-[8px] font-semibold uppercase" style={{ color: `hsl(${a} / 0.5)` }}>
                             {cfg.label}
                           </span>
-                          <p className="text-[10px] font-bold tabular-nums" style={{ color: `hsl(${a})` }}>
+                          <p className="text-[11px] font-bold tabular-nums" style={{ color: `hsl(${a})` }}>
                             {fmt(ev.amount)}
                           </p>
                         </div>
