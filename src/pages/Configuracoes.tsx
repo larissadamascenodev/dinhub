@@ -139,7 +139,7 @@ const Configuracoes = () => {
   );
 
   return (
-    <div className="pt-2 pb-8 space-y-6">
+    <div className="pt-1 pb-8 space-y-4">
       {/* ═══ Edit Profile Modal ═══ */}
       <Dialog open={editModalOpen} onOpenChange={setEditModalOpen}>
         <DialogContent className="bg-card border-border/30 rounded-2xl max-w-sm mx-auto p-0 overflow-hidden">
@@ -212,23 +212,22 @@ const Configuracoes = () => {
       <motion.div
         initial={{ opacity: 0, y: 12 }}
         animate={{ opacity: 1, y: 0 }}
-        className="rounded-2xl bg-card/60 border border-border/20 p-5"
+        className="rounded-2xl bg-card/60 border border-border/20 p-4"
       >
-        <div className="flex items-start gap-4">
-          {/* Avatar */}
+        <div className="flex items-start gap-3">
           <div className="relative">
-            <div className="w-16 h-16 rounded-2xl bg-muted/40 flex items-center justify-center overflow-hidden border-2 border-border/20">
+            <div className="w-14 h-14 rounded-xl bg-muted/40 flex items-center justify-center overflow-hidden border-2 border-border/20">
               {profile?.avatar_url ? (
                 <img src={profile.avatar_url} alt="Avatar" className="w-full h-full object-cover" />
               ) : (
-                <User className="w-8 h-8 text-muted-foreground" />
+                <User className="w-7 h-7 text-muted-foreground" />
               )}
             </div>
-            <div className="absolute -bottom-1 -right-1 w-4 h-4 rounded-full bg-primary border-2 border-card" />
+            <div className="absolute -bottom-1 -right-1 w-3.5 h-3.5 rounded-full bg-primary border-2 border-card" />
           </div>
 
           <div className="flex-1 min-w-0">
-            <h2 className="text-lg font-bold text-foreground truncate">{displayName}</h2>
+            <h2 className="text-base font-bold text-foreground truncate">{displayName}</h2>
             <p className="text-xs text-muted-foreground truncate">{email}</p>
             <div className="flex items-center gap-2 mt-1.5">
               <span className="text-[10px] font-bold bg-primary/15 text-primary px-2 py-0.5 rounded-full flex items-center gap-1">
@@ -249,15 +248,14 @@ const Configuracoes = () => {
         </div>
 
         {/* Bio placeholder */}
-        <p className="text-sm text-muted-foreground mt-3">Focado em controle financeiro e evolução diária 💪</p>
+        <p className="text-xs text-muted-foreground mt-2">Focado em controle financeiro e evolução diária 💪</p>
 
-        {/* XP Progress */}
-        <div className="mt-4">
+        <div className="mt-3">
           <div className="flex items-center justify-between mb-1">
             <span className="text-[10px] text-muted-foreground">Progresso de nível</span>
             <span className="text-[10px] text-muted-foreground">0 / 200 XP</span>
           </div>
-          <Progress value={0} className="h-2" />
+          <Progress value={0} className="h-1.5" />
         </div>
       </motion.div>
 
@@ -267,37 +265,37 @@ const Configuracoes = () => {
         animate={{ opacity: 1, y: 0 }}
         transition={{ delay: 0.05 }}
         onClick={() => navigate("/gestao")}
-        className="relative overflow-hidden rounded-2xl border border-primary/20 backdrop-blur-xl shadow-2xl shadow-black/40 p-4 w-full flex items-center gap-4 hover:border-primary/30 transition-all text-left group"
+        className="relative overflow-hidden rounded-2xl border border-primary/20 backdrop-blur-xl shadow-2xl shadow-black/40 p-3.5 w-full flex items-center gap-3 hover:border-primary/30 transition-all text-left group"
         style={{
           background: "linear-gradient(160deg, hsl(150 100% 45% / 0.08) 0%, hsl(150 100% 45% / 0.03) 100%)",
         }}
       >
         <div className="absolute inset-0 bg-gradient-to-br from-primary/[0.06] via-transparent to-transparent pointer-events-none" />
-        <div className="relative z-10 w-11 h-11 rounded-xl bg-primary/15 flex items-center justify-center shrink-0">
+        <div className="relative z-10 w-10 h-10 rounded-xl bg-primary/15 flex items-center justify-center shrink-0">
           <Wallet className="w-5 h-5 text-primary" />
         </div>
         <div className="relative z-10 flex-1 min-w-0">
-          <p className="text-base font-bold text-primary">Carteira</p>
-          <p className="text-xs text-primary/60">Contas e Cartões de Crédito</p>
+          <p className="text-sm font-bold text-primary">Carteira</p>
+          <p className="text-[11px] text-primary/60">Contas e Cartões de Crédito</p>
         </div>
         <ChevronRight className="relative z-10 w-5 h-5 text-primary/50 group-hover:text-primary transition-colors shrink-0" />
       </motion.button>
 
       {/* ═══ Feature Cards Grid ═══ */}
-      <div className="grid grid-cols-2 gap-3">
+      <div className="grid grid-cols-2 gap-2">
         {featureCards.map((fc, idx) => (
           <motion.button
             key={fc.label}
             initial={{ opacity: 0, y: 12 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ delay: 0.05 * (idx + 1) }}
-            className="relative overflow-hidden rounded-2xl border border-white/[0.08] backdrop-blur-xl shadow-lg shadow-black/30 px-3 py-3 flex items-center gap-2.5 hover:border-white/[0.12] transition-all text-left group"
+            className="relative overflow-hidden rounded-xl border border-white/[0.08] backdrop-blur-xl shadow-lg shadow-black/30 px-2.5 py-2.5 flex items-center gap-2 hover:border-white/[0.12] transition-all text-left group"
             style={{
               background: "linear-gradient(160deg, hsl(220 18% 9% / 0.85) 0%, hsl(220 20% 5% / 0.9) 100%)",
             }}
           >
             <div className="absolute inset-0 bg-gradient-to-br from-white/[0.06] via-transparent to-transparent pointer-events-none" />
-            <div className="relative z-10 w-9 h-9 rounded-lg bg-primary/10 flex items-center justify-center shrink-0">
+            <div className="relative z-10 w-8 h-8 rounded-lg bg-primary/10 flex items-center justify-center shrink-0">
               <fc.icon className="w-4 h-4 text-primary" />
             </div>
             <div className="relative z-10 flex-1 min-w-0">
@@ -320,11 +318,11 @@ const Configuracoes = () => {
           <p className="text-[10px] font-bold text-muted-foreground uppercase tracking-widest">Personalidade do Fin</p>
         </div>
         <p className="text-xs text-muted-foreground mb-3 px-1">Como o Fin responde no app</p>
-        <div className="grid grid-cols-2 gap-3">
+        <div className="grid grid-cols-2 gap-2">
           <button
             onClick={() => setBotPersonality("casual")}
             className={cn(
-              "relative overflow-hidden rounded-2xl border p-4 text-left transition-all",
+              "relative overflow-hidden rounded-xl border p-3 text-left transition-all",
               botPersonality === "casual"
                 ? "border-primary/40 bg-primary/[0.08]"
                 : "border-border/20 bg-card/60 hover:border-border/40"
@@ -346,7 +344,7 @@ const Configuracoes = () => {
           <button
             onClick={() => setBotPersonality("assessor")}
             className={cn(
-              "relative overflow-hidden rounded-2xl border p-4 text-left transition-all",
+              "relative overflow-hidden rounded-xl border p-3 text-left transition-all",
               botPersonality === "assessor"
                 ? "border-primary/40 bg-primary/[0.08]"
                 : "border-border/20 bg-card/60 hover:border-border/40"
