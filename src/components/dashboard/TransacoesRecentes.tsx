@@ -31,24 +31,9 @@ const NotificationCard = ({ tx }: { tx: Transaction }) => {
   const Icon = CATEGORY_ICONS[tx.category] || Wallet;
 
   return (
-    <div
-      className="flex items-center gap-3 px-4 py-3 rounded-2xl relative overflow-hidden"
-      style={{
-        background: "linear-gradient(145deg, hsl(225 20% 10%) 0%, hsl(225 22% 6%) 100%)",
-        boxShadow: "0 2px 12px -2px rgba(0,0,0,0.4), inset 0 1px 0 0 rgba(255,255,255,0.04)",
-        border: "1px solid hsl(225 14% 16% / 0.5)",
-      }}
-    >
+    <div className="flex items-center gap-3 px-4 py-3 rounded-xl border border-border/30 bg-card shadow-[0_1px_4px_-1px_rgba(0,0,0,0.2),inset_0_1px_0_0_rgba(255,255,255,0.03)]">
       {/* Icon */}
-      <div
-        className="w-10 h-10 rounded-xl flex items-center justify-center flex-shrink-0"
-        style={{
-          background: isReceita
-            ? "linear-gradient(135deg, hsl(152 50% 48% / 0.12) 0%, hsl(152 50% 48% / 0.04) 100%)"
-            : "linear-gradient(135deg, hsl(0 55% 48% / 0.12) 0%, hsl(0 55% 48% / 0.04) 100%)",
-          border: `1px solid ${isReceita ? "hsl(152 50% 48% / 0.15)" : "hsl(0 55% 48% / 0.15)"}`,
-        }}
-      >
+      <div className="w-10 h-10 rounded-xl flex items-center justify-center flex-shrink-0 bg-muted/50 border border-border/20">
         <Icon className={`w-5 h-5 ${isReceita ? "text-primary" : "text-destructive"}`} />
       </div>
 
@@ -83,13 +68,7 @@ const TransacoesRecentes = memo(({ transactions, onVerTodas }: Props) => {
 
   if (transactions.length === 0) {
     return (
-      <div
-        className="rounded-2xl p-6 text-center"
-        style={{
-          background: "linear-gradient(145deg, hsl(225 20% 10%) 0%, hsl(225 22% 6%) 100%)",
-          border: "1px solid hsl(225 14% 16% / 0.5)",
-        }}
-      >
+      <div className="rounded-xl border border-border/30 bg-card p-6 text-center">
         <Bell className="w-6 h-6 text-muted-foreground/20 mx-auto mb-2" />
         <p className="text-xs text-muted-foreground/50">Nenhuma transação ainda</p>
       </div>
@@ -103,16 +82,13 @@ const TransacoesRecentes = memo(({ transactions, onVerTodas }: Props) => {
         <div className="flex items-center gap-2">
           <div className="relative">
             <Bell className="w-4 h-4 text-muted-foreground" />
-            <span className="absolute -top-1 -right-1 w-2 h-2 rounded-full bg-primary animate-pulse" style={{ boxShadow: "0 0 6px hsl(152 45% 45% / 0.5)" }} />
+            <span className="absolute -top-1 -right-1 w-2 h-2 rounded-full bg-primary animate-pulse" />
           </div>
           <h3 className="text-[10px] font-semibold text-muted-foreground uppercase tracking-widest">
             Transações Recentes
           </h3>
         </div>
-        <span
-          className="text-[10px] font-semibold text-muted-foreground px-2.5 py-0.5 rounded-full"
-          style={{ background: "hsl(225 18% 12%)", border: "1px solid hsl(225 14% 16% / 0.5)" }}
-        >
+        <span className="text-[10px] font-semibold text-muted-foreground bg-muted/30 px-2 py-0.5 rounded-full">
           {transactions.length}
         </span>
       </div>
@@ -123,6 +99,7 @@ const TransacoesRecentes = memo(({ transactions, onVerTodas }: Props) => {
         onClick={() => setExpanded(!expanded)}
         style={{ paddingBottom: !expanded && restTx.length > 0 ? `${Math.min(restTx.length, 3) * 8 + 12}px` : 0 }}
       >
+        {/* Stacked background cards */}
         <AnimatePresence>
           {!expanded && restTx.length > 0 && (
             <>
@@ -132,15 +109,13 @@ const TransacoesRecentes = memo(({ transactions, onVerTodas }: Props) => {
                   initial={{ opacity: 0 }}
                   animate={{ opacity: 1 }}
                   exit={{ opacity: 0, scale: 0.95 }}
-                  className="absolute left-0 right-0 rounded-2xl"
+                  className="absolute left-0 right-0 rounded-xl border border-border/20 bg-card"
                   style={{
                     top: `${(i + 1) * 8}px`,
                     transform: `scale(${1 - (i + 1) * 0.03})`,
                     zIndex: 3 - i,
                     height: "58px",
-                    background: "linear-gradient(145deg, hsl(225 20% 10%) 0%, hsl(225 22% 6%) 100%)",
-                    border: "1px solid hsl(225 14% 16% / 0.3)",
-                    filter: `brightness(${1 - (i + 1) * 0.06})`,
+                    filter: `brightness(${1 - (i + 1) * 0.05})`,
                   }}
                 />
               ))}
@@ -148,10 +123,12 @@ const TransacoesRecentes = memo(({ transactions, onVerTodas }: Props) => {
           )}
         </AnimatePresence>
 
+        {/* Top card */}
         <motion.div layout className="relative z-10">
           <NotificationCard tx={topTx} />
         </motion.div>
 
+        {/* Expand indicator */}
         {!expanded && restTx.length > 0 && (
           <div className="absolute -bottom-1 left-1/2 -translate-x-1/2 z-20">
             <ChevronDown className="w-4 h-4 text-muted-foreground/40" />
@@ -159,6 +136,7 @@ const TransacoesRecentes = memo(({ transactions, onVerTodas }: Props) => {
         )}
       </div>
 
+      {/* Expanded list */}
       <AnimatePresence>
         {expanded && (
           <motion.div

@@ -17,34 +17,14 @@ const BalancoCard = memo(({ balanco }: Props) => {
       initial={{ opacity: 0, y: 8 }}
       animate={{ opacity: 1, y: 0 }}
       transition={{ delay: 0.15 }}
-      className="relative cursor-pointer rounded-2xl overflow-hidden p-3 md:p-4"
-      style={{
-        background: "linear-gradient(145deg, hsl(225 20% 10%) 0%, hsl(225 22% 6%) 100%)",
-        boxShadow: "0 4px 24px -4px rgba(0,0,0,0.6), inset 0 1px 0 0 rgba(255,255,255,0.04)",
-        border: "1px solid hsl(225 14% 16% / 0.5)",
-      }}
+      className="cursor-pointer rounded-xl border border-border/30 bg-card p-3 md:p-4 shadow-[0_2px_8px_-2px_rgba(0,0,0,0.4),inset_0_1px_0_0_rgba(255,255,255,0.03)] overflow-hidden relative"
     >
-      {/* Glow accent */}
-      <div
-        className="absolute inset-0 pointer-events-none"
-        style={{
-          background: isPositive
-            ? "radial-gradient(ellipse at 0% 50%, hsl(152 45% 45% / 0.05) 0%, transparent 40%)"
-            : "radial-gradient(ellipse at 0% 50%, hsl(0 55% 48% / 0.05) 0%, transparent 40%)",
-        }}
-      />
-
       <div className="relative flex items-center justify-between gap-3">
         <div className="flex items-center gap-2 md:gap-3 min-w-0 flex-1">
           <div className={cn(
-            "w-9 h-9 md:w-10 md:h-10 rounded-xl flex items-center justify-center flex-shrink-0"
-          )}
-            style={{
-              background: isPositive
-                ? "linear-gradient(135deg, hsl(152 50% 48% / 0.15) 0%, hsl(152 50% 48% / 0.05) 100%)"
-                : "linear-gradient(135deg, hsl(0 55% 48% / 0.15) 0%, hsl(0 55% 48% / 0.05) 100%)",
-            }}
-          >
+            "w-9 h-9 md:w-10 md:h-10 rounded-xl flex items-center justify-center flex-shrink-0",
+            isPositive ? "bg-primary/10" : "bg-destructive/10"
+          )}>
             <Scale className={cn("w-4 h-4 md:w-5 md:h-5", isPositive ? "text-primary" : "text-destructive")} />
           </div>
           <div className="min-w-0">
@@ -59,7 +39,7 @@ const BalancoCard = memo(({ balanco }: Props) => {
             </span>
           </div>
         </div>
-        <ChevronRight className="w-4 h-4 text-muted-foreground/30 flex-shrink-0" />
+        <ChevronRight className="w-4 h-4 text-muted-foreground/40 flex-shrink-0" />
       </div>
     </motion.div>
   );
