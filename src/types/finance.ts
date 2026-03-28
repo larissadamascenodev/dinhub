@@ -59,7 +59,7 @@ export const SAMPLE_DATA: DashboardData = {
   ],
   events: [
     { id: "1", name: "Aluguel", date: "05 de mar", amount: 1800, status: "pago" },
-    { id: "2", name: "Salário", date: "05 de mar", amount: 5500, status: "pago" },
+    { id: "2", name: "Salário", date: "05 de mar", amount: 5500, status: "recebido" },
     { id: "3", name: "Netflix", date: "15 de mar", amount: 55.9, status: "pago" },
     { id: "4", name: "Internet", date: "20 de mar", amount: 120, status: "pendente" },
     { id: "5", name: "Fatura Nubank", date: "22 de mar", amount: 2340, status: "pendente" },
