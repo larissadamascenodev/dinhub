@@ -17,21 +17,13 @@ const BalancoCard = memo(({ balanco }: Props) => {
       initial={{ opacity: 0, y: 8 }}
       animate={{ opacity: 1, y: 0 }}
       transition={{ delay: 0.15 }}
-      className="cursor-pointer rounded-xl border border-border/20 bg-card p-3 md:p-4 shadow-[0_2px_8px_-2px_rgba(0,0,0,0.4),inset_0_1px_0_0_rgba(255,255,255,0.06)] overflow-hidden relative"
-      style={{ background: `linear-gradient(135deg, ${isPositive ? "hsl(var(--primary) / 0.05)" : "hsl(var(--destructive) / 0.05)"} 0%, transparent 60%)` }}
+      className="cursor-pointer rounded-xl border border-border/30 bg-card p-3 md:p-4 shadow-[0_2px_8px_-2px_rgba(0,0,0,0.4),inset_0_1px_0_0_rgba(255,255,255,0.03)] overflow-hidden relative"
     >
-      <div
-        className={cn(
-          "absolute -top-8 -right-8 w-28 h-28 rounded-full blur-3xl opacity-30",
-          isPositive ? "bg-primary" : "bg-destructive"
-        )}
-      />
-
       <div className="relative flex items-center justify-between gap-3">
         <div className="flex items-center gap-2 md:gap-3 min-w-0 flex-1">
           <div className={cn(
             "w-9 h-9 md:w-10 md:h-10 rounded-xl flex items-center justify-center flex-shrink-0",
-            isPositive ? "bg-primary/15" : "bg-destructive/15"
+            isPositive ? "bg-primary/10" : "bg-destructive/10"
           )}>
             <Scale className={cn("w-4 h-4 md:w-5 md:h-5", isPositive ? "text-primary" : "text-destructive")} />
           </div>

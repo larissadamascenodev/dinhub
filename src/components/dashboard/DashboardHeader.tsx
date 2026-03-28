@@ -44,7 +44,7 @@ const DashboardHeader = memo(() => {
                 key={item.label}
                 className={`relative flex items-center gap-1.5 px-4 py-2 rounded-xl text-xs font-medium transition-all duration-300 ${
                   item.active
-                    ? "bg-primary/20 text-primary shadow-[0_0_12px_-2px_hsl(var(--primary)/0.3)]"
+                    ? "bg-primary/15 text-primary"
                     : "text-muted-foreground hover:text-foreground hover:bg-muted/20"
                 }`}
               >
@@ -57,14 +57,14 @@ const DashboardHeader = memo(() => {
 
         {/* Right: Streak + Bell + Avatar */}
         <div className="flex items-center gap-2 flex-shrink-0">
-          <button className="flex items-center gap-1.5 px-3 py-1.5 rounded-full bg-warning/15 border border-warning/30 hover:border-warning/50 transition-all">
+          <button className="flex items-center gap-1.5 px-3 py-1.5 rounded-full bg-warning/10 border border-warning/20 hover:border-warning/40 transition-all">
             <Flame className="w-4 h-4 text-warning" />
             <span className="text-sm font-bold text-warning">0</span>
           </button>
-          <button className="w-9 h-9 rounded-full border border-border/30 flex items-center justify-center text-muted-foreground hover:text-foreground transition-colors hover:border-primary/30">
+          <button className="w-9 h-9 rounded-full border border-border/30 flex items-center justify-center text-muted-foreground hover:text-foreground transition-colors">
             <Bell className="h-4 w-4" />
           </button>
-          <div className="w-8 h-8 rounded-lg border border-border/30 bg-gradient-to-br from-primary/30 to-primary/10 flex items-center justify-center text-foreground text-xs font-bold">
+          <div className="w-8 h-8 rounded-lg border border-border/30 bg-muted/30 flex items-center justify-center text-foreground text-xs font-bold">
             U
           </div>
         </div>
@@ -91,7 +91,7 @@ const DashboardHeader = memo(() => {
       {/* Greeting */}
       <motion.div initial={{ opacity: 0, y: -10 }} animate={{ opacity: 1, y: 0 }} className="mb-1 md:mb-2">
         <h1 className="font-display text-xl md:text-2xl font-bold leading-tight">
-          {greeting}, <span className="text-primary">Olá</span>
+          {greeting}, <span className="text-foreground/70">Olá</span>
         </h1>
         <p className="text-xs text-muted-foreground mt-0.5">{dateStr}</p>
       </motion.div>
