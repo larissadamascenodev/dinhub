@@ -33,12 +33,13 @@ export async function createTransaction(input: CreateTransactionInput, userId: s
       category: input.category,
       date: input.date,
       status: input.status ?? "pago",
-      account_id: input.account_id ?? null,
+      account_id: input.payment_method === "cartao" ? null : (input.account_id ?? null),
       payment_method: input.payment_method ?? "conta",
       recurrence_type: input.recurrence_type ?? "unica",
       installments: input.installments ?? null,
       observation: input.observation ?? null,
-    })
+      credit_card_id: input.payment_method === "cartao" ? (input.credit_card_id ?? null) : null,
+    } as any)
     .select()
     .single();
 
