@@ -22,13 +22,15 @@ const SaldoCard = memo(({ saldoAtual, saldoPrevisto, onNovaTransacao, mobile }: 
           <Scale className="w-3.5 h-3.5 text-muted-foreground" />
           <span className="text-[10px] text-muted-foreground uppercase tracking-[0.15em] font-semibold">Saldo do mês</span>
         </div>
-        <button
-          onClick={onNovaTransacao}
-          className="flex items-center gap-1 px-2.5 py-1 rounded-lg text-[10px] font-semibold text-primary border border-primary/20 hover:border-primary/40 transition-all bg-primary/5"
-        >
-          <Plus className="w-3 h-3" />
-          Nova transação
-        </button>
+        {!mobile && (
+          <button
+            onClick={onNovaTransacao}
+            className="flex items-center gap-1 px-2.5 py-1 rounded-lg text-[10px] font-semibold text-primary border border-primary/20 hover:border-primary/40 transition-all bg-primary/5"
+          >
+            <Plus className="w-3 h-3" />
+            Nova transação
+          </button>
+        )}
       </div>
       <motion.p
         key={saldoAtual}
