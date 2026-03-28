@@ -66,7 +66,7 @@ const Index = () => {
             </div>
             <BalancoCard balanco={balanco} />
             <MicroInteracoesCard gastosHoje={data.gastosHoje} mediaGastosDiarios={data.mediaGastosDiarios} />
-            <TransacoesRecentes transactions={data.transactions} />
+            <TransacoesRecentes transactions={data.transactions} onDelete={refetch} />
           </div>
           <div className="space-y-4">
             <ProximosEventos events={data.events} selectedMonth={selectedMonth} selectedYear={selectedYear} />
