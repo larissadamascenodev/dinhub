@@ -366,33 +366,33 @@ const Configuracoes = () => {
       </motion.div>
 
       {/* ═══ Tabs: Conta / Configurações ═══ */}
-      <div className="relative rounded-2xl bg-card/90 backdrop-blur-xl border border-border/30 shadow-2xl shadow-black/40 p-1 flex">
+      <div className="relative rounded-xl bg-card/90 backdrop-blur-xl border border-border/30 shadow-lg shadow-black/30 p-0.5 flex">
         <motion.div
-          className="absolute top-1 bottom-1 rounded-lg bg-primary"
+          className="absolute top-0.5 bottom-0.5 rounded-lg bg-primary/20 border border-primary/30"
           initial={false}
           animate={{
-            left: activeTab === "conta" ? "4px" : "50%",
-            width: "calc(50% - 4px)",
+            left: activeTab === "conta" ? "2px" : "50%",
+            width: "calc(50% - 2px)",
           }}
           transition={{ type: "spring", stiffness: 350, damping: 30 }}
         />
         <button
           onClick={() => setActiveTab("conta")}
           className={cn(
-            "relative z-10 flex-1 h-10 rounded-lg text-sm font-bold flex items-center justify-center gap-2 transition-colors duration-200",
-            activeTab === "conta" ? "text-primary-foreground" : "text-muted-foreground hover:text-foreground"
+            "relative z-10 flex-1 h-8 rounded-lg text-xs font-bold flex items-center justify-center gap-1.5 transition-colors duration-200",
+            activeTab === "conta" ? "text-primary" : "text-muted-foreground hover:text-foreground"
           )}
         >
-          <User className="w-4 h-4" /> Conta
+          <User className="w-3.5 h-3.5" /> Conta
         </button>
         <button
           onClick={() => setActiveTab("config")}
           className={cn(
-            "relative z-10 flex-1 h-10 rounded-lg text-sm font-bold flex items-center justify-center gap-2 transition-colors duration-200",
-            activeTab === "config" ? "text-primary-foreground" : "text-muted-foreground hover:text-foreground"
+            "relative z-10 flex-1 h-8 rounded-lg text-xs font-bold flex items-center justify-center gap-1.5 transition-colors duration-200",
+            activeTab === "config" ? "text-primary" : "text-muted-foreground hover:text-foreground"
           )}
         >
-          <Settings className="w-4 h-4" /> Configurações
+          <Settings className="w-3.5 h-3.5" /> Configurações
         </button>
       </div>
 
