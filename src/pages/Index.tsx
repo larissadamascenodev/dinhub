@@ -81,9 +81,9 @@ const Index = () => {
             ══════════════════════════════════════════════════ */}
         <div className="hidden md:block lg:hidden space-y-4">
           <div className="flex items-center justify-between mb-3">
-            <div>
+            <div className="pl-0.5">
               <h1 className="font-display text-lg font-bold leading-tight">
-                {greeting}, <span className="text-foreground/70">{userName}</span>
+                {greeting}, <span className="text-primary">{userName}</span>
               </h1>
               <p className="text-[10px] text-muted-foreground">{dateStr}</p>
             </div>
