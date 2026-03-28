@@ -1,5 +1,5 @@
 import { memo, useState } from "react";
-import { ArrowUpRight, ArrowDownRight, Bell, ChevronDown, ChevronUp } from "lucide-react";
+import { ArrowUpRight, ArrowDownRight, Layers, ChevronDown, ChevronUp } from "lucide-react";
 import { motion, AnimatePresence } from "framer-motion";
 import type { Transaction } from "@/types/finance";
 
@@ -7,23 +7,6 @@ interface Props {
   transactions: Transaction[];
   onVerTodas?: () => void;
 }
-
-const TYPE_CONFIG = {
-  receita: {
-    Icon: ArrowUpRight,
-    accent: "150 100% 45%",
-    textClass: "text-primary",
-    label: "Receita",
-    prefix: "+",
-  },
-  despesa: {
-    Icon: ArrowDownRight,
-    accent: "0 60% 50%",
-    textClass: "text-destructive",
-    label: "Despesa",
-    prefix: "-",
-  },
-};
 
 const fmt = (v: number) =>
   v.toLocaleString("pt-BR", { style: "currency", currency: "BRL" });
@@ -35,168 +18,123 @@ const formatDate = () => {
   return `${day} de ${months[now.getMonth()]}`;
 };
 
-const NotificationCard = ({ tx, isTop = false }: { tx: Transaction; isTop?: boolean }) => {
-  const cfg = TYPE_CONFIG[tx.type];
-  const Icon = cfg.Icon;
-  const a = cfg.accent;
+const TxCard = ({ tx }: { tx: Transaction }) => {
+  const isReceita = tx.type === "receita";
+  const Icon = isReceita ? ArrowUpRight : ArrowDownRight;
 
   return (
     <div
-      className={`flex items-center gap-3 rounded-2xl transition-all ${isTop ? "px-4 py-3.5" : "px-4 py-3"}`}
+      className="relative flex items-center gap-3 px-4 py-3 rounded-[14px] overflow-hidden"
       style={{
-        background: `linear-gradient(145deg, hsl(220 16% 13%) 0%, hsl(220 18% 9%) 100%)`,
-        border: `1px solid hsl(220 14% 18%)`,
-        boxShadow: isTop
-          ? "0 6px 24px -6px rgba(0,0,0,0.6), inset 0 1px 0 0 rgba(255,255,255,0.06)"
-          : "0 2px 8px -3px rgba(0,0,0,0.4), inset 0 1px 0 0 rgba(255,255,255,0.04)",
+        background: "hsl(220 17% 10%)",
+        boxShadow: "0 1px 3px rgba(0,0,0,0.3), inset 0 1px 0 rgba(255,255,255,0.04)",
       }}
     >
-      {/* Colored accent dot on left edge */}
+      {/* Icon circle */}
       <div
-        className="absolute left-0 top-1/2 -translate-y-1/2 w-[3px] h-6 rounded-r-full"
-        style={{ background: `hsl(${a})`, boxShadow: `0 0 8px hsl(${a} / 0.3)` }}
-      />
-
-      {/* Icon */}
-      <div
-        className="w-9 h-9 rounded-xl flex items-center justify-center flex-shrink-0"
+        className="w-9 h-9 rounded-full flex items-center justify-center flex-shrink-0"
         style={{
-          background: `hsl(${a} / 0.1)`,
-          border: `1px solid hsl(${a} / 0.15)`,
+          background: isReceita ? "hsl(150 100% 45% / 0.1)" : "hsl(0 60% 50% / 0.1)",
         }}
       >
-        <Icon className={`w-4 h-4 ${cfg.textClass}`} />
+        <Icon
+          className="w-4 h-4"
+          style={{ color: isReceita ? "hsl(150 100% 45%)" : "hsl(0 60% 50%)" }}
+        />
       </div>
 
       {/* Info */}
       <div className="flex-1 min-w-0">
-        <p className="text-[13px] font-semibold text-foreground/90 leading-tight truncate">
-          {tx.name}
-        </p>
-        <p className="text-[10px] text-muted-foreground/40 mt-0.5">
-          {tx.category} · {formatDate()}
-        </p>
+        <p className="text-[13px] font-semibold text-foreground truncate">{tx.name}</p>
+        <p className="text-[10px] text-muted-foreground/40 mt-px">{tx.category} · {formatDate()}</p>
       </div>
 
       {/* Amount */}
-      <div className="text-right flex-shrink-0">
-        <p className={`text-[13px] font-bold tabular-nums ${cfg.textClass}`}>
-          {cfg.prefix}{fmt(tx.amount)}
+      <div className="text-right shrink-0">
+        <p
+          className="text-[13px] font-bold tabular-nums"
+          style={{ color: isReceita ? "hsl(150 100% 45%)" : "hsl(0 60% 50%)" }}
+        >
+          {isReceita ? "+" : "−"}{fmt(tx.amount)}
         </p>
-        <span className="text-[9px] font-medium text-muted-foreground/30 uppercase tracking-wider">
-          {cfg.label}
-        </span>
+        <p className="text-[9px] text-muted-foreground/30 font-medium">{isReceita ? "Receita" : "Despesa"}</p>
       </div>
     </div>
   );
 };
 
-const TransacoesRecentes = memo(({ transactions, onVerTodas }: Props) => {
+const TransacoesRecentes = memo(({ transactions }: Props) => {
   const [expanded, setExpanded] = useState(false);
   const visible = transactions.slice(0, 7);
   const topTx = visible[0];
   const restTx = visible.slice(1);
 
-  if (transactions.length === 0) {
+  if (!transactions.length) {
     return (
-      <div className="rounded-xl border border-border/20 bg-card p-6 text-center">
-        <Bell className="w-6 h-6 text-muted-foreground/20 mx-auto mb-2" />
-        <p className="text-xs text-muted-foreground/50">Nenhuma transação ainda</p>
+      <div className="rounded-xl border border-border/15 p-6 text-center" style={{ background: "hsl(220 17% 10%)" }}>
+        <Layers className="w-5 h-5 text-muted-foreground/20 mx-auto mb-2" />
+        <p className="text-xs text-muted-foreground/40">Nenhuma transação</p>
       </div>
     );
   }
 
   return (
-    <div className="relative">
+    <div>
       {/* Header */}
-      <div className="flex items-center justify-between mb-3">
+      <div className="flex items-center justify-between mb-2.5">
         <div className="flex items-center gap-2">
-          <div className="relative">
-            <Bell className="w-4 h-4 text-muted-foreground/60" />
-            <span className="absolute -top-0.5 -right-0.5 w-1.5 h-1.5 rounded-full bg-primary" />
-          </div>
-          <h3 className="text-[11px] font-semibold text-muted-foreground/70 uppercase tracking-widest">
+          <Layers className="w-3.5 h-3.5 text-muted-foreground/50" />
+          <h3 className="text-[11px] font-semibold text-muted-foreground/60 uppercase tracking-widest">
             Transações Recentes
           </h3>
         </div>
-        <span className="text-[10px] font-bold text-foreground/50 bg-secondary/60 px-2.5 py-0.5 rounded-full border border-border/30">
-          {transactions.length}
+        <span className="text-[10px] text-muted-foreground/40 font-medium">
+          {transactions.length} itens
         </span>
       </div>
 
-      {/* Stack area */}
+      {/* Stack */}
       <div
         className="relative cursor-pointer"
         onClick={() => setExpanded(!expanded)}
         style={{
-          paddingBottom: !expanded && restTx.length > 0 ? `${Math.min(restTx.length, 3) * 6 + 16}px` : 0,
+          paddingBottom: !expanded && restTx.length > 0 ? `${Math.min(restTx.length, 3) * 5 + 8}px` : 0,
         }}
       >
-        {/* Stacked ghost cards behind */}
-        <AnimatePresence>
-          {!expanded && restTx.length > 0 && (
-            <>
-              {restTx.slice(0, 3).map((tx, i) => {
-                const stackCfg = TYPE_CONFIG[tx.type];
-                return (
-                  <motion.div
-                    key={`stack-${i}`}
-                    initial={{ opacity: 0, y: -4 }}
-                    animate={{ opacity: 1, y: 0 }}
-                    exit={{ opacity: 0, scale: 0.96 }}
-                    transition={{ delay: i * 0.03 }}
-                    className="absolute left-0 right-0 rounded-2xl"
-                    style={{
-                      top: `${(i + 1) * 6}px`,
-                      transform: `scale(${1 - (i + 1) * 0.025})`,
-                      zIndex: 3 - i,
-                      height: "60px",
-                      background: `linear-gradient(145deg, hsl(220 16% ${12 - i * 2}%) 0%, hsl(220 18% ${8 - i}%) 100%)`,
-                      border: "1px solid hsl(220 14% 16%)",
-                      opacity: 1 - (i + 1) * 0.15,
-                    }}
-                  />
-                );
-              })}
-            </>
-          )}
-        </AnimatePresence>
+        {/* Ghost cards */}
+        {!expanded && restTx.length > 0 &&
+          restTx.slice(0, 3).map((_, i) => (
+            <div
+              key={`g-${i}`}
+              className="absolute left-0 right-0 rounded-[14px]"
+              style={{
+                top: `${(i + 1) * 5}px`,
+                height: "56px",
+                transform: `scale(${1 - (i + 1) * 0.02})`,
+                zIndex: 3 - i,
+                background: `hsl(220 17% ${10 - (i + 1) * 1.5}%)`,
+                borderBottom: "1px solid hsl(220 14% 14%)",
+                opacity: 1 - (i + 1) * 0.2,
+              }}
+            />
+          ))
+        }
 
         {/* Top card */}
         <motion.div layout className="relative z-10">
-          <NotificationCard tx={topTx} isTop />
+          <TxCard tx={topTx} />
         </motion.div>
 
-        {/* Expand/collapse pill */}
-        {restTx.length > 0 && (
-          <div className="absolute -bottom-2 left-1/2 -translate-x-1/2 z-20">
-            <motion.div
-              animate={{ y: expanded ? 0 : [0, 2, 0] }}
-              transition={{ repeat: expanded ? 0 : Infinity, duration: 2 }}
-              className="flex items-center gap-1 px-2.5 py-0.5 rounded-full text-[9px] font-medium text-muted-foreground/50"
-              style={{
-                background: "hsl(220 16% 12%)",
-                border: "1px solid hsl(220 14% 18%)",
-                boxShadow: "0 2px 6px rgba(0,0,0,0.3)",
-              }}
-            >
-              {expanded ? (
-                <>
-                  <ChevronUp className="w-2.5 h-2.5" />
-                  Recolher
-                </>
-              ) : (
-                <>
-                  <ChevronDown className="w-2.5 h-2.5" />
-                  +{restTx.length} transações
-                </>
-              )}
-            </motion.div>
+        {/* Pill */}
+        {restTx.length > 0 && !expanded && (
+          <div className="absolute -bottom-1.5 left-1/2 -translate-x-1/2 z-20 flex items-center gap-1 text-[9px] text-muted-foreground/40 font-medium">
+            <ChevronDown className="w-3 h-3" />
+            +{restTx.length}
           </div>
         )}
       </div>
 
-      {/* Expanded list */}
+      {/* Expanded */}
       <AnimatePresence>
         {expanded && (
           <motion.div
@@ -204,22 +142,29 @@ const TransacoesRecentes = memo(({ transactions, onVerTodas }: Props) => {
             animate={{ height: "auto", opacity: 1 }}
             exit={{ height: 0, opacity: 0 }}
             transition={{ type: "spring", stiffness: 300, damping: 28 }}
-            className="overflow-hidden mt-2"
+            className="overflow-hidden mt-1.5"
           >
             <div className="space-y-1.5">
-              {restTx.map((tx, index) => (
+              {restTx.map((tx, i) => (
                 <motion.div
                   key={tx.id}
-                  initial={{ opacity: 0, y: -8 }}
+                  initial={{ opacity: 0, y: -6 }}
                   animate={{ opacity: 1, y: 0 }}
-                  exit={{ opacity: 0, y: -8 }}
-                  transition={{ delay: index * 0.04 }}
-                  className="relative"
+                  transition={{ delay: i * 0.03 }}
                 >
-                  <NotificationCard tx={tx} />
+                  <TxCard tx={tx} />
                 </motion.div>
               ))}
             </div>
+
+            {/* Collapse button */}
+            <button
+              onClick={(e) => { e.stopPropagation(); setExpanded(false); }}
+              className="w-full mt-2 flex items-center justify-center gap-1 text-[10px] text-muted-foreground/40 hover:text-muted-foreground/60 transition-colors py-1"
+            >
+              <ChevronUp className="w-3 h-3" />
+              Recolher
+            </button>
           </motion.div>
         )}
       </AnimatePresence>
