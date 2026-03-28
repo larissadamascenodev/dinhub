@@ -551,6 +551,20 @@ const NovaTransacaoModal = ({ open, onClose, onSuccess, initialType = "despesa" 
                   )}
 
                   {paymentMethod === "conta" || type === "receita" ? (
+                    accounts.length === 0 ? (
+                      <div className="rounded-xl border border-primary/20 bg-primary/5 p-4 text-center space-y-2">
+                        <Wallet className="w-6 h-6 text-primary mx-auto" />
+                        <p className="text-xs text-foreground font-medium">Você precisa adicionar uma conta antes</p>
+                        <Button
+                          type="button"
+                          size="sm"
+                          onClick={() => { onClose(); window.location.href = "/gestao"; }}
+                          className="h-8 px-4 text-xs rounded-xl"
+                        >
+                          Adicionar conta
+                        </Button>
+                      </div>
+                    ) : (
                     <>
                       <Select value={accountId} onValueChange={setAccountId}>
                         <SelectTrigger className="bg-muted/30 border-border/20 h-11 rounded-xl">
