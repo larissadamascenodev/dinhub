@@ -4,6 +4,7 @@ import { Toaster as Sonner } from "@/components/ui/sonner";
 import { Toaster } from "@/components/ui/toaster";
 import { TooltipProvider } from "@/components/ui/tooltip";
 import { AuthProvider, useAuth } from "@/contexts/AuthContext";
+import DashboardLayout from "@/components/dashboard/DashboardLayout";
 import Index from "./pages/Index.tsx";
 import Auth from "./pages/Auth.tsx";
 import ResetPassword from "./pages/ResetPassword.tsx";
@@ -36,10 +37,12 @@ const App = () => (
           <Routes>
             <Route path="/auth" element={<Auth />} />
             <Route path="/reset-password" element={<ResetPassword />} />
-            <Route path="/" element={<ProtectedRoute><Index /></ProtectedRoute>} />
-            <Route path="/gestao" element={<ProtectedRoute><GestaoFinanceira /></ProtectedRoute>} />
-            <Route path="/fatura/:cardId" element={<ProtectedRoute><FaturaCartao /></ProtectedRoute>} />
-            <Route path="/configuracoes" element={<ProtectedRoute><Configuracoes /></ProtectedRoute>} />
+            <Route element={<ProtectedRoute><DashboardLayout /></ProtectedRoute>}>
+              <Route path="/" element={<Index />} />
+              <Route path="/gestao" element={<GestaoFinanceira />} />
+              <Route path="/fatura/:cardId" element={<FaturaCartao />} />
+              <Route path="/configuracoes" element={<Configuracoes />} />
+            </Route>
             <Route path="*" element={<NotFound />} />
           </Routes>
         </AuthProvider>
