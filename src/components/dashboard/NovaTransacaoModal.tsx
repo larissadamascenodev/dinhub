@@ -47,7 +47,7 @@ const NovaTransacaoModal = ({ open, onClose, onSuccess }: Props) => {
   const [submitting, setSubmitting] = useState(false);
   const amountInputRef = useRef<HTMLInputElement>(null);
 
-  const categories = type === "income" ? CATEGORIES_INCOME : CATEGORIES_EXPENSE;
+  const categories = type === "receita" ? CATEGORIES_INCOME : CATEGORIES_EXPENSE;
 
   // Reset form when modal opens
   useEffect(() => {
