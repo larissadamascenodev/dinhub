@@ -79,7 +79,7 @@ const TransacoesRecentes = memo(({ transactions }: Props) => {
           </h3>
         </div>
         <span className="text-[10px] text-muted-foreground/40 font-medium">
-          {transactions.length} itens
+          {expanded ? `${transactions.length} itens` : restTx.length > 0 ? `+${restTx.length} transações` : `${transactions.length} itens`}
         </span>
       </div>
 
@@ -128,34 +128,6 @@ const TransacoesRecentes = memo(({ transactions }: Props) => {
           <TxCard tx={topTx} />
         </motion.div>
 
-        {/* Hint pill */}
-        <AnimatePresence>
-          {restTx.length > 0 && !expanded && (
-            <motion.div
-              initial={{ opacity: 0, y: -4, scale: 0.9 }}
-              animate={{ opacity: 1, y: 0, scale: 1 }}
-              exit={{ opacity: 0, y: -4, scale: 0.9 }}
-              transition={{ type: "spring", stiffness: 400, damping: 25, delay: 0.1 }}
-              className="absolute -bottom-2 left-1/2 -translate-x-1/2 z-20 flex items-center gap-1 px-3 py-1 rounded-full"
-              style={{
-                background: "hsl(220 16% 12%)",
-                border: "1px solid hsl(220 14% 18%)",
-                boxShadow: "0 2px 8px rgba(0,0,0,0.3)",
-              }}
-            >
-              <motion.div
-                animate={{ y: [0, 2, 0] }}
-                transition={{ repeat: Infinity, duration: 2, ease: "easeInOut" }}
-                className="flex items-center gap-1"
-              >
-                <ChevronDown className="w-3 h-3 text-muted-foreground/50" />
-                <span className="text-[9px] text-muted-foreground/50 font-medium">
-                  +{restTx.length} transações
-                </span>
-              </motion.div>
-            </motion.div>
-          )}
-        </AnimatePresence>
       </motion.div>
 
       {/* Expanded list */}
@@ -165,21 +137,21 @@ const TransacoesRecentes = memo(({ transactions }: Props) => {
             initial={{ height: 0, opacity: 0 }}
             animate={{ height: "auto", opacity: 1 }}
             exit={{ height: 0, opacity: 0 }}
-            transition={{ type: "spring", stiffness: 400, damping: 30 }}
+            transition={{ type: "spring", stiffness: 300, damping: 28 }}
             className="overflow-hidden"
           >
             <div className="space-y-1.5 pt-1.5">
               {restTx.map((tx, i) => (
                 <motion.div
                   key={tx.id}
-                  initial={{ opacity: 0, scale: 0.95, y: -10 }}
-                  animate={{ opacity: 1, scale: 1, y: 0 }}
-                  exit={{ opacity: 0, scale: 0.95, y: -10 }}
+                  initial={{ opacity: 0, y: 8 }}
+                  animate={{ opacity: 1, y: 0 }}
+                  exit={{ opacity: 0, y: -4 }}
                   transition={{
                     type: "spring",
-                    stiffness: 500,
-                    damping: 30,
-                    delay: i * 0.04,
+                    stiffness: 350,
+                    damping: 28,
+                    delay: i * 0.05,
                   }}
                 >
                   <TxCard tx={tx} />
