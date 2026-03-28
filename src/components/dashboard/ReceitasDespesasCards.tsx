@@ -30,7 +30,7 @@ const ReceitasDespesasCards = memo(({ receitas, despesas, mobile }: Props) => (
 
     {/* Despesas */}
     <button
-      className={`relative rounded-xl border-0 transition-all text-left overflow-hidden ${mobile ? "p-3" : "p-4"}`}
+      className={`relative rounded-xl border border-destructive/20 transition-all text-left overflow-hidden ${mobile ? "p-3" : "p-4"}`}
       style={{
         background: "linear-gradient(180deg, hsl(0 60% 50% / 0.06) 0%, hsl(220 20% 5% / 0.95) 40%, hsl(220 20% 5% / 0.98) 100%)",
         boxShadow: "0 2px 8px -2px rgba(0,0,0,0.4), inset 0 1px 0 0 hsl(0 60% 50% / 0.08)",
