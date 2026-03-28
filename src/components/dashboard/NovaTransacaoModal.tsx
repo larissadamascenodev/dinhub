@@ -1,6 +1,6 @@
 import { useState, useRef, useEffect } from "react";
 import { motion, AnimatePresence } from "framer-motion";
-import { X, Plus, ArrowUpCircle, ArrowDownCircle } from "lucide-react";
+import { X, Plus, ArrowUpCircle, ArrowDownCircle, Check, Clock } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
@@ -29,7 +29,6 @@ const CATEGORIES_INCOME = [
   "Salário", "Freelance", "Investimentos", "Outros",
 ];
 
-// Format cents to BRL display
 function formatCurrency(cents: number): string {
   return (cents / 100).toLocaleString("pt-BR", {
     minimumFractionDigits: 2,
@@ -40,6 +39,7 @@ function formatCurrency(cents: number): string {
 const NovaTransacaoModal = ({ open, onClose, onSuccess }: Props) => {
   const { user } = useAuth();
   const [type, setType] = useState<"receita" | "despesa">("despesa");
+  const [status, setStatus] = useState<"pago" | "pendente">("pago");
   const [description, setDescription] = useState("");
   const [amountCents, setAmountCents] = useState(0);
   const [category, setCategory] = useState("");
@@ -49,10 +49,10 @@ const NovaTransacaoModal = ({ open, onClose, onSuccess }: Props) => {
 
   const categories = type === "receita" ? CATEGORIES_INCOME : CATEGORIES_EXPENSE;
 
-  // Reset form when modal opens
   useEffect(() => {
     if (open) {
       setType("despesa");
+      setStatus("pago");
       setDescription("");
       setAmountCents(0);
       setCategory("");
@@ -60,7 +60,6 @@ const NovaTransacaoModal = ({ open, onClose, onSuccess }: Props) => {
     }
   }, [open]);
 
-  // Currency mask: user types digits, we accumulate cents
   const handleAmountKeyDown = (e: React.KeyboardEvent<HTMLInputElement>) => {
     if (e.key === "Backspace") {
       e.preventDefault();
@@ -71,7 +70,7 @@ const NovaTransacaoModal = ({ open, onClose, onSuccess }: Props) => {
       e.preventDefault();
       setAmountCents((prev) => {
         const next = prev * 10 + parseInt(e.key);
-        return next > 99999999 ? prev : next; // cap at 999,999.99
+        return next > 99999999 ? prev : next;
       });
     }
   };
@@ -96,10 +95,11 @@ const NovaTransacaoModal = ({ open, onClose, onSuccess }: Props) => {
     setSubmitting(true);
     try {
       await createTransaction(
-        { name: finalName, type, amount: realAmount, category, date: dateStr },
+        { name: finalName, type, amount: realAmount, category, date: dateStr, status },
         user.id
       );
-      toast.success("Boa! Já registrei isso aqui 🎯", {
+      const statusLabel = status === "pago" ? "registrada" : "agendada";
+      toast.success(`Transação ${statusLabel} 🎯`, {
         description: `${type === "receita" ? "Receita" : "Despesa"} de R$ ${formatCurrency(amountCents)}`,
       });
       onSuccess();
@@ -168,6 +168,36 @@ const NovaTransacaoModal = ({ open, onClose, onSuccess }: Props) => {
               </div>
             </div>
 
+            {/* Status Toggle: Pago / Agendado */}
+            <div className="px-5 pb-3">
+              <div className="flex gap-2 p-1 rounded-xl bg-muted/50">
+                <button
+                  type="button"
+                  onClick={() => setStatus("pago")}
+                  className={`flex-1 flex items-center justify-center gap-2 py-2 rounded-lg text-xs font-semibold transition-all ${
+                    status === "pago"
+                      ? "bg-primary/15 text-primary border border-primary/25"
+                      : "text-muted-foreground hover:text-foreground"
+                  }`}
+                >
+                  <Check className="w-3.5 h-3.5" />
+                  Já paguei
+                </button>
+                <button
+                  type="button"
+                  onClick={() => setStatus("pendente")}
+                  className={`flex-1 flex items-center justify-center gap-2 py-2 rounded-lg text-xs font-semibold transition-all ${
+                    status === "pendente"
+                      ? "bg-amber-500/15 text-amber-500 border border-amber-500/25"
+                      : "text-muted-foreground hover:text-foreground"
+                  }`}
+                >
+                  <Clock className="w-3.5 h-3.5" />
+                  Agendar
+                </button>
+              </div>
+            </div>
+
             {/* Big Value Display */}
             <div
               className="mx-5 mb-4 rounded-xl p-5 text-center cursor-text"
@@ -190,7 +220,6 @@ const NovaTransacaoModal = ({ open, onClose, onSuccess }: Props) => {
               >
                 R$ {formatCurrency(amountCents)}
               </motion.p>
-              {/* Hidden input to capture keystrokes */}
               <input
                 ref={amountInputRef}
                 className="sr-only"
@@ -256,7 +285,6 @@ const NovaTransacaoModal = ({ open, onClose, onSuccess }: Props) => {
                 />
               </div>
 
-              {/* Fixed Save Button */}
               <div className="pt-1">
                 <Button
                   type="submit"
@@ -270,7 +298,7 @@ const NovaTransacaoModal = ({ open, onClose, onSuccess }: Props) => {
                   ) : (
                     <>
                       <Plus className="w-4 h-4 mr-1.5" />
-                      Adicionar transação
+                      {status === "pago" ? "Adicionar transação" : "Agendar transação"}
                     </>
                   )}
                 </Button>

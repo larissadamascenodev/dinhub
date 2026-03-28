@@ -5,6 +5,7 @@ export interface Transaction {
   date: string;
   amount: number;
   type: "receita" | "despesa";
+  status?: "pago" | "pendente";
 }
 
 export interface CategoryExpense {
@@ -19,8 +20,11 @@ export interface FinanceEvent {
   name: string;
   category: string;
   date: string;
+  rawDate?: string;
   amount: number;
   status: "pago" | "pendente" | "atrasado" | "recebido";
+  type?: "receita" | "despesa";
+  isTransaction?: boolean;
 }
 
 export interface DailyBehavior {
@@ -47,6 +51,7 @@ export interface DashboardData {
   transactions: Transaction[];
   categories: CategoryExpense[];
   events: FinanceEvent[];
+  pendingTransactions: Transaction[];
 }
 
 export const SAMPLE_DATA: DashboardData = {
@@ -67,4 +72,5 @@ export const SAMPLE_DATA: DashboardData = {
   transactions: [],
   categories: [],
   events: [],
+  pendingTransactions: [],
 };
