@@ -58,6 +58,19 @@ const DashboardHeader = memo(({ profile }: { profile?: { display_name: string | 
 
   return (
     <>
+      {/* Desktop backdrop for transaction menu */}
+      <AnimatePresence>
+        {transacaoMenuOpen && (
+          <motion.div
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            exit={{ opacity: 0 }}
+            className="hidden md:block fixed inset-0 z-40 bg-black/50 backdrop-blur-sm"
+            onClick={() => setTransacaoMenuOpen(false)}
+          />
+        )}
+      </AnimatePresence>
+
       {/* Desktop Top Bar */}
       <div className="hidden md:flex items-center justify-between sticky top-0 z-50 bg-background/70 backdrop-blur-2xl px-6 py-3 border-b border-border/10 -mx-4 md:-mx-6 mb-4">
         {/* Logo */}
