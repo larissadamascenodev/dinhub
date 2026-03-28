@@ -9,7 +9,7 @@ interface Props {
 }
 
 const CATEGORY_CONFIG: Record<string, { icon: React.ElementType; color: string }> = {
-  Salário: { icon: Wallet, color: "#22c55e" },
+  Salário: { icon: Wallet, color: "#10b981" },
   Alimentação: { icon: ShoppingCart, color: "#ef4444" },
   Transporte: { icon: Car, color: "#3b82f6" },
   Saúde: { icon: Heart, color: "#ec4899" },
