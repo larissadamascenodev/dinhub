@@ -37,9 +37,6 @@ const OnboardingCard = ({ profile, onUpdateName, onGoToAccounts, onCreateTransac
 
   if (allDone) return null;
 
-  const firstPendingIndex = sortedSteps.findIndex((s) => !s.done);
-  const activeStep = Math.max(0, Math.min(currentStep, sortedSteps.length - 1));
-  const step = sortedSteps[activeStep >= 0 ? activeStep : firstPendingIndex];
 
   const handleSaveName = async () => {
     if (!name.trim()) return;
