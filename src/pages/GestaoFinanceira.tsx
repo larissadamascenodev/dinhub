@@ -335,8 +335,9 @@ const GestaoFinanceira = () => {
                     initial={{ opacity: 0, y: 12 }}
                     animate={{ opacity: 1, y: 0 }}
                     transition={{ delay: idx * 0.06 }}
+                    onClick={() => navigate(`/fatura/${card.id}`)}
                     className={cn(
-                      "relative rounded-2xl p-5 overflow-hidden bg-gradient-to-br",
+                      "relative rounded-2xl p-5 overflow-hidden bg-gradient-to-br cursor-pointer active:scale-[0.98] transition-transform",
                       colorClass
                     )}
                   >
