@@ -344,7 +344,7 @@ const Configuracoes = () => {
           <button
             onClick={() => setBotPersonality("assessor")}
             className={cn(
-              "relative overflow-hidden rounded-2xl border p-4 text-left transition-all",
+              "relative overflow-hidden rounded-xl border p-3 text-left transition-all",
               botPersonality === "assessor"
                 ? "border-primary/40 bg-primary/[0.08]"
                 : "border-border/20 bg-card/60 hover:border-border/40"
