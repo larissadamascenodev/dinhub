@@ -136,12 +136,32 @@ const Configuracoes = () => {
       >
         <div className="flex items-start gap-4">
           {/* Avatar */}
-          <div className="relative">
+          <button
+            onClick={() => fileInputRef.current?.click()}
+            className="relative group/avatar"
+            disabled={uploadingAvatar}
+          >
             <div className="w-16 h-16 rounded-2xl bg-muted/40 flex items-center justify-center overflow-hidden border-2 border-border/20">
-              <User className="w-8 h-8 text-muted-foreground" />
+              {profile?.avatar_url ? (
+                <img src={profile.avatar_url} alt="Avatar" className="w-full h-full object-cover" />
+              ) : (
+                <User className="w-8 h-8 text-muted-foreground" />
+              )}
             </div>
-            <div className="absolute -bottom-1 -right-1 w-4 h-4 rounded-full bg-primary border-2 border-card" />
-          </div>
+            <div className="absolute inset-0 rounded-2xl bg-black/50 flex items-center justify-center opacity-0 group-hover/avatar:opacity-100 transition-opacity">
+              <Camera className="w-5 h-5 text-foreground" />
+            </div>
+            <div className="absolute -bottom-1 -right-1 w-5 h-5 rounded-full bg-primary border-2 border-card flex items-center justify-center">
+              <Camera className="w-2.5 h-2.5 text-primary-foreground" />
+            </div>
+            <input
+              ref={fileInputRef}
+              type="file"
+              accept="image/*"
+              onChange={handleAvatarChange}
+              className="hidden"
+            />
+          </button>
 
           <div className="flex-1 min-w-0">
             {editing ? (
