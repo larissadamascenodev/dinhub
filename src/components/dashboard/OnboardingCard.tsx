@@ -43,12 +43,22 @@ const OnboardingCard = ({ profile, onUpdateName, onGoToAccounts, onCreateTransac
     },
   ];
 
-  const completedCount = steps.filter((s) => s.done).length;
-  const allDone = completedCount === steps.length;
+  // Sort: completed first, pending after
+  const sortedSteps = [...steps].sort((a, b) => {
+    if (a.done && !b.done) return -1;
+    if (!a.done && b.done) return 1;
+    return 0;
+  });
+
+  const completedCount = sortedSteps.filter((s) => s.done).length;
+  const allDone = completedCount === sortedSteps.length;
 
   if (allDone) return null;
 
-  const step = steps[currentStep];
+  // Auto-focus on first pending step
+  const firstPendingIndex = sortedSteps.findIndex((s) => !s.done);
+  const activeStep = Math.max(0, Math.min(currentStep, sortedSteps.length - 1));
+  const step = sortedSteps[activeStep >= 0 ? activeStep : firstPendingIndex];
 
   const handleSaveName = async () => {
     if (!name.trim()) return;
