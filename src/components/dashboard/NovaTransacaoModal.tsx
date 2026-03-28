@@ -273,6 +273,10 @@ const NovaTransacaoModal = ({ open, onClose, onSuccess, initialType = "despesa" 
     }
 
     const realAmount = amountCents / 100;
+    const isParcelado = recurrenceType === "parcelado" && installments > 1;
+    // For parcelado, the amount stored per transaction is per-installment
+    const perInstallmentAmount = isParcelado ? Math.round((realAmount / installments) * 100) / 100 : realAmount;
+    const currentInstallment = isParcelado ? (paidInstallments + 1) : null;
     const dateStr = format(date, "yyyy-MM-dd");
     const finalName = description.trim() || category;
 
@@ -282,15 +286,16 @@ const NovaTransacaoModal = ({ open, onClose, onSuccess, initialType = "despesa" 
         {
           name: finalName,
           type,
-          amount: realAmount,
+          amount: perInstallmentAmount,
           category,
           date: dateStr,
           status,
           account_id: paymentMethod === "cartao" ? null : (accountId || null),
           payment_method: type === "despesa" ? paymentMethod : "conta",
           recurrence_type: recurrenceType,
-          installments: recurrenceType === "parcelado" ? installments : null,
-          observation: paymentMethod === "cartao" && recurrenceType === "parcelado" && paidInstallments > 0
+          installments: isParcelado ? installments : null,
+          installment_current: currentInstallment,
+          observation: isParcelado && paidInstallments > 0
             ? `paid_installments:${paidInstallments}${observation.trim() ? ` | ${observation.trim()}` : ""}`
             : (observation.trim() || null),
           credit_card_id: paymentMethod === "cartao" ? (creditCardId || null) : null,
