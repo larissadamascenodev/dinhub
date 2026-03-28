@@ -115,6 +115,7 @@ const Index = () => {
           </div>
         </div>
       </div>
+      <NovaTransacaoModal open={showModal} onClose={() => setShowModal(false)} onSuccess={refetch} />
       <MobileBottomNav />
     </div>
   );
