@@ -18,6 +18,7 @@ const Index = () => {
   const data = useMemo(() => SAMPLE_DATA, []);
   const handleNovaTransacao = useCallback(() => {}, []);
   const { greeting, dateStr } = useGreeting();
+  const userName = "Larissa"; // TODO: substituir pelo nome do usuário autenticado
 
   const handleMonthChange = (month: number, year: number) => {
     setSelectedMonth(month);
