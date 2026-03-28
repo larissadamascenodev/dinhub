@@ -58,6 +58,7 @@ export const SAMPLE_DATA: DashboardData = {
   gastosHoje: 0,
   mediaGastosDiarios: 0,
   status: "safe",
+  dailyBehavior: { today_spent: 0, average: 0, status: "controlled" },
   projection: {
     nextMonthBalance: 0,
     avgIncome3m: 0,
