@@ -248,15 +248,14 @@ const Configuracoes = () => {
         </div>
 
         {/* Bio placeholder */}
-        <p className="text-sm text-muted-foreground mt-3">Focado em controle financeiro e evolução diária 💪</p>
+        <p className="text-xs text-muted-foreground mt-2">Focado em controle financeiro e evolução diária 💪</p>
 
-        {/* XP Progress */}
-        <div className="mt-4">
+        <div className="mt-3">
           <div className="flex items-center justify-between mb-1">
             <span className="text-[10px] text-muted-foreground">Progresso de nível</span>
             <span className="text-[10px] text-muted-foreground">0 / 200 XP</span>
           </div>
-          <Progress value={0} className="h-2" />
+          <Progress value={0} className="h-1.5" />
         </div>
       </motion.div>
 
