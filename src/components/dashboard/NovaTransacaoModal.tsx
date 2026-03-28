@@ -111,13 +111,17 @@ const NovaTransacaoModal = ({ open, onClose, onSuccess, initialType = "despesa" 
     ? allCategories.filter((c) => c.toLowerCase().includes(categorySearch.toLowerCase()))
     : allCategories;
 
-  // Fetch accounts
+  // Fetch accounts and credit cards
   useEffect(() => {
     if (open && user) {
       getAccounts().then((accs) => {
         setAccounts(accs as Account[]);
         const defaultAcc = accs.find((a: any) => a.is_default);
         if (defaultAcc) setAccountId(defaultAcc.id);
+      });
+      getCreditCards().then((cards) => {
+        setCreditCards(cards as CreditCardItem[]);
+        if (cards.length > 0) setCreditCardId(cards[0].id);
       });
     }
   }, [open, user]);
@@ -144,6 +148,12 @@ const NovaTransacaoModal = ({ open, onClose, onSuccess, initialType = "despesa" 
       setNewAccountName("");
       setShowCategoryModal(false);
       setCategorySearch("");
+      setCreditCardId("");
+      setShowNewCard(false);
+      setNewCardName("");
+      setNewCardLimit("");
+      setNewCardClosingDay("10");
+      setNewCardDueDay("20");
     }
   }, [open, initialType]);
 
