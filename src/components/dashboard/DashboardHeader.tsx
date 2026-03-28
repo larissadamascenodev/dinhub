@@ -1,5 +1,6 @@
 import { memo, useMemo } from "react";
-import { LayoutDashboard, ArrowLeftRight, Wallet, Bot, User, Bell, Flame } from "lucide-react";
+import { LayoutDashboard, ArrowLeftRight, Wallet, Bot, User, Bell, Flame, PiggyBank } from "lucide-react";
+import { motion } from "framer-motion";
 
 const NAV_ITEMS = [
   { label: "Dashboard", icon: LayoutDashboard, active: true },
@@ -22,59 +23,79 @@ const DashboardHeader = memo(() => {
   }, []);
 
   return (
-    <header className="mb-6">
-      {/* Top bar */}
-      <div className="flex items-center justify-between mb-5">
-        <div className="flex items-center gap-2.5">
-          <span className="text-2xl">🐾</span>
-          <span className="text-lg font-bold tracking-tight">
+    <>
+      {/* Desktop Top Bar */}
+      <div className="hidden md:flex items-center justify-between sticky top-0 z-50 bg-background/70 backdrop-blur-2xl px-6 py-3 border-b border-border/10 -mx-4 md:-mx-6 mb-4">
+        {/* Logo */}
+        <div className="flex items-center gap-2 flex-shrink-0">
+          <PiggyBank className="w-6 h-6 text-primary" />
+          <span className="font-display font-bold text-lg">
             <span className="text-foreground">Finan</span>
-            <span className="fp-text-green">Pro</span>
+            <span className="text-primary">Pro</span>
           </span>
         </div>
 
-        {/* Desktop nav */}
-        <nav className="hidden md:flex items-center gap-1 bg-secondary/50 rounded-2xl p-1">
+        {/* Center: Floating nav pill */}
+        <nav className="flex items-center gap-1 bg-card/80 backdrop-blur-xl border border-border/20 rounded-2xl px-1.5 py-1 shadow-lg shadow-black/10">
           {NAV_ITEMS.map((item) => {
             const Icon = item.icon;
             return (
               <button
                 key={item.label}
-                className={`flex items-center gap-2 px-4 py-2 rounded-xl text-sm font-medium transition-all duration-200 ${
+                className={`relative flex items-center gap-1.5 px-4 py-2 rounded-xl text-xs font-medium transition-all duration-300 ${
                   item.active
-                    ? "bg-primary text-primary-foreground shadow-lg"
-                    : "text-muted-foreground hover:text-foreground"
+                    ? "bg-primary/20 text-primary shadow-[0_0_12px_-2px_hsl(var(--primary)/0.3)]"
+                    : "text-muted-foreground hover:text-foreground hover:bg-muted/20"
                 }`}
               >
-                <Icon className="h-4 w-4" />
-                {item.label}
+                <Icon className="w-3.5 h-3.5" />
+                <span>{item.label}</span>
               </button>
             );
           })}
         </nav>
 
-        <div className="flex items-center gap-2.5">
-          <div className="hidden md:flex items-center gap-1.5 px-3 py-1.5 rounded-full bg-primary/15 text-primary text-sm font-semibold">
-            <Flame className="h-4 w-4" />
-            <span>0</span>
-          </div>
-          <button className="w-9 h-9 rounded-full border border-border flex items-center justify-center text-muted-foreground hover:text-foreground transition-colors hover:border-primary/30">
+        {/* Right: Streak + Bell + Avatar */}
+        <div className="flex items-center gap-2 flex-shrink-0">
+          <button className="flex items-center gap-1.5 px-3 py-1.5 rounded-full bg-warning/15 border border-warning/30 hover:border-warning/50 transition-all">
+            <Flame className="w-4 h-4 text-warning" />
+            <span className="text-sm font-bold text-warning">0</span>
+          </button>
+          <button className="w-9 h-9 rounded-full border border-border/30 flex items-center justify-center text-muted-foreground hover:text-foreground transition-colors hover:border-primary/30">
             <Bell className="h-4 w-4" />
           </button>
-          <div className="w-9 h-9 rounded-full bg-gradient-to-br from-primary to-fp-green/60 flex items-center justify-center text-primary-foreground text-sm font-bold shadow-lg shadow-primary/20">
+          <div className="w-8 h-8 rounded-lg border border-border/30 bg-gradient-to-br from-primary/30 to-primary/10 flex items-center justify-center text-foreground text-xs font-bold">
             U
           </div>
         </div>
       </div>
 
+      {/* Mobile Header */}
+      <header className="sticky top-0 z-40 bg-background/80 backdrop-blur-xl px-4 py-3 md:hidden -mx-4 mb-2">
+        <div className="flex items-center justify-between">
+          <div className="flex items-center gap-1.5">
+            <PiggyBank className="w-5 h-5 text-primary" />
+            <span className="font-display font-bold text-lg">
+              <span className="text-foreground">Finan</span>
+              <span className="text-primary">Pro</span>
+            </span>
+          </div>
+          <div className="flex items-center gap-1.5">
+            <button className="w-8 h-8 rounded-full border border-border/30 flex items-center justify-center text-muted-foreground">
+              <Bell className="h-4 w-4" />
+            </button>
+          </div>
+        </div>
+      </header>
+
       {/* Greeting */}
-      <div>
-        <h1 className="text-xl md:text-2xl font-bold">
-          {greeting}, <span className="fp-text-green">Olá</span>
+      <motion.div initial={{ opacity: 0, y: -10 }} animate={{ opacity: 1, y: 0 }} className="-mt-2 mb-2 md:mb-4">
+        <h1 className="font-display text-xl md:text-2xl font-bold leading-tight">
+          {greeting}, <span className="text-primary">Olá</span>
         </h1>
-        <p className="text-sm text-muted-foreground mt-0.5">{dateStr}</p>
-      </div>
-    </header>
+        <p className="text-xs text-muted-foreground mt-0.5">{dateStr}</p>
+      </motion.div>
+    </>
   );
 });
 
