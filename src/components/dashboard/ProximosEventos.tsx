@@ -1,5 +1,5 @@
 import { memo } from "react";
-import { ChevronRight, Check, Clock } from "lucide-react";
+import { ChevronRight, Check, Clock, AlertTriangle, Calendar } from "lucide-react";
 import { motion } from "framer-motion";
 import type { FinanceEvent } from "@/types/finance";
 
@@ -11,42 +11,38 @@ interface Props {
 const STATUS_CONFIG = {
   pago: {
     label: "Pago",
-    dotColor: "bg-primary",
-    badgeBg: "bg-primary/15",
-    badgeText: "text-primary",
-    badgeBorder: "border-primary/30",
-    iconBg: "bg-primary/15",
-    iconColor: "text-primary",
+    gradient: "from-primary/20 to-primary/5",
+    borderColor: "border-primary/25",
+    textColor: "text-primary",
+    dotGlow: "shadow-[0_0_8px_hsl(150_100%_45%/0.5)]",
+    dotBg: "bg-primary",
     Icon: Check,
   },
   pendente: {
     label: "A pagar",
-    dotColor: "bg-warning",
-    badgeBg: "bg-warning/15",
-    badgeText: "text-warning",
-    badgeBorder: "border-warning/30",
-    iconBg: "bg-warning/15",
-    iconColor: "text-warning",
+    gradient: "from-warning/20 to-warning/5",
+    borderColor: "border-warning/25",
+    textColor: "text-warning",
+    dotGlow: "shadow-[0_0_8px_hsl(40_80%_50%/0.5)]",
+    dotBg: "bg-warning",
     Icon: Clock,
   },
   atrasado: {
     label: "Atrasado",
-    dotColor: "bg-destructive",
-    badgeBg: "bg-destructive/15",
-    badgeText: "text-destructive",
-    badgeBorder: "border-destructive/30",
-    iconBg: "bg-destructive/15",
-    iconColor: "text-destructive",
-    Icon: Clock,
+    gradient: "from-destructive/20 to-destructive/5",
+    borderColor: "border-destructive/25",
+    textColor: "text-destructive",
+    dotGlow: "shadow-[0_0_8px_hsl(0_60%_50%/0.5)]",
+    dotBg: "bg-destructive",
+    Icon: AlertTriangle,
   },
   recebido: {
     label: "Recebido",
-    dotColor: "bg-primary",
-    badgeBg: "bg-primary/15",
-    badgeText: "text-primary",
-    badgeBorder: "border-primary/30",
-    iconBg: "bg-primary/15",
-    iconColor: "text-primary",
+    gradient: "from-primary/20 to-primary/5",
+    borderColor: "border-primary/25",
+    textColor: "text-primary",
+    dotGlow: "shadow-[0_0_8px_hsl(150_100%_45%/0.5)]",
+    dotBg: "bg-primary",
     Icon: Check,
   },
 };
@@ -55,23 +51,26 @@ const fmt = (v: number) =>
   v.toLocaleString("pt-BR", { style: "currency", currency: "BRL", minimumFractionDigits: 2 });
 
 const ProximosEventos = memo(({ events, onVerTodos }: Props) => (
-  <div
-    className="rounded-xl border border-border/10 shadow-[0_4px_12px_-4px_rgba(0,0,0,0.5)] backdrop-blur-sm overflow-hidden"
+  <div className="rounded-2xl overflow-hidden border border-border/30"
     style={{
-      background: "linear-gradient(160deg, hsl(220 15% 14% / 0.6) 0%, hsl(220 18% 8% / 0.75) 50%, hsl(220 20% 4% / 0.9) 100%)",
+      background: "linear-gradient(180deg, hsl(220 18% 8% / 0.95) 0%, hsl(220 20% 4%) 100%)",
+      boxShadow: "0 8px 32px -8px rgba(0,0,0,0.6), inset 0 1px 0 0 rgba(255,255,255,0.04)",
     }}
   >
     {/* Header */}
-    <div className="flex items-center justify-between px-4 pt-4 pb-2">
-      <h3 className="text-sm font-bold text-foreground">
-        Próximos Eventos
-      </h3>
+    <div className="flex items-center justify-between px-5 pt-5 pb-3">
+      <div className="flex items-center gap-2.5">
+        <div className="w-8 h-8 rounded-xl bg-primary/10 flex items-center justify-center">
+          <Calendar className="w-4 h-4 text-primary" />
+        </div>
+        <h3 className="text-sm font-bold text-foreground tracking-tight">Próximos Eventos</h3>
+      </div>
       <button
         onClick={onVerTodos}
-        className="text-[10px] text-muted-foreground hover:text-foreground transition-colors flex items-center gap-0.5"
+        className="text-[11px] text-muted-foreground hover:text-primary transition-colors flex items-center gap-0.5 font-medium"
       >
         Ver todos
-        <ChevronRight className="w-3 h-3" />
+        <ChevronRight className="w-3.5 h-3.5" />
       </button>
     </div>
 
@@ -79,75 +78,59 @@ const ProximosEventos = memo(({ events, onVerTodos }: Props) => (
     <MiniCalendar />
 
     {/* Legend */}
-    <div className="flex items-center justify-center gap-5 px-4 pb-3">
+    <div className="flex items-center justify-center gap-5 px-5 pb-4">
       {[
-        { label: "Pago", cls: "bg-primary" },
-        { label: "Pendente", cls: "bg-warning" },
-        { label: "Atrasado", cls: "bg-destructive" },
+        { label: "Pago", cls: "bg-primary", glow: "shadow-[0_0_6px_hsl(150_100%_45%/0.4)]" },
+        { label: "Pendente", cls: "bg-warning", glow: "shadow-[0_0_6px_hsl(40_80%_50%/0.4)]" },
+        { label: "Atrasado", cls: "bg-destructive", glow: "shadow-[0_0_6px_hsl(0_60%_50%/0.4)]" },
       ].map((s) => (
-        <span key={s.label} className="flex items-center gap-1.5 text-[10px] text-muted-foreground">
-          <span className={`w-2 h-2 rounded-full ${s.cls}`} />
+        <span key={s.label} className="flex items-center gap-1.5 text-[10px] text-muted-foreground font-medium">
+          <span className={`w-2 h-2 rounded-full ${s.cls} ${s.glow}`} />
           {s.label}
         </span>
       ))}
     </div>
 
-    {/* Timeline events */}
-    <div className="px-4 pb-4">
+    {/* Divider */}
+    <div className="mx-5 h-px bg-border/20" />
+
+    {/* Event Cards */}
+    <div className="px-5 py-4 space-y-2.5">
       {events.map((ev, i) => {
         const cfg = STATUS_CONFIG[ev.status];
         const StatusIcon = cfg.Icon;
-        const isLast = i === events.length - 1;
 
         return (
           <motion.div
             key={ev.id}
-            initial={{ opacity: 0, y: 6 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ delay: i * 0.04 }}
-            className="flex gap-3"
+            initial={{ opacity: 0, x: -8 }}
+            animate={{ opacity: 1, x: 0 }}
+            transition={{ delay: i * 0.05, duration: 0.3 }}
+            className={`group relative rounded-xl border ${cfg.borderColor} bg-gradient-to-r ${cfg.gradient} p-3.5 flex items-center justify-between cursor-pointer hover:scale-[1.01] transition-all duration-200`}
+            style={{
+              boxShadow: "0 2px 12px -4px rgba(0,0,0,0.4), inset 0 1px 0 0 rgba(255,255,255,0.03)",
+            }}
           >
-            {/* Timeline line + dot */}
-            <div className="flex flex-col items-center">
-              <div className={`w-3 h-3 rounded-full ${cfg.dotColor} ring-2 ring-background flex-shrink-0 mt-5`} />
-              {!isLast && (
-                <div
-                  className="w-[2px] flex-1 mt-1 rounded-full"
-                  style={{
-                    background: "linear-gradient(180deg, hsl(var(--primary)) 0%, hsl(var(--primary) / 0.3) 100%)",
-                  }}
-                />
-              )}
+            {/* Left */}
+            <div className="flex items-center gap-3 min-w-0">
+              <div className={`w-9 h-9 rounded-xl bg-gradient-to-br ${cfg.gradient} flex items-center justify-center flex-shrink-0 border ${cfg.borderColor}`}>
+                <StatusIcon className={`w-4 h-4 ${cfg.textColor}`} />
+              </div>
+              <div className="min-w-0">
+                <p className="text-sm font-semibold text-foreground truncate">{ev.name}</p>
+                <p className="text-[11px] text-muted-foreground">{ev.date}</p>
+              </div>
             </div>
 
-            {/* Card */}
-            <div className="flex-1 pb-2.5">
-              <p className="text-[11px] text-muted-foreground/50 mb-1 mt-1">{ev.date}</p>
-              <div
-                className="rounded-2xl border border-border/20 px-4 py-3 flex items-center justify-between"
-                style={{
-                  background: "linear-gradient(145deg, hsl(220 18% 10% / 0.95) 0%, hsl(220 20% 6% / 0.98) 100%)",
-                  boxShadow: "0 2px 10px -3px rgba(0,0,0,0.4), inset 0 1px 0 0 rgba(255,255,255,0.04)",
-                }}
-              >
-                {/* Left: name + badge */}
-                <div className="flex items-center gap-2 min-w-0">
-                  <p className="text-sm font-bold text-foreground truncate">{ev.name}</p>
-                  <span
-                    className={`text-[10px] font-semibold px-2 py-0.5 rounded-full whitespace-nowrap border ${cfg.badgeBg} ${cfg.badgeText} ${cfg.badgeBorder}`}
-                  >
-                    {cfg.label}
-                  </span>
-                </div>
-
-                {/* Right: amount + icon */}
-                <div className="flex items-center gap-2 shrink-0 ml-3">
-                  <p className="text-sm font-bold text-foreground tabular-nums">{fmt(ev.amount)}</p>
-                  <div className={`w-7 h-7 rounded-full flex items-center justify-center ${cfg.iconBg}`}>
-                    <StatusIcon className={`h-3.5 w-3.5 ${cfg.iconColor}`} />
-                  </div>
-                </div>
+            {/* Right */}
+            <div className="flex items-center gap-2.5 shrink-0 ml-3">
+              <div className="text-right">
+                <p className="text-sm font-bold text-foreground tabular-nums">{fmt(ev.amount)}</p>
+                <span className={`text-[10px] font-semibold ${cfg.textColor}`}>
+                  {cfg.label}
+                </span>
               </div>
+              <div className={`w-2 h-2 rounded-full ${cfg.dotBg} ${cfg.dotGlow} flex-shrink-0`} />
             </div>
           </motion.div>
         );
@@ -173,18 +156,18 @@ const MiniCalendar = memo(() => {
   });
 
   return (
-    <div className="grid grid-cols-7 gap-1 px-4 mb-3">
+    <div className="grid grid-cols-7 gap-1.5 px-5 mb-3">
       {days.map((d) => (
         <div
           key={`${d.label}-${d.day}`}
           className={`flex flex-col items-center py-2 rounded-xl text-xs transition-all ${
             d.isToday
-              ? "bg-primary text-primary-foreground font-bold shadow-md shadow-primary/15"
-              : "text-muted-foreground hover:bg-secondary"
+              ? "bg-primary text-primary-foreground font-bold shadow-lg shadow-primary/20"
+              : "text-muted-foreground hover:bg-secondary/60"
           }`}
         >
-          <span className="text-[10px] mb-0.5">{d.label}</span>
-          <span className="text-sm font-medium">{d.day}</span>
+          <span className="text-[10px] mb-0.5 opacity-70">{d.label}</span>
+          <span className="text-sm font-semibold">{d.day}</span>
         </div>
       ))}
     </div>
