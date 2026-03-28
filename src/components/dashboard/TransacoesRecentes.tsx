@@ -115,6 +115,9 @@ const TransacoesRecentes = memo(({ transactions, onVerTodas }: Props) => {
             Transações Recentes
           </h3>
         </div>
+        <span className="text-[10px] font-semibold text-muted-foreground bg-muted/30 px-2 py-0.5 rounded-full">
+          {transactions.length}
+        </span>
       </div>
 
       {/* Stack area */}
@@ -155,11 +158,8 @@ const TransacoesRecentes = memo(({ transactions, onVerTodas }: Props) => {
 
         {/* Expand badge */}
         {!expanded && restTx.length > 0 && (
-          <div className={`absolute -bottom-1 left-1/2 -translate-x-1/2 z-20 px-3 py-0.5 rounded-full ${CARD_CLASS} flex items-center gap-1`}>
-            <ChevronDown className="w-3 h-3 text-muted-foreground/50" />
-            <span className="text-[9px] font-semibold text-muted-foreground">
-              +{restTx.length}
-            </span>
+          <div className="absolute -bottom-1 left-1/2 -translate-x-1/2 z-20">
+            <ChevronDown className="w-4 h-4 text-muted-foreground/40" />
           </div>
         )}
       </div>
