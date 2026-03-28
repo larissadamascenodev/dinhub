@@ -1,11 +1,14 @@
 import { memo, useState } from "react";
-import { ArrowUpRight, ArrowDownRight, Layers, ChevronDown, ChevronUp } from "lucide-react";
+import { ArrowUpRight, ArrowDownRight, Layers, ChevronUp, Trash2 } from "lucide-react";
 import { motion, AnimatePresence } from "framer-motion";
+import { toast } from "sonner";
 import type { Transaction } from "@/types/finance";
+import { deleteTransaction } from "@/services/transactionService";
 
 interface Props {
   transactions: Transaction[];
   onVerTodas?: () => void;
+  onDelete?: () => void;
 }
 
 const fmt = (v: number) =>
