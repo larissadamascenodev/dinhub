@@ -164,31 +164,24 @@ const FaturaCartao = () => {
 
   if (loading) {
     return (
-      <div className="dark min-h-screen bg-background flex items-center justify-center">
+      <div className="flex items-center justify-center py-20">
         <div className="animate-pulse text-primary text-sm">Carregando fatura...</div>
       </div>
     );
   }
 
   return (
-    <div className="dark min-h-screen bg-background text-foreground">
-      <div className="max-w-lg mx-auto px-4 pt-6 pb-32">
-        {/* Header */}
-        <div className="flex items-center gap-3 mb-6">
-          <button
-            onClick={() => navigate("/gestao")}
-            className="w-9 h-9 rounded-xl bg-card border border-border/30 flex items-center justify-center"
-          >
-            <ArrowLeft className="w-4 h-4 text-muted-foreground" />
-          </button>
-          <div className="flex-1">
-            <h1 className="text-lg font-bold text-foreground">Fatura {card?.name}</h1>
-            <p className="text-xs text-muted-foreground">
-              Fecha dia {card?.closing_day} · Vence dia {card?.due_day}
-            </p>
-          </div>
-          <CreditCard className="w-5 h-5 text-violet-400" />
+    <div className="max-w-lg mx-auto pt-2 pb-8">
+      {/* Title */}
+      <div className="flex items-center gap-3 mb-6">
+        <div className="flex-1">
+          <h1 className="text-lg font-bold text-foreground">Fatura {card?.name}</h1>
+          <p className="text-xs text-muted-foreground">
+            Fecha dia {card?.closing_day} · Vence dia {card?.due_day}
+          </p>
         </div>
+        <CreditCard className="w-5 h-5 text-violet-400" />
+      </div>
 
         {/* Month Selector */}
         <div className="flex items-center justify-center gap-4 mb-6">
