@@ -13,6 +13,8 @@ const navItems = [
 
 const MobileBottomNav = memo(() => {
   const [isOpen, setIsOpen] = useState(false);
+  const navigate = useNavigate();
+  const location = useLocation();
 
   return (
     <>
