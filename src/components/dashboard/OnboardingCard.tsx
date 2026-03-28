@@ -80,17 +80,17 @@ const OnboardingCard = ({ profile, onUpdateName, onGoToAccounts, onCreateTransac
           <Rocket className="w-3 h-3 text-primary" />
         </div>
         <p className="text-xs font-bold text-foreground flex-1">Complete sua conta</p>
-        <span className="text-[9px] text-muted-foreground">{completedCount}/{steps.length}</span>
+        <span className="text-[9px] text-muted-foreground">{completedCount}/{sortedSteps.length}</span>
       </div>
 
       {/* Progress dots */}
       <div className="flex gap-1 mb-2.5">
-        {steps.map((s, i) => (
+        {sortedSteps.map((s, i) => (
           <div
             key={s.id}
             className={cn(
               "h-1 rounded-full flex-1 transition-all",
-              s.done ? "bg-primary" : i === currentStep ? "bg-primary/40" : "bg-muted/30"
+              s.done ? "bg-primary" : i === activeStep ? "bg-primary/40" : "bg-muted/30"
             )}
           />
         ))}
