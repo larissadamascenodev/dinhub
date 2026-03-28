@@ -13,8 +13,7 @@ const fmt = (v: number) => v.toLocaleString("pt-BR", { style: "currency", curren
 
 const SaldoCard = memo(({ saldoAtual, saldoPrevisto, onNovaTransacao, mobile }: SaldoCardProps) => (
   <div
-    className={`rounded-xl border border-border/20 bg-card shadow-[0_2px_8px_-2px_rgba(0,0,0,0.4),inset_0_1px_0_0_rgba(255,255,255,0.06)] flex flex-col justify-between ${mobile ? "p-4" : "p-5"}`}
-    style={{ background: "linear-gradient(135deg, hsl(var(--primary) / 0.06) 0%, transparent 60%)" }}
+    className={`rounded-xl border border-border/30 bg-card shadow-[0_2px_8px_-2px_rgba(0,0,0,0.4),inset_0_1px_0_0_rgba(255,255,255,0.03)] flex flex-col justify-between ${mobile ? "p-4" : "p-5"}`}
   >
     <div>
       <div className="flex items-center justify-between mb-2">
@@ -24,8 +23,7 @@ const SaldoCard = memo(({ saldoAtual, saldoPrevisto, onNovaTransacao, mobile }: 
         </div>
         <button
           onClick={onNovaTransacao}
-          className="flex items-center gap-1 px-2.5 py-1 rounded-lg text-[10px] font-semibold text-primary border border-primary/20 hover:border-primary/40 transition-all"
-          style={{ background: "linear-gradient(135deg, hsl(var(--primary) / 0.10) 0%, transparent 60%)" }}
+          className="flex items-center gap-1 px-2.5 py-1 rounded-lg text-[10px] font-semibold text-primary border border-primary/20 hover:border-primary/40 transition-all bg-primary/5"
         >
           <Plus className="w-3 h-3" />
           Nova transação
@@ -40,7 +38,7 @@ const SaldoCard = memo(({ saldoAtual, saldoPrevisto, onNovaTransacao, mobile }: 
         {fmt(saldoAtual)}
       </motion.p>
       <div className="mt-4 flex items-center gap-2">
-        <div className={`w-1 h-1 rounded-full ${saldoPrevisto >= 0 ? "bg-primary" : "bg-destructive"} animate-pulse`} />
+        <div className={`w-1 h-1 rounded-full ${saldoPrevisto >= 0 ? "bg-primary" : "bg-destructive"}`} />
         <span className="text-[10px] text-muted-foreground/60">Previsto ao final do mês</span>
         <span className={`text-[13px] font-semibold tabular-nums tracking-tight ${saldoPrevisto >= 0 ? "text-primary/80" : "text-destructive/80"}`}>{fmt(saldoPrevisto)}</span>
       </div>

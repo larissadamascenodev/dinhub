@@ -11,37 +11,27 @@ const buckets = {
   zero: {
     msgs: ["Hoje tá tranquilo até agora 😄", "Nenhum gasto registrado hoje 🎉"],
     icon: PartyPopper,
-    bg: "hsl(var(--primary) / 0.08)",
-    border: "hsl(var(--primary) / 0.18)",
-    iconColor: "hsl(var(--primary))",
+    iconClass: "text-primary",
   },
   saving: {
     msgs: ["Hoje você tá no controle 💰", "Economia real hoje, parabéns 🚀"],
     icon: TrendingDown,
-    bg: "hsl(var(--primary) / 0.08)",
-    border: "hsl(var(--primary) / 0.18)",
-    iconColor: "hsl(var(--primary))",
+    iconClass: "text-primary",
   },
   below: {
     msgs: ["Tá indo bem hoje, continua assim 👏", "Ritmo saudável hoje 😊"],
     icon: Smile,
-    bg: "hsl(var(--primary) / 0.06)",
-    border: "hsl(var(--primary) / 0.15)",
-    iconColor: "hsl(var(--primary))",
+    iconClass: "text-primary",
   },
   above: {
     msgs: ["Cuidado, o ritmo subiu um pouco ⚠️", "Um pouco acima da média hoje 👀"],
     icon: Meh,
-    bg: "hsl(45 93% 47% / 0.08)",
-    border: "hsl(45 93% 47% / 0.18)",
-    iconColor: "hsl(45, 93%, 47%)",
+    iconClass: "text-warning",
   },
   high: {
     msgs: ["Hoje você tá gastando mais que o normal 👀", "Calma… desse jeito o mês sente 😅"],
     icon: AlertTriangle,
-    bg: "hsl(var(--destructive) / 0.08)",
-    border: "hsl(var(--destructive) / 0.18)",
-    iconColor: "hsl(var(--destructive))",
+    iconClass: "text-destructive",
   },
 };
 
@@ -70,12 +60,7 @@ const MicroInteracoesCard = memo(({ gastosHoje, mediaGastosDiarios }: Props) => 
     <motion.div
       initial={{ opacity: 0, y: 6 }}
       animate={{ opacity: 1, y: 0 }}
-      className="flex items-center gap-3 rounded-xl px-4 py-2.5 cursor-pointer transition-all"
-      style={{
-        background: cfg.bg,
-        border: `1px solid ${cfg.border}`,
-        boxShadow: `0 0 12px -4px ${cfg.border}`,
-      }}
+      className="flex items-center gap-3 rounded-xl px-4 py-2.5 cursor-pointer transition-all border border-border/30 bg-card shadow-[0_1px_4px_-1px_rgba(0,0,0,0.2),inset_0_1px_0_0_rgba(255,255,255,0.03)]"
     >
       <motion.div
         key={bucket}
@@ -83,7 +68,7 @@ const MicroInteracoesCard = memo(({ gastosHoje, mediaGastosDiarios }: Props) => 
         animate={{ scale: 1, opacity: 1 }}
         transition={{ type: "spring", stiffness: 400, damping: 20 }}
       >
-        <Icon className="w-4 h-4 shrink-0" style={{ color: cfg.iconColor }} />
+        <Icon className={`w-4 h-4 shrink-0 ${cfg.iconClass}`} />
       </motion.div>
       <motion.p
         key={msg}

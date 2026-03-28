@@ -11,26 +11,26 @@ interface Props {
 const STATUS_CONFIG = {
   pago: {
     label: "Pago",
-    color: "hsl(var(--primary))",
-    bg: "bg-primary/15",
+    bg: "bg-primary/10",
     text: "text-primary",
-    border: "border-primary/25",
+    border: "border-primary/20",
+    dotColor: "bg-primary",
     Icon: Check,
   },
   pendente: {
     label: "A pagar",
-    color: "hsl(var(--warning))",
-    bg: "bg-warning/15",
+    bg: "bg-warning/10",
     text: "text-warning",
-    border: "border-warning/25",
+    border: "border-warning/20",
+    dotColor: "bg-warning",
     Icon: Clock,
   },
   atrasado: {
     label: "Atrasado",
-    color: "hsl(var(--destructive))",
-    bg: "bg-destructive/15",
+    bg: "bg-destructive/10",
     text: "text-destructive",
-    border: "border-destructive/25",
+    border: "border-destructive/20",
+    dotColor: "bg-destructive",
     Icon: AlertTriangle,
   },
 };
@@ -38,10 +38,7 @@ const STATUS_CONFIG = {
 const fmt = (v: number) => v.toLocaleString("pt-BR", { style: "currency", currency: "BRL", minimumFractionDigits: 2 });
 
 const ProximosEventos = memo(({ events, onVerTodos }: Props) => (
-  <div
-    className="rounded-xl border border-border/20 bg-card shadow-[0_2px_8px_-2px_rgba(0,0,0,0.4),inset_0_1px_0_0_rgba(255,255,255,0.06)] overflow-hidden"
-    style={{ background: "linear-gradient(135deg, hsl(var(--primary) / 0.04) 0%, transparent 60%)" }}
-  >
+  <div className="rounded-xl border border-border/30 bg-card shadow-[0_2px_8px_-2px_rgba(0,0,0,0.4),inset_0_1px_0_0_rgba(255,255,255,0.03)] overflow-hidden">
     {/* Header */}
     <div className="flex items-center justify-between px-4 pt-4 pb-2">
       <div className="flex items-center gap-2">
@@ -50,7 +47,7 @@ const ProximosEventos = memo(({ events, onVerTodos }: Props) => (
       </div>
       <button
         onClick={onVerTodos}
-        className="text-[10px] text-primary/70 hover:text-primary transition-colors flex items-center gap-0.5"
+        className="text-[10px] text-muted-foreground hover:text-foreground transition-colors flex items-center gap-0.5"
       >
         Ver todos
         <ChevronRight className="w-3 h-3" />
@@ -89,16 +86,16 @@ const ProximosEventos = memo(({ events, onVerTodos }: Props) => (
             transition={{ delay: i * 0.04 }}
             className="flex gap-3"
           >
-            {/* Timeline dot */}
+            {/* Timeline dot — neutral line, colored dot */}
             <div className="flex flex-col items-center pt-1">
-              <div className={`w-3 h-3 rounded-full ${cfg.bg} ring-2 ring-card`} style={{ backgroundColor: cfg.color }} />
-              {!isLast && <div className="w-px flex-1 bg-border/30 mt-1" />}
+              <div className={`w-3 h-3 rounded-full ${cfg.dotColor} ring-2 ring-card`} />
+              {!isLast && <div className="w-px flex-1 bg-border/40 mt-1" />}
             </div>
 
             {/* Content */}
             <div className="flex-1 pb-4">
               <p className="text-[11px] text-muted-foreground mb-1.5 font-medium">{ev.date}</p>
-              <div className="rounded-xl border border-border/20 bg-card/60 p-3 flex items-center justify-between shadow-[0_1px_4px_-1px_rgba(0,0,0,0.15),inset_0_1px_0_0_rgba(255,255,255,0.03)]">
+              <div className="rounded-xl border border-border/20 bg-card/60 p-3 flex items-center justify-between shadow-[0_1px_4px_-1px_rgba(0,0,0,0.15),inset_0_1px_0_0_rgba(255,255,255,0.02)]">
                 <div className="flex items-center gap-2.5 min-w-0">
                   <p className="text-sm font-semibold text-foreground truncate">{ev.name}</p>
                   <span className={`text-[10px] font-semibold px-2 py-0.5 rounded-full whitespace-nowrap ${cfg.bg} ${cfg.text} border ${cfg.border}`}>
@@ -143,7 +140,7 @@ const MiniCalendar = memo(() => {
           key={`${d.label}-${d.day}`}
           className={`flex flex-col items-center py-2 rounded-xl text-xs transition-all ${
             d.isToday
-              ? "bg-primary text-primary-foreground font-bold shadow-lg shadow-primary/20"
+              ? "bg-primary text-primary-foreground font-bold shadow-md shadow-primary/15"
               : "text-muted-foreground hover:bg-secondary"
           }`}
         >
