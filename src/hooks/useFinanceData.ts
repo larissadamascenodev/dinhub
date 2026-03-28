@@ -31,10 +31,14 @@ const CAT_ICONS: Record<string, string> = {
   Assinaturas: "📦", Lazer: "🎮", Moradia: "🏠",
 };
 
+// Module-level cache to persist data across component remounts
+const dataCache: Record<string, DashboardData> = {};
+
 export function useFinanceData(selectedMonth: number, selectedYear: number) {
   const { user } = useAuth();
-  const [data, setData] = useState<DashboardData>(EMPTY_DATA);
-  const [loading, setLoading] = useState(true);
+  const cacheKey = `${user?.id ?? ""}-${selectedMonth}-${selectedYear}`;
+  const [data, setData] = useState<DashboardData>(dataCache[cacheKey] ?? EMPTY_DATA);
+  const [loading, setLoading] = useState(!dataCache[cacheKey]);
 
   const fetchData = useCallback(async () => {
     if (!user) return;
