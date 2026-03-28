@@ -62,7 +62,7 @@ const Index = () => {
 
           {/* RIGHT COLUMN (sidebar) */}
           <div className="space-y-4">
-            <ProximosEventos events={data.events} />
+            <ProximosEventos events={data.events} selectedMonth={selectedMonth} selectedYear={selectedYear} />
           </div>
         </div>
 
