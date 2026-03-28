@@ -83,7 +83,7 @@ const Index = () => {
           <div className="flex items-center justify-between mb-3">
             <div>
               <h1 className="font-display text-lg font-bold leading-tight">
-                {greeting}, <span className="text-foreground/70">Olá</span>
+                {greeting}, <span className="text-foreground/70">{userName}</span>
               </h1>
               <p className="text-[10px] text-muted-foreground">{dateStr}</p>
             </div>
