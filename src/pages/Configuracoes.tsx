@@ -200,7 +200,7 @@ const Configuracoes = () => {
           animate={{ opacity: 1, y: 0 }}
           transition={{ delay: 0.1 }}
           onClick={() => navigate("/gestao")}
-          className="glass-card rounded-2xl p-5 flex flex-col gap-4 hover:bg-card/80 transition-all text-left group min-h-[120px]"
+          className="glass-card rounded-2xl p-5 flex flex-col gap-4 hover:bg-card/80 transition-all text-left group min-h-[120px] relative"
         >
           <div className="w-12 h-12 rounded-2xl bg-primary/15 flex items-center justify-center shrink-0">
             <CreditCard className="w-6 h-6 text-primary" />
