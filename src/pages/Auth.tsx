@@ -116,6 +116,18 @@ const Auth = () => {
             </div>
           </div>
 
+          {isLogin && (
+            <div className="text-right">
+              <button
+                type="button"
+                onClick={handleForgotPassword}
+                className="text-xs text-primary hover:underline"
+              >
+                Esqueci minha senha
+              </button>
+            </div>
+          )}
+
           <Button
             type="submit"
             disabled={submitting}
