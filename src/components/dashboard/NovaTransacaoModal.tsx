@@ -87,6 +87,13 @@ const NovaTransacaoModal = ({ open, onClose, onSuccess, initialType = "despesa" 
   const [accounts, setAccounts] = useState<Account[]>([]);
   const [newAccountName, setNewAccountName] = useState("");
   const [showNewAccount, setShowNewAccount] = useState(false);
+  const [creditCards, setCreditCards] = useState<CreditCardItem[]>([]);
+  const [creditCardId, setCreditCardId] = useState<string>("");
+  const [showNewCard, setShowNewCard] = useState(false);
+  const [newCardName, setNewCardName] = useState("");
+  const [newCardLimit, setNewCardLimit] = useState("");
+  const [newCardClosingDay, setNewCardClosingDay] = useState("10");
+  const [newCardDueDay, setNewCardDueDay] = useState("20");
   const [submitting, setSubmitting] = useState(false);
   const [showCategoryModal, setShowCategoryModal] = useState(false);
   const [categorySearch, setCategorySearch] = useState("");
