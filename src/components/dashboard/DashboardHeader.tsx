@@ -89,7 +89,7 @@ const DashboardHeader = memo(() => {
       </header>
 
       {/* Greeting */}
-      <motion.div initial={{ opacity: 0, y: -10 }} animate={{ opacity: 1, y: 0 }} className="-mt-2 mb-2 md:mb-4">
+      <motion.div initial={{ opacity: 0, y: -10 }} animate={{ opacity: 1, y: 0 }} className="mb-1 md:mb-2">
         <h1 className="font-display text-xl md:text-2xl font-bold leading-tight">
           {greeting}, <span className="text-primary">Olá</span>
         </h1>
