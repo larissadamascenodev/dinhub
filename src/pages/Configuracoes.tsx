@@ -214,17 +214,16 @@ const Configuracoes = () => {
         animate={{ opacity: 1, y: 0 }}
         className="rounded-2xl bg-card/60 border border-border/20 p-4"
       >
-        <div className="flex items-start gap-4">
-          {/* Avatar */}
+        <div className="flex items-start gap-3">
           <div className="relative">
-            <div className="w-16 h-16 rounded-2xl bg-muted/40 flex items-center justify-center overflow-hidden border-2 border-border/20">
+            <div className="w-14 h-14 rounded-xl bg-muted/40 flex items-center justify-center overflow-hidden border-2 border-border/20">
               {profile?.avatar_url ? (
                 <img src={profile.avatar_url} alt="Avatar" className="w-full h-full object-cover" />
               ) : (
-                <User className="w-8 h-8 text-muted-foreground" />
+                <User className="w-7 h-7 text-muted-foreground" />
               )}
             </div>
-            <div className="absolute -bottom-1 -right-1 w-4 h-4 rounded-full bg-primary border-2 border-card" />
+            <div className="absolute -bottom-1 -right-1 w-3.5 h-3.5 rounded-full bg-primary border-2 border-card" />
           </div>
 
           <div className="flex-1 min-w-0">
