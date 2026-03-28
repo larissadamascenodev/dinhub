@@ -28,6 +28,7 @@ const NAV_ITEMS = [
 const DashboardHeader = memo(({ profile }: { profile?: { display_name: string | null } | null }) => {
   const { signOut, user } = useAuth();
   const navigate = useNavigate();
+  const location = useLocation();
   const initial = (profile?.display_name ?? user?.email ?? "U").charAt(0).toUpperCase();
   const displayName = profile?.display_name || user?.email?.split("@")[0] || "Usuário";
   const email = user?.email ?? "";
