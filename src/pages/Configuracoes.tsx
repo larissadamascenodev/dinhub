@@ -282,7 +282,7 @@ const Configuracoes = () => {
       </motion.button>
 
       {/* ═══ Feature Cards Grid ═══ */}
-      <div className="grid grid-cols-2 gap-3">
+      <div className="grid grid-cols-2 gap-2">
         {featureCards.map((fc, idx) => (
           <motion.button
             key={fc.label}
