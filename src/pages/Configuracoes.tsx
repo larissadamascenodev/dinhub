@@ -368,7 +368,7 @@ const Configuracoes = () => {
       {/* ═══ Tabs: Conta / Configurações ═══ */}
       <div className="relative rounded-xl bg-card/90 backdrop-blur-xl border border-border/30 shadow-lg shadow-black/30 p-1 flex">
         <motion.div
-          className="absolute top-1 bottom-1 rounded-lg bg-primary/15 border border-primary/40 shadow-[0_0_8px_0_hsl(150_100%_45%/0.15)]"
+          className="absolute top-1 bottom-1 rounded-xl bg-primary/15 border border-primary/40 shadow-[0_0_8px_0_hsl(150_100%_45%/0.15)]"
           initial={false}
           animate={{
             left: activeTab === "conta" ? "4px" : "50%",
