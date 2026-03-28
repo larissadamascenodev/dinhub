@@ -182,20 +182,20 @@ const Configuracoes = () => {
         animate={{ opacity: 1, y: 0 }}
         transition={{ delay: 0.05 }}
         onClick={() => navigate("/gestao")}
-        className="relative overflow-hidden rounded-2xl border border-white/[0.08] backdrop-blur-xl shadow-2xl shadow-black/40 p-5 w-full flex items-center gap-4 hover:border-white/[0.12] transition-all text-left group"
+        className="relative overflow-hidden rounded-2xl border border-primary/20 backdrop-blur-xl shadow-2xl shadow-black/40 p-4 w-full flex items-center gap-4 hover:border-primary/30 transition-all text-left group"
         style={{
-          background: "linear-gradient(160deg, hsl(220 18% 9% / 0.85) 0%, hsl(220 20% 5% / 0.9) 100%)",
+          background: "linear-gradient(160deg, hsl(150 100% 45% / 0.08) 0%, hsl(150 100% 45% / 0.03) 100%)",
         }}
       >
-        <div className="absolute inset-0 bg-gradient-to-br from-white/[0.06] via-transparent to-transparent pointer-events-none" />
-        <div className="relative z-10 w-12 h-12 rounded-2xl bg-primary/15 flex items-center justify-center shrink-0">
-          <Wallet className="w-6 h-6 text-primary" />
+        <div className="absolute inset-0 bg-gradient-to-br from-primary/[0.06] via-transparent to-transparent pointer-events-none" />
+        <div className="relative z-10 w-11 h-11 rounded-xl bg-primary/15 flex items-center justify-center shrink-0">
+          <Wallet className="w-5 h-5 text-primary" />
         </div>
         <div className="relative z-10 flex-1 min-w-0">
-          <p className="text-base font-bold text-foreground">Carteira</p>
-          <p className="text-xs text-muted-foreground">Contas e Cartões de Crédito</p>
+          <p className="text-base font-bold text-primary">Carteira</p>
+          <p className="text-xs text-primary/60">Contas e Cartões de Crédito</p>
         </div>
-        <ChevronRight className="relative z-10 w-5 h-5 text-muted-foreground group-hover:text-foreground transition-colors shrink-0" />
+        <ChevronRight className="relative z-10 w-5 h-5 text-primary/50 group-hover:text-primary transition-colors shrink-0" />
       </motion.button>
 
       {/* ═══ Feature Cards Grid ═══ */}
@@ -206,20 +206,20 @@ const Configuracoes = () => {
             initial={{ opacity: 0, y: 12 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ delay: 0.05 * (idx + 1) }}
-            className="relative overflow-hidden rounded-2xl border border-white/[0.08] backdrop-blur-xl shadow-2xl shadow-black/40 p-4 flex items-center gap-3 hover:border-white/[0.12] transition-all text-left group"
+            className="relative overflow-hidden rounded-2xl border border-white/[0.08] backdrop-blur-xl shadow-lg shadow-black/30 px-3 py-3 flex items-center gap-2.5 hover:border-white/[0.12] transition-all text-left group"
             style={{
               background: "linear-gradient(160deg, hsl(220 18% 9% / 0.85) 0%, hsl(220 20% 5% / 0.9) 100%)",
             }}
           >
             <div className="absolute inset-0 bg-gradient-to-br from-white/[0.06] via-transparent to-transparent pointer-events-none" />
-            <div className="relative z-10 w-10 h-10 rounded-xl bg-primary/10 flex items-center justify-center shrink-0">
-              <fc.icon className="w-5 h-5 text-primary" />
+            <div className="relative z-10 w-9 h-9 rounded-lg bg-primary/10 flex items-center justify-center shrink-0">
+              <fc.icon className="w-4 h-4 text-primary" />
             </div>
             <div className="relative z-10 flex-1 min-w-0">
-              <p className="text-sm font-bold text-foreground">{fc.label}</p>
-              <p className="text-[11px] text-muted-foreground">{fc.sub}</p>
+              <p className="text-xs font-bold text-foreground whitespace-nowrap">{fc.label}</p>
+              <p className="text-[10px] text-muted-foreground whitespace-nowrap">{fc.sub}</p>
             </div>
-            <ChevronRight className="relative z-10 w-4 h-4 text-muted-foreground group-hover:text-foreground transition-colors shrink-0" />
+            <ChevronRight className="relative z-10 w-3.5 h-3.5 text-muted-foreground group-hover:text-foreground transition-colors shrink-0" />
           </motion.button>
         ))}
       </div>
