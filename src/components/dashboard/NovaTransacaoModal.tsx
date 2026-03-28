@@ -20,6 +20,8 @@ import {
   getAccounts,
   createAccount,
   suggestCategory,
+  getCreditCards,
+  createCreditCard,
 } from "@/services/transactionService";
 
 interface Props {
@@ -53,6 +55,16 @@ interface Account {
   is_default: boolean;
 }
 
+interface CreditCardItem {
+  id: string;
+  name: string;
+  limit: number;
+  used_limit: number;
+  closing_day: number;
+  due_day: number;
+  color: string | null;
+}
+
 const NovaTransacaoModal = ({ open, onClose, onSuccess, initialType = "despesa" }: Props) => {
   const { user } = useAuth();
   const [type, setType] = useState<"receita" | "despesa">(initialType);
@@ -75,6 +87,13 @@ const NovaTransacaoModal = ({ open, onClose, onSuccess, initialType = "despesa" 
   const [accounts, setAccounts] = useState<Account[]>([]);
   const [newAccountName, setNewAccountName] = useState("");
   const [showNewAccount, setShowNewAccount] = useState(false);
+  const [creditCards, setCreditCards] = useState<CreditCardItem[]>([]);
+  const [creditCardId, setCreditCardId] = useState<string>("");
+  const [showNewCard, setShowNewCard] = useState(false);
+  const [newCardName, setNewCardName] = useState("");
+  const [newCardLimit, setNewCardLimit] = useState("");
+  const [newCardClosingDay, setNewCardClosingDay] = useState("10");
+  const [newCardDueDay, setNewCardDueDay] = useState("20");
   const [submitting, setSubmitting] = useState(false);
   const [showCategoryModal, setShowCategoryModal] = useState(false);
   const [categorySearch, setCategorySearch] = useState("");
@@ -92,13 +111,18 @@ const NovaTransacaoModal = ({ open, onClose, onSuccess, initialType = "despesa" 
     ? allCategories.filter((c) => c.toLowerCase().includes(categorySearch.toLowerCase()))
     : allCategories;
 
-  // Fetch accounts
+  // Fetch accounts and credit cards
   useEffect(() => {
     if (open && user) {
       getAccounts().then((accs) => {
         setAccounts(accs as Account[]);
         const defaultAcc = accs.find((a: any) => a.is_default);
         if (defaultAcc) setAccountId(defaultAcc.id);
+      });
+      getCreditCards().then((cards) => {
+        const typedCards = cards as unknown as CreditCardItem[];
+        setCreditCards(typedCards);
+        if (typedCards.length > 0) setCreditCardId(typedCards[0].id);
       });
     }
   }, [open, user]);
@@ -125,6 +149,12 @@ const NovaTransacaoModal = ({ open, onClose, onSuccess, initialType = "despesa" 
       setNewAccountName("");
       setShowCategoryModal(false);
       setCategorySearch("");
+      setCreditCardId("");
+      setShowNewCard(false);
+      setNewCardName("");
+      setNewCardLimit("");
+      setNewCardClosingDay("10");
+      setNewCardDueDay("20");
     }
   }, [open, initialType]);
 
@@ -194,6 +224,30 @@ const NovaTransacaoModal = ({ open, onClose, onSuccess, initialType = "despesa" 
     }
   };
 
+  const handleCreateCreditCard = async () => {
+    if (!user || !newCardName.trim() || !newCardLimit) return;
+    try {
+      const card = await createCreditCard(
+        {
+          name: newCardName.trim(),
+          limit: parseFloat(newCardLimit),
+          closing_day: parseInt(newCardClosingDay),
+          due_day: parseInt(newCardDueDay),
+        },
+        user.id
+      );
+      const typedCard = card as unknown as CreditCardItem;
+      setCreditCards((prev) => [...prev, typedCard]);
+      setCreditCardId(typedCard.id);
+      setShowNewCard(false);
+      setNewCardName("");
+      setNewCardLimit("");
+      toast.success("Cartão cadastrado!");
+    } catch {
+      toast.error("Erro ao criar cartão");
+    }
+  };
+
   const handleCreateCategory = (nameOverride?: string) => {
     const name = (nameOverride || newCategoryName).trim();
     if (!name) return;
@@ -232,11 +286,12 @@ const NovaTransacaoModal = ({ open, onClose, onSuccess, initialType = "despesa" 
           category,
           date: dateStr,
           status,
-          account_id: accountId || null,
+          account_id: paymentMethod === "cartao" ? null : (accountId || null),
           payment_method: type === "despesa" ? paymentMethod : "conta",
           recurrence_type: recurrenceType,
           installments: recurrenceType === "parcelado" ? installments : null,
           observation: observation.trim() || null,
+          credit_card_id: paymentMethod === "cartao" ? (creditCardId || null) : null,
         },
         user.id
       );
@@ -554,12 +609,106 @@ const NovaTransacaoModal = ({ open, onClose, onSuccess, initialType = "despesa" 
                   ) : (
                     /* Cartão de crédito mode */
                     <div className="space-y-2">
-                      <div className="rounded-xl border border-border/20 bg-muted/30 p-3 text-center">
-                        <CreditCard className="w-5 h-5 text-muted-foreground mx-auto mb-1" />
-                        <p className="text-xs text-muted-foreground">
-                          Em breve: cadastre seus cartões de crédito
-                        </p>
-                      </div>
+                      {creditCards.length > 0 ? (
+                        <Select value={creditCardId} onValueChange={setCreditCardId}>
+                          <SelectTrigger className="bg-muted/30 border-border/20 h-11 rounded-xl">
+                            <SelectValue placeholder="Selecionar cartão" />
+                          </SelectTrigger>
+                          <SelectContent>
+                            {creditCards.map((card) => (
+                              <SelectItem key={card.id} value={card.id}>
+                                <div className="flex items-center gap-2">
+                                  <CreditCard className="w-3.5 h-3.5 text-muted-foreground" />
+                                  <span>{card.name}</span>
+                                  <span className="text-[10px] text-muted-foreground ml-1">
+                                    Fecha dia {card.closing_day} · Vence dia {card.due_day}
+                                  </span>
+                                </div>
+                              </SelectItem>
+                            ))}
+                          </SelectContent>
+                        </Select>
+                      ) : (
+                        <div className="rounded-xl border border-border/20 bg-muted/30 p-3 text-center">
+                          <CreditCard className="w-5 h-5 text-muted-foreground mx-auto mb-1" />
+                          <p className="text-xs text-muted-foreground">Nenhum cartão cadastrado</p>
+                        </div>
+                      )}
+
+                      {!showNewCard ? (
+                        <button
+                          type="button"
+                          onClick={() => setShowNewCard(true)}
+                          className="flex items-center gap-1 text-[11px] text-primary font-medium hover:opacity-80 mt-1"
+                        >
+                          <Plus className="w-3 h-3" />
+                          Cadastrar cartão
+                        </button>
+                      ) : (
+                        <motion.div
+                          initial={{ height: 0, opacity: 0 }}
+                          animate={{ height: "auto", opacity: 1 }}
+                          className="space-y-2 mt-1 overflow-hidden"
+                        >
+                          <Input
+                            placeholder="Nome do cartão (ex: Nubank)"
+                            value={newCardName}
+                            onChange={(e) => setNewCardName(e.target.value)}
+                            className="bg-muted/30 border-border/20 h-9 text-sm rounded-xl"
+                          />
+                          <Input
+                            placeholder="Limite (ex: 5000)"
+                            type="number"
+                            value={newCardLimit}
+                            onChange={(e) => setNewCardLimit(e.target.value)}
+                            className="bg-muted/30 border-border/20 h-9 text-sm rounded-xl"
+                          />
+                          <div className="flex gap-2">
+                            <div className="flex-1">
+                              <Label className="text-[10px] text-muted-foreground">Fecha dia</Label>
+                              <Input
+                                type="number"
+                                min={1}
+                                max={31}
+                                value={newCardClosingDay}
+                                onChange={(e) => setNewCardClosingDay(e.target.value)}
+                                className="bg-muted/30 border-border/20 h-9 text-sm rounded-xl"
+                              />
+                            </div>
+                            <div className="flex-1">
+                              <Label className="text-[10px] text-muted-foreground">Vence dia</Label>
+                              <Input
+                                type="number"
+                                min={1}
+                                max={31}
+                                value={newCardDueDay}
+                                onChange={(e) => setNewCardDueDay(e.target.value)}
+                                className="bg-muted/30 border-border/20 h-9 text-sm rounded-xl"
+                              />
+                            </div>
+                          </div>
+                          <div className="flex gap-2">
+                            <Button
+                              type="button"
+                              size="sm"
+                              onClick={handleCreateCreditCard}
+                              disabled={!newCardName.trim() || !newCardLimit}
+                              className="h-9 px-3 text-xs rounded-xl flex-1"
+                            >
+                              Cadastrar
+                            </Button>
+                            <Button
+                              type="button"
+                              size="sm"
+                              variant="outline"
+                              onClick={() => { setShowNewCard(false); setNewCardName(""); setNewCardLimit(""); }}
+                              className="h-9 px-3 text-xs rounded-xl"
+                            >
+                              <X className="w-3 h-3" />
+                            </Button>
+                          </div>
+                        </motion.div>
+                      )}
                     </div>
                   )}
                 </div>

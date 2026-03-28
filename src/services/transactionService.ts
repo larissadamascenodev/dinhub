@@ -12,6 +12,7 @@ export interface CreateTransactionInput {
   recurrence_type?: "unica" | "parcelado" | "fixa";
   installments?: number | null;
   observation?: string | null;
+  credit_card_id?: string | null;
 }
 
 export interface TransactionFilters {
@@ -32,12 +33,13 @@ export async function createTransaction(input: CreateTransactionInput, userId: s
       category: input.category,
       date: input.date,
       status: input.status ?? "pago",
-      account_id: input.account_id ?? null,
+      account_id: input.payment_method === "cartao" ? null : (input.account_id ?? null),
       payment_method: input.payment_method ?? "conta",
       recurrence_type: input.recurrence_type ?? "unica",
       installments: input.installments ?? null,
       observation: input.observation ?? null,
-    })
+      credit_card_id: input.payment_method === "cartao" ? (input.credit_card_id ?? null) : null,
+    } as any)
     .select()
     .single();
 
@@ -132,6 +134,43 @@ export async function createAccount(name: string, userId: string, type: "checkin
   const { data, error } = await supabase
     .from("accounts")
     .insert({ user_id: userId, name, type, is_default: false } as any)
+    .select()
+    .single();
+
+  if (error) throw error;
+  return data;
+}
+
+// Credit card helpers
+export interface CreditCardInput {
+  name: string;
+  limit: number;
+  closing_day: number;
+  due_day: number;
+  color?: string | null;
+}
+
+export async function getCreditCards() {
+  const { data, error } = await supabase
+    .from("credit_cards" as any)
+    .select("*")
+    .order("created_at", { ascending: true });
+
+  if (error) throw error;
+  return data ?? [];
+}
+
+export async function createCreditCard(input: CreditCardInput, userId: string) {
+  const { data, error } = await supabase
+    .from("credit_cards" as any)
+    .insert({
+      user_id: userId,
+      name: input.name,
+      limit: input.limit,
+      closing_day: input.closing_day,
+      due_day: input.due_day,
+      color: input.color ?? null,
+    })
     .select()
     .single();
 
