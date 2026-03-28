@@ -237,13 +237,18 @@ const ProximosEventos = memo(({ events, selectedMonth, selectedYear, onVerTodos 
                     <div
                       className="w-6 h-6 rounded-full flex items-center justify-center shrink-0"
                       style={{
-                        background: isPaidOrReceived ? `hsl(${a})` : "transparent",
-                        border: isPaidOrReceived ? "none" : `1.5px solid hsl(${a} / 0.4)`,
+                        background: isPaidOrReceived
+                          ? `linear-gradient(160deg, hsl(${a} / 0.2) 0%, hsl(${a} / 0.1) 100%)`
+                          : "transparent",
+                        border: isPaidOrReceived
+                          ? `1px solid hsl(${a} / 0.3)`
+                          : `1.5px solid hsl(${a} / 0.4)`,
+                        boxShadow: isPaidOrReceived ? `0 2px 8px -2px hsl(${a} / 0.3)` : "none",
                       }}
                     >
                       <StatusIcon
                         className="w-3 h-3"
-                        style={{ color: isPaidOrReceived ? "hsl(220 20% 4%)" : `hsl(${a})` }}
+                        style={{ color: `hsl(${a})` }}
                       />
                     </div>
 
