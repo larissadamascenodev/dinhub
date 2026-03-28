@@ -7,7 +7,7 @@ import ReceitasDespesasCards from "@/components/dashboard/ReceitasDespesasCards"
 import BalancoCard from "@/components/dashboard/BalancoCard";
 import MicroInteracoesCard from "@/components/dashboard/MicroInteracoesCard";
 import TransacoesRecentes from "@/components/dashboard/TransacoesRecentes";
-import GastosPorCategoria from "@/components/dashboard/GastosPorCategoria";
+
 import ProximosEventos from "@/components/dashboard/ProximosEventos";
 import MonthSelector from "@/components/dashboard/MonthSelector";
 import { SAMPLE_DATA } from "@/types/finance";
