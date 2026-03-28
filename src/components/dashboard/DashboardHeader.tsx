@@ -63,24 +63,27 @@ const DashboardHeader = memo(({ profile }: { profile?: { display_name: string | 
           })}
         </nav>
 
-        {/* Right: Streak + Bell + Avatar */}
-        <div className="flex items-center gap-2 flex-shrink-0">
+        {/* Right: Profile + Bell + Streak */}
+        <div className="flex items-center gap-3 flex-shrink-0">
+          {/* Profile chip */}
+          <div className="flex items-center gap-2.5 bg-card/80 border border-border/20 rounded-2xl px-3 py-1.5">
+            <div className="w-8 h-8 rounded-full bg-primary/20 flex items-center justify-center text-primary text-sm font-bold shrink-0">
+              {initial}
+            </div>
+            <div className="flex flex-col leading-tight">
+              <span className="text-xs font-semibold text-foreground truncate max-w-[120px]">{displayName}</span>
+              <span className="text-[10px] text-muted-foreground truncate max-w-[120px]">{email}</span>
+            </div>
+            <span className="ml-1 px-2 py-0.5 rounded-md bg-primary/15 text-primary text-[10px] font-bold uppercase tracking-wide shrink-0">
+              {plan}
+            </span>
+          </div>
+          <button className="text-muted-foreground hover:text-foreground transition-colors">
+            <Bell className="h-4.5 w-4.5" />
+          </button>
           <button className="flex items-center gap-1.5 px-3 py-1.5 rounded-full bg-warning/10 border border-warning/20 hover:border-warning/40 transition-all">
             <Flame className="w-4 h-4 text-warning" />
             <span className="text-sm font-bold text-warning">0</span>
-          </button>
-          <button className="w-9 h-9 rounded-full border border-border/30 flex items-center justify-center text-muted-foreground hover:text-foreground transition-colors">
-            <Bell className="h-4 w-4" />
-          </button>
-          <div className="w-8 h-8 rounded-lg border border-border/30 bg-muted/30 flex items-center justify-center text-foreground text-xs font-bold">
-            {initials}
-          </div>
-          <button
-            onClick={signOut}
-            className="w-9 h-9 rounded-full border border-border/30 flex items-center justify-center text-muted-foreground hover:text-destructive transition-colors"
-            title="Sair"
-          >
-            <LogOut className="h-4 w-4" />
           </button>
         </div>
       </div>
