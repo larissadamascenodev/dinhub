@@ -19,9 +19,9 @@ export const useGreeting = () => {
 
 const NAV_ITEMS = [
   { label: "Dashboard", icon: LayoutDashboard, path: "/" },
-  { label: "Transações", icon: ArrowLeftRight, path: "/" },
+  { label: "Transações", icon: ArrowLeftRight, path: "/transacoes" },
   { label: "Carteira", icon: Wallet, path: "/gestao" },
-  { label: "Bot Finance", icon: Bot, path: "/" },
+  { label: "Bot Finance", icon: Bot, path: "/bot" },
   { label: "Perfil", icon: User, path: "/configuracoes" },
 ];
 
