@@ -65,8 +65,8 @@
     --gradient-card: linear-gradient(145deg, hsl(220 18% 9% / 0.9) 0%, hsl(220 20% 5% / 0.95) 100%);
     --gradient-card-hover: linear-gradient(145deg, hsl(220 18% 11% / 0.9) 0%, hsl(220 20% 6% / 0.95) 100%);
     --gradient-surface: linear-gradient(180deg, hsl(220 20% 6%) 0%, hsl(220 20% 3%) 100%);
-    --gradient-primary: linear-gradient(135deg, hsl(160 67% 52%) 0%, hsl(168 80% 32%) 100%);
-    --gradient-primary-subtle: linear-gradient(135deg, hsl(160 67% 52% / 0.12) 0%, hsl(168 80% 32% / 0.04) 100%);
+    --gradient-primary: linear-gradient(135deg, hsl(150 100% 45%) 0%, hsl(155 90% 30%) 100%);
+    --gradient-primary-subtle: linear-gradient(135deg, hsl(150 100% 45% / 0.12) 0%, hsl(155 90% 30% / 0.04) 100%);
     --gradient-destructive: linear-gradient(135deg, hsl(0 60% 50%) 0%, hsl(350 55% 40%) 100%);
     --gradient-border: linear-gradient(135deg, hsl(220 14% 20%) 0%, hsl(220 14% 10%) 100%);
     --gradient-glow: radial-gradient(ellipse at 50% 0%, hsl(160 67% 52% / 0.08) 0%, transparent 60%);
