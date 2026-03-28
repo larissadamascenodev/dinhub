@@ -206,16 +206,20 @@ const Configuracoes = () => {
             initial={{ opacity: 0, y: 12 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ delay: 0.05 * (idx + 1) }}
-            className="rounded-xl bg-card/60 border border-border/20 p-4 flex items-center gap-3 hover:bg-card/80 transition-colors text-left group"
+            className="relative overflow-hidden rounded-2xl border border-white/[0.08] backdrop-blur-xl shadow-2xl shadow-black/40 p-4 flex items-center gap-3 hover:border-white/[0.12] transition-all text-left group"
+            style={{
+              background: "linear-gradient(160deg, hsl(220 18% 9% / 0.85) 0%, hsl(220 20% 5% / 0.9) 100%)",
+            }}
           >
-            <div className="w-10 h-10 rounded-xl bg-primary/10 flex items-center justify-center shrink-0">
+            <div className="absolute inset-0 bg-gradient-to-br from-white/[0.06] via-transparent to-transparent pointer-events-none" />
+            <div className="relative z-10 w-10 h-10 rounded-xl bg-primary/10 flex items-center justify-center shrink-0">
               <fc.icon className="w-5 h-5 text-primary" />
             </div>
-            <div className="flex-1 min-w-0">
+            <div className="relative z-10 flex-1 min-w-0">
               <p className="text-sm font-bold text-foreground">{fc.label}</p>
               <p className="text-[11px] text-muted-foreground">{fc.sub}</p>
             </div>
-            <ChevronRight className="w-4 h-4 text-muted-foreground group-hover:text-foreground transition-colors shrink-0" />
+            <ChevronRight className="relative z-10 w-4 h-4 text-muted-foreground group-hover:text-foreground transition-colors shrink-0" />
           </motion.button>
         ))}
       </div>
