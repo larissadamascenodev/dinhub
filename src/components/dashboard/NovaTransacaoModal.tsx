@@ -271,6 +271,10 @@ const NovaTransacaoModal = ({ open, onClose, onSuccess, initialType = "despesa" 
       toast.error("Selecione uma categoria");
       return;
     }
+    if (paymentMethod === "conta" && accounts.length === 0) {
+      toast.error("Você precisa cadastrar uma conta antes");
+      return;
+    }
 
     const realAmount = amountCents / 100;
     const isParcelado = recurrenceType === "parcelado" && installments > 1;
