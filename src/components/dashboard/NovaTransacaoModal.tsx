@@ -39,7 +39,7 @@ function formatCurrency(cents: number): string {
 
 const NovaTransacaoModal = ({ open, onClose, onSuccess }: Props) => {
   const { user } = useAuth();
-  const [type, setType] = useState<"income" | "expense">("expense");
+  const [type, setType] = useState<"receita" | "despesa">("despesa");
   const [description, setDescription] = useState("");
   const [amountCents, setAmountCents] = useState(0);
   const [category, setCategory] = useState("");
