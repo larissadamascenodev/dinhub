@@ -43,7 +43,7 @@ const MobileBottomNav = memo(() => {
                     <motion.div
                       whileTap={{ scale: 0.9 }}
                       animate={isOpen ? { rotate: 45 } : { rotate: 0 }}
-                      className="w-[44px] h-[44px] rounded-full bg-primary shadow-lg shadow-primary/30 flex items-center justify-center">
+                      className="w-[44px] h-[44px] rounded-full bg-primary shadow-lg shadow-primary/30 flex items-center justify-center"
                     >
                       {isOpen ? (
                         <X className="w-5 h-5 text-primary-foreground" />
