@@ -52,7 +52,7 @@ export function useFinanceData(selectedMonth: number, selectedYear: number) {
           month: "short",
         }),
         amount: Number(t.amount),
-        type: (t.type === "income" ? "receita" : t.type === "expense" ? "despesa" : t.type) as Transaction["type"],
+        type: t.type as Transaction["type"],
       }));
 
       // Map events for UI
@@ -71,7 +71,7 @@ export function useFinanceData(selectedMonth: number, selectedYear: number) {
       // Group expenses by category
       const catMap = new Map<string, number>();
       rawTxs
-        .filter((t) => t.type === "expense" || t.type === "despesa")
+        .filter((t) => t.type === "despesa")
         .forEach((t) => {
           catMap.set(t.category, (catMap.get(t.category) ?? 0) + Number(t.amount));
         });

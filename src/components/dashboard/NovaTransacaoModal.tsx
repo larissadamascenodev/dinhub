@@ -39,7 +39,7 @@ function formatCurrency(cents: number): string {
 
 const NovaTransacaoModal = ({ open, onClose, onSuccess }: Props) => {
   const { user } = useAuth();
-  const [type, setType] = useState<"income" | "expense">("expense");
+  const [type, setType] = useState<"receita" | "despesa">("despesa");
   const [description, setDescription] = useState("");
   const [amountCents, setAmountCents] = useState(0);
   const [category, setCategory] = useState("");
@@ -47,12 +47,12 @@ const NovaTransacaoModal = ({ open, onClose, onSuccess }: Props) => {
   const [submitting, setSubmitting] = useState(false);
   const amountInputRef = useRef<HTMLInputElement>(null);
 
-  const categories = type === "income" ? CATEGORIES_INCOME : CATEGORIES_EXPENSE;
+  const categories = type === "receita" ? CATEGORIES_INCOME : CATEGORIES_EXPENSE;
 
   // Reset form when modal opens
   useEffect(() => {
     if (open) {
-      setType("expense");
+      setType("despesa");
       setDescription("");
       setAmountCents(0);
       setCategory("");
@@ -100,7 +100,7 @@ const NovaTransacaoModal = ({ open, onClose, onSuccess }: Props) => {
         user.id
       );
       toast.success("Boa! Já registrei isso aqui 🎯", {
-        description: `${type === "income" ? "Receita" : "Despesa"} de R$ ${formatCurrency(amountCents)}`,
+        description: `${type === "receita" ? "Receita" : "Despesa"} de R$ ${formatCurrency(amountCents)}`,
       });
       onSuccess();
       onClose();
@@ -143,9 +143,9 @@ const NovaTransacaoModal = ({ open, onClose, onSuccess }: Props) => {
               <div className="flex gap-2 p-1 rounded-xl bg-muted/50">
                 <button
                   type="button"
-                  onClick={() => { setType("expense"); setCategory(""); }}
+                  onClick={() => { setType("despesa"); setCategory(""); }}
                   className={`flex-1 flex items-center justify-center gap-2 py-2.5 rounded-lg text-sm font-semibold transition-all ${
-                    type === "expense"
+                    type === "despesa"
                       ? "bg-destructive/20 text-destructive border border-destructive/30"
                       : "text-muted-foreground hover:text-foreground"
                   }`}
@@ -155,9 +155,9 @@ const NovaTransacaoModal = ({ open, onClose, onSuccess }: Props) => {
                 </button>
                 <button
                   type="button"
-                  onClick={() => { setType("income"); setCategory(""); }}
+                  onClick={() => { setType("receita"); setCategory(""); }}
                   className={`flex-1 flex items-center justify-center gap-2 py-2.5 rounded-lg text-sm font-semibold transition-all ${
-                    type === "income"
+                    type === "receita"
                       ? "bg-primary/20 text-primary border border-primary/30"
                       : "text-muted-foreground hover:text-foreground"
                   }`}
@@ -172,10 +172,10 @@ const NovaTransacaoModal = ({ open, onClose, onSuccess }: Props) => {
             <div
               className="mx-5 mb-4 rounded-xl p-5 text-center cursor-text"
               style={{
-                background: type === "income"
+                background: type === "receita"
                   ? "hsl(150 100% 45% / 0.06)"
                   : "hsl(0 60% 50% / 0.06)",
-                border: `1px solid ${type === "income" ? "hsl(150 100% 45% / 0.15)" : "hsl(0 60% 50% / 0.15)"}`,
+                border: `1px solid ${type === "receita" ? "hsl(150 100% 45% / 0.15)" : "hsl(0 60% 50% / 0.15)"}`,
               }}
               onClick={() => amountInputRef.current?.focus()}
             >
@@ -185,7 +185,7 @@ const NovaTransacaoModal = ({ open, onClose, onSuccess }: Props) => {
                 initial={{ scale: 1.05 }}
                 animate={{ scale: 1 }}
                 className={`font-display text-3xl md:text-4xl font-bold tabular-nums tracking-tight ${
-                  type === "income" ? "text-primary" : "text-destructive"
+                  type === "receita" ? "text-primary" : "text-destructive"
                 }`}
               >
                 R$ {formatCurrency(amountCents)}
@@ -262,8 +262,8 @@ const NovaTransacaoModal = ({ open, onClose, onSuccess }: Props) => {
                   type="submit"
                   disabled={submitting || amountCents === 0}
                   className="w-full h-12 font-semibold text-sm"
-                  style={{ background: type === "income" ? "var(--gradient-primary)" : undefined }}
-                  variant={type === "expense" ? "destructive" : "default"}
+                  style={{ background: type === "receita" ? "var(--gradient-primary)" : undefined }}
+                  variant={type === "despesa" ? "destructive" : "default"}
                 >
                   {submitting ? (
                     <span className="animate-pulse">Salvando...</span>

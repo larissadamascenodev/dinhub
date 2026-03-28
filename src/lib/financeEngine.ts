@@ -100,7 +100,7 @@ function aggregate(transactions: RawTransaction[]) {
   let expense = 0;
   for (const t of transactions) {
     const amt = Number(t.amount);
-    if (t.type === "income" || t.type === "receita") {
+    if (t.type === "receita") {
       income += amt;
     } else {
       expense += amt;
@@ -187,8 +187,7 @@ export async function getFinancialSummary(
   // Today's expenses
   const todayExpenses = transactions
     .filter(
-      (t) =>
-        (t.type === "expense" || t.type === "despesa") && t.date === todayStr
+      (t) => t.type === "despesa" && t.date === todayStr
     )
     .reduce((s, t) => s + Number(t.amount), 0);
 
