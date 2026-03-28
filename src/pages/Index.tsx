@@ -1,4 +1,5 @@
 import { useState, useCallback } from "react";
+import { useNavigate } from "react-router-dom";
 import { motion } from "framer-motion";
 import DashboardHeader, { useGreeting } from "@/components/dashboard/DashboardHeader";
 import MobileBottomNav from "@/components/dashboard/MobileBottomNav";
@@ -12,8 +13,10 @@ import MonthSelector from "@/components/dashboard/MonthSelector";
 import NovaTransacaoModal from "@/components/dashboard/NovaTransacaoModal";
 import TransactionTypeChooser from "@/components/dashboard/TransactionTypeChooser";
 import PagarEditarModal from "@/components/dashboard/PagarEditarModal";
+import OnboardingCard from "@/components/dashboard/OnboardingCard";
 import { useAuth } from "@/contexts/AuthContext";
 import { useFinanceData } from "@/hooks/useFinanceData";
+import { useProfile } from "@/hooks/useProfile";
 import type { FinanceEvent } from "@/types/finance";
 
 const Index = () => {
@@ -24,16 +27,22 @@ const Index = () => {
   const [modalType, setModalType] = useState<"receita" | "despesa">("despesa");
   const [selectedEvent, setSelectedEvent] = useState<FinanceEvent | null>(null);
   const [showPayModal, setShowPayModal] = useState(false);
+  const navigate = useNavigate();
   const { user } = useAuth();
   const { data, loading, refetch } = useFinanceData(selectedMonth, selectedYear);
+  const { profile, refetch: refetchProfile, updateDisplayName, isOnboardingComplete } = useProfile();
   const handleNovaTransacao = useCallback(() => setShowTypeChooser(true), []);
   const handleTypeSelected = useCallback((type: "receita" | "despesa") => {
     setModalType(type);
     setShowTypeChooser(false);
     setShowModal(true);
   }, []);
+  const handleTransactionSuccess = useCallback(() => {
+    refetch();
+    refetchProfile();
+  }, [refetch, refetchProfile]);
   const { greeting, dateStr } = useGreeting();
-  const userName = user?.email?.split("@")[0] ?? "Usuário";
+  const userName = profile?.display_name || (user?.email?.split("@")[0] ?? "Usuário");
 
   const handleMonthChange = (month: number, year: number) => {
     setSelectedMonth(month);
@@ -75,6 +84,14 @@ const Index = () => {
               </div>
               <MonthSelector selectedMonth={selectedMonth} selectedYear={selectedYear} onMonthChange={handleMonthChange} />
             </div>
+            {profile && !isOnboardingComplete && (
+              <OnboardingCard
+                profile={profile}
+                onUpdateName={updateDisplayName}
+                onGoToAccounts={() => navigate("/gestao")}
+                onCreateTransaction={handleNovaTransacao}
+              />
+            )}
             <div>
               <motion.div initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }} className="grid grid-cols-[1.4fr_1fr] gap-3">
                 <SaldoCard saldoAtual={saldoMes} saldoPrevisto={balanco} onNovaTransacao={handleNovaTransacao} />
@@ -101,6 +118,14 @@ const Index = () => {
             </div>
             <MonthSelector selectedMonth={selectedMonth} selectedYear={selectedYear} onMonthChange={handleMonthChange} />
           </div>
+          {profile && !isOnboardingComplete && (
+            <OnboardingCard
+              profile={profile}
+              onUpdateName={updateDisplayName}
+              onGoToAccounts={() => navigate("/gestao")}
+              onCreateTransaction={handleNovaTransacao}
+            />
+          )}
           <SaldoCard saldoAtual={saldoMes} saldoPrevisto={balanco} onNovaTransacao={handleNovaTransacao} />
           <ReceitasDespesasCards receitas={receitas} despesas={despesas} />
           <BalancoCard balanco={balanco} />
@@ -120,6 +145,14 @@ const Index = () => {
             </div>
             <MonthSelector selectedMonth={selectedMonth} selectedYear={selectedYear} onMonthChange={handleMonthChange} />
           </div>
+          {profile && !isOnboardingComplete && (
+            <OnboardingCard
+              profile={profile}
+              onUpdateName={updateDisplayName}
+              onGoToAccounts={() => navigate("/gestao")}
+              onCreateTransaction={handleNovaTransacao}
+            />
+          )}
           <motion.div initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }} className="space-y-3">
             <SaldoCard saldoAtual={saldoMes} saldoPrevisto={balanco} onNovaTransacao={handleNovaTransacao} mobile />
             <ReceitasDespesasCards receitas={receitas} despesas={despesas} mobile />
@@ -133,7 +166,7 @@ const Index = () => {
         </div>
       </div>
       <TransactionTypeChooser open={showTypeChooser} onClose={() => setShowTypeChooser(false)} onSelect={handleTypeSelected} />
-      <NovaTransacaoModal open={showModal} onClose={() => setShowModal(false)} onSuccess={refetch} initialType={modalType} />
+      <NovaTransacaoModal open={showModal} onClose={() => setShowModal(false)} onSuccess={handleTransactionSuccess} initialType={modalType} />
       <PagarEditarModal
         open={showPayModal}
         event={selectedEvent}
