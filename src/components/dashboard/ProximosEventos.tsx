@@ -128,7 +128,7 @@ const ProximosEventos = memo(({ events, selectedMonth, selectedYear }: Props) =>
             return (
               <div
                 key={`${d.day}-${d.month}-${i}`}
-                className={`flex flex-col items-center py-1.5 rounded-xl text-xs transition-all relative ${dimmed ? "opacity-20" : ""}`}
+                className={`flex flex-col items-center py-2.5 px-1 rounded-2xl text-xs transition-all relative ${dimmed ? "opacity-20" : ""}`}
                 style={
                   d.isToday
                     ? {
@@ -145,18 +145,18 @@ const ProximosEventos = memo(({ events, selectedMonth, selectedYear }: Props) =>
                     : {}
                 }
               >
-                <span className={`text-[8px] mb-0.5 ${d.isToday ? "opacity-90 font-bold" : eventInfo ? "opacity-60" : "text-muted-foreground/30"}`}>
+                <span className={`text-[8px] mb-1 ${d.isToday ? "opacity-90 font-bold" : eventInfo ? "opacity-60" : "text-muted-foreground/30"}`}>
                   {d.label}
                 </span>
                 <span
-                  className={`text-sm leading-none ${d.isToday ? "font-extrabold" : eventInfo ? "font-semibold" : "font-medium text-muted-foreground/50"}`}
+                  className={`text-base leading-none ${d.isToday ? "font-extrabold" : eventInfo ? "font-semibold" : "font-medium text-muted-foreground/50"}`}
                   style={!d.isToday && eventInfo ? { color: `hsl(${eventInfo.accent})` } : {}}
                 >
                   {d.day}
                 </span>
                 {eventInfo && !d.isToday && (
                   <span
-                    className="absolute bottom-0.5 w-1 h-1 rounded-full"
+                    className="absolute bottom-1 w-1 h-1 rounded-full"
                     style={{ background: `hsl(${eventInfo.accent})`, boxShadow: `0 0 4px hsl(${eventInfo.accent} / 0.5)` }}
                   />
                 )}
