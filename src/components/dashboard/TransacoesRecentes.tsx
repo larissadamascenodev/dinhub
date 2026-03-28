@@ -24,11 +24,7 @@ const TxCard = ({ tx }: { tx: Transaction }) => {
 
   return (
     <div
-      className="relative flex items-center gap-3 px-4 py-3 rounded-[14px] overflow-hidden border border-border/20"
-      style={{
-        background: "linear-gradient(145deg, hsl(220 18% 9% / 0.9) 0%, hsl(220 20% 5% / 0.95) 100%)",
-        boxShadow: "0 1px 4px -1px rgba(0,0,0,0.2), inset 0 1px 0 0 rgba(255,255,255,0.03)",
-      }}
+      className="relative flex items-center gap-3 px-4 py-3 rounded-[14px] overflow-hidden bg-card/90 backdrop-blur-xl border border-border/30 shadow-2xl shadow-black/40"
     >
       <div
         className="w-9 h-9 rounded-full flex items-center justify-center flex-shrink-0"
