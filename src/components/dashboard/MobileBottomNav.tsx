@@ -8,7 +8,7 @@ const navItems = [
   { icon: ArrowLeftRight, label: "Transações", path: "/transacoes" },
   { icon: null, label: "", isCenter: true, path: "" },
   { icon: Wallet, label: "Carteira", path: "/gestao" },
-  { icon: User, label: "Perfil", path: "/perfil" },
+  { icon: User, label: "Perfil", path: "/configuracoes" },
 ];
 
 const MobileBottomNav = memo(() => {
