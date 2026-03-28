@@ -193,9 +193,9 @@ const NovaTransacaoModal = ({ open, onClose, onSuccess, initialType = "despesa" 
     }
   };
 
-  const handleCreateCategory = () => {
-    if (!newCategoryName.trim()) return;
-    const name = newCategoryName.trim();
+  const handleCreateCategory = (nameOverride?: string) => {
+    const name = (nameOverride || newCategoryName).trim();
+    if (!name) return;
     if (!allCategories.includes(name)) {
       setCustomCategories((prev) => [...prev, name]);
     }
