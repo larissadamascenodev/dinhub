@@ -23,6 +23,12 @@ export interface FinanceEvent {
   status: "pago" | "pendente" | "atrasado" | "recebido";
 }
 
+export interface DailyBehavior {
+  today_spent: number;
+  average: number;
+  status: "controlled" | "normal" | "above_average";
+}
+
 export interface DashboardData {
   saldoAtual: number;
   saldoPrevisto: number;
@@ -32,6 +38,7 @@ export interface DashboardData {
   gastosHoje: number;
   mediaGastosDiarios: number;
   status: "safe" | "warning" | "danger";
+  dailyBehavior: DailyBehavior;
   projection: {
     nextMonthBalance: number;
     avgIncome3m: number;
@@ -51,6 +58,7 @@ export const SAMPLE_DATA: DashboardData = {
   gastosHoje: 0,
   mediaGastosDiarios: 0,
   status: "safe",
+  dailyBehavior: { today_spent: 0, average: 0, status: "controlled" },
   projection: {
     nextMonthBalance: 0,
     avgIncome3m: 0,

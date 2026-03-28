@@ -1,7 +1,7 @@
 import { useEffect, useState, useCallback } from "react";
 import { supabase } from "@/integrations/supabase/client";
 import { useAuth } from "@/contexts/AuthContext";
-import { getFinancialSummary } from "@/lib/financeEngine";
+import { getFinancialSummary, computeDailyBehavior } from "@/lib/financeEngine";
 import type { DashboardData, Transaction, FinanceEvent } from "@/types/finance";
 
 const EMPTY_DATA: DashboardData = {
@@ -13,6 +13,7 @@ const EMPTY_DATA: DashboardData = {
   gastosHoje: 0,
   mediaGastosDiarios: 0,
   status: "safe",
+  dailyBehavior: { today_spent: 0, average: 0, status: "controlled" },
   projection: { nextMonthBalance: 0, avgIncome3m: 0, avgExpense3m: 0 },
   transactions: [],
   categories: [],
@@ -91,6 +92,7 @@ export function useFinanceData(selectedMonth: number, selectedYear: number) {
         gastosHoje: summary.todayExpenses,
         mediaGastosDiarios: summary.dailyAverageExpense,
         status: summary.status,
+        dailyBehavior: computeDailyBehavior(summary.todayExpenses, summary.dailyAverageExpense),
         projection: summary.projection,
         transactions,
         categories,
