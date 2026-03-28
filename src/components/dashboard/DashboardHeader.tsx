@@ -24,16 +24,6 @@ const NAV_ITEMS = [
 ];
 
 const DashboardHeader = memo(() => {
-  const { greeting, dateStr } = useMemo(() => {
-    const now = new Date();
-    const hour = now.getHours();
-    let g = "Bom dia";
-    if (hour >= 12 && hour < 18) g = "Boa tarde";
-    else if (hour >= 18) g = "Boa noite";
-    const days = ["Domingo", "Segunda-feira", "Terça-feira", "Quarta-feira", "Quinta-feira", "Sexta-feira", "Sábado"];
-    const months = ["janeiro", "fevereiro", "março", "abril", "maio", "junho", "julho", "agosto", "setembro", "outubro", "novembro", "dezembro"];
-    return { greeting: g, dateStr: `${days[now.getDay()]}, ${now.getDate()} de ${months[now.getMonth()]}` };
-  }, []);
 
   return (
     <>
