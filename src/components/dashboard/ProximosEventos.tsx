@@ -100,7 +100,14 @@ const ProximosEventos = memo(({ events, onVerTodos }: Props) => (
             {/* Timeline line + dot */}
             <div className="flex flex-col items-center">
               <div className={`w-3 h-3 rounded-full ${cfg.dotColor} ring-2 ring-background flex-shrink-0 mt-5`} />
-              {!isLast && <div className="w-px flex-1 bg-primary/20 mt-1" />}
+              {!isLast && (
+                <div
+                  className="w-[2px] flex-1 mt-1 rounded-full"
+                  style={{
+                    background: "linear-gradient(180deg, hsl(var(--primary)) 0%, hsl(var(--primary) / 0.3) 100%)",
+                  }}
+                />
+              )}
             </div>
 
             {/* Card */}
