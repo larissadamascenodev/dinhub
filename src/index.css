@@ -97,6 +97,33 @@
 }
 
 @layer utilities {
+  .fp-card {
+    background: hsl(var(--card));
+    border: 1px solid hsl(var(--border));
+    border-radius: 1rem;
+    box-shadow: 0 0 20px -5px hsl(152 60% 42% / 0.06),
+                0 0 6px -2px hsl(152 60% 42% / 0.03);
+  }
+  .fp-card-hover {
+    transition: box-shadow 0.2s ease, transform 0.2s ease;
+  }
+  .fp-card-hover:hover {
+    box-shadow: 0 0 25px -5px hsl(152 60% 42% / 0.15),
+                0 4px 12px -4px hsl(0 0% 0% / 0.25);
+    transform: translateY(-1px);
+  }
+  .fp-text-green {
+    color: hsl(145 72% 40%);
+  }
+  .fp-text-red {
+    color: hsl(0 84% 60%);
+  }
+  .fp-bg-green {
+    background-color: hsl(145 72% 40%);
+  }
+  .fp-glow-green {
+    box-shadow: 0 0 16px -4px hsl(145 72% 40% / 0.3);
+  }
   .card-glow {
     box-shadow: 0 0 20px -5px hsl(152 60% 42% / 0.1),
                 0 0 6px -2px hsl(152 60% 42% / 0.05);
@@ -105,5 +132,20 @@
     box-shadow: 0 0 25px -5px hsl(152 60% 42% / 0.2),
                 0 4px 12px -4px hsl(0 0% 0% / 0.3);
     transform: translateY(-1px);
+  }
+}
+
+@keyframes bar-fill-anim {
+  from { width: 0; }
+}
+
+@keyframes fade-up {
+  from {
+    opacity: 0;
+    transform: translateY(8px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
   }
 }
