@@ -9,27 +9,27 @@ interface Props {
 
 const buckets = {
   zero: {
-    msgs: ["Hoje tá tranquilo até agora 😄", "Nenhum gasto registrado hoje 🎉"],
+    msgs: ["Hoje tá tranquilo até agora", "Nenhum gasto registrado hoje"],
     icon: PartyPopper,
     iconClass: "text-primary",
   },
   saving: {
-    msgs: ["Hoje você tá no controle 💰", "Economia real hoje, parabéns 🚀"],
+    msgs: ["Hoje você tá no controle", "Economia real hoje, parabéns"],
     icon: TrendingDown,
     iconClass: "text-primary",
   },
   below: {
-    msgs: ["Tá indo bem hoje, continua assim 👏", "Ritmo saudável hoje 😊"],
+    msgs: ["Tá indo bem hoje, continua assim", "Ritmo saudável hoje"],
     icon: Smile,
     iconClass: "text-primary",
   },
   above: {
-    msgs: ["Cuidado, o ritmo subiu um pouco ⚠️", "Um pouco acima da média hoje 👀"],
+    msgs: ["Cuidado, o ritmo subiu um pouco", "Um pouco acima da média hoje"],
     icon: Meh,
     iconClass: "text-warning",
   },
   high: {
-    msgs: ["Hoje você tá gastando mais que o normal 👀", "Calma… desse jeito o mês sente 😅"],
+    msgs: ["Hoje você tá gastando mais que o normal", "Calma… desse jeito o mês sente"],
     icon: AlertTriangle,
     iconClass: "text-destructive",
   },
@@ -89,7 +89,7 @@ const MicroInteracoesCard = memo(({ gastosHoje, mediaGastosDiarios }: Props) => 
             animate={{ opacity: 1, y: 0 }}
             exit={{ opacity: 0, y: -12 }}
             transition={{ duration: 0.35, ease: "easeInOut" }}
-            className="text-xs text-primary/90 leading-snug font-medium absolute inset-0 whitespace-nowrap"
+            className="text-xs text-foreground leading-snug font-medium absolute inset-0 whitespace-nowrap"
           >
             {msgs[msgIdx]}
           </motion.p>
