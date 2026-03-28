@@ -59,10 +59,10 @@ export const SAMPLE_DATA: DashboardData = {
     { name: "Lazer", amount: 180, color: "hsl(210 90% 55%)", icon: "🎮" },
   ],
   events: [
-    { id: "1", name: "Aluguel", date: "24 de mar", amount: 1800, status: "pago" },
-    { id: "2", name: "Salário", date: "25 de mar", amount: 5500, status: "recebido" },
-    { id: "3", name: "Netflix", date: "26 de mar", amount: 55.9, status: "atrasado" },
-    { id: "4", name: "Internet", date: "28 de mar", amount: 120, status: "pendente" },
-    { id: "5", name: "Fatura Nubank", date: "30 de mar", amount: 2340, status: "pendente" },
+    { id: "1", name: "Aluguel", category: "Moradia", date: "24 de mar", amount: 1800, status: "pago" },
+    { id: "2", name: "Salário", category: "Renda", date: "25 de mar", amount: 5500, status: "recebido" },
+    { id: "3", name: "Netflix", category: "Assinaturas", date: "26 de mar", amount: 55.9, status: "atrasado" },
+    { id: "4", name: "Internet", category: "Serviços", date: "28 de mar", amount: 120, status: "pendente" },
+    { id: "5", name: "Fatura Nubank", category: "Cartão", date: "30 de mar", amount: 2340, status: "pendente" },
   ],
 };
