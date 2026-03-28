@@ -117,7 +117,7 @@ export function useFinanceData(selectedMonth: number, selectedYear: number) {
         icon: CAT_ICONS[name] ?? "📋",
       }));
 
-      setData({
+      const newData: DashboardData = {
         saldoAtual: summary.balance,
         saldoPrevisto: summary.predictedBalance,
         receitas: summary.income,
@@ -140,7 +140,9 @@ export function useFinanceData(selectedMonth: number, selectedYear: number) {
           type: t.type as Transaction["type"],
           status: "pendente" as const,
         })),
-      });
+      };
+      dataCache[cacheKey] = newData;
+      setData(newData);
     } catch (err) {
       console.error("Finance engine error:", err);
     } finally {
