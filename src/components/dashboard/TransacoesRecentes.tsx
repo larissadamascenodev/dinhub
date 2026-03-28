@@ -24,10 +24,13 @@ const TxCard = ({ tx }: { tx: Transaction }) => {
 
   return (
     <div
-      className="relative flex items-center gap-3 px-4 py-3 rounded-[14px] overflow-hidden border border-border/10 backdrop-blur-sm"
+      className="relative flex items-center gap-3 px-4 py-3 rounded-[14px] overflow-hidden backdrop-blur-sm"
       style={{
-        background: "hsl(220 10% 12%)",
-        boxShadow: "0 4px 12px -4px rgba(0,0,0,0.5), inset 0 1px 0 rgba(255,255,255,0.04)",
+        background: isReceita ? "hsl(150 100% 45% / 0.06)" : "hsl(0 60% 50% / 0.06)",
+        border: isReceita ? "1px solid hsl(150 100% 45% / 0.2)" : "1px solid hsl(0 60% 50% / 0.2)",
+        boxShadow: isReceita
+          ? "0 2px 8px -2px rgba(0,0,0,0.4), inset 0 1px 0 0 hsl(150 100% 45% / 0.08)"
+          : "0 2px 8px -2px rgba(0,0,0,0.4), inset 0 1px 0 0 hsl(0 60% 50% / 0.08)",
       }}
     >
       <div
