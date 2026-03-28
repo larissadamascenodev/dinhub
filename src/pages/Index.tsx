@@ -1,4 +1,4 @@
-import { useState, useCallback } from "react";
+import { useState, useCallback, useEffect } from "react";
 import { useNavigate, useOutletContext } from "react-router-dom";
 import { motion } from "framer-motion";
 import { useGreeting } from "@/components/dashboard/DashboardHeader";
@@ -31,6 +31,13 @@ const Index = () => {
   const { data, loading, refetch } = useFinanceData(selectedMonth, selectedYear);
   const { profile, refetch: refetchProfile, updateDisplayName, isOnboardingComplete } = useProfile();
   const handleNovaTransacao = useCallback(() => setShowTypeChooser(true), []);
+
+  // Listen for desktop nav "Nova transação" button
+  useEffect(() => {
+    const handler = () => setShowTypeChooser(true);
+    window.addEventListener("open-nova-transacao", handler);
+    return () => window.removeEventListener("open-nova-transacao", handler);
+  }, []);
   const handleTypeSelected = useCallback((type: "receita" | "despesa") => {
     setModalType(type);
     setShowTypeChooser(false);
@@ -91,7 +98,7 @@ const Index = () => {
             )}
             <div>
               <motion.div initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }} className="grid grid-cols-[1.4fr_1fr] gap-3">
-                <SaldoCard saldoAtual={saldoMes} saldoPrevisto={balanco} onNovaTransacao={handleNovaTransacao} />
+                <SaldoCard saldoAtual={saldoMes} saldoPrevisto={balanco} />
                 <ReceitasDespesasCards receitas={receitas} despesas={despesas} />
               </motion.div>
             </div>
@@ -123,7 +130,7 @@ const Index = () => {
               onCreateTransaction={handleNovaTransacao}
             />
           )}
-          <SaldoCard saldoAtual={saldoMes} saldoPrevisto={balanco} onNovaTransacao={handleNovaTransacao} />
+          <SaldoCard saldoAtual={saldoMes} saldoPrevisto={balanco} />
           <ReceitasDespesasCards receitas={receitas} despesas={despesas} />
           <BalancoCard balanco={balanco} />
           <MicroInteracoesCard gastosHoje={data.gastosHoje} mediaGastosDiarios={data.mediaGastosDiarios} />
@@ -151,7 +158,7 @@ const Index = () => {
             />
           )}
           <motion.div initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }} className="space-y-3">
-            <SaldoCard saldoAtual={saldoMes} saldoPrevisto={balanco} onNovaTransacao={handleNovaTransacao} mobile />
+            <SaldoCard saldoAtual={saldoMes} saldoPrevisto={balanco} mobile />
             <ReceitasDespesasCards receitas={receitas} despesas={despesas} mobile />
           </motion.div>
           <BalancoCard balanco={balanco} />

@@ -1,15 +1,14 @@
 import { memo } from "react";
-import { Scale, Plus } from "lucide-react";
+import { Scale } from "lucide-react";
 import { useFormattedCounter } from "@/hooks/useAnimatedCounter";
 
 interface SaldoCardProps {
   saldoAtual: number;
   saldoPrevisto: number;
-  onNovaTransacao?: () => void;
   mobile?: boolean;
 }
 
-const SaldoCard = memo(({ saldoAtual, saldoPrevisto, onNovaTransacao, mobile }: SaldoCardProps) => {
+const SaldoCard = memo(({ saldoAtual, saldoPrevisto, mobile }: SaldoCardProps) => {
   const animatedSaldo = useFormattedCounter(saldoAtual);
   const animatedPrevisto = useFormattedCounter(saldoPrevisto);
 
@@ -24,15 +23,6 @@ const SaldoCard = memo(({ saldoAtual, saldoPrevisto, onNovaTransacao, mobile }: 
             <Scale className="w-3.5 h-3.5 text-muted-foreground" />
             <span className="text-[10px] text-muted-foreground uppercase tracking-[0.15em] font-semibold">Saldo do mês</span>
           </div>
-          {!mobile && (
-            <button
-              onClick={onNovaTransacao}
-              className="flex items-center gap-1 px-2.5 py-1 rounded-lg text-[10px] font-semibold text-primary border border-primary/20 hover:border-primary/40 transition-all bg-primary/5"
-            >
-              <Plus className="w-3 h-3" />
-              Nova transação
-            </button>
-          )}
         </div>
         <p className={`font-display ${mobile ? "text-2xl" : "text-4xl"} font-bold tracking-tight tabular-nums leading-none ${saldoAtual >= 0 ? "text-foreground" : "text-destructive"}`}>
           {animatedSaldo}
