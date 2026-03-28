@@ -19,6 +19,10 @@ const ICONS: Record<string, { icon: React.ComponentType<any>; color: string }> =
 const fmt = (v: number) => v.toLocaleString("pt-BR", { style: "currency", currency: "BRL" });
 
 const TransacoesRecentes = memo(({ transactions, onVerTodas }: Props) => (
+  <div
+    className="rounded-xl border border-border/20 bg-card shadow-[0_2px_8px_-2px_rgba(0,0,0,0.4),inset_0_1px_0_0_rgba(255,255,255,0.06)] overflow-hidden p-4"
+    style={{ background: "linear-gradient(135deg, hsl(var(--primary) / 0.03) 0%, transparent 60%)" }}
+  >
   <div className="space-y-3">
     <div className="flex items-center justify-between">
       <h3 className="text-[10px] font-semibold text-muted-foreground uppercase tracking-widest">Transações Recentes</h3>
