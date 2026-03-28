@@ -81,7 +81,7 @@ const Index = () => {
 
           <TransacoesRecentes transactions={data.transactions} />
 
-          <ProximosEventos events={data.events} />
+          <ProximosEventos events={data.events} selectedMonth={selectedMonth} selectedYear={selectedYear} />
         </div>
 
         {/* ══════════════════════════════════════════════════
