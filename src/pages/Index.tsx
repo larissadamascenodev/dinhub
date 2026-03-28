@@ -77,7 +77,13 @@ const Index = () => {
             TABLET LAYOUT (768px – 1024px)
             ══════════════════════════════════════════════════ */}
         <div className="hidden md:block lg:hidden space-y-4">
-          <div className="flex justify-end">
+          <div className="flex items-center justify-between mb-3">
+            <div>
+              <h1 className="font-display text-lg font-bold leading-tight">
+                {greeting}, <span className="text-foreground/70">Olá</span>
+              </h1>
+              <p className="text-[10px] text-muted-foreground">{dateStr}</p>
+            </div>
             <MonthSelector selectedMonth={selectedMonth} selectedYear={selectedYear} onMonthChange={handleMonthChange} />
           </div>
 
