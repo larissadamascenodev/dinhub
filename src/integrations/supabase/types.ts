@@ -22,6 +22,7 @@ export type Database = {
           initial_balance: number
           is_default: boolean
           name: string
+          type: string
           updated_at: string
           user_id: string
         }
@@ -32,6 +33,7 @@ export type Database = {
           initial_balance?: number
           is_default?: boolean
           name?: string
+          type?: string
           updated_at?: string
           user_id: string
         }
@@ -42,6 +44,7 @@ export type Database = {
           initial_balance?: number
           is_default?: boolean
           name?: string
+          type?: string
           updated_at?: string
           user_id?: string
         }

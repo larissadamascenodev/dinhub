@@ -49,6 +49,7 @@ function formatCurrency(cents: number): string {
 interface Account {
   id: string;
   name: string;
+  type: string;
   is_default: boolean;
 }
 
