@@ -2,7 +2,7 @@ import { supabase } from "@/integrations/supabase/client";
 
 export interface CreateTransactionInput {
   name: string;
-  type: "income" | "expense";
+  type: "receita" | "despesa";
   amount: number;
   category: string;
   date: string; // YYYY-MM-DD
