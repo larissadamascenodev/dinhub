@@ -1,17 +1,20 @@
 import { memo, useState } from "react";
 import { Home, ArrowLeftRight, Wallet, User, Plus, X } from "lucide-react";
 import { motion, AnimatePresence } from "framer-motion";
+import { useNavigate, useLocation } from "react-router-dom";
 
 const navItems = [
-  { icon: Home, label: "Início", active: true },
-  { icon: ArrowLeftRight, label: "Transações", active: false },
-  { icon: null, label: "", isCenter: true },
-  { icon: Wallet, label: "Carteira", active: false },
-  { icon: User, label: "Perfil", active: false },
+  { icon: Home, label: "Início", path: "/" },
+  { icon: ArrowLeftRight, label: "Transações", path: "/transacoes" },
+  { icon: null, label: "", isCenter: true, path: "" },
+  { icon: Wallet, label: "Carteira", path: "/gestao" },
+  { icon: User, label: "Perfil", path: "/perfil" },
 ];
 
 const MobileBottomNav = memo(() => {
   const [isOpen, setIsOpen] = useState(false);
+  const navigate = useNavigate();
+  const location = useLocation();
 
   return (
     <>
@@ -60,12 +63,13 @@ const MobileBottomNav = memo(() => {
               }
 
               const Icon = item.icon!;
+              const isActive = location.pathname === item.path;
               return (
-                <button key={item.label} className="flex flex-col items-center gap-0.5 min-w-[44px]">
+                <button key={item.label} onClick={() => navigate(item.path)} className="flex flex-col items-center gap-0.5 min-w-[44px]">
                   <motion.div whileTap={{ scale: 0.9 }}>
-                    <Icon className={`w-5 h-5 ${item.active ? "text-primary" : "text-muted-foreground/60"}`} />
+                    <Icon className={`w-5 h-5 ${isActive ? "text-primary" : "text-muted-foreground/60"}`} />
                   </motion.div>
-                  <span className={`text-[9px] font-medium ${item.active ? "text-primary" : "text-muted-foreground/50"}`}>
+                  <span className={`text-[9px] font-medium ${isActive ? "text-primary" : "text-muted-foreground/50"}`}>
                     {item.label}
                   </span>
                 </button>
