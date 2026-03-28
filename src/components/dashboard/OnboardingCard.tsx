@@ -17,7 +17,7 @@ const OnboardingCard = ({ profile, onUpdateName, onGoToAccounts, onCreateTransac
   const [editingName, setEditingName] = useState(false);
   const [name, setName] = useState(profile.display_name ?? "");
   const [saving, setSaving] = useState(false);
-  const [currentStep, setCurrentStep] = useState(0);
+  
 
   const steps = [
     { id: "name", label: "Adicionar nome", icon: User, done: profile.has_completed_profile, action: () => setEditingName(true) },
