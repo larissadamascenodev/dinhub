@@ -1,5 +1,6 @@
 import { memo, useMemo } from "react";
-import { LayoutDashboard, ArrowLeftRight, Wallet, Bot, User, Bell, Flame, PiggyBank } from "lucide-react";
+import { LayoutDashboard, ArrowLeftRight, Wallet, Bot, User, Bell, Flame, PiggyBank, LogOut } from "lucide-react";
+import { useAuth } from "@/contexts/AuthContext";
 import { motion } from "framer-motion";
 
 export const useGreeting = () => {
