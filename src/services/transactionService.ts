@@ -12,7 +12,7 @@ export interface CreateTransactionInput {
 export interface TransactionFilters {
   month?: number;
   year?: number;
-  type?: "income" | "expense";
+  type?: "receita" | "despesa";
   category?: string;
 }
 
