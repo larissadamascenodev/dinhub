@@ -19,12 +19,14 @@ import { supabase } from "@/integrations/supabase/client";
 
 const Configuracoes = () => {
   const { user } = useAuth();
-  const { profile, updateDisplayName } = useProfile();
+  const { profile, updateDisplayName, uploadAvatar } = useProfile();
   const navigate = useNavigate();
+  const fileInputRef = useRef<HTMLInputElement>(null);
 
   const [editing, setEditing] = useState(false);
   const [editName, setEditName] = useState("");
   const [activeTab, setActiveTab] = useState<"conta" | "config">("conta");
+  const [uploadingAvatar, setUploadingAvatar] = useState(false);
 
   const displayName = profile?.display_name || user?.email?.split("@")[0] || "Usuário";
   const email = user?.email ?? "";
