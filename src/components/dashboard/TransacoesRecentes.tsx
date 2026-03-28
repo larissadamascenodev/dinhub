@@ -32,24 +32,25 @@ const formatDate = () => {
 };
 
 const NotificationCard = ({ tx }: { tx: Transaction }) => {
-  const isReceita = tx.type === "receita";
-  const cfg = CATEGORY_CONFIG[tx.category] || { icon: Wallet, color: "#6b7280" };
-  const Icon = cfg.icon;
+  const cfg = TYPE_CONFIG[tx.type];
+  const Icon = cfg.Icon;
+  const a = cfg.accent;
 
   return (
     <div
-      className="flex items-center gap-3 px-4 py-3 rounded-2xl border border-border/20"
+      className="flex items-center gap-3 px-4 py-3 rounded-2xl"
       style={{
-        background: "linear-gradient(145deg, hsl(220 18% 9% / 0.85) 0%, hsl(220 20% 5% / 0.9) 100%)",
-        boxShadow: "0 2px 8px -2px rgba(0,0,0,0.3), inset 0 1px 0 0 rgba(255,255,255,0.03)",
+        background: `linear-gradient(135deg, hsl(${a} / 0.03) 0%, hsl(220 20% 6% / 0.85) 100%)`,
+        border: `1px solid hsl(${a} / 0.1)`,
+        boxShadow: "0 2px 8px -2px rgba(0,0,0,0.3), inset 0 1px 0 0 rgba(255,255,255,0.02)",
       }}
     >
-      {/* Category icon */}
+      {/* Icon */}
       <div
         className="w-10 h-10 rounded-xl flex items-center justify-center flex-shrink-0"
-        style={{ background: `${cfg.color}20`, border: `1px solid ${cfg.color}30` }}
+        style={{ background: `hsl(${a} / 0.08)`, border: `1px solid hsl(${a} / 0.12)` }}
       >
-        <Icon className="w-5 h-5" style={{ color: cfg.color }} />
+        <Icon className={`w-5 h-5 ${cfg.textClass}`} />
       </div>
 
       {/* Name + category + date */}
@@ -58,18 +59,18 @@ const NotificationCard = ({ tx }: { tx: Transaction }) => {
           {tx.name}
         </p>
         <p className="text-[11px] text-muted-foreground/50 mt-0.5">
-          {tx.category} {formatDate()}
+          {tx.category} · {formatDate()}
         </p>
       </div>
 
       {/* Value + type */}
       <div className="text-right flex-shrink-0">
-        <p className={`text-[14px] font-bold tabular-nums tracking-tight ${isReceita ? "text-primary" : "text-destructive"}`}>
-          {isReceita ? "+" : "-"}{fmt(tx.amount)}
+        <p className={`text-[14px] font-bold tabular-nums tracking-tight ${cfg.textClass}`}>
+          {tx.type === "receita" ? "+" : "-"}{fmt(tx.amount)}
         </p>
-        <p className="text-[9px] font-medium mt-0.5 text-muted-foreground/40">
-          {isReceita ? "Receita" : "Despesa"}
-        </p>
+        <span className={`text-[9px] font-semibold uppercase tracking-wider ${cfg.textClass} opacity-70`}>
+          {tx.type === "receita" ? "Receita" : "Despesa"}
+        </span>
       </div>
     </div>
   );
