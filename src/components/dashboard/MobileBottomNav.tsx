@@ -43,45 +43,54 @@ const MobileBottomNav = memo(() => {
       {/* Floating action options */}
       <AnimatePresence>
         {isOpen && (
-          <div className="fixed bottom-[90px] left-0 right-0 z-50 flex justify-center md:hidden">
+          <div className="fixed bottom-[76px] left-0 right-0 z-50 flex justify-center md:hidden">
             <motion.div
-              initial={{ opacity: 0, y: 16, scale: 0.9 }}
-              animate={{ opacity: 1, y: 0, scale: 1 }}
-              exit={{ opacity: 0, y: 16, scale: 0.9 }}
-              transition={{ type: "spring", stiffness: 350, damping: 25 }}
-              className="flex gap-3"
+              initial={{ opacity: 0, y: 12 }}
+              animate={{ opacity: 1, y: 0 }}
+              exit={{ opacity: 0, y: 12 }}
+              transition={{ duration: 0.15 }}
+              className="w-[260px] rounded-2xl bg-card/95 backdrop-blur-2xl border border-border/15 shadow-2xl shadow-black/40 overflow-hidden"
             >
               <motion.button
-                whileTap={{ scale: 0.9 }}
+                whileTap={{ scale: 0.97 }}
                 onClick={() => handleOption("receita")}
-                className="flex flex-col items-center gap-2 w-[76px] py-3.5 rounded-2xl bg-primary/10 backdrop-blur-xl border border-primary/25 shadow-xl shadow-primary/10 hover:bg-primary/15 transition-all"
+                className="flex items-center gap-3 w-full px-4 py-3 hover:bg-primary/8 transition-colors"
               >
-                <div className="w-11 h-11 rounded-xl bg-primary/15 flex items-center justify-center shadow-[0_0_14px_hsl(150_100%_45%/0.2)]">
-                  <TrendingUp className="w-5 h-5 text-primary" />
+                <div className="w-9 h-9 rounded-xl bg-primary/15 flex items-center justify-center">
+                  <TrendingUp className="w-4 h-4 text-primary" />
                 </div>
-                <span className="text-[10px] font-bold text-primary">Receita</span>
+                <div className="text-left">
+                  <span className="text-xs font-semibold text-foreground">Receita</span>
+                  <p className="text-[9px] text-muted-foreground">Adicionar ganho</p>
+                </div>
               </motion.button>
-
+              <div className="h-px bg-border/10 mx-4" />
               <motion.button
-                whileTap={{ scale: 0.9 }}
+                whileTap={{ scale: 0.97 }}
                 onClick={() => handleOption("despesa")}
-                className="flex flex-col items-center gap-2 w-[76px] py-3.5 rounded-2xl bg-destructive/10 backdrop-blur-xl border border-destructive/25 shadow-xl shadow-destructive/10 hover:bg-destructive/15 transition-all"
+                className="flex items-center gap-3 w-full px-4 py-3 hover:bg-destructive/8 transition-colors"
               >
-                <div className="w-11 h-11 rounded-xl bg-destructive/15 flex items-center justify-center shadow-[0_0_14px_hsl(0_84%_60%/0.2)]">
-                  <TrendingDown className="w-5 h-5 text-destructive" />
+                <div className="w-9 h-9 rounded-xl bg-destructive/15 flex items-center justify-center">
+                  <TrendingDown className="w-4 h-4 text-destructive" />
                 </div>
-                <span className="text-[10px] font-bold text-destructive">Despesa</span>
+                <div className="text-left">
+                  <span className="text-xs font-semibold text-foreground">Despesa</span>
+                  <p className="text-[9px] text-muted-foreground">Adicionar gasto</p>
+                </div>
               </motion.button>
-
+              <div className="h-px bg-border/10 mx-4" />
               <motion.button
-                whileTap={{ scale: 0.9 }}
+                whileTap={{ scale: 0.97 }}
                 onClick={() => handleOption("scanner")}
-                className="flex flex-col items-center gap-2 w-[76px] py-3.5 rounded-2xl bg-blue-500/10 backdrop-blur-xl border border-blue-500/25 shadow-xl shadow-blue-500/10 hover:bg-blue-500/15 transition-all"
+                className="flex items-center gap-3 w-full px-4 py-3 hover:bg-blue-500/8 transition-colors"
               >
-                <div className="w-11 h-11 rounded-xl bg-blue-500/15 flex items-center justify-center shadow-[0_0_14px_hsl(217_91%_60%/0.2)]">
-                  <Camera className="w-5 h-5 text-blue-400" />
+                <div className="w-9 h-9 rounded-xl bg-blue-500/15 flex items-center justify-center">
+                  <Camera className="w-4 h-4 text-blue-400" />
                 </div>
-                <span className="text-[10px] font-bold text-blue-400">Scanner</span>
+                <div className="text-left">
+                  <span className="text-xs font-semibold text-foreground">Scanner</span>
+                  <p className="text-[9px] text-muted-foreground">Foto ou arquivo</p>
+                </div>
               </motion.button>
             </motion.div>
           </div>
