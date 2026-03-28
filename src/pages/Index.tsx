@@ -9,15 +9,17 @@ import MicroInteracoesCard from "@/components/dashboard/MicroInteracoesCard";
 import TransacoesRecentes from "@/components/dashboard/TransacoesRecentes";
 import ProximosEventos from "@/components/dashboard/ProximosEventos";
 import MonthSelector from "@/components/dashboard/MonthSelector";
+import NovaTransacaoModal from "@/components/dashboard/NovaTransacaoModal";
 import { useAuth } from "@/contexts/AuthContext";
 import { useFinanceData } from "@/hooks/useFinanceData";
 
 const Index = () => {
   const [selectedMonth, setSelectedMonth] = useState(new Date().getMonth());
   const [selectedYear, setSelectedYear] = useState(new Date().getFullYear());
+  const [showModal, setShowModal] = useState(false);
   const { user } = useAuth();
-  const { data, loading } = useFinanceData(selectedMonth, selectedYear);
-  const handleNovaTransacao = useCallback(() => {}, []);
+  const { data, loading, refetch } = useFinanceData(selectedMonth, selectedYear);
+  const handleNovaTransacao = useCallback(() => setShowModal(true), []);
   const { greeting, dateStr } = useGreeting();
   const userName = user?.email?.split("@")[0] ?? "Usuário";
 
