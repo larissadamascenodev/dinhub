@@ -26,6 +26,22 @@ const Auth = () => {
 
   if (user) return <Navigate to="/" replace />;
 
+  const handleForgotPassword = async () => {
+    if (!email.trim()) {
+      toast.error("Digite seu email primeiro");
+      return;
+    }
+    try {
+      const { error } = await supabase.auth.resetPasswordForEmail(email, {
+        redirectTo: `${window.location.origin}/reset-password`,
+      });
+      if (error) throw error;
+      toast.success("Email de recuperação enviado! Verifique sua caixa de entrada.");
+    } catch (error: any) {
+      toast.error(error.message || "Erro ao enviar email de recuperação");
+    }
+  };
+
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
 
@@ -115,6 +131,18 @@ const Auth = () => {
               </button>
             </div>
           </div>
+
+          {isLogin && (
+            <div className="text-right">
+              <button
+                type="button"
+                onClick={handleForgotPassword}
+                className="text-xs text-primary hover:underline"
+              >
+                Esqueci minha senha
+              </button>
+            </div>
+          )}
 
           <Button
             type="submit"
