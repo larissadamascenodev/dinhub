@@ -45,10 +45,7 @@ const ProximosEventos = memo(({ events, selectedMonth, selectedYear, onVerTodos 
 
   return (
     <div
-      className="rounded-2xl border border-border/10 shadow-[0_4px_12px_-4px_rgba(0,0,0,0.5)] backdrop-blur-sm overflow-hidden"
-      style={{
-        background: "linear-gradient(160deg, hsl(220 15% 14% / 0.6) 0%, hsl(220 18% 8% / 0.75) 50%, hsl(220 20% 4% / 0.9) 100%)",
-      }}
+      className="rounded-2xl bg-card/90 backdrop-blur-xl border border-border/30 shadow-2xl shadow-black/40 overflow-hidden"
     >
       {/* Header */}
       <div className="flex items-center justify-between px-5 pt-5 pb-3">
