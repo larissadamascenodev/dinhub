@@ -15,8 +15,8 @@ const ReceitasDespesasCards = memo(({ receitas, despesas, mobile }: Props) => (
     <button
       className={`relative rounded-xl border border-primary/15 hover:border-primary/30 transition-all text-left overflow-hidden ${mobile ? "p-3" : "p-4"}`}
       style={{
-        background: "linear-gradient(145deg, hsl(220 18% 9% / 0.9) 0%, hsl(220 20% 5% / 0.95) 100%)",
-        boxShadow: "0 2px 8px -2px rgba(0,0,0,0.4), inset 0 1px 0 0 rgba(255,255,255,0.03)",
+        background: "linear-gradient(180deg, hsl(150 100% 45% / 0.06) 0%, hsl(220 20% 5% / 0.95) 40%, hsl(220 20% 5% / 0.98) 100%)",
+        boxShadow: "0 2px 8px -2px rgba(0,0,0,0.4), inset 0 1px 0 0 hsl(150 100% 45% / 0.08)",
       }}
     >
       <div className="flex items-center gap-1 mb-0.5">
@@ -34,8 +34,8 @@ const ReceitasDespesasCards = memo(({ receitas, despesas, mobile }: Props) => (
     <button
       className={`relative rounded-xl border border-destructive/15 hover:border-destructive/30 transition-all text-left overflow-hidden ${mobile ? "p-3" : "p-4"}`}
       style={{
-        background: "linear-gradient(145deg, hsl(220 18% 9% / 0.9) 0%, hsl(220 20% 5% / 0.95) 100%)",
-        boxShadow: "0 2px 8px -2px rgba(0,0,0,0.4), inset 0 1px 0 0 rgba(255,255,255,0.03)",
+        background: "linear-gradient(180deg, hsl(0 60% 50% / 0.06) 0%, hsl(220 20% 5% / 0.95) 40%, hsl(220 20% 5% / 0.98) 100%)",
+        boxShadow: "0 2px 8px -2px rgba(0,0,0,0.4), inset 0 1px 0 0 hsl(0 60% 50% / 0.08)",
       }}
     >
       <div className="flex items-center gap-1 mb-0.5">
