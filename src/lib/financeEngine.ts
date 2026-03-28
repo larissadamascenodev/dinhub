@@ -242,6 +242,42 @@ export async function getFinancialSummary(
 }
 
 /**
+ * Daily behavior analysis
+ * Returns today's spending, daily average, and a behavioral status
+ */
+export interface DailyBehavior {
+  today_spent: number;
+  average: number;
+  status: "controlled" | "normal" | "above_average";
+}
+
+export function computeDailyBehavior(
+  todaySpent: number,
+  dailyAverage: number
+): DailyBehavior {
+  let status: DailyBehavior["status"];
+
+  if (dailyAverage === 0) {
+    status = todaySpent === 0 ? "controlled" : "above_average";
+  } else {
+    const ratio = todaySpent / dailyAverage;
+    if (ratio > 1.15) {
+      status = "above_average";
+    } else if (ratio >= 0.85) {
+      status = "normal";
+    } else {
+      status = "controlled";
+    }
+  }
+
+  return {
+    today_spent: todaySpent,
+    average: dailyAverage,
+    status,
+  };
+}
+
+/**
  * Get summary for a past month (simplified)
  */
 export async function getMonthHistory(month: number, year: number) {
