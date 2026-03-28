@@ -1,5 +1,5 @@
 import { memo, useState } from "react";
-import { Home, ArrowLeftRight, Wallet, MoreHorizontal, Plus, X } from "lucide-react";
+import { Home, ArrowLeftRight, Wallet, User, Plus, X } from "lucide-react";
 import { motion, AnimatePresence } from "framer-motion";
 
 const navItems = [
@@ -7,7 +7,7 @@ const navItems = [
   { icon: ArrowLeftRight, label: "Transações", active: false },
   { icon: null, label: "", isCenter: true },
   { icon: Wallet, label: "Carteira", active: false },
-  { icon: MoreHorizontal, label: "Mais", active: false },
+  { icon: User, label: "Perfil", active: false },
 ];
 
 const MobileBottomNav = memo(() => {
@@ -30,8 +30,8 @@ const MobileBottomNav = memo(() => {
 
       {/* Bottom Nav Bar */}
       <div className="fixed bottom-0 left-0 right-0 z-50 flex justify-center px-8 pb-4 md:hidden">
-        <nav className="w-full max-w-[300px] rounded-2xl bg-card/90 backdrop-blur-xl border border-border/30 shadow-2xl shadow-black/40">
-          <div className="flex items-center justify-around h-[52px] px-1">
+        <nav className="w-full max-w-[340px] rounded-2xl bg-card/90 backdrop-blur-xl border border-border/30 shadow-2xl shadow-black/40">
+          <div className="flex items-center justify-around h-[58px] px-2">
             {navItems.map((item, idx) => {
               if (item.isCenter) {
                 return (
@@ -43,7 +43,7 @@ const MobileBottomNav = memo(() => {
                     <motion.div
                       whileTap={{ scale: 0.9 }}
                       animate={isOpen ? { rotate: 45 } : { rotate: 0 }}
-                      className="w-[42px] h-[42px] rounded-xl bg-primary shadow-lg shadow-primary/30 flex items-center justify-center"
+                      className="w-[44px] h-[44px] rounded-full bg-primary shadow-lg shadow-primary/30 flex items-center justify-center"
                     >
                       {isOpen ? (
                         <X className="w-5 h-5 text-primary-foreground" />
@@ -57,11 +57,11 @@ const MobileBottomNav = memo(() => {
 
               const Icon = item.icon!;
               return (
-                <button key={item.label} className="flex flex-col items-center gap-0 min-w-[40px]">
+                <button key={item.label} className="flex flex-col items-center gap-0.5 min-w-[44px]">
                   <motion.div whileTap={{ scale: 0.9 }}>
-                    <Icon className={`w-4 h-4 ${item.active ? "text-primary" : "text-muted-foreground/60"}`} />
+                    <Icon className={`w-5 h-5 ${item.active ? "text-primary" : "text-muted-foreground/60"}`} />
                   </motion.div>
-                  <span className={`text-[8px] font-medium ${item.active ? "text-primary" : "text-muted-foreground/50"}`}>
+                  <span className={`text-[9px] font-medium ${item.active ? "text-primary" : "text-muted-foreground/50"}`}>
                     {item.label}
                   </span>
                 </button>
