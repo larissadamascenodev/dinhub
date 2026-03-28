@@ -187,8 +187,7 @@ export async function getFinancialSummary(
   // Today's expenses
   const todayExpenses = transactions
     .filter(
-      (t) =>
-        (t.type === "expense" || t.type === "despesa") && t.date === todayStr
+      (t) => t.type === "despesa" && t.date === todayStr
     )
     .reduce((s, t) => s + Number(t.amount), 0);
 

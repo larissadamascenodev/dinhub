@@ -4,7 +4,7 @@ export interface Transaction {
   category: string;
   date: string;
   amount: number;
-  type: "receita" | "despesa" | "income" | "expense";
+  type: "receita" | "despesa";
 }
 
 export interface CategoryExpense {
