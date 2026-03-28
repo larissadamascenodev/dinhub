@@ -366,20 +366,20 @@ const Configuracoes = () => {
       </motion.div>
 
       {/* ═══ Tabs: Conta / Configurações ═══ */}
-      <div className="relative rounded-xl bg-card/90 backdrop-blur-xl border border-border/30 shadow-lg shadow-black/30 p-0.5 flex">
+      <div className="relative rounded-full bg-card/90 backdrop-blur-xl border border-border/30 shadow-lg shadow-black/30 p-1 flex">
         <motion.div
-          className="absolute top-0.5 bottom-0.5 rounded-lg bg-primary/20 border border-primary/30"
+          className="absolute top-1 bottom-1 rounded-full bg-primary/15 border border-primary/40 shadow-[0_0_8px_0_hsl(150_100%_45%/0.15)]"
           initial={false}
           animate={{
-            left: activeTab === "conta" ? "2px" : "50%",
-            width: "calc(50% - 2px)",
+            left: activeTab === "conta" ? "4px" : "50%",
+            width: "calc(50% - 4px)",
           }}
           transition={{ type: "spring", stiffness: 350, damping: 30 }}
         />
         <button
           onClick={() => setActiveTab("conta")}
           className={cn(
-            "relative z-10 flex-1 h-8 rounded-lg text-xs font-bold flex items-center justify-center gap-1.5 transition-colors duration-200",
+            "relative z-10 flex-1 h-8 rounded-full text-xs font-bold flex items-center justify-center gap-1.5 transition-colors duration-200",
             activeTab === "conta" ? "text-primary" : "text-muted-foreground hover:text-foreground"
           )}
         >
@@ -388,7 +388,7 @@ const Configuracoes = () => {
         <button
           onClick={() => setActiveTab("config")}
           className={cn(
-            "relative z-10 flex-1 h-8 rounded-lg text-xs font-bold flex items-center justify-center gap-1.5 transition-colors duration-200",
+            "relative z-10 flex-1 h-8 rounded-full text-xs font-bold flex items-center justify-center gap-1.5 transition-colors duration-200",
             activeTab === "config" ? "text-primary" : "text-muted-foreground hover:text-foreground"
           )}
         >
