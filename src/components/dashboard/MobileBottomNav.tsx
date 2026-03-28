@@ -57,11 +57,11 @@ const MobileBottomNav = memo(() => {
 
               const Icon = item.icon!;
               return (
-                <button key={item.label} className="flex flex-col items-center gap-0 min-w-[40px]">
+                <button key={item.label} className="flex flex-col items-center gap-0.5 min-w-[44px]">
                   <motion.div whileTap={{ scale: 0.9 }}>
-                    <Icon className={`w-4 h-4 ${item.active ? "text-primary" : "text-muted-foreground/60"}`} />
+                    <Icon className={`w-5 h-5 ${item.active ? "text-primary" : "text-muted-foreground/60"}`} />
                   </motion.div>
-                  <span className={`text-[8px] font-medium ${item.active ? "text-primary" : "text-muted-foreground/50"}`}>
+                  <span className={`text-[9px] font-medium ${item.active ? "text-primary" : "text-muted-foreground/50"}`}>
                     {item.label}
                   </span>
                 </button>
