@@ -1,5 +1,5 @@
 import { memo, useState } from "react";
-import { Wallet, ShoppingCart, Car, Heart, Tv, Bell, ChevronDown } from "lucide-react";
+import { ArrowUpRight, ArrowDownRight, Bell, ChevronDown } from "lucide-react";
 import { motion, AnimatePresence } from "framer-motion";
 import type { Transaction } from "@/types/finance";
 
@@ -8,12 +8,17 @@ interface Props {
   onVerTodas?: () => void;
 }
 
-const CATEGORY_CONFIG: Record<string, { icon: React.ElementType; color: string }> = {
-  Salário: { icon: Wallet, color: "#10b981" },
-  Alimentação: { icon: ShoppingCart, color: "#ef4444" },
-  Transporte: { icon: Car, color: "#3b82f6" },
-  Saúde: { icon: Heart, color: "#ec4899" },
-  Assinaturas: { icon: Tv, color: "#a855f7" },
+const TYPE_CONFIG = {
+  receita: {
+    Icon: ArrowUpRight,
+    accent: "150 100% 45%",       // primary green
+    textClass: "text-primary",
+  },
+  despesa: {
+    Icon: ArrowDownRight,
+    accent: "0 60% 50%",           // destructive red
+    textClass: "text-destructive",
+  },
 };
 
 const fmt = (v: number) =>
