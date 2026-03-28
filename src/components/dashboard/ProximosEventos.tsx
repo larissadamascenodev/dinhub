@@ -1,5 +1,5 @@
 import { memo } from "react";
-import { Calendar, ChevronRight, Check, Clock } from "lucide-react";
+import { ChevronRight, Check, Clock } from "lucide-react";
 import { motion } from "framer-motion";
 import type { FinanceEvent } from "@/types/finance";
 
@@ -46,19 +46,16 @@ const fmt = (v: number) =>
 
 const ProximosEventos = memo(({ events, onVerTodos }: Props) => (
   <div
-    className="rounded-xl border border-border/20 shadow-[0_2px_8px_-2px_rgba(0,0,0,0.4),inset_0_1px_0_0_rgba(255,255,255,0.03)] overflow-hidden"
+    className="rounded-xl border border-border/10 shadow-[0_4px_12px_-4px_rgba(0,0,0,0.5)] backdrop-blur-sm overflow-hidden"
     style={{
-      background: "linear-gradient(145deg, hsl(220 18% 9% / 0.9) 0%, hsl(220 20% 5% / 0.95) 100%)",
+      background: "linear-gradient(160deg, hsl(220 15% 14% / 0.6) 0%, hsl(220 18% 8% / 0.75) 50%, hsl(220 20% 4% / 0.9) 100%)",
     }}
   >
     {/* Header */}
     <div className="flex items-center justify-between px-4 pt-4 pb-2">
-      <div className="flex items-center gap-2">
-        <Calendar className="w-3.5 h-3.5 text-muted-foreground" />
-        <h3 className="text-[10px] font-semibold text-muted-foreground uppercase tracking-widest">
-          Próximos Eventos
-        </h3>
-      </div>
+      <h3 className="text-sm font-bold text-foreground">
+        Próximos Eventos
+      </h3>
       <button
         onClick={onVerTodos}
         className="text-[10px] text-muted-foreground hover:text-foreground transition-colors flex items-center gap-0.5"
@@ -85,11 +82,12 @@ const ProximosEventos = memo(({ events, onVerTodos }: Props) => (
       ))}
     </div>
 
-    {/* Event cards */}
-    <div className="px-4 pb-4 space-y-2.5">
+    {/* Timeline events */}
+    <div className="px-4 pb-4">
       {events.map((ev, i) => {
         const cfg = STATUS_CONFIG[ev.status];
         const StatusIcon = cfg.Icon;
+        const isLast = i === events.length - 1;
 
         return (
           <motion.div
@@ -97,26 +95,26 @@ const ProximosEventos = memo(({ events, onVerTodos }: Props) => (
             initial={{ opacity: 0, y: 6 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ delay: i * 0.04 }}
-            className="flex items-center gap-3"
+            className="flex gap-3"
           >
-            {/* Timeline dot */}
-            <div className="flex flex-col items-center self-stretch">
-              <div className={`w-3 h-3 rounded-full ${cfg.dotColor} ring-2 ring-background flex-shrink-0 mt-4`} />
-              {i < events.length - 1 && <div className="w-px flex-1 bg-border/40 mt-1" />}
+            {/* Timeline line + dot */}
+            <div className="flex flex-col items-center">
+              <div className={`w-3 h-3 rounded-full ${cfg.dotColor} ring-2 ring-background flex-shrink-0 mt-5`} />
+              {!isLast && <div className="w-px flex-1 bg-primary/20 mt-1" />}
             </div>
 
             {/* Card */}
-            <div
-              className="flex-1 rounded-2xl border border-border/20 px-4 py-3 flex items-center justify-between"
-              style={{
-                background: "linear-gradient(145deg, hsl(220 18% 9% / 0.85) 0%, hsl(220 20% 5% / 0.9) 100%)",
-                boxShadow: "0 2px 8px -2px rgba(0,0,0,0.3), inset 0 1px 0 0 rgba(255,255,255,0.03)",
-              }}
-            >
-              {/* Left: date, name, badge */}
-              <div className="min-w-0">
-                <p className="text-[11px] text-muted-foreground/50 mb-0.5">{ev.date}</p>
-                <div className="flex items-center gap-2">
+            <div className="flex-1 pb-2.5">
+              <p className="text-[11px] text-muted-foreground/50 mb-1 mt-1">{ev.date}</p>
+              <div
+                className="rounded-2xl border border-border/15 px-4 py-3 flex items-center justify-between"
+                style={{
+                  background: "linear-gradient(160deg, hsl(220 15% 14% / 0.6) 0%, hsl(220 18% 8% / 0.75) 50%, hsl(220 20% 4% / 0.9) 100%)",
+                  boxShadow: "0 2px 8px -2px rgba(0,0,0,0.3), inset 0 1px 0 0 rgba(255,255,255,0.03)",
+                }}
+              >
+                {/* Left: name + badge */}
+                <div className="flex items-center gap-2 min-w-0">
                   <p className="text-sm font-bold text-foreground truncate">{ev.name}</p>
                   <span
                     className={`text-[10px] font-semibold px-2 py-0.5 rounded-full whitespace-nowrap border ${cfg.badgeBg} ${cfg.badgeText} ${cfg.badgeBorder}`}
@@ -124,13 +122,13 @@ const ProximosEventos = memo(({ events, onVerTodos }: Props) => (
                     {cfg.label}
                   </span>
                 </div>
-              </div>
 
-              {/* Right: amount + icon */}
-              <div className="flex items-center gap-2 shrink-0 ml-3">
-                <p className="text-sm font-bold text-foreground tabular-nums">{fmt(ev.amount)}</p>
-                <div className={`w-7 h-7 rounded-full flex items-center justify-center ${cfg.iconBg}`}>
-                  <StatusIcon className={`h-3.5 w-3.5 ${cfg.iconColor}`} />
+                {/* Right: amount + icon */}
+                <div className="flex items-center gap-2 shrink-0 ml-3">
+                  <p className="text-sm font-bold text-foreground tabular-nums">{fmt(ev.amount)}</p>
+                  <div className={`w-7 h-7 rounded-full flex items-center justify-center ${cfg.iconBg}`}>
+                    <StatusIcon className={`h-3.5 w-3.5 ${cfg.iconColor}`} />
+                  </div>
                 </div>
               </div>
             </div>
