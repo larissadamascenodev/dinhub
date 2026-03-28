@@ -107,7 +107,10 @@ const ProximosEventos = memo(({ events, selectedMonth, selectedYear, onVerTodos 
     <div className="rounded-2xl bg-card/90 backdrop-blur-xl border border-border/30 shadow-lg shadow-black/20 overflow-hidden">
       {/* Header */}
       <div className="flex items-center justify-between px-4 pt-4 pb-2">
-        <h2 className="text-base font-bold text-foreground italic">Próximos Eventos</h2>
+        <div className="flex items-center gap-2">
+          <CalendarDays className="w-4 h-4 text-primary" />
+          <h2 className="text-sm font-bold text-foreground">Próximos Eventos</h2>
+        </div>
         <button
           onClick={onVerTodos}
           className="flex items-center gap-0.5 text-[11px] text-primary font-semibold hover:opacity-80 transition-opacity"
