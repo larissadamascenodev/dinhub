@@ -125,6 +125,108 @@ export type Database = {
         }
         Relationships: []
       }
+      invoice_items: {
+        Row: {
+          amount: number
+          created_at: string
+          id: string
+          installment_number: number
+          invoice_id: string
+          total_installments: number
+          transaction_id: string
+        }
+        Insert: {
+          amount: number
+          created_at?: string
+          id?: string
+          installment_number?: number
+          invoice_id: string
+          total_installments?: number
+          transaction_id: string
+        }
+        Update: {
+          amount?: number
+          created_at?: string
+          id?: string
+          installment_number?: number
+          invoice_id?: string
+          total_installments?: number
+          transaction_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "invoice_items_invoice_id_fkey"
+            columns: ["invoice_id"]
+            isOneToOne: false
+            referencedRelation: "invoices"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "invoice_items_transaction_id_fkey"
+            columns: ["transaction_id"]
+            isOneToOne: false
+            referencedRelation: "transactions"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      invoices: {
+        Row: {
+          created_at: string
+          credit_card_id: string
+          id: string
+          is_paid: boolean
+          month: number
+          paid_at: string | null
+          paid_from_account_id: string | null
+          total_amount: number
+          updated_at: string
+          user_id: string
+          year: number
+        }
+        Insert: {
+          created_at?: string
+          credit_card_id: string
+          id?: string
+          is_paid?: boolean
+          month: number
+          paid_at?: string | null
+          paid_from_account_id?: string | null
+          total_amount?: number
+          updated_at?: string
+          user_id: string
+          year: number
+        }
+        Update: {
+          created_at?: string
+          credit_card_id?: string
+          id?: string
+          is_paid?: boolean
+          month?: number
+          paid_at?: string | null
+          paid_from_account_id?: string | null
+          total_amount?: number
+          updated_at?: string
+          user_id?: string
+          year?: number
+        }
+        Relationships: [
+          {
+            foreignKeyName: "invoices_credit_card_id_fkey"
+            columns: ["credit_card_id"]
+            isOneToOne: false
+            referencedRelation: "credit_cards"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "invoices_paid_from_account_id_fkey"
+            columns: ["paid_from_account_id"]
+            isOneToOne: false
+            referencedRelation: "accounts"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       transactions: {
         Row: {
           account_id: string | null
@@ -202,7 +304,26 @@ export type Database = {
       [_ in never]: never
     }
     Functions: {
-      [_ in never]: never
+      get_invoice_period: {
+        Args: { p_closing_day: number; p_purchase_date: string }
+        Returns: {
+          inv_month: number
+          inv_year: number
+        }[]
+      }
+      get_or_create_invoice: {
+        Args: {
+          p_credit_card_id: string
+          p_month: number
+          p_user_id: string
+          p_year: number
+        }
+        Returns: string
+      }
+      recalc_invoice_total: {
+        Args: { p_invoice_id: string }
+        Returns: undefined
+      }
     }
     Enums: {
       [_ in never]: never
