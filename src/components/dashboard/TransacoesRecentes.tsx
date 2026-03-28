@@ -102,6 +102,7 @@ const TransacoesRecentes = memo(({ transactions, onVerTodas }: Props) => (
       </div>
     )}
   </div>
+  </div>
 ));
 
 TransacoesRecentes.displayName = "TransacoesRecentes";
