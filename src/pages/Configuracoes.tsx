@@ -139,7 +139,7 @@ const Configuracoes = () => {
   );
 
   return (
-    <div className="pt-2 pb-8 space-y-6">
+    <div className="pt-1 pb-8 space-y-4">
       {/* ═══ Edit Profile Modal ═══ */}
       <Dialog open={editModalOpen} onOpenChange={setEditModalOpen}>
         <DialogContent className="bg-card border-border/30 rounded-2xl max-w-sm mx-auto p-0 overflow-hidden">
