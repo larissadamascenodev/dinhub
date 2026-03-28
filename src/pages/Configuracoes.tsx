@@ -4,6 +4,7 @@ import {
   User, Pencil, Star, Flame, Target, TrendingUp, Swords, Trophy,
   Shield, Crown, Upload, FileText, Smartphone, MessageCircle, Trash2, LogOut,
   Bell, Globe, HelpCircle, Headphones, FileCheck, ChevronRight, Wallet, Settings, Camera,
+  MessageSquare, Sparkles, Briefcase,
 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -29,6 +30,7 @@ const Configuracoes = () => {
   const [activeTab, setActiveTab] = useState<"conta" | "config">("conta");
   const [uploadingAvatar, setUploadingAvatar] = useState(false);
   const [previewUrl, setPreviewUrl] = useState<string | null>(null);
+  const [botPersonality, setBotPersonality] = useState<"casual" | "assessor">("casual");
 
   const displayName = profile?.display_name || user?.email?.split("@")[0] || "Usuário";
   const email = user?.email ?? "";
@@ -370,6 +372,62 @@ const Configuracoes = () => {
           animate={{ opacity: 1, x: 0 }}
           className="space-y-5"
         >
+          {/* Personalidade do Fin */}
+          <div>
+            <div className="flex items-center gap-2 mb-2 px-1">
+              <MessageSquare className="w-3.5 h-3.5 text-muted-foreground" />
+              <p className="text-[10px] font-bold text-muted-foreground uppercase tracking-widest">Personalidade do Fin</p>
+            </div>
+            <p className="text-xs text-muted-foreground mb-3 px-1">Como o Fin responde no app</p>
+            <div className="grid grid-cols-2 gap-3">
+              {/* Casual */}
+              <button
+                onClick={() => setBotPersonality("casual")}
+                className={cn(
+                  "relative overflow-hidden rounded-2xl border p-4 text-left transition-all",
+                  botPersonality === "casual"
+                    ? "border-primary/40 bg-primary/[0.08]"
+                    : "border-border/20 bg-card/60 hover:border-border/40"
+                )}
+              >
+                <div className="flex items-center justify-between mb-2">
+                  <div className="flex items-center gap-1.5">
+                    <Sparkles className="w-4 h-4 text-primary" />
+                    <span className="text-sm font-bold text-foreground">Casual</span>
+                  </div>
+                  {botPersonality === "casual" && (
+                    <span className="text-[9px] font-bold text-primary bg-primary/15 px-2 py-0.5 rounded-full">ATIVO</span>
+                  )}
+                </div>
+                <p className="text-[11px] text-muted-foreground leading-relaxed">Irônico, descontraído, zoeiro com carinho</p>
+                <p className="text-[10px] text-muted-foreground/60 mt-2 italic">"Mais Uber? Tá formando parceria! 😅 Anotei R$45"</p>
+              </button>
+
+              {/* Assessor */}
+              <button
+                onClick={() => setBotPersonality("assessor")}
+                className={cn(
+                  "relative overflow-hidden rounded-2xl border p-4 text-left transition-all",
+                  botPersonality === "assessor"
+                    ? "border-primary/40 bg-primary/[0.08]"
+                    : "border-border/20 bg-card/60 hover:border-border/40"
+                )}
+              >
+                <div className="flex items-center justify-between mb-2">
+                  <div className="flex items-center gap-1.5">
+                    <Briefcase className="w-4 h-4 text-primary" />
+                    <span className="text-sm font-bold text-foreground">Assessor</span>
+                  </div>
+                  {botPersonality === "assessor" && (
+                    <span className="text-[9px] font-bold text-primary bg-primary/15 px-2 py-0.5 rounded-full">ATIVO</span>
+                  )}
+                </div>
+                <p className="text-[11px] text-muted-foreground leading-relaxed">Sério, objetivo, tom de consultor financeiro</p>
+                <p className="text-[10px] text-muted-foreground/60 mt-2 italic">"Registrado: R$45,00 — Transporte. Saldo atualizado."</p>
+              </button>
+            </div>
+          </div>
+
           <SectionGroup title="Configurações" items={configItems} />
         </motion.div>
       )}
