@@ -158,7 +158,7 @@ const Index = () => {
             />
           )}
           <motion.div initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }} className="space-y-3">
-            <SaldoCard saldoAtual={saldoMes} saldoPrevisto={balanco} onNovaTransacao={handleNovaTransacao} mobile />
+            <SaldoCard saldoAtual={saldoMes} saldoPrevisto={balanco} mobile />
             <ReceitasDespesasCards receitas={receitas} despesas={despesas} mobile />
           </motion.div>
           <BalancoCard balanco={balanco} />
