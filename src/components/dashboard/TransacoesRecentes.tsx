@@ -28,11 +28,10 @@ const NotificationCard = ({ tx, index }: { tx: Transaction; index: number }) => 
 
   return (
     <div
-      className="flex items-center gap-3 px-4 py-3 rounded-2xl transition-all"
+      className="flex items-center gap-3 px-4 py-3 rounded-2xl transition-all border border-border/20"
       style={{
-        background: "hsl(220 16% 9% / 0.85)",
-        backdropFilter: "blur(12px)",
-        boxShadow: "0 2px 8px -2px rgba(0,0,0,0.3)",
+        background: "linear-gradient(145deg, hsl(220 18% 9% / 0.85) 0%, hsl(220 20% 5% / 0.9) 100%)",
+        boxShadow: "0 2px 8px -2px rgba(0,0,0,0.3), inset 0 1px 0 0 rgba(255,255,255,0.03)",
       }}
     >
       {/* Icon */}
