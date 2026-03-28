@@ -1,5 +1,5 @@
 import { memo, useState } from "react";
-import { Phone, Bell, ChevronDown } from "lucide-react";
+import { Wallet, ShoppingCart, Car, Heart, Tv, Bell, ChevronDown } from "lucide-react";
 import { motion, AnimatePresence } from "framer-motion";
 import type { Transaction } from "@/types/finance";
 
@@ -8,59 +8,77 @@ interface Props {
   onVerTodas?: () => void;
 }
 
+const CATEGORY_ICONS: Record<string, React.ElementType> = {
+  Salário: Wallet,
+  Alimentação: ShoppingCart,
+  Transporte: Car,
+  Saúde: Heart,
+  Assinaturas: Tv,
+};
+
 const fmt = (v: number) =>
   v.toLocaleString("pt-BR", { style: "currency", currency: "BRL" });
 
-function timeAgo(index: number): string {
-  const times = ["agora", "agora", "2 min", "15 min", "1h", "3h", "5h"];
-  return times[index] || `${index}h`;
-}
+const formatDate = () => {
+  const now = new Date();
+  const day = now.getDate();
+  const months = ["jan.", "fev.", "mar.", "abr.", "mai.", "jun.", "jul.", "ago.", "set.", "out.", "nov.", "dez."];
+  return `${day} de ${months[now.getMonth()]}`;
+};
 
-const NotificationCard = ({
-  tx,
-  index,
-}: {
-  tx: Transaction;
-  index: number;
-}) => {
+const NotificationCard = ({ tx }: { tx: Transaction }) => {
   const isReceita = tx.type === "receita";
+  const Icon = CATEGORY_ICONS[tx.category] || Wallet;
 
   return (
     <div
       className="flex items-center gap-3 rounded-2xl px-4 py-3"
       style={{
-        background: "linear-gradient(135deg, hsl(142 71% 45% / 0.12) 0%, hsl(var(--card)) 60%)",
-        border: "1px solid hsl(var(--border) / 0.15)",
+        background: "hsl(var(--card) / 0.85)",
+        border: "1px solid hsl(var(--border) / 0.12)",
+        backdropFilter: "blur(8px)",
       }}
     >
-      {/* Green circle icon */}
+      {/* Icon */}
       <div
-        className="w-10 h-10 rounded-full flex items-center justify-center flex-shrink-0"
+        className="w-10 h-10 rounded-xl flex items-center justify-center flex-shrink-0"
         style={{
-          background: "#22c55e",
-          boxShadow: "0 4px 14px rgba(34,197,94,0.35)",
+          background: "hsl(142 71% 45% / 0.15)",
+          border: "1px solid hsl(142 71% 45% / 0.2)",
         }}
       >
-        <Phone className="w-5 h-5 text-white" style={{ transform: "rotate(-30deg)" }} />
+        <Icon className="w-5 h-5" style={{ color: "hsl(142 71% 55%)" }} />
       </div>
 
-      {/* Content */}
+      {/* Name + date */}
       <div className="flex-1 min-w-0">
-        <p className="text-[13px] font-semibold text-foreground leading-tight">
+        <p className="text-[13px] font-semibold text-foreground leading-tight truncate">
           {tx.name}
         </p>
-        <p className="text-[11px] mt-0.5" style={{ color: isReceita ? "hsl(142 71% 55%)" : "hsl(0 72% 55%)" }}>
-          Valor: {fmt(tx.amount)}
+        <p className="text-[11px] text-muted-foreground/50 mt-0.5">
+          {tx.category} {formatDate()}
         </p>
-        <p className="text-[9px] text-muted-foreground/50 mt-0.5 font-medium">
+      </div>
+
+      {/* Value + label */}
+      <div className="text-right flex-shrink-0">
+        <p
+          className="text-[14px] font-bold tabular-nums tracking-tight"
+          style={{
+            color: isReceita ? "hsl(142 71% 55%)" : "hsl(0 72% 55%)",
+          }}
+        >
+          {isReceita ? "+" : "-"}{fmt(tx.amount)}
+        </p>
+        <p
+          className="text-[9px] font-medium mt-0.5"
+          style={{
+            color: isReceita ? "hsl(142 71% 55% / 0.6)" : "hsl(0 72% 55% / 0.6)",
+          }}
+        >
           {isReceita ? "Receita" : "Despesa"}
         </p>
       </div>
-
-      {/* Time */}
-      <span className="text-[11px] text-muted-foreground/40 flex-shrink-0 self-start mt-1">
-        {timeAgo(index)}
-      </span>
     </div>
   );
 };
@@ -95,12 +113,13 @@ const TransacoesRecentes = memo(({ transactions, onVerTodas }: Props) => {
         </div>
       </div>
 
-      {/* Stacked / Expanded */}
+      {/* Stack area */}
       <div
         className="relative cursor-pointer"
         onClick={() => setExpanded(!expanded)}
+        style={{ paddingBottom: !expanded && restTx.length > 0 ? `${Math.min(restTx.length, 3) * 8 + 12}px` : 0 }}
       >
-        {/* Background stack cards (iPhone notification style) */}
+        {/* Stacked background cards */}
         <AnimatePresence>
           {!expanded && restTx.length > 0 && (
             <>
@@ -115,10 +134,10 @@ const TransacoesRecentes = memo(({ transactions, onVerTodas }: Props) => {
                     top: `${(i + 1) * 8}px`,
                     transform: `scale(${1 - (i + 1) * 0.03})`,
                     zIndex: 3 - i,
-                    height: "64px",
-                    background: "linear-gradient(135deg, hsl(142 71% 45% / 0.08) 0%, hsl(var(--card)) 60%)",
-                    border: "1px solid hsl(var(--border) / 0.1)",
-                    filter: `brightness(${1 - (i + 1) * 0.06})`,
+                    height: "58px",
+                    background: `hsl(var(--card) / ${0.7 - i * 0.15})`,
+                    border: "1px solid hsl(var(--border) / 0.08)",
+                    backdropFilter: "blur(8px)",
                   }}
                 />
               ))}
@@ -128,12 +147,12 @@ const TransacoesRecentes = memo(({ transactions, onVerTodas }: Props) => {
 
         {/* Top card */}
         <motion.div layout className="relative z-10">
-          <NotificationCard tx={topTx} index={0} />
+          <NotificationCard tx={topTx} />
         </motion.div>
 
-        {/* Expand indicator */}
+        {/* Expand badge */}
         {!expanded && restTx.length > 0 && (
-          <div className="absolute -bottom-3 left-1/2 -translate-x-1/2 z-20 px-3 py-0.5 rounded-full bg-card border border-border/30 shadow-lg flex items-center gap-1">
+          <div className="absolute -bottom-1 left-1/2 -translate-x-1/2 z-20 px-3 py-0.5 rounded-full bg-card border border-border/20 shadow-lg flex items-center gap-1">
             <ChevronDown className="w-3 h-3 text-muted-foreground/50" />
             <span className="text-[9px] font-semibold text-muted-foreground">
               +{restTx.length}
@@ -161,7 +180,7 @@ const TransacoesRecentes = memo(({ transactions, onVerTodas }: Props) => {
                   exit={{ opacity: 0, y: -6 }}
                   transition={{ delay: index * 0.04 }}
                 >
-                  <NotificationCard tx={tx} index={index + 1} />
+                  <NotificationCard tx={tx} />
                 </motion.div>
               ))}
             </div>
