@@ -220,54 +220,45 @@ const ProximosEventos = memo(({ events, selectedMonth, selectedYear, onVerTodos 
 
                 {/* Card */}
                 <div
-                  className="flex-1 rounded-xl border px-3.5 py-3 cursor-pointer transition-all hover:scale-[1.01]"
+                  className="flex-1 rounded-xl border px-3.5 py-2.5 cursor-pointer transition-all hover:scale-[1.01]"
                   style={{
-                    background: "hsl(var(--card))",
+                    background: `hsl(${a} / 0.06)`,
                     borderColor: `hsl(${a} / 0.15)`,
                   }}
                 >
                   {/* Date label */}
-                  <p className="text-[10px] text-muted-foreground/40 font-medium mb-2">
+                  <p className="text-[9px] text-muted-foreground/35 font-medium mb-1.5">
                     {ev._day && ev._day < 10 ? `0${ev._day}` : ev._day} de {MONTH_SHORT[selectedMonth]}
                   </p>
 
                   {/* Content row */}
-                  <div className="flex items-center gap-3">
-                    {/* Status icon */}
+                  <div className="flex items-center gap-2.5">
+                    {/* Name */}
+                    <p className="flex-1 text-[13px] font-semibold text-foreground/90 truncate">{ev.name}</p>
+
+                    {/* Amount + status label */}
+                    <div className="flex flex-col items-end shrink-0">
+                      <p className="text-[13px] font-bold tabular-nums" style={{ color: `hsl(${a})` }}>
+                        {fmt(ev.amount)}
+                      </p>
+                      <span className="text-[8px] font-semibold uppercase mt-0.5" style={{ color: `hsl(${a} / 0.7)` }}>
+                        {cfg.label}
+                      </span>
+                    </div>
+
+                    {/* Status icon circle */}
                     <div
-                      className="w-7 h-7 rounded-full flex items-center justify-center shrink-0"
+                      className="w-6 h-6 rounded-full flex items-center justify-center shrink-0"
                       style={{
                         background: isPaidOrReceived ? `hsl(${a})` : "transparent",
-                        border: isPaidOrReceived ? "none" : `2px solid hsl(${a} / 0.4)`,
+                        border: isPaidOrReceived ? "none" : `1.5px solid hsl(${a} / 0.4)`,
                       }}
                     >
                       <StatusIcon
-                        className="w-3.5 h-3.5"
+                        className="w-3 h-3"
                         style={{ color: isPaidOrReceived ? "hsl(220 20% 4%)" : `hsl(${a})` }}
                       />
                     </div>
-
-                    {/* Name + tag */}
-                    <div className="flex-1 min-w-0">
-                      <div className="flex items-center gap-2">
-                        <p className="text-[14px] font-semibold text-foreground/90 truncate">{ev.name}</p>
-                        <span
-                          className="text-[9px] font-bold px-2 py-0.5 rounded shrink-0"
-                          style={{
-                            background: `hsl(${a} / 0.12)`,
-                            color: `hsl(${a})`,
-                            border: `1px solid hsl(${a} / 0.2)`,
-                          }}
-                        >
-                          {cfg.label}
-                        </span>
-                      </div>
-                    </div>
-
-                    {/* Amount */}
-                    <p className="text-[14px] font-bold tabular-nums shrink-0" style={{ color: `hsl(${a})` }}>
-                      {fmt(ev.amount)}
-                    </p>
                   </div>
                 </div>
               </motion.div>
