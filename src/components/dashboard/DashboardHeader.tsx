@@ -25,7 +25,8 @@ const NAV_ITEMS = [
 ];
 
 const DashboardHeader = memo(() => {
-
+  const { signOut, user } = useAuth();
+  const initials = user?.email?.substring(0, 2).toUpperCase() ?? "U";
   return (
     <>
       {/* Desktop Top Bar */}
