@@ -24,9 +24,12 @@ const NAV_ITEMS = [
   { label: "Perfil", icon: User, active: false },
 ];
 
-const DashboardHeader = memo(() => {
-  const { signOut, user } = useAuth();
-  const initials = user?.email?.substring(0, 2).toUpperCase() ?? "U";
+const DashboardHeader = memo(({ profile }: { profile?: { display_name: string | null } | null }) => {
+  const { user } = useAuth();
+  const initial = (profile?.display_name ?? user?.email ?? "U").charAt(0).toUpperCase();
+  const displayName = profile?.display_name || user?.email?.split("@")[0] || "Usuário";
+  const email = user?.email ?? "";
+  const plan = "Free";
   return (
     <>
       {/* Desktop Top Bar */}
