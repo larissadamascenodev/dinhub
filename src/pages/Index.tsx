@@ -58,7 +58,7 @@ const Index = () => {
   const balanco = receitas - despesas;
   const saldoMes = data.saldoAtual;
 
-  if (loading) {
+  if (loading && data.transactions.length === 0 && data.receitas === 0 && data.despesas === 0) {
     return (
       <div className="flex items-center justify-center py-20">
         <div className="animate-pulse text-primary text-lg">Carregando dados...</div>
