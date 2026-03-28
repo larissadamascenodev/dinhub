@@ -227,7 +227,7 @@ const Configuracoes = () => {
           </div>
 
           <div className="flex-1 min-w-0">
-            <h2 className="text-lg font-bold text-foreground truncate">{displayName}</h2>
+            <h2 className="text-base font-bold text-foreground truncate">{displayName}</h2>
             <p className="text-xs text-muted-foreground truncate">{email}</p>
             <div className="flex items-center gap-2 mt-1.5">
               <span className="text-[10px] font-bold bg-primary/15 text-primary px-2 py-0.5 rounded-full flex items-center gap-1">
