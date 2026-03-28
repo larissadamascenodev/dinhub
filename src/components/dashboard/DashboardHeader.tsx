@@ -91,7 +91,7 @@ const DashboardHeader = memo(() => {
         </div>
       </header>
 
-      {/* Greeting — rendered externally now */}
+      
     </>
   );
 });
