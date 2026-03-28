@@ -229,7 +229,7 @@ const Configuracoes = () => {
       </motion.div>
 
       {/* ═══ Tabs: Conta / Configurações ═══ */}
-      <div className="relative rounded-xl bg-card/60 border border-border/20 p-1 flex">
+      <div className="relative rounded-2xl bg-card/90 backdrop-blur-xl border border-border/30 shadow-2xl shadow-black/40 p-1 flex">
         <motion.div
           className="absolute top-1 bottom-1 rounded-lg bg-primary"
           initial={false}
