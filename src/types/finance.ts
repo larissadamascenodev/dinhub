@@ -4,7 +4,7 @@ export interface Transaction {
   category: string;
   date: string;
   amount: number;
-  type: "receita" | "despesa";
+  type: "receita" | "despesa" | "income" | "expense";
 }
 
 export interface CategoryExpense {
@@ -31,6 +31,12 @@ export interface DashboardData {
   balanco: number;
   gastosHoje: number;
   mediaGastosDiarios: number;
+  status: "safe" | "warning" | "danger";
+  projection: {
+    nextMonthBalance: number;
+    avgIncome3m: number;
+    avgExpense3m: number;
+  };
   transactions: Transaction[];
   categories: CategoryExpense[];
   events: FinanceEvent[];
@@ -44,25 +50,13 @@ export const SAMPLE_DATA: DashboardData = {
   balanco: 0,
   gastosHoje: 0,
   mediaGastosDiarios: 0,
-  transactions: [
-    { id: "1", name: "Salário", category: "Salário", date: "27 de mar.", amount: 5500, type: "receita" },
-    { id: "2", name: "Supermercado Extra", category: "Alimentação", date: "27 de mar.", amount: 342.5, type: "despesa" },
-    { id: "3", name: "Uber", category: "Transporte", date: "27 de mar.", amount: 28.9, type: "despesa" },
-    { id: "4", name: "Farmácia", category: "Saúde", date: "27 de mar.", amount: 89, type: "despesa" },
-    { id: "5", name: "Netflix", category: "Assinaturas", date: "27 de mar.", amount: 55.9, type: "despesa" },
-  ],
-  categories: [
-    { name: "Alimentação", amount: 1450, color: "hsl(0 84% 60%)", icon: "🍽️" },
-    { name: "Transporte", amount: 580, color: "hsl(25 95% 53%)", icon: "🚗" },
-    { name: "Saúde", amount: 320, color: "hsl(340 75% 55%)", icon: "❤️" },
-    { name: "Assinaturas", amount: 210, color: "hsl(270 60% 55%)", icon: "📦" },
-    { name: "Lazer", amount: 180, color: "hsl(210 90% 55%)", icon: "🎮" },
-  ],
-  events: [
-    { id: "1", name: "Aluguel", category: "Moradia", date: "24 de mar", amount: 1800, status: "pago" },
-    { id: "2", name: "Salário", category: "Renda", date: "25 de mar", amount: 5500, status: "recebido" },
-    { id: "3", name: "Netflix", category: "Assinaturas", date: "26 de mar", amount: 55.9, status: "atrasado" },
-    { id: "4", name: "Internet", category: "Serviços", date: "28 de mar", amount: 120, status: "pendente" },
-    { id: "5", name: "Fatura Nubank", category: "Cartão", date: "30 de mar", amount: 2340, status: "pendente" },
-  ],
+  status: "safe",
+  projection: {
+    nextMonthBalance: 0,
+    avgIncome3m: 0,
+    avgExpense3m: 0,
+  },
+  transactions: [],
+  categories: [],
+  events: [],
 };

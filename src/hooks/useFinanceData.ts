@@ -1,6 +1,7 @@
 import { useEffect, useState, useCallback } from "react";
 import { supabase } from "@/integrations/supabase/client";
 import { useAuth } from "@/contexts/AuthContext";
+import { getFinancialSummary } from "@/lib/financeEngine";
 import type { DashboardData, Transaction, FinanceEvent } from "@/types/finance";
 
 const EMPTY_DATA: DashboardData = {
@@ -11,9 +12,21 @@ const EMPTY_DATA: DashboardData = {
   balanco: 0,
   gastosHoje: 0,
   mediaGastosDiarios: 0,
+  status: "safe",
+  projection: { nextMonthBalance: 0, avgIncome3m: 0, avgExpense3m: 0 },
   transactions: [],
   categories: [],
   events: [],
+};
+
+const CAT_COLORS = [
+  "hsl(0 84% 60%)", "hsl(25 95% 53%)", "hsl(340 75% 55%)",
+  "hsl(270 60% 55%)", "hsl(210 90% 55%)", "hsl(45 90% 55%)",
+];
+
+const CAT_ICONS: Record<string, string> = {
+  Alimentação: "🍽️", Transporte: "🚗", Saúde: "❤️",
+  Assinaturas: "📦", Lazer: "🎮", Moradia: "🏠",
 };
 
 export function useFinanceData(selectedMonth: number, selectedYear: number) {
@@ -24,104 +37,70 @@ export function useFinanceData(selectedMonth: number, selectedYear: number) {
   const fetchData = useCallback(async () => {
     if (!user) return;
 
-    const startDate = new Date(selectedYear, selectedMonth, 1).toISOString().split("T")[0];
-    const endDate = new Date(selectedYear, selectedMonth + 1, 0).toISOString().split("T")[0];
-    const today = new Date().toISOString().split("T")[0];
+    try {
+      const { summary, transactions: rawTxs, events: rawEvents } =
+        await getFinancialSummary(selectedMonth, selectedYear);
 
-    const [txRes, evRes, accRes] = await Promise.all([
-      supabase
-        .from("transactions")
-        .select("*")
-        .gte("date", startDate)
-        .lte("date", endDate)
-        .order("date", { ascending: false }),
-      supabase
-        .from("finance_events")
-        .select("*")
-        .gte("date", startDate)
-        .lte("date", endDate)
-        .order("date", { ascending: true }),
-      supabase
-        .from("accounts")
-        .select("*")
-        .eq("is_default", true)
-        .limit(1),
-    ]);
+      // Map transactions for UI
+      const transactions: Transaction[] = rawTxs.map((t) => ({
+        id: t.id,
+        name: t.name,
+        category: t.category,
+        date: new Date(t.date).toLocaleDateString("pt-BR", {
+          day: "numeric",
+          month: "short",
+        }),
+        amount: Number(t.amount),
+        type: (t.type === "income" ? "receita" : t.type === "expense" ? "despesa" : t.type) as Transaction["type"],
+      }));
 
-    const transactions: Transaction[] = (txRes.data ?? []).map((t) => ({
-      id: t.id,
-      name: t.name,
-      category: t.category,
-      date: new Date(t.date).toLocaleDateString("pt-BR", { day: "numeric", month: "short" }),
-      amount: Number(t.amount),
-      type: t.type as "receita" | "despesa",
-    }));
+      // Map events for UI
+      const events: FinanceEvent[] = rawEvents.map((e) => ({
+        id: e.id,
+        name: e.name,
+        category: e.category,
+        date: new Date(e.date).toLocaleDateString("pt-BR", {
+          day: "numeric",
+          month: "short",
+        }),
+        amount: Number(e.amount),
+        status: e.status as FinanceEvent["status"],
+      }));
 
-    const events: FinanceEvent[] = (evRes.data ?? []).map((e) => ({
-      id: e.id,
-      name: e.name,
-      category: e.category,
-      date: new Date(e.date).toLocaleDateString("pt-BR", { day: "numeric", month: "short" }),
-      amount: Number(e.amount),
-      status: e.status as FinanceEvent["status"],
-    }));
+      // Group expenses by category
+      const catMap = new Map<string, number>();
+      rawTxs
+        .filter((t) => t.type === "expense" || t.type === "despesa")
+        .forEach((t) => {
+          catMap.set(t.category, (catMap.get(t.category) ?? 0) + Number(t.amount));
+        });
 
-    const receitas = (txRes.data ?? [])
-      .filter((t) => t.type === "receita")
-      .reduce((sum, t) => sum + Number(t.amount), 0);
+      const categories = Array.from(catMap.entries()).map(([name, amount], i) => ({
+        name,
+        amount,
+        color: CAT_COLORS[i % CAT_COLORS.length],
+        icon: CAT_ICONS[name] ?? "📋",
+      }));
 
-    const despesas = (txRes.data ?? [])
-      .filter((t) => t.type === "despesa")
-      .reduce((sum, t) => sum + Number(t.amount), 0);
-
-    const gastosHoje = (txRes.data ?? [])
-      .filter((t) => t.type === "despesa" && t.date === today)
-      .reduce((sum, t) => sum + Number(t.amount), 0);
-
-    const daysInMonth = new Date(selectedYear, selectedMonth + 1, 0).getDate();
-    const currentDay = Math.min(new Date().getDate(), daysInMonth);
-    const mediaGastosDiarios = currentDay > 0 ? despesas / currentDay : 0;
-
-    const balanco = receitas - despesas;
-    const saldoAtual = Number(accRes.data?.[0]?.current_balance ?? 0) + balanco;
-
-    // Group by category
-    const catMap = new Map<string, number>();
-    (txRes.data ?? [])
-      .filter((t) => t.type === "despesa")
-      .forEach((t) => {
-        catMap.set(t.category, (catMap.get(t.category) ?? 0) + Number(t.amount));
+      setData({
+        saldoAtual: summary.balance,
+        saldoPrevisto: summary.predictedBalance,
+        receitas: summary.income,
+        despesas: summary.expense,
+        balanco: summary.balance,
+        gastosHoje: summary.todayExpenses,
+        mediaGastosDiarios: summary.dailyAverageExpense,
+        status: summary.status,
+        projection: summary.projection,
+        transactions,
+        categories,
+        events,
       });
-
-    const catColors = [
-      "hsl(0 84% 60%)", "hsl(25 95% 53%)", "hsl(340 75% 55%)",
-      "hsl(270 60% 55%)", "hsl(210 90% 55%)", "hsl(45 90% 55%)",
-    ];
-    const catIcons: Record<string, string> = {
-      Alimentação: "🍽️", Transporte: "🚗", Saúde: "❤️",
-      Assinaturas: "📦", Lazer: "🎮", Moradia: "🏠",
-    };
-
-    const categories = Array.from(catMap.entries()).map(([name, amount], i) => ({
-      name,
-      amount,
-      color: catColors[i % catColors.length],
-      icon: catIcons[name] ?? "📋",
-    }));
-
-    setData({
-      saldoAtual,
-      saldoPrevisto: balanco,
-      receitas,
-      despesas,
-      balanco,
-      gastosHoje,
-      mediaGastosDiarios,
-      transactions,
-      categories,
-      events,
-    });
-    setLoading(false);
+    } catch (err) {
+      console.error("Finance engine error:", err);
+    } finally {
+      setLoading(false);
+    }
   }, [user, selectedMonth, selectedYear]);
 
   useEffect(() => {
