@@ -14,6 +14,7 @@ const ReceitasDespesasCards = memo(({ receitas, despesas, mobile }: Props) => (
     <button
       className={`rounded-xl border border-border/20 hover:border-primary/20 transition-all text-left shadow-[0_2px_8px_-2px_rgba(0,0,0,0.4),inset_0_1px_0_0_rgba(255,255,255,0.03)] ${mobile ? "p-3" : "p-4"}`}
       style={{ background: "linear-gradient(145deg, hsl(220 18% 9% / 0.9) 0%, hsl(220 20% 5% / 0.95) 100%)" }}
+    >
       <div className="flex items-center gap-1 mb-0.5">
         <ArrowUpRight className={`${mobile ? "w-3 h-3" : "w-3.5 h-3.5"} text-primary`} />
         <span className="text-[9px] text-muted-foreground uppercase tracking-wider font-semibold">Receitas</span>
