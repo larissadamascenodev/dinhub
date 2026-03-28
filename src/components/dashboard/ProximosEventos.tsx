@@ -1,10 +1,12 @@
-import { memo, useMemo, useState, useRef } from "react";
+import { memo, useMemo, useState } from "react";
 import { ChevronRight, Check, Clock, AlertTriangle, Calendar } from "lucide-react";
 import { motion } from "framer-motion";
 import type { FinanceEvent } from "@/types/finance";
 
 interface Props {
   events: FinanceEvent[];
+  selectedMonth: number;
+  selectedYear: number;
   onVerTodos?: () => void;
 }
 
