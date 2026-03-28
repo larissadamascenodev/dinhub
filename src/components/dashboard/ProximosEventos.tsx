@@ -233,20 +233,7 @@ const ProximosEventos = memo(({ events, selectedMonth, selectedYear, onVerTodos 
 
                   {/* Content row */}
                   <div className="flex items-center gap-2.5">
-                    {/* Name */}
-                    <p className="flex-1 text-[13px] font-semibold text-foreground/90 truncate">{ev.name}</p>
-
-                    {/* Amount + status label */}
-                    <div className="flex flex-col items-end shrink-0">
-                      <p className="text-[13px] font-bold tabular-nums" style={{ color: `hsl(${a})` }}>
-                        {fmt(ev.amount)}
-                      </p>
-                      <span className="text-[8px] font-semibold uppercase mt-0.5" style={{ color: `hsl(${a} / 0.7)` }}>
-                        {cfg.label}
-                      </span>
-                    </div>
-
-                    {/* Status icon circle */}
+                    {/* Status icon before name */}
                     <div
                       className="w-6 h-6 rounded-full flex items-center justify-center shrink-0"
                       style={{
@@ -258,6 +245,19 @@ const ProximosEventos = memo(({ events, selectedMonth, selectedYear, onVerTodos 
                         className="w-3 h-3"
                         style={{ color: isPaidOrReceived ? "hsl(220 20% 4%)" : `hsl(${a})` }}
                       />
+                    </div>
+
+                    {/* Name */}
+                    <p className="flex-1 text-[13px] font-semibold text-foreground/90 truncate">{ev.name}</p>
+
+                    {/* Amount + status label */}
+                    <div className="flex flex-col items-end shrink-0">
+                      <p className="text-[13px] font-bold tabular-nums" style={{ color: `hsl(${a})` }}>
+                        {fmt(ev.amount)}
+                      </p>
+                      <span className="text-[8px] font-semibold uppercase mt-0.5" style={{ color: `hsl(${a} / 0.7)` }}>
+                        {cfg.label}
+                      </span>
                     </div>
                   </div>
                 </div>
