@@ -26,28 +26,32 @@ const formatDate = () => {
   return `${day} de ${months[now.getMonth()]}`;
 };
 
+/* ── Shared card style matching SaldoCard, BalancoCard, etc. ── */
+const CARD_STYLE = {
+  background: "linear-gradient(135deg, hsl(var(--primary) / 0.06) 0%, transparent 60%)",
+  border: undefined as undefined,
+};
+const CARD_CLASS =
+  "rounded-xl border border-border/20 bg-card shadow-[0_2px_8px_-2px_rgba(0,0,0,0.4),inset_0_1px_0_0_rgba(255,255,255,0.06)]";
+
 const NotificationCard = ({ tx }: { tx: Transaction }) => {
   const isReceita = tx.type === "receita";
   const Icon = CATEGORY_ICONS[tx.category] || Wallet;
 
   return (
     <div
-      className="flex items-center gap-3 rounded-2xl px-4 py-3"
-      style={{
-        background: "hsl(var(--card) / 0.85)",
-        border: "1px solid hsl(var(--border) / 0.12)",
-        backdropFilter: "blur(8px)",
-      }}
+      className={`${CARD_CLASS} flex items-center gap-3 px-4 py-3`}
+      style={{ background: CARD_STYLE.background }}
     >
       {/* Icon */}
       <div
         className="w-10 h-10 rounded-xl flex items-center justify-center flex-shrink-0"
         style={{
-          background: "hsl(142 71% 45% / 0.15)",
-          border: "1px solid hsl(142 71% 45% / 0.2)",
+          background: "hsl(var(--primary) / 0.12)",
+          border: "1px solid hsl(var(--primary) / 0.18)",
         }}
       >
-        <Icon className="w-5 h-5" style={{ color: "hsl(142 71% 55%)" }} />
+        <Icon className="w-5 h-5 text-primary" />
       </div>
 
       {/* Name + date */}
@@ -91,7 +95,7 @@ const TransacoesRecentes = memo(({ transactions, onVerTodas }: Props) => {
 
   if (transactions.length === 0) {
     return (
-      <div className="rounded-2xl border border-border/20 bg-card p-6 text-center">
+      <div className={`${CARD_CLASS} p-6 text-center`} style={{ background: CARD_STYLE.background }}>
         <Bell className="w-6 h-6 text-muted-foreground/20 mx-auto mb-2" />
         <p className="text-xs text-muted-foreground/50">Nenhuma transação ainda</p>
       </div>
@@ -129,15 +133,14 @@ const TransacoesRecentes = memo(({ transactions, onVerTodas }: Props) => {
                   initial={{ opacity: 0 }}
                   animate={{ opacity: 1 }}
                   exit={{ opacity: 0, scale: 0.95 }}
-                  className="absolute left-0 right-0 rounded-2xl"
+                  className={`absolute left-0 right-0 ${CARD_CLASS}`}
                   style={{
                     top: `${(i + 1) * 8}px`,
                     transform: `scale(${1 - (i + 1) * 0.03})`,
                     zIndex: 3 - i,
                     height: "58px",
-                    background: `hsl(var(--card) / ${0.7 - i * 0.15})`,
-                    border: "1px solid hsl(var(--border) / 0.08)",
-                    backdropFilter: "blur(8px)",
+                    background: CARD_STYLE.background,
+                    filter: `brightness(${1 - (i + 1) * 0.06})`,
                   }}
                 />
               ))}
@@ -152,7 +155,7 @@ const TransacoesRecentes = memo(({ transactions, onVerTodas }: Props) => {
 
         {/* Expand badge */}
         {!expanded && restTx.length > 0 && (
-          <div className="absolute -bottom-1 left-1/2 -translate-x-1/2 z-20 px-3 py-0.5 rounded-full bg-card border border-border/20 shadow-lg flex items-center gap-1">
+          <div className={`absolute -bottom-1 left-1/2 -translate-x-1/2 z-20 px-3 py-0.5 rounded-full ${CARD_CLASS} flex items-center gap-1`}>
             <ChevronDown className="w-3 h-3 text-muted-foreground/50" />
             <span className="text-[9px] font-semibold text-muted-foreground">
               +{restTx.length}
