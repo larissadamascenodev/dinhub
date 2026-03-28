@@ -71,7 +71,7 @@ const ProximosEventos = memo(({ events, selectedMonth, selectedYear, onVerTodos 
   const today = new Date();
 
   const dayStatusMap = useMemo(() => {
-    const map = new Map<number, { accent: string; priority: number }>();
+    const map = new Map<number, { accent: string; priority: number; status: string }>();
     for (const ev of events) {
       const day = parseDayFromDate(ev.date);
       if (day === null) continue;
@@ -79,7 +79,7 @@ const ProximosEventos = memo(({ events, selectedMonth, selectedYear, onVerTodos 
       const priority = STATUS_PRIORITY[ev.status] || 0;
       const existing = map.get(day);
       if (!existing || priority > existing.priority) {
-        map.set(day, { accent: cfg.accent, priority });
+        map.set(day, { accent: cfg.accent, priority, status: ev.status });
       }
     }
     return map;
