@@ -92,6 +92,7 @@ export function useFinanceData(selectedMonth: number, selectedYear: number) {
         gastosHoje: summary.todayExpenses,
         mediaGastosDiarios: summary.dailyAverageExpense,
         status: summary.status,
+        dailyBehavior: computeDailyBehavior(summary.todayExpenses, summary.dailyAverageExpense),
         projection: summary.projection,
         transactions,
         categories,
