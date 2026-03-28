@@ -1,5 +1,5 @@
 import { memo } from "react";
-import { Scale, Plus } from "lucide-react";
+import { Scale } from "lucide-react";
 import { useFormattedCounter } from "@/hooks/useAnimatedCounter";
 
 interface SaldoCardProps {
