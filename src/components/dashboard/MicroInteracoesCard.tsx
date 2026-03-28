@@ -79,7 +79,7 @@ const MicroInteracoesCard = memo(({ gastosHoje, mediaGastosDiarios }: Props) => 
       >
         {msg}
       </motion.p>
-      <div className="absolute bottom-0 left-0 right-0 h-[2px] bg-gradient-to-r from-transparent via-primary to-transparent opacity-40" />
+      
     </motion.div>
   );
 });

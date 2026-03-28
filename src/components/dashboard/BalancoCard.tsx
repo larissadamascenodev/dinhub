@@ -42,7 +42,7 @@ const BalancoCard = memo(({ balanco }: Props) => {
         </div>
         <ChevronRight className="w-4 h-4 text-muted-foreground/40 flex-shrink-0" />
       </div>
-      <div className={cn("absolute bottom-0 left-0 right-0 h-[2px] bg-gradient-to-r from-transparent to-transparent opacity-50", isPositive ? "via-primary" : "via-destructive")} />
+      
     </motion.div>
   );
 });

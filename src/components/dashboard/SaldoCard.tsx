@@ -44,7 +44,6 @@ const SaldoCard = memo(({ saldoAtual, saldoPrevisto, onNovaTransacao, mobile }: 
         <span className={`text-[13px] font-semibold tabular-nums tracking-tight ${saldoPrevisto >= 0 ? "text-primary/80" : "text-destructive/80"}`}>{fmt(saldoPrevisto)}</span>
       </div>
     </div>
-    <div className="absolute bottom-0 left-0 right-0 h-[2px] bg-gradient-to-r from-transparent via-primary to-transparent opacity-40" />
   </div>
 ));
 
