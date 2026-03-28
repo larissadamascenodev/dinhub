@@ -1,5 +1,5 @@
 import { memo, useState } from "react";
-import { Home, ArrowLeftRight, Wallet, User, Plus, X } from "lucide-react";
+import { Home, ArrowLeftRight, Bot, User, Plus, X } from "lucide-react";
 import { motion, AnimatePresence } from "framer-motion";
 import { useNavigate, useLocation } from "react-router-dom";
 
@@ -7,7 +7,7 @@ const navItems = [
   { icon: Home, label: "Início", path: "/" },
   { icon: ArrowLeftRight, label: "Transações", path: "/transacoes" },
   { icon: null, label: "", isCenter: true, path: "" },
-  { icon: Wallet, label: "Carteira", path: "/gestao" },
+  { icon: Bot, label: "Bot Finance", path: "/bot" },
   { icon: User, label: "Perfil", path: "/configuracoes" },
 ];
 

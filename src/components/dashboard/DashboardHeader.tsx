@@ -1,5 +1,5 @@
 import { memo, useMemo, useState, useRef, useEffect } from "react";
-import { LayoutDashboard, ArrowLeftRight, Wallet, Bot, User, Bell, Flame, PiggyBank, Settings, LogOut } from "lucide-react";
+import { LayoutDashboard, ArrowLeftRight, Plus, Bot, User, Bell, Flame, PiggyBank, Settings, LogOut } from "lucide-react";
 import { useAuth } from "@/contexts/AuthContext";
 import { useNavigate, useLocation } from "react-router-dom";
 import { motion, AnimatePresence } from "framer-motion";
@@ -20,7 +20,7 @@ export const useGreeting = () => {
 const NAV_ITEMS = [
   { label: "Dashboard", icon: LayoutDashboard, path: "/" },
   { label: "Transações", icon: ArrowLeftRight, path: "/transacoes" },
-  { label: "Carteira", icon: Wallet, path: "/gestao" },
+  { label: "Nova transação", icon: Plus, path: "/nova-transacao", isAction: true },
   { label: "Bot Finance", icon: Bot, path: "/bot" },
   { label: "Perfil", icon: User, path: "/configuracoes" },
 ];
