@@ -52,7 +52,7 @@ const NovaTransacaoModal = ({ open, onClose, onSuccess }: Props) => {
   // Reset form when modal opens
   useEffect(() => {
     if (open) {
-      setType("expense");
+      setType("despesa");
       setDescription("");
       setAmountCents(0);
       setCategory("");
