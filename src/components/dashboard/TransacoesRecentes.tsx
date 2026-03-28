@@ -30,31 +30,18 @@ const TxCard = ({ tx }: { tx: Transaction }) => {
         boxShadow: "0 1px 3px rgba(0,0,0,0.3), inset 0 1px 0 rgba(255,255,255,0.04)",
       }}
     >
-      {/* Icon circle */}
       <div
         className="w-9 h-9 rounded-full flex items-center justify-center flex-shrink-0"
-        style={{
-          background: isReceita ? "hsl(150 100% 45% / 0.1)" : "hsl(0 60% 50% / 0.1)",
-        }}
+        style={{ background: isReceita ? "hsl(150 100% 45% / 0.1)" : "hsl(0 60% 50% / 0.1)" }}
       >
-        <Icon
-          className="w-4 h-4"
-          style={{ color: isReceita ? "hsl(150 100% 45%)" : "hsl(0 60% 50%)" }}
-        />
+        <Icon className="w-4 h-4" style={{ color: isReceita ? "hsl(150 100% 45%)" : "hsl(0 60% 50%)" }} />
       </div>
-
-      {/* Info */}
       <div className="flex-1 min-w-0">
         <p className="text-[13px] font-semibold text-foreground truncate">{tx.name}</p>
         <p className="text-[10px] text-muted-foreground/40 mt-px">{tx.category} · {formatDate()}</p>
       </div>
-
-      {/* Amount */}
       <div className="text-right shrink-0">
-        <p
-          className="text-[13px] font-bold tabular-nums"
-          style={{ color: isReceita ? "hsl(150 100% 45%)" : "hsl(0 60% 50%)" }}
-        >
+        <p className="text-[13px] font-bold tabular-nums" style={{ color: isReceita ? "hsl(150 100% 45%)" : "hsl(0 60% 50%)" }}>
           {isReceita ? "+" : "−"}{fmt(tx.amount)}
         </p>
         <p className="text-[9px] text-muted-foreground/30 font-medium">{isReceita ? "Receita" : "Despesa"}</p>
@@ -62,6 +49,11 @@ const TxCard = ({ tx }: { tx: Transaction }) => {
     </div>
   );
 };
+
+// Stack card spacing & scale
+const STACK_OFFSET = 10;
+const STACK_SCALE_STEP = 0.03;
+const STACK_COUNT = 4;
 
 const TransacoesRecentes = memo(({ transactions }: Props) => {
   const [expanded, setExpanded] = useState(false);
@@ -78,6 +70,8 @@ const TransacoesRecentes = memo(({ transactions }: Props) => {
     );
   }
 
+  const stackCount = Math.min(restTx.length, STACK_COUNT);
+
   return (
     <div>
       {/* Header */}
@@ -93,91 +87,136 @@ const TransacoesRecentes = memo(({ transactions }: Props) => {
         </span>
       </div>
 
-      {/* Stack */}
-      <div
+      {/* Stack container */}
+      <motion.div
         className="relative cursor-pointer"
         onClick={() => setExpanded(!expanded)}
-        style={{
-          paddingBottom: !expanded && restTx.length > 0 ? `${Math.min(restTx.length, 4) * 10 + 14}px` : 0,
+        animate={{
+          paddingBottom: !expanded && restTx.length > 0 ? stackCount * STACK_OFFSET + 16 : 0,
         }}
+        transition={{ type: "spring", stiffness: 400, damping: 30 }}
       >
-        {/* Stacked cards behind — iPhone notification style */}
-        {!expanded && restTx.length > 0 &&
-          restTx.slice(0, 4).map((_, i) => (
-            <div
-              key={`g-${i}`}
-              className="absolute left-0 right-0 rounded-[14px]"
-              style={{
-                top: `${(i + 1) * 10}px`,
-                height: "56px",
-                transform: `scale(${1 - (i + 1) * 0.03})`,
-                transformOrigin: "top center",
-                zIndex: 4 - i,
-                background: `hsl(220 17% ${10 - (i + 1) * 1.2}%)`,
-                border: "1px solid hsl(220 14% 15%)",
-                opacity: 1 - (i + 1) * 0.15,
-                boxShadow: "0 1px 2px rgba(0,0,0,0.2)",
-              }}
-            />
-          ))
-        }
+        {/* Stacked ghost cards — animate in/out like iPhone */}
+        <AnimatePresence>
+          {!expanded && restTx.length > 0 &&
+            restTx.slice(0, STACK_COUNT).map((_, i) => (
+              <motion.div
+                key={`stack-${i}`}
+                className="absolute left-0 right-0 rounded-[14px]"
+                initial={{ 
+                  top: 0, 
+                  opacity: 0, 
+                  scale: 1,
+                }}
+                animate={{
+                  top: (i + 1) * STACK_OFFSET,
+                  opacity: 1 - (i + 1) * 0.18,
+                  scale: 1 - (i + 1) * STACK_SCALE_STEP,
+                }}
+                exit={{
+                  top: 0,
+                  opacity: 0,
+                  scale: 1,
+                }}
+                transition={{
+                  type: "spring",
+                  stiffness: 500,
+                  damping: 35,
+                  delay: i * 0.03,
+                }}
+                style={{
+                  height: "56px",
+                  transformOrigin: "top center",
+                  zIndex: STACK_COUNT - i,
+                  background: `hsl(220 17% ${10 - (i + 1) * 1.2}%)`,
+                  border: "1px solid hsl(220 14% 15%)",
+                  boxShadow: "0 1px 2px rgba(0,0,0,0.2)",
+                }}
+              />
+            ))
+          }
+        </AnimatePresence>
 
         {/* Top card */}
-        <motion.div layout className="relative z-10">
+        <motion.div
+          layout
+          transition={{ type: "spring", stiffness: 500, damping: 35 }}
+          className="relative z-10"
+        >
           <TxCard tx={topTx} />
         </motion.div>
 
-        {/* Badge + hint */}
-        {restTx.length > 0 && !expanded && (
-          <motion.div
-            animate={{ y: [0, 3, 0] }}
-            transition={{ repeat: Infinity, duration: 2.5, ease: "easeInOut" }}
-            className="absolute -bottom-2 left-1/2 -translate-x-1/2 z-20 flex items-center gap-1 px-3 py-1 rounded-full"
-            style={{
-              background: "hsl(220 16% 12%)",
-              border: "1px solid hsl(220 14% 18%)",
-              boxShadow: "0 2px 8px rgba(0,0,0,0.3)",
-            }}
-          >
-            <ChevronDown className="w-3 h-3 text-muted-foreground/50" />
-            <span className="text-[9px] text-muted-foreground/50 font-medium">
-              +{restTx.length} transações
-            </span>
-          </motion.div>
-        )}
-      </div>
+        {/* Hint pill */}
+        <AnimatePresence>
+          {restTx.length > 0 && !expanded && (
+            <motion.div
+              initial={{ opacity: 0, y: -4, scale: 0.9 }}
+              animate={{ opacity: 1, y: 0, scale: 1 }}
+              exit={{ opacity: 0, y: -4, scale: 0.9 }}
+              transition={{ type: "spring", stiffness: 400, damping: 25, delay: 0.1 }}
+              className="absolute -bottom-2 left-1/2 -translate-x-1/2 z-20 flex items-center gap-1 px-3 py-1 rounded-full"
+              style={{
+                background: "hsl(220 16% 12%)",
+                border: "1px solid hsl(220 14% 18%)",
+                boxShadow: "0 2px 8px rgba(0,0,0,0.3)",
+              }}
+            >
+              <motion.div
+                animate={{ y: [0, 2, 0] }}
+                transition={{ repeat: Infinity, duration: 2, ease: "easeInOut" }}
+                className="flex items-center gap-1"
+              >
+                <ChevronDown className="w-3 h-3 text-muted-foreground/50" />
+                <span className="text-[9px] text-muted-foreground/50 font-medium">
+                  +{restTx.length} transações
+                </span>
+              </motion.div>
+            </motion.div>
+          )}
+        </AnimatePresence>
+      </motion.div>
 
-      {/* Expanded */}
+      {/* Expanded list */}
       <AnimatePresence>
         {expanded && (
           <motion.div
             initial={{ height: 0, opacity: 0 }}
             animate={{ height: "auto", opacity: 1 }}
             exit={{ height: 0, opacity: 0 }}
-            transition={{ type: "spring", stiffness: 300, damping: 28 }}
-            className="overflow-hidden mt-1.5"
+            transition={{ type: "spring", stiffness: 400, damping: 30 }}
+            className="overflow-hidden"
           >
-            <div className="space-y-1.5">
+            <div className="space-y-1.5 pt-1.5">
               {restTx.map((tx, i) => (
                 <motion.div
                   key={tx.id}
-                  initial={{ opacity: 0, y: -6 }}
-                  animate={{ opacity: 1, y: 0 }}
-                  transition={{ delay: i * 0.03 }}
+                  initial={{ opacity: 0, scale: 0.95, y: -10 }}
+                  animate={{ opacity: 1, scale: 1, y: 0 }}
+                  exit={{ opacity: 0, scale: 0.95, y: -10 }}
+                  transition={{
+                    type: "spring",
+                    stiffness: 500,
+                    damping: 30,
+                    delay: i * 0.04,
+                  }}
                 >
                   <TxCard tx={tx} />
                 </motion.div>
               ))}
             </div>
 
-            {/* Collapse button */}
-            <button
+            {/* Collapse */}
+            <motion.button
+              initial={{ opacity: 0 }}
+              animate={{ opacity: 1 }}
+              exit={{ opacity: 0 }}
+              transition={{ delay: restTx.length * 0.04 }}
               onClick={(e) => { e.stopPropagation(); setExpanded(false); }}
-              className="w-full mt-2 flex items-center justify-center gap-1 text-[10px] text-muted-foreground/40 hover:text-muted-foreground/60 transition-colors py-1"
+              className="w-full mt-2.5 flex items-center justify-center gap-1 text-[10px] text-muted-foreground/40 hover:text-muted-foreground/60 transition-colors py-1.5 rounded-lg hover:bg-white/[0.02]"
             >
               <ChevronUp className="w-3 h-3" />
               Recolher
-            </button>
+            </motion.button>
           </motion.div>
         )}
       </AnimatePresence>
