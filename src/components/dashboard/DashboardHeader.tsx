@@ -61,6 +61,27 @@ const DashboardHeader = memo(({ profile }: { profile?: { display_name: string | 
           {NAV_ITEMS.map((item) => {
             const Icon = item.icon;
             const isActive = location.pathname === item.path;
+            const isAction = item.isAction;
+
+            if (isAction) {
+              return (
+                <button
+                  key={item.label}
+                  onClick={() => {
+                    // Dispatch custom event so Index can open the transaction modal
+                    window.dispatchEvent(new CustomEvent("open-nova-transacao"));
+                  }}
+                  className="relative -my-1 mx-1 flex items-center gap-1.5 px-4 py-2.5 rounded-xl text-xs font-bold transition-all bg-primary/15 border border-primary/30 text-primary hover:bg-primary/25"
+                  style={{
+                    boxShadow: "0 2px 12px -2px hsl(150 100% 45% / 0.3)",
+                  }}
+                >
+                  <Icon className="w-4 h-4" />
+                  <span>{item.label}</span>
+                </button>
+              );
+            }
+
             return (
               <button
                 key={item.label}

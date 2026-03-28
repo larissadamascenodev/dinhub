@@ -5,7 +5,6 @@ import { useFormattedCounter } from "@/hooks/useAnimatedCounter";
 interface SaldoCardProps {
   saldoAtual: number;
   saldoPrevisto: number;
-  onNovaTransacao?: () => void;
   mobile?: boolean;
 }
 
