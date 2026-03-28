@@ -7,7 +7,7 @@ import ReceitasDespesasCards from "@/components/dashboard/ReceitasDespesasCards"
 import BalancoCard from "@/components/dashboard/BalancoCard";
 import MicroInteracoesCard from "@/components/dashboard/MicroInteracoesCard";
 import TransacoesRecentes from "@/components/dashboard/TransacoesRecentes";
-import GastosPorCategoria from "@/components/dashboard/GastosPorCategoria";
+
 import ProximosEventos from "@/components/dashboard/ProximosEventos";
 import MonthSelector from "@/components/dashboard/MonthSelector";
 import { SAMPLE_DATA } from "@/types/finance";
@@ -58,7 +58,6 @@ const Index = () => {
 
             {/* Transações + Categorias stacked */}
             <TransacoesRecentes transactions={data.transactions} />
-            <GastosPorCategoria categories={data.categories} />
           </div>
 
           {/* RIGHT COLUMN (sidebar) */}
@@ -81,7 +80,6 @@ const Index = () => {
           <MicroInteracoesCard gastosHoje={data.gastosHoje} mediaGastosDiarios={data.mediaGastosDiarios} />
 
           <TransacoesRecentes transactions={data.transactions} />
-          <GastosPorCategoria categories={data.categories} />
 
           <ProximosEventos events={data.events} />
         </div>
@@ -101,7 +99,7 @@ const Index = () => {
 
           <BalancoCard balanco={balanco} />
           <MicroInteracoesCard gastosHoje={data.gastosHoje} mediaGastosDiarios={data.mediaGastosDiarios} />
-          <GastosPorCategoria categories={data.categories} />
+          
           <TransacoesRecentes transactions={data.transactions} />
           <ProximosEventos events={data.events} />
         </div>
