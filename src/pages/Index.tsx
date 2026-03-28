@@ -29,7 +29,7 @@ const Index = () => {
   const saldoMes = data.saldoAtual;
 
   return (
-    <div className="dark min-h-screen bg-background text-foreground">
+    <div className="dark min-h-screen text-foreground" style={{ background: "linear-gradient(180deg, hsl(225 25% 5%) 0%, hsl(225 28% 3%) 50%, hsl(225 25% 4%) 100%)" }}>
       <div className="max-w-7xl mx-auto px-4 md:px-6 pt-0 pb-24 md:pb-8">
         <DashboardHeader />
 

@@ -60,7 +60,12 @@ const MicroInteracoesCard = memo(({ gastosHoje, mediaGastosDiarios }: Props) => 
     <motion.div
       initial={{ opacity: 0, y: 6 }}
       animate={{ opacity: 1, y: 0 }}
-      className="flex items-center gap-3 rounded-xl px-4 py-2.5 cursor-pointer transition-all border border-border/30 bg-card shadow-[0_1px_4px_-1px_rgba(0,0,0,0.2),inset_0_1px_0_0_rgba(255,255,255,0.03)]"
+      className="flex items-center gap-3 rounded-2xl px-4 py-2.5 cursor-pointer transition-all relative overflow-hidden"
+      style={{
+        background: "linear-gradient(145deg, hsl(225 20% 10%) 0%, hsl(225 22% 6%) 100%)",
+        boxShadow: "0 2px 12px -2px rgba(0,0,0,0.4), inset 0 1px 0 0 rgba(255,255,255,0.04)",
+        border: "1px solid hsl(225 14% 16% / 0.5)",
+      }}
     >
       <motion.div
         key={bucket}
