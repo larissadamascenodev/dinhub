@@ -251,10 +251,10 @@ const ProximosEventos = memo(({ events, selectedMonth, selectedYear, onVerTodos 
                       borderColor: `hsl(${a} / 0.15)`,
                     }}
                   >
-                    <div className="flex items-center gap-2.5">
+                    <div className="flex items-start gap-2.5">
                       {/* Status icon */}
                       <div
-                        className="w-6 h-6 rounded-full flex items-center justify-center shrink-0"
+                        className="w-6 h-6 rounded-full flex items-center justify-center shrink-0 mt-0.5"
                         style={{
                           background: isPaidOrReceived
                             ? `linear-gradient(160deg, hsl(${a} / 0.2) 0%, hsl(${a} / 0.1) 100%)`
@@ -271,8 +271,11 @@ const ProximosEventos = memo(({ events, selectedMonth, selectedYear, onVerTodos 
                         />
                       </div>
 
-                      {/* Name */}
-                      <p className="flex-1 text-[13px] font-semibold text-foreground/90 truncate">{ev.name}</p>
+                      {/* Name + Category */}
+                      <div className="flex-1 min-w-0">
+                        <p className="text-[13px] font-semibold text-foreground/90 truncate">{ev.name}</p>
+                        <p className="text-[9px] text-muted-foreground/40 font-medium mt-0.5">{ev.category}</p>
+                      </div>
 
                       {/* Amount + status label */}
                       <div className="flex flex-col items-end shrink-0">
