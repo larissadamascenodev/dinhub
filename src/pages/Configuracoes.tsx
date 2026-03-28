@@ -182,7 +182,7 @@ const Configuracoes = () => {
         animate={{ opacity: 1, y: 0 }}
         transition={{ delay: 0.05 }}
         onClick={() => navigate("/gestao")}
-        className="glass-card rounded-2xl p-5 w-full flex items-center gap-4 hover:bg-card/80 transition-all text-left group"
+        className="rounded-2xl bg-card/90 backdrop-blur-xl border border-border/30 shadow-2xl shadow-black/40 p-5 w-full flex items-center gap-4 hover:bg-card/80 transition-all text-left group"
       >
         <div className="w-12 h-12 rounded-2xl bg-primary/15 flex items-center justify-center shrink-0">
           <Wallet className="w-6 h-6 text-primary" />
@@ -229,7 +229,7 @@ const Configuracoes = () => {
       </motion.div>
 
       {/* ═══ Tabs: Conta / Configurações ═══ */}
-      <div className="relative rounded-xl bg-card/60 border border-border/20 p-1 flex">
+      <div className="relative rounded-2xl bg-card/90 backdrop-blur-xl border border-border/30 shadow-2xl shadow-black/40 p-1 flex">
         <motion.div
           className="absolute top-1 bottom-1 rounded-lg bg-primary"
           initial={false}
