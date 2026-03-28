@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useState, useRef } from "react";
 import { motion } from "framer-motion";
 import {
   User, Pencil, Star, Flame, Target, TrendingUp, Swords, Trophy,
