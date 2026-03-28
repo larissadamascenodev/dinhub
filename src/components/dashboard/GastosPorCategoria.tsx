@@ -85,6 +85,7 @@ const GastosPorCategoria = memo(({ categories, onVerAnalise }: Props) => {
         })}
       </div>
     </div>
+    </div>
   );
 });
 
