@@ -2,6 +2,19 @@ import { memo, useMemo } from "react";
 import { LayoutDashboard, ArrowLeftRight, Wallet, Bot, User, Bell, Flame, PiggyBank } from "lucide-react";
 import { motion } from "framer-motion";
 
+export const useGreeting = () => {
+  return useMemo(() => {
+    const now = new Date();
+    const hour = now.getHours();
+    let g = "Bom dia";
+    if (hour >= 12 && hour < 18) g = "Boa tarde";
+    else if (hour >= 18) g = "Boa noite";
+    const days = ["Domingo", "Segunda-feira", "Terça-feira", "Quarta-feira", "Quinta-feira", "Sexta-feira", "Sábado"];
+    const months = ["janeiro", "fevereiro", "março", "abril", "maio", "junho", "julho", "agosto", "setembro", "outubro", "novembro", "dezembro"];
+    return { greeting: g, dateStr: `${days[now.getDay()]}, ${now.getDate()} de ${months[now.getMonth()]}` };
+  }, []);
+};
+
 const NAV_ITEMS = [
   { label: "Dashboard", icon: LayoutDashboard, active: true },
   { label: "Transações", icon: ArrowLeftRight, active: false },
