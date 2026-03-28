@@ -10,6 +10,7 @@ import TransacoesRecentes from "@/components/dashboard/TransacoesRecentes";
 import ProximosEventos from "@/components/dashboard/ProximosEventos";
 import MonthSelector from "@/components/dashboard/MonthSelector";
 import NovaTransacaoModal from "@/components/dashboard/NovaTransacaoModal";
+import TransactionTypeChooser from "@/components/dashboard/TransactionTypeChooser";
 import PagarEditarModal from "@/components/dashboard/PagarEditarModal";
 import { useAuth } from "@/contexts/AuthContext";
 import { useFinanceData } from "@/hooks/useFinanceData";
@@ -18,12 +19,19 @@ import type { FinanceEvent } from "@/types/finance";
 const Index = () => {
   const [selectedMonth, setSelectedMonth] = useState(new Date().getMonth());
   const [selectedYear, setSelectedYear] = useState(new Date().getFullYear());
+  const [showTypeChooser, setShowTypeChooser] = useState(false);
   const [showModal, setShowModal] = useState(false);
+  const [modalType, setModalType] = useState<"receita" | "despesa">("despesa");
   const [selectedEvent, setSelectedEvent] = useState<FinanceEvent | null>(null);
   const [showPayModal, setShowPayModal] = useState(false);
   const { user } = useAuth();
   const { data, loading, refetch } = useFinanceData(selectedMonth, selectedYear);
-  const handleNovaTransacao = useCallback(() => setShowModal(true), []);
+  const handleNovaTransacao = useCallback(() => setShowTypeChooser(true), []);
+  const handleTypeSelected = useCallback((type: "receita" | "despesa") => {
+    setModalType(type);
+    setShowTypeChooser(false);
+    setShowModal(true);
+  }, []);
   const { greeting, dateStr } = useGreeting();
   const userName = user?.email?.split("@")[0] ?? "Usuário";
 
@@ -124,7 +132,8 @@ const Index = () => {
           </div>
         </div>
       </div>
-      <NovaTransacaoModal open={showModal} onClose={() => setShowModal(false)} onSuccess={refetch} />
+      <TransactionTypeChooser open={showTypeChooser} onClose={() => setShowTypeChooser(false)} onSelect={handleTypeSelected} />
+      <NovaTransacaoModal open={showModal} onClose={() => setShowModal(false)} onSuccess={refetch} initialType={modalType} />
       <PagarEditarModal
         open={showPayModal}
         event={selectedEvent}

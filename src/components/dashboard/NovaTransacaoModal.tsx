@@ -2,15 +2,14 @@ import { useState, useRef, useEffect, useCallback } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import {
   X, TrendingUp, TrendingDown, CalendarDays, FileText, Tag,
-  Wallet, Repeat, StickyNote, Check, Clock, ChevronDown,
-  CreditCard, Plus, Sparkles,
+  Wallet, Repeat, StickyNote, Check, Clock, CreditCard, Plus,
+  Sparkles, Search, Settings,
 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { Calendar } from "@/components/ui/calendar";
-import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover";
 import { cn } from "@/lib/utils";
 import { format, subDays } from "date-fns";
 import { ptBR } from "date-fns/locale";
@@ -27,14 +26,17 @@ interface Props {
   open: boolean;
   onClose: () => void;
   onSuccess: () => void;
+  initialType?: "receita" | "despesa";
 }
 
 const CATEGORIES_EXPENSE = [
   "Alimentação", "Transporte", "Saúde", "Assinaturas",
-  "Lazer", "Moradia", "Educação", "Vestuário", "Outros",
+  "Lazer", "Moradia", "Educação", "Vestuário", "Pets",
+  "Beleza", "Presentes", "Viagem", "Tecnologia", "Impostos",
 ];
 const CATEGORIES_INCOME = [
-  "Salário", "Freelance", "Investimentos", "Outros",
+  "Salário", "Freelance", "Investimentos", "Vendas",
+  "Aluguéis", "Bônus", "Comissão", "Mesada",
 ];
 
 function formatCurrency(cents: number): string {
@@ -50,9 +52,9 @@ interface Account {
   is_default: boolean;
 }
 
-const NovaTransacaoModal = ({ open, onClose, onSuccess }: Props) => {
+const NovaTransacaoModal = ({ open, onClose, onSuccess, initialType = "despesa" }: Props) => {
   const { user } = useAuth();
-  const [type, setType] = useState<"receita" | "despesa">("despesa");
+  const [type, setType] = useState<"receita" | "despesa">(initialType);
   const [status, setStatus] = useState<"pago" | "pendente">("pago");
   const [description, setDescription] = useState("");
   const [amountCents, setAmountCents] = useState(0);
@@ -65,16 +67,29 @@ const NovaTransacaoModal = ({ open, onClose, onSuccess }: Props) => {
   const [paymentMethod, setPaymentMethod] = useState<"conta" | "cartao">("conta");
   const [recurrenceType, setRecurrenceType] = useState<"unica" | "parcelado" | "fixa">("unica");
   const [installments, setInstallments] = useState<number>(2);
+  const [paidInstallments, setPaidInstallments] = useState<number>(0);
+  const [installmentFrequency, setInstallmentFrequency] = useState<"mensal" | "anual">("mensal");
   const [observation, setObservation] = useState("");
   const [accountId, setAccountId] = useState<string>("");
   const [accounts, setAccounts] = useState<Account[]>([]);
   const [newAccountName, setNewAccountName] = useState("");
   const [showNewAccount, setShowNewAccount] = useState(false);
   const [submitting, setSubmitting] = useState(false);
+  const [showCategoryModal, setShowCategoryModal] = useState(false);
+  const [categorySearch, setCategorySearch] = useState("");
+  const [customCategories, setCustomCategories] = useState<string[]>([]);
+  const [newCategoryName, setNewCategoryName] = useState("");
   const amountInputRef = useRef<HTMLInputElement>(null);
   const suggestTimeoutRef = useRef<ReturnType<typeof setTimeout>>();
 
-  const categories = type === "receita" ? CATEGORIES_INCOME : CATEGORIES_EXPENSE;
+  const allCategories = [
+    ...(type === "receita" ? CATEGORIES_INCOME : CATEGORIES_EXPENSE),
+    ...customCategories,
+  ];
+
+  const filteredCategories = categorySearch
+    ? allCategories.filter((c) => c.toLowerCase().includes(categorySearch.toLowerCase()))
+    : allCategories;
 
   // Fetch accounts
   useEffect(() => {
@@ -90,7 +105,7 @@ const NovaTransacaoModal = ({ open, onClose, onSuccess }: Props) => {
   // Reset form
   useEffect(() => {
     if (open) {
-      setType("despesa");
+      setType(initialType);
       setStatus("pago");
       setDescription("");
       setAmountCents(0);
@@ -102,17 +117,21 @@ const NovaTransacaoModal = ({ open, onClose, onSuccess }: Props) => {
       setPaymentMethod("conta");
       setRecurrenceType("unica");
       setInstallments(2);
+      setPaidInstallments(0);
+      setInstallmentFrequency("mensal");
       setObservation("");
       setShowNewAccount(false);
       setNewAccountName("");
+      setShowCategoryModal(false);
+      setCategorySearch("");
     }
-  }, [open]);
+  }, [open, initialType]);
 
-  // AI category suggestion with debounce
+  // AI category suggestion with debounce - faster
   const triggerSuggest = useCallback(
     (desc: string, txType: "receita" | "despesa") => {
       if (suggestTimeoutRef.current) clearTimeout(suggestTimeoutRef.current);
-      if (desc.trim().length < 3) {
+      if (desc.trim().length < 2) {
         setSuggestedCategory(null);
         return;
       }
@@ -122,7 +141,7 @@ const NovaTransacaoModal = ({ open, onClose, onSuccess }: Props) => {
         setSuggestedCategory(cat);
         if (cat && !category) setCategory(cat);
         setSuggestingCategory(false);
-      }, 600);
+      }, 350);
     },
     [category]
   );
@@ -132,7 +151,6 @@ const NovaTransacaoModal = ({ open, onClose, onSuccess }: Props) => {
     triggerSuggest(val, type);
   };
 
-  // Date shortcuts
   const handleDateMode = (mode: "hoje" | "ontem" | "outros") => {
     setDateMode(mode);
     if (mode === "hoje") {
@@ -146,7 +164,6 @@ const NovaTransacaoModal = ({ open, onClose, onSuccess }: Props) => {
     }
   };
 
-  // Currency input
   const handleAmountKeyDown = (e: React.KeyboardEvent<HTMLInputElement>) => {
     if (e.key === "Backspace") {
       e.preventDefault();
@@ -174,6 +191,17 @@ const NovaTransacaoModal = ({ open, onClose, onSuccess }: Props) => {
     } catch {
       toast.error("Erro ao criar conta");
     }
+  };
+
+  const handleCreateCategory = (nameOverride?: string) => {
+    const name = (nameOverride || newCategoryName).trim();
+    if (!name) return;
+    if (!allCategories.includes(name)) {
+      setCustomCategories((prev) => [...prev, name]);
+    }
+    setCategory(name);
+    setNewCategoryName("");
+    setShowCategoryModal(false);
   };
 
   const handleSubmit = async (e: React.FormEvent) => {
@@ -227,7 +255,10 @@ const NovaTransacaoModal = ({ open, onClose, onSuccess }: Props) => {
   };
 
   const isReceita = type === "receita";
-  const accentColor = isReceita ? "hsl(150 100% 45%)" : "hsl(0 60% 50%)";
+  const accentHsl = isReceita ? "hsl(var(--primary))" : "hsl(var(--destructive))";
+
+  // Account colors for visual dots
+  const accountColors = ["#8b5cf6", "#f97316", "#00e676", "#00e676", "#3b82f6", "#ec4899"];
 
   return (
     <AnimatePresence>
@@ -236,7 +267,7 @@ const NovaTransacaoModal = ({ open, onClose, onSuccess }: Props) => {
           initial={{ opacity: 0 }}
           animate={{ opacity: 1 }}
           exit={{ opacity: 0 }}
-          transition={{ duration: 0.2 }}
+          transition={{ duration: 0.15 }}
           className="fixed inset-0 z-50 flex items-end md:items-center justify-center bg-black/70 backdrop-blur-sm"
           onClick={onClose}
         >
@@ -248,65 +279,41 @@ const NovaTransacaoModal = ({ open, onClose, onSuccess }: Props) => {
             onClick={(e) => e.stopPropagation()}
             className="w-full max-w-md mx-0 md:mx-4 rounded-t-3xl md:rounded-2xl bg-card border border-border/20 shadow-2xl overflow-hidden max-h-[92vh] flex flex-col"
           >
-            {/* Close button */}
-            <button
-              onClick={onClose}
-              className="absolute right-4 top-4 z-10 w-8 h-8 rounded-full bg-muted/50 flex items-center justify-center text-muted-foreground hover:text-foreground transition-colors"
-            >
-              <X className="w-4 h-4" />
-            </button>
+            {/* Header */}
+            <div className="relative flex items-center justify-center pt-5 pb-3 px-5">
+              <div className="flex items-center gap-2">
+                {isReceita ? (
+                  <TrendingUp className="w-5 h-5 text-primary" />
+                ) : (
+                  <TrendingDown className="w-5 h-5 text-destructive" />
+                )}
+                <span className="text-lg font-bold text-foreground">
+                  {isReceita ? "Nova Receita" : "Nova Despesa"}
+                </span>
+              </div>
+              <button
+                onClick={onClose}
+                className="absolute right-4 w-8 h-8 rounded-full bg-muted/50 flex items-center justify-center text-muted-foreground hover:text-foreground transition-colors"
+              >
+                <X className="w-4 h-4" />
+              </button>
+            </div>
 
             <div className="overflow-y-auto flex-1 pb-4">
-              {/* Type header */}
-              <div className="flex flex-col items-center pt-6 pb-2">
-                <Popover>
-                  <PopoverTrigger asChild>
-                    <button className="flex items-center gap-2 text-lg font-bold text-foreground hover:opacity-80 transition-opacity">
-                      {isReceita ? (
-                        <TrendingUp className="w-5 h-5" style={{ color: accentColor }} />
-                      ) : (
-                        <TrendingDown className="w-5 h-5" style={{ color: accentColor }} />
-                      )}
-                      {isReceita ? "Receita" : "Despesa"}
-                      <ChevronDown className="w-4 h-4 text-muted-foreground" />
-                    </button>
-                  </PopoverTrigger>
-                  <PopoverContent className="w-40 p-1" align="center">
-                    <button
-                      onClick={() => { setType("despesa"); setCategory(""); setSuggestedCategory(null); setRecurrenceType("unica"); }}
-                      className={`w-full flex items-center gap-2 px-3 py-2 rounded-lg text-sm font-medium transition-colors ${
-                        type === "despesa" ? "bg-destructive/10 text-destructive" : "hover:bg-muted"
-                      }`}
-                    >
-                      <TrendingDown className="w-4 h-4" />
-                      Despesa
-                    </button>
-                    <button
-                      onClick={() => { setType("receita"); setCategory(""); setSuggestedCategory(null); setPaymentMethod("conta"); setRecurrenceType("unica"); }}
-                      className={`w-full flex items-center gap-2 px-3 py-2 rounded-lg text-sm font-medium transition-colors ${
-                        type === "receita" ? "bg-primary/10 text-primary" : "hover:bg-muted"
-                      }`}
-                    >
-                      <TrendingUp className="w-4 h-4" />
-                      Receita
-                    </button>
-                  </PopoverContent>
-                </Popover>
-              </div>
-
               {/* Value display */}
               <div
-                className="mx-5 mb-3 rounded-xl p-5 text-center cursor-text"
+                className="mx-5 mb-4 rounded-xl p-5 text-center cursor-text border border-border/10"
+                style={{ background: `${accentHsl}08` }}
                 onClick={() => amountInputRef.current?.focus()}
               >
                 <p className="text-[10px] text-muted-foreground uppercase tracking-widest mb-2">Valor</p>
                 <div className="flex items-baseline justify-center gap-2">
-                  <span className="text-xl font-bold" style={{ color: accentColor }}>R$</span>
+                  <span className="text-xl font-bold" style={{ color: accentHsl }}>R$</span>
                   <motion.span
                     key={amountCents}
                     initial={{ scale: 1.05 }}
                     animate={{ scale: 1 }}
-                    className="font-display text-4xl font-bold tabular-nums tracking-tight text-foreground/70"
+                    className="font-display text-4xl font-bold tabular-nums tracking-tight text-foreground/80"
                   >
                     {formatCurrency(amountCents)}
                   </motion.span>
@@ -320,18 +327,20 @@ const NovaTransacaoModal = ({ open, onClose, onSuccess }: Props) => {
                 />
               </div>
 
-              {/* Status toggle */}
-              <div className="flex justify-center mb-5">
-                <div className="flex gap-1 p-0.5 rounded-full bg-muted/40">
+              {/* Status toggle - translucent style */}
+              <div className="flex justify-center mb-5 px-5">
+                <div className="flex gap-2 w-full">
                   <button
                     type="button"
                     onClick={() => setStatus("pago")}
-                    className={`flex items-center gap-1.5 px-4 py-1.5 rounded-full text-xs font-semibold transition-all ${
+                    className={cn(
+                      "flex items-center justify-center gap-1.5 flex-1 py-2.5 rounded-xl text-xs font-bold transition-all border",
                       status === "pago"
-                        ? "text-card shadow-sm"
-                        : "text-muted-foreground hover:text-foreground"
-                    }`}
-                    style={status === "pago" ? { background: accentColor } : {}}
+                        ? isReceita
+                          ? "bg-primary/15 text-primary border-primary/30"
+                          : "bg-destructive/15 text-destructive border-destructive/30"
+                        : "bg-muted/30 text-muted-foreground border-transparent hover:bg-muted/50"
+                    )}
                   >
                     <Check className="w-3.5 h-3.5" />
                     {isReceita ? "Já recebi" : "Já paguei"}
@@ -339,11 +348,12 @@ const NovaTransacaoModal = ({ open, onClose, onSuccess }: Props) => {
                   <button
                     type="button"
                     onClick={() => setStatus("pendente")}
-                    className={`flex items-center gap-1.5 px-4 py-1.5 rounded-full text-xs font-semibold transition-all ${
+                    className={cn(
+                      "flex items-center justify-center gap-1.5 flex-1 py-2.5 rounded-xl text-xs font-bold transition-all border",
                       status === "pendente"
-                        ? "bg-amber-500 text-card shadow-sm"
-                        : "text-muted-foreground hover:text-foreground"
-                    }`}
+                        ? "bg-amber-500/15 text-amber-400 border-amber-500/30"
+                        : "bg-muted/30 text-muted-foreground border-transparent hover:bg-muted/50"
+                    )}
                   >
                     <Clock className="w-3.5 h-3.5" />
                     Pendente
@@ -365,11 +375,12 @@ const NovaTransacaoModal = ({ open, onClose, onSuccess }: Props) => {
                         key={mode}
                         type="button"
                         onClick={() => handleDateMode(mode)}
-                        className={`px-4 py-2 rounded-lg text-xs font-semibold transition-all capitalize ${
+                        className={cn(
+                          "px-4 py-2 rounded-xl text-xs font-semibold transition-all border",
                           dateMode === mode
-                            ? "bg-primary/15 text-primary border border-primary/25"
-                            : "bg-muted/50 text-muted-foreground hover:text-foreground border border-transparent"
-                        }`}
+                            ? "bg-primary/15 text-primary border-primary/25"
+                            : "bg-muted/30 text-muted-foreground hover:text-foreground border-transparent"
+                        )}
                       >
                         {mode === "outros" ? "Outros" : mode.charAt(0).toUpperCase() + mode.slice(1)}
                       </button>
@@ -401,10 +412,10 @@ const NovaTransacaoModal = ({ open, onClose, onSuccess }: Props) => {
                     Descrição
                   </div>
                   <Input
-                    placeholder={isReceita ? "Ex: Salário" : "Ex: Jantar no Outback"}
+                    placeholder={isReceita ? "Ex: Salário mensal" : "Ex: Jantar no Outback"}
                     value={description}
                     onChange={(e) => handleDescriptionChange(e.target.value)}
-                    className="bg-muted/50 border-border/30 h-11"
+                    className="bg-muted/30 border-border/20 h-11 rounded-xl"
                     maxLength={100}
                   />
                 </div>
@@ -421,26 +432,27 @@ const NovaTransacaoModal = ({ open, onClose, onSuccess }: Props) => {
                       <span className="text-[9px] text-primary/60 font-medium ml-1">sugestão IA ✨</span>
                     )}
                   </div>
-                  <Select value={category} onValueChange={setCategory}>
-                    <SelectTrigger className="bg-muted/50 border-border/30 h-11">
-                      <SelectValue placeholder="Selecionar categoria" />
-                    </SelectTrigger>
-                    <SelectContent>
-                      {categories.map((cat) => (
-                        <SelectItem key={cat} value={cat}>{cat}</SelectItem>
-                      ))}
-                    </SelectContent>
-                  </Select>
+                  <button
+                    type="button"
+                    onClick={() => setShowCategoryModal(true)}
+                    className={cn(
+                      "w-full flex items-center justify-between px-3 h-11 rounded-xl text-sm border transition-colors",
+                      category
+                        ? "bg-muted/30 border-border/20 text-foreground"
+                        : "bg-muted/30 border-border/20 text-muted-foreground"
+                    )}
+                  >
+                    {category || "Selecionar categoria"}
+                    <Tag className="w-3.5 h-3.5 text-muted-foreground" />
+                  </button>
                 </div>
 
-                {/* Account */}
+                {/* Account section */}
                 <div className="space-y-2">
                   <div className="flex items-center gap-2 text-sm font-medium text-foreground">
                     <Wallet className="w-4 h-4 text-muted-foreground" />
                     Conta
-                    {type === "despesa" && (
-                      <span className="text-destructive text-xs">*</span>
-                    )}
+                    {type === "despesa" && <span className="text-destructive text-xs">*</span>}
                   </div>
 
                   {/* Payment method toggle (expenses only) */}
@@ -449,11 +461,12 @@ const NovaTransacaoModal = ({ open, onClose, onSuccess }: Props) => {
                       <button
                         type="button"
                         onClick={() => setPaymentMethod("conta")}
-                        className={`flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-xs font-semibold transition-all ${
+                        className={cn(
+                          "flex items-center gap-1.5 px-4 py-2 rounded-xl text-xs font-semibold transition-all border",
                           paymentMethod === "conta"
-                            ? "bg-primary/15 text-primary border border-primary/25"
-                            : "bg-muted/50 text-muted-foreground border border-transparent"
-                        }`}
+                            ? "bg-primary/15 text-primary border-primary/25"
+                            : "bg-muted/30 text-muted-foreground border-transparent"
+                        )}
                       >
                         <Wallet className="w-3.5 h-3.5" />
                         Conta
@@ -461,11 +474,12 @@ const NovaTransacaoModal = ({ open, onClose, onSuccess }: Props) => {
                       <button
                         type="button"
                         onClick={() => setPaymentMethod("cartao")}
-                        className={`flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-xs font-semibold transition-all ${
+                        className={cn(
+                          "flex items-center gap-1.5 px-4 py-2 rounded-xl text-xs font-semibold transition-all border",
                           paymentMethod === "cartao"
-                            ? "bg-primary/15 text-primary border border-primary/25"
-                            : "bg-muted/50 text-muted-foreground border border-transparent"
-                        }`}
+                            ? "bg-primary/15 text-primary border-primary/25"
+                            : "bg-muted/30 text-muted-foreground border-transparent"
+                        )}
                       >
                         <CreditCard className="w-3.5 h-3.5" />
                         Cartão
@@ -473,54 +487,78 @@ const NovaTransacaoModal = ({ open, onClose, onSuccess }: Props) => {
                     </div>
                   )}
 
-                  <Select value={accountId} onValueChange={setAccountId}>
-                    <SelectTrigger className="bg-muted/50 border-border/30 h-11">
-                      <SelectValue placeholder="Selecionar conta" />
-                    </SelectTrigger>
-                    <SelectContent>
-                      {accounts.map((acc) => (
-                        <SelectItem key={acc.id} value={acc.id}>
-                          {acc.name} {acc.is_default && "(padrão)"}
-                        </SelectItem>
-                      ))}
-                    </SelectContent>
-                  </Select>
+                  {paymentMethod === "conta" || type === "receita" ? (
+                    <>
+                      <Select value={accountId} onValueChange={setAccountId}>
+                        <SelectTrigger className="bg-muted/30 border-border/20 h-11 rounded-xl">
+                          <SelectValue placeholder="Selecionar conta" />
+                        </SelectTrigger>
+                        <SelectContent>
+                          {accounts.map((acc, idx) => (
+                            <SelectItem key={acc.id} value={acc.id}>
+                              <div className="flex items-center gap-2">
+                                <div
+                                  className="w-2.5 h-2.5 rounded-full"
+                                  style={{ backgroundColor: accountColors[idx % accountColors.length] }}
+                                />
+                                {acc.name} {acc.is_default && "(padrão)"}
+                              </div>
+                            </SelectItem>
+                          ))}
+                        </SelectContent>
+                      </Select>
 
-                  {!showNewAccount ? (
-                    <button
-                      type="button"
-                      onClick={() => setShowNewAccount(true)}
-                      className="flex items-center gap-1 text-[11px] text-primary font-medium hover:opacity-80 mt-1"
-                    >
-                      <Plus className="w-3 h-3" />
-                      Criar nova conta
-                    </button>
+                      {!showNewAccount ? (
+                        <button
+                          type="button"
+                          onClick={() => setShowNewAccount(true)}
+                          className="flex items-center gap-1 text-[11px] text-primary font-medium hover:opacity-80 mt-1"
+                        >
+                          <Plus className="w-3 h-3" />
+                          Criar nova conta
+                        </button>
+                      ) : (
+                        <motion.div
+                          initial={{ height: 0, opacity: 0 }}
+                          animate={{ height: "auto", opacity: 1 }}
+                          className="flex gap-2 mt-1 overflow-hidden"
+                        >
+                          <Input
+                            placeholder="Nome da conta"
+                            value={newAccountName}
+                            onChange={(e) => setNewAccountName(e.target.value)}
+                            className="bg-muted/30 border-border/20 h-9 text-sm flex-1 rounded-xl"
+                          />
+                          <Button
+                            type="button"
+                            size="sm"
+                            onClick={handleCreateAccount}
+                            disabled={!newAccountName.trim()}
+                            className="h-9 px-3 text-xs rounded-xl"
+                          >
+                            Criar
+                          </Button>
+                          <Button
+                            type="button"
+                            size="sm"
+                            variant="outline"
+                            onClick={() => { setShowNewAccount(false); setNewAccountName(""); }}
+                            className="h-9 px-3 text-xs rounded-xl"
+                          >
+                            <X className="w-3 h-3" />
+                          </Button>
+                        </motion.div>
+                      )}
+                    </>
                   ) : (
-                    <div className="flex gap-2 mt-1">
-                      <Input
-                        placeholder="Nome da conta"
-                        value={newAccountName}
-                        onChange={(e) => setNewAccountName(e.target.value)}
-                        className="bg-muted/50 border-border/30 h-9 text-sm flex-1"
-                      />
-                      <Button
-                        type="button"
-                        size="sm"
-                        onClick={handleCreateAccount}
-                        disabled={!newAccountName.trim()}
-                        className="h-9 px-3 text-xs"
-                      >
-                        Criar
-                      </Button>
-                      <Button
-                        type="button"
-                        size="sm"
-                        variant="outline"
-                        onClick={() => { setShowNewAccount(false); setNewAccountName(""); }}
-                        className="h-9 px-3 text-xs"
-                      >
-                        <X className="w-3 h-3" />
-                      </Button>
+                    /* Cartão de crédito mode */
+                    <div className="space-y-2">
+                      <div className="rounded-xl border border-border/20 bg-muted/30 p-3 text-center">
+                        <CreditCard className="w-5 h-5 text-muted-foreground mx-auto mb-1" />
+                        <p className="text-xs text-muted-foreground">
+                          Em breve: cadastre seus cartões de crédito
+                        </p>
+                      </div>
                     </div>
                   )}
                 </div>
@@ -529,46 +567,49 @@ const NovaTransacaoModal = ({ open, onClose, onSuccess }: Props) => {
                 <div className="space-y-2">
                   <div className="flex items-center gap-2 text-sm font-medium text-foreground">
                     <Repeat className="w-4 h-4 text-muted-foreground" />
-                    {isReceita ? "Receita fixa (recorrente)" : "Repetição"}
+                    {isReceita ? "Repetição" : "Repetição"}
                   </div>
                   {isReceita ? (
                     <div className="flex gap-2">
                       <button
                         type="button"
                         onClick={() => setRecurrenceType("unica")}
-                        className={`flex items-center gap-1.5 px-4 py-2 rounded-lg text-xs font-semibold transition-all ${
+                        className={cn(
+                          "px-4 py-2 rounded-xl text-xs font-semibold transition-all border",
                           recurrenceType === "unica"
-                            ? "bg-primary/15 text-primary border border-primary/25"
-                            : "bg-muted/50 text-muted-foreground border border-transparent"
-                        }`}
+                            ? "bg-primary/15 text-primary border-primary/25"
+                            : "bg-muted/30 text-muted-foreground border-transparent"
+                        )}
                       >
                         Única
                       </button>
                       <button
                         type="button"
                         onClick={() => setRecurrenceType("fixa")}
-                        className={`flex items-center gap-1.5 px-4 py-2 rounded-lg text-xs font-semibold transition-all ${
+                        className={cn(
+                          "px-4 py-2 rounded-xl text-xs font-semibold transition-all border",
                           recurrenceType === "fixa"
-                            ? "bg-primary/15 text-primary border border-primary/25"
-                            : "bg-muted/50 text-muted-foreground border border-transparent"
-                        }`}
+                            ? "bg-primary/15 text-primary border-primary/25"
+                            : "bg-muted/30 text-muted-foreground border-transparent"
+                        )}
                       >
                         ∞ Fixa
                       </button>
                     </div>
                   ) : (
-                    <div className="space-y-2">
+                    <div className="space-y-3">
                       <div className="flex gap-2">
                         {(["unica", "parcelado", "fixa"] as const).map((rt) => (
                           <button
                             key={rt}
                             type="button"
                             onClick={() => setRecurrenceType(rt)}
-                            className={`flex items-center gap-1.5 px-4 py-2 rounded-lg text-xs font-semibold transition-all ${
+                            className={cn(
+                              "px-4 py-2 rounded-xl text-xs font-semibold transition-all border",
                               recurrenceType === rt
-                                ? "bg-primary/15 text-primary border border-primary/25"
-                                : "bg-muted/50 text-muted-foreground border border-transparent"
-                            }`}
+                                ? "bg-primary/15 text-primary border-primary/25"
+                                : "bg-muted/30 text-muted-foreground border-transparent"
+                            )}
                           >
                             {rt === "unica" ? "Única" : rt === "parcelado" ? "Parcelado" : "∞ Fixa"}
                           </button>
@@ -581,26 +622,64 @@ const NovaTransacaoModal = ({ open, onClose, onSuccess }: Props) => {
                             initial={{ height: 0, opacity: 0 }}
                             animate={{ height: "auto", opacity: 1 }}
                             exit={{ height: 0, opacity: 0 }}
-                            className="overflow-hidden"
+                            className="overflow-hidden space-y-3"
                           >
-                            <div className="flex items-center gap-2 mt-1">
-                              <Label className="text-xs text-muted-foreground whitespace-nowrap">Parcelas:</Label>
-                              <Select value={String(installments)} onValueChange={(v) => setInstallments(Number(v))}>
-                                <SelectTrigger className="bg-muted/50 border-border/30 h-9 w-24">
-                                  <SelectValue />
-                                </SelectTrigger>
-                                <SelectContent>
-                                  {Array.from({ length: 23 }, (_, i) => i + 2).map((n) => (
-                                    <SelectItem key={n} value={String(n)}>{n}x</SelectItem>
-                                  ))}
-                                </SelectContent>
-                              </Select>
-                              {amountCents > 0 && (
-                                <span className="text-[11px] text-muted-foreground">
-                                  = R$ {formatCurrency(Math.round(amountCents / installments))}/mês
-                                </span>
-                              )}
+                            {/* Quantidade de parcelas */}
+                            <Input
+                              type="number"
+                              placeholder="Quantidade de parcelas"
+                              value={installments || ""}
+                              onChange={(e) => setInstallments(Number(e.target.value) || 2)}
+                              min={2}
+                              max={48}
+                              className="bg-muted/30 border-border/20 h-11 rounded-xl"
+                            />
+
+                            {/* Mensal / Anual */}
+                            <div className="flex gap-2">
+                              <button
+                                type="button"
+                                onClick={() => setInstallmentFrequency("mensal")}
+                                className={cn(
+                                  "flex-1 py-2 rounded-xl text-xs font-semibold transition-all border",
+                                  installmentFrequency === "mensal"
+                                    ? "bg-primary/15 text-primary border-primary/25"
+                                    : "bg-muted/30 text-muted-foreground border-transparent"
+                                )}
+                              >
+                                Mensal
+                              </button>
+                              <button
+                                type="button"
+                                onClick={() => setInstallmentFrequency("anual")}
+                                className={cn(
+                                  "flex-1 py-2 rounded-xl text-xs font-semibold transition-all border",
+                                  installmentFrequency === "anual"
+                                    ? "bg-primary/15 text-primary border-primary/25"
+                                    : "bg-muted/30 text-muted-foreground border-transparent"
+                                )}
+                              >
+                                Anual
+                              </button>
                             </div>
+
+                            {/* Parcelas já pagas */}
+                            <Input
+                              type="number"
+                              placeholder="Parcelas já pagas (opcional)"
+                              value={paidInstallments || ""}
+                              onChange={(e) => setPaidInstallments(Number(e.target.value) || 0)}
+                              min={0}
+                              max={installments - 1}
+                              className="bg-muted/30 border-border/20 h-11 rounded-xl"
+                            />
+
+                            {amountCents > 0 && installments > 0 && (
+                              <p className="text-[11px] text-muted-foreground px-1">
+                                {installments}x de R$ {formatCurrency(Math.round(amountCents / installments))}
+                                {paidInstallments > 0 && ` · ${paidInstallments} já pagas`}
+                              </p>
+                            )}
                           </motion.div>
                         )}
                       </AnimatePresence>
@@ -618,7 +697,7 @@ const NovaTransacaoModal = ({ open, onClose, onSuccess }: Props) => {
                     placeholder="Adicionar nota (opcional)"
                     value={observation}
                     onChange={(e) => setObservation(e.target.value)}
-                    className="bg-muted/50 border-border/30 h-11"
+                    className="bg-muted/30 border-border/20 h-11 rounded-xl"
                     maxLength={200}
                   />
                 </div>
@@ -629,15 +708,17 @@ const NovaTransacaoModal = ({ open, onClose, onSuccess }: Props) => {
                     type="button"
                     variant="outline"
                     onClick={onClose}
-                    className="flex-1 h-12 font-semibold text-sm"
+                    className="flex-1 h-12 font-semibold text-sm rounded-xl"
                   >
                     Cancelar
                   </Button>
                   <Button
                     type="submit"
                     disabled={submitting || amountCents === 0}
-                    className="flex-1 h-12 font-semibold text-sm"
-                    style={{ background: accentColor }}
+                    className={cn(
+                      "flex-1 h-12 font-semibold text-sm rounded-xl text-white",
+                      isReceita ? "bg-primary hover:bg-primary/90" : "bg-destructive hover:bg-destructive/90"
+                    )}
                   >
                     {submitting ? (
                       <span className="animate-pulse">Salvando...</span>
@@ -649,6 +730,101 @@ const NovaTransacaoModal = ({ open, onClose, onSuccess }: Props) => {
               </form>
             </div>
           </motion.div>
+
+          {/* Category modal overlay */}
+          <AnimatePresence>
+            {showCategoryModal && (
+              <motion.div
+                initial={{ opacity: 0 }}
+                animate={{ opacity: 1 }}
+                exit={{ opacity: 0 }}
+                className="fixed inset-0 z-[60] flex items-center justify-center bg-black/50"
+                onClick={() => setShowCategoryModal(false)}
+              >
+                <motion.div
+                  initial={{ opacity: 0, scale: 0.95, y: 20 }}
+                  animate={{ opacity: 1, scale: 1, y: 0 }}
+                  exit={{ opacity: 0, scale: 0.95, y: 20 }}
+                  transition={{ type: "spring", damping: 25, stiffness: 350 }}
+                  onClick={(e) => e.stopPropagation()}
+                  className="w-[90%] max-w-sm rounded-2xl bg-card border border-border/30 shadow-2xl p-5"
+                >
+                  <div className="flex items-center justify-between mb-4">
+                    <h3 className="text-base font-bold text-foreground">Categoria</h3>
+                    <button
+                      onClick={() => setShowCategoryModal(false)}
+                      className="w-7 h-7 rounded-full border border-primary/40 flex items-center justify-center text-primary hover:bg-primary/10 transition-colors"
+                    >
+                      <X className="w-3.5 h-3.5" />
+                    </button>
+                  </div>
+
+                  {/* Search */}
+                  <div className="relative mb-3">
+                    <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-muted-foreground" />
+                    <Input
+                      placeholder="Buscar categoria"
+                      value={categorySearch}
+                      onChange={(e) => setCategorySearch(e.target.value)}
+                      className="pl-9 bg-muted/30 border-border/20 h-10 rounded-xl"
+                    />
+                  </div>
+
+                  {/* Category list */}
+                  <div className="max-h-48 overflow-y-auto space-y-1 mb-3">
+                    {filteredCategories.length > 0 ? (
+                      filteredCategories.map((cat) => (
+                        <button
+                          key={cat}
+                          type="button"
+                          onClick={() => {
+                            setCategory(cat);
+                            setShowCategoryModal(false);
+                          }}
+                          className={cn(
+                            "w-full text-left px-3 py-2 rounded-xl text-sm transition-colors",
+                            category === cat
+                              ? "bg-primary/15 text-primary font-semibold"
+                              : "text-foreground hover:bg-muted/50"
+                          )}
+                        >
+                          {cat}
+                        </button>
+                      ))
+                    ) : (
+                      <p className="text-center text-sm text-muted-foreground py-4">
+                        Nenhuma categoria encontrada
+                      </p>
+                    )}
+                  </div>
+
+                  {/* Footer */}
+                  <div className="flex items-center justify-between pt-2 border-t border-border/20">
+                    <button
+                      type="button"
+                      onClick={() => {
+                        const name = categorySearch.trim() || prompt("Nome da nova categoria:");
+                        if (name) {
+                          handleCreateCategory(name);
+                        }
+                      }}
+                      className="flex items-center gap-1 text-xs text-primary font-medium hover:opacity-80"
+                    >
+                      <Plus className="w-3.5 h-3.5" />
+                      Criar categoria
+                    </button>
+                    <button
+                      type="button"
+                      className="flex items-center gap-1 text-xs text-muted-foreground font-medium hover:text-foreground"
+                    >
+                      <Settings className="w-3.5 h-3.5" />
+                      Gerenciar
+                    </button>
+                  </div>
+                </motion.div>
+              </motion.div>
+            )}
+          </AnimatePresence>
         </motion.div>
       )}
     </AnimatePresence>
