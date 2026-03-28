@@ -143,9 +143,9 @@ const NovaTransacaoModal = ({ open, onClose, onSuccess }: Props) => {
               <div className="flex gap-2 p-1 rounded-xl bg-muted/50">
                 <button
                   type="button"
-                  onClick={() => { setType("expense"); setCategory(""); }}
+                  onClick={() => { setType("despesa"); setCategory(""); }}
                   className={`flex-1 flex items-center justify-center gap-2 py-2.5 rounded-lg text-sm font-semibold transition-all ${
-                    type === "expense"
+                    type === "despesa"
                       ? "bg-destructive/20 text-destructive border border-destructive/30"
                       : "text-muted-foreground hover:text-foreground"
                   }`}
