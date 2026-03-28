@@ -29,7 +29,7 @@ const parseDayFromDate = (dateStr: string): number | null => {
 /** Get best status priority for a day: atrasado > pendente > pago/recebido */
 const STATUS_PRIORITY: Record<string, number> = { atrasado: 3, pendente: 2, pago: 1, recebido: 1 };
 
-const ProximosEventos = memo(({ events, onVerTodos }: Props) => {
+const ProximosEventos = memo(({ events, selectedMonth, selectedYear, onVerTodos }: Props) => {
   // Build map: day → best status accent color
   const dayStatusMap = useMemo(() => {
     const map = new Map<number, { accent: string; priority: number }>();
