@@ -43,7 +43,7 @@ const MobileBottomNav = memo(() => {
       {/* Floating action options */}
       <AnimatePresence>
         {isOpen && (
-          <div className="fixed bottom-[76px] left-0 right-0 z-50 flex justify-center md:hidden">
+          <div className="fixed bottom-[90px] left-0 right-0 z-50 flex justify-center md:hidden">
             <motion.div
               initial={{ opacity: 0, y: 12 }}
               animate={{ opacity: 1, y: 0 }}
