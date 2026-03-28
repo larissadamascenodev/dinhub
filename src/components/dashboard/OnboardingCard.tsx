@@ -1,6 +1,6 @@
 import { useState } from "react";
 import { motion, AnimatePresence } from "framer-motion";
-import { Rocket, Check, User, Wallet, Receipt, ChevronRight, ChevronLeft, X } from "lucide-react";
+import { Rocket, Check, User, Wallet, Receipt, X } from "lucide-react";
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
 import { cn } from "@/lib/utils";
@@ -20,27 +20,9 @@ const OnboardingCard = ({ profile, onUpdateName, onGoToAccounts, onCreateTransac
   const [currentStep, setCurrentStep] = useState(0);
 
   const steps = [
-    {
-      id: "name",
-      label: "Adicionar nome",
-      icon: User,
-      done: profile.has_completed_profile,
-      action: () => setEditingName(true),
-    },
-    {
-      id: "account",
-      label: "Criar conta",
-      icon: Wallet,
-      done: profile.has_account,
-      action: onGoToAccounts,
-    },
-    {
-      id: "transaction",
-      label: "Adicionar transação",
-      icon: Receipt,
-      done: profile.has_transactions,
-      action: onCreateTransaction,
-    },
+    { id: "name", label: "Adicionar nome", icon: User, done: profile.has_completed_profile, action: () => setEditingName(true) },
+    { id: "account", label: "Criar conta", icon: Wallet, done: profile.has_account, action: onGoToAccounts },
+    { id: "transaction", label: "Adicionar transação", icon: Receipt, done: profile.has_transactions, action: onCreateTransaction },
   ];
 
   // Sort: completed first, pending after
@@ -55,7 +37,6 @@ const OnboardingCard = ({ profile, onUpdateName, onGoToAccounts, onCreateTransac
 
   if (allDone) return null;
 
-  // Auto-focus on first pending step
   const firstPendingIndex = sortedSteps.findIndex((s) => !s.done);
   const activeStep = Math.max(0, Math.min(currentStep, sortedSteps.length - 1));
   const step = sortedSteps[activeStep >= 0 ? activeStep : firstPendingIndex];
@@ -72,10 +53,10 @@ const OnboardingCard = ({ profile, onUpdateName, onGoToAccounts, onCreateTransac
     <motion.div
       initial={{ opacity: 0, y: 12 }}
       animate={{ opacity: 1, y: 0 }}
-      className="rounded-xl bg-gradient-to-br from-primary/10 to-primary/5 border border-primary/20 p-3"
+      className="rounded-xl bg-gradient-to-br from-primary/8 to-primary/3 border border-primary/15 p-3"
     >
-      {/* Header row */}
-      <div className="flex items-center gap-2 mb-2">
+      {/* Header */}
+      <div className="flex items-center gap-2 mb-2.5">
         <div className="w-6 h-6 rounded-lg bg-primary/20 flex items-center justify-center">
           <Rocket className="w-3 h-3 text-primary" />
         </div>
@@ -83,73 +64,63 @@ const OnboardingCard = ({ profile, onUpdateName, onGoToAccounts, onCreateTransac
         <span className="text-[9px] text-muted-foreground">{completedCount}/{sortedSteps.length}</span>
       </div>
 
-      {/* Progress dots */}
-      <div className="flex gap-1 mb-2.5">
+      {/* Steps as dots - clickable */}
+      <div className="flex justify-center gap-3 mb-2.5">
         {sortedSteps.map((s, i) => (
-          <div
+          <button
             key={s.id}
+            onClick={() => setCurrentStep(i)}
             className={cn(
-              "h-1 rounded-full flex-1 transition-all",
-              s.done ? "bg-primary" : i === activeStep ? "bg-primary/40" : "bg-muted/30"
+              "w-2 h-2 rounded-full transition-all",
+              i === activeStep
+                ? "bg-primary scale-125 shadow-[0_0_6px_hsl(150_100%_45%/0.5)]"
+                : s.done
+                  ? "bg-primary/40"
+                  : "bg-muted/30 hover:bg-muted/50"
             )}
           />
         ))}
       </div>
 
-      {/* Current step */}
-      <div className="flex items-center gap-2">
-        <button
-          onClick={() => setCurrentStep((p) => Math.max(0, p - 1))}
-          disabled={currentStep === 0}
-          className="w-6 h-6 rounded-lg flex items-center justify-center text-muted-foreground hover:text-foreground disabled:opacity-20 transition-all shrink-0"
+      {/* Current step - centered, clean */}
+      <AnimatePresence mode="wait">
+        <motion.div
+          key={step.id}
+          initial={{ opacity: 0, x: 10 }}
+          animate={{ opacity: 1, x: 0 }}
+          exit={{ opacity: 0, x: -10 }}
+          transition={{ duration: 0.15 }}
+          className="flex justify-center"
         >
-          <ChevronLeft className="w-3.5 h-3.5" />
-        </button>
-
-        <AnimatePresence mode="wait">
-          <motion.button
-            key={step.id}
-            initial={{ opacity: 0, x: 10 }}
-            animate={{ opacity: 1, x: 0 }}
-            exit={{ opacity: 0, x: -10 }}
-            transition={{ duration: 0.15 }}
+          <button
             onClick={step.done ? undefined : step.action}
             disabled={step.done}
             className={cn(
-              "flex-1 flex items-center gap-2.5 p-2 rounded-lg transition-all text-left",
+              "flex items-center gap-2.5 px-4 py-2 rounded-xl transition-all",
               step.done
-                ? "bg-primary/5 opacity-60"
-                : "bg-card/60 hover:bg-card border border-border/20 cursor-pointer"
+                ? "opacity-50 cursor-default"
+                : "bg-card/50 hover:bg-card/80 cursor-pointer"
             )}
           >
             <div className={cn(
               "w-5 h-5 rounded-full flex items-center justify-center shrink-0",
-              step.done ? "bg-primary" : "border-2 border-border/40"
+              step.done ? "bg-primary" : "border-2 border-primary/30"
             )}>
               {step.done ? (
                 <Check className="w-3 h-3 text-primary-foreground" />
               ) : (
-                <step.icon className="w-2.5 h-2.5 text-muted-foreground" />
+                <step.icon className="w-2.5 h-2.5 text-primary/60" />
               )}
             </div>
             <span className={cn(
-              "text-xs font-medium flex-1",
+              "text-xs font-medium",
               step.done ? "text-muted-foreground line-through" : "text-foreground"
             )}>
               {step.label}
             </span>
-            {!step.done && <ChevronRight className="w-3 h-3 text-muted-foreground" />}
-          </motion.button>
-        </AnimatePresence>
-
-        <button
-          onClick={() => setCurrentStep((p) => Math.min(sortedSteps.length - 1, p + 1))}
-          disabled={activeStep === sortedSteps.length - 1}
-          className="w-6 h-6 rounded-lg flex items-center justify-center text-muted-foreground hover:text-foreground disabled:opacity-20 transition-all shrink-0"
-        >
-          <ChevronRight className="w-3.5 h-3.5" />
-        </button>
-      </div>
+          </button>
+        </motion.div>
+      </AnimatePresence>
 
       {/* Inline name editor */}
       <AnimatePresence>
@@ -160,28 +131,18 @@ const OnboardingCard = ({ profile, onUpdateName, onGoToAccounts, onCreateTransac
             exit={{ height: 0, opacity: 0 }}
             className="overflow-hidden mt-2"
           >
-            <div className="flex gap-2">
+            <div className="flex gap-2 justify-center">
               <Input
                 placeholder="Seu nome"
                 value={name}
                 onChange={(e) => setName(e.target.value)}
-                className="bg-card border-border/20 h-8 text-xs rounded-lg flex-1"
+                className="bg-card border-border/20 h-8 text-xs rounded-lg max-w-[180px]"
                 autoFocus
               />
-              <Button
-                size="sm"
-                onClick={handleSaveName}
-                disabled={!name.trim() || saving}
-                className="h-8 px-3 text-[10px] rounded-lg"
-              >
+              <Button size="sm" onClick={handleSaveName} disabled={!name.trim() || saving} className="h-8 px-3 text-[10px] rounded-lg">
                 {saving ? "..." : "Salvar"}
               </Button>
-              <Button
-                size="sm"
-                variant="outline"
-                onClick={() => setEditingName(false)}
-                className="h-8 px-2 rounded-lg"
-              >
+              <Button size="sm" variant="outline" onClick={() => setEditingName(false)} className="h-8 px-2 rounded-lg">
                 <X className="w-3 h-3" />
               </Button>
             </div>
