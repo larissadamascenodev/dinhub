@@ -1,13 +1,14 @@
 import { memo, useState } from "react";
 import { Home, ArrowLeftRight, Wallet, User, Plus, X } from "lucide-react";
 import { motion, AnimatePresence } from "framer-motion";
+import { useNavigate, useLocation } from "react-router-dom";
 
 const navItems = [
-  { icon: Home, label: "Início", active: true },
-  { icon: ArrowLeftRight, label: "Transações", active: false },
-  { icon: null, label: "", isCenter: true },
-  { icon: Wallet, label: "Carteira", active: false },
-  { icon: User, label: "Perfil", active: false },
+  { icon: Home, label: "Início", path: "/" },
+  { icon: ArrowLeftRight, label: "Transações", path: "/transacoes" },
+  { icon: null, label: "", isCenter: true, path: "" },
+  { icon: Wallet, label: "Carteira", path: "/gestao" },
+  { icon: User, label: "Perfil", path: "/perfil" },
 ];
 
 const MobileBottomNav = memo(() => {
