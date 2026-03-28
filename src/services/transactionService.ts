@@ -190,6 +190,7 @@ export async function createCreditCard(input: CreditCardInput, userId: string) {
       closing_day: input.closing_day,
       due_day: input.due_day,
       color: input.color ?? null,
+      last_four_digits: input.last_four_digits ?? null,
     })
     .select()
     .single();

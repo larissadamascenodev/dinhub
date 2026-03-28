@@ -213,7 +213,7 @@ const NovaTransacaoModal = ({ open, onClose, onSuccess, initialType = "despesa" 
   const handleCreateAccount = async () => {
     if (!user || !newAccountName.trim()) return;
     try {
-      const acc = await createAccount(newAccountName.trim(), user.id);
+      const acc = await createAccount(user.id, { name: newAccountName.trim() });
       setAccounts((prev) => [...prev, acc as Account]);
       setAccountId(acc.id);
       setShowNewAccount(false);
