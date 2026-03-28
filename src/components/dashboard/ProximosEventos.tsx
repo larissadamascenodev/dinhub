@@ -114,10 +114,10 @@ const ProximosEventos = memo(({ events, onVerTodos }: Props) => (
             <div className="flex-1 pb-2.5">
               <p className="text-[11px] text-muted-foreground/50 mb-1 mt-1">{ev.date}</p>
               <div
-                className="rounded-2xl border border-border/15 px-4 py-3 flex items-center justify-between"
+                className="rounded-2xl border border-border/20 px-4 py-3 flex items-center justify-between"
                 style={{
-                  background: "linear-gradient(160deg, hsl(220 15% 14% / 0.6) 0%, hsl(220 18% 8% / 0.75) 50%, hsl(220 20% 4% / 0.9) 100%)",
-                  boxShadow: "0 2px 8px -2px rgba(0,0,0,0.3), inset 0 1px 0 0 rgba(255,255,255,0.03)",
+                  background: "linear-gradient(145deg, hsl(220 18% 10% / 0.95) 0%, hsl(220 20% 6% / 0.98) 100%)",
+                  boxShadow: "0 2px 10px -3px rgba(0,0,0,0.4), inset 0 1px 0 0 rgba(255,255,255,0.04)",
                 }}
               >
                 {/* Left: name + badge */}
