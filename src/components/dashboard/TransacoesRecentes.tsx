@@ -19,43 +19,41 @@ const CATEGORY_ICONS: Record<string, React.ElementType> = {
 const fmt = (v: number) =>
   v.toLocaleString("pt-BR", { style: "currency", currency: "BRL" });
 
-const formatDate = () => {
-  const now = new Date();
-  const day = now.getDate();
-  const months = ["jan.", "fev.", "mar.", "abr.", "mai.", "jun.", "jul.", "ago.", "set.", "out.", "nov.", "dez."];
-  return `${day} de ${months[now.getMonth()]}`;
-};
+const randomMinutes = [2, 4, 6, 8, 12, 15, 23, 35, 47];
 
-const NotificationCard = ({ tx }: { tx: Transaction }) => {
+const NotificationCard = ({ tx, index }: { tx: Transaction; index: number }) => {
   const isReceita = tx.type === "receita";
   const Icon = CATEGORY_ICONS[tx.category] || Wallet;
+  const mins = randomMinutes[index % randomMinutes.length];
 
   return (
-    <div className="flex items-center gap-3 px-4 py-3 rounded-xl border border-border/30 bg-card shadow-[0_1px_4px_-1px_rgba(0,0,0,0.2),inset_0_1px_0_0_rgba(255,255,255,0.03)]">
+    <div
+      className="flex items-center gap-3 px-4 py-3 rounded-2xl transition-all"
+      style={{
+        background: "hsl(220 16% 9% / 0.85)",
+        backdropFilter: "blur(12px)",
+        boxShadow: "0 2px 8px -2px rgba(0,0,0,0.3)",
+      }}
+    >
       {/* Icon */}
-      <div className="w-10 h-10 rounded-xl flex items-center justify-center flex-shrink-0 bg-muted/50 border border-border/20">
-        <Icon className={`w-5 h-5 ${isReceita ? "text-primary" : "text-destructive"}`} />
+      <div className="w-10 h-10 rounded-full bg-primary flex items-center justify-center flex-shrink-0 shadow-lg shadow-primary/20">
+        <Icon className="w-5 h-5 text-primary-foreground" />
       </div>
 
-      {/* Name + date */}
+      {/* Content */}
       <div className="flex-1 min-w-0">
-        <p className="text-[13px] font-semibold text-foreground leading-tight truncate">
+        <p className="text-[13px] font-bold text-foreground leading-tight truncate">
           {tx.name}
         </p>
-        <p className="text-[11px] text-muted-foreground/50 mt-0.5">
-          {tx.category} · {formatDate()}
+        <p className="text-[12px] text-muted-foreground mt-0.5">
+          Valor: <span className={isReceita ? "text-primary" : "text-destructive"}>{fmt(tx.amount)}</span>
         </p>
       </div>
 
-      {/* Value */}
-      <div className="text-right flex-shrink-0">
-        <p className={`text-[14px] font-bold tabular-nums tracking-tight ${isReceita ? "text-primary" : "text-destructive"}`}>
-          {isReceita ? "+" : "-"}{fmt(tx.amount)}
-        </p>
-        <p className="text-[9px] font-medium mt-0.5 text-muted-foreground/40">
-          {isReceita ? "Receita" : "Despesa"}
-        </p>
-      </div>
+      {/* Time */}
+      <span className="text-[11px] text-muted-foreground/50 flex-shrink-0 whitespace-nowrap">
+        há {mins}m
+      </span>
     </div>
   );
 };
@@ -109,13 +107,14 @@ const TransacoesRecentes = memo(({ transactions, onVerTodas }: Props) => {
                   initial={{ opacity: 0 }}
                   animate={{ opacity: 1 }}
                   exit={{ opacity: 0, scale: 0.95 }}
-                  className="absolute left-0 right-0 rounded-xl border border-border/20 bg-card"
+                  className="absolute left-0 right-0 rounded-2xl"
                   style={{
                     top: `${(i + 1) * 8}px`,
                     transform: `scale(${1 - (i + 1) * 0.03})`,
                     zIndex: 3 - i,
                     height: "58px",
-                    filter: `brightness(${1 - (i + 1) * 0.05})`,
+                    background: "hsl(220 16% 9% / 0.85)",
+                    filter: `brightness(${1 - (i + 1) * 0.06})`,
                   }}
                 />
               ))}
@@ -125,7 +124,7 @@ const TransacoesRecentes = memo(({ transactions, onVerTodas }: Props) => {
 
         {/* Top card */}
         <motion.div layout className="relative z-10">
-          <NotificationCard tx={topTx} />
+          <NotificationCard tx={topTx} index={0} />
         </motion.div>
 
         {/* Expand indicator */}
@@ -155,7 +154,7 @@ const TransacoesRecentes = memo(({ transactions, onVerTodas }: Props) => {
                   exit={{ opacity: 0, y: -6 }}
                   transition={{ delay: index * 0.04 }}
                 >
-                  <NotificationCard tx={tx} />
+                  <NotificationCard tx={tx} index={index + 1} />
                 </motion.div>
               ))}
             </div>
