@@ -128,10 +128,10 @@ export async function getAccounts() {
   return data ?? [];
 }
 
-export async function createAccount(name: string, userId: string) {
+export async function createAccount(name: string, userId: string, type: "checking" | "cash" | "savings" = "checking") {
   const { data, error } = await supabase
     .from("accounts")
-    .insert({ user_id: userId, name, is_default: false })
+    .insert({ user_id: userId, name, type, is_default: false } as any)
     .select()
     .single();
 
