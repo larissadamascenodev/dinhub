@@ -49,48 +49,31 @@ const MobileBottomNav = memo(() => {
               animate={{ opacity: 1, y: 0 }}
               exit={{ opacity: 0, y: 12 }}
               transition={{ duration: 0.15 }}
-              className="w-[260px] rounded-2xl bg-card/95 backdrop-blur-2xl border border-border/15 shadow-2xl shadow-black/40 overflow-hidden"
+              className="flex gap-1.5 p-1.5 rounded-xl bg-card/95 backdrop-blur-2xl border border-border/15 shadow-2xl shadow-black/40"
             >
               <motion.button
-                whileTap={{ scale: 0.97 }}
+                whileTap={{ scale: 0.95 }}
                 onClick={() => handleOption("receita")}
-                className="flex items-center gap-3 w-full px-4 py-3 hover:bg-primary/8 transition-colors"
+                className="flex items-center gap-1.5 px-3 py-2 rounded-lg hover:bg-primary/10 transition-colors"
               >
-                <div className="w-9 h-9 rounded-xl bg-primary/15 flex items-center justify-center">
-                  <TrendingUp className="w-4 h-4 text-primary" />
-                </div>
-                <div className="text-left">
-                  <span className="text-xs font-semibold text-foreground">Receita</span>
-                  <p className="text-[9px] text-muted-foreground">Adicionar ganho</p>
-                </div>
+                <TrendingUp className="w-3.5 h-3.5 text-primary" />
+                <span className="text-[11px] font-medium text-foreground whitespace-nowrap">Receita</span>
               </motion.button>
-              <div className="h-px bg-border/10 mx-4" />
               <motion.button
-                whileTap={{ scale: 0.97 }}
+                whileTap={{ scale: 0.95 }}
                 onClick={() => handleOption("despesa")}
-                className="flex items-center gap-3 w-full px-4 py-3 hover:bg-destructive/8 transition-colors"
+                className="flex items-center gap-1.5 px-3 py-2 rounded-lg hover:bg-destructive/10 transition-colors"
               >
-                <div className="w-9 h-9 rounded-xl bg-destructive/15 flex items-center justify-center">
-                  <TrendingDown className="w-4 h-4 text-destructive" />
-                </div>
-                <div className="text-left">
-                  <span className="text-xs font-semibold text-foreground">Despesa</span>
-                  <p className="text-[9px] text-muted-foreground">Adicionar gasto</p>
-                </div>
+                <TrendingDown className="w-3.5 h-3.5 text-destructive" />
+                <span className="text-[11px] font-medium text-foreground whitespace-nowrap">Despesa</span>
               </motion.button>
-              <div className="h-px bg-border/10 mx-4" />
               <motion.button
-                whileTap={{ scale: 0.97 }}
+                whileTap={{ scale: 0.95 }}
                 onClick={() => handleOption("scanner")}
-                className="flex items-center gap-3 w-full px-4 py-3 hover:bg-blue-500/8 transition-colors"
+                className="flex items-center gap-1.5 px-3 py-2 rounded-lg hover:bg-blue-500/10 transition-colors"
               >
-                <div className="w-9 h-9 rounded-xl bg-blue-500/15 flex items-center justify-center">
-                  <Camera className="w-4 h-4 text-blue-400" />
-                </div>
-                <div className="text-left">
-                  <span className="text-xs font-semibold text-foreground">Scanner</span>
-                  <p className="text-[9px] text-muted-foreground">Foto ou arquivo</p>
-                </div>
+                <Camera className="w-3.5 h-3.5 text-blue-400" />
+                <span className="text-[11px] font-medium text-foreground whitespace-nowrap">Scanner</span>
               </motion.button>
             </motion.div>
           </div>
