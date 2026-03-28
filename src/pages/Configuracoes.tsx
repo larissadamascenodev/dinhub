@@ -289,7 +289,7 @@ const Configuracoes = () => {
             initial={{ opacity: 0, y: 12 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ delay: 0.05 * (idx + 1) }}
-            className="relative overflow-hidden rounded-2xl border border-white/[0.08] backdrop-blur-xl shadow-lg shadow-black/30 px-3 py-3 flex items-center gap-2.5 hover:border-white/[0.12] transition-all text-left group"
+            className="relative overflow-hidden rounded-xl border border-white/[0.08] backdrop-blur-xl shadow-lg shadow-black/30 px-2.5 py-2.5 flex items-center gap-2 hover:border-white/[0.12] transition-all text-left group"
             style={{
               background: "linear-gradient(160deg, hsl(220 18% 9% / 0.85) 0%, hsl(220 20% 5% / 0.9) 100%)",
             }}
