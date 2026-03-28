@@ -446,7 +446,6 @@ const GestaoFinanceira = () => {
             )}
           </AnimatePresence>
         </motion.section>
-      </div>
     </div>
   );
 };
