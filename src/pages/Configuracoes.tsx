@@ -351,6 +351,10 @@ const Configuracoes = () => {
         </div>
 
         {/* Preview da personalidade */}
+        <div className="flex items-center justify-between mb-2">
+          <span className="text-[10px] text-muted-foreground">Prévia</span>
+          <span className="text-[9px] font-bold text-primary bg-primary/15 px-2 py-0.5 rounded-full">ATIVO</span>
+        </div>
         <AnimatePresence mode="wait">
           <motion.div
             key={botPersonality}
