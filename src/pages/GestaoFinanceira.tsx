@@ -1,6 +1,6 @@
 import { useState, useEffect } from "react";
 import { motion, AnimatePresence } from "framer-motion";
-import { ArrowLeft, Wallet, CreditCard, Plus, X, Landmark, Banknote, PiggyBank, TrendingUp } from "lucide-react";
+import { Wallet, CreditCard, Plus, X, Landmark, Banknote, PiggyBank, TrendingUp } from "lucide-react";
 import { useNavigate } from "react-router-dom";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -129,18 +129,9 @@ const GestaoFinanceira = () => {
   const totalUsed = creditCards.reduce((sum, c) => sum + Number(c.used_limit), 0);
 
   return (
-    <div className="dark min-h-screen bg-background text-foreground">
-      <div className="max-w-lg mx-auto px-4 pt-6 pb-32">
-        {/* Header */}
-        <div className="flex items-center gap-3 mb-6">
-          <button
-            onClick={() => navigate("/")}
-            className="w-9 h-9 rounded-xl bg-card border border-border/30 flex items-center justify-center"
-          >
-            <ArrowLeft className="w-4 h-4 text-muted-foreground" />
-          </button>
-          <h1 className="text-xl font-bold text-foreground">Gestão Financeira</h1>
-        </div>
+    <div className="max-w-lg mx-auto pt-2 pb-8">
+      {/* Title */}
+      <h1 className="text-xl font-bold text-foreground mb-6">Gestão Financeira</h1>
 
         {/* Summary Cards */}
         <div className="grid grid-cols-2 gap-3 mb-8">
@@ -455,7 +446,6 @@ const GestaoFinanceira = () => {
             )}
           </AnimatePresence>
         </motion.section>
-      </div>
     </div>
   );
 };

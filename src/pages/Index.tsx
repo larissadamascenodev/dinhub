@@ -1,8 +1,7 @@
 import { useState, useCallback } from "react";
-import { useNavigate } from "react-router-dom";
+import { useNavigate, useOutletContext } from "react-router-dom";
 import { motion } from "framer-motion";
-import DashboardHeader, { useGreeting } from "@/components/dashboard/DashboardHeader";
-import MobileBottomNav from "@/components/dashboard/MobileBottomNav";
+import { useGreeting } from "@/components/dashboard/DashboardHeader";
 import SaldoCard from "@/components/dashboard/SaldoCard";
 import ReceitasDespesasCards from "@/components/dashboard/ReceitasDespesasCards";
 import BalancoCard from "@/components/dashboard/BalancoCard";
@@ -61,16 +60,14 @@ const Index = () => {
 
   if (loading) {
     return (
-      <div className="dark min-h-screen bg-background flex items-center justify-center">
+      <div className="flex items-center justify-center py-20">
         <div className="animate-pulse text-primary text-lg">Carregando dados...</div>
       </div>
     );
   }
 
   return (
-    <div className="dark min-h-screen bg-background text-foreground">
-      <div className="max-w-7xl mx-auto px-4 md:px-6 pt-0 pb-24 md:pb-8">
-        <DashboardHeader profile={profile} />
+    <>
 
         {/* DESKTOP LAYOUT */}
         <div className="hidden lg:grid lg:grid-cols-[1fr_340px] gap-5">
@@ -164,7 +161,6 @@ const Index = () => {
             <ProximosEventos events={data.events} selectedMonth={selectedMonth} selectedYear={selectedYear} onEventClick={handleEventClick} />
           </div>
         </div>
-      </div>
       <TransactionTypeChooser open={showTypeChooser} onClose={() => setShowTypeChooser(false)} onSelect={handleTypeSelected} />
       <NovaTransacaoModal open={showModal} onClose={() => setShowModal(false)} onSuccess={handleTransactionSuccess} initialType={modalType} />
       <PagarEditarModal
@@ -173,8 +169,7 @@ const Index = () => {
         onClose={() => { setShowPayModal(false); setSelectedEvent(null); }}
         onSuccess={refetch}
       />
-      <MobileBottomNav />
-    </div>
+    </>
   );
 };
 
