@@ -141,6 +141,43 @@ export async function createAccount(name: string, userId: string, type: "checkin
   return data;
 }
 
+// Credit card helpers
+export interface CreditCardInput {
+  name: string;
+  limit: number;
+  closing_day: number;
+  due_day: number;
+  color?: string | null;
+}
+
+export async function getCreditCards() {
+  const { data, error } = await supabase
+    .from("credit_cards" as any)
+    .select("*")
+    .order("created_at", { ascending: true });
+
+  if (error) throw error;
+  return data ?? [];
+}
+
+export async function createCreditCard(input: CreditCardInput, userId: string) {
+  const { data, error } = await supabase
+    .from("credit_cards" as any)
+    .insert({
+      user_id: userId,
+      name: input.name,
+      limit: input.limit,
+      closing_day: input.closing_day,
+      due_day: input.due_day,
+      color: input.color ?? null,
+    })
+    .select()
+    .single();
+
+  if (error) throw error;
+  return data;
+}
+
 // AI category suggestion
 export async function suggestCategory(description: string, type: "receita" | "despesa"): Promise<string | null> {
   try {
