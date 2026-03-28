@@ -27,16 +27,22 @@ const Index = () => {
   const [modalType, setModalType] = useState<"receita" | "despesa">("despesa");
   const [selectedEvent, setSelectedEvent] = useState<FinanceEvent | null>(null);
   const [showPayModal, setShowPayModal] = useState(false);
+  const navigate = useNavigate();
   const { user } = useAuth();
   const { data, loading, refetch } = useFinanceData(selectedMonth, selectedYear);
+  const { profile, refetch: refetchProfile, updateDisplayName, isOnboardingComplete } = useProfile();
   const handleNovaTransacao = useCallback(() => setShowTypeChooser(true), []);
   const handleTypeSelected = useCallback((type: "receita" | "despesa") => {
     setModalType(type);
     setShowTypeChooser(false);
     setShowModal(true);
   }, []);
+  const handleTransactionSuccess = useCallback(() => {
+    refetch();
+    refetchProfile();
+  }, [refetch, refetchProfile]);
   const { greeting, dateStr } = useGreeting();
-  const userName = user?.email?.split("@")[0] ?? "Usuário";
+  const userName = profile?.display_name || user?.email?.split("@")[0] ?? "Usuário";
 
   const handleMonthChange = (month: number, year: number) => {
     setSelectedMonth(month);
