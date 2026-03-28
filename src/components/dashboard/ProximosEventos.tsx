@@ -93,7 +93,7 @@ const ProximosEventos = memo(({ events, selectedMonth, selectedYear, onVerTodos 
         </div>
 
         {/* Mini Calendar */}
-        <MiniCalendar dayStatusMap={dayStatusMap} />
+        <MiniCalendar dayStatusMap={dayStatusMap} selectedMonth={selectedMonth} selectedYear={selectedYear} />
 
         {/* Legend */}
         <div className="flex items-center justify-center gap-6 px-5 pb-4">
