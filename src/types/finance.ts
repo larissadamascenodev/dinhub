@@ -17,6 +17,7 @@ export interface CategoryExpense {
 export interface FinanceEvent {
   id: string;
   name: string;
+  category: string;
   date: string;
   amount: number;
   status: "pago" | "pendente" | "atrasado" | "recebido";
