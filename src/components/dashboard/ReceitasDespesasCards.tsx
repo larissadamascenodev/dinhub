@@ -10,7 +10,7 @@ interface Props {
 const fmt = (v: number) => v.toLocaleString("pt-BR", { style: "currency", currency: "BRL", minimumFractionDigits: 2 });
 
 const ReceitasDespesasCards = memo(({ receitas, despesas, mobile }: Props) => (
-  <div className={mobile ? "grid grid-cols-2 gap-3" : "grid grid-rows-2 gap-3"}>
+  <div className="grid grid-rows-2 gap-3">
     {/* Receitas */}
     <button
       className={`relative rounded-xl border border-primary/15 hover:border-primary/30 transition-all text-left overflow-hidden ${mobile ? "p-3" : "p-4"}`}
