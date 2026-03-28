@@ -80,10 +80,8 @@ const Index = () => {
           <BalancoCard balanco={balanco} />
           <MicroInteracoesCard gastosHoje={data.gastosHoje} mediaGastosDiarios={data.mediaGastosDiarios} />
 
-          <div className="grid grid-cols-2 gap-4">
-            <TransacoesRecentes transactions={data.transactions} />
-            <GastosPorCategoria categories={data.categories} />
-          </div>
+          <TransacoesRecentes transactions={data.transactions} />
+          <GastosPorCategoria categories={data.categories} />
 
           <ProximosEventos events={data.events} />
         </div>
