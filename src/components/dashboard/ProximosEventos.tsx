@@ -8,6 +8,7 @@ interface Props {
   selectedMonth: number;
   selectedYear: number;
   onVerTodos?: () => void;
+  onEventClick?: (event: FinanceEvent) => void;
 }
 
 const STATUS_CONFIG = {
@@ -67,7 +68,7 @@ const getMonthWeeks = (month: number, year: number) => {
   return weeks;
 };
 
-const ProximosEventos = memo(({ events, selectedMonth, selectedYear, onVerTodos }: Props) => {
+const ProximosEventos = memo(({ events, selectedMonth, selectedYear, onVerTodos, onEventClick }: Props) => {
   const today = new Date();
 
   const dayStatusMap = useMemo(() => {
@@ -95,7 +96,6 @@ const ProximosEventos = memo(({ events, selectedMonth, selectedYear, onVerTodos 
   const clampedIdx = Math.max(0, Math.min(weekIdx, weeks.length - 1));
   const days = weeks[clampedIdx];
 
-  // All events sorted by day
   const sortedEvents = useMemo(() => {
     return [...events]
       .map((ev) => ({ ...ev, _day: parseDayFromDate(ev.date) }))
@@ -139,7 +139,6 @@ const ProximosEventos = memo(({ events, selectedMonth, selectedYear, onVerTodos 
             const dimmed = !d.inMonth;
             const dayEvent = d.inMonth ? dayStatusMap.get(d.day) : undefined;
 
-            // Circle style based on event status (today no longer gets special circle)
             let circleStyle: React.CSSProperties;
             const todayWithEvent = d.isToday && dayEvent && !dimmed;
             if (todayWithEvent) {
@@ -246,7 +245,6 @@ const ProximosEventos = memo(({ events, selectedMonth, selectedYear, onVerTodos 
 
       {/* Timeline events */}
       <div className="relative px-4 py-3">
-        {/* Vertical timeline line */}
         <div
           className="absolute left-[22px] top-3 bottom-3 w-px"
           style={{ background: "linear-gradient(180deg, hsl(40 80% 50% / 0.4), hsl(150 100% 45% / 0.3), transparent)" }}
@@ -258,6 +256,7 @@ const ProximosEventos = memo(({ events, selectedMonth, selectedYear, onVerTodos 
             const a = cfg.accent;
             const StatusIcon = cfg.Icon;
             const isPaidOrReceived = ev.status === "pago" || ev.status === "recebido";
+            const isClickable = ev.isTransaction && ev.status === "pendente";
 
             return (
               <motion.div
@@ -267,7 +266,6 @@ const ProximosEventos = memo(({ events, selectedMonth, selectedYear, onVerTodos 
                 transition={{ delay: idx * 0.04, type: "spring", stiffness: 400, damping: 30 }}
                 className="flex gap-3"
               >
-                {/* Timeline dot */}
                 <div className="flex flex-col items-center pt-3 shrink-0 z-10">
                   <div
                     className="w-3 h-3 rounded-full border-2"
@@ -280,21 +278,23 @@ const ProximosEventos = memo(({ events, selectedMonth, selectedYear, onVerTodos 
                 </div>
 
                 <div className="flex-1">
-                  {/* Date label outside card */}
                   <p className="text-[9px] text-muted-foreground/35 font-medium mb-1">
                     {ev._day && ev._day < 10 ? `0${ev._day}` : ev._day} de {MONTH_SHORT[selectedMonth]}
                   </p>
 
-                  {/* Card */}
                   <div
-                    className="rounded-xl border px-3 py-2 cursor-pointer transition-all hover:scale-[1.01]"
+                    className={`rounded-xl border px-3 py-2 transition-all ${isClickable ? "cursor-pointer hover:scale-[1.02] active:scale-[0.98]" : "hover:scale-[1.01]"}`}
                     style={{
                       background: `hsl(${a} / 0.06)`,
                       borderColor: `hsl(${a} / 0.15)`,
                     }}
+                    onClick={() => {
+                      if (isClickable && onEventClick) {
+                        onEventClick(ev);
+                      }
+                    }}
                   >
                     <div className="flex items-start gap-2.5">
-                      {/* Status icon */}
                       <div
                         className="w-6 h-6 rounded-full flex items-center justify-center shrink-0 mt-0.5"
                         style={{
@@ -307,19 +307,17 @@ const ProximosEventos = memo(({ events, selectedMonth, selectedYear, onVerTodos 
                           boxShadow: isPaidOrReceived ? `0 2px 8px -2px hsl(${a} / 0.3)` : "none",
                         }}
                       >
-                        <StatusIcon
-                          className="w-3 h-3"
-                          style={{ color: `hsl(${a})` }}
-                        />
+                        <StatusIcon className="w-3 h-3" style={{ color: `hsl(${a})` }} />
                       </div>
 
-                      {/* Name + Category */}
                       <div className="flex-1 min-w-0">
                         <p className="text-[13px] font-semibold text-foreground/90 truncate">{ev.name}</p>
-                        <p className="text-[9px] text-muted-foreground/40 font-medium mt-0.5">{ev.category}</p>
+                        <p className="text-[9px] text-muted-foreground/40 font-medium mt-0.5">
+                          {ev.category}
+                          {ev.isTransaction && <span className="ml-1 opacity-60">· agendada</span>}
+                        </p>
                       </div>
 
-                      {/* Amount + status label */}
                       <div className="flex flex-col items-end shrink-0">
                         <p className="text-[13px] font-bold tabular-nums" style={{ color: `hsl(${a})` }}>
                           {fmt(ev.amount)}

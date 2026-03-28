@@ -6,6 +6,7 @@ export interface CreateTransactionInput {
   amount: number;
   category: string;
   date: string; // YYYY-MM-DD
+  status?: "pago" | "pendente";
   account_id?: string | null;
 }
 
@@ -16,9 +17,6 @@ export interface TransactionFilters {
   category?: string;
 }
 
-/**
- * Create a new transaction
- */
 export async function createTransaction(input: CreateTransactionInput, userId: string) {
   const { data, error } = await supabase
     .from("transactions")
@@ -29,6 +27,7 @@ export async function createTransaction(input: CreateTransactionInput, userId: s
       amount: input.amount,
       category: input.category,
       date: input.date,
+      status: input.status ?? "pago",
       account_id: input.account_id ?? null,
     })
     .select()
@@ -38,9 +37,37 @@ export async function createTransaction(input: CreateTransactionInput, userId: s
   return data;
 }
 
-/**
- * Get transactions with filters
- */
+export async function updateTransactionStatus(id: string, status: "pago" | "pendente") {
+  const { data, error } = await supabase
+    .from("transactions")
+    .update({ status })
+    .eq("id", id)
+    .select()
+    .single();
+
+  if (error) throw error;
+  return data;
+}
+
+export async function updateTransaction(id: string, updates: {
+  name?: string;
+  amount?: number;
+  category?: string;
+  date?: string;
+  type?: "receita" | "despesa";
+  status?: "pago" | "pendente";
+}) {
+  const { data, error } = await supabase
+    .from("transactions")
+    .update(updates)
+    .eq("id", id)
+    .select()
+    .single();
+
+  if (error) throw error;
+  return data;
+}
+
 export async function getTransactions(filters: TransactionFilters = {}) {
   let query = supabase
     .from("transactions")
@@ -66,13 +93,11 @@ export async function getTransactions(filters: TransactionFilters = {}) {
   return data ?? [];
 }
 
-/**
- * Get recent transactions (last 10)
- */
 export async function getRecentTransactions(limit = 10) {
   const { data, error } = await supabase
     .from("transactions")
     .select("*")
+    .eq("status", "pago")
     .order("date", { ascending: false })
     .limit(limit);
 
@@ -80,9 +105,6 @@ export async function getRecentTransactions(limit = 10) {
   return data ?? [];
 }
 
-/**
- * Delete a transaction
- */
 export async function deleteTransaction(id: string) {
   const { error } = await supabase
     .from("transactions")

@@ -23,6 +23,7 @@ export interface RawTransaction {
   date: string;
   amount: number;
   type: string;
+  status: string;
   account_id: string | null;
   user_id: string;
   created_at: string;
@@ -47,9 +48,6 @@ function getMonthRange(month: number, year: number) {
   return { start, end };
 }
 
-/**
- * Fetch all transactions for a given month/year (RLS handles user filtering)
- */
 async function fetchMonthTransactions(month: number, year: number) {
   const { start, end } = getMonthRange(month, year);
   const { data, error } = await supabase
@@ -63,9 +61,6 @@ async function fetchMonthTransactions(month: number, year: number) {
   return (data ?? []) as RawTransaction[];
 }
 
-/**
- * Fetch events for a given month/year
- */
 async function fetchMonthEvents(month: number, year: number) {
   const { start, end } = getMonthRange(month, year);
   const { data, error } = await supabase
@@ -79,9 +74,6 @@ async function fetchMonthEvents(month: number, year: number) {
   return (data ?? []) as RawEvent[];
 }
 
-/**
- * Fetch default account balance
- */
 async function fetchDefaultAccountBalance(): Promise<number> {
   const { data } = await supabase
     .from("accounts")
@@ -93,12 +85,13 @@ async function fetchDefaultAccountBalance(): Promise<number> {
 }
 
 /**
- * Calculate income/expense aggregations from raw transactions
+ * Only count PAID transactions in balance
  */
 function aggregate(transactions: RawTransaction[]) {
   let income = 0;
   let expense = 0;
   for (const t of transactions) {
+    if (t.status !== "pago") continue; // Skip pending/scheduled
     const amt = Number(t.amount);
     if (t.type === "receita") {
       income += amt;
@@ -109,9 +102,6 @@ function aggregate(transactions: RawTransaction[]) {
   return { income, expense, balance: income - expense };
 }
 
-/**
- * Fetch average income/expense over the last N months for projections
- */
 async function fetchHistoricalAverages(
   currentMonth: number,
   currentYear: number,
@@ -144,9 +134,6 @@ async function fetchHistoricalAverages(
   };
 }
 
-/**
- * Determine financial health status based on current vs historical spending
- */
 function computeStatus(
   currentExpense: number,
   avgExpense: number
@@ -158,9 +145,6 @@ function computeStatus(
   return "safe";
 }
 
-/**
- * Central financial summary function
- */
 export async function getFinancialSummary(
   month: number,
   year: number
@@ -169,7 +153,6 @@ export async function getFinancialSummary(
   transactions: RawTransaction[];
   events: RawEvent[];
 }> {
-  // Fetch current month data + historical averages + account balance in parallel
   const [transactions, events, accountBalance, historical] = await Promise.all([
     fetchMonthTransactions(month, year),
     fetchMonthEvents(month, year),
@@ -177,6 +160,7 @@ export async function getFinancialSummary(
     fetchHistoricalAverages(month, year, 3),
   ]);
 
+  // Only paid transactions count toward balance
   const { income, expense, balance } = aggregate(transactions);
 
   const today = new Date();
@@ -184,14 +168,11 @@ export async function getFinancialSummary(
   const isCurrentMonth =
     today.getMonth() === month && today.getFullYear() === year;
 
-  // Today's expenses
+  // Today's paid expenses only
   const todayExpenses = transactions
-    .filter(
-      (t) => t.type === "despesa" && t.date === todayStr
-    )
+    .filter((t) => t.type === "despesa" && t.status === "pago" && t.date === todayStr)
     .reduce((s, t) => s + Number(t.amount), 0);
 
-  // Daily average expense (based on elapsed days)
   const daysInMonth = new Date(year, month + 1, 0).getDate();
   const elapsedDays = isCurrentMonth
     ? Math.max(today.getDate(), 1)
@@ -199,24 +180,30 @@ export async function getFinancialSummary(
   const dailyAverageExpense = elapsedDays > 0 ? expense / elapsedDays : 0;
   const dailyAverageIncome = elapsedDays > 0 ? income / elapsedDays : 0;
 
-  // Predicted balance: current balance + future transactions this month
+  // Predicted balance includes pending transactions + pending events
   let predictedBalance = balance;
   if (isCurrentMonth) {
-    // Include pending events as predicted future transactions
+    // Pending transactions (scheduled but not paid)
+    const pendingTxs = transactions.filter((t) => t.status === "pendente");
+    for (const t of pendingTxs) {
+      const amt = Number(t.amount);
+      if (t.type === "receita") {
+        predictedBalance += amt;
+      } else {
+        predictedBalance -= amt;
+      }
+    }
+
+    // Pending finance_events
     const futureEvents = events.filter(
       (e) => e.date > todayStr && e.status === "pendente"
     );
-    const futureEventBalance = futureEvents.reduce((s, e) => {
-      // Negative for expenses, positive for income (use category heuristic or amount sign)
-      return s - Number(e.amount);
-    }, 0);
-    predictedBalance = balance + futureEventBalance;
+    for (const e of futureEvents) {
+      predictedBalance -= Number(e.amount);
+    }
   }
 
-  // Projection for next month
   const nextMonthBalance = historical.avgIncome - historical.avgExpense;
-
-  // Status
   const status = computeStatus(expense, historical.avgExpense);
 
   return {
@@ -240,10 +227,6 @@ export async function getFinancialSummary(
   };
 }
 
-/**
- * Daily behavior analysis
- * Returns today's spending, daily average, and a behavioral status
- */
 export interface DailyBehavior {
   today_spent: number;
   average: number;
@@ -269,16 +252,9 @@ export function computeDailyBehavior(
     }
   }
 
-  return {
-    today_spent: todaySpent,
-    average: dailyAverage,
-    status,
-  };
+  return { today_spent: todaySpent, average: dailyAverage, status };
 }
 
-/**
- * Get summary for a past month (simplified)
- */
 export async function getMonthHistory(month: number, year: number) {
   const transactions = await fetchMonthTransactions(month, year);
   const { income, expense, balance } = aggregate(transactions);

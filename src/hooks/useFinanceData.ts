@@ -18,6 +18,7 @@ const EMPTY_DATA: DashboardData = {
   transactions: [],
   categories: [],
   events: [],
+  pendingTransactions: [],
 };
 
 const CAT_COLORS = [
@@ -42,8 +43,11 @@ export function useFinanceData(selectedMonth: number, selectedYear: number) {
       const { summary, transactions: rawTxs, events: rawEvents } =
         await getFinancialSummary(selectedMonth, selectedYear);
 
-      // Map transactions for UI
-      const transactions: Transaction[] = rawTxs.map((t) => ({
+      // Split transactions: paid → recentes, pending → events
+      const paidTxs = rawTxs.filter((t) => t.status === "pago");
+      const pendingTxs = rawTxs.filter((t) => t.status === "pendente");
+
+      const transactions: Transaction[] = paidTxs.map((t) => ({
         id: t.id,
         name: t.name,
         category: t.category,
@@ -53,9 +57,26 @@ export function useFinanceData(selectedMonth: number, selectedYear: number) {
         }),
         amount: Number(t.amount),
         type: t.type as Transaction["type"],
+        status: "pago" as const,
       }));
 
-      // Map events for UI
+      // Pending transactions as FinanceEvent-like items for ProximosEventos
+      const pendingAsEvents: FinanceEvent[] = pendingTxs.map((t) => ({
+        id: t.id,
+        name: t.name,
+        category: t.category,
+        date: new Date(t.date).toLocaleDateString("pt-BR", {
+          day: "numeric",
+          month: "short",
+        }),
+        rawDate: t.date,
+        amount: Number(t.amount),
+        status: "pendente" as const,
+        type: t.type as "receita" | "despesa",
+        isTransaction: true,
+      }));
+
+      // Map finance_events
       const events: FinanceEvent[] = rawEvents.map((e) => ({
         id: e.id,
         name: e.name,
@@ -64,13 +85,22 @@ export function useFinanceData(selectedMonth: number, selectedYear: number) {
           day: "numeric",
           month: "short",
         }),
+        rawDate: e.date,
         amount: Number(e.amount),
         status: e.status as FinanceEvent["status"],
+        isTransaction: false,
       }));
 
-      // Group expenses by category
+      // Merge pending transactions into events list
+      const allEvents = [...events, ...pendingAsEvents].sort((a, b) => {
+        const dayA = parseInt(a.date);
+        const dayB = parseInt(b.date);
+        return dayA - dayB;
+      });
+
+      // Group expenses by category (only paid)
       const catMap = new Map<string, number>();
-      rawTxs
+      paidTxs
         .filter((t) => t.type === "despesa")
         .forEach((t) => {
           catMap.set(t.category, (catMap.get(t.category) ?? 0) + Number(t.amount));
@@ -96,7 +126,16 @@ export function useFinanceData(selectedMonth: number, selectedYear: number) {
         projection: summary.projection,
         transactions,
         categories,
-        events,
+        events: allEvents,
+        pendingTransactions: pendingTxs.map((t) => ({
+          id: t.id,
+          name: t.name,
+          category: t.category,
+          date: t.date,
+          amount: Number(t.amount),
+          type: t.type as Transaction["type"],
+          status: "pendente" as const,
+        })),
       });
     } catch (err) {
       console.error("Finance engine error:", err);
@@ -109,7 +148,6 @@ export function useFinanceData(selectedMonth: number, selectedYear: number) {
     fetchData();
   }, [fetchData]);
 
-  // Realtime subscription
   useEffect(() => {
     if (!user) return;
 
