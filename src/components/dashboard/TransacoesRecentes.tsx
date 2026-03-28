@@ -99,44 +99,37 @@ const TransacoesRecentes = memo(({ transactions }: Props) => {
         }}
         transition={{ type: "spring", stiffness: 400, damping: 30 }}
       >
-        {/* Stacked ghost cards — animate in/out like iPhone */}
+        {/* Stacked ghost cards */}
         <AnimatePresence>
           {!expanded && restTx.length > 0 &&
-            restTx.slice(0, STACK_COUNT).map((_, i) => (
-              <motion.div
-                key={`stack-${i}`}
-                className="absolute left-0 right-0 rounded-[14px]"
-                initial={{ 
-                  top: 0, 
-                  opacity: 0, 
-                  scale: 1,
-                }}
-                animate={{
-                  top: (i + 1) * STACK_OFFSET,
-                  opacity: 1 - (i + 1) * 0.18,
-                  scale: 1 - (i + 1) * STACK_SCALE_STEP,
-                }}
-                exit={{
-                  top: 0,
-                  opacity: 0,
-                  scale: 1,
-                }}
-                transition={{
-                  type: "spring",
-                  stiffness: 500,
-                  damping: 35,
-                  delay: i * 0.03,
-                }}
-                style={{
-                  height: "56px",
-                  transformOrigin: "top center",
-                  zIndex: STACK_COUNT - i,
-                  background: `hsl(220 10% ${12 - (i + 1) * 1.5}%)`,
-                  border: "1px solid hsl(220 12% 16% / 0.3)",
-                  boxShadow: "0 1px 3px rgba(0,0,0,0.2)",
-                }}
-              />
-            ))
+            restTx.slice(0, STACK_COUNT).map((tx, i) => {
+              const isR = tx.type === "receita";
+              return (
+                <motion.div
+                  key={`stack-${i}`}
+                  className="absolute left-0 right-0 rounded-[14px]"
+                  initial={{ top: 0, opacity: 0, scale: 1 }}
+                  animate={{
+                    top: (i + 1) * STACK_OFFSET,
+                    opacity: 1 - (i + 1) * 0.2,
+                    scale: 1 - (i + 1) * STACK_SCALE_STEP,
+                  }}
+                  exit={{ top: 0, opacity: 0, scale: 1 }}
+                  transition={{ type: "spring", stiffness: 500, damping: 35, delay: i * 0.03 }}
+                  style={{
+                    height: "56px",
+                    transformOrigin: "top center",
+                    zIndex: STACK_COUNT - i,
+                    background: isR
+                      ? `hsl(150 100% 45% / ${0.04 - i * 0.005})`
+                      : `hsl(0 60% 50% / ${0.04 - i * 0.005})`,
+                    border: isR
+                      ? "1px solid hsl(150 100% 45% / 0.12)"
+                      : "1px solid hsl(0 60% 50% / 0.12)",
+                  }}
+                />
+              );
+            })
           }
         </AnimatePresence>
 
