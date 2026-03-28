@@ -58,7 +58,6 @@ const Index = () => {
 
             {/* Transações + Categorias stacked */}
             <TransacoesRecentes transactions={data.transactions} />
-            <GastosPorCategoria categories={data.categories} />
           </div>
 
           {/* RIGHT COLUMN (sidebar) */}
