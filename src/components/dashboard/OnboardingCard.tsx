@@ -143,8 +143,8 @@ const OnboardingCard = ({ profile, onUpdateName, onGoToAccounts, onCreateTransac
         </AnimatePresence>
 
         <button
-          onClick={() => setCurrentStep((p) => Math.min(steps.length - 1, p + 1))}
-          disabled={currentStep === steps.length - 1}
+          onClick={() => setCurrentStep((p) => Math.min(sortedSteps.length - 1, p + 1))}
+          disabled={activeStep === sortedSteps.length - 1}
           className="w-6 h-6 rounded-lg flex items-center justify-center text-muted-foreground hover:text-foreground disabled:opacity-20 transition-all shrink-0"
         >
           <ChevronRight className="w-3.5 h-3.5" />
