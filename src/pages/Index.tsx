@@ -31,6 +31,13 @@ const Index = () => {
   const { data, loading, refetch } = useFinanceData(selectedMonth, selectedYear);
   const { profile, refetch: refetchProfile, updateDisplayName, isOnboardingComplete } = useProfile();
   const handleNovaTransacao = useCallback(() => setShowTypeChooser(true), []);
+
+  // Listen for desktop nav "Nova transação" button
+  useEffect(() => {
+    const handler = () => setShowTypeChooser(true);
+    window.addEventListener("open-nova-transacao", handler);
+    return () => window.removeEventListener("open-nova-transacao", handler);
+  }, []);
   const handleTypeSelected = useCallback((type: "receita" | "despesa") => {
     setModalType(type);
     setShowTypeChooser(false);
