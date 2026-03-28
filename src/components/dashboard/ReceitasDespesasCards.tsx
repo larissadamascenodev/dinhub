@@ -39,7 +39,7 @@ const ReceitasDespesasCards = memo(({ receitas, despesas, mobile }: Props) => {
           <ArrowDownRight className={`${mobile ? "w-3 h-3" : "w-3.5 h-3.5"} text-destructive`} />
           <span className="text-[9px] text-muted-foreground uppercase tracking-wider font-semibold">Despesas</span>
         </div>
-        <p className={`font-display ${mobile ? "text-lg" : "text-xl"} font-bold text-destructive tabular-nums leading-none`}>
+        <p className={`font-display ${mobile ? "text-base" : "text-xl"} font-bold text-destructive tabular-nums leading-none`}>
           {animatedDespesas}
         </p>
       </button>
