@@ -98,23 +98,25 @@ const TransacoesRecentes = memo(({ transactions }: Props) => {
         className="relative cursor-pointer"
         onClick={() => setExpanded(!expanded)}
         style={{
-          paddingBottom: !expanded && restTx.length > 0 ? `${Math.min(restTx.length, 3) * 5 + 8}px` : 0,
+          paddingBottom: !expanded && restTx.length > 0 ? `${Math.min(restTx.length, 4) * 10 + 14}px` : 0,
         }}
       >
-        {/* Ghost cards */}
+        {/* Stacked cards behind — iPhone notification style */}
         {!expanded && restTx.length > 0 &&
-          restTx.slice(0, 3).map((_, i) => (
+          restTx.slice(0, 4).map((_, i) => (
             <div
               key={`g-${i}`}
               className="absolute left-0 right-0 rounded-[14px]"
               style={{
-                top: `${(i + 1) * 5}px`,
+                top: `${(i + 1) * 10}px`,
                 height: "56px",
-                transform: `scale(${1 - (i + 1) * 0.02})`,
-                zIndex: 3 - i,
-                background: `hsl(220 17% ${10 - (i + 1) * 1.5}%)`,
-                borderBottom: "1px solid hsl(220 14% 14%)",
-                opacity: 1 - (i + 1) * 0.2,
+                transform: `scale(${1 - (i + 1) * 0.03})`,
+                transformOrigin: "top center",
+                zIndex: 4 - i,
+                background: `hsl(220 17% ${10 - (i + 1) * 1.2}%)`,
+                border: "1px solid hsl(220 14% 15%)",
+                opacity: 1 - (i + 1) * 0.15,
+                boxShadow: "0 1px 2px rgba(0,0,0,0.2)",
               }}
             />
           ))
@@ -125,12 +127,23 @@ const TransacoesRecentes = memo(({ transactions }: Props) => {
           <TxCard tx={topTx} />
         </motion.div>
 
-        {/* Pill */}
+        {/* Badge + hint */}
         {restTx.length > 0 && !expanded && (
-          <div className="absolute -bottom-1.5 left-1/2 -translate-x-1/2 z-20 flex items-center gap-1 text-[9px] text-muted-foreground/40 font-medium">
-            <ChevronDown className="w-3 h-3" />
-            +{restTx.length}
-          </div>
+          <motion.div
+            animate={{ y: [0, 3, 0] }}
+            transition={{ repeat: Infinity, duration: 2.5, ease: "easeInOut" }}
+            className="absolute -bottom-2 left-1/2 -translate-x-1/2 z-20 flex items-center gap-1 px-3 py-1 rounded-full"
+            style={{
+              background: "hsl(220 16% 12%)",
+              border: "1px solid hsl(220 14% 18%)",
+              boxShadow: "0 2px 8px rgba(0,0,0,0.3)",
+            }}
+          >
+            <ChevronDown className="w-3 h-3 text-muted-foreground/50" />
+            <span className="text-[9px] text-muted-foreground/50 font-medium">
+              +{restTx.length} transações
+            </span>
+          </motion.div>
         )}
       </div>
 
