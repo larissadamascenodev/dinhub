@@ -170,8 +170,7 @@ const Index = () => {
         onClose={() => { setShowPayModal(false); setSelectedEvent(null); }}
         onSuccess={refetch}
       />
-      <MobileBottomNav />
-    </div>
+    </>
   );
 };
 
