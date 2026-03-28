@@ -224,6 +224,30 @@ const NovaTransacaoModal = ({ open, onClose, onSuccess, initialType = "despesa" 
     }
   };
 
+  const handleCreateCreditCard = async () => {
+    if (!user || !newCardName.trim() || !newCardLimit) return;
+    try {
+      const card = await createCreditCard(
+        {
+          name: newCardName.trim(),
+          limit: parseFloat(newCardLimit),
+          closing_day: parseInt(newCardClosingDay),
+          due_day: parseInt(newCardDueDay),
+        },
+        user.id
+      );
+      const typedCard = card as unknown as CreditCardItem;
+      setCreditCards((prev) => [...prev, typedCard]);
+      setCreditCardId(typedCard.id);
+      setShowNewCard(false);
+      setNewCardName("");
+      setNewCardLimit("");
+      toast.success("Cartão cadastrado!");
+    } catch {
+      toast.error("Erro ao criar cartão");
+    }
+  };
+
   const handleCreateCategory = (nameOverride?: string) => {
     const name = (nameOverride || newCategoryName).trim();
     if (!name) return;
