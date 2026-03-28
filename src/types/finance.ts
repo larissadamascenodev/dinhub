@@ -19,7 +19,7 @@ export interface FinanceEvent {
   name: string;
   date: string;
   amount: number;
-  status: "pago" | "pendente" | "atrasado";
+  status: "pago" | "pendente" | "atrasado" | "recebido";
 }
 
 export interface DashboardData {
