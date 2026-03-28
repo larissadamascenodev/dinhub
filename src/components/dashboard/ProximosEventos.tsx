@@ -213,7 +213,7 @@ const ProximosEventos = memo(({ events, selectedMonth, selectedYear }: Props) =>
                 </div>
 
                 {/* Events */}
-                <div className="space-y-1">
+                <div className="space-y-0.5">
                   {evs.map((ev, i) => {
                     const cfg = STATUS_CONFIG[ev.status];
                     const a = cfg.accent;
@@ -225,28 +225,28 @@ const ProximosEventos = memo(({ events, selectedMonth, selectedYear }: Props) =>
                         initial={{ opacity: 0, y: 4 }}
                         animate={{ opacity: 1, y: 0 }}
                         transition={{ delay: gi * 0.05 + i * 0.03 }}
-                        className="flex items-center gap-2 rounded-xl px-3 py-2 cursor-pointer transition-all"
+                        className="flex items-center gap-2 rounded-lg px-2.5 py-1.5 cursor-pointer transition-all"
                         style={{
                           background: `hsl(${a} / 0.05)`,
                           border: `1px solid hsl(${a} / 0.1)`,
                         }}
                       >
                         <div
-                          className="w-5 h-5 rounded-md flex items-center justify-center shrink-0"
+                          className="w-4 h-4 rounded flex items-center justify-center shrink-0"
                           style={{ background: `hsl(${a} / 0.12)` }}
                         >
-                          <StatusIcon className="w-2.5 h-2.5" style={{ color: `hsl(${a})` }} />
+                          <StatusIcon className="w-2 h-2" style={{ color: `hsl(${a})` }} />
                         </div>
 
-                        <p className="flex-1 text-[11px] font-semibold text-foreground/80 truncate">{ev.name}</p>
+                        <p className="flex-1 text-[10px] font-semibold text-foreground/80 truncate">{ev.name}</p>
 
-                        <div className="text-right shrink-0">
-                          <p className="text-[11px] font-bold tabular-nums" style={{ color: `hsl(${a})` }}>
-                            {fmt(ev.amount)}
-                          </p>
-                          <span className="text-[7px] font-semibold uppercase tracking-wider" style={{ color: `hsl(${a} / 0.5)` }}>
+                        <div className="flex items-center gap-1.5 shrink-0">
+                          <span className="text-[7px] font-semibold uppercase" style={{ color: `hsl(${a} / 0.5)` }}>
                             {cfg.label}
                           </span>
+                          <p className="text-[10px] font-bold tabular-nums" style={{ color: `hsl(${a})` }}>
+                            {fmt(ev.amount)}
+                          </p>
                         </div>
                       </motion.div>
                     );
