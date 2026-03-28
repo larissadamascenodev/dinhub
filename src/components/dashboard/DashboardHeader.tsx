@@ -1,5 +1,6 @@
 import { memo, useMemo } from "react";
-import { LayoutDashboard, ArrowLeftRight, Wallet, Bot, User, Bell, Flame, PiggyBank } from "lucide-react";
+import { LayoutDashboard, ArrowLeftRight, Wallet, Bot, User, Bell, Flame, PiggyBank, LogOut } from "lucide-react";
+import { useAuth } from "@/contexts/AuthContext";
 import { motion } from "framer-motion";
 
 export const useGreeting = () => {
@@ -24,7 +25,8 @@ const NAV_ITEMS = [
 ];
 
 const DashboardHeader = memo(() => {
-
+  const { signOut, user } = useAuth();
+  const initials = user?.email?.substring(0, 2).toUpperCase() ?? "U";
   return (
     <>
       {/* Desktop Top Bar */}
@@ -68,8 +70,15 @@ const DashboardHeader = memo(() => {
             <Bell className="h-4 w-4" />
           </button>
           <div className="w-8 h-8 rounded-lg border border-border/30 bg-muted/30 flex items-center justify-center text-foreground text-xs font-bold">
-            U
+            {initials}
           </div>
+          <button
+            onClick={signOut}
+            className="w-9 h-9 rounded-full border border-border/30 flex items-center justify-center text-muted-foreground hover:text-destructive transition-colors"
+            title="Sair"
+          >
+            <LogOut className="h-4 w-4" />
+          </button>
         </div>
       </div>
 
