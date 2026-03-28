@@ -1,5 +1,5 @@
 import { memo, useState } from "react";
-import { Home, ArrowLeftRight, Wallet, MoreHorizontal, Plus, X } from "lucide-react";
+import { Home, ArrowLeftRight, Wallet, User, Plus, X } from "lucide-react";
 import { motion, AnimatePresence } from "framer-motion";
 
 const navItems = [
@@ -7,7 +7,7 @@ const navItems = [
   { icon: ArrowLeftRight, label: "Transações", active: false },
   { icon: null, label: "", isCenter: true },
   { icon: Wallet, label: "Carteira", active: false },
-  { icon: MoreHorizontal, label: "Mais", active: false },
+  { icon: User, label: "Perfil", active: false },
 ];
 
 const MobileBottomNav = memo(() => {
