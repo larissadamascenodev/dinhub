@@ -290,7 +290,9 @@ const NovaTransacaoModal = ({ open, onClose, onSuccess, initialType = "despesa" 
           payment_method: type === "despesa" ? paymentMethod : "conta",
           recurrence_type: recurrenceType,
           installments: recurrenceType === "parcelado" ? installments : null,
-          observation: observation.trim() || null,
+          observation: paymentMethod === "cartao" && recurrenceType === "parcelado" && paidInstallments > 0
+            ? `paid_installments:${paidInstallments}${observation.trim() ? ` | ${observation.trim()}` : ""}`
+            : (observation.trim() || null),
           credit_card_id: paymentMethod === "cartao" ? (creditCardId || null) : null,
         },
         user.id
