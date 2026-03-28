@@ -13,7 +13,7 @@ const ReceitasDespesasCards = memo(({ receitas, despesas, mobile }: Props) => {
   const animatedDespesas = useFormattedCounter(despesas);
 
   return (
-    <div className={`grid ${mobile ? "grid-cols-2" : "grid-rows-2"} gap-3`}>
+    <div className={`grid ${mobile ? "grid-cols-2 gap-2" : "grid-rows-2 gap-3"} w-full`}>
       <button
         className={`relative rounded-xl border border-primary/20 transition-all text-left overflow-hidden backdrop-blur-sm ${mobile ? "p-3" : "p-4"}`}
         style={{
