@@ -55,6 +55,16 @@ interface Account {
   is_default: boolean;
 }
 
+interface CreditCardItem {
+  id: string;
+  name: string;
+  limit: number;
+  used_limit: number;
+  closing_day: number;
+  due_day: number;
+  color: string | null;
+}
+
 const NovaTransacaoModal = ({ open, onClose, onSuccess, initialType = "despesa" }: Props) => {
   const { user } = useAuth();
   const [type, setType] = useState<"receita" | "despesa">(initialType);
