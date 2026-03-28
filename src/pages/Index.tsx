@@ -10,6 +10,7 @@ import TransacoesRecentes from "@/components/dashboard/TransacoesRecentes";
 import ProximosEventos from "@/components/dashboard/ProximosEventos";
 import MonthSelector from "@/components/dashboard/MonthSelector";
 import NovaTransacaoModal from "@/components/dashboard/NovaTransacaoModal";
+import TransactionTypeChooser from "@/components/dashboard/TransactionTypeChooser";
 import PagarEditarModal from "@/components/dashboard/PagarEditarModal";
 import { useAuth } from "@/contexts/AuthContext";
 import { useFinanceData } from "@/hooks/useFinanceData";
