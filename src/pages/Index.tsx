@@ -1,4 +1,5 @@
 import { useState, useCallback } from "react";
+import { useNavigate } from "react-router-dom";
 import { motion } from "framer-motion";
 import DashboardHeader, { useGreeting } from "@/components/dashboard/DashboardHeader";
 import MobileBottomNav from "@/components/dashboard/MobileBottomNav";
@@ -12,8 +13,10 @@ import MonthSelector from "@/components/dashboard/MonthSelector";
 import NovaTransacaoModal from "@/components/dashboard/NovaTransacaoModal";
 import TransactionTypeChooser from "@/components/dashboard/TransactionTypeChooser";
 import PagarEditarModal from "@/components/dashboard/PagarEditarModal";
+import OnboardingCard from "@/components/dashboard/OnboardingCard";
 import { useAuth } from "@/contexts/AuthContext";
 import { useFinanceData } from "@/hooks/useFinanceData";
+import { useProfile } from "@/hooks/useProfile";
 import type { FinanceEvent } from "@/types/finance";
 
 const Index = () => {
