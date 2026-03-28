@@ -8,6 +8,7 @@ import {
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Progress } from "@/components/ui/progress";
+import { Dialog, DialogContent } from "@/components/ui/dialog";
 import { toast } from "sonner";
 import { useAuth } from "@/contexts/AuthContext";
 import { useProfile } from "@/hooks/useProfile";
@@ -23,10 +24,11 @@ const Configuracoes = () => {
   const navigate = useNavigate();
   const fileInputRef = useRef<HTMLInputElement>(null);
 
-  const [editing, setEditing] = useState(false);
+  const [editModalOpen, setEditModalOpen] = useState(false);
   const [editName, setEditName] = useState("");
   const [activeTab, setActiveTab] = useState<"conta" | "config">("conta");
   const [uploadingAvatar, setUploadingAvatar] = useState(false);
+  const [previewUrl, setPreviewUrl] = useState<string | null>(null);
 
   const displayName = profile?.display_name || user?.email?.split("@")[0] || "Usuário";
   const email = user?.email ?? "";
@@ -35,12 +37,13 @@ const Configuracoes = () => {
     if (!editName.trim()) return;
     await updateDisplayName(editName.trim());
     toast.success("Nome atualizado!");
-    setEditing(false);
+    setEditModalOpen(false);
   };
 
-  const handleAvatarChange = async (e: React.ChangeEvent<HTMLInputElement>) => {
+  const handleAvatarInModal = async (e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0];
     if (!file) return;
+    setPreviewUrl(URL.createObjectURL(file));
     setUploadingAvatar(true);
     try {
       await uploadAvatar(file);
@@ -51,6 +54,13 @@ const Configuracoes = () => {
       setUploadingAvatar(false);
     }
   };
+
+  const openEditModal = () => {
+    setEditName(displayName);
+    setPreviewUrl(profile?.avatar_url || null);
+    setEditModalOpen(true);
+  };
+
 
   const handleLogout = async () => {
     await supabase.auth.signOut();
@@ -128,6 +138,74 @@ const Configuracoes = () => {
 
   return (
     <div className="pt-2 pb-8 space-y-6">
+      {/* ═══ Edit Profile Modal ═══ */}
+      <Dialog open={editModalOpen} onOpenChange={setEditModalOpen}>
+        <DialogContent className="bg-card border-border/30 rounded-2xl max-w-sm mx-auto p-0 overflow-hidden">
+          <div className="p-6 space-y-6">
+            <h3 className="text-lg font-bold text-foreground text-center">Editar Perfil</h3>
+
+            {/* Avatar in modal */}
+            <div className="flex justify-center">
+              <button
+                onClick={() => fileInputRef.current?.click()}
+                className="relative group/avatar"
+                disabled={uploadingAvatar}
+              >
+                <div className="w-24 h-24 rounded-2xl bg-muted/40 flex items-center justify-center overflow-hidden border-2 border-border/20">
+                  {previewUrl ? (
+                    <img src={previewUrl} alt="Avatar" className="w-full h-full object-cover" />
+                  ) : (
+                    <User className="w-10 h-10 text-muted-foreground" />
+                  )}
+                </div>
+                <div className="absolute inset-0 rounded-2xl bg-black/40 flex items-center justify-center opacity-0 group-hover/avatar:opacity-100 transition-opacity">
+                  <Camera className="w-6 h-6 text-foreground" />
+                </div>
+                <div className="absolute -bottom-1 -right-1 w-7 h-7 rounded-full bg-primary border-2 border-card flex items-center justify-center">
+                  <Camera className="w-3.5 h-3.5 text-primary-foreground" />
+                </div>
+                <input
+                  ref={fileInputRef}
+                  type="file"
+                  accept="image/*"
+                  onChange={handleAvatarInModal}
+                  className="hidden"
+                />
+              </button>
+            </div>
+
+            {/* Name input */}
+            <div className="space-y-2">
+              <label className="text-xs font-semibold text-muted-foreground">Nome</label>
+              <Input
+                value={editName}
+                onChange={(e) => setEditName(e.target.value)}
+                className="h-11 bg-muted/30 border-border/20 rounded-xl text-sm"
+                placeholder="Seu nome"
+              />
+            </div>
+
+            {/* Email (read-only) */}
+            <div className="space-y-2">
+              <label className="text-xs font-semibold text-muted-foreground">E-mail</label>
+              <Input
+                value={email}
+                disabled
+                className="h-11 bg-muted/20 border-border/10 rounded-xl text-sm text-muted-foreground"
+              />
+            </div>
+
+            <Button
+              onClick={handleSaveName}
+              disabled={!editName.trim() || uploadingAvatar}
+              className="w-full h-11 rounded-xl font-bold"
+            >
+              {uploadingAvatar ? "Enviando..." : "Salvar"}
+            </Button>
+          </div>
+        </DialogContent>
+      </Dialog>
+
       {/* ═══ Profile Header ═══ */}
       <motion.div
         initial={{ opacity: 0, y: 12 }}
@@ -136,11 +214,7 @@ const Configuracoes = () => {
       >
         <div className="flex items-start gap-4">
           {/* Avatar */}
-          <button
-            onClick={() => fileInputRef.current?.click()}
-            className="relative group/avatar"
-            disabled={uploadingAvatar}
-          >
+          <div className="relative">
             <div className="w-16 h-16 rounded-2xl bg-muted/40 flex items-center justify-center overflow-hidden border-2 border-border/20">
               {profile?.avatar_url ? (
                 <img src={profile.avatar_url} alt="Avatar" className="w-full h-full object-cover" />
@@ -148,39 +222,12 @@ const Configuracoes = () => {
                 <User className="w-8 h-8 text-muted-foreground" />
               )}
             </div>
-            <div className="absolute inset-0 rounded-2xl bg-black/50 flex items-center justify-center opacity-0 group-hover/avatar:opacity-100 transition-opacity">
-              <Camera className="w-5 h-5 text-foreground" />
-            </div>
-            <div className="absolute -bottom-1 -right-1 w-5 h-5 rounded-full bg-primary border-2 border-card flex items-center justify-center">
-              <Camera className="w-2.5 h-2.5 text-primary-foreground" />
-            </div>
-            <input
-              ref={fileInputRef}
-              type="file"
-              accept="image/*"
-              onChange={handleAvatarChange}
-              className="hidden"
-            />
-          </button>
+            <div className="absolute -bottom-1 -right-1 w-4 h-4 rounded-full bg-primary border-2 border-card" />
+          </div>
 
           <div className="flex-1 min-w-0">
-            {editing ? (
-              <div className="flex gap-2">
-                <Input
-                  value={editName}
-                  onChange={(e) => setEditName(e.target.value)}
-                  className="h-9 bg-muted/30 border-border/20 rounded-xl text-sm"
-                  placeholder="Seu nome"
-                  autoFocus
-                />
-                <Button size="sm" className="rounded-xl h-9 px-3" onClick={handleSaveName}>Salvar</Button>
-              </div>
-            ) : (
-              <>
-                <h2 className="text-lg font-bold text-foreground truncate">{displayName}</h2>
-                <p className="text-xs text-muted-foreground truncate">{email}</p>
-              </>
-            )}
+            <h2 className="text-lg font-bold text-foreground truncate">{displayName}</h2>
+            <p className="text-xs text-muted-foreground truncate">{email}</p>
             <div className="flex items-center gap-2 mt-1.5">
               <span className="text-[10px] font-bold bg-primary/15 text-primary px-2 py-0.5 rounded-full flex items-center gap-1">
                 <Star className="w-3 h-3" /> LV 1
@@ -192,7 +239,7 @@ const Configuracoes = () => {
           </div>
 
           <button
-            onClick={() => { setEditing(!editing); setEditName(displayName); }}
+            onClick={openEditModal}
             className="w-8 h-8 rounded-lg bg-muted/40 flex items-center justify-center hover:bg-muted/60 transition-colors shrink-0"
           >
             <Pencil className="w-4 h-4 text-muted-foreground" />
