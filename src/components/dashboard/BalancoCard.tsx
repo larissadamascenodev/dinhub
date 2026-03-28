@@ -2,15 +2,15 @@ import { memo } from "react";
 import { Scale, ChevronRight } from "lucide-react";
 import { motion } from "framer-motion";
 import { cn } from "@/lib/utils";
+import { useFormattedCounter } from "@/hooks/useAnimatedCounter";
 
 interface Props {
   balanco: number;
 }
 
-const fmt = (v: number) => v.toLocaleString("pt-BR", { style: "currency", currency: "BRL", minimumFractionDigits: 2 });
-
 const BalancoCard = memo(({ balanco }: Props) => {
   const isPositive = balanco >= 0;
+  const animatedBalanco = useFormattedCounter(balanco);
 
   return (
     <motion.div
@@ -36,13 +36,12 @@ const BalancoCard = memo(({ balanco }: Props) => {
               "font-display text-base md:text-xl font-bold tabular-nums leading-tight truncate block",
               isPositive ? "text-primary" : "text-destructive"
             )}>
-              {fmt(balanco)}
+              {animatedBalanco}
             </span>
           </div>
         </div>
         <ChevronRight className="w-4 h-4 text-muted-foreground/40 flex-shrink-0" />
       </div>
-      
     </motion.div>
   );
 });
