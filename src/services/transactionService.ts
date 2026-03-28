@@ -11,6 +11,7 @@ export interface CreateTransactionInput {
   payment_method?: "conta" | "cartao";
   recurrence_type?: "unica" | "parcelado" | "fixa";
   installments?: number | null;
+  installment_current?: number | null;
   observation?: string | null;
   credit_card_id?: string | null;
 }
