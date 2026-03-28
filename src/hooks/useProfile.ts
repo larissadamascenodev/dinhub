@@ -5,6 +5,7 @@ import { useAuth } from "@/contexts/AuthContext";
 export interface Profile {
   id: string;
   display_name: string | null;
+  avatar_url: string | null;
   has_completed_profile: boolean;
   has_account: boolean;
   has_transactions: boolean;
@@ -25,7 +26,6 @@ export function useProfile() {
         .single();
 
       if (error && error.code === "PGRST116") {
-        // Profile not found, create it
         const { data: newProfile } = await supabase
           .from("profiles" as any)
           .insert({ id: user.id } as any)
@@ -55,9 +55,38 @@ export function useProfile() {
     await fetchProfile();
   }, [user, fetchProfile]);
 
+  const uploadAvatar = useCallback(async (file: File) => {
+    if (!user) return;
+    const fileExt = file.name.split(".").pop();
+    const filePath = `${user.id}/avatar.${fileExt}`;
+
+    // Upload file
+    const { error: uploadError } = await supabase.storage
+      .from("avatars")
+      .upload(filePath, file, { upsert: true });
+
+    if (uploadError) throw uploadError;
+
+    // Get public URL
+    const { data: { publicUrl } } = supabase.storage
+      .from("avatars")
+      .getPublicUrl(filePath);
+
+    // Add cache buster
+    const avatarUrl = `${publicUrl}?t=${Date.now()}`;
+
+    // Update profile
+    await supabase
+      .from("profiles" as any)
+      .update({ avatar_url: avatarUrl } as any)
+      .eq("id", user.id);
+
+    await fetchProfile();
+  }, [user, fetchProfile]);
+
   const isOnboardingComplete = profile
     ? profile.has_completed_profile && profile.has_account && profile.has_transactions
     : false;
 
-  return { profile, loading, refetch: fetchProfile, updateDisplayName, isOnboardingComplete };
+  return { profile, loading, refetch: fetchProfile, updateDisplayName, uploadAvatar, isOnboardingComplete };
 }

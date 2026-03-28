@@ -1,9 +1,9 @@
-import { useState } from "react";
+import { useState, useRef } from "react";
 import { motion } from "framer-motion";
 import {
   User, Pencil, Star, Flame, Target, TrendingUp, Swords, Trophy,
   Shield, Crown, Upload, FileText, Smartphone, MessageCircle, Trash2, LogOut,
-  Bell, Globe, HelpCircle, Headphones, FileCheck, ChevronRight, Wallet, Settings,
+  Bell, Globe, HelpCircle, Headphones, FileCheck, ChevronRight, Wallet, Settings, Camera,
 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -19,12 +19,14 @@ import { supabase } from "@/integrations/supabase/client";
 
 const Configuracoes = () => {
   const { user } = useAuth();
-  const { profile, updateDisplayName } = useProfile();
+  const { profile, updateDisplayName, uploadAvatar } = useProfile();
   const navigate = useNavigate();
+  const fileInputRef = useRef<HTMLInputElement>(null);
 
   const [editing, setEditing] = useState(false);
   const [editName, setEditName] = useState("");
   const [activeTab, setActiveTab] = useState<"conta" | "config">("conta");
+  const [uploadingAvatar, setUploadingAvatar] = useState(false);
 
   const displayName = profile?.display_name || user?.email?.split("@")[0] || "Usuário";
   const email = user?.email ?? "";
@@ -34,6 +36,20 @@ const Configuracoes = () => {
     await updateDisplayName(editName.trim());
     toast.success("Nome atualizado!");
     setEditing(false);
+  };
+
+  const handleAvatarChange = async (e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0];
+    if (!file) return;
+    setUploadingAvatar(true);
+    try {
+      await uploadAvatar(file);
+      toast.success("Foto atualizada!");
+    } catch {
+      toast.error("Erro ao enviar foto");
+    } finally {
+      setUploadingAvatar(false);
+    }
   };
 
   const handleLogout = async () => {
@@ -120,12 +136,32 @@ const Configuracoes = () => {
       >
         <div className="flex items-start gap-4">
           {/* Avatar */}
-          <div className="relative">
+          <button
+            onClick={() => fileInputRef.current?.click()}
+            className="relative group/avatar"
+            disabled={uploadingAvatar}
+          >
             <div className="w-16 h-16 rounded-2xl bg-muted/40 flex items-center justify-center overflow-hidden border-2 border-border/20">
-              <User className="w-8 h-8 text-muted-foreground" />
+              {profile?.avatar_url ? (
+                <img src={profile.avatar_url} alt="Avatar" className="w-full h-full object-cover" />
+              ) : (
+                <User className="w-8 h-8 text-muted-foreground" />
+              )}
             </div>
-            <div className="absolute -bottom-1 -right-1 w-4 h-4 rounded-full bg-primary border-2 border-card" />
-          </div>
+            <div className="absolute inset-0 rounded-2xl bg-black/50 flex items-center justify-center opacity-0 group-hover/avatar:opacity-100 transition-opacity">
+              <Camera className="w-5 h-5 text-foreground" />
+            </div>
+            <div className="absolute -bottom-1 -right-1 w-5 h-5 rounded-full bg-primary border-2 border-card flex items-center justify-center">
+              <Camera className="w-2.5 h-2.5 text-primary-foreground" />
+            </div>
+            <input
+              ref={fileInputRef}
+              type="file"
+              accept="image/*"
+              onChange={handleAvatarChange}
+              className="hidden"
+            />
+          </button>
 
           <div className="flex-1 min-w-0">
             {editing ? (
