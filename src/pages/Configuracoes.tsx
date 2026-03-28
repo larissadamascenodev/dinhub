@@ -366,20 +366,20 @@ const Configuracoes = () => {
       </motion.div>
 
       {/* ═══ Tabs: Conta / Configurações ═══ */}
-      <div className="relative rounded-xl bg-card/90 backdrop-blur-xl border border-border/30 shadow-lg shadow-black/30 flex overflow-hidden">
+      <div className="relative rounded-xl bg-card/90 backdrop-blur-xl border border-border/30 shadow-lg shadow-black/30 p-[3px] flex">
         <motion.div
-          className="absolute inset-y-0 bg-primary/15"
+          className="absolute top-[3px] bottom-[3px] rounded-[10px] bg-primary/15 border border-primary/40"
           initial={false}
           animate={{
-            left: activeTab === "conta" ? "0%" : "50%",
-            width: "50%",
+            left: activeTab === "conta" ? "3px" : "calc(50% + 0px)",
+            width: "calc(50% - 3px)",
           }}
           transition={{ type: "spring", stiffness: 350, damping: 30 }}
         />
         <button
           onClick={() => setActiveTab("conta")}
           className={cn(
-            "relative z-10 flex-1 h-8 rounded-lg text-xs font-bold flex items-center justify-center gap-1.5 transition-colors duration-200",
+            "relative z-10 flex-1 h-8 rounded-[10px] text-xs font-bold flex items-center justify-center gap-1.5 transition-colors duration-200",
             activeTab === "conta" ? "text-primary" : "text-muted-foreground hover:text-foreground"
           )}
         >
@@ -388,7 +388,7 @@ const Configuracoes = () => {
         <button
           onClick={() => setActiveTab("config")}
           className={cn(
-            "relative z-10 flex-1 h-8 rounded-lg text-xs font-bold flex items-center justify-center gap-1.5 transition-colors duration-200",
+            "relative z-10 flex-1 h-8 rounded-[10px] text-xs font-bold flex items-center justify-center gap-1.5 transition-colors duration-200",
             activeTab === "config" ? "text-primary" : "text-muted-foreground hover:text-foreground"
           )}
         >
