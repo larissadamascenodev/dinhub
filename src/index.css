@@ -1,69 +1,89 @@
+#lovable-badge {
+  display: none !important;
+}
+
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
 
-@import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap');
-
 @layer base {
   :root {
-    --background: 150 8% 96%;
-    --foreground: 150 10% 10%;
+    --background: 160 10% 97%;
+    --foreground: 160 10% 10%;
     --card: 0 0% 100%;
-    --card-foreground: 150 10% 10%;
+    --card-foreground: 160 10% 10%;
     --popover: 0 0% 100%;
-    --popover-foreground: 150 10% 10%;
-    --primary: 145 72% 40%;
+    --popover-foreground: 160 10% 10%;
+    --primary: 152 60% 42%;
     --primary-foreground: 0 0% 100%;
-    --secondary: 150 8% 93%;
-    --secondary-foreground: 150 10% 10%;
-    --muted: 150 6% 90%;
-    --muted-foreground: 150 5% 45%;
-    --accent: 150 8% 93%;
-    --accent-foreground: 150 10% 10%;
-    --destructive: 0 84% 60%;
+    --secondary: 210 40% 96%;
+    --secondary-foreground: 160 10% 10%;
+    --muted: 210 20% 94%;
+    --muted-foreground: 215 16% 47%;
+    --accent: 210 40% 96%;
+    --accent-foreground: 160 10% 10%;
+    --destructive: 0 72% 51%;
     --destructive-foreground: 0 0% 100%;
-    --border: 150 8% 88%;
-    --input: 150 8% 88%;
-    --ring: 145 72% 40%;
+    --border: 214 32% 91%;
+    --input: 214 32% 91%;
+    --ring: 152 60% 42%;
     --radius: 0.75rem;
+
     --sidebar-background: 0 0% 98%;
     --sidebar-foreground: 240 5% 26%;
-    --sidebar-primary: 145 72% 40%;
+    --sidebar-primary: 152 60% 42%;
     --sidebar-primary-foreground: 0 0% 100%;
     --sidebar-accent: 240 5% 96%;
     --sidebar-accent-foreground: 240 6% 10%;
     --sidebar-border: 220 13% 91%;
-    --sidebar-ring: 145 72% 40%;
+    --sidebar-ring: 152 60% 42%;
+
+    --finanpro-green: 152 60% 42%;
+    --finanpro-red: 0 72% 51%;
+    --finanpro-yellow: 45 93% 47%;
+    --finanpro-glow: 152 60% 42%;
+    --finanpro-card-bg: 160 30% 8%;
+    --finanpro-card-border: 160 20% 15%;
+    --finanpro-surface: 160 25% 6%;
   }
 
   .dark {
-    --background: 155 30% 3.5%;
-    --foreground: 140 10% 90%;
-    --card: 155 25% 7%;
-    --card-foreground: 140 10% 90%;
-    --popover: 155 25% 7%;
-    --popover-foreground: 140 10% 90%;
-    --primary: 145 72% 40%;
+    --background: 160 25% 4%;
+    --foreground: 150 10% 92%;
+    --card: 160 30% 8%;
+    --card-foreground: 150 10% 92%;
+    --popover: 160 30% 8%;
+    --popover-foreground: 150 10% 92%;
+    --primary: 152 60% 42%;
     --primary-foreground: 0 0% 100%;
-    --secondary: 155 20% 10%;
-    --secondary-foreground: 140 10% 90%;
-    --muted: 155 18% 12%;
-    --muted-foreground: 150 8% 48%;
-    --accent: 155 20% 10%;
-    --accent-foreground: 140 10% 90%;
-    --destructive: 0 84% 60%;
+    --secondary: 160 20% 12%;
+    --secondary-foreground: 150 10% 92%;
+    --muted: 160 15% 14%;
+    --muted-foreground: 150 10% 55%;
+    --accent: 160 20% 12%;
+    --accent-foreground: 150 10% 92%;
+    --destructive: 0 72% 51%;
     --destructive-foreground: 0 0% 100%;
-    --border: 155 18% 12%;
-    --input: 155 18% 14%;
-    --ring: 145 72% 40%;
-    --sidebar-background: 155 28% 5%;
-    --sidebar-foreground: 140 10% 90%;
-    --sidebar-primary: 145 72% 40%;
+    --border: 160 20% 15%;
+    --input: 160 20% 15%;
+    --ring: 152 60% 42%;
+
+    --sidebar-background: 160 25% 6%;
+    --sidebar-foreground: 150 10% 92%;
+    --sidebar-primary: 152 60% 42%;
     --sidebar-primary-foreground: 0 0% 100%;
-    --sidebar-accent: 155 20% 10%;
-    --sidebar-accent-foreground: 140 10% 90%;
-    --sidebar-border: 155 18% 12%;
-    --sidebar-ring: 145 72% 40%;
+    --sidebar-accent: 160 20% 12%;
+    --sidebar-accent-foreground: 150 10% 92%;
+    --sidebar-border: 160 20% 15%;
+    --sidebar-ring: 152 60% 42%;
+
+    --finanpro-green: 152 60% 42%;
+    --finanpro-red: 0 72% 51%;
+    --finanpro-yellow: 45 93% 47%;
+    --finanpro-glow: 152 60% 42%;
+    --finanpro-card-bg: 160 30% 8%;
+    --finanpro-card-border: 160 20% 15%;
+    --finanpro-surface: 160 25% 6%;
   }
 }
 
@@ -72,72 +92,18 @@
     @apply border-border;
   }
   body {
-    @apply bg-background text-foreground antialiased;
-    font-family: 'Inter', system-ui, -apple-system, sans-serif;
+    @apply bg-background text-foreground;
   }
 }
 
 @layer utilities {
-  .fp-card {
-    @apply rounded-2xl border border-border bg-card;
-    box-shadow:
-      0 0 0 1px hsl(145 72% 40% / 0.04),
-      0 1px 3px 0 hsl(0 0% 0% / 0.2),
-      0 0 20px -8px hsl(145 72% 40% / 0.06);
+  .card-glow {
+    box-shadow: 0 0 20px -5px hsl(152 60% 42% / 0.1),
+                0 0 6px -2px hsl(152 60% 42% / 0.05);
   }
-  .fp-card-hover {
-    @apply transition-all duration-300;
-  }
-  .fp-card-hover:hover {
-    box-shadow:
-      0 0 0 1px hsl(145 72% 40% / 0.08),
-      0 4px 12px 0 hsl(0 0% 0% / 0.3),
-      0 0 30px -6px hsl(145 72% 40% / 0.12);
+  .card-glow-hover:hover {
+    box-shadow: 0 0 25px -5px hsl(152 60% 42% / 0.2),
+                0 4px 12px -4px hsl(0 0% 0% / 0.3);
     transform: translateY(-1px);
   }
-  .fp-glow-green {
-    box-shadow: 0 0 12px -3px hsl(145 72% 40% / 0.3);
-  }
-  .fp-glow-red {
-    box-shadow: 0 0 12px -3px hsl(0 84% 60% / 0.3);
-  }
-  .fp-text-green {
-    color: hsl(145, 72%, 40%);
-  }
-  .fp-text-red {
-    color: hsl(0, 84%, 60%);
-  }
-  .fp-text-yellow {
-    color: hsl(45, 93%, 47%);
-  }
-  .fp-bg-green {
-    background-color: hsl(145, 72%, 40%);
-  }
-  .fp-bg-red {
-    background-color: hsl(0, 84%, 60%);
-  }
-  .fp-bg-yellow {
-    background-color: hsl(45, 93%, 47%);
-  }
-}
-
-@keyframes bar-fill-anim {
-  from { width: 0%; }
-  to { width: var(--bar-width); }
-}
-
-@keyframes fade-up {
-  from {
-    opacity: 0;
-    transform: translateY(12px);
-  }
-  to {
-    opacity: 1;
-    transform: translateY(0);
-  }
-}
-
-@keyframes subtle-pulse {
-  0%, 100% { opacity: 1; }
-  50% { opacity: 0.7; }
 }
