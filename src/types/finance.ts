@@ -51,11 +51,11 @@ export const SAMPLE_DATA: DashboardData = {
     { id: "5", name: "Netflix", category: "Assinaturas", date: "27 de mar.", amount: 55.9, type: "despesa" },
   ],
   categories: [
-    { name: "Alimentação", amount: 1450, color: "hsl(0 72% 51%)", icon: "🍽️" },
-    { name: "Transporte", amount: 580, color: "hsl(30 90% 50%)", icon: "🚗" },
-    { name: "Saúde", amount: 320, color: "hsl(340 70% 50%)", icon: "❤️" },
-    { name: "Assinaturas", amount: 210, color: "hsl(270 60% 50%)", icon: "📦" },
-    { name: "Lazer", amount: 180, color: "hsl(200 70% 50%)", icon: "🎮" },
+    { name: "Alimentação", amount: 1450, color: "hsl(0 84% 60%)", icon: "🍽️" },
+    { name: "Transporte", amount: 580, color: "hsl(25 95% 53%)", icon: "🚗" },
+    { name: "Saúde", amount: 320, color: "hsl(340 75% 55%)", icon: "❤️" },
+    { name: "Assinaturas", amount: 210, color: "hsl(270 60% 55%)", icon: "📦" },
+    { name: "Lazer", amount: 180, color: "hsl(210 90% 55%)", icon: "🎮" },
   ],
   events: [
     { id: "1", name: "Aluguel", date: "05 de mar", amount: 1800, status: "pago" },

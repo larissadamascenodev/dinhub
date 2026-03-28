@@ -1,7 +1,6 @@
 import { useState, useCallback, useMemo } from "react";
 import { useIsMobile } from "@/hooks/use-mobile";
 import DashboardHeader from "@/components/dashboard/DashboardHeader";
-import Navbar from "@/components/dashboard/Navbar";
 import MobileBottomNav from "@/components/dashboard/MobileBottomNav";
 import SaldoCard from "@/components/dashboard/SaldoCard";
 import ReceitasDespesasCards from "@/components/dashboard/ReceitasDespesasCards";
@@ -13,52 +12,61 @@ import ProximosEventos from "@/components/dashboard/ProximosEventos";
 import MobileToggle from "@/components/dashboard/MobileToggle";
 import { SAMPLE_DATA } from "@/types/finance";
 
+const MonthTabs = () => {
+  const months = ["Jan", "Fev", "Mar", "Abr", "Mai"];
+  const active = "Mar";
+  return (
+    <div className="hidden md:flex items-center gap-1 mb-5">
+      {months.map((m) => (
+        <button
+          key={m}
+          className={`px-4 py-1.5 rounded-lg text-xs font-semibold transition-all ${
+            m === active
+              ? "bg-primary text-primary-foreground shadow-md shadow-primary/20"
+              : "text-muted-foreground hover:text-foreground hover:bg-secondary"
+          }`}
+        >
+          {m}
+        </button>
+      ))}
+    </div>
+  );
+};
+
 const Index = () => {
   const isMobile = useIsMobile();
   const [mobileTab, setMobileTab] = useState<"transacoes" | "eventos">("transacoes");
-
   const data = useMemo(() => SAMPLE_DATA, []);
-
-  const handleNovaTransacao = useCallback(() => {
-    // placeholder for future integration
-  }, []);
+  const handleNovaTransacao = useCallback(() => {}, []);
 
   return (
-    <div className="dark min-h-screen bg-background pb-20 md:pb-6">
-      <div className="container max-w-7xl mx-auto px-4 pt-4 md:pt-6">
-        {/* Desktop top nav */}
-        <div className="hidden md:flex items-center justify-between mb-2">
-          <div className="flex items-center gap-2">
-            <span className="text-2xl">🐾</span>
-            <span className="text-lg font-bold text-foreground">
-              Finan<span className="text-primary">Pro</span>
-            </span>
-          </div>
-        </div>
-
-        {/* Mobile header with logo */}
-        <div className="md:hidden flex items-center justify-between mb-4">
-          <div className="flex items-center gap-2">
-            <span className="text-xl">🐾</span>
-            <span className="text-base font-bold text-foreground">
-              Finan<span className="text-primary">Pro</span>
-            </span>
-          </div>
-        </div>
-
-        <Navbar />
+    <div className="dark min-h-screen bg-background text-foreground">
+      <div className="max-w-7xl mx-auto px-4 md:px-6 pt-4 md:pt-5 pb-24 md:pb-8">
         <DashboardHeader />
+        <MonthTabs />
 
-        {/* Main grid */}
-        <div className="grid grid-cols-1 lg:grid-cols-[1fr_380px] gap-5">
+        {/* Main grid: left content + right sidebar */}
+        <div className="grid grid-cols-1 lg:grid-cols-[1fr_360px] gap-5 items-start">
           {/* Left column */}
           <div className="flex flex-col gap-4">
-            <SaldoCard
-              saldoAtual={data.saldoAtual}
-              saldoPrevisto={data.saldoPrevisto}
-              onNovaTransacao={handleNovaTransacao}
-            />
-            <ReceitasDespesasCards receitas={data.receitas} despesas={data.despesas} />
+            <div className="grid grid-cols-1 md:grid-cols-[1fr_auto] gap-4 items-start">
+              <div className="flex flex-col gap-4">
+                <SaldoCard
+                  saldoAtual={data.saldoAtual}
+                  saldoPrevisto={data.saldoPrevisto}
+                  onNovaTransacao={handleNovaTransacao}
+                />
+              </div>
+              <div className="hidden md:flex flex-col gap-3 w-[220px]">
+                <ReceitasDespesasCards receitas={data.receitas} despesas={data.despesas} />
+              </div>
+            </div>
+
+            {/* Mobile: receitas/despesas inline */}
+            <div className="md:hidden">
+              <ReceitasDespesasCards receitas={data.receitas} despesas={data.despesas} />
+            </div>
+
             <BalancoCard balanco={data.balanco} />
             <MicroInteracoesCard
               gastosHoje={data.gastosHoje}
@@ -70,7 +78,7 @@ const Index = () => {
               <MobileToggle activeTab={mobileTab} onTabChange={setMobileTab} />
             )}
 
-            {/* Desktop: always show transactions + categories */}
+            {/* Desktop: always show */}
             {!isMobile && (
               <>
                 <TransacoesRecentes transactions={data.transactions} />
@@ -78,7 +86,7 @@ const Index = () => {
               </>
             )}
 
-            {/* Mobile: conditional content */}
+            {/* Mobile: conditional */}
             {isMobile && mobileTab === "transacoes" && (
               <>
                 <TransacoesRecentes transactions={data.transactions} />
@@ -91,7 +99,7 @@ const Index = () => {
             )}
           </div>
 
-          {/* Right column - sidebar (desktop only) */}
+          {/* Right sidebar (desktop) */}
           {!isMobile && (
             <div>
               <ProximosEventos events={data.events} />
