@@ -43,8 +43,6 @@ const ReceitasDespesasCards = memo(({ receitas, despesas, mobile }: Props) => (
       <p className={`font-display ${mobile ? "text-lg" : "text-xl"} font-bold text-destructive tabular-nums leading-none`}>
         {fmt(despesas)}
       </p>
-      {/* Bottom glow line */}
-      <div className="absolute bottom-0 left-0 right-0 h-[2px] bg-gradient-to-r from-transparent via-destructive to-transparent opacity-60" />
     </button>
   </div>
 ));
