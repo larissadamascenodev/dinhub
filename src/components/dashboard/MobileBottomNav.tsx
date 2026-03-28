@@ -54,34 +54,34 @@ const MobileBottomNav = memo(() => {
               <motion.button
                 whileTap={{ scale: 0.9 }}
                 onClick={() => handleOption("receita")}
-                className="flex flex-col items-center gap-1.5 w-20 py-3 rounded-xl bg-card border border-border/30 shadow-xl"
+                className="flex flex-col items-center gap-2 w-[76px] py-3.5 rounded-2xl bg-primary/10 backdrop-blur-xl border border-primary/25 shadow-xl shadow-primary/10 hover:bg-primary/15 transition-all"
               >
-                <div className="w-10 h-10 rounded-lg bg-primary/15 flex items-center justify-center">
+                <div className="w-11 h-11 rounded-xl bg-primary/15 flex items-center justify-center shadow-[0_0_14px_hsl(150_100%_45%/0.2)]">
                   <TrendingUp className="w-5 h-5 text-primary" />
                 </div>
-                <span className="text-[10px] font-bold text-foreground">Receita</span>
+                <span className="text-[10px] font-bold text-primary">Receita</span>
               </motion.button>
 
               <motion.button
                 whileTap={{ scale: 0.9 }}
                 onClick={() => handleOption("despesa")}
-                className="flex flex-col items-center gap-1.5 w-20 py-3 rounded-xl bg-card border border-border/30 shadow-xl"
+                className="flex flex-col items-center gap-2 w-[76px] py-3.5 rounded-2xl bg-destructive/10 backdrop-blur-xl border border-destructive/25 shadow-xl shadow-destructive/10 hover:bg-destructive/15 transition-all"
               >
-                <div className="w-10 h-10 rounded-lg bg-destructive/15 flex items-center justify-center">
+                <div className="w-11 h-11 rounded-xl bg-destructive/15 flex items-center justify-center shadow-[0_0_14px_hsl(0_84%_60%/0.2)]">
                   <TrendingDown className="w-5 h-5 text-destructive" />
                 </div>
-                <span className="text-[10px] font-bold text-foreground">Despesa</span>
+                <span className="text-[10px] font-bold text-destructive">Despesa</span>
               </motion.button>
 
               <motion.button
                 whileTap={{ scale: 0.9 }}
                 onClick={() => handleOption("scanner")}
-                className="flex flex-col items-center gap-1.5 w-20 py-3 rounded-xl bg-card border border-border/30 shadow-xl"
+                className="flex flex-col items-center gap-2 w-[76px] py-3.5 rounded-2xl bg-blue-500/10 backdrop-blur-xl border border-blue-500/25 shadow-xl shadow-blue-500/10 hover:bg-blue-500/15 transition-all"
               >
-                <div className="w-10 h-10 rounded-lg bg-muted/20 flex items-center justify-center">
-                  <Camera className="w-5 h-5 text-muted-foreground" />
+                <div className="w-11 h-11 rounded-xl bg-blue-500/15 flex items-center justify-center shadow-[0_0_14px_hsl(217_91%_60%/0.2)]">
+                  <Camera className="w-5 h-5 text-blue-400" />
                 </div>
-                <span className="text-[10px] font-bold text-foreground">Scanner</span>
+                <span className="text-[10px] font-bold text-blue-400">Scanner</span>
               </motion.button>
             </motion.div>
           </div>

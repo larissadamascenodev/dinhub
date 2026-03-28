@@ -94,34 +94,38 @@ const DashboardHeader = memo(({ profile }: { profile?: { display_name: string | 
                   <AnimatePresence>
                     {transacaoMenuOpen && (
                       <motion.div
-                        initial={{ opacity: 0, y: -4, scale: 0.95 }}
+                        initial={{ opacity: 0, y: -8, scale: 0.9 }}
                         animate={{ opacity: 1, y: 0, scale: 1 }}
-                        exit={{ opacity: 0, y: -4, scale: 0.95 }}
-                        transition={{ duration: 0.15 }}
-                        className="absolute left-1/2 -translate-x-1/2 top-full mt-2 bg-card border border-border/20 rounded-xl shadow-xl shadow-black/30 overflow-hidden z-50 min-w-[160px]"
+                        exit={{ opacity: 0, y: -8, scale: 0.9 }}
+                        transition={{ type: "spring", stiffness: 400, damping: 25 }}
+                        className="absolute left-1/2 -translate-x-1/2 top-full mt-3 z-50 flex gap-2.5 p-2 rounded-2xl bg-card/90 backdrop-blur-2xl border border-border/20 shadow-2xl shadow-black/40"
                       >
                         <button
                           onClick={() => handleTransacaoOption("receita")}
-                          className="flex items-center gap-2.5 w-full px-4 py-2.5 text-xs font-medium text-foreground hover:bg-primary/10 transition-colors"
+                          className="flex flex-col items-center gap-1.5 w-[72px] py-3 rounded-xl bg-primary/10 border border-primary/20 hover:bg-primary/20 hover:border-primary/40 transition-all group"
                         >
-                          <TrendingUp className="w-3.5 h-3.5 text-primary" />
-                          Receita
+                          <div className="w-9 h-9 rounded-lg bg-primary/15 flex items-center justify-center group-hover:shadow-[0_0_12px_hsl(150_100%_45%/0.3)] transition-shadow">
+                            <TrendingUp className="w-4.5 h-4.5 text-primary" />
+                          </div>
+                          <span className="text-[10px] font-bold text-primary">Receita</span>
                         </button>
-                        <div className="h-px bg-border/10" />
                         <button
                           onClick={() => handleTransacaoOption("despesa")}
-                          className="flex items-center gap-2.5 w-full px-4 py-2.5 text-xs font-medium text-foreground hover:bg-destructive/10 transition-colors"
+                          className="flex flex-col items-center gap-1.5 w-[72px] py-3 rounded-xl bg-destructive/10 border border-destructive/20 hover:bg-destructive/20 hover:border-destructive/40 transition-all group"
                         >
-                          <TrendingDown className="w-3.5 h-3.5 text-destructive" />
-                          Despesa
+                          <div className="w-9 h-9 rounded-lg bg-destructive/15 flex items-center justify-center group-hover:shadow-[0_0_12px_hsl(0_84%_60%/0.3)] transition-shadow">
+                            <TrendingDown className="w-4.5 h-4.5 text-destructive" />
+                          </div>
+                          <span className="text-[10px] font-bold text-destructive">Despesa</span>
                         </button>
-                        <div className="h-px bg-border/10" />
                         <button
                           onClick={() => handleTransacaoOption("scanner")}
-                          className="flex items-center gap-2.5 w-full px-4 py-2.5 text-xs font-medium text-foreground hover:bg-muted/20 transition-colors"
+                          className="flex flex-col items-center gap-1.5 w-[72px] py-3 rounded-xl bg-blue-500/10 border border-blue-500/20 hover:bg-blue-500/20 hover:border-blue-500/40 transition-all group"
                         >
-                          <Camera className="w-3.5 h-3.5 text-muted-foreground" />
-                          Scanner
+                          <div className="w-9 h-9 rounded-lg bg-blue-500/15 flex items-center justify-center group-hover:shadow-[0_0_12px_hsl(217_91%_60%/0.3)] transition-shadow">
+                            <Camera className="w-4.5 h-4.5 text-blue-400" />
+                          </div>
+                          <span className="text-[10px] font-bold text-blue-400">Scanner</span>
                         </button>
                       </motion.div>
                     )}
