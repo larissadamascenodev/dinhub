@@ -10,13 +10,17 @@ import TransacoesRecentes from "@/components/dashboard/TransacoesRecentes";
 import ProximosEventos from "@/components/dashboard/ProximosEventos";
 import MonthSelector from "@/components/dashboard/MonthSelector";
 import NovaTransacaoModal from "@/components/dashboard/NovaTransacaoModal";
+import PagarEditarModal from "@/components/dashboard/PagarEditarModal";
 import { useAuth } from "@/contexts/AuthContext";
 import { useFinanceData } from "@/hooks/useFinanceData";
+import type { FinanceEvent } from "@/types/finance";
 
 const Index = () => {
   const [selectedMonth, setSelectedMonth] = useState(new Date().getMonth());
   const [selectedYear, setSelectedYear] = useState(new Date().getFullYear());
   const [showModal, setShowModal] = useState(false);
+  const [selectedEvent, setSelectedEvent] = useState<FinanceEvent | null>(null);
+  const [showPayModal, setShowPayModal] = useState(false);
   const { user } = useAuth();
   const { data, loading, refetch } = useFinanceData(selectedMonth, selectedYear);
   const handleNovaTransacao = useCallback(() => setShowModal(true), []);
@@ -26,6 +30,11 @@ const Index = () => {
   const handleMonthChange = (month: number, year: number) => {
     setSelectedMonth(month);
     setSelectedYear(year);
+  };
+
+  const handleEventClick = (event: FinanceEvent) => {
+    setSelectedEvent(event);
+    setShowPayModal(true);
   };
 
   const receitas = data.receitas;
@@ -69,7 +78,7 @@ const Index = () => {
             <TransacoesRecentes transactions={data.transactions} onDelete={refetch} />
           </div>
           <div className="space-y-4">
-            <ProximosEventos events={data.events} selectedMonth={selectedMonth} selectedYear={selectedYear} />
+            <ProximosEventos events={data.events} selectedMonth={selectedMonth} selectedYear={selectedYear} onEventClick={handleEventClick} />
           </div>
         </div>
 
@@ -89,7 +98,7 @@ const Index = () => {
           <BalancoCard balanco={balanco} />
           <MicroInteracoesCard gastosHoje={data.gastosHoje} mediaGastosDiarios={data.mediaGastosDiarios} />
           <TransacoesRecentes transactions={data.transactions} onDelete={refetch} />
-          <ProximosEventos events={data.events} selectedMonth={selectedMonth} selectedYear={selectedYear} />
+          <ProximosEventos events={data.events} selectedMonth={selectedMonth} selectedYear={selectedYear} onEventClick={handleEventClick} />
         </div>
 
         {/* MOBILE LAYOUT */}
@@ -111,11 +120,17 @@ const Index = () => {
           <MicroInteracoesCard gastosHoje={data.gastosHoje} mediaGastosDiarios={data.mediaGastosDiarios} />
           <TransacoesRecentes transactions={data.transactions} onDelete={refetch} />
           <div className="-mt-3">
-            <ProximosEventos events={data.events} selectedMonth={selectedMonth} selectedYear={selectedYear} />
+            <ProximosEventos events={data.events} selectedMonth={selectedMonth} selectedYear={selectedYear} onEventClick={handleEventClick} />
           </div>
         </div>
       </div>
       <NovaTransacaoModal open={showModal} onClose={() => setShowModal(false)} onSuccess={refetch} />
+      <PagarEditarModal
+        open={showPayModal}
+        event={selectedEvent}
+        onClose={() => { setShowPayModal(false); setSelectedEvent(null); }}
+        onSuccess={refetch}
+      />
       <MobileBottomNav />
     </div>
   );
