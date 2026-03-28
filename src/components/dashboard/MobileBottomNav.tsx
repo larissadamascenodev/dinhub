@@ -30,8 +30,8 @@ const MobileBottomNav = memo(() => {
 
       {/* Bottom Nav Bar */}
       <div className="fixed bottom-0 left-0 right-0 z-50 flex justify-center px-8 pb-4 md:hidden">
-        <nav className="w-full max-w-[300px] rounded-2xl bg-card/90 backdrop-blur-xl border border-border/30 shadow-2xl shadow-black/40">
-          <div className="flex items-center justify-around h-[52px] px-1">
+        <nav className="w-full max-w-[340px] rounded-2xl bg-card/90 backdrop-blur-xl border border-border/30 shadow-2xl shadow-black/40">
+          <div className="flex items-center justify-around h-[58px] px-2">
             {navItems.map((item, idx) => {
               if (item.isCenter) {
                 return (
