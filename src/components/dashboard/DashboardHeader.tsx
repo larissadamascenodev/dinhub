@@ -94,40 +94,32 @@ const DashboardHeader = memo(({ profile }: { profile?: { display_name: string | 
                   <AnimatePresence>
                     {transacaoMenuOpen && (
                       <motion.div
-                        initial={{ opacity: 0, y: -4 }}
-                        animate={{ opacity: 1, y: 0 }}
-                        exit={{ opacity: 0, y: -4 }}
+                        initial={{ opacity: 0, y: -4, scale: 0.95 }}
+                        animate={{ opacity: 1, y: 0, scale: 1 }}
+                        exit={{ opacity: 0, y: -4, scale: 0.95 }}
                         transition={{ duration: 0.12 }}
-                        className="absolute left-1/2 -translate-x-1/2 top-full mt-2 z-50 w-44 rounded-xl bg-card/95 backdrop-blur-2xl border border-border/15 shadow-2xl shadow-black/30 overflow-hidden"
+                        className="absolute left-1/2 -translate-x-1/2 top-full mt-1.5 z-50 flex gap-1.5 p-1.5 rounded-xl bg-card/95 backdrop-blur-2xl border border-border/15 shadow-2xl shadow-black/30"
                       >
                         <button
                           onClick={() => handleTransacaoOption("receita")}
-                          className="flex items-center gap-2.5 w-full px-3.5 py-2.5 text-xs font-medium text-foreground hover:bg-primary/10 transition-colors group"
+                          className="flex items-center gap-1.5 px-3 py-2 rounded-lg hover:bg-primary/10 transition-colors"
                         >
-                          <div className="w-7 h-7 rounded-lg bg-primary/15 flex items-center justify-center">
-                            <TrendingUp className="w-3.5 h-3.5 text-primary" />
-                          </div>
-                          <span>Receita</span>
+                          <TrendingUp className="w-3.5 h-3.5 text-primary" />
+                          <span className="text-[11px] font-medium text-foreground whitespace-nowrap">Receita</span>
                         </button>
-                        <div className="h-px bg-border/10 mx-3" />
                         <button
                           onClick={() => handleTransacaoOption("despesa")}
-                          className="flex items-center gap-2.5 w-full px-3.5 py-2.5 text-xs font-medium text-foreground hover:bg-destructive/10 transition-colors group"
+                          className="flex items-center gap-1.5 px-3 py-2 rounded-lg hover:bg-destructive/10 transition-colors"
                         >
-                          <div className="w-7 h-7 rounded-lg bg-destructive/15 flex items-center justify-center">
-                            <TrendingDown className="w-3.5 h-3.5 text-destructive" />
-                          </div>
-                          <span>Despesa</span>
+                          <TrendingDown className="w-3.5 h-3.5 text-destructive" />
+                          <span className="text-[11px] font-medium text-foreground whitespace-nowrap">Despesa</span>
                         </button>
-                        <div className="h-px bg-border/10 mx-3" />
                         <button
                           onClick={() => handleTransacaoOption("scanner")}
-                          className="flex items-center gap-2.5 w-full px-3.5 py-2.5 text-xs font-medium text-foreground hover:bg-blue-500/10 transition-colors group"
+                          className="flex items-center gap-1.5 px-3 py-2 rounded-lg hover:bg-blue-500/10 transition-colors"
                         >
-                          <div className="w-7 h-7 rounded-lg bg-blue-500/15 flex items-center justify-center">
-                            <Camera className="w-3.5 h-3.5 text-blue-400" />
-                          </div>
-                          <span>Scanner</span>
+                          <Camera className="w-3.5 h-3.5 text-blue-400" />
+                          <span className="text-[11px] font-medium text-foreground whitespace-nowrap">Scanner</span>
                         </button>
                       </motion.div>
                     )}

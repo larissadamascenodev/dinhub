@@ -50,7 +50,7 @@ const OnboardingCard = ({ profile, onUpdateName, onGoToAccounts, onCreateTransac
     <motion.div
       initial={{ opacity: 0, y: 8 }}
       animate={{ opacity: 1, y: 0 }}
-      className="rounded-xl bg-card/50 border border-border/10 px-3 py-2"
+      className="rounded-xl bg-primary/8 border border-primary/15 px-3 py-2"
     >
       {/* Header + progress inline */}
       <div className="flex items-center gap-2 mb-1.5">
