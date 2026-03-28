@@ -227,6 +227,36 @@ export type Database = {
           },
         ]
       }
+      profiles: {
+        Row: {
+          created_at: string
+          display_name: string | null
+          has_account: boolean
+          has_completed_profile: boolean
+          has_transactions: boolean
+          id: string
+          updated_at: string
+        }
+        Insert: {
+          created_at?: string
+          display_name?: string | null
+          has_account?: boolean
+          has_completed_profile?: boolean
+          has_transactions?: boolean
+          id: string
+          updated_at?: string
+        }
+        Update: {
+          created_at?: string
+          display_name?: string | null
+          has_account?: boolean
+          has_completed_profile?: boolean
+          has_transactions?: boolean
+          id?: string
+          updated_at?: string
+        }
+        Relationships: []
+      }
       transactions: {
         Row: {
           account_id: string | null
