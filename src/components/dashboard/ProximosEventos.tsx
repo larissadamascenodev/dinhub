@@ -207,7 +207,7 @@ const ProximosEventos = memo(({ events, selectedMonth, selectedYear, onVerTodos 
                 className="flex gap-3"
               >
                 {/* Timeline dot */}
-                <div className="flex flex-col items-center pt-4 shrink-0 z-10">
+                <div className="flex flex-col items-center pt-3 shrink-0 z-10">
                   <div
                     className="w-3 h-3 rounded-full border-2"
                     style={{
@@ -218,51 +218,52 @@ const ProximosEventos = memo(({ events, selectedMonth, selectedYear, onVerTodos 
                   />
                 </div>
 
-                {/* Card */}
-                <div
-                  className="flex-1 rounded-xl border px-3.5 py-2.5 cursor-pointer transition-all hover:scale-[1.01]"
-                  style={{
-                    background: `hsl(${a} / 0.06)`,
-                    borderColor: `hsl(${a} / 0.15)`,
-                  }}
-                >
-                  {/* Date label */}
-                  <p className="text-[9px] text-muted-foreground/35 font-medium mb-1.5">
+                <div className="flex-1">
+                  {/* Date label outside card */}
+                  <p className="text-[9px] text-muted-foreground/35 font-medium mb-1">
                     {ev._day && ev._day < 10 ? `0${ev._day}` : ev._day} de {MONTH_SHORT[selectedMonth]}
                   </p>
 
-                  {/* Content row */}
-                  <div className="flex items-center gap-2.5">
-                    {/* Status icon before name */}
-                    <div
-                      className="w-6 h-6 rounded-full flex items-center justify-center shrink-0"
-                      style={{
-                        background: isPaidOrReceived
-                          ? `linear-gradient(160deg, hsl(${a} / 0.2) 0%, hsl(${a} / 0.1) 100%)`
-                          : "transparent",
-                        border: isPaidOrReceived
-                          ? `1px solid hsl(${a} / 0.3)`
-                          : `1.5px solid hsl(${a} / 0.4)`,
-                        boxShadow: isPaidOrReceived ? `0 2px 8px -2px hsl(${a} / 0.3)` : "none",
-                      }}
-                    >
-                      <StatusIcon
-                        className="w-3 h-3"
-                        style={{ color: `hsl(${a})` }}
-                      />
-                    </div>
+                  {/* Card */}
+                  <div
+                    className="rounded-xl border px-3 py-2 cursor-pointer transition-all hover:scale-[1.01]"
+                    style={{
+                      background: `hsl(${a} / 0.06)`,
+                      borderColor: `hsl(${a} / 0.15)`,
+                    }}
+                  >
+                    <div className="flex items-center gap-2.5">
+                      {/* Status icon */}
+                      <div
+                        className="w-6 h-6 rounded-full flex items-center justify-center shrink-0"
+                        style={{
+                          background: isPaidOrReceived
+                            ? `linear-gradient(160deg, hsl(${a} / 0.2) 0%, hsl(${a} / 0.1) 100%)`
+                            : "transparent",
+                          border: isPaidOrReceived
+                            ? `1px solid hsl(${a} / 0.3)`
+                            : `1.5px solid hsl(${a} / 0.4)`,
+                          boxShadow: isPaidOrReceived ? `0 2px 8px -2px hsl(${a} / 0.3)` : "none",
+                        }}
+                      >
+                        <StatusIcon
+                          className="w-3 h-3"
+                          style={{ color: `hsl(${a})` }}
+                        />
+                      </div>
 
-                    {/* Name */}
-                    <p className="flex-1 text-[13px] font-semibold text-foreground/90 truncate">{ev.name}</p>
+                      {/* Name */}
+                      <p className="flex-1 text-[13px] font-semibold text-foreground/90 truncate">{ev.name}</p>
 
-                    {/* Amount + status label */}
-                    <div className="flex flex-col items-end shrink-0">
-                      <p className="text-[13px] font-bold tabular-nums" style={{ color: `hsl(${a})` }}>
-                        {fmt(ev.amount)}
-                      </p>
-                      <span className="text-[8px] font-semibold uppercase mt-0.5" style={{ color: `hsl(${a} / 0.7)` }}>
-                        {cfg.label}
-                      </span>
+                      {/* Amount + status label */}
+                      <div className="flex flex-col items-end shrink-0">
+                        <p className="text-[13px] font-bold tabular-nums" style={{ color: `hsl(${a})` }}>
+                          {fmt(ev.amount)}
+                        </p>
+                        <span className="text-[8px] font-semibold uppercase mt-0.5" style={{ color: `hsl(${a} / 0.7)` }}>
+                          {cfg.label}
+                        </span>
+                      </div>
                     </div>
                   </div>
                 </div>
