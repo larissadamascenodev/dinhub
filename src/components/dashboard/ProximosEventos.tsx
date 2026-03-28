@@ -183,70 +183,132 @@ const ProximosEventos = memo(({ events, onVerTodos }: Props) => {
   );
 });
 
-// Mini calendar with event indicators
+// Mini calendar with swipeable weeks
 interface MiniCalendarProps {
   dayStatusMap: Map<number, { accent: string; priority: number }>;
 }
 
-const MiniCalendar = memo(({ dayStatusMap }: MiniCalendarProps) => {
+const WEEK_LABELS = ["D", "S", "T", "Q", "Q", "S", "S"];
+
+const getWeekDays = (weekOffset: number) => {
   const today = new Date();
   const dow = today.getDay();
   const start = new Date(today);
-  start.setDate(today.getDate() - dow);
-  const days = Array.from({ length: 7 }, (_, i) => {
+  start.setDate(today.getDate() - dow + weekOffset * 7);
+  return Array.from({ length: 7 }, (_, i) => {
     const d = new Date(start);
     d.setDate(start.getDate() + i);
     return {
       day: d.getDate(),
-      label: ["D", "S", "T", "Q", "Q", "S", "S"][i],
+      month: d.getMonth(),
+      label: WEEK_LABELS[i],
       isToday: d.toDateString() === today.toDateString(),
+      fullDate: new Date(d),
     };
   });
+};
+
+const MONTHS_PT = ["Jan", "Fev", "Mar", "Abr", "Mai", "Jun", "Jul", "Ago", "Set", "Out", "Nov", "Dez"];
+
+const MiniCalendar = memo(({ dayStatusMap }: MiniCalendarProps) => {
+  const [weekOffset, setWeekOffset] = useState(0);
+  const containerRef = useRef<HTMLDivElement>(null);
+  const days = useMemo(() => getWeekDays(weekOffset), [weekOffset]);
+
+  // Determine month label from the first day of the displayed week
+  const monthLabel = MONTHS_PT[days[0].fullDate.getMonth()];
+  const yearLabel = days[0].fullDate.getFullYear();
+  const isCurrentWeek = weekOffset === 0;
 
   return (
-    <div className="grid grid-cols-7 gap-1 px-5 mb-3">
-      {days.map((d) => {
-        const eventInfo = dayStatusMap.get(d.day);
-
-        return (
-          <div
-            key={`${d.label}-${d.day}`}
-            className="flex flex-col items-center py-2 rounded-xl text-xs transition-all relative"
-            style={
-              d.isToday
-                ? {
-                    background: "linear-gradient(180deg, hsl(150 100% 45%) 0%, hsl(150 100% 38%) 100%)",
-                    color: "white",
-                    fontWeight: 700,
-                    boxShadow: "0 4px 14px -4px hsl(150 100% 45% / 0.35), inset 0 1px 0 0 rgba(255,255,255,0.2)",
-                  }
-                : eventInfo
-                ? {
-                    background: `hsl(${eventInfo.accent} / 0.06)`,
-                    border: `1px solid hsl(${eventInfo.accent} / 0.12)`,
-                  }
-                : {}
-            }
-          >
-            <span className={`text-[10px] mb-0.5 ${d.isToday ? "opacity-80" : eventInfo ? `opacity-70` : "text-muted-foreground/40"}`}>
-              {d.label}
-            </span>
-            <span
-              className={`text-sm font-semibold ${d.isToday ? "" : eventInfo ? "" : "text-muted-foreground/60"}`}
-              style={!d.isToday && eventInfo ? { color: `hsl(${eventInfo.accent})` } : {}}
+    <div className="px-5 mb-3">
+      {/* Week navigation */}
+      <div className="flex items-center justify-between mb-2">
+        <button
+          onClick={() => setWeekOffset((w) => w - 1)}
+          className="text-muted-foreground/50 hover:text-foreground transition-colors p-1 rounded-lg hover:bg-white/[0.04]"
+        >
+          <ChevronRight className="w-3.5 h-3.5 rotate-180" />
+        </button>
+        <div className="flex items-center gap-2">
+          <span className="text-[11px] font-semibold text-foreground/70">
+            {monthLabel} {yearLabel !== new Date().getFullYear() ? yearLabel : ""}
+          </span>
+          {!isCurrentWeek && (
+            <button
+              onClick={() => setWeekOffset(0)}
+              className="text-[9px] text-primary font-semibold px-2 py-0.5 rounded-full bg-primary/10 border border-primary/15 hover:bg-primary/15 transition-colors"
             >
-              {d.day}
-            </span>
-            {/* Event dot indicator */}
-            {eventInfo && !d.isToday && (
+              Hoje
+            </button>
+          )}
+        </div>
+        <button
+          onClick={() => setWeekOffset((w) => w + 1)}
+          className="text-muted-foreground/50 hover:text-foreground transition-colors p-1 rounded-lg hover:bg-white/[0.04]"
+        >
+          <ChevronRight className="w-3.5 h-3.5" />
+        </button>
+      </div>
+
+      {/* Swipeable week strip */}
+      <motion.div
+        ref={containerRef}
+        key={weekOffset}
+        initial={{ opacity: 0, x: weekOffset >= 0 ? 30 : -30 }}
+        animate={{ opacity: 1, x: 0 }}
+        transition={{ duration: 0.2 }}
+        drag="x"
+        dragConstraints={{ left: 0, right: 0 }}
+        dragElastic={0.3}
+        onDragEnd={(_, info) => {
+          if (info.offset.x > 60) setWeekOffset((w) => w - 1);
+          else if (info.offset.x < -60) setWeekOffset((w) => w + 1);
+        }}
+        className="grid grid-cols-7 gap-1 cursor-grab active:cursor-grabbing select-none"
+      >
+        {days.map((d) => {
+          const eventInfo = dayStatusMap.get(d.day);
+
+          return (
+            <div
+              key={`${d.day}-${d.month}`}
+              className="flex flex-col items-center py-2 rounded-xl text-xs transition-all relative"
+              style={
+                d.isToday
+                  ? {
+                      background: "linear-gradient(180deg, hsl(150 100% 45%) 0%, hsl(150 100% 38%) 100%)",
+                      color: "white",
+                      fontWeight: 700,
+                      boxShadow: "0 4px 14px -4px hsl(150 100% 45% / 0.35), inset 0 1px 0 0 rgba(255,255,255,0.2)",
+                    }
+                  : eventInfo
+                  ? {
+                      background: `hsl(${eventInfo.accent} / 0.06)`,
+                      border: `1px solid hsl(${eventInfo.accent} / 0.12)`,
+                    }
+                  : {}
+              }
+            >
+              <span className={`text-[10px] mb-0.5 ${d.isToday ? "opacity-80" : eventInfo ? "opacity-70" : "text-muted-foreground/40"}`}>
+                {d.label}
+              </span>
               <span
-                className="absolute bottom-1 w-1 h-1 rounded-full"
-                style={{ background: `hsl(${eventInfo.accent})`, boxShadow: `0 0 4px hsl(${eventInfo.accent} / 0.6)` }}
-              />
-            )}
-          </div>
-        );
-      })}
+                className={`text-sm font-semibold ${d.isToday ? "" : eventInfo ? "" : "text-muted-foreground/60"}`}
+                style={!d.isToday && eventInfo ? { color: `hsl(${eventInfo.accent})` } : {}}
+              >
+                {d.day}
+              </span>
+              {eventInfo && !d.isToday && (
+                <span
+                  className="absolute bottom-1 w-1 h-1 rounded-full"
+                  style={{ background: `hsl(${eventInfo.accent})`, boxShadow: `0 0 4px hsl(${eventInfo.accent} / 0.6)` }}
+                />
+              )}
+            </div>
+          );
+        })}
+      </motion.div>
     </div>
   );
 });
