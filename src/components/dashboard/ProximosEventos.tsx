@@ -184,8 +184,8 @@ const ProximosEventos = memo(({ events, selectedMonth, selectedYear }: Props) =>
           style={{ background: "linear-gradient(180deg, hsl(220 15% 20% / 0.3), transparent)" }}
         />
 
-        <div className="space-y-3">
-          {grouped.map(([day, evs], gi) => {
+        <div className="space-y-2">
+          {grouped.slice(0, 3).map(([day, evs], gi) => {
             const isToday = today.getDate() === day && today.getMonth() === selectedMonth;
 
             return (
