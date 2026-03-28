@@ -142,7 +142,7 @@ const TransacoesRecentes = memo(({ transactions, onDelete }: Props) => {
           transition={{ type: "spring", stiffness: 500, damping: 35 }}
           className="relative z-10"
         >
-          <TxCard tx={topTx} />
+          <TxCard tx={topTx} onDelete={onDelete} />
         </motion.div>
 
       </motion.div>
