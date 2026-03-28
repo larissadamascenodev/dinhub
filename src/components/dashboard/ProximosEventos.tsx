@@ -185,97 +185,85 @@ const ProximosEventos = memo(({ events, selectedMonth, selectedYear, onVerTodos 
   );
 });
 
-// Mini calendar with swipeable weeks
+// Mini calendar — shows weeks of the selected month, swipeable
 interface MiniCalendarProps {
   dayStatusMap: Map<number, { accent: string; priority: number }>;
+  selectedMonth: number;
+  selectedYear: number;
 }
 
 const WEEK_LABELS = ["D", "S", "T", "Q", "Q", "S", "S"];
 
-const getWeekDays = (weekOffset: number) => {
+/** Get all weeks (arrays of 7 days) for a given month */
+const getMonthWeeks = (month: number, year: number) => {
   const today = new Date();
-  const dow = today.getDay();
-  const start = new Date(today);
-  start.setDate(today.getDate() - dow + weekOffset * 7);
-  return Array.from({ length: 7 }, (_, i) => {
-    const d = new Date(start);
-    d.setDate(start.getDate() + i);
-    return {
-      day: d.getDate(),
-      month: d.getMonth(),
-      label: WEEK_LABELS[i],
-      isToday: d.toDateString() === today.toDateString(),
-      fullDate: new Date(d),
-    };
-  });
+  const firstDay = new Date(year, month, 1);
+  const startDow = firstDay.getDay(); // 0=Sun
+  const start = new Date(firstDay);
+  start.setDate(1 - startDow); // back to Sunday of first week
+
+  const lastDay = new Date(year, month + 1, 0);
+  const endDow = lastDay.getDay();
+  const end = new Date(lastDay);
+  end.setDate(lastDay.getDate() + (6 - endDow)); // forward to Saturday of last week
+
+  const weeks: Array<Array<{ day: number; month: number; label: string; isToday: boolean; inMonth: boolean }>> = [];
+  const cursor = new Date(start);
+
+  while (cursor <= end) {
+    const week: typeof weeks[0] = [];
+    for (let i = 0; i < 7; i++) {
+      week.push({
+        day: cursor.getDate(),
+        month: cursor.getMonth(),
+        label: WEEK_LABELS[cursor.getDay()],
+        isToday: cursor.toDateString() === today.toDateString(),
+        inMonth: cursor.getMonth() === month,
+      });
+      cursor.setDate(cursor.getDate() + 1);
+    }
+    weeks.push(week);
+  }
+  return weeks;
 };
 
-const MONTHS_PT = ["Jan", "Fev", "Mar", "Abr", "Mai", "Jun", "Jul", "Ago", "Set", "Out", "Nov", "Dez"];
+const MiniCalendar = memo(({ dayStatusMap, selectedMonth, selectedYear }: MiniCalendarProps) => {
+  const weeks = useMemo(() => getMonthWeeks(selectedMonth, selectedYear), [selectedMonth, selectedYear]);
 
-const MiniCalendar = memo(({ dayStatusMap }: MiniCalendarProps) => {
-  const [weekOffset, setWeekOffset] = useState(0);
-  const containerRef = useRef<HTMLDivElement>(null);
-  const days = useMemo(() => getWeekDays(weekOffset), [weekOffset]);
+  // Start on the week that contains today (if in this month), otherwise week 0
+  const today = new Date();
+  const initialWeek = (today.getMonth() === selectedMonth && today.getFullYear() === selectedYear)
+    ? weeks.findIndex((w) => w.some((d) => d.isToday)) || 0
+    : 0;
 
-  // Determine month label from the first day of the displayed week
-  const monthLabel = MONTHS_PT[days[0].fullDate.getMonth()];
-  const yearLabel = days[0].fullDate.getFullYear();
-  const isCurrentWeek = weekOffset === 0;
+  const [weekIdx, setWeekIdx] = useState(initialWeek);
+  const clampedIdx = Math.max(0, Math.min(weekIdx, weeks.length - 1));
+  const days = weeks[clampedIdx];
 
   return (
     <div className="px-5 mb-3">
-      {/* Week navigation */}
-      <div className="flex items-center justify-between mb-2">
-        <button
-          onClick={() => setWeekOffset((w) => w - 1)}
-          className="text-muted-foreground/50 hover:text-foreground transition-colors p-1 rounded-lg hover:bg-white/[0.04]"
-        >
-          <ChevronRight className="w-3.5 h-3.5 rotate-180" />
-        </button>
-        <div className="flex items-center gap-2">
-          <span className="text-[11px] font-semibold text-foreground/70">
-            {monthLabel} {yearLabel !== new Date().getFullYear() ? yearLabel : ""}
-          </span>
-          {!isCurrentWeek && (
-            <button
-              onClick={() => setWeekOffset(0)}
-              className="text-[9px] text-primary font-semibold px-2 py-0.5 rounded-full bg-primary/10 border border-primary/15 hover:bg-primary/15 transition-colors"
-            >
-              Hoje
-            </button>
-          )}
-        </div>
-        <button
-          onClick={() => setWeekOffset((w) => w + 1)}
-          className="text-muted-foreground/50 hover:text-foreground transition-colors p-1 rounded-lg hover:bg-white/[0.04]"
-        >
-          <ChevronRight className="w-3.5 h-3.5" />
-        </button>
-      </div>
-
-      {/* Swipeable week strip */}
       <motion.div
-        ref={containerRef}
-        key={weekOffset}
-        initial={{ opacity: 0, x: weekOffset >= 0 ? 30 : -30 }}
+        key={`${selectedMonth}-${selectedYear}-${clampedIdx}`}
+        initial={{ opacity: 0, x: 20 }}
         animate={{ opacity: 1, x: 0 }}
         transition={{ duration: 0.2 }}
         drag="x"
         dragConstraints={{ left: 0, right: 0 }}
         dragElastic={0.3}
         onDragEnd={(_, info) => {
-          if (info.offset.x > 60) setWeekOffset((w) => w - 1);
-          else if (info.offset.x < -60) setWeekOffset((w) => w + 1);
+          if (info.offset.x > 50 && clampedIdx > 0) setWeekIdx((w) => w - 1);
+          else if (info.offset.x < -50 && clampedIdx < weeks.length - 1) setWeekIdx((w) => w + 1);
         }}
         className="grid grid-cols-7 gap-1 cursor-grab active:cursor-grabbing select-none"
       >
-        {days.map((d) => {
-          const eventInfo = dayStatusMap.get(d.day);
+        {days.map((d, i) => {
+          const eventInfo = d.inMonth ? dayStatusMap.get(d.day) : undefined;
+          const dimmed = !d.inMonth;
 
           return (
             <div
-              key={`${d.day}-${d.month}`}
-              className="flex flex-col items-center py-2 rounded-xl text-xs transition-all relative"
+              key={`${d.day}-${d.month}-${i}`}
+              className={`flex flex-col items-center py-2 rounded-xl text-xs transition-all relative ${dimmed ? "opacity-25" : ""}`}
               style={
                 d.isToday
                   ? {
@@ -311,6 +299,18 @@ const MiniCalendar = memo(({ dayStatusMap }: MiniCalendarProps) => {
           );
         })}
       </motion.div>
+
+      {/* Week dots indicator */}
+      {weeks.length > 1 && (
+        <div className="flex items-center justify-center gap-1 mt-2">
+          {weeks.map((_, i) => (
+            <span
+              key={i}
+              className={`w-1 h-1 rounded-full transition-all ${i === clampedIdx ? "bg-primary w-2.5" : "bg-muted-foreground/20"}`}
+            />
+          ))}
+        </div>
+      )}
     </div>
   );
 });
