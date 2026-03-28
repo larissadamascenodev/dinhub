@@ -140,6 +140,19 @@ const ProximosEventos = memo(({ events, selectedMonth, selectedYear, onVerTodos 
             const dayEvent = d.inMonth ? dayStatusMap.get(d.day) : undefined;
             const isPast = d.inMonth && !d.isToday && new Date(selectedYear, d.month, d.day) < today;
 
+            // Determine dot color based on status logic
+            let dotColor: string | undefined;
+            if (dayEvent && !dimmed) {
+              if (isPast || d.isToday) {
+                // Past/today: green if paid/received, red if not
+                const isPaid = dayEvent.status === "pago" || dayEvent.status === "recebido";
+                dotColor = isPaid ? "hsl(150 100% 45%)" : "hsl(0 60% 50%)";
+              } else {
+                // Future: yellow for pending
+                dotColor = "hsl(40 80% 50%)";
+              }
+            }
+
             return (
               <div
                 key={`${d.day}-${d.month}-${i}`}
@@ -159,16 +172,16 @@ const ProximosEventos = memo(({ events, selectedMonth, selectedYear, onVerTodos 
                           boxShadow: "0 0 12px hsl(150 100% 45% / 0.3)",
                         }
                       : isPast
-                        ? { color: "hsl(0 60% 50% / 0.6)" }
+                        ? { color: "hsl(var(--muted-foreground) / 0.3)" }
                         : { color: "hsl(var(--muted-foreground) / 0.6)" }
                   }
                 >
                   {d.day}
                 </div>
-                {dayEvent && !dimmed && (
+                {dotColor && (
                   <span
                     className="w-1.5 h-1.5 rounded-full mt-1"
-                    style={{ background: `hsl(${dayEvent.accent})` }}
+                    style={{ background: dotColor }}
                   />
                 )}
               </div>
