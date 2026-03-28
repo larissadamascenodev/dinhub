@@ -56,11 +56,9 @@ const Index = () => {
             {/* Daily behavior */}
             <MicroInteracoesCard gastosHoje={data.gastosHoje} mediaGastosDiarios={data.mediaGastosDiarios} />
 
-            {/* Grid: Transações + Categorias */}
-            <div className="grid grid-cols-2 gap-4">
-              <TransacoesRecentes transactions={data.transactions} />
-              <GastosPorCategoria categories={data.categories} />
-            </div>
+            {/* Transações + Categorias stacked */}
+            <TransacoesRecentes transactions={data.transactions} />
+            <GastosPorCategoria categories={data.categories} />
           </div>
 
           {/* RIGHT COLUMN (sidebar) */}
