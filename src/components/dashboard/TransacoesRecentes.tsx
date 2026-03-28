@@ -1,11 +1,14 @@
 import { memo, useState } from "react";
-import { ArrowUpRight, ArrowDownRight, Layers, ChevronDown, ChevronUp } from "lucide-react";
+import { ArrowUpRight, ArrowDownRight, Layers, ChevronUp, Trash2 } from "lucide-react";
 import { motion, AnimatePresence } from "framer-motion";
+import { toast } from "sonner";
 import type { Transaction } from "@/types/finance";
+import { deleteTransaction } from "@/services/transactionService";
 
 interface Props {
   transactions: Transaction[];
   onVerTodas?: () => void;
+  onDelete?: () => void;
 }
 
 const fmt = (v: number) =>
@@ -18,14 +21,23 @@ const formatDate = () => {
   return `${day} de ${months[now.getMonth()]}`;
 };
 
-const TxCard = ({ tx }: { tx: Transaction }) => {
-  const isReceita = tx.type === "receita";
+const TxCard = ({ tx, onDelete }: { tx: Transaction; onDelete?: (id: string) => void }) => {
+  const isReceita = tx.type === "receita" || tx.type === "income";
   const Icon = isReceita ? ArrowUpRight : ArrowDownRight;
 
+  const handleDelete = async (e: React.MouseEvent) => {
+    e.stopPropagation();
+    try {
+      await deleteTransaction(tx.id);
+      toast.success("Transação removida");
+      onDelete?.(tx.id);
+    } catch {
+      toast.error("Erro ao remover");
+    }
+  };
+
   return (
-    <div
-      className="relative flex items-center gap-3 px-4 py-3 rounded-[14px] overflow-hidden bg-card/90 backdrop-blur-xl border border-border/30 shadow-2xl shadow-black/40"
-    >
+    <div className="group relative flex items-center gap-3 px-4 py-3 rounded-[14px] overflow-hidden bg-card/90 backdrop-blur-xl border border-border/30 shadow-2xl shadow-black/40">
       <div
         className="w-9 h-9 rounded-full flex items-center justify-center flex-shrink-0"
         style={{ background: isReceita ? "hsl(150 100% 45% / 0.1)" : "hsl(0 60% 50% / 0.1)" }}
@@ -34,13 +46,18 @@ const TxCard = ({ tx }: { tx: Transaction }) => {
       </div>
       <div className="flex-1 min-w-0">
         <p className="text-[13px] font-semibold text-foreground truncate">{tx.name}</p>
-        <p className="text-[10px] text-muted-foreground/40 mt-px">{tx.category} · {formatDate()}</p>
+        <p className="text-[10px] text-muted-foreground/40 mt-px">{tx.category} · {tx.date}</p>
       </div>
-      <div className="text-right shrink-0">
+      <div className="text-right shrink-0 flex items-center gap-2">
         <p className="text-[13px] font-bold tabular-nums" style={{ color: isReceita ? "hsl(150 100% 45%)" : "hsl(0 60% 50%)" }}>
           {isReceita ? "+" : "−"}{fmt(tx.amount)}
         </p>
-        <p className="text-[9px] text-muted-foreground/30 font-medium">{isReceita ? "Receita" : "Despesa"}</p>
+        <button
+          onClick={handleDelete}
+          className="opacity-0 group-hover:opacity-100 transition-opacity text-muted-foreground/40 hover:text-destructive"
+        >
+          <Trash2 className="w-3.5 h-3.5" />
+        </button>
       </div>
     </div>
   );
@@ -51,7 +68,7 @@ const STACK_OFFSET = 10;
 const STACK_SCALE_STEP = 0.03;
 const STACK_COUNT = 4;
 
-const TransacoesRecentes = memo(({ transactions }: Props) => {
+const TransacoesRecentes = memo(({ transactions, onDelete }: Props) => {
   const [expanded, setExpanded] = useState(false);
   const visible = transactions.slice(0, 7);
   const topTx = visible[0];
@@ -125,7 +142,7 @@ const TransacoesRecentes = memo(({ transactions }: Props) => {
           transition={{ type: "spring", stiffness: 500, damping: 35 }}
           className="relative z-10"
         >
-          <TxCard tx={topTx} />
+          <TxCard tx={topTx} onDelete={onDelete} />
         </motion.div>
 
       </motion.div>
@@ -154,7 +171,7 @@ const TransacoesRecentes = memo(({ transactions }: Props) => {
                     delay: i * 0.05,
                   }}
                 >
-                  <TxCard tx={tx} />
+                  <TxCard tx={tx} onDelete={onDelete} />
                 </motion.div>
               ))}
             </div>
