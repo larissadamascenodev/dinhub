@@ -271,12 +271,12 @@ const Configuracoes = () => {
         }}
       >
         <div className="absolute inset-0 bg-gradient-to-br from-primary/[0.06] via-transparent to-transparent pointer-events-none" />
-        <div className="relative z-10 w-11 h-11 rounded-xl bg-primary/15 flex items-center justify-center shrink-0">
+        <div className="relative z-10 w-10 h-10 rounded-xl bg-primary/15 flex items-center justify-center shrink-0">
           <Wallet className="w-5 h-5 text-primary" />
         </div>
         <div className="relative z-10 flex-1 min-w-0">
-          <p className="text-base font-bold text-primary">Carteira</p>
-          <p className="text-xs text-primary/60">Contas e Cartões de Crédito</p>
+          <p className="text-sm font-bold text-primary">Carteira</p>
+          <p className="text-[11px] text-primary/60">Contas e Cartões de Crédito</p>
         </div>
         <ChevronRight className="relative z-10 w-5 h-5 text-primary/50 group-hover:text-primary transition-colors shrink-0" />
       </motion.button>
