@@ -286,11 +286,12 @@ const NovaTransacaoModal = ({ open, onClose, onSuccess, initialType = "despesa" 
           category,
           date: dateStr,
           status,
-          account_id: accountId || null,
+          account_id: paymentMethod === "cartao" ? null : (accountId || null),
           payment_method: type === "despesa" ? paymentMethod : "conta",
           recurrence_type: recurrenceType,
           installments: recurrenceType === "parcelado" ? installments : null,
           observation: observation.trim() || null,
+          credit_card_id: paymentMethod === "cartao" ? (creditCardId || null) : null,
         },
         user.id
       );
