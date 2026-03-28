@@ -13,7 +13,7 @@ const fmt = (v: number) => v.toLocaleString("pt-BR", { style: "currency", curren
 
 const SaldoCard = memo(({ saldoAtual, saldoPrevisto, onNovaTransacao, mobile }: SaldoCardProps) => (
   <div
-    className={`relative overflow-hidden rounded-xl border border-primary/10 shadow-[0_2px_8px_-2px_rgba(0,0,0,0.4),inset_0_1px_0_0_rgba(255,255,255,0.03)] flex flex-col justify-between ${mobile ? "p-4" : "p-5"}`}
+    className={`rounded-xl border border-border/20 shadow-[0_2px_8px_-2px_rgba(0,0,0,0.4),inset_0_1px_0_0_rgba(255,255,255,0.03)] flex flex-col justify-between ${mobile ? "p-4" : "p-5"}`}
     style={{ background: "linear-gradient(145deg, hsl(220 18% 9% / 0.9) 0%, hsl(220 20% 5% / 0.95) 100%)" }}
   >
     <div>
