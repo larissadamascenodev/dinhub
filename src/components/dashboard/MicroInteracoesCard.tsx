@@ -1,6 +1,6 @@
-import { memo, useMemo } from "react";
+import { memo, useMemo, useState, useEffect } from "react";
 import { Smile, Meh, AlertTriangle, PartyPopper, TrendingDown } from "lucide-react";
-import { motion } from "framer-motion";
+import { motion, AnimatePresence } from "framer-motion";
 
 interface Props {
   gastosHoje: number;
@@ -36,32 +36,42 @@ const buckets = {
 };
 
 const MicroInteracoesCard = memo(({ gastosHoje, mediaGastosDiarios }: Props) => {
-  const { bucket, msg } = useMemo(() => {
+  const bucket = useMemo(() => {
     const variacao = mediaGastosDiarios > 0 ? ((gastosHoje - mediaGastosDiarios) / mediaGastosDiarios) * 100 : 0;
-    const b =
-      gastosHoje === 0
-        ? "zero" as const
-        : variacao > 20
-          ? "high" as const
-          : variacao > 0
-            ? "above" as const
-            : variacao > -20
-              ? "below" as const
-              : "saving" as const;
-    const cfg = buckets[b];
-    const m = cfg.msgs[new Date().getDate() % cfg.msgs.length];
-    return { bucket: b, msg: m };
+    return gastosHoje === 0
+      ? "zero" as const
+      : variacao > 20
+        ? "high" as const
+        : variacao > 0
+          ? "above" as const
+          : variacao > -20
+            ? "below" as const
+            : "saving" as const;
   }, [gastosHoje, mediaGastosDiarios]);
 
   const cfg = buckets[bucket];
   const Icon = cfg.icon;
+  const msgs = cfg.msgs;
+
+  const [msgIdx, setMsgIdx] = useState(0);
+
+  useEffect(() => {
+    if (msgs.length <= 1) return;
+    const interval = setInterval(() => {
+      setMsgIdx((prev) => (prev + 1) % msgs.length);
+    }, 4000);
+    return () => clearInterval(interval);
+  }, [msgs]);
 
   return (
     <motion.div
       initial={{ opacity: 0, y: 6 }}
       animate={{ opacity: 1, y: 0 }}
-      className="flex items-center gap-3 rounded-xl px-4 py-2.5 cursor-pointer transition-all border border-border/20 shadow-[0_1px_4px_-1px_rgba(0,0,0,0.2),inset_0_1px_0_0_rgba(255,255,255,0.03)]"
-      style={{ background: "linear-gradient(145deg, hsl(220 18% 9% / 0.9) 0%, hsl(220 20% 5% / 0.95) 100%)" }}
+      className="flex items-center gap-3 rounded-xl px-4 py-2.5 cursor-pointer transition-all border border-primary/20 backdrop-blur-sm overflow-hidden"
+      style={{
+        background: "hsl(150 100% 45% / 0.06)",
+        boxShadow: "0 2px 8px -2px rgba(0,0,0,0.4), inset 0 1px 0 0 hsl(150 100% 45% / 0.08)",
+      }}
     >
       <motion.div
         key={bucket}
@@ -71,15 +81,20 @@ const MicroInteracoesCard = memo(({ gastosHoje, mediaGastosDiarios }: Props) => 
       >
         <Icon className={`w-4 h-4 shrink-0 ${cfg.iconClass}`} />
       </motion.div>
-      <motion.p
-        key={msg}
-        initial={{ opacity: 0, x: 6 }}
-        animate={{ opacity: 1, x: 0 }}
-        className="text-xs text-foreground/80 leading-snug"
-      >
-        {msg}
-      </motion.p>
-      
+      <div className="relative flex-1 h-5 overflow-hidden">
+        <AnimatePresence mode="wait">
+          <motion.p
+            key={msgIdx}
+            initial={{ opacity: 0, y: 12 }}
+            animate={{ opacity: 1, y: 0 }}
+            exit={{ opacity: 0, y: -12 }}
+            transition={{ duration: 0.35, ease: "easeInOut" }}
+            className="text-xs text-primary/90 leading-snug font-medium absolute inset-0 whitespace-nowrap"
+          >
+            {msgs[msgIdx]}
+          </motion.p>
+        </AnimatePresence>
+      </div>
     </motion.div>
   );
 });
