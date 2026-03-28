@@ -132,7 +132,8 @@ const Index = () => {
           </div>
         </div>
       </div>
-      <NovaTransacaoModal open={showModal} onClose={() => setShowModal(false)} onSuccess={refetch} />
+      <TransactionTypeChooser open={showTypeChooser} onClose={() => setShowTypeChooser(false)} onSelect={handleTypeSelected} />
+      <NovaTransacaoModal open={showModal} onClose={() => setShowModal(false)} onSuccess={refetch} initialType={modalType} />
       <PagarEditarModal
         open={showPayModal}
         event={selectedEvent}
