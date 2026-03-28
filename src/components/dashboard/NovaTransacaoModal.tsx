@@ -120,8 +120,9 @@ const NovaTransacaoModal = ({ open, onClose, onSuccess, initialType = "despesa" 
         if (defaultAcc) setAccountId(defaultAcc.id);
       });
       getCreditCards().then((cards) => {
-        setCreditCards(cards as CreditCardItem[]);
-        if (cards.length > 0) setCreditCardId(cards[0].id);
+        const typedCards = cards as unknown as CreditCardItem[];
+        setCreditCards(typedCards);
+        if (typedCards.length > 0) setCreditCardId(typedCards[0].id);
       });
     }
   }, [open, user]);
