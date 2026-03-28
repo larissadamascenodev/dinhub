@@ -70,7 +70,7 @@ const Index = () => {
   return (
     <div className="dark min-h-screen bg-background text-foreground">
       <div className="max-w-7xl mx-auto px-4 md:px-6 pt-0 pb-24 md:pb-8">
-        <DashboardHeader />
+        <DashboardHeader profile={profile} />
 
         {/* DESKTOP LAYOUT */}
         <div className="hidden lg:grid lg:grid-cols-[1fr_340px] gap-5">
