@@ -318,7 +318,7 @@ const Configuracoes = () => {
           <p className="text-[10px] font-bold text-muted-foreground uppercase tracking-widest">Personalidade do Fin</p>
         </div>
         <p className="text-xs text-muted-foreground mb-3 px-1">Como o Fin responde no app</p>
-        <div className="grid grid-cols-2 gap-3">
+        <div className="grid grid-cols-2 gap-2">
           <button
             onClick={() => setBotPersonality("casual")}
             className={cn(
