@@ -88,13 +88,7 @@ const DashboardHeader = memo(() => {
         </div>
       </header>
 
-      {/* Greeting */}
-      <motion.div initial={{ opacity: 0, y: -10 }} animate={{ opacity: 1, y: 0 }} className="mb-1 md:mb-2">
-        <h1 className="font-display text-xl md:text-2xl font-bold leading-tight">
-          {greeting}, <span className="text-foreground/70">Olá</span>
-        </h1>
-        <p className="text-xs text-muted-foreground mt-0.5">{dateStr}</p>
-      </motion.div>
+      {/* Greeting — rendered externally now */}
     </>
   );
 });
