@@ -137,6 +137,8 @@ const ProximosEventos = memo(({ events, selectedMonth, selectedYear, onVerTodos 
         >
           {days.map((d, i) => {
             const dimmed = !d.inMonth;
+            const dayEvent = d.inMonth ? dayStatusMap.get(d.day) : undefined;
+            const isPast = d.inMonth && !d.isToday && new Date(selectedYear, d.month, d.day) < today;
 
             return (
               <div
@@ -147,14 +149,28 @@ const ProximosEventos = memo(({ events, selectedMonth, selectedYear, onVerTodos 
                   {DAY_INITIALS[d.dow]}
                 </span>
                 <div
-                  className={`w-8 h-8 rounded-full flex items-center justify-center text-sm font-bold transition-all ${
+                  className="w-8 h-8 rounded-full flex items-center justify-center text-sm font-bold transition-all relative"
+                  style={
                     d.isToday
-                      ? "bg-primary text-primary-foreground shadow-[0_0_12px_hsl(150_100%_45%/0.4)]"
-                      : "text-muted-foreground/60"
-                  }`}
+                      ? {
+                          background: "linear-gradient(160deg, hsl(150 100% 45% / 0.2) 0%, hsl(150 100% 45% / 0.1) 100%)",
+                          border: "1px solid hsl(150 100% 45% / 0.3)",
+                          color: "hsl(150 100% 45%)",
+                          boxShadow: "0 0 12px hsl(150 100% 45% / 0.3)",
+                        }
+                      : isPast
+                        ? { color: "hsl(0 60% 50% / 0.6)" }
+                        : { color: "hsl(var(--muted-foreground) / 0.6)" }
+                  }
                 >
                   {d.day}
                 </div>
+                {dayEvent && !dimmed && (
+                  <span
+                    className="w-1.5 h-1.5 rounded-full mt-1"
+                    style={{ background: `hsl(${dayEvent.accent})` }}
+                  />
+                )}
               </div>
             );
           })}
