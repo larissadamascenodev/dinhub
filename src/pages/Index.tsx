@@ -17,6 +17,7 @@ const Index = () => {
   const [selectedYear, setSelectedYear] = useState(new Date().getFullYear());
   const data = useMemo(() => SAMPLE_DATA, []);
   const handleNovaTransacao = useCallback(() => {}, []);
+  const { greeting, dateStr } = useGreeting();
 
   const handleMonthChange = (month: number, year: number) => {
     setSelectedMonth(month);
