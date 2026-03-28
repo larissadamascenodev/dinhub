@@ -16,6 +16,7 @@ export type Database = {
     Tables: {
       accounts: {
         Row: {
+          color: string | null
           created_at: string
           current_balance: number
           id: string
@@ -27,6 +28,7 @@ export type Database = {
           user_id: string
         }
         Insert: {
+          color?: string | null
           created_at?: string
           current_balance?: number
           id?: string
@@ -38,6 +40,7 @@ export type Database = {
           user_id: string
         }
         Update: {
+          color?: string | null
           created_at?: string
           current_balance?: number
           id?: string
@@ -57,6 +60,7 @@ export type Database = {
           created_at: string
           due_day: number
           id: string
+          last_four_digits: string | null
           limit: number
           name: string
           updated_at: string
@@ -69,6 +73,7 @@ export type Database = {
           created_at?: string
           due_day?: number
           id?: string
+          last_four_digits?: string | null
           limit?: number
           name: string
           updated_at?: string
@@ -81,6 +86,7 @@ export type Database = {
           created_at?: string
           due_day?: number
           id?: string
+          last_four_digits?: string | null
           limit?: number
           name?: string
           updated_at?: string
