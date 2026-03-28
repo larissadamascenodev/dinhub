@@ -23,10 +23,11 @@ const Configuracoes = () => {
   const navigate = useNavigate();
   const fileInputRef = useRef<HTMLInputElement>(null);
 
-  const [editing, setEditing] = useState(false);
+  const [editModalOpen, setEditModalOpen] = useState(false);
   const [editName, setEditName] = useState("");
   const [activeTab, setActiveTab] = useState<"conta" | "config">("conta");
   const [uploadingAvatar, setUploadingAvatar] = useState(false);
+  const [previewUrl, setPreviewUrl] = useState<string | null>(null);
 
   const displayName = profile?.display_name || user?.email?.split("@")[0] || "Usuário";
   const email = user?.email ?? "";
