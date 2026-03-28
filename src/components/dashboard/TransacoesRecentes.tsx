@@ -128,7 +128,7 @@ const TransacoesRecentes = memo(({ transactions }: Props) => {
                   height: "56px",
                   transformOrigin: "top center",
                   zIndex: STACK_COUNT - i,
-                  background: `linear-gradient(160deg, hsl(220 15% ${13 - (i + 1) * 1.5}% / 0.6) 0%, hsl(220 18% ${7 - i}% / 0.75) 50%, hsl(220 20% ${3 - i * 0.5}% / 0.9) 100%)`,
+                  background: `hsl(220 10% ${12 - (i + 1) * 1.5}%)`,
                   border: "1px solid hsl(220 12% 16% / 0.3)",
                   boxShadow: "0 1px 3px rgba(0,0,0,0.2)",
                 }}
