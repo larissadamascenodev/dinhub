@@ -39,6 +39,16 @@ const STATUS_CONFIG = {
     iconColor: "text-destructive",
     Icon: Clock,
   },
+  recebido: {
+    label: "Recebido",
+    dotColor: "bg-primary",
+    badgeBg: "bg-primary/15",
+    badgeText: "text-primary",
+    badgeBorder: "border-primary/30",
+    iconBg: "bg-primary/15",
+    iconColor: "text-primary",
+    Icon: Check,
+  },
 };
 
 const fmt = (v: number) =>
