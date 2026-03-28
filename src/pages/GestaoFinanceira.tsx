@@ -58,6 +58,41 @@ function formatCurrency(value: number) {
   return value.toLocaleString("pt-BR", { style: "currency", currency: "BRL" });
 }
 
+/* ══════════════════════════════════════════════
+   Modal overlay shared by account & card forms
+   ══════════════════════════════════════════════ */
+const ModalOverlay = ({ open, onClose, children }: { open: boolean; onClose: () => void; children: React.ReactNode }) => (
+  <AnimatePresence>
+    {open && (
+      <motion.div
+        initial={{ opacity: 0 }}
+        animate={{ opacity: 1 }}
+        exit={{ opacity: 0 }}
+        className="fixed inset-0 z-50 flex items-center justify-center px-4"
+      >
+        {/* backdrop */}
+        <motion.div
+          initial={{ opacity: 0 }}
+          animate={{ opacity: 1 }}
+          exit={{ opacity: 0 }}
+          className="absolute inset-0 bg-black/60 backdrop-blur-sm"
+          onClick={onClose}
+        />
+        {/* content */}
+        <motion.div
+          initial={{ opacity: 0, scale: 0.95, y: 16 }}
+          animate={{ opacity: 1, scale: 1, y: 0 }}
+          exit={{ opacity: 0, scale: 0.95, y: 16 }}
+          transition={{ type: "spring", duration: 0.4 }}
+          className="relative z-10 w-full max-w-md rounded-2xl bg-card border border-border/40 p-6 shadow-2xl"
+        >
+          {children}
+        </motion.div>
+      </motion.div>
+    )}
+  </AnimatePresence>
+);
+
 const GestaoFinanceira = () => {
   const navigate = useNavigate();
   const { user } = useAuth();
@@ -78,7 +113,7 @@ const GestaoFinanceira = () => {
   const [newCardLimit, setNewCardLimit] = useState("");
   const [newCardClosing, setNewCardClosing] = useState("10");
   const [newCardDue, setNewCardDue] = useState("20");
-  const [newCardColor, setNewCardColor] = useState("violet");
+  const [newCardColor, setNewCardColor] = useState("emerald");
   const [newCardDigits, setNewCardDigits] = useState("");
 
   const fetchData = async () => {
@@ -98,6 +133,24 @@ const GestaoFinanceira = () => {
     fetchData();
   }, [user]);
 
+  const resetAddAccount = () => {
+    setShowAddAccount(false);
+    setNewAccName("");
+    setNewAccType("checking");
+    setNewAccBalance("");
+    setNewAccColor("violet");
+  };
+
+  const resetAddCard = () => {
+    setShowAddCard(false);
+    setNewCardName("");
+    setNewCardLimit("");
+    setNewCardClosing("10");
+    setNewCardDue("20");
+    setNewCardColor("emerald");
+    setNewCardDigits("");
+  };
+
   const handleAddAccount = async () => {
     if (!user || !newAccName.trim()) return;
     try {
@@ -108,11 +161,7 @@ const GestaoFinanceira = () => {
         color: newAccColor,
       });
       toast.success("Conta criada!");
-      setShowAddAccount(false);
-      setNewAccName("");
-      setNewAccType("checking");
-      setNewAccBalance("");
-      setNewAccColor("violet");
+      resetAddAccount();
       fetchData();
     } catch {
       toast.error("Erro ao criar conta");
@@ -134,35 +183,11 @@ const GestaoFinanceira = () => {
         user.id
       );
       toast.success("Cartão cadastrado!");
-      setShowAddCard(false);
-      setNewCardName("");
-      setNewCardLimit("");
-      setNewCardClosing("10");
-      setNewCardDue("20");
-      setNewCardColor("violet");
-      setNewCardDigits("");
+      resetAddCard();
       fetchData();
     } catch {
       toast.error("Erro ao criar cartão");
     }
-  };
-
-  const resetAddAccount = () => {
-    setShowAddAccount(false);
-    setNewAccName("");
-    setNewAccType("checking");
-    setNewAccBalance("");
-    setNewAccColor("violet");
-  };
-
-  const resetAddCard = () => {
-    setShowAddCard(false);
-    setNewCardName("");
-    setNewCardLimit("");
-    setNewCardClosing("10");
-    setNewCardDue("20");
-    setNewCardColor("violet");
-    setNewCardDigits("");
   };
 
   return (
@@ -194,12 +219,16 @@ const GestaoFinanceira = () => {
               <div key={i} className="h-44 rounded-2xl bg-card animate-pulse" />
             ))}
           </div>
-        ) : accounts.length === 0 && !showAddAccount ? (
-          <div className="rounded-2xl bg-card border border-border/30 p-8 text-center">
+        ) : accounts.length === 0 ? (
+          <div className="rounded-2xl bg-card/60 backdrop-blur-sm border border-border/20 p-8 text-center">
             <Landmark className="w-10 h-10 text-muted-foreground mx-auto mb-3" />
             <p className="text-sm text-muted-foreground mb-1">Nenhuma conta cadastrada</p>
             <p className="text-xs text-muted-foreground/60 mb-4">Crie sua primeira conta para começar</p>
-            <Button onClick={() => setShowAddAccount(true)} size="sm" className="rounded-xl">
+            <Button
+              onClick={() => setShowAddAccount(true)}
+              size="sm"
+              className="rounded-xl bg-primary/15 text-primary hover:bg-primary/25 border-0"
+            >
               <Plus className="w-4 h-4 mr-1" /> Criar Conta
             </Button>
           </div>
@@ -246,9 +275,7 @@ const GestaoFinanceira = () => {
                     )}
 
                     <div className="mt-auto pt-3">
-                      <p className="text-[10px] text-white/40 font-medium uppercase tracking-wide mb-0.5">
-                        Saldo disponível
-                      </p>
+                      <p className="text-[10px] text-white/40 font-medium uppercase tracking-wide mb-0.5">Saldo disponível</p>
                       <p className="text-lg font-bold text-white">{formatCurrency(balance)}</p>
                       <div className="flex items-center gap-1 mt-1">
                         <TrendingUp className={cn("w-3 h-3", isPositive ? "text-emerald-400" : "text-red-400")} />
@@ -281,94 +308,20 @@ const GestaoFinanceira = () => {
             </motion.button>
           </div>
         )}
-
-        {/* Add account form */}
-        <AnimatePresence>
-          {showAddAccount && (
-            <motion.div
-              initial={{ height: 0, opacity: 0 }}
-              animate={{ height: "auto", opacity: 1 }}
-              exit={{ height: 0, opacity: 0 }}
-              className="overflow-hidden mt-4"
-            >
-              <div className="rounded-2xl bg-card border border-border/30 p-5 space-y-4">
-                <div className="flex items-center justify-between">
-                  <p className="text-sm font-bold text-foreground">Nova Conta</p>
-                  <button onClick={resetAddAccount} className="w-7 h-7 rounded-lg bg-muted/50 flex items-center justify-center hover:bg-muted transition-colors">
-                    <X className="w-4 h-4 text-muted-foreground" />
-                  </button>
-                </div>
-                <Input
-                  placeholder="Nome do banco (ex: Nubank)"
-                  value={newAccName}
-                  onChange={(e) => setNewAccName(e.target.value)}
-                  className="bg-muted/30 border-border/20 h-11 rounded-xl"
-                />
-                <Select value={newAccType} onValueChange={(v) => setNewAccType(v as any)}>
-                  <SelectTrigger className="bg-muted/30 border-border/20 h-11 rounded-xl">
-                    <SelectValue placeholder="Tipo de conta" />
-                  </SelectTrigger>
-                  <SelectContent>
-                    <SelectItem value="checking">Conta Corrente</SelectItem>
-                    <SelectItem value="savings">Poupança</SelectItem>
-                    <SelectItem value="cash">Dinheiro</SelectItem>
-                  </SelectContent>
-                </Select>
-                <div>
-                  <Label className="text-xs text-muted-foreground mb-1.5 block">Saldo inicial (opcional)</Label>
-                  <Input
-                    placeholder="0,00"
-                    type="number"
-                    value={newAccBalance}
-                    onChange={(e) => setNewAccBalance(e.target.value)}
-                    className="bg-muted/30 border-border/20 h-11 rounded-xl"
-                  />
-                </div>
-                <div>
-                  <Label className="text-xs text-muted-foreground mb-2 block">Cor do cartão</Label>
-                  <div className="flex flex-wrap gap-2">
-                    {COLOR_OPTIONS.map((c) => (
-                      <button
-                        key={c.value}
-                        type="button"
-                        onClick={() => setNewAccColor(c.value)}
-                        className={cn(
-                          "w-8 h-8 rounded-full transition-all duration-200",
-                          c.accent,
-                          newAccColor === c.value
-                            ? "ring-2 ring-white ring-offset-2 ring-offset-card scale-110"
-                            : "opacity-60 hover:opacity-100"
-                        )}
-                        title={c.label}
-                      />
-                    ))}
-                  </div>
-                </div>
-                <Button
-                  onClick={handleAddAccount}
-                  disabled={!newAccName.trim()}
-                  className="w-full h-11 rounded-xl text-sm font-semibold"
-                >
-                  Criar Conta
-                </Button>
-              </div>
-            </motion.div>
-          )}
-        </AnimatePresence>
       </section>
 
       {/* ═══════ Cartões de Crédito ═══════ */}
       <section>
         <div className="flex items-center justify-between mb-4">
           <h2 className="text-base font-bold text-foreground flex items-center gap-2">
-            <CreditCard className="w-4 h-4 text-violet-400" />
+            <CreditCard className="w-4 h-4 text-primary" />
             Cartões de Crédito
           </h2>
           <button
             onClick={() => setShowAddCard(true)}
-            className="w-7 h-7 rounded-lg bg-violet-500/10 flex items-center justify-center hover:bg-violet-500/20 transition-colors"
+            className="w-7 h-7 rounded-lg bg-primary/10 flex items-center justify-center hover:bg-primary/20 transition-colors"
           >
-            <Plus className="w-4 h-4 text-violet-400" />
+            <Plus className="w-4 h-4 text-primary" />
           </button>
         </div>
 
@@ -378,12 +331,16 @@ const GestaoFinanceira = () => {
               <div key={i} className="h-44 rounded-2xl bg-card animate-pulse" />
             ))}
           </div>
-        ) : creditCards.length === 0 && !showAddCard ? (
-          <div className="rounded-2xl bg-card border border-border/30 p-8 text-center">
+        ) : creditCards.length === 0 ? (
+          <div className="rounded-2xl bg-card/60 backdrop-blur-sm border border-border/20 p-8 text-center">
             <CreditCard className="w-10 h-10 text-muted-foreground mx-auto mb-3" />
             <p className="text-sm text-muted-foreground mb-1">Nenhum cartão cadastrado</p>
             <p className="text-xs text-muted-foreground/60 mb-4">Cadastre seu cartão de crédito</p>
-            <Button onClick={() => setShowAddCard(true)} size="sm" className="rounded-xl">
+            <Button
+              onClick={() => setShowAddCard(true)}
+              size="sm"
+              className="rounded-xl bg-primary/15 text-primary hover:bg-primary/25 border-0"
+            >
               <Plus className="w-4 h-4 mr-1" /> Cadastrar Cartão
             </Button>
           </div>
@@ -408,7 +365,6 @@ const GestaoFinanceira = () => {
                   )}
                 >
                   <div className="absolute -right-6 -top-6 w-20 h-20 rounded-full bg-white/[0.04]" />
-
                   <div className="relative z-10 flex flex-col h-full min-h-[148px]">
                     <div className="flex items-start justify-between mb-1">
                       <div className="flex items-center gap-2.5">
@@ -428,7 +384,6 @@ const GestaoFinanceira = () => {
                     <div className="mt-auto pt-3">
                       <p className="text-[10px] text-white/40 font-medium uppercase tracking-wide mb-0.5">Disponível</p>
                       <p className="text-lg font-bold text-white">{formatCurrency(available)}</p>
-
                       <div className="w-full h-1.5 rounded-full bg-white/10 overflow-hidden mt-2 mb-1.5">
                         <motion.div
                           initial={{ width: 0 }}
@@ -463,114 +418,170 @@ const GestaoFinanceira = () => {
               onClick={() => setShowAddCard(true)}
               className={cn(
                 "rounded-2xl p-4 min-h-[148px] flex flex-col items-center justify-center gap-2",
-                "border-2 border-dashed border-violet-400/20 hover:border-violet-400/40",
-                "bg-violet-500/[0.03] hover:bg-violet-500/[0.06] transition-all duration-300 cursor-pointer"
+                "border-2 border-dashed border-primary/20 hover:border-primary/40",
+                "bg-primary/[0.03] hover:bg-primary/[0.06] transition-all duration-300 cursor-pointer"
               )}
             >
-              <div className="w-10 h-10 rounded-xl bg-violet-500/10 flex items-center justify-center">
-                <Plus className="w-5 h-5 text-violet-400" />
+              <div className="w-10 h-10 rounded-xl bg-primary/10 flex items-center justify-center">
+                <Plus className="w-5 h-5 text-primary" />
               </div>
-              <span className="text-xs text-violet-400/70 font-medium">Adicionar cartão</span>
+              <span className="text-xs text-primary/70 font-medium">Adicionar cartão</span>
             </motion.button>
           </div>
         )}
-
-        {/* Add card form */}
-        <AnimatePresence>
-          {showAddCard && (
-            <motion.div
-              initial={{ height: 0, opacity: 0 }}
-              animate={{ height: "auto", opacity: 1 }}
-              exit={{ height: 0, opacity: 0 }}
-              className="overflow-hidden mt-4"
-            >
-              <div className="rounded-2xl bg-card border border-border/30 p-5 space-y-4">
-                <div className="flex items-center justify-between">
-                  <p className="text-sm font-bold text-foreground">Novo Cartão</p>
-                  <button onClick={resetAddCard} className="w-7 h-7 rounded-lg bg-muted/50 flex items-center justify-center hover:bg-muted transition-colors">
-                    <X className="w-4 h-4 text-muted-foreground" />
-                  </button>
-                </div>
-                <Input
-                  placeholder="Nome do cartão (ex: Nubank Platinum)"
-                  value={newCardName}
-                  onChange={(e) => setNewCardName(e.target.value)}
-                  className="bg-muted/30 border-border/20 h-11 rounded-xl"
-                />
-                <div className="grid grid-cols-2 gap-3">
-                  <div>
-                    <Label className="text-xs text-muted-foreground mb-1.5 block">Limite</Label>
-                    <Input
-                      placeholder="5000"
-                      type="number"
-                      value={newCardLimit}
-                      onChange={(e) => setNewCardLimit(e.target.value)}
-                      className="bg-muted/30 border-border/20 h-10 text-sm rounded-xl"
-                    />
-                  </div>
-                  <div>
-                    <Label className="text-xs text-muted-foreground mb-1.5 block">4 últimos dígitos</Label>
-                    <Input
-                      placeholder="1234"
-                      maxLength={4}
-                      value={newCardDigits}
-                      onChange={(e) => setNewCardDigits(e.target.value.replace(/\D/g, "").slice(0, 4))}
-                      className="bg-muted/30 border-border/20 h-10 text-sm rounded-xl"
-                    />
-                  </div>
-                </div>
-                <div className="grid grid-cols-2 gap-3">
-                  <div>
-                    <Label className="text-xs text-muted-foreground mb-1.5 block">Dia do fechamento</Label>
-                    <Input
-                      type="number" min={1} max={31}
-                      value={newCardClosing}
-                      onChange={(e) => setNewCardClosing(e.target.value)}
-                      className="bg-muted/30 border-border/20 h-10 text-sm rounded-xl"
-                    />
-                  </div>
-                  <div>
-                    <Label className="text-xs text-muted-foreground mb-1.5 block">Dia do vencimento</Label>
-                    <Input
-                      type="number" min={1} max={31}
-                      value={newCardDue}
-                      onChange={(e) => setNewCardDue(e.target.value)}
-                      className="bg-muted/30 border-border/20 h-10 text-sm rounded-xl"
-                    />
-                  </div>
-                </div>
-                <div>
-                  <Label className="text-xs text-muted-foreground mb-2 block">Cor do cartão</Label>
-                  <div className="flex flex-wrap gap-2">
-                    {COLOR_OPTIONS.map((c) => (
-                      <button
-                        key={c.value}
-                        type="button"
-                        onClick={() => setNewCardColor(c.value)}
-                        className={cn(
-                          "w-8 h-8 rounded-full transition-all duration-200",
-                          c.accent,
-                          newCardColor === c.value
-                            ? "ring-2 ring-white ring-offset-2 ring-offset-card scale-110"
-                            : "opacity-60 hover:opacity-100"
-                        )}
-                        title={c.label}
-                      />
-                    ))}
-                  </div>
-                </div>
-                <Button
-                  onClick={handleAddCard}
-                  disabled={!newCardName.trim() || !newCardLimit}
-                  className="w-full h-11 rounded-xl text-sm font-semibold"
-                >
-                  Cadastrar Cartão
-                </Button>
-              </div>
-            </motion.div>
-          )}
-        </AnimatePresence>
       </section>
+
+      {/* ═══════ MODAL: Nova Conta ═══════ */}
+      <ModalOverlay open={showAddAccount} onClose={resetAddAccount}>
+        <div className="space-y-4">
+          <div className="flex items-center justify-between">
+            <p className="text-base font-bold text-foreground">Nova Conta</p>
+            <button onClick={resetAddAccount} className="w-8 h-8 rounded-lg bg-muted/50 flex items-center justify-center hover:bg-muted transition-colors">
+              <X className="w-4 h-4 text-muted-foreground" />
+            </button>
+          </div>
+          <Input
+            placeholder="Nome do banco (ex: Nubank)"
+            value={newAccName}
+            onChange={(e) => setNewAccName(e.target.value)}
+            className="bg-muted/30 border-border/20 h-11 rounded-xl"
+          />
+          <Select value={newAccType} onValueChange={(v) => setNewAccType(v as any)}>
+            <SelectTrigger className="bg-muted/30 border-border/20 h-11 rounded-xl">
+              <SelectValue placeholder="Tipo de conta" />
+            </SelectTrigger>
+            <SelectContent>
+              <SelectItem value="checking">Conta Corrente</SelectItem>
+              <SelectItem value="savings">Poupança</SelectItem>
+              <SelectItem value="cash">Dinheiro</SelectItem>
+            </SelectContent>
+          </Select>
+          <div>
+            <Label className="text-xs text-muted-foreground mb-1.5 block">Saldo inicial (opcional)</Label>
+            <Input
+              placeholder="0,00"
+              type="number"
+              value={newAccBalance}
+              onChange={(e) => setNewAccBalance(e.target.value)}
+              className="bg-muted/30 border-border/20 h-11 rounded-xl"
+            />
+          </div>
+          <div>
+            <Label className="text-xs text-muted-foreground mb-2 block">Cor do cartão</Label>
+            <div className="flex flex-wrap gap-2">
+              {COLOR_OPTIONS.map((c) => (
+                <button
+                  key={c.value}
+                  type="button"
+                  onClick={() => setNewAccColor(c.value)}
+                  className={cn(
+                    "w-8 h-8 rounded-full transition-all duration-200",
+                    c.accent,
+                    newAccColor === c.value
+                      ? "ring-2 ring-white ring-offset-2 ring-offset-card scale-110"
+                      : "opacity-60 hover:opacity-100"
+                  )}
+                  title={c.label}
+                />
+              ))}
+            </div>
+          </div>
+          <Button
+            onClick={handleAddAccount}
+            disabled={!newAccName.trim()}
+            className="w-full h-11 rounded-xl text-sm font-semibold"
+          >
+            Criar Conta
+          </Button>
+        </div>
+      </ModalOverlay>
+
+      {/* ═══════ MODAL: Novo Cartão ═══════ */}
+      <ModalOverlay open={showAddCard} onClose={resetAddCard}>
+        <div className="space-y-4">
+          <div className="flex items-center justify-between">
+            <p className="text-base font-bold text-foreground">Novo Cartão</p>
+            <button onClick={resetAddCard} className="w-8 h-8 rounded-lg bg-muted/50 flex items-center justify-center hover:bg-muted transition-colors">
+              <X className="w-4 h-4 text-muted-foreground" />
+            </button>
+          </div>
+          <Input
+            placeholder="Nome do cartão (ex: Nubank Platinum)"
+            value={newCardName}
+            onChange={(e) => setNewCardName(e.target.value)}
+            className="bg-muted/30 border-border/20 h-11 rounded-xl"
+          />
+          <div className="grid grid-cols-2 gap-3">
+            <div>
+              <Label className="text-xs text-muted-foreground mb-1.5 block">Limite</Label>
+              <Input
+                placeholder="5000"
+                type="number"
+                value={newCardLimit}
+                onChange={(e) => setNewCardLimit(e.target.value)}
+                className="bg-muted/30 border-border/20 h-10 text-sm rounded-xl"
+              />
+            </div>
+            <div>
+              <Label className="text-xs text-muted-foreground mb-1.5 block">4 últimos dígitos</Label>
+              <Input
+                placeholder="1234"
+                maxLength={4}
+                value={newCardDigits}
+                onChange={(e) => setNewCardDigits(e.target.value.replace(/\D/g, "").slice(0, 4))}
+                className="bg-muted/30 border-border/20 h-10 text-sm rounded-xl"
+              />
+            </div>
+          </div>
+          <div className="grid grid-cols-2 gap-3">
+            <div>
+              <Label className="text-xs text-muted-foreground mb-1.5 block">Dia do fechamento</Label>
+              <Input
+                type="number" min={1} max={31}
+                value={newCardClosing}
+                onChange={(e) => setNewCardClosing(e.target.value)}
+                className="bg-muted/30 border-border/20 h-10 text-sm rounded-xl"
+              />
+            </div>
+            <div>
+              <Label className="text-xs text-muted-foreground mb-1.5 block">Dia do vencimento</Label>
+              <Input
+                type="number" min={1} max={31}
+                value={newCardDue}
+                onChange={(e) => setNewCardDue(e.target.value)}
+                className="bg-muted/30 border-border/20 h-10 text-sm rounded-xl"
+              />
+            </div>
+          </div>
+          <div>
+            <Label className="text-xs text-muted-foreground mb-2 block">Cor do cartão</Label>
+            <div className="flex flex-wrap gap-2">
+              {COLOR_OPTIONS.map((c) => (
+                <button
+                  key={c.value}
+                  type="button"
+                  onClick={() => setNewCardColor(c.value)}
+                  className={cn(
+                    "w-8 h-8 rounded-full transition-all duration-200",
+                    c.accent,
+                    newCardColor === c.value
+                      ? "ring-2 ring-white ring-offset-2 ring-offset-card scale-110"
+                      : "opacity-60 hover:opacity-100"
+                  )}
+                  title={c.label}
+                />
+              ))}
+            </div>
+          </div>
+          <Button
+            onClick={handleAddCard}
+            disabled={!newCardName.trim() || !newCardLimit}
+            className="w-full h-11 rounded-xl text-sm font-semibold"
+          >
+            Cadastrar Cartão
+          </Button>
+        </div>
+      </ModalOverlay>
     </div>
   );
 };
