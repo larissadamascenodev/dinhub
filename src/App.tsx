@@ -9,6 +9,7 @@ import Auth from "./pages/Auth.tsx";
 import ResetPassword from "./pages/ResetPassword.tsx";
 import GestaoFinanceira from "./pages/GestaoFinanceira.tsx";
 import FaturaCartao from "./pages/FaturaCartao.tsx";
+import Configuracoes from "./pages/Configuracoes.tsx";
 import NotFound from "./pages/NotFound.tsx";
 
 const queryClient = new QueryClient();
