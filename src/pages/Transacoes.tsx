@@ -245,7 +245,7 @@ const EditTransactionModal = ({
             exit={{ opacity: 0, y: 80 }}
             transition={{ type: "spring", damping: 28, stiffness: 300 }}
             onClick={(e) => e.stopPropagation()}
-            className="w-full max-w-md mx-0 md:mx-4 rounded-t-3xl md:rounded-2xl bg-card border border-border/20 shadow-2xl p-5 space-y-4"
+            className="w-full max-w-md mx-0 md:mx-4 rounded-t-3xl md:rounded-2xl bg-card border border-border/20 shadow-2xl p-5 pb-24 md:pb-5 space-y-4"
           >
             <div className="flex items-center justify-between">
               <h2 className="text-base font-bold text-foreground">Editar Transação</h2>
