@@ -11,6 +11,7 @@ import ResetPassword from "./pages/ResetPassword.tsx";
 import GestaoFinanceira from "./pages/GestaoFinanceira.tsx";
 import FaturaCartao from "./pages/FaturaCartao.tsx";
 import Configuracoes from "./pages/Configuracoes.tsx";
+import Transacoes from "./pages/Transacoes.tsx";
 import NotFound from "./pages/NotFound.tsx";
 
 const queryClient = new QueryClient();
