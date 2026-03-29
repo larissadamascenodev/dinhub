@@ -20,7 +20,7 @@ function formatCurrency(value: number) {
 const ReceitasDespesasCards = memo(({
   receitas, receitasRecebidas, receitasPendentes,
   despesas, despesasPagas, despesasPendentes,
-  mobile,
+  mobile, compact,
 }: Props) => {
   const animatedReceitas = useFormattedCounter(receitas);
   const animatedDespesas = useFormattedCounter(despesas);
