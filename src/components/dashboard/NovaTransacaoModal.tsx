@@ -344,7 +344,7 @@ const NovaTransacaoModal = ({ open, onClose, onSuccess, initialType = "despesa" 
             exit={{ opacity: 0, y: 100 }}
             transition={{ type: "spring", damping: 28, stiffness: 300 }}
             onClick={(e) => e.stopPropagation()}
-            className="w-full max-w-md mx-0 md:mx-4 rounded-t-3xl md:rounded-2xl bg-card border border-border/20 shadow-2xl overflow-hidden max-h-[92vh] flex flex-col"
+            className="w-full max-w-md mx-0 md:mx-4 rounded-t-3xl md:rounded-2xl bg-card border border-border/20 shadow-2xl overflow-hidden max-h-[85vh] md:max-h-[92vh] flex flex-col"
           >
             {/* Header */}
             <div className="relative flex items-center justify-center pt-5 pb-3 px-5">
