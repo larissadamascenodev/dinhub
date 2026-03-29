@@ -7,6 +7,7 @@ export interface FinancialSummary {
   balance: number;
   predictedBalance: number;
   previousMonthEndingBalance: number;
+  accountBalance: number;
   isFutureMonth: boolean;
   isPastMonth: boolean;
   dailyAverageExpense: number;
@@ -260,6 +261,7 @@ export async function getFinancialSummary(
       balance,
       predictedBalance,
       previousMonthEndingBalance,
+      accountBalance,
       isFutureMonth,
       isPastMonth,
       dailyAverageExpense,
