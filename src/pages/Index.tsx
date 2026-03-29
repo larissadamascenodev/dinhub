@@ -129,7 +129,7 @@ const Index = () => {
             />
           )}
           <SaldoCard saldoAtual={saldoMes} saldoPrevisto={saldoPrevisto} isFutureMonth={isFutureMonth} />
-          <ReceitasDespesasCards receitas={receitas} despesas={despesas} />
+          <ReceitasDespesasCards receitas={receitas} receitasRecebidas={data.receitasRecebidas} receitasPendentes={data.receitasPendentes} despesas={despesas} despesasPagas={data.despesasPagas} despesasPendentes={data.despesasPendentes} />
           <BalancoCard balanco={balanco} />
           {isCurrentMonth && <MicroInteracoesCard gastosHoje={data.gastosHoje} mediaGastosDiarios={data.mediaGastosDiarios} />}
           <TransacoesRecentes transactions={data.transactions} onDelete={refetch} />
