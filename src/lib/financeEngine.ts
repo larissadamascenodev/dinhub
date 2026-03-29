@@ -107,15 +107,13 @@ async function fetchTotalAccountBalance(): Promise<number> {
     .from("transactions")
     .select("amount")
     .eq("type", "receita")
-    .eq("status", "pago")
-    .neq("recurrence_type", "fixa");
+    .eq("status", "pago");
 
   const { data: paidDespesas } = await supabase
     .from("transactions")
     .select("amount")
     .eq("type", "despesa")
-    .eq("status", "pago")
-    .neq("recurrence_type", "fixa");
+    .eq("status", "pago");
 
   const totalReceitas = (paidReceitas ?? []).reduce((s, t) => s + Number(t.amount), 0);
   const totalDespesas = (paidDespesas ?? []).reduce((s, t) => s + Number(t.amount), 0);
