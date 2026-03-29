@@ -262,5 +262,5 @@ export function computeDailyBehavior(
 export async function getMonthHistory(month: number, year: number) {
   const transactions = await fetchMonthTransactions(month, year);
   const { income, expense, balance } = aggregate(transactions);
-  return { income, expense, balance, month, year };
+  return { income: agg.income, expense: agg.expense, balance: agg.balance, month, year };
 }
