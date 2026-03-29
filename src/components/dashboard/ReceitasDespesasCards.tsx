@@ -10,6 +10,7 @@ interface Props {
   despesasPagas: number;
   despesasPendentes: number;
   mobile?: boolean;
+  compact?: boolean;
 }
 
 function formatCurrency(value: number) {
