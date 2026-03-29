@@ -177,7 +177,7 @@ export async function getFinancialSummary(
   const [transactions, events, accountBalance, historical] = await Promise.all([
     fetchMonthTransactions(month, year),
     fetchMonthEvents(month, year),
-    fetchDefaultAccountBalance(),
+    fetchTotalAccountBalance(),
     fetchHistoricalAverages(month, year, 3),
   ]);
 
