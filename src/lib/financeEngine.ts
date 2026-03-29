@@ -85,21 +85,25 @@ async function fetchDefaultAccountBalance(): Promise<number> {
 }
 
 /**
- * Only count PAID transactions in balance
+ * Aggregate ALL transactions for income/expense totals,
+ * but only PAID transactions for balance.
  */
 function aggregate(transactions: RawTransaction[]) {
   let income = 0;
   let expense = 0;
+  let paidIncome = 0;
+  let paidExpense = 0;
   for (const t of transactions) {
-    if (t.status !== "pago") continue; // Skip pending/scheduled
     const amt = Number(t.amount);
     if (t.type === "receita") {
       income += amt;
+      if (t.status === "pago") paidIncome += amt;
     } else {
       expense += amt;
+      if (t.status === "pago") paidExpense += amt;
     }
   }
-  return { income, expense, balance: income - expense };
+  return { income, expense, paidIncome, paidExpense, balance: paidIncome - paidExpense };
 }
 
 async function fetchHistoricalAverages(
