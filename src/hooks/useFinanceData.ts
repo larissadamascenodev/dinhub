@@ -37,6 +37,28 @@ const CAT_ICONS: Record<string, string> = {
 // Module-level cache to persist data across component remounts
 const dataCache: Record<string, DashboardData> = {};
 
+// Prefetch a specific month into cache (no state updates)
+async function prefetchMonth(userId: string, month: number, year: number) {
+  const key = `${userId}-${month}-${year}`;
+  if (dataCache[key] || prefetchingSet.has(key)) return;
+  prefetchingSet.add(key);
+  try {
+    const result = await buildDashboardData(month, year);
+    dataCache[key] = result;
+  } catch {
+    // silent — prefetch failure is non-critical
+  } finally {
+    prefetchingSet.delete(key);
+  }
+}
+
+const prefetchingSet = new Set<string>();
+
+function addMonthsUtil(month: number, year: number, offset: number) {
+  const d = new Date(year, month + offset, 1);
+  return { month: d.getMonth(), year: d.getFullYear() };
+}
+
 export function useFinanceData(selectedMonth: number, selectedYear: number) {
   const { user } = useAuth();
   const cacheKey = `${user?.id ?? ""}-${selectedMonth}-${selectedYear}`;
@@ -52,7 +74,6 @@ export function useFinanceData(selectedMonth: number, selectedYear: number) {
       setData(c);
       setLoading(false);
     }
-    // Don't reset to EMPTY_DATA — keep stale data visible while new data loads
   }, [cacheKey]);
 
   const fetchData = useCallback(async () => {
