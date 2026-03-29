@@ -2,11 +2,11 @@ import { useState, useEffect, useMemo } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import {
   TrendingUp, ArrowUpRight, ArrowDownRight,
-  Wallet, CalendarDays, ChevronDown,
+  CalendarDays, ChevronDown,
 } from "lucide-react";
 import {
-  AreaChart, Area, BarChart, Bar, XAxis, YAxis, Tooltip,
-  ResponsiveContainer, CartesianGrid, PieChart, Pie, Cell,
+  BarChart, Bar, XAxis, YAxis, Tooltip,
+  ResponsiveContainer, CartesianGrid,
 } from "recharts";
 import { supabase } from "@/integrations/supabase/client";
 import { useAuth } from "@/contexts/AuthContext";
@@ -165,13 +165,12 @@ const TransacoesAnalytics = () => {
     return cells;
   }, [transactions, selectedMonth, selectedYear]);
 
-  // Current week days for collapsed daily view
   const currentWeekDays = useMemo(() => {
     const today = new Date();
     const currentDay = today.getDay();
     const weekStart = new Date(today);
     weekStart.setDate(today.getDate() - currentDay);
-    
+
     const days: { day: number; inMonth: boolean; despesas: number; receitas: number }[] = [];
     for (let i = 0; i < 7; i++) {
       const d = new Date(weekStart);
@@ -192,108 +191,78 @@ const TransacoesAnalytics = () => {
   if (loading) {
     return (
       <div className="flex items-center justify-center py-16">
-        <div className="animate-pulse text-primary text-sm">Carregando analytics...</div>
+        <div className="animate-pulse text-primary text-sm">Carregando...</div>
       </div>
     );
   }
 
   return (
     <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} className="space-y-3">
-      {/* Resumo de Pagamentos */}
-      <GlassCard>
-        <h3 className="text-[10px] font-semibold text-muted-foreground uppercase tracking-widest mb-3">Resumo de Pagamentos</h3>
-        <div className="grid grid-cols-2 gap-2">
-          <div className="rounded-xl bg-primary/[0.06] border border-primary/15 p-3">
-            <p className="text-[9px] text-muted-foreground uppercase tracking-wider font-semibold mb-1">Recebido</p>
-            <p className="text-sm font-bold text-primary tabular-nums">{fmt(totals.receitasRecebidas)}</p>
+      {/* Resumo Receitas & Despesas */}
+      <div className="grid grid-cols-2 gap-2">
+        {/* Receitas */}
+        <GlassCard className="!p-3 border-primary/15 bg-primary/[0.04]">
+          <div className="flex items-center gap-1.5 mb-2">
+            <ArrowUpRight className="w-3.5 h-3.5 text-primary" />
+            <span className="text-[10px] text-muted-foreground uppercase tracking-wider font-semibold">Receitas</span>
           </div>
-          <div className="rounded-xl bg-primary/[0.06] border border-primary/15 p-3">
-            <p className="text-[9px] text-muted-foreground uppercase tracking-wider font-semibold mb-1">A Receber</p>
-            <p className="text-sm font-bold text-muted-foreground tabular-nums">{fmt(totals.receitasPendentes)}</p>
+          <p className="text-base font-bold text-primary tabular-nums leading-none mb-2">{fmt(totals.receitas)}</p>
+          <div className="space-y-1">
+            <div className="flex items-center justify-between">
+              <span className="text-[9px] text-muted-foreground/60">Recebido</span>
+              <span className="text-[10px] font-semibold text-primary/80 tabular-nums">{fmt(totals.receitasRecebidas)}</span>
+            </div>
+            {totals.receitasPendentes > 0 && (
+              <div className="flex items-center justify-between">
+                <span className="text-[9px] text-muted-foreground/60">Pendente</span>
+                <span className="text-[10px] font-semibold text-muted-foreground tabular-nums">{fmt(totals.receitasPendentes)}</span>
+              </div>
+            )}
           </div>
-          <div className="rounded-xl bg-destructive/[0.06] border border-destructive/15 p-3">
-            <p className="text-[9px] text-muted-foreground uppercase tracking-wider font-semibold mb-1">Pago</p>
-            <p className="text-sm font-bold text-destructive tabular-nums">{fmt(totals.despesasPagas)}</p>
-          </div>
-          <div className="rounded-xl bg-destructive/[0.06] border border-destructive/15 p-3">
-            <p className="text-[9px] text-muted-foreground uppercase tracking-wider font-semibold mb-1">A Pagar</p>
-            <p className="text-sm font-bold text-muted-foreground tabular-nums">{fmt(totals.despesasPendentes)}</p>
-          </div>
-        </div>
-      </GlassCard>
+        </GlassCard>
 
-      {/* Evolução Mensal */}
-      <GlassCard>
-        <div className="flex items-center gap-2 mb-3">
-          <TrendingUp className="w-4 h-4 text-primary" />
-          <h3 className="text-sm font-bold text-foreground">Evolução Mensal</h3>
-        </div>
-        <div className="h-48">
-          <ResponsiveContainer width="100%" height="100%">
-            <AreaChart data={evolutionData} margin={{ top: 5, right: 5, left: -20, bottom: 0 }}>
-              <defs>
-                <linearGradient id="receitasGrad" x1="0" y1="0" x2="0" y2="1">
-                  <stop offset="0%" stopColor="hsl(150 100% 45%)" stopOpacity={0.3} />
-                  <stop offset="100%" stopColor="hsl(150 100% 45%)" stopOpacity={0} />
-                </linearGradient>
-                <linearGradient id="despesasGrad" x1="0" y1="0" x2="0" y2="1">
-                  <stop offset="0%" stopColor="hsl(0 60% 50%)" stopOpacity={0.3} />
-                  <stop offset="100%" stopColor="hsl(0 60% 50%)" stopOpacity={0} />
-                </linearGradient>
-              </defs>
-              <CartesianGrid strokeDasharray="3 3" stroke="hsl(220 10% 20%)" />
-              <XAxis dataKey="month" tick={{ fill: "hsl(220 10% 45%)", fontSize: 11 }} axisLine={false} tickLine={false} />
-              <YAxis tick={{ fill: "hsl(220 10% 45%)", fontSize: 10 }} axisLine={false} tickLine={false} tickFormatter={(v) => v >= 1000 ? `${(v/1000).toFixed(0)}k` : v} />
-              <Tooltip content={<ChartTooltip />} />
-              <Area type="monotone" dataKey="receitas" name="Receitas" stroke="hsl(150 100% 45%)" fill="url(#receitasGrad)" strokeWidth={2} />
-              <Area type="monotone" dataKey="despesas" name="Despesas" stroke="hsl(0 60% 50%)" fill="url(#despesasGrad)" strokeWidth={2} />
-            </AreaChart>
-          </ResponsiveContainer>
-        </div>
-      </GlassCard>
+        {/* Despesas */}
+        <GlassCard className="!p-3 border-destructive/15 bg-destructive/[0.04]">
+          <div className="flex items-center gap-1.5 mb-2">
+            <ArrowDownRight className="w-3.5 h-3.5 text-destructive" />
+            <span className="text-[10px] text-muted-foreground uppercase tracking-wider font-semibold">Despesas</span>
+          </div>
+          <p className="text-base font-bold text-destructive tabular-nums leading-none mb-2">{fmt(totals.despesas)}</p>
+          <div className="space-y-1">
+            <div className="flex items-center justify-between">
+              <span className="text-[9px] text-muted-foreground/60">Pago</span>
+              <span className="text-[10px] font-semibold text-destructive/80 tabular-nums">{fmt(totals.despesasPagas)}</span>
+            </div>
+            {totals.despesasPendentes > 0 && (
+              <div className="flex items-center justify-between">
+                <span className="text-[9px] text-muted-foreground/60">Pendente</span>
+                <span className="text-[10px] font-semibold text-muted-foreground tabular-nums">{fmt(totals.despesasPendentes)}</span>
+              </div>
+            )}
+          </div>
+        </GlassCard>
+      </div>
 
       {/* Gastos por Categoria */}
       {categoryData.length > 0 && (
         <GlassCard>
           <h3 className="text-[10px] font-semibold text-muted-foreground uppercase tracking-widest mb-3">Gastos por Categoria</h3>
-          <div className="grid grid-cols-1 md:grid-cols-[1fr_1.2fr] gap-6 items-center">
-            <div className="h-44 flex items-center justify-center">
-              <ResponsiveContainer width="100%" height="100%">
-                <PieChart>
-                  <Pie
-                    data={categoryData}
-                    dataKey="amount"
-                    nameKey="name"
-                    innerRadius="55%"
-                    outerRadius="85%"
-                    paddingAngle={3}
-                    strokeWidth={0}
-                  >
-                    {categoryData.map((entry, i) => (
-                      <Cell key={i} fill={entry.color} />
-                    ))}
-                  </Pie>
-                  <Tooltip content={<ChartTooltip />} />
-                </PieChart>
-              </ResponsiveContainer>
-            </div>
-            <div className="space-y-2.5">
-              {categoryData.slice(0, 5).map((cat) => (
-                <div key={cat.name} className="flex items-center gap-3">
-                  <div className="w-2.5 h-2.5 rounded-full shrink-0" style={{ background: cat.color }} />
-                  <div className="flex-1 min-w-0">
-                    <p className="text-xs font-semibold text-foreground truncate">{cat.name}</p>
-                    <div className="w-full h-1 bg-border/20 rounded-full mt-1 overflow-hidden">
-                      <div className="h-full rounded-full" style={{ width: `${cat.percentage}%`, background: cat.color }} />
-                    </div>
-                  </div>
-                  <div className="text-right shrink-0">
-                    <p className="text-xs font-bold text-foreground tabular-nums">{fmt(cat.amount)}</p>
-                    <p className="text-[9px] text-muted-foreground/50">{cat.percentage}%</p>
+          <div className="space-y-2.5">
+            {categoryData.slice(0, 6).map((cat) => (
+              <div key={cat.name} className="flex items-center gap-3">
+                <div className="w-2.5 h-2.5 rounded-full shrink-0" style={{ background: cat.color }} />
+                <div className="flex-1 min-w-0">
+                  <p className="text-xs font-semibold text-foreground truncate">{cat.name}</p>
+                  <div className="w-full h-1 bg-border/20 rounded-full mt-1 overflow-hidden">
+                    <div className="h-full rounded-full" style={{ width: `${cat.percentage}%`, background: cat.color }} />
                   </div>
                 </div>
-              ))}
-            </div>
+                <div className="text-right shrink-0">
+                  <p className="text-xs font-bold text-foreground tabular-nums">{fmt(cat.amount)}</p>
+                  <p className="text-[9px] text-muted-foreground/50">{cat.percentage}%</p>
+                </div>
+              </div>
+            ))}
           </div>
         </GlassCard>
       )}
@@ -316,7 +285,7 @@ const TransacoesAnalytics = () => {
           </motion.div>
         </button>
 
-        {/* Collapsed: show current week mini bar */}
+        {/* Collapsed: current week mini bars */}
         {!dailyExpanded && (
           <div className="px-4 pb-4">
             <div className="flex gap-1.5">
@@ -327,18 +296,31 @@ const TransacoesAnalytics = () => {
                 const barH = wd.inMonth ? Math.max(((wd.despesas + wd.receitas) / maxVal) * 32, 4) : 4;
                 return (
                   <div key={i} className="flex-1 flex flex-col items-center gap-1">
-                    <div className="h-8 w-full flex items-end justify-center">
-                      <div
-                        className="w-full rounded-t-sm"
-                        style={{
-                          height: `${barH}px`,
-                          background: wd.despesas > 0
-                            ? "hsl(0 60% 50% / 0.5)"
-                            : wd.receitas > 0
-                            ? "hsl(150 100% 45% / 0.5)"
-                            : "hsl(220 10% 25% / 0.3)",
-                        }}
-                      />
+                    <div className="h-8 w-full flex items-end justify-center gap-[2px]">
+                      {wd.despesas > 0 && (
+                        <div
+                          className="w-[45%] rounded-t-sm"
+                          style={{
+                            height: `${Math.max((wd.despesas / maxVal) * 32, 3)}px`,
+                            background: "hsl(0 60% 50% / 0.5)",
+                          }}
+                        />
+                      )}
+                      {wd.receitas > 0 && (
+                        <div
+                          className="w-[45%] rounded-t-sm"
+                          style={{
+                            height: `${Math.max((wd.receitas / maxVal) * 32, 3)}px`,
+                            background: "hsl(150 100% 45% / 0.5)",
+                          }}
+                        />
+                      )}
+                      {wd.despesas === 0 && wd.receitas === 0 && (
+                        <div
+                          className="w-full rounded-t-sm"
+                          style={{ height: "4px", background: "hsl(220 10% 25% / 0.3)" }}
+                        />
+                      )}
                     </div>
                     <span className={`text-[9px] font-medium ${isToday ? "text-primary font-bold" : "text-muted-foreground/50"}`}>
                       {WEEKDAYS_SHORT[i]}
@@ -350,7 +332,7 @@ const TransacoesAnalytics = () => {
           </div>
         )}
 
-        {/* Expanded: full chart + heatmap */}
+        {/* Expanded: bar chart + heatmap calendar */}
         <AnimatePresence>
           {dailyExpanded && (
             <motion.div
@@ -361,13 +343,13 @@ const TransacoesAnalytics = () => {
               className="overflow-hidden"
             >
               <div className="px-4 pb-4 space-y-4">
-                {/* Bar chart */}
-                <div className="h-48">
+                {/* Bar chart - receitas & despesas side by side */}
+                <div className="h-44">
                   <ResponsiveContainer width="100%" height="100%">
-                    <BarChart data={dailyData} margin={{ top: 5, right: 5, left: -20, bottom: 0 }}>
+                    <BarChart data={dailyData} margin={{ top: 5, right: 5, left: -20, bottom: 0 }} barGap={1} barSize={6}>
                       <CartesianGrid strokeDasharray="3 3" stroke="hsl(220 10% 20%)" />
-                      <XAxis dataKey="day" tick={{ fill: "hsl(220 10% 45%)", fontSize: 9 }} axisLine={false} tickLine={false} interval={1} />
-                      <YAxis tick={{ fill: "hsl(220 10% 45%)", fontSize: 10 }} axisLine={false} tickLine={false} tickFormatter={(v) => v >= 1000 ? `${(v/1000).toFixed(0)}k` : v} />
+                      <XAxis dataKey="day" tick={{ fill: "hsl(220 10% 45%)", fontSize: 8 }} axisLine={false} tickLine={false} interval={2} />
+                      <YAxis tick={{ fill: "hsl(220 10% 45%)", fontSize: 9 }} axisLine={false} tickLine={false} tickFormatter={(v) => v >= 1000 ? `${(v / 1000).toFixed(0)}k` : v} />
                       <Tooltip content={<ChartTooltip />} />
                       <Bar dataKey="despesas" name="Despesas" fill="hsl(0 60% 50%)" radius={[2, 2, 0, 0]} />
                       <Bar dataKey="receitas" name="Receitas" fill="hsl(150 100% 45%)" radius={[2, 2, 0, 0]} />
@@ -375,12 +357,12 @@ const TransacoesAnalytics = () => {
                   </ResponsiveContainer>
                 </div>
 
-                {/* Heatmap */}
+                {/* Mini Calendar Heatmap */}
                 <div>
                   <h4 className="text-[10px] font-semibold text-muted-foreground uppercase tracking-widest mb-2">Mapa de Gastos</h4>
-                  <div className="grid grid-cols-7 gap-1 mb-2">
+                  <div className="grid grid-cols-7 gap-1 mb-1">
                     {WEEKDAYS_SHORT.map((d, i) => (
-                      <div key={i} className="text-center text-[10px] text-muted-foreground/50 font-semibold py-1">{d}</div>
+                      <div key={i} className="text-center text-[9px] text-muted-foreground/50 font-semibold py-0.5">{d}</div>
                     ))}
                   </div>
                   <div className="grid grid-cols-7 gap-1">
@@ -391,7 +373,7 @@ const TransacoesAnalytics = () => {
                       return (
                         <div
                           key={cell.day}
-                          className={`aspect-square rounded-lg flex items-center justify-center relative text-[11px] font-medium transition-all ${isToday ? "ring-1 ring-primary" : ""}`}
+                          className={`aspect-square rounded-md flex items-center justify-center relative text-[10px] font-medium transition-all ${isToday ? "ring-1 ring-primary" : ""}`}
                           style={{
                             background: cell.intensity > 0
                               ? `hsl(340 60% ${55 - cell.intensity * 25}% / ${0.2 + cell.intensity * 0.5})`
@@ -401,24 +383,24 @@ const TransacoesAnalytics = () => {
                         >
                           {cell.day}
                           {cell.hasReceipt && (
-                            <span className="absolute top-0.5 right-0.5 w-1.5 h-1.5 rounded-full bg-primary" />
+                            <span className="absolute top-0.5 right-0.5 w-1 h-1 rounded-full bg-primary" />
                           )}
                         </div>
                       );
                     })}
                   </div>
-                  <div className="flex items-center justify-center gap-4 mt-3">
+                  <div className="flex items-center justify-center gap-3 mt-2">
                     <div className="flex items-center gap-1">
-                      <div className="w-3 h-3 rounded-sm" style={{ background: "hsl(340 60% 50% / 0.3)" }} />
-                      <span className="text-[9px] text-muted-foreground/50">Pouco gasto</span>
+                      <div className="w-2.5 h-2.5 rounded-sm" style={{ background: "hsl(340 60% 50% / 0.3)" }} />
+                      <span className="text-[8px] text-muted-foreground/50">Pouco</span>
                     </div>
                     <div className="flex items-center gap-1">
-                      <div className="w-3 h-3 rounded-sm" style={{ background: "hsl(340 60% 40% / 0.7)" }} />
-                      <span className="text-[9px] text-muted-foreground/50">Muito gasto</span>
+                      <div className="w-2.5 h-2.5 rounded-sm" style={{ background: "hsl(340 60% 40% / 0.7)" }} />
+                      <span className="text-[8px] text-muted-foreground/50">Muito</span>
                     </div>
                     <div className="flex items-center gap-1">
-                      <div className="w-2 h-2 rounded-full bg-primary" />
-                      <span className="text-[9px] text-muted-foreground/50">Receita</span>
+                      <div className="w-1.5 h-1.5 rounded-full bg-primary" />
+                      <span className="text-[8px] text-muted-foreground/50">Receita</span>
                     </div>
                   </div>
                 </div>
@@ -426,6 +408,26 @@ const TransacoesAnalytics = () => {
             </motion.div>
           )}
         </AnimatePresence>
+      </GlassCard>
+
+      {/* Evolução Mensal */}
+      <GlassCard>
+        <div className="flex items-center gap-2 mb-3">
+          <TrendingUp className="w-4 h-4 text-primary" />
+          <h3 className="text-sm font-bold text-foreground">Evolução Mensal</h3>
+        </div>
+        <div className="h-40">
+          <ResponsiveContainer width="100%" height="100%">
+            <BarChart data={evolutionData} margin={{ top: 5, right: 5, left: -20, bottom: 0 }} barGap={2} barSize={14}>
+              <CartesianGrid strokeDasharray="3 3" stroke="hsl(220 10% 20%)" />
+              <XAxis dataKey="month" tick={{ fill: "hsl(220 10% 45%)", fontSize: 11 }} axisLine={false} tickLine={false} />
+              <YAxis tick={{ fill: "hsl(220 10% 45%)", fontSize: 10 }} axisLine={false} tickLine={false} tickFormatter={(v) => v >= 1000 ? `${(v / 1000).toFixed(0)}k` : v} />
+              <Tooltip content={<ChartTooltip />} />
+              <Bar dataKey="receitas" name="Receitas" fill="hsl(150 100% 45% / 0.7)" radius={[3, 3, 0, 0]} />
+              <Bar dataKey="despesas" name="Despesas" fill="hsl(0 60% 50% / 0.7)" radius={[3, 3, 0, 0]} />
+            </BarChart>
+          </ResponsiveContainer>
+        </div>
       </GlassCard>
     </motion.div>
   );
