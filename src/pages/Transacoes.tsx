@@ -505,31 +505,6 @@ const Transacoes = () => {
         <MonthSelector selectedMonth={selectedMonth} selectedYear={selectedYear} onMonthChange={(m, y) => setMonth(m, y)} />
       </div>
 
-      {/* Main Tab Switcher */}
-      <div className="flex rounded-xl bg-card/60 backdrop-blur-xl border border-border/20 p-1 overflow-hidden">
-        {([
-          { key: "transacoes" as MainTab, label: "Transações", icon: "📋" },
-          { key: "analytics" as MainTab, label: "Analytics", icon: "📊" },
-        ]).map(tab => (
-          <button
-            key={tab.key}
-            onClick={() => setMainTab(tab.key)}
-            className={`flex-1 flex items-center justify-center gap-2 py-2.5 rounded-lg text-sm font-semibold transition-all ${
-              mainTab === tab.key
-                ? "bg-primary/15 text-primary shadow-sm"
-                : "text-muted-foreground/50 hover:text-muted-foreground/70"
-            }`}
-          >
-            <span>{tab.icon}</span>
-            {tab.label}
-          </button>
-        ))}
-      </div>
-
-      {mainTab === "analytics" ? (
-        <TransacoesAnalytics />
-      ) : (
-      <>
       {/* Summary - desktop */}
       <motion.div initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }} className="hidden md:grid grid-cols-[1.4fr_1fr] gap-3">
         <SaldoCard saldoAtual={totals.saldo} saldoPrevisto={totals.saldo} />
@@ -540,6 +515,38 @@ const Transacoes = () => {
         <SaldoCard saldoAtual={totals.saldo} saldoPrevisto={totals.saldo} mobile />
         <ReceitasDespesasCards receitas={totals.receitas} receitasRecebidas={totals.receitasRecebidas} receitasPendentes={totals.receitasPendentes} despesas={totals.despesas} despesasPagas={totals.despesasPagas} despesasPendentes={totals.despesasPendentes} mobile />
       </motion.div>
+
+      {/* Tab Switcher */}
+      <div className="relative rounded-xl bg-background/60 border border-border/20 flex overflow-hidden">
+        <motion.div
+          className="absolute inset-y-0 bg-primary/15 border border-primary/40 rounded-xl"
+          initial={false}
+          animate={{
+            left: mainTab === "transacoes" ? "0px" : "50%",
+            width: "50%",
+          }}
+          transition={{ type: "spring", stiffness: 350, damping: 30 }}
+        />
+        {([
+          { key: "transacoes" as MainTab, label: "Transações" },
+          { key: "analytics" as MainTab, label: "Analytics" },
+        ]).map(tab => (
+          <button
+            key={tab.key}
+            onClick={() => setMainTab(tab.key)}
+            className={`relative z-10 flex-1 h-10 rounded-xl text-xs font-bold flex items-center justify-center transition-colors duration-200 ${
+              mainTab === tab.key ? "text-primary" : "text-muted-foreground hover:text-foreground"
+            }`}
+          >
+            {tab.label}
+          </button>
+        ))}
+      </div>
+
+      {mainTab === "analytics" ? (
+        <TransacoesAnalytics />
+      ) : (
+      <>
 
       {/* Tabs + Search + Filter */}
       <div className="space-y-3">
