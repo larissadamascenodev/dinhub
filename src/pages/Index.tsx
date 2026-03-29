@@ -58,7 +58,9 @@ const Index = () => {
   const saldoPrevisto = data.saldoPrevisto;
   const isFutureMonth = data.isFutureMonth;
 
-  if (loading && data.transactions.length === 0 && data.receitas === 0 && data.despesas === 0) {
+  // Only show full loading screen on very first load (no data at all yet)
+  const isFirstLoad = loading && data === undefined;
+  if (isFirstLoad) {
     return (
       <div className="flex items-center justify-center py-20">
         <div className="animate-pulse text-primary text-lg">Carregando dados...</div>

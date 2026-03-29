@@ -45,16 +45,14 @@ export function useFinanceData(selectedMonth: number, selectedYear: number) {
   const [data, setData] = useState<DashboardData>(cached ?? EMPTY_DATA);
   const [loading, setLoading] = useState(!cached);
 
-  // Sync cache on key change using useEffect to avoid setState-during-render
+  // Sync cache on key change — keep previous data visible while fetching
   useEffect(() => {
     const c = dataCache[cacheKey];
     if (c) {
       setData(c);
       setLoading(false);
-    } else {
-      setData(EMPTY_DATA);
-      setLoading(true);
     }
+    // Don't reset to EMPTY_DATA — keep stale data visible while new data loads
   }, [cacheKey]);
 
   const fetchData = useCallback(async () => {
