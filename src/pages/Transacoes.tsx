@@ -505,6 +505,31 @@ const Transacoes = () => {
         <MonthSelector selectedMonth={selectedMonth} selectedYear={selectedYear} onMonthChange={(m, y) => setMonth(m, y)} />
       </div>
 
+      {/* Main Tab Switcher */}
+      <div className="flex rounded-xl bg-card/60 backdrop-blur-xl border border-border/20 p-1 overflow-hidden">
+        {([
+          { key: "transacoes" as MainTab, label: "Transações", icon: "📋" },
+          { key: "analytics" as MainTab, label: "Analytics", icon: "📊" },
+        ]).map(tab => (
+          <button
+            key={tab.key}
+            onClick={() => setMainTab(tab.key)}
+            className={`flex-1 flex items-center justify-center gap-2 py-2.5 rounded-lg text-sm font-semibold transition-all ${
+              mainTab === tab.key
+                ? "bg-primary/15 text-primary shadow-sm"
+                : "text-muted-foreground/50 hover:text-muted-foreground/70"
+            }`}
+          >
+            <span>{tab.icon}</span>
+            {tab.label}
+          </button>
+        ))}
+      </div>
+
+      {mainTab === "analytics" ? (
+        <TransacoesAnalytics />
+      ) : (
+      <>
       {/* Summary - desktop */}
       <motion.div initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }} className="hidden md:grid grid-cols-[1.4fr_1fr] gap-3">
         <SaldoCard saldoAtual={totals.saldo} saldoPrevisto={totals.saldo} />
