@@ -371,6 +371,13 @@ const Transacoes = () => {
 
   useEffect(() => { fetchData(); }, [fetchData]);
 
+  // Refresh when a transaction is created globally
+  useEffect(() => {
+    const handler = () => fetchData();
+    window.addEventListener("transaction-created", handler);
+    return () => window.removeEventListener("transaction-created", handler);
+  }, [fetchData]);
+
   const filtered = useMemo(() => {
     return transactions.filter((tx) => {
       if (activeTab !== "todos" && tx.type !== activeTab) return false;
