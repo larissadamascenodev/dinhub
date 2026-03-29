@@ -55,6 +55,8 @@ const Index = () => {
   const despesas = data.despesas;
   const balanco = receitas - despesas;
   const saldoMes = data.saldoAtual;
+  const saldoPrevisto = data.saldoPrevisto;
+  const isFutureMonth = data.isFutureMonth;
 
   if (loading && data.transactions.length === 0 && data.receitas === 0 && data.despesas === 0) {
     return (
