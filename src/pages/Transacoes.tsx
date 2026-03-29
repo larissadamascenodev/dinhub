@@ -346,6 +346,8 @@ const Transacoes = () => {
   const [newModalType, setNewModalType] = useState<"receita" | "despesa">("despesa");
   const [editTx, setEditTx] = useState<TransactionRow | null>(null);
   const [showEditModal, setShowEditModal] = useState(false);
+  const [deleteTarget, setDeleteTarget] = useState<TransactionRow | null>(null);
+  const [showDeleteDialog, setShowDeleteDialog] = useState(false);
 
   const accountMap = useMemo(() => {
     const map: Record<string, string> = {};
