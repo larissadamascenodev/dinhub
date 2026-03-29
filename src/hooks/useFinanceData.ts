@@ -40,18 +40,20 @@ const dataCache: Record<string, DashboardData> = {};
 export function useFinanceData(selectedMonth: number, selectedYear: number) {
   const { user } = useAuth();
   const cacheKey = `${user?.id ?? ""}-${selectedMonth}-${selectedYear}`;
-  const [data, setData] = useState<DashboardData>(dataCache[cacheKey] ?? EMPTY_DATA);
-  const [loading, setLoading] = useState(!dataCache[cacheKey]);
+  
+  // Derive state synchronously from cache to avoid any render delay
+  const cached = dataCache[cacheKey];
+  const [data, setData] = useState<DashboardData>(cached ?? EMPTY_DATA);
+  const [loading, setLoading] = useState(!cached);
 
-  // When month/year changes, immediately show cached data if available (no flash)
-  useEffect(() => {
-    if (dataCache[cacheKey]) {
-      setData(dataCache[cacheKey]);
-      setLoading(false);
-    } else {
-      setLoading(true);
-    }
-  }, [cacheKey]);
+  // Synchronous update when cacheKey changes - use layout-time sync
+  if (cached && data !== cached) {
+    setData(cached);
+    setLoading(false);
+  } else if (!cached && data !== EMPTY_DATA) {
+    setData(EMPTY_DATA);
+    setLoading(true);
+  }
 
   const fetchData = useCallback(async () => {
     if (!user) return;
