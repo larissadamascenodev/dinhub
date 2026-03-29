@@ -40,14 +40,16 @@ const ReceitasDespesasCards = memo(({
         <p className={`font-display ${mobile ? "text-base" : "text-xl"} font-bold text-primary tabular-nums leading-none`}>
           {animatedReceitas}
         </p>
-        <div className={`mt-1.5 space-y-0.5 ${mobile ? "text-[8px]" : "text-[9px]"}`}>
-          <p className="text-primary/70 tabular-nums">
-            Recebido: <span className="font-medium">{formatCurrency(receitasRecebidas)}</span>
-          </p>
-          <p className="text-muted-foreground tabular-nums">
-            A receber: <span className="font-medium">{formatCurrency(receitasPendentes)}</span>
-          </p>
-        </div>
+        {!compact && (
+          <div className={`mt-1.5 space-y-0.5 ${mobile ? "text-[8px]" : "text-[9px]"}`}>
+            <p className="text-primary/70 tabular-nums">
+              Recebido: <span className="font-medium">{formatCurrency(receitasRecebidas)}</span>
+            </p>
+            <p className="text-muted-foreground tabular-nums">
+              A receber: <span className="font-medium">{formatCurrency(receitasPendentes)}</span>
+            </p>
+          </div>
+        )}
       </button>
 
       <button
