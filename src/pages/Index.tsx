@@ -9,8 +9,6 @@ import MicroInteracoesCard from "@/components/dashboard/MicroInteracoesCard";
 import TransacoesRecentes from "@/components/dashboard/TransacoesRecentes";
 import ProximosEventos from "@/components/dashboard/ProximosEventos";
 import MonthSelector from "@/components/dashboard/MonthSelector";
-import NovaTransacaoModal from "@/components/dashboard/NovaTransacaoModal";
-import TransactionTypeChooser from "@/components/dashboard/TransactionTypeChooser";
 import PagarEditarModal from "@/components/dashboard/PagarEditarModal";
 import OnboardingCard from "@/components/dashboard/OnboardingCard";
 import { useAuth } from "@/contexts/AuthContext";
