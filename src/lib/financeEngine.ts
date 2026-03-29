@@ -85,21 +85,25 @@ async function fetchDefaultAccountBalance(): Promise<number> {
 }
 
 /**
- * Only count PAID transactions in balance
+ * Aggregate ALL transactions for income/expense totals,
+ * but only PAID transactions for balance.
  */
 function aggregate(transactions: RawTransaction[]) {
   let income = 0;
   let expense = 0;
+  let paidIncome = 0;
+  let paidExpense = 0;
   for (const t of transactions) {
-    if (t.status !== "pago") continue; // Skip pending/scheduled
     const amt = Number(t.amount);
     if (t.type === "receita") {
       income += amt;
+      if (t.status === "pago") paidIncome += amt;
     } else {
       expense += amt;
+      if (t.status === "pago") paidExpense += amt;
     }
   }
-  return { income, expense, balance: income - expense };
+  return { income, expense, paidIncome, paidExpense, balance: paidIncome - paidExpense };
 }
 
 async function fetchHistoricalAverages(
@@ -122,8 +126,8 @@ async function fetchHistoricalAverages(
     const txs = await fetchMonthTransactions(m, y);
     if (txs.length > 0) {
       const agg = aggregate(txs);
-      totalIncome += agg.income;
-      totalExpense += agg.expense;
+      totalIncome += agg.paidIncome;
+      totalExpense += agg.paidExpense;
       validMonths++;
     }
   }
@@ -160,8 +164,8 @@ export async function getFinancialSummary(
     fetchHistoricalAverages(month, year, 3),
   ]);
 
-  // Only paid transactions count toward balance
-  const { income, expense, balance } = aggregate(transactions);
+  // income/expense = ALL transactions, balance = only paid
+  const { income, expense, paidIncome, paidExpense, balance } = aggregate(transactions);
 
   const today = new Date();
   const todayStr = today.toISOString().split("T")[0];
@@ -177,8 +181,8 @@ export async function getFinancialSummary(
   const elapsedDays = isCurrentMonth
     ? Math.max(today.getDate(), 1)
     : daysInMonth;
-  const dailyAverageExpense = elapsedDays > 0 ? expense / elapsedDays : 0;
-  const dailyAverageIncome = elapsedDays > 0 ? income / elapsedDays : 0;
+  const dailyAverageExpense = elapsedDays > 0 ? paidExpense / elapsedDays : 0;
+  const dailyAverageIncome = elapsedDays > 0 ? paidIncome / elapsedDays : 0;
 
   // Predicted balance includes pending transactions + pending events
   let predictedBalance = balance;
@@ -204,7 +208,7 @@ export async function getFinancialSummary(
   }
 
   const nextMonthBalance = historical.avgIncome - historical.avgExpense;
-  const status = computeStatus(expense, historical.avgExpense);
+  const status = computeStatus(paidExpense, historical.avgExpense);
 
   return {
     summary: {
@@ -257,6 +261,6 @@ export function computeDailyBehavior(
 
 export async function getMonthHistory(month: number, year: number) {
   const transactions = await fetchMonthTransactions(month, year);
-  const { income, expense, balance } = aggregate(transactions);
-  return { income, expense, balance, month, year };
+  const agg = aggregate(transactions);
+  return { income: agg.income, expense: agg.expense, balance: agg.balance, month, year };
 }
