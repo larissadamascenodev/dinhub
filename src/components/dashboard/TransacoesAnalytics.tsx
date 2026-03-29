@@ -212,12 +212,10 @@ const TransacoesAnalytics = () => {
               <span className="text-[9px] text-muted-foreground/60">Recebido</span>
               <span className="text-[10px] font-semibold text-primary/80 tabular-nums">{fmt(totals.receitasRecebidas)}</span>
             </div>
-            {totals.receitasPendentes > 0 && (
-              <div className="flex items-center justify-between">
-                <span className="text-[9px] text-muted-foreground/60">Pendente</span>
-                <span className="text-[10px] font-semibold text-muted-foreground tabular-nums">{fmt(totals.receitasPendentes)}</span>
-              </div>
-            )}
+            <div className="flex items-center justify-between">
+              <span className="text-[9px] text-muted-foreground/60">Pendente</span>
+              <span className="text-[10px] font-semibold text-muted-foreground tabular-nums">{fmt(totals.receitasPendentes)}</span>
+            </div>
           </div>
         </GlassCard>
 
