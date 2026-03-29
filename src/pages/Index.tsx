@@ -58,6 +58,9 @@ const Index = () => {
   const saldoPrevisto = data.saldoPrevisto;
   const isFutureMonth = data.isFutureMonth;
 
+  const now = new Date();
+  const isCurrentMonth = selectedMonth === now.getMonth() && selectedYear === now.getFullYear();
+
   // Only show full loading screen on very first load (no data at all yet)
   const isFirstLoad = loading && data === undefined;
   if (isFirstLoad) {
