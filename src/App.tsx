@@ -11,6 +11,7 @@ import ResetPassword from "./pages/ResetPassword.tsx";
 import GestaoFinanceira from "./pages/GestaoFinanceira.tsx";
 import FaturaCartao from "./pages/FaturaCartao.tsx";
 import Configuracoes from "./pages/Configuracoes.tsx";
+import Transacoes from "./pages/Transacoes.tsx";
 import NotFound from "./pages/NotFound.tsx";
 
 const queryClient = new QueryClient();
@@ -39,6 +40,7 @@ const App = () => (
             <Route path="/reset-password" element={<ResetPassword />} />
             <Route element={<ProtectedRoute><DashboardLayout /></ProtectedRoute>}>
               <Route path="/" element={<Index />} />
+              <Route path="/transacoes" element={<Transacoes />} />
               <Route path="/gestao" element={<GestaoFinanceira />} />
               <Route path="/fatura/:cardId" element={<FaturaCartao />} />
               <Route path="/configuracoes" element={<Configuracoes />} />
