@@ -366,7 +366,7 @@ const NovaTransacaoModal = ({ open, onClose, onSuccess, initialType = "despesa" 
               </button>
             </div>
 
-            <div className="overflow-y-auto flex-1 pb-4">
+            <div className="overflow-y-auto flex-1 pb-20 md:pb-4">
               {/* Value display */}
               <div
                 className="mx-5 mb-4 rounded-xl p-5 text-center cursor-text border border-border/10"
