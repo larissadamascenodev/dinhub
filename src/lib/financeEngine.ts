@@ -164,8 +164,8 @@ export async function getFinancialSummary(
     fetchHistoricalAverages(month, year, 3),
   ]);
 
-  // Only paid transactions count toward balance
-  const { income, expense, balance } = aggregate(transactions);
+  // income/expense = ALL transactions, balance = only paid
+  const { income, expense, paidIncome, paidExpense, balance } = aggregate(transactions);
 
   const today = new Date();
   const todayStr = today.toISOString().split("T")[0];
