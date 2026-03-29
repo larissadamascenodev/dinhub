@@ -120,8 +120,13 @@ export function useFinanceData(selectedMonth: number, selectedYear: number) {
         icon: CAT_ICONS[name] ?? "📋",
       }));
 
+      // saldoAtual: for current/past month = accountBalance (real available), for future = saldoInicial (starting balance)
+      const saldoAtual = summary.isFutureMonth
+        ? summary.previousMonthEndingBalance
+        : summary.accountBalance;
+
       const newData: DashboardData = {
-        saldoAtual: summary.balance,
+        saldoAtual,
         saldoPrevisto: summary.predictedBalance,
         previousMonthEndingBalance: summary.previousMonthEndingBalance,
         isFutureMonth: summary.isFutureMonth,

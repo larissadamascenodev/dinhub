@@ -261,6 +261,7 @@ export async function getFinancialSummary(
       balance,
       predictedBalance,
       previousMonthEndingBalance,
+      accountBalance,
       isFutureMonth,
       isPastMonth,
       dailyAverageExpense,

@@ -21,28 +21,31 @@ const SaldoCard = memo(({ saldoAtual, saldoPrevisto, isFutureMonth, mobile }: Sa
       <div>
         {isFutureMonth ? (
           <>
-            {/* Future month: only show predicted balance */}
+            {/* Future month: show starting balance + end projection */}
             <div className="flex items-center justify-between mb-2">
               <div className="flex items-center gap-1.5">
                 <TrendingUp className="w-3.5 h-3.5 text-primary" />
                 <span className="text-[10px] text-primary uppercase tracking-[0.15em] font-semibold">Saldo previsto</span>
               </div>
             </div>
-            <p className={`font-display ${mobile ? "text-3xl" : "text-4xl"} font-bold tracking-tight tabular-nums leading-none ${saldoPrevisto >= 0 ? "text-primary" : "text-destructive"} my-[7px]`}>
-              {animatedPrevisto}
+            <p className={`font-display ${mobile ? "text-3xl" : "text-4xl"} font-bold tracking-tight tabular-nums leading-none ${saldoAtual >= 0 ? "text-primary" : "text-destructive"} my-[7px]`}>
+              {animatedSaldo}
             </p>
             <div className="mt-4 flex items-center gap-2">
-              <div className="w-1 h-1 rounded-full bg-muted-foreground/40" />
+              <div className={`w-1 h-1 rounded-full ${saldoPrevisto >= 0 ? "bg-primary" : "bg-destructive"}`} />
               <span className="text-[10px] text-muted-foreground/60">Projeção ao final do mês</span>
+              <span className={`text-[13px] font-semibold tabular-nums tracking-tight ${saldoPrevisto >= 0 ? "text-primary/80" : "text-destructive/80"}`}>
+                {animatedPrevisto}
+              </span>
             </div>
           </>
         ) : (
           <>
-            {/* Current/past month: show both */}
+            {/* Current/past month: show available balance + end prediction */}
             <div className="flex items-center justify-between mb-2">
               <div className="flex items-center gap-1.5">
                 <Scale className="w-3.5 h-3.5 text-muted-foreground" />
-                <span className="text-[10px] text-muted-foreground uppercase tracking-[0.15em] font-semibold">Saldo do mês</span>
+                <span className="text-[10px] text-muted-foreground uppercase tracking-[0.15em] font-semibold">Saldo disponível</span>
               </div>
             </div>
             <p className={`font-display ${mobile ? "text-3xl" : "text-4xl"} font-bold tracking-tight tabular-nums leading-none ${saldoAtual >= 0 ? "text-foreground" : "text-destructive"} my-[7px]`}>
@@ -50,7 +53,7 @@ const SaldoCard = memo(({ saldoAtual, saldoPrevisto, isFutureMonth, mobile }: Sa
             </p>
             <div className="mt-4 flex items-center gap-2">
               <div className={`w-1 h-1 rounded-full ${saldoPrevisto >= 0 ? "bg-primary" : "bg-destructive"}`} />
-              <span className="text-[10px] text-muted-foreground/60">Previsto ao final do mês</span>
+              <span className="text-[10px] text-muted-foreground/60">Saldo previsto no final do mês</span>
               <span className={`text-[13px] font-semibold tabular-nums tracking-tight ${saldoPrevisto >= 0 ? "text-primary/80" : "text-destructive/80"}`}>
                 {animatedPrevisto}
               </span>
