@@ -208,7 +208,7 @@ export async function getFinancialSummary(
   }
 
   const nextMonthBalance = historical.avgIncome - historical.avgExpense;
-  const status = computeStatus(expense, historical.avgExpense);
+  const status = computeStatus(paidExpense, historical.avgExpense);
 
   return {
     summary: {
