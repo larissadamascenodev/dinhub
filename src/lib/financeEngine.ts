@@ -279,6 +279,8 @@ export async function getFinancialSummary(
     summary: {
       income,
       expense,
+      paidIncome,
+      paidExpense,
       balance,
       predictedBalance,
       previousMonthEndingBalance,
