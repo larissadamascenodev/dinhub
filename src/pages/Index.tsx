@@ -58,6 +58,9 @@ const Index = () => {
   const saldoPrevisto = data.saldoPrevisto;
   const isFutureMonth = data.isFutureMonth;
 
+  const now = new Date();
+  const isCurrentMonth = selectedMonth === now.getMonth() && selectedYear === now.getFullYear();
+
   // Only show full loading screen on very first load (no data at all yet)
   const isFirstLoad = loading && data === undefined;
   if (isFirstLoad) {
@@ -98,7 +101,7 @@ const Index = () => {
               </motion.div>
             </div>
             <BalancoCard balanco={balanco} />
-            <MicroInteracoesCard gastosHoje={data.gastosHoje} mediaGastosDiarios={data.mediaGastosDiarios} />
+            {isCurrentMonth && <MicroInteracoesCard gastosHoje={data.gastosHoje} mediaGastosDiarios={data.mediaGastosDiarios} />}
             <TransacoesRecentes transactions={data.transactions} onDelete={refetch} />
           </div>
           <div className="space-y-4">
@@ -128,7 +131,7 @@ const Index = () => {
           <SaldoCard saldoAtual={saldoMes} saldoPrevisto={saldoPrevisto} isFutureMonth={isFutureMonth} />
           <ReceitasDespesasCards receitas={receitas} despesas={despesas} />
           <BalancoCard balanco={balanco} />
-          <MicroInteracoesCard gastosHoje={data.gastosHoje} mediaGastosDiarios={data.mediaGastosDiarios} />
+          {isCurrentMonth && <MicroInteracoesCard gastosHoje={data.gastosHoje} mediaGastosDiarios={data.mediaGastosDiarios} />}
           <TransacoesRecentes transactions={data.transactions} onDelete={refetch} />
           <ProximosEventos events={data.events} selectedMonth={selectedMonth} selectedYear={selectedYear} onEventClick={handleEventClick} />
         </div>
@@ -157,7 +160,7 @@ const Index = () => {
             <ReceitasDespesasCards receitas={receitas} despesas={despesas} mobile />
           </motion.div>
           <BalancoCard balanco={balanco} />
-          <MicroInteracoesCard gastosHoje={data.gastosHoje} mediaGastosDiarios={data.mediaGastosDiarios} />
+          {isCurrentMonth && <MicroInteracoesCard gastosHoje={data.gastosHoje} mediaGastosDiarios={data.mediaGastosDiarios} />}
           <TransacoesRecentes transactions={data.transactions} onDelete={refetch} />
           <div className="-mt-3">
             <ProximosEventos events={data.events} selectedMonth={selectedMonth} selectedYear={selectedYear} onEventClick={handleEventClick} />
