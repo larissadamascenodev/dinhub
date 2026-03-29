@@ -385,7 +385,10 @@ const Transacoes = () => {
   const totals = useMemo(() => {
     const receitas = filtered.filter((t) => t.type === "receita").reduce((s, t) => s + t.amount, 0);
     const despesas = filtered.filter((t) => t.type === "despesa").reduce((s, t) => s + t.amount, 0);
-    return { receitas, despesas, saldo: receitas - despesas };
+    // Saldo only considers paid/received transactions
+    const receitasPagas = filtered.filter((t) => t.type === "receita" && t.status === "pago").reduce((s, t) => s + t.amount, 0);
+    const despesasPagas = filtered.filter((t) => t.type === "despesa" && t.status === "pago").reduce((s, t) => s + t.amount, 0);
+    return { receitas, despesas, saldo: receitasPagas - despesasPagas };
   }, [filtered]);
 
   const grouped = useMemo(() => {
