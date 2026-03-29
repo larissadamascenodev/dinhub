@@ -40,13 +40,10 @@ const ReceitasDespesasCards = memo(({
         <p className={`font-display ${mobile ? "text-base" : "text-xl"} font-bold text-primary tabular-nums leading-none`}>
           {animatedReceitas}
         </p>
-        {!compact && (
-          <div className={`mt-1.5 space-y-0.5 ${mobile ? "text-[8px]" : "text-[9px]"}`}>
+        {!compact && receitasPendentes > 0 && (
+          <div className={`mt-1.5 ${mobile ? "text-[8px]" : "text-[9px]"}`}>
             <p className="text-primary/70 tabular-nums">
-              Recebido: <span className="font-medium">{formatCurrency(receitasRecebidas)}</span>
-            </p>
-            <p className="text-muted-foreground tabular-nums">
-              A receber: <span className="font-medium">{formatCurrency(receitasPendentes)}</span>
+              Pendente: <span className="font-medium">{formatCurrency(receitasPendentes)}</span>
             </p>
           </div>
         )}
@@ -65,13 +62,10 @@ const ReceitasDespesasCards = memo(({
         <p className={`font-display ${mobile ? "text-base" : "text-xl"} font-bold text-destructive tabular-nums leading-none`}>
           {animatedDespesas}
         </p>
-        {!compact && (
-          <div className={`mt-1.5 space-y-0.5 ${mobile ? "text-[8px]" : "text-[9px]"}`}>
+        {!compact && despesasPendentes > 0 && (
+          <div className={`mt-1.5 ${mobile ? "text-[8px]" : "text-[9px]"}`}>
             <p className="text-destructive/70 tabular-nums">
-              Pago: <span className="font-medium">{formatCurrency(despesasPagas)}</span>
-            </p>
-            <p className="text-muted-foreground tabular-nums">
-              A pagar: <span className="font-medium">{formatCurrency(despesasPendentes)}</span>
+              Pendente: <span className="font-medium">{formatCurrency(despesasPendentes)}</span>
             </p>
           </div>
         )}
