@@ -730,6 +730,59 @@ const Transacoes = () => {
 
       {/* Modals */}
       <EditTransactionModal open={showEditModal} tx={editTx} onClose={() => { setShowEditModal(false); setEditTx(null); }} onSave={fetchData} />
+
+      {/* Delete Fixa Dialog */}
+      <AnimatePresence>
+        {showDeleteDialog && deleteTarget && (
+          <motion.div
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            exit={{ opacity: 0 }}
+            className="fixed inset-0 z-50 flex items-end md:items-center justify-center bg-black/70 backdrop-blur-sm"
+            onClick={() => { setShowDeleteDialog(false); setDeleteTarget(null); }}
+          >
+            <motion.div
+              initial={{ opacity: 0, y: 80 }}
+              animate={{ opacity: 1, y: 0 }}
+              exit={{ opacity: 0, y: 80 }}
+              transition={{ type: "spring", damping: 28, stiffness: 300 }}
+              onClick={(e) => e.stopPropagation()}
+              className="w-full max-w-sm mx-4 rounded-2xl bg-card border border-border/20 shadow-2xl p-5 space-y-4"
+            >
+              <div className="text-center space-y-2">
+                <div className="w-12 h-12 rounded-full bg-destructive/10 flex items-center justify-center mx-auto">
+                  <Trash2 className="w-5 h-5 text-destructive" />
+                </div>
+                <h3 className="text-base font-bold text-foreground">Remover transação fixa</h3>
+                <p className="text-xs text-muted-foreground">
+                  <span className="font-semibold text-foreground">{deleteTarget.name}</span> é uma transação fixa. Como deseja removê-la?
+                </p>
+              </div>
+
+              <div className="space-y-2">
+                <button
+                  onClick={handleDeleteFixaThisMonth}
+                  className="w-full py-3 rounded-xl text-sm font-bold text-foreground bg-muted/40 border border-border/20 hover:bg-muted/60 transition-all"
+                >
+                  Apagar apenas este mês
+                </button>
+                <button
+                  onClick={handleDeleteFixaAllFuture}
+                  className="w-full py-3 rounded-xl text-sm font-bold text-destructive bg-destructive/10 border border-destructive/20 hover:bg-destructive/20 transition-all"
+                >
+                  Apagar este e todos os meses futuros
+                </button>
+                <button
+                  onClick={() => { setShowDeleteDialog(false); setDeleteTarget(null); }}
+                  className="w-full py-2.5 rounded-xl text-xs font-semibold text-muted-foreground hover:text-foreground transition-all"
+                >
+                  Cancelar
+                </button>
+              </div>
+            </motion.div>
+          </motion.div>
+        )}
+      </AnimatePresence>
     </div>
   );
 };
