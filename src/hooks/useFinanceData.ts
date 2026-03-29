@@ -43,6 +43,16 @@ export function useFinanceData(selectedMonth: number, selectedYear: number) {
   const [data, setData] = useState<DashboardData>(dataCache[cacheKey] ?? EMPTY_DATA);
   const [loading, setLoading] = useState(!dataCache[cacheKey]);
 
+  // When month/year changes, immediately show cached data if available (no flash)
+  useEffect(() => {
+    if (dataCache[cacheKey]) {
+      setData(dataCache[cacheKey]);
+      setLoading(false);
+    } else {
+      setLoading(true);
+    }
+  }, [cacheKey]);
+
   const fetchData = useCallback(async () => {
     if (!user) return;
 
