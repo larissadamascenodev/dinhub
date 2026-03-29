@@ -55,6 +55,8 @@ const Index = () => {
   const despesas = data.despesas;
   const balanco = receitas - despesas;
   const saldoMes = data.saldoAtual;
+  const saldoPrevisto = data.saldoPrevisto;
+  const isFutureMonth = data.isFutureMonth;
 
   if (loading && data.transactions.length === 0 && data.receitas === 0 && data.despesas === 0) {
     return (
@@ -89,7 +91,7 @@ const Index = () => {
             )}
             <div>
               <motion.div initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }} className="grid grid-cols-[1.4fr_1fr] gap-3">
-                <SaldoCard saldoAtual={saldoMes} saldoPrevisto={balanco} />
+                <SaldoCard saldoAtual={saldoMes} saldoPrevisto={saldoPrevisto} isFutureMonth={isFutureMonth} />
                 <ReceitasDespesasCards receitas={receitas} despesas={despesas} />
               </motion.div>
             </div>
@@ -121,7 +123,7 @@ const Index = () => {
               onCreateTransaction={handleNovaTransacao}
             />
           )}
-          <SaldoCard saldoAtual={saldoMes} saldoPrevisto={balanco} />
+          <SaldoCard saldoAtual={saldoMes} saldoPrevisto={saldoPrevisto} isFutureMonth={isFutureMonth} />
           <ReceitasDespesasCards receitas={receitas} despesas={despesas} />
           <BalancoCard balanco={balanco} />
           <MicroInteracoesCard gastosHoje={data.gastosHoje} mediaGastosDiarios={data.mediaGastosDiarios} />
@@ -149,7 +151,7 @@ const Index = () => {
             />
           )}
           <motion.div initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }} className="space-y-3">
-            <SaldoCard saldoAtual={saldoMes} saldoPrevisto={balanco} mobile />
+            <SaldoCard saldoAtual={saldoMes} saldoPrevisto={saldoPrevisto} isFutureMonth={isFutureMonth} mobile />
             <ReceitasDespesasCards receitas={receitas} despesas={despesas} mobile />
           </motion.div>
           <BalancoCard balanco={balanco} />
