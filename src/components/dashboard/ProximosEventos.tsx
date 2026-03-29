@@ -210,7 +210,7 @@ const ProximosEventos = memo(({ events, selectedMonth, selectedYear, onVerTodos,
                   {d.day}
                 </div>
                 {d.isToday && !dimmed && (
-                  <span className="w-1.5 h-1.5 rounded-full mt-1 bg-primary" />
+                  <span className="w-1.5 h-1.5 rounded-full mt-1 bg-primary my-[5px]" />
                 )}
               </div>
             );
