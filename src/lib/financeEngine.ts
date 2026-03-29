@@ -4,6 +4,8 @@ import { getRecurringForMonth } from "@/services/recurringService";
 export interface FinancialSummary {
   income: number;
   expense: number;
+  paidIncome: number;
+  paidExpense: number;
   balance: number;
   predictedBalance: number;
   previousMonthEndingBalance: number;
