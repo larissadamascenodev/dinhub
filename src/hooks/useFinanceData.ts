@@ -123,6 +123,9 @@ export function useFinanceData(selectedMonth: number, selectedYear: number) {
       const newData: DashboardData = {
         saldoAtual: summary.balance,
         saldoPrevisto: summary.predictedBalance,
+        previousMonthEndingBalance: summary.previousMonthEndingBalance,
+        isFutureMonth: summary.isFutureMonth,
+        isPastMonth: summary.isPastMonth,
         receitas: summary.income,
         despesas: summary.expense,
         balanco: summary.balance,
