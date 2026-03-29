@@ -92,14 +92,13 @@ async function fetchMonthEvents(month: number, year: number) {
   return (data ?? []) as RawEvent[];
 }
 
-async function fetchDefaultAccountBalance(): Promise<number> {
+async function fetchTotalAccountBalance(): Promise<number> {
   const { data } = await supabase
     .from("accounts")
-    .select("current_balance")
-    .eq("is_default", true)
-    .limit(1);
+    .select("current_balance");
 
-  return Number(data?.[0]?.current_balance ?? 0);
+  if (!data || data.length === 0) return 0;
+  return data.reduce((sum, acc) => sum + Number(acc.current_balance), 0);
 }
 
 /**
