@@ -126,8 +126,8 @@ async function fetchHistoricalAverages(
     const txs = await fetchMonthTransactions(m, y);
     if (txs.length > 0) {
       const agg = aggregate(txs);
-      totalIncome += agg.income;
-      totalExpense += agg.expense;
+      totalIncome += agg.paidIncome;
+      totalExpense += agg.paidExpense;
       validMonths++;
     }
   }
