@@ -36,6 +36,9 @@ export interface DailyBehavior {
 export interface DashboardData {
   saldoAtual: number;
   saldoPrevisto: number;
+  previousMonthEndingBalance: number;
+  isFutureMonth: boolean;
+  isPastMonth: boolean;
   receitas: number;
   despesas: number;
   balanco: number;

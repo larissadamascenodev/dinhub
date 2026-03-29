@@ -6,6 +6,9 @@ export interface FinancialSummary {
   expense: number;
   balance: number;
   predictedBalance: number;
+  previousMonthEndingBalance: number;
+  isFutureMonth: boolean;
+  isPastMonth: boolean;
   dailyAverageExpense: number;
   dailyAverageIncome: number;
   status: "safe" | "warning" | "danger";
