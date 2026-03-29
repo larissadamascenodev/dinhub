@@ -186,8 +186,11 @@ export async function getFinancialSummary(
 
   const today = new Date();
   const todayStr = today.toISOString().split("T")[0];
-  const isCurrentMonth =
-    today.getMonth() === month && today.getFullYear() === year;
+  const currentCalendarMonth = today.getMonth();
+  const currentCalendarYear = today.getFullYear();
+  const isCurrentMonth = currentCalendarMonth === month && currentCalendarYear === year;
+  const isFutureMonth = year > currentCalendarYear || (year === currentCalendarYear && month > currentCalendarMonth);
+  const isPastMonth = year < currentCalendarYear || (year === currentCalendarYear && month < currentCalendarMonth);
 
   // Today's paid expenses only
   const todayExpenses = transactions
@@ -201,28 +204,51 @@ export async function getFinancialSummary(
   const dailyAverageExpense = elapsedDays > 0 ? paidExpense / elapsedDays : 0;
   const dailyAverageIncome = elapsedDays > 0 ? paidIncome / elapsedDays : 0;
 
-  // Predicted balance includes pending transactions + pending events
-  let predictedBalance = balance;
-  if (isCurrentMonth) {
-    // Pending transactions (scheduled but not paid)
-    const pendingTxs = transactions.filter((t) => t.status === "pendente");
-    for (const t of pendingTxs) {
-      const amt = Number(t.amount);
-      if (t.type === "receita") {
-        predictedBalance += amt;
-      } else {
-        predictedBalance -= amt;
-      }
-    }
+  // ── Compute previousMonthEndingBalance ──
+  // accountBalance = cumulative balance of ALL paid transactions ever (from default account)
+  // For current month: previousMonthEnding = accountBalance - currentMonthPaidBalance
+  // For future months: chain from accountBalance through intermediate months
+  // For past months: we'd need to subtract future paid transactions (approximate with accountBalance)
+  let previousMonthEndingBalance = 0;
 
-    // Pending finance_events
-    const futureEvents = events.filter(
-      (e) => e.date > todayStr && e.status === "pendente"
-    );
-    for (const e of futureEvents) {
-      predictedBalance -= Number(e.amount);
+  if (isCurrentMonth) {
+    previousMonthEndingBalance = accountBalance - balance; // balance = paidIncome - paidExpense of this month
+  } else if (isFutureMonth) {
+    // Start from account balance, add current month's pending, then chain through intermediate months
+    let accumulated = accountBalance;
+    
+    // Add current calendar month's pending transactions
+    if (!(currentCalendarMonth === month && currentCalendarYear === year)) {
+      const currentMonthTxs = await fetchMonthTransactions(currentCalendarMonth, currentCalendarYear);
+      const currentAgg = aggregate(currentMonthTxs);
+      // accountBalance already has current month's paid. Add pending to project end of current month.
+      const pendingIncome = currentAgg.income - currentAgg.paidIncome;
+      const pendingExpense = currentAgg.expense - currentAgg.paidExpense;
+      accumulated += pendingIncome - pendingExpense;
     }
+    
+    // Chain through intermediate months (between current+1 and target-1)
+    let chainMonth = currentCalendarMonth + 1;
+    let chainYear = currentCalendarYear;
+    while (chainMonth > 11) { chainMonth -= 12; chainYear++; }
+    
+    while (chainYear < year || (chainYear === year && chainMonth < month)) {
+      const intermediateTxs = await fetchMonthTransactions(chainMonth, chainYear);
+      const intAgg = aggregate(intermediateTxs);
+      accumulated += intAgg.income - intAgg.expense; // all income - all expense for projected months
+      chainMonth++;
+      if (chainMonth > 11) { chainMonth = 0; chainYear++; }
+    }
+    
+    previousMonthEndingBalance = accumulated;
+  } else {
+    // Past month: approximate using accountBalance minus all paid transactions from months after this one
+    previousMonthEndingBalance = accountBalance - balance; // simplified approximation
   }
+
+  // ── Predicted balance = previousMonthEnding + month's total balance (all statuses) ──
+  const monthFullBalance = income - expense; // all statuses
+  const predictedBalance = previousMonthEndingBalance + monthFullBalance;
 
   const nextMonthBalance = historical.avgIncome - historical.avgExpense;
   const status = computeStatus(paidExpense, historical.avgExpense);
@@ -233,6 +259,9 @@ export async function getFinancialSummary(
       expense,
       balance,
       predictedBalance,
+      previousMonthEndingBalance,
+      isFutureMonth,
+      isPastMonth,
       dailyAverageExpense,
       dailyAverageIncome,
       status,

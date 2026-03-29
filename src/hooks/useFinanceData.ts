@@ -7,6 +7,9 @@ import type { DashboardData, Transaction, FinanceEvent } from "@/types/finance";
 const EMPTY_DATA: DashboardData = {
   saldoAtual: 0,
   saldoPrevisto: 0,
+  previousMonthEndingBalance: 0,
+  isFutureMonth: false,
+  isPastMonth: false,
   receitas: 0,
   despesas: 0,
   balanco: 0,
