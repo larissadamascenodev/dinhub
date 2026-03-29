@@ -159,7 +159,7 @@ const Index = () => {
               <h1 className="font-display text-base font-bold leading-tight mx-[2px]">
                 {greeting}, <span className="text-primary">{userName}</span>
               </h1>
-              <p className="text-[10px] text-muted-foreground">{dateStr}</p>
+              <p className="text-[10px] text-muted-foreground my-0 mx-[2px]">{dateStr}</p>
             </div>
             <MonthSelector selectedMonth={selectedMonth} selectedYear={selectedYear} onMonthChange={handleMonthChange} />
           </div>
