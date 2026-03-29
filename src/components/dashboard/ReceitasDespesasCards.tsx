@@ -10,6 +10,7 @@ interface Props {
   despesasPagas: number;
   despesasPendentes: number;
   mobile?: boolean;
+  compact?: boolean;
 }
 
 function formatCurrency(value: number) {
@@ -19,7 +20,7 @@ function formatCurrency(value: number) {
 const ReceitasDespesasCards = memo(({
   receitas, receitasRecebidas, receitasPendentes,
   despesas, despesasPagas, despesasPendentes,
-  mobile,
+  mobile, compact,
 }: Props) => {
   const animatedReceitas = useFormattedCounter(receitas);
   const animatedDespesas = useFormattedCounter(despesas);
@@ -39,14 +40,16 @@ const ReceitasDespesasCards = memo(({
         <p className={`font-display ${mobile ? "text-base" : "text-xl"} font-bold text-primary tabular-nums leading-none`}>
           {animatedReceitas}
         </p>
-        <div className={`mt-1.5 space-y-0.5 ${mobile ? "text-[8px]" : "text-[9px]"}`}>
-          <p className="text-primary/70 tabular-nums">
-            Recebido: <span className="font-medium">{formatCurrency(receitasRecebidas)}</span>
-          </p>
-          <p className="text-muted-foreground tabular-nums">
-            A receber: <span className="font-medium">{formatCurrency(receitasPendentes)}</span>
-          </p>
-        </div>
+        {!compact && (
+          <div className={`mt-1.5 space-y-0.5 ${mobile ? "text-[8px]" : "text-[9px]"}`}>
+            <p className="text-primary/70 tabular-nums">
+              Recebido: <span className="font-medium">{formatCurrency(receitasRecebidas)}</span>
+            </p>
+            <p className="text-muted-foreground tabular-nums">
+              A receber: <span className="font-medium">{formatCurrency(receitasPendentes)}</span>
+            </p>
+          </div>
+        )}
       </button>
 
       <button
@@ -62,14 +65,16 @@ const ReceitasDespesasCards = memo(({
         <p className={`font-display ${mobile ? "text-base" : "text-xl"} font-bold text-destructive tabular-nums leading-none`}>
           {animatedDespesas}
         </p>
-        <div className={`mt-1.5 space-y-0.5 ${mobile ? "text-[8px]" : "text-[9px]"}`}>
-          <p className="text-destructive/70 tabular-nums">
-            Pago: <span className="font-medium">{formatCurrency(despesasPagas)}</span>
-          </p>
-          <p className="text-muted-foreground tabular-nums">
-            A pagar: <span className="font-medium">{formatCurrency(despesasPendentes)}</span>
-          </p>
-        </div>
+        {!compact && (
+          <div className={`mt-1.5 space-y-0.5 ${mobile ? "text-[8px]" : "text-[9px]"}`}>
+            <p className="text-destructive/70 tabular-nums">
+              Pago: <span className="font-medium">{formatCurrency(despesasPagas)}</span>
+            </p>
+            <p className="text-muted-foreground tabular-nums">
+              A pagar: <span className="font-medium">{formatCurrency(despesasPendentes)}</span>
+            </p>
+          </div>
+        )}
       </button>
     </div>
   );
