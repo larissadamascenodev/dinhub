@@ -684,8 +684,6 @@ const Transacoes = () => {
       )}
 
       {/* Modals */}
-      <TransactionTypeChooser open={showTypeChooser} onClose={() => setShowTypeChooser(false)} onSelect={handleTypeSelected} />
-      <NovaTransacaoModal open={showNewModal} onClose={() => setShowNewModal(false)} onSuccess={fetchData} initialType={newModalType} />
       <EditTransactionModal open={showEditModal} tx={editTx} onClose={() => { setShowEditModal(false); setEditTx(null); }} onSave={fetchData} />
     </div>
   );
