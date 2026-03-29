@@ -425,10 +425,42 @@ const Transacoes = () => {
   }, [transactions]);
 
   const handleDelete = async (id: string) => {
+    const tx = transactions.find((t) => t.id === id);
+    if (tx && tx.recurrence_type === "fixa") {
+      setDeleteTarget(tx);
+      setShowDeleteDialog(true);
+      return;
+    }
     try {
       await deleteTransaction(id);
       setTransactions((prev) => prev.filter((t) => t.id !== id));
       toast.success("Transação removida");
+    } catch {
+      toast.error("Erro ao remover");
+    }
+  };
+
+  const handleDeleteFixaThisMonth = async () => {
+    if (!deleteTarget || !user) return;
+    try {
+      await excludeRecurringForMonth(deleteTarget.id, selectedMonth, selectedYear, user.id);
+      toast.success("Receita fixa removida deste mês");
+      setShowDeleteDialog(false);
+      setDeleteTarget(null);
+      fetchData();
+    } catch {
+      toast.error("Erro ao remover");
+    }
+  };
+
+  const handleDeleteFixaAllFuture = async () => {
+    if (!deleteTarget || !user) return;
+    try {
+      await excludeRecurringFromMonthOnward(deleteTarget.id, selectedMonth, selectedYear, user.id);
+      toast.success("Receita fixa removida deste mês e de todos os futuros");
+      setShowDeleteDialog(false);
+      setDeleteTarget(null);
+      fetchData();
     } catch {
       toast.error("Erro ao remover");
     }
