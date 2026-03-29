@@ -7,6 +7,7 @@ export interface FinancialSummary {
   balance: number;
   predictedBalance: number;
   previousMonthEndingBalance: number;
+  accountBalance: number;
   isFutureMonth: boolean;
   isPastMonth: boolean;
   dailyAverageExpense: number;
