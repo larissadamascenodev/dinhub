@@ -17,6 +17,7 @@ import SaldoCard from "@/components/dashboard/SaldoCard";
 import ReceitasDespesasCards from "@/components/dashboard/ReceitasDespesasCards";
 import NovaTransacaoModal from "@/components/dashboard/NovaTransacaoModal";
 import TransactionTypeChooser from "@/components/dashboard/TransactionTypeChooser";
+import TransacoesAnalytics from "@/components/dashboard/TransacoesAnalytics";
 
 // ── Types ──────────────────────────────────────────────
 type TransactionRow = {
