@@ -115,21 +115,21 @@ const DashboardHeader = memo(({ profile }: { profile?: { display_name: string | 
                       >
                         <button
                           onClick={() => handleTransacaoOption("receita")}
-                          className="flex items-center gap-1.5 px-3 py-2 rounded-lg hover:bg-primary/10 transition-colors"
+                          className="flex items-center gap-1.5 px-3 py-2 rounded-lg transition-all duration-200 ease-out hover:bg-primary/10 hover:scale-105 active:scale-95"
                         >
                           <TrendingUp className="w-3.5 h-3.5 text-primary" />
                           <span className="text-[11px] font-medium text-foreground whitespace-nowrap">Receita</span>
                         </button>
                         <button
                           onClick={() => handleTransacaoOption("despesa")}
-                          className="flex items-center gap-1.5 px-3 py-2 rounded-lg hover:bg-destructive/10 transition-colors"
+                          className="flex items-center gap-1.5 px-3 py-2 rounded-lg transition-all duration-200 ease-out hover:bg-destructive/10 hover:scale-105 active:scale-95"
                         >
                           <TrendingDown className="w-3.5 h-3.5 text-destructive" />
                           <span className="text-[11px] font-medium text-foreground whitespace-nowrap">Despesa</span>
                         </button>
                         <button
                           onClick={() => handleTransacaoOption("scanner")}
-                          className="flex items-center gap-1.5 px-3 py-2 rounded-lg hover:bg-blue-500/10 transition-colors"
+                          className="flex items-center gap-1.5 px-3 py-2 rounded-lg transition-all duration-200 ease-out hover:bg-accent/15 hover:scale-105 active:scale-95"
                         >
                           <Camera className="w-3.5 h-3.5 text-blue-400" />
                           <span className="text-[11px] font-medium text-foreground whitespace-nowrap">Scanner</span>
