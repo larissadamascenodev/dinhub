@@ -40,7 +40,11 @@ export interface DashboardData {
   isFutureMonth: boolean;
   isPastMonth: boolean;
   receitas: number;
+  receitasRecebidas: number;
+  receitasPendentes: number;
   despesas: number;
+  despesasPagas: number;
+  despesasPendentes: number;
   balanco: number;
   gastosHoje: number;
   mediaGastosDiarios: number;
@@ -64,7 +68,11 @@ export const SAMPLE_DATA: DashboardData = {
   isFutureMonth: false,
   isPastMonth: false,
   receitas: 0,
+  receitasRecebidas: 0,
+  receitasPendentes: 0,
   despesas: 0,
+  despesasPagas: 0,
+  despesasPendentes: 0,
   balanco: 0,
   gastosHoje: 0,
   mediaGastosDiarios: 0,

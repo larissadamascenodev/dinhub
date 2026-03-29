@@ -405,10 +405,17 @@ const Transacoes = () => {
   const totals = useMemo(() => {
     const receitas = filtered.filter((t) => t.type === "receita").reduce((s, t) => s + t.amount, 0);
     const despesas = filtered.filter((t) => t.type === "despesa").reduce((s, t) => s + t.amount, 0);
-    // Saldo only considers paid/received transactions
-    const receitasPagas = filtered.filter((t) => t.type === "receita" && t.status === "pago").reduce((s, t) => s + t.amount, 0);
+    const receitasRecebidas = filtered.filter((t) => t.type === "receita" && t.status === "pago").reduce((s, t) => s + t.amount, 0);
     const despesasPagas = filtered.filter((t) => t.type === "despesa" && t.status === "pago").reduce((s, t) => s + t.amount, 0);
-    return { receitas, despesas, saldo: receitasPagas - despesasPagas };
+    return {
+      receitas,
+      despesas,
+      receitasRecebidas,
+      receitasPendentes: receitas - receitasRecebidas,
+      despesasPagas,
+      despesasPendentes: despesas - despesasPagas,
+      saldo: receitasRecebidas - despesasPagas,
+    };
   }, [filtered]);
 
   const grouped = useMemo(() => {
@@ -498,12 +505,12 @@ const Transacoes = () => {
       {/* Summary - desktop */}
       <motion.div initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }} className="hidden md:grid grid-cols-[1.4fr_1fr] gap-3">
         <SaldoCard saldoAtual={totals.saldo} saldoPrevisto={totals.saldo} />
-        <ReceitasDespesasCards receitas={totals.receitas} despesas={totals.despesas} />
+        <ReceitasDespesasCards receitas={totals.receitas} receitasRecebidas={totals.receitasRecebidas} receitasPendentes={totals.receitasPendentes} despesas={totals.despesas} despesasPagas={totals.despesasPagas} despesasPendentes={totals.despesasPendentes} />
       </motion.div>
       {/* Summary - mobile */}
       <motion.div initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }} className="md:hidden space-y-2">
         <SaldoCard saldoAtual={totals.saldo} saldoPrevisto={totals.saldo} mobile />
-        <ReceitasDespesasCards receitas={totals.receitas} despesas={totals.despesas} mobile />
+        <ReceitasDespesasCards receitas={totals.receitas} receitasRecebidas={totals.receitasRecebidas} receitasPendentes={totals.receitasPendentes} despesas={totals.despesas} despesasPagas={totals.despesasPagas} despesasPendentes={totals.despesasPendentes} mobile />
       </motion.div>
 
       {/* Tabs + Search + Filter */}

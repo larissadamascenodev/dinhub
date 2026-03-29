@@ -4,11 +4,23 @@ import { useFormattedCounter } from "@/hooks/useAnimatedCounter";
 
 interface Props {
   receitas: number;
+  receitasRecebidas: number;
+  receitasPendentes: number;
   despesas: number;
+  despesasPagas: number;
+  despesasPendentes: number;
   mobile?: boolean;
 }
 
-const ReceitasDespesasCards = memo(({ receitas, despesas, mobile }: Props) => {
+function formatCurrency(value: number) {
+  return value.toLocaleString("pt-BR", { style: "currency", currency: "BRL" });
+}
+
+const ReceitasDespesasCards = memo(({
+  receitas, receitasRecebidas, receitasPendentes,
+  despesas, despesasPagas, despesasPendentes,
+  mobile,
+}: Props) => {
   const animatedReceitas = useFormattedCounter(receitas);
   const animatedDespesas = useFormattedCounter(despesas);
 
@@ -27,6 +39,14 @@ const ReceitasDespesasCards = memo(({ receitas, despesas, mobile }: Props) => {
         <p className={`font-display ${mobile ? "text-base" : "text-xl"} font-bold text-primary tabular-nums leading-none`}>
           {animatedReceitas}
         </p>
+        <div className={`mt-1.5 space-y-0.5 ${mobile ? "text-[8px]" : "text-[9px]"}`}>
+          <p className="text-primary/70 tabular-nums">
+            Recebido: <span className="font-medium">{formatCurrency(receitasRecebidas)}</span>
+          </p>
+          <p className="text-muted-foreground tabular-nums">
+            A receber: <span className="font-medium">{formatCurrency(receitasPendentes)}</span>
+          </p>
+        </div>
       </button>
 
       <button
@@ -42,6 +62,14 @@ const ReceitasDespesasCards = memo(({ receitas, despesas, mobile }: Props) => {
         <p className={`font-display ${mobile ? "text-base" : "text-xl"} font-bold text-destructive tabular-nums leading-none`}>
           {animatedDespesas}
         </p>
+        <div className={`mt-1.5 space-y-0.5 ${mobile ? "text-[8px]" : "text-[9px]"}`}>
+          <p className="text-destructive/70 tabular-nums">
+            Pago: <span className="font-medium">{formatCurrency(despesasPagas)}</span>
+          </p>
+          <p className="text-muted-foreground tabular-nums">
+            A pagar: <span className="font-medium">{formatCurrency(despesasPendentes)}</span>
+          </p>
+        </div>
       </button>
     </div>
   );
