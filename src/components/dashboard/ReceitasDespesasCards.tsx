@@ -40,13 +40,6 @@ const ReceitasDespesasCards = memo(({
         <p className={`font-display ${mobile ? "text-base" : "text-xl"} font-bold text-primary tabular-nums leading-none`}>
           {animatedReceitas}
         </p>
-        {!compact && receitasPendentes > 0 && (
-          <div className={`mt-1.5 ${mobile ? "text-[8px]" : "text-[9px]"}`}>
-            <p className="text-primary/70 tabular-nums">
-              Pendente: <span className="font-medium">{formatCurrency(receitasPendentes)}</span>
-            </p>
-          </div>
-        )}
       </button>
 
       <button
@@ -62,13 +55,6 @@ const ReceitasDespesasCards = memo(({
         <p className={`font-display ${mobile ? "text-base" : "text-xl"} font-bold text-destructive tabular-nums leading-none`}>
           {animatedDespesas}
         </p>
-        {!compact && despesasPendentes > 0 && (
-          <div className={`mt-1.5 ${mobile ? "text-[8px]" : "text-[9px]"}`}>
-            <p className="text-destructive/70 tabular-nums">
-              Pendente: <span className="font-medium">{formatCurrency(despesasPendentes)}</span>
-            </p>
-          </div>
-        )}
       </button>
     </div>
   );
