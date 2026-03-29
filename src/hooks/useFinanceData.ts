@@ -1,4 +1,4 @@
-import { useEffect, useState, useCallback } from "react";
+import { useEffect, useState, useCallback, useRef } from "react";
 import { supabase } from "@/integrations/supabase/client";
 import { useAuth } from "@/contexts/AuthContext";
 import { getFinancialSummary, computeDailyBehavior } from "@/lib/financeEngine";
@@ -143,12 +143,15 @@ function prefetchMonth(userId: string, month: number, year: number) {
 export function useFinanceData(selectedMonth: number, selectedYear: number) {
   const { user } = useAuth();
   const cacheKey = `${user?.id ?? ""}-${selectedMonth}-${selectedYear}`;
+  // Track which cacheKey is "current" to prevent stale fetch results from overwriting state
+  const activeCacheKeyRef = useRef(cacheKey);
+  activeCacheKeyRef.current = cacheKey;
 
   const cached = dataCache[cacheKey];
   const [data, setData] = useState<DashboardData>(cached ?? EMPTY_DATA);
   const [loading, setLoading] = useState(!cached);
 
-  // Sync cache on key change — keep previous data visible while fetching
+  // Sync cache on key change — show cached data immediately if available
   useEffect(() => {
     const c = dataCache[cacheKey];
     if (c) {
@@ -159,14 +162,20 @@ export function useFinanceData(selectedMonth: number, selectedYear: number) {
 
   const fetchData = useCallback(async () => {
     if (!user) return;
+    const fetchKey = `${user.id}-${selectedMonth}-${selectedYear}`;
     try {
       const newData = await buildDashboardData(selectedMonth, selectedYear);
-      dataCache[cacheKey] = newData;
-      setData(newData);
+      dataCache[fetchKey] = newData;
+      // Only update state if this fetch still matches the active month
+      if (activeCacheKeyRef.current === fetchKey) {
+        setData(newData);
+        setLoading(false);
+      }
     } catch (err) {
       console.error("Finance engine error:", err);
-    } finally {
-      setLoading(false);
+      if (activeCacheKeyRef.current === fetchKey) {
+        setLoading(false);
+      }
     }
   }, [user, selectedMonth, selectedYear, cacheKey]);
 
