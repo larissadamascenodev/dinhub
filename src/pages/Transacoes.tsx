@@ -328,13 +328,12 @@ const EditTransactionModal = ({
 // ── Main Page ──────────────────────────────────────────
 const Transacoes = () => {
   const { user } = useAuth();
+  const { selectedMonth, selectedYear, setMonth } = useMonth();
   const [transactions, setTransactions] = useState<TransactionRow[]>([]);
   const [accounts, setAccounts] = useState<AccountRow[]>([]);
   const [loading, setLoading] = useState(true);
   const [search, setSearch] = useState("");
   const [activeTab, setActiveTab] = useState<TabFilter>("todos");
-  const [selectedMonth, setSelectedMonth] = useState(new Date().getMonth());
-  const [selectedYear, setSelectedYear] = useState(new Date().getFullYear());
   const [showFilters, setShowFilters] = useState(false);
   const [filterCategory, setFilterCategory] = useState("todos");
   const [filterStatus, setFilterStatus] = useState("todos");
