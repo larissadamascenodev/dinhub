@@ -510,7 +510,7 @@ const Transacoes = () => {
       {/* Summary - mobile */}
       <motion.div initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }} className="md:hidden space-y-2">
         <SaldoCard saldoAtual={totals.saldo} saldoPrevisto={totals.saldo} mobile />
-        <ReceitasDespesasCards receitas={totals.receitas} despesas={totals.despesas} mobile />
+        <ReceitasDespesasCards receitas={totals.receitas} receitasRecebidas={totals.receitasRecebidas} receitasPendentes={totals.receitasPendentes} despesas={totals.despesas} despesasPagas={totals.despesasPagas} despesasPendentes={totals.despesasPendentes} mobile />
       </motion.div>
 
       {/* Tabs + Search + Filter */}
