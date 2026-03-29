@@ -440,10 +440,15 @@ const Transacoes = () => {
         <MonthSelector selectedMonth={selectedMonth} selectedYear={selectedYear} onMonthChange={(m, y) => setMonth(m, y)} />
       </div>
 
-      {/* Summary - same style as dashboard */}
-      <motion.div initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }} className="grid grid-cols-[1.4fr_1fr] md:grid-cols-[1.4fr_1fr] gap-3">
+      {/* Summary - desktop */}
+      <motion.div initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }} className="hidden md:grid grid-cols-[1.4fr_1fr] gap-3">
         <SaldoCard saldoAtual={totals.saldo} saldoPrevisto={totals.saldo} />
         <ReceitasDespesasCards receitas={totals.receitas} despesas={totals.despesas} />
+      </motion.div>
+      {/* Summary - mobile */}
+      <motion.div initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }} className="md:hidden space-y-2">
+        <SaldoCard saldoAtual={totals.saldo} saldoPrevisto={totals.saldo} mobile />
+        <ReceitasDespesasCards receitas={totals.receitas} despesas={totals.despesas} mobile />
       </motion.div>
 
       {/* Tabs + Search + Filter */}
