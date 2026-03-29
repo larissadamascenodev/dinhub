@@ -157,7 +157,7 @@ const Index = () => {
           )}
           <motion.div initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }} className="space-y-3">
             <SaldoCard saldoAtual={saldoMes} saldoPrevisto={saldoPrevisto} isFutureMonth={isFutureMonth} mobile />
-            <ReceitasDespesasCards receitas={receitas} receitasRecebidas={data.receitasRecebidas} receitasPendentes={data.receitasPendentes} despesas={despesas} despesasPagas={data.despesasPagas} despesasPendentes={data.despesasPendentes} mobile />
+            <ReceitasDespesasCards receitas={receitas} receitasRecebidas={data.receitasRecebidas} receitasPendentes={data.receitasPendentes} despesas={despesas} despesasPagas={data.despesasPagas} despesasPendentes={data.despesasPendentes} mobile compact />
           </motion.div>
           <BalancoCard balanco={balanco} />
           {isCurrentMonth && <MicroInteracoesCard gastosHoje={data.gastosHoje} mediaGastosDiarios={data.mediaGastosDiarios} />}
