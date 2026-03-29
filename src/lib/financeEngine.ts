@@ -1,4 +1,5 @@
 import { supabase } from "@/integrations/supabase/client";
+import { getRecurringForMonth } from "@/services/recurringService";
 
 export interface FinancialSummary {
   income: number;
