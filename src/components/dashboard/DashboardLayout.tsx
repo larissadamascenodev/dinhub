@@ -8,7 +8,7 @@ const DashboardLayout = () => {
 
   return (
     <div className="dark min-h-screen bg-background text-foreground">
-      <div className="max-w-[1600px] mx-auto px-4 md:px-8 lg:px-12 pt-0 pb-24 md:pb-8">
+      <div className="w-full mx-auto px-4 md:px-6 lg:px-8 xl:px-12 pt-0 pb-24 md:pb-8">
         <DashboardHeader profile={profile} />
         <Outlet context={{ profile }} />
       </div>
