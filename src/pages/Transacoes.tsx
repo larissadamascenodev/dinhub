@@ -9,8 +9,11 @@ import {
 import { toast } from "sonner";
 import { supabase } from "@/integrations/supabase/client";
 import { useAuth } from "@/contexts/AuthContext";
+import { useMonth } from "@/contexts/MonthContext";
 import { deleteTransaction, getAccounts, updateTransaction } from "@/services/transactionService";
 import MonthSelector from "@/components/dashboard/MonthSelector";
+import SaldoCard from "@/components/dashboard/SaldoCard";
+import ReceitasDespesasCards from "@/components/dashboard/ReceitasDespesasCards";
 import NovaTransacaoModal from "@/components/dashboard/NovaTransacaoModal";
 import TransactionTypeChooser from "@/components/dashboard/TransactionTypeChooser";
 
