@@ -437,24 +437,14 @@ const Transacoes = () => {
       {/* Header */}
       <div className="flex items-center justify-between">
         <h1 className="font-display text-lg font-bold text-foreground">Transações</h1>
-        <MonthSelector selectedMonth={selectedMonth} selectedYear={selectedYear} onMonthChange={(m, y) => { setSelectedMonth(m); setSelectedYear(y); }} />
+        <MonthSelector selectedMonth={selectedMonth} selectedYear={selectedYear} onMonthChange={(m, y) => setMonth(m, y)} />
       </div>
 
-      {/* Summary */}
-      <div className="grid grid-cols-3 gap-2">
-        <div className="glass-card p-3">
-          <p className="text-[9px] uppercase tracking-wider text-muted-foreground/60 font-semibold">Receitas</p>
-          <p className="text-sm font-bold text-primary mt-0.5">{fmt(totals.receitas)}</p>
-        </div>
-        <div className="glass-card p-3">
-          <p className="text-[9px] uppercase tracking-wider text-muted-foreground/60 font-semibold">Despesas</p>
-          <p className="text-sm font-bold text-destructive mt-0.5">{fmt(totals.despesas)}</p>
-        </div>
-        <div className="glass-card p-3">
-          <p className="text-[9px] uppercase tracking-wider text-muted-foreground/60 font-semibold">Saldo</p>
-          <p className={`text-sm font-bold mt-0.5 ${totals.saldo >= 0 ? "text-primary" : "text-destructive"}`}>{fmt(totals.saldo)}</p>
-        </div>
-      </div>
+      {/* Summary - same style as dashboard */}
+      <motion.div initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }} className="grid grid-cols-[1.4fr_1fr] md:grid-cols-[1.4fr_1fr] gap-3">
+        <SaldoCard saldoAtual={totals.saldo} saldoPrevisto={totals.saldo} />
+        <ReceitasDespesasCards receitas={totals.receitas} despesas={totals.despesas} />
+      </motion.div>
 
       {/* Tabs + Search + Filter */}
       <div className="space-y-3">
