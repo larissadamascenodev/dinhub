@@ -1,6 +1,10 @@
 import { useState, useEffect, useMemo, useCallback } from "react";
 import { motion, AnimatePresence } from "framer-motion";
-import { Search, Filter, ArrowUpRight, ArrowDownRight, Trash2, Calendar, ChevronDown, X, Layers } from "lucide-react";
+import {
+  SlidersHorizontal, ShoppingCart, Heart, Car, Utensils, Home as HomeIcon,
+  Briefcase, GraduationCap, Shirt, TrendingUp, DollarSign, MoreHorizontal,
+  Trash2, RefreshCw, Layers, X,
+} from "lucide-react";
 import { toast } from "sonner";
 import { supabase } from "@/integrations/supabase/client";
 import { useAuth } from "@/contexts/AuthContext";
@@ -20,37 +24,69 @@ type TransactionRow = {
   installment_current: number | null;
   installments: number | null;
   observation: string | null;
+  account_id: string | null;
 };
 
 const fmt = (v: number) =>
   v.toLocaleString("pt-BR", { style: "currency", currency: "BRL" });
 
-const formatDate = (dateStr: string) => {
-  const [y, m, d] = dateStr.split("-").map(Number);
-  const date = new Date(y, m - 1, d);
-  const months = ["jan", "fev", "mar", "abr", "mai", "jun", "jul", "ago", "set", "out", "nov", "dez"];
-  return `${d} ${months[m - 1]} ${y}`;
+const WEEKDAYS = ["Domingo", "Segunda-Feira", "Terça-Feira", "Quarta-Feira", "Quinta-Feira", "Sexta-Feira", "Sábado"];
+const MONTHS_FULL = ["Janeiro", "Fevereiro", "Março", "Abril", "Maio", "Junho", "Julho", "Agosto", "Setembro", "Outubro", "Novembro", "Dezembro"];
+
+const CATEGORY_ICONS: Record<string, typeof ShoppingCart> = {
+  "Alimentação": Utensils,
+  "Transporte": Car,
+  "Moradia": HomeIcon,
+  "Saúde": Heart,
+  "Educação": GraduationCap,
+  "Vestuário": Shirt,
+  "Salário": DollarSign,
+  "Freelance": Briefcase,
+  "Investimentos": TrendingUp,
+  "Supermercado": ShoppingCart,
+  "Lazer": MoreHorizontal,
 };
 
-const CATEGORIES = [
-  "Alimentação", "Transporte", "Moradia", "Lazer", "Saúde", "Educação",
-  "Vestuário", "Salário", "Freelance", "Investimentos", "Outros",
-];
+const CATEGORY_COLORS: Record<string, string> = {
+  "Alimentação": "0 60% 50%",
+  "Transporte": "199 70% 48%",
+  "Moradia": "150 100% 45%",
+  "Saúde": "150 100% 45%",
+  "Educação": "40 80% 50%",
+  "Vestuário": "280 60% 55%",
+  "Salário": "150 100% 45%",
+  "Freelance": "199 70% 48%",
+  "Investimentos": "150 100% 45%",
+  "Supermercado": "150 100% 45%",
+  "Lazer": "40 80% 50%",
+};
 
-type FilterType = "todos" | "receita" | "despesa";
-type FilterStatus = "todos" | "pago" | "pendente";
+const getCategoryIcon = (category: string) => CATEGORY_ICONS[category] || MoreHorizontal;
+const getCategoryColor = (category: string) => CATEGORY_COLORS[category] || "220 10% 55%";
+
+const formatDateHeader = (dateStr: string) => {
+  const [y, m, d] = dateStr.split("-").map(Number);
+  const date = new Date(y, m - 1, d);
+  const today = new Date();
+  const isToday = date.toDateString() === today.toDateString();
+  const weekday = WEEKDAYS[date.getDay()];
+  const month = MONTHS_FULL[date.getMonth()];
+  const label = `${weekday}, ${d} De ${month}`;
+  return { label, isToday };
+};
+
+type TabFilter = "todos" | "receita" | "despesa";
 
 const Transacoes = () => {
   const { user } = useAuth();
   const [transactions, setTransactions] = useState<TransactionRow[]>([]);
   const [loading, setLoading] = useState(true);
-  const [search, setSearch] = useState("");
-  const [filterType, setFilterType] = useState<FilterType>("todos");
-  const [filterStatus, setFilterStatus] = useState<FilterStatus>("todos");
-  const [filterCategory, setFilterCategory] = useState<string>("todos");
-  const [showFilters, setShowFilters] = useState(false);
+  const [activeTab, setActiveTab] = useState<TabFilter>("todos");
   const [selectedMonth, setSelectedMonth] = useState(new Date().getMonth());
   const [selectedYear, setSelectedYear] = useState(new Date().getFullYear());
+  const [showFilters, setShowFilters] = useState(false);
+  const [filterCategory, setFilterCategory] = useState<string>("todos");
+  const [filterStatus, setFilterStatus] = useState<string>("todos");
 
   const fetchTransactions = useCallback(async () => {
     if (!user) return;
@@ -74,32 +110,22 @@ const Transacoes = () => {
     setLoading(false);
   }, [user, selectedMonth, selectedYear]);
 
-  useEffect(() => {
-    fetchTransactions();
-  }, [fetchTransactions]);
+  useEffect(() => { fetchTransactions(); }, [fetchTransactions]);
 
   const filtered = useMemo(() => {
     return transactions.filter((tx) => {
-      if (filterType !== "todos" && tx.type !== filterType) return false;
-      if (filterStatus !== "todos" && tx.status !== filterStatus) return false;
+      if (activeTab !== "todos" && tx.type !== activeTab) return false;
       if (filterCategory !== "todos" && tx.category !== filterCategory) return false;
-      if (search && !tx.name.toLowerCase().includes(search.toLowerCase())) return false;
+      if (filterStatus !== "todos" && tx.status !== filterStatus) return false;
       return true;
     });
-  }, [transactions, filterType, filterStatus, filterCategory, search]);
-
-  const totals = useMemo(() => {
-    const receitas = filtered.filter(t => t.type === "receita").reduce((s, t) => s + t.amount, 0);
-    const despesas = filtered.filter(t => t.type === "despesa").reduce((s, t) => s + t.amount, 0);
-    return { receitas, despesas, saldo: receitas - despesas };
-  }, [filtered]);
+  }, [transactions, activeTab, filterCategory, filterStatus]);
 
   const grouped = useMemo(() => {
     const groups: Record<string, TransactionRow[]> = {};
     filtered.forEach((tx) => {
-      const key = tx.date;
-      if (!groups[key]) groups[key] = [];
-      groups[key].push(tx);
+      if (!groups[tx.date]) groups[tx.date] = [];
+      groups[tx.date].push(tx);
     });
     return Object.entries(groups).sort(([a], [b]) => b.localeCompare(a));
   }, [filtered]);
@@ -114,75 +140,51 @@ const Transacoes = () => {
     }
   };
 
-  const activeFiltersCount = [filterType !== "todos", filterStatus !== "todos", filterCategory !== "todos"].filter(Boolean).length;
-
-  const clearFilters = () => {
-    setFilterType("todos");
-    setFilterStatus("todos");
-    setFilterCategory("todos");
-    setSearch("");
-  };
+  const activeFiltersCount = [filterCategory !== "todos", filterStatus !== "todos"].filter(Boolean).length;
 
   return (
-    <div className="space-y-4">
-      {/* Header */}
-      <div className="flex items-center justify-between">
-        <div>
-          <h1 className="font-display text-lg font-bold text-foreground">Transações</h1>
-          <p className="text-[10px] text-muted-foreground">{filtered.length} transações encontradas</p>
-        </div>
-        <MonthSelector selectedMonth={selectedMonth} selectedYear={selectedYear} onMonthChange={(m, y) => { setSelectedMonth(m); setSelectedYear(y); }} />
-      </div>
-
-      {/* Summary cards */}
-      <div className="grid grid-cols-3 gap-2">
-        <div className="glass-card p-3">
-          <p className="text-[9px] uppercase tracking-wider text-muted-foreground/60 font-semibold">Receitas</p>
-          <p className="text-sm font-bold text-primary mt-0.5">{fmt(totals.receitas)}</p>
-        </div>
-        <div className="glass-card p-3">
-          <p className="text-[9px] uppercase tracking-wider text-muted-foreground/60 font-semibold">Despesas</p>
-          <p className="text-sm font-bold text-destructive mt-0.5">{fmt(totals.despesas)}</p>
-        </div>
-        <div className="glass-card p-3">
-          <p className="text-[9px] uppercase tracking-wider text-muted-foreground/60 font-semibold">Saldo</p>
-          <p className={`text-sm font-bold mt-0.5 ${totals.saldo >= 0 ? "text-primary" : "text-destructive"}`}>{fmt(totals.saldo)}</p>
-        </div>
-      </div>
-
-      {/* Search & Filter bar */}
-      <div className="flex gap-2">
-        <div className="flex-1 relative">
-          <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-3.5 h-3.5 text-muted-foreground/40" />
-          <input
-            type="text"
-            placeholder="Buscar transação..."
-            value={search}
-            onChange={(e) => setSearch(e.target.value)}
-            className="w-full h-9 pl-8 pr-3 rounded-xl bg-card border border-border/30 text-xs text-foreground placeholder:text-muted-foreground/30 focus:outline-none focus:ring-1 focus:ring-primary/30 transition-all"
-          />
-          {search && (
-            <button onClick={() => setSearch("")} className="absolute right-3 top-1/2 -translate-y-1/2">
-              <X className="w-3 h-3 text-muted-foreground/40" />
+    <div className="space-y-0">
+      {/* Top bar: tabs + month + filters */}
+      <div className="flex items-center justify-between mb-4">
+        <div className="flex items-center gap-0">
+          {([
+            { key: "todos", label: "Todos" },
+            { key: "receita", label: "Receitas" },
+            { key: "despesa", label: "Despesas" },
+          ] as { key: TabFilter; label: string }[]).map((tab) => (
+            <button
+              key={tab.key}
+              onClick={() => setActiveTab(tab.key)}
+              className={`px-4 py-2 text-sm font-semibold transition-colors relative ${
+                activeTab === tab.key
+                  ? "text-foreground"
+                  : "text-muted-foreground/50 hover:text-muted-foreground/70"
+              }`}
+            >
+              {tab.label}
+              {activeTab === tab.key && (
+                <motion.div
+                  layoutId="tab-underline"
+                  className="absolute bottom-0 left-2 right-2 h-0.5 bg-primary rounded-full"
+                  transition={{ type: "spring", stiffness: 400, damping: 30 }}
+                />
+              )}
             </button>
-          )}
+          ))}
         </div>
-        <button
-          onClick={() => setShowFilters(!showFilters)}
-          className={`h-9 px-3 rounded-xl border flex items-center gap-1.5 text-xs font-medium transition-all ${
-            activeFiltersCount > 0
-              ? "bg-primary/10 border-primary/30 text-primary"
-              : "bg-card border-border/30 text-muted-foreground/60 hover:text-foreground"
-          }`}
-        >
-          <Filter className="w-3.5 h-3.5" />
-          Filtros
-          {activeFiltersCount > 0 && (
-            <span className="w-4 h-4 rounded-full bg-primary text-primary-foreground text-[9px] font-bold flex items-center justify-center">
-              {activeFiltersCount}
-            </span>
-          )}
-        </button>
+        <div className="flex items-center gap-2">
+          <MonthSelector selectedMonth={selectedMonth} selectedYear={selectedYear} onMonthChange={(m, y) => { setSelectedMonth(m); setSelectedYear(y); }} />
+          <button
+            onClick={() => setShowFilters(!showFilters)}
+            className={`p-2 rounded-lg transition-colors ${
+              activeFiltersCount > 0 || showFilters
+                ? "text-primary bg-primary/10"
+                : "text-muted-foreground/40 hover:text-muted-foreground/60"
+            }`}
+          >
+            <SlidersHorizontal className="w-4 h-4" />
+          </button>
+        </div>
       </div>
 
       {/* Filters panel */}
@@ -193,43 +195,19 @@ const Transacoes = () => {
             animate={{ height: "auto", opacity: 1 }}
             exit={{ height: 0, opacity: 0 }}
             transition={{ type: "spring", stiffness: 300, damping: 28 }}
-            className="overflow-hidden"
+            className="overflow-hidden mb-4"
           >
             <div className="glass-card p-3 space-y-3">
               <div className="flex items-center justify-between">
                 <span className="text-[10px] font-semibold text-muted-foreground/60 uppercase tracking-wider">Filtros</span>
                 {activeFiltersCount > 0 && (
-                  <button onClick={clearFilters} className="text-[10px] text-primary hover:underline">Limpar</button>
+                  <button onClick={() => { setFilterCategory("todos"); setFilterStatus("todos"); }} className="text-[10px] text-primary hover:underline">Limpar</button>
                 )}
               </div>
-
-              {/* Type filter */}
-              <div>
-                <p className="text-[10px] text-muted-foreground/50 mb-1.5">Tipo</p>
-                <div className="flex gap-1.5">
-                  {(["todos", "receita", "despesa"] as FilterType[]).map((t) => (
-                    <button
-                      key={t}
-                      onClick={() => setFilterType(t)}
-                      className={`px-3 py-1.5 rounded-lg text-[11px] font-medium transition-all ${
-                        filterType === t
-                          ? t === "receita" ? "bg-primary/15 text-primary border border-primary/30"
-                          : t === "despesa" ? "bg-destructive/15 text-destructive border border-destructive/30"
-                          : "bg-accent text-foreground border border-border/30"
-                          : "bg-transparent text-muted-foreground/50 border border-border/20 hover:border-border/40"
-                      }`}
-                    >
-                      {t === "todos" ? "Todos" : t === "receita" ? "Receitas" : "Despesas"}
-                    </button>
-                  ))}
-                </div>
-              </div>
-
-              {/* Status filter */}
               <div>
                 <p className="text-[10px] text-muted-foreground/50 mb-1.5">Status</p>
                 <div className="flex gap-1.5">
-                  {(["todos", "pago", "pendente"] as FilterStatus[]).map((s) => (
+                  {["todos", "pago", "pendente"].map((s) => (
                     <button
                       key={s}
                       onClick={() => setFilterStatus(s)}
@@ -244,22 +222,10 @@ const Transacoes = () => {
                   ))}
                 </div>
               </div>
-
-              {/* Category filter */}
               <div>
                 <p className="text-[10px] text-muted-foreground/50 mb-1.5">Categoria</p>
                 <div className="flex flex-wrap gap-1.5">
-                  <button
-                    onClick={() => setFilterCategory("todos")}
-                    className={`px-2.5 py-1 rounded-lg text-[10px] font-medium transition-all ${
-                      filterCategory === "todos"
-                        ? "bg-accent text-foreground border border-border/30"
-                        : "bg-transparent text-muted-foreground/50 border border-border/20 hover:border-border/40"
-                    }`}
-                  >
-                    Todas
-                  </button>
-                  {CATEGORIES.map((c) => (
+                  {["todos", "Alimentação", "Transporte", "Moradia", "Saúde", "Educação", "Vestuário", "Salário", "Freelance", "Investimentos", "Outros"].map((c) => (
                     <button
                       key={c}
                       onClick={() => setFilterCategory(c)}
@@ -269,7 +235,7 @@ const Transacoes = () => {
                           : "bg-transparent text-muted-foreground/50 border border-border/20 hover:border-border/40"
                       }`}
                     >
-                      {c}
+                      {c === "todos" ? "Todas" : c}
                     </button>
                   ))}
                 </div>
@@ -279,83 +245,114 @@ const Transacoes = () => {
         )}
       </AnimatePresence>
 
-      {/* Transaction list */}
+      {/* Timeline */}
       {loading ? (
         <div className="flex items-center justify-center py-16">
           <div className="animate-pulse text-primary text-sm">Carregando...</div>
         </div>
       ) : filtered.length === 0 ? (
-        <div className="glass-card p-8 text-center">
+        <div className="glass-card p-8 text-center mt-4">
           <Layers className="w-6 h-6 text-muted-foreground/20 mx-auto mb-2" />
           <p className="text-xs text-muted-foreground/40">Nenhuma transação encontrada</p>
-          {activeFiltersCount > 0 && (
-            <button onClick={clearFilters} className="text-[11px] text-primary mt-2 hover:underline">
-              Limpar filtros
-            </button>
-          )}
         </div>
       ) : (
-        <div className="space-y-4">
-          {grouped.map(([date, txs]) => (
-            <div key={date}>
-              <div className="flex items-center gap-2 mb-2">
-                <Calendar className="w-3 h-3 text-muted-foreground/30" />
-                <span className="text-[10px] font-semibold text-muted-foreground/50 uppercase tracking-wider">
-                  {formatDate(date)}
-                </span>
-                <div className="flex-1 h-px bg-border/20" />
-              </div>
-              <div className="space-y-1.5">
-                {txs.map((tx, i) => {
-                  const isReceita = tx.type === "receita";
-                  const Icon = isReceita ? ArrowUpRight : ArrowDownRight;
-                  return (
-                    <motion.div
-                      key={tx.id}
-                      initial={{ opacity: 0, y: 6 }}
-                      animate={{ opacity: 1, y: 0 }}
-                      transition={{ delay: i * 0.03 }}
-                      className="group flex items-center gap-3 px-4 py-3 rounded-[14px] bg-card/90 backdrop-blur-xl border border-border/30 shadow-lg shadow-black/20 hover:border-border/50 transition-all"
-                    >
-                      <div
-                        className="w-9 h-9 rounded-full flex items-center justify-center flex-shrink-0"
-                        style={{ background: isReceita ? "hsl(var(--primary) / 0.1)" : "hsl(var(--destructive) / 0.1)" }}
+        <div className="relative pl-6">
+          {/* Timeline line */}
+          <div className="absolute left-[7px] top-3 bottom-0 w-px bg-border/30" />
+
+          {grouped.map(([date, txs], gi) => {
+            const { label, isToday } = formatDateHeader(date);
+            return (
+              <div key={date} className={gi > 0 ? "mt-5" : ""}>
+                {/* Date header with dot */}
+                <div className="relative flex items-center mb-3">
+                  <div
+                    className="absolute -left-6 w-3.5 h-3.5 rounded-full border-2 z-10"
+                    style={{
+                      borderColor: "hsl(var(--primary))",
+                      background: isToday ? "hsl(var(--primary))" : "hsl(var(--background))",
+                    }}
+                  />
+                  {isToday ? (
+                    <div className="flex-1 py-2 px-4 rounded-xl border border-primary/30" style={{ background: "linear-gradient(135deg, hsl(var(--primary) / 0.12) 0%, hsl(var(--primary) / 0.04) 100%)" }}>
+                      <span className="text-sm font-bold text-primary">Hoje, {label}</span>
+                    </div>
+                  ) : (
+                    <span className="text-sm font-semibold text-muted-foreground/70">{label}</span>
+                  )}
+                </div>
+
+                {/* Transactions */}
+                <div className="space-y-2 ml-2">
+                  {txs.map((tx, i) => {
+                    const isReceita = tx.type === "receita";
+                    const catColor = getCategoryColor(tx.category);
+                    const CatIcon = getCategoryIcon(tx.category);
+                    const isRecurring = tx.recurrence_type === "fixa" || (tx.installments && tx.installments > 1);
+
+                    return (
+                      <motion.div
+                        key={tx.id}
+                        initial={{ opacity: 0, x: -8 }}
+                        animate={{ opacity: 1, x: 0 }}
+                        transition={{ delay: i * 0.04 }}
+                        className="group flex items-center gap-3 px-4 py-3 rounded-xl hover:bg-card/60 transition-all cursor-default"
                       >
-                        <Icon className="w-4 h-4" style={{ color: isReceita ? "hsl(var(--primary))" : "hsl(var(--destructive))" }} />
-                      </div>
-                      <div className="flex-1 min-w-0">
-                        <div className="flex items-center gap-1.5">
-                          <p className="text-[13px] font-semibold text-foreground truncate">{tx.name}</p>
-                          {tx.status === "pendente" && (
-                            <span className="px-1.5 py-0.5 rounded text-[8px] font-bold uppercase bg-warning/15 text-warning border border-warning/20">
-                              Pendente
-                            </span>
-                          )}
-                        </div>
-                        <p className="text-[10px] text-muted-foreground/40 mt-px">
-                          {tx.category}
-                          {tx.installments && tx.installment_current
-                            ? ` · ${tx.installment_current}/${tx.installments}x`
-                            : ""}
-                        </p>
-                      </div>
-                      <div className="text-right shrink-0 flex items-center gap-2">
-                        <p className="text-[13px] font-bold tabular-nums" style={{ color: isReceita ? "hsl(var(--primary))" : "hsl(var(--destructive))" }}>
-                          {isReceita ? "+" : "−"}{fmt(tx.amount)}
-                        </p>
-                        <button
-                          onClick={() => handleDelete(tx.id)}
-                          className="opacity-0 group-hover:opacity-100 transition-opacity text-muted-foreground/40 hover:text-destructive"
+                        {/* Category icon */}
+                        <div
+                          className="w-10 h-10 rounded-full flex items-center justify-center flex-shrink-0"
+                          style={{ background: `hsl(${catColor} / 0.12)` }}
                         >
-                          <Trash2 className="w-3.5 h-3.5" />
-                        </button>
-                      </div>
-                    </motion.div>
-                  );
-                })}
+                          <CatIcon className="w-4.5 h-4.5" style={{ color: `hsl(${catColor})` }} />
+                        </div>
+
+                        {/* Info */}
+                        <div className="flex-1 min-w-0">
+                          <div className="flex items-center gap-2">
+                            <p className="text-sm font-bold text-foreground truncate">{tx.name}</p>
+                            <span
+                              className={`px-2 py-0.5 rounded text-[9px] font-bold uppercase border ${
+                                tx.status === "pago"
+                                  ? "bg-primary/10 text-primary border-primary/20"
+                                  : "bg-warning/10 text-warning border-warning/20"
+                              }`}
+                            >
+                              {tx.status === "pago" ? "Pago" : "Pendente"}
+                            </span>
+                            {isRecurring && (
+                              <RefreshCw className="w-3 h-3 text-muted-foreground/30" />
+                            )}
+                          </div>
+                          <p className="text-[11px] text-muted-foreground/40 mt-0.5">
+                            {tx.category}
+                            {tx.installments && tx.installment_current ? ` · ${tx.installment_current}/${tx.installments}x` : ""}
+                            {" · "}
+                            {tx.payment_method === "cartao" ? "Cartão" : "Sem conta"}
+                          </p>
+                        </div>
+
+                        {/* Amount + delete */}
+                        <div className="flex items-center gap-2 shrink-0">
+                          <p
+                            className="text-sm font-bold tabular-nums"
+                            style={{ color: isReceita ? "hsl(var(--primary))" : "hsl(var(--destructive))" }}
+                          >
+                            {fmt(tx.amount)}
+                          </p>
+                          <button
+                            onClick={() => handleDelete(tx.id)}
+                            className="opacity-0 group-hover:opacity-100 transition-opacity text-muted-foreground/30 hover:text-destructive"
+                          >
+                            <Trash2 className="w-3.5 h-3.5" />
+                          </button>
+                        </div>
+                      </motion.div>
+                    );
+                  })}
+                </div>
               </div>
-            </div>
-          ))}
+            );
+          })}
         </div>
       )}
     </div>
