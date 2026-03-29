@@ -21,44 +21,25 @@ import type { FinanceEvent } from "@/types/finance";
 
 const Index = () => {
   const { selectedMonth, selectedYear, setMonth } = useMonth();
-  const [showTypeChooser, setShowTypeChooser] = useState(false);
-  const [showModal, setShowModal] = useState(false);
-  const [modalType, setModalType] = useState<"receita" | "despesa">("despesa");
   const [selectedEvent, setSelectedEvent] = useState<FinanceEvent | null>(null);
   const [showPayModal, setShowPayModal] = useState(false);
   const navigate = useNavigate();
   const { user } = useAuth();
   const { data, loading, refetch } = useFinanceData(selectedMonth, selectedYear);
   const { profile, refetch: refetchProfile, updateDisplayName, isOnboardingComplete } = useProfile();
-  const handleNovaTransacao = useCallback(() => setShowTypeChooser(true), []);
+  const handleNovaTransacao = useCallback(() => {
+    // Dispatch event to open the global type chooser
+    window.dispatchEvent(new CustomEvent("open-nova-transacao-direct", { detail: { type: "despesa" } }));
+  }, []);
 
-  // Listen for nav "Nova transação" direct type selection
+  // Listen for global transaction-created event to refresh data
   useEffect(() => {
-    const handleDirect = (e: Event) => {
-      const detail = (e as CustomEvent).detail;
-      if (detail?.type === "receita" || detail?.type === "despesa") {
-        setModalType(detail.type);
-        setShowModal(true);
-      }
+    const handleCreated = () => {
+      refetch();
+      refetchProfile();
     };
-    const handleScanner = () => {
-      console.log("Scanner opened");
-    };
-    window.addEventListener("open-nova-transacao-direct", handleDirect);
-    window.addEventListener("open-scanner", handleScanner);
-    return () => {
-      window.removeEventListener("open-nova-transacao-direct", handleDirect);
-      window.removeEventListener("open-scanner", handleScanner);
-    };
-  }, []);
-  const handleTypeSelected = useCallback((type: "receita" | "despesa") => {
-    setModalType(type);
-    setShowTypeChooser(false);
-    setShowModal(true);
-  }, []);
-  const handleTransactionSuccess = useCallback(() => {
-    refetch();
-    refetchProfile();
+    window.addEventListener("transaction-created", handleCreated);
+    return () => window.removeEventListener("transaction-created", handleCreated);
   }, [refetch, refetchProfile]);
   const { greeting, dateStr } = useGreeting();
   const userName = profile?.display_name || (user?.email?.split("@")[0] ?? "Usuário");
