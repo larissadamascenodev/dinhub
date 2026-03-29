@@ -40,7 +40,11 @@ export interface DashboardData {
   isFutureMonth: boolean;
   isPastMonth: boolean;
   receitas: number;
+  receitasRecebidas: number;
+  receitasPendentes: number;
   despesas: number;
+  despesasPagas: number;
+  despesasPendentes: number;
   balanco: number;
   gastosHoje: number;
   mediaGastosDiarios: number;
