@@ -818,6 +818,8 @@ const Transacoes = () => {
           </motion.div>
         )}
       </AnimatePresence>
+      </>
+      )}
     </div>
   );
 };
