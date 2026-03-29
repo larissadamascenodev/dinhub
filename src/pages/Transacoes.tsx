@@ -359,13 +359,23 @@ const Transacoes = () => {
     const start = new Date(selectedYear, selectedMonth, 1).toISOString().split("T")[0];
     const end = new Date(selectedYear, selectedMonth + 1, 0).toISOString().split("T")[0];
 
-    const [txRes, accRes] = await Promise.all([
+    const [txRes, accRes, recurringTxs] = await Promise.all([
       supabase.from("transactions").select("*").eq("user_id", user.id).gte("date", start).lte("date", end).order("date", { ascending: false }),
       getAccounts(),
+      getRecurringForMonth(selectedMonth, selectedYear),
     ]);
 
     if (txRes.error) toast.error("Erro ao carregar transações");
-    else setTransactions((txRes.data as TransactionRow[]) ?? []);
+    else {
+      const baseTxs = (txRes.data as TransactionRow[]) ?? [];
+      // Materialize recurring with adjusted date
+      const materializedRecurring = recurringTxs.map((t: any) => ({
+        ...t,
+        date: `${selectedYear}-${String(selectedMonth + 1).padStart(2, "0")}-${String(new Date(t.date).getDate()).padStart(2, "0")}`,
+        _isRecurringMaterialized: true,
+      })) as TransactionRow[];
+      setTransactions([...baseTxs, ...materializedRecurring]);
+    }
     setAccounts(accRes as AccountRow[]);
     setLoading(false);
   }, [user, selectedMonth, selectedYear]);
