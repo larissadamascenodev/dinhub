@@ -101,7 +101,7 @@ const Index = () => {
               </motion.div>
             </div>
             <BalancoCard balanco={balanco} />
-            <MicroInteracoesCard gastosHoje={data.gastosHoje} mediaGastosDiarios={data.mediaGastosDiarios} />
+            {isCurrentMonth && <MicroInteracoesCard gastosHoje={data.gastosHoje} mediaGastosDiarios={data.mediaGastosDiarios} />}
             <TransacoesRecentes transactions={data.transactions} onDelete={refetch} />
           </div>
           <div className="space-y-4">
