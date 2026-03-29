@@ -143,69 +143,82 @@ function prefetchMonth(userId: string, month: number, year: number) {
 export function useFinanceData(selectedMonth: number, selectedYear: number) {
   const { user } = useAuth();
   const cacheKey = `${user?.id ?? ""}-${selectedMonth}-${selectedYear}`;
-  // Track which cacheKey is "current" to prevent stale fetch results from overwriting state
-  const activeCacheKeyRef = useRef(cacheKey);
-  activeCacheKeyRef.current = cacheKey;
+  const activeKeyRef = useRef(cacheKey);
+  const [data, setData] = useState<DashboardData>(EMPTY_DATA);
+  const [loading, setLoading] = useState(true);
 
-  const cached = dataCache[cacheKey];
-  const [data, setData] = useState<DashboardData>(cached ?? EMPTY_DATA);
-  const [loading, setLoading] = useState(!cached);
-
-  // Sync cache on key change — show cached data immediately if available
+  // Keep activeKeyRef in sync and handle cache/fetch on key change
   useEffect(() => {
-    const c = dataCache[cacheKey];
-    if (c) {
-      setData(c);
-      setLoading(false);
-    }
-  }, [cacheKey]);
+    activeKeyRef.current = cacheKey;
+    let cancelled = false;
 
-  const fetchData = useCallback(async () => {
+    // Show cached data immediately if available
+    const cached = dataCache[cacheKey];
+    if (cached) {
+      setData(cached);
+      setLoading(false);
+    } else {
+      setLoading(true);
+    }
+
+    // Always fetch fresh data
+    if (user) {
+      buildDashboardData(selectedMonth, selectedYear)
+        .then((newData) => {
+          dataCache[cacheKey] = newData;
+          if (!cancelled && activeKeyRef.current === cacheKey) {
+            setData(newData);
+            setLoading(false);
+          }
+        })
+        .catch((err) => {
+          console.error("Finance engine error:", err);
+          if (!cancelled && activeKeyRef.current === cacheKey) {
+            setLoading(false);
+          }
+        });
+
+      // Prefetch nearby months after a short delay
+      const timer = setTimeout(() => {
+        for (const offset of [-2, -1, 1, 2, 3]) {
+          const m = offsetMonth(selectedMonth, selectedYear, offset);
+          prefetchMonth(user.id, m.month, m.year);
+        }
+      }, 300);
+      return () => { cancelled = true; clearTimeout(timer); };
+    }
+
+    return () => { cancelled = true; };
+  }, [cacheKey, user, selectedMonth, selectedYear]);
+
+  // Refetch function for manual refresh
+  const refetch = useCallback(async () => {
     if (!user) return;
-    const fetchKey = `${user.id}-${selectedMonth}-${selectedYear}`;
     try {
       const newData = await buildDashboardData(selectedMonth, selectedYear);
-      dataCache[fetchKey] = newData;
-      // Only update state if this fetch still matches the active month
-      if (activeCacheKeyRef.current === fetchKey) {
+      const key = `${user.id}-${selectedMonth}-${selectedYear}`;
+      dataCache[key] = newData;
+      if (activeKeyRef.current === key) {
         setData(newData);
-        setLoading(false);
       }
     } catch (err) {
       console.error("Finance engine error:", err);
-      if (activeCacheKeyRef.current === fetchKey) {
-        setLoading(false);
-      }
     }
-  }, [user, selectedMonth, selectedYear, cacheKey]);
+  }, [user, selectedMonth, selectedYear]);
 
-  // Fetch current month + prefetch adjacent months
-  useEffect(() => {
-    fetchData();
-
-    // Prefetch nearby months (prev 2 + next 3) after a short delay
-    if (!user) return;
-    const timer = setTimeout(() => {
-      for (const offset of [-2, -1, 1, 2, 3]) {
-        const m = offsetMonth(selectedMonth, selectedYear, offset);
-        prefetchMonth(user.id, m.month, m.year);
-      }
-    }, 300);
-    return () => clearTimeout(timer);
-  }, [fetchData, user, selectedMonth, selectedYear]);
-
+  // Realtime subscription
   useEffect(() => {
     if (!user) return;
 
     const channel = supabase
       .channel("finance-realtime")
-      .on("postgres_changes", { event: "*", schema: "public", table: "transactions", filter: `user_id=eq.${user.id}` }, () => fetchData())
-      .on("postgres_changes", { event: "*", schema: "public", table: "finance_events", filter: `user_id=eq.${user.id}` }, () => fetchData())
-      .on("postgres_changes", { event: "*", schema: "public", table: "accounts", filter: `user_id=eq.${user.id}` }, () => fetchData())
+      .on("postgres_changes", { event: "*", schema: "public", table: "transactions", filter: `user_id=eq.${user.id}` }, () => refetch())
+      .on("postgres_changes", { event: "*", schema: "public", table: "finance_events", filter: `user_id=eq.${user.id}` }, () => refetch())
+      .on("postgres_changes", { event: "*", schema: "public", table: "accounts", filter: `user_id=eq.${user.id}` }, () => refetch())
       .subscribe();
 
     return () => { supabase.removeChannel(channel); };
-  }, [user, fetchData]);
+  }, [user, refetch]);
 
-  return { data, loading, refetch: fetchData };
+  return { data, loading, refetch };
 }
