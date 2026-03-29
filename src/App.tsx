@@ -40,6 +40,7 @@ const App = () => (
             <Route path="/reset-password" element={<ResetPassword />} />
             <Route element={<ProtectedRoute><DashboardLayout /></ProtectedRoute>}>
               <Route path="/" element={<Index />} />
+              <Route path="/transacoes" element={<Transacoes />} />
               <Route path="/gestao" element={<GestaoFinanceira />} />
               <Route path="/fatura/:cardId" element={<FaturaCartao />} />
               <Route path="/configuracoes" element={<Configuracoes />} />
