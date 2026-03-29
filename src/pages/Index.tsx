@@ -14,13 +14,13 @@ import TransactionTypeChooser from "@/components/dashboard/TransactionTypeChoose
 import PagarEditarModal from "@/components/dashboard/PagarEditarModal";
 import OnboardingCard from "@/components/dashboard/OnboardingCard";
 import { useAuth } from "@/contexts/AuthContext";
+import { useMonth } from "@/contexts/MonthContext";
 import { useFinanceData } from "@/hooks/useFinanceData";
 import { useProfile } from "@/hooks/useProfile";
 import type { FinanceEvent } from "@/types/finance";
 
 const Index = () => {
-  const [selectedMonth, setSelectedMonth] = useState(new Date().getMonth());
-  const [selectedYear, setSelectedYear] = useState(new Date().getFullYear());
+  const { selectedMonth, selectedYear, setMonth } = useMonth();
   const [showTypeChooser, setShowTypeChooser] = useState(false);
   const [showModal, setShowModal] = useState(false);
   const [modalType, setModalType] = useState<"receita" | "despesa">("despesa");
@@ -42,7 +42,6 @@ const Index = () => {
       }
     };
     const handleScanner = () => {
-      // TODO: implement scanner functionality
       console.log("Scanner opened");
     };
     window.addEventListener("open-nova-transacao-direct", handleDirect);
@@ -65,8 +64,7 @@ const Index = () => {
   const userName = profile?.display_name || (user?.email?.split("@")[0] ?? "Usuário");
 
   const handleMonthChange = (month: number, year: number) => {
-    setSelectedMonth(month);
-    setSelectedYear(year);
+    setMonth(month, year);
   };
 
   const handleEventClick = (event: FinanceEvent) => {
