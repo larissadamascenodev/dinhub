@@ -111,7 +111,7 @@ const DashboardHeader = memo(({ profile }: { profile?: { display_name: string | 
                         animate={{ opacity: 1, y: 0, scale: 1 }}
                         exit={{ opacity: 0, y: -4, scale: 0.95 }}
                         transition={{ duration: 0.12 }}
-                        className="fixed top-[70px] z-50 flex gap-1.5 p-1.5 rounded-xl bg-card/95 backdrop-blur-2xl border-border/15 shadow-2xl shadow-black/30 border-2"
+                        className="fixed top-[70px] z-50 gap-1.5 p-1.5 rounded-xl bg-card/95 backdrop-blur-2xl border-border/15 shadow-2xl shadow-black/30 border border-none text-left ml-0 mt-0 mr-0 flex-row flex items-center justify-start"
                       >
                         <button
                           onClick={() => handleTransacaoOption("receita")}

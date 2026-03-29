@@ -24,7 +24,7 @@ const SaldoCard = memo(({ saldoAtual, saldoPrevisto, mobile }: SaldoCardProps) =
             <span className="text-[10px] text-muted-foreground uppercase tracking-[0.15em] font-semibold">Saldo do mês</span>
           </div>
         </div>
-        <p className={`font-display ${mobile ? "text-3xl" : "text-4xl"} font-bold tracking-tight tabular-nums leading-none ${saldoAtual >= 0 ? "text-foreground" : "text-destructive"}`}>
+        <p className={`font-display ${mobile ? "text-3xl" : "text-4xl"} font-bold tracking-tight tabular-nums leading-none ${saldoAtual >= 0 ? "text-foreground" : "text-destructive"} my-[7px]`}>
           {animatedSaldo}
         </p>
         <div className="mt-4 flex items-center gap-2">

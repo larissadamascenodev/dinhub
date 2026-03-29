@@ -156,10 +156,10 @@ const Index = () => {
         <div className="md:hidden space-y-3">
           <div className="flex items-center justify-between">
             <div className="pl-0.5">
-              <h1 className="font-display text-base font-bold leading-tight">
+              <h1 className="font-display text-base font-bold leading-tight mx-[2px]">
                 {greeting}, <span className="text-primary">{userName}</span>
               </h1>
-              <p className="text-[10px] text-muted-foreground">{dateStr}</p>
+              <p className="text-[10px] text-muted-foreground my-0 mx-[2px]">{dateStr}</p>
             </div>
             <MonthSelector selectedMonth={selectedMonth} selectedYear={selectedYear} onMonthChange={handleMonthChange} />
           </div>

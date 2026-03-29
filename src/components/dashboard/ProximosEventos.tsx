@@ -210,7 +210,7 @@ const ProximosEventos = memo(({ events, selectedMonth, selectedYear, onVerTodos,
                   {d.day}
                 </div>
                 {d.isToday && !dimmed && (
-                  <span className="w-1.5 h-1.5 rounded-full mt-1 bg-primary" />
+                  <span className="w-1.5 h-1.5 rounded-full mt-1 bg-primary my-[5px]" />
                 )}
               </div>
             );
@@ -296,7 +296,7 @@ const ProximosEventos = memo(({ events, selectedMonth, selectedYear, onVerTodos,
                   >
                     <div className="flex items-start gap-2.5">
                       <div
-                        className="w-6 h-6 rounded-full flex items-center justify-center shrink-0 mt-0.5"
+                        className="w-6 h-6 rounded-full flex items-center justify-center shrink-0 mt-0.5 my-[5px]"
                         style={{
                           background: isPaidOrReceived
                             ? `linear-gradient(160deg, hsl(${a} / 0.2) 0%, hsl(${a} / 0.1) 100%)`
