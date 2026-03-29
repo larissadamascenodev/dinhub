@@ -93,12 +93,34 @@ async function fetchMonthEvents(month: number, year: number) {
 }
 
 async function fetchTotalAccountBalance(): Promise<number> {
-  const { data } = await supabase
+  // Sum initial balances from all accounts
+  const { data: accounts } = await supabase
     .from("accounts")
-    .select("current_balance");
+    .select("initial_balance");
 
-  if (!data || data.length === 0) return 0;
-  return data.reduce((sum, acc) => sum + Number(acc.current_balance), 0);
+  const initialBalance = (accounts ?? []).reduce(
+    (sum, acc) => sum + Number(acc.initial_balance), 0
+  );
+
+  // Sum all paid transactions ever (not month-specific) to get cumulative balance
+  const { data: paidReceitas } = await supabase
+    .from("transactions")
+    .select("amount")
+    .eq("type", "receita")
+    .eq("status", "pago")
+    .neq("recurrence_type", "fixa");
+
+  const { data: paidDespesas } = await supabase
+    .from("transactions")
+    .select("amount")
+    .eq("type", "despesa")
+    .eq("status", "pago")
+    .neq("recurrence_type", "fixa");
+
+  const totalReceitas = (paidReceitas ?? []).reduce((s, t) => s + Number(t.amount), 0);
+  const totalDespesas = (paidDespesas ?? []).reduce((s, t) => s + Number(t.amount), 0);
+
+  return initialBalance + totalReceitas - totalDespesas;
 }
 
 /**
