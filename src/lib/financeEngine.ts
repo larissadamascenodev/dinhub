@@ -181,8 +181,8 @@ export async function getFinancialSummary(
   const elapsedDays = isCurrentMonth
     ? Math.max(today.getDate(), 1)
     : daysInMonth;
-  const dailyAverageExpense = elapsedDays > 0 ? expense / elapsedDays : 0;
-  const dailyAverageIncome = elapsedDays > 0 ? income / elapsedDays : 0;
+  const dailyAverageExpense = elapsedDays > 0 ? paidExpense / elapsedDays : 0;
+  const dailyAverageIncome = elapsedDays > 0 ? paidIncome / elapsedDays : 0;
 
   // Predicted balance includes pending transactions + pending events
   let predictedBalance = balance;
