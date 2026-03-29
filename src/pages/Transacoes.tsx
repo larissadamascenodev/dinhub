@@ -435,16 +435,7 @@ const Transacoes = () => {
       {/* Header */}
       <div className="flex items-center justify-between">
         <h1 className="font-display text-lg font-bold text-foreground">Transações</h1>
-        <div className="flex items-center gap-2">
-          <MonthSelector selectedMonth={selectedMonth} selectedYear={selectedYear} onMonthChange={(m, y) => { setSelectedMonth(m); setSelectedYear(y); }} />
-          <button
-            onClick={() => setShowTypeChooser(true)}
-            className="h-8 px-3 rounded-xl text-[11px] font-bold flex items-center gap-1.5 border border-primary/30 text-primary hover:bg-primary/10 transition-all"
-          >
-            <Plus className="w-3.5 h-3.5" />
-            Nova transação
-          </button>
-        </div>
+        <MonthSelector selectedMonth={selectedMonth} selectedYear={selectedYear} onMonthChange={(m, y) => { setSelectedMonth(m); setSelectedYear(y); }} />
       </div>
 
       {/* Summary */}
