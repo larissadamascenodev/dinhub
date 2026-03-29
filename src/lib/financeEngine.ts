@@ -51,15 +51,28 @@ function getMonthRange(month: number, year: number) {
 
 async function fetchMonthTransactions(month: number, year: number) {
   const { start, end } = getMonthRange(month, year);
-  const { data, error } = await supabase
-    .from("transactions")
-    .select("*")
-    .gte("date", start)
-    .lte("date", end)
-    .order("date", { ascending: false });
+  const [{ data, error }, recurringTxs] = await Promise.all([
+    supabase
+      .from("transactions")
+      .select("*")
+      .gte("date", start)
+      .lte("date", end)
+      .order("date", { ascending: false }),
+    getRecurringForMonth(month, year),
+  ]);
 
   if (error) throw error;
-  return (data ?? []) as RawTransaction[];
+
+  const baseTxs = (data ?? []) as RawTransaction[];
+
+  // Materialize recurring transactions with adjusted date for this month
+  const materializedRecurring = recurringTxs.map((t: any) => ({
+    ...t,
+    date: `${year}-${String(month + 1).padStart(2, "0")}-${String(new Date(t.date).getDate()).padStart(2, "0")}`,
+    _isRecurringMaterialized: true,
+  })) as RawTransaction[];
+
+  return [...baseTxs, ...materializedRecurring];
 }
 
 async function fetchMonthEvents(month: number, year: number) {
