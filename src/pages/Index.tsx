@@ -161,8 +161,6 @@ const Index = () => {
             <ProximosEventos events={data.events} selectedMonth={selectedMonth} selectedYear={selectedYear} onEventClick={handleEventClick} />
           </div>
         </div>
-      <TransactionTypeChooser open={showTypeChooser} onClose={() => setShowTypeChooser(false)} onSelect={handleTypeSelected} />
-      <NovaTransacaoModal open={showModal} onClose={() => setShowModal(false)} onSuccess={handleTransactionSuccess} initialType={modalType} />
       <PagarEditarModal
         open={showPayModal}
         event={selectedEvent}
