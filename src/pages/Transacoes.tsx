@@ -11,6 +11,7 @@ import { supabase } from "@/integrations/supabase/client";
 import { useAuth } from "@/contexts/AuthContext";
 import { useMonth } from "@/contexts/MonthContext";
 import { deleteTransaction, getAccounts, updateTransaction } from "@/services/transactionService";
+import { getRecurringForMonth, excludeRecurringForMonth, excludeRecurringFromMonthOnward } from "@/services/recurringService";
 import MonthSelector from "@/components/dashboard/MonthSelector";
 import SaldoCard from "@/components/dashboard/SaldoCard";
 import ReceitasDespesasCards from "@/components/dashboard/ReceitasDespesasCards";
@@ -345,6 +346,8 @@ const Transacoes = () => {
   const [newModalType, setNewModalType] = useState<"receita" | "despesa">("despesa");
   const [editTx, setEditTx] = useState<TransactionRow | null>(null);
   const [showEditModal, setShowEditModal] = useState(false);
+  const [deleteTarget, setDeleteTarget] = useState<TransactionRow | null>(null);
+  const [showDeleteDialog, setShowDeleteDialog] = useState(false);
 
   const accountMap = useMemo(() => {
     const map: Record<string, string> = {};
@@ -358,13 +361,23 @@ const Transacoes = () => {
     const start = new Date(selectedYear, selectedMonth, 1).toISOString().split("T")[0];
     const end = new Date(selectedYear, selectedMonth + 1, 0).toISOString().split("T")[0];
 
-    const [txRes, accRes] = await Promise.all([
+    const [txRes, accRes, recurringTxs] = await Promise.all([
       supabase.from("transactions").select("*").eq("user_id", user.id).gte("date", start).lte("date", end).order("date", { ascending: false }),
       getAccounts(),
+      getRecurringForMonth(selectedMonth, selectedYear),
     ]);
 
     if (txRes.error) toast.error("Erro ao carregar transações");
-    else setTransactions((txRes.data as TransactionRow[]) ?? []);
+    else {
+      const baseTxs = (txRes.data as TransactionRow[]) ?? [];
+      // Materialize recurring with adjusted date
+      const materializedRecurring = recurringTxs.map((t: any) => ({
+        ...t,
+        date: `${selectedYear}-${String(selectedMonth + 1).padStart(2, "0")}-${String(new Date(t.date).getDate()).padStart(2, "0")}`,
+        _isRecurringMaterialized: true,
+      })) as TransactionRow[];
+      setTransactions([...baseTxs, ...materializedRecurring]);
+    }
     setAccounts(accRes as AccountRow[]);
     setLoading(false);
   }, [user, selectedMonth, selectedYear]);
@@ -412,10 +425,42 @@ const Transacoes = () => {
   }, [transactions]);
 
   const handleDelete = async (id: string) => {
+    const tx = transactions.find((t) => t.id === id);
+    if (tx && tx.recurrence_type === "fixa") {
+      setDeleteTarget(tx);
+      setShowDeleteDialog(true);
+      return;
+    }
     try {
       await deleteTransaction(id);
       setTransactions((prev) => prev.filter((t) => t.id !== id));
       toast.success("Transação removida");
+    } catch {
+      toast.error("Erro ao remover");
+    }
+  };
+
+  const handleDeleteFixaThisMonth = async () => {
+    if (!deleteTarget || !user) return;
+    try {
+      await excludeRecurringForMonth(deleteTarget.id, selectedMonth, selectedYear, user.id);
+      toast.success("Receita fixa removida deste mês");
+      setShowDeleteDialog(false);
+      setDeleteTarget(null);
+      fetchData();
+    } catch {
+      toast.error("Erro ao remover");
+    }
+  };
+
+  const handleDeleteFixaAllFuture = async () => {
+    if (!deleteTarget || !user) return;
+    try {
+      await excludeRecurringFromMonthOnward(deleteTarget.id, selectedMonth, selectedYear, user.id);
+      toast.success("Receita fixa removida deste mês e de todos os futuros");
+      setShowDeleteDialog(false);
+      setDeleteTarget(null);
+      fetchData();
     } catch {
       toast.error("Erro ao remover");
     }
@@ -685,6 +730,59 @@ const Transacoes = () => {
 
       {/* Modals */}
       <EditTransactionModal open={showEditModal} tx={editTx} onClose={() => { setShowEditModal(false); setEditTx(null); }} onSave={fetchData} />
+
+      {/* Delete Fixa Dialog */}
+      <AnimatePresence>
+        {showDeleteDialog && deleteTarget && (
+          <motion.div
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            exit={{ opacity: 0 }}
+            className="fixed inset-0 z-50 flex items-end md:items-center justify-center bg-black/70 backdrop-blur-sm"
+            onClick={() => { setShowDeleteDialog(false); setDeleteTarget(null); }}
+          >
+            <motion.div
+              initial={{ opacity: 0, y: 80 }}
+              animate={{ opacity: 1, y: 0 }}
+              exit={{ opacity: 0, y: 80 }}
+              transition={{ type: "spring", damping: 28, stiffness: 300 }}
+              onClick={(e) => e.stopPropagation()}
+              className="w-full max-w-sm mx-4 rounded-2xl bg-card border border-border/20 shadow-2xl p-5 space-y-4"
+            >
+              <div className="text-center space-y-2">
+                <div className="w-12 h-12 rounded-full bg-destructive/10 flex items-center justify-center mx-auto">
+                  <Trash2 className="w-5 h-5 text-destructive" />
+                </div>
+                <h3 className="text-base font-bold text-foreground">Remover transação fixa</h3>
+                <p className="text-xs text-muted-foreground">
+                  <span className="font-semibold text-foreground">{deleteTarget.name}</span> é uma transação fixa. Como deseja removê-la?
+                </p>
+              </div>
+
+              <div className="space-y-2">
+                <button
+                  onClick={handleDeleteFixaThisMonth}
+                  className="w-full py-3 rounded-xl text-sm font-bold text-foreground bg-muted/40 border border-border/20 hover:bg-muted/60 transition-all"
+                >
+                  Apagar apenas este mês
+                </button>
+                <button
+                  onClick={handleDeleteFixaAllFuture}
+                  className="w-full py-3 rounded-xl text-sm font-bold text-destructive bg-destructive/10 border border-destructive/20 hover:bg-destructive/20 transition-all"
+                >
+                  Apagar este e todos os meses futuros
+                </button>
+                <button
+                  onClick={() => { setShowDeleteDialog(false); setDeleteTarget(null); }}
+                  className="w-full py-2.5 rounded-xl text-xs font-semibold text-muted-foreground hover:text-foreground transition-all"
+                >
+                  Cancelar
+                </button>
+              </div>
+            </motion.div>
+          </motion.div>
+        )}
+      </AnimatePresence>
     </div>
   );
 };
