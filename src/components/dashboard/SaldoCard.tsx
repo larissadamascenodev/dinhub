@@ -1,14 +1,15 @@
 import { memo } from "react";
-import { Scale } from "lucide-react";
+import { Scale, TrendingUp } from "lucide-react";
 import { useFormattedCounter } from "@/hooks/useAnimatedCounter";
 
 interface SaldoCardProps {
   saldoAtual: number;
   saldoPrevisto: number;
+  isFutureMonth?: boolean;
   mobile?: boolean;
 }
 
-const SaldoCard = memo(({ saldoAtual, saldoPrevisto, mobile }: SaldoCardProps) => {
+const SaldoCard = memo(({ saldoAtual, saldoPrevisto, isFutureMonth, mobile }: SaldoCardProps) => {
   const animatedSaldo = useFormattedCounter(saldoAtual);
   const animatedPrevisto = useFormattedCounter(saldoPrevisto);
 
@@ -18,22 +19,44 @@ const SaldoCard = memo(({ saldoAtual, saldoPrevisto, mobile }: SaldoCardProps) =
       style={{ background: "linear-gradient(160deg, hsl(220 15% 14% / 0.6) 0%, hsl(220 18% 8% / 0.75) 50%, hsl(220 20% 4% / 0.9) 100%)" }}
     >
       <div>
-        <div className="flex items-center justify-between mb-2">
-          <div className="flex items-center gap-1.5">
-            <Scale className="w-3.5 h-3.5 text-muted-foreground" />
-            <span className="text-[10px] text-muted-foreground uppercase tracking-[0.15em] font-semibold">Saldo do mês</span>
-          </div>
-        </div>
-        <p className={`font-display ${mobile ? "text-3xl" : "text-4xl"} font-bold tracking-tight tabular-nums leading-none ${saldoAtual >= 0 ? "text-foreground" : "text-destructive"} my-[7px]`}>
-          {animatedSaldo}
-        </p>
-        <div className="mt-4 flex items-center gap-2">
-          <div className={`w-1 h-1 rounded-full ${saldoPrevisto >= 0 ? "bg-primary" : "bg-destructive"}`} />
-          <span className="text-[10px] text-muted-foreground/60">Previsto ao final do mês</span>
-          <span className={`text-[13px] font-semibold tabular-nums tracking-tight ${saldoPrevisto >= 0 ? "text-primary/80" : "text-destructive/80"}`}>
-            {animatedPrevisto}
-          </span>
-        </div>
+        {isFutureMonth ? (
+          <>
+            {/* Future month: only show predicted balance */}
+            <div className="flex items-center justify-between mb-2">
+              <div className="flex items-center gap-1.5">
+                <TrendingUp className="w-3.5 h-3.5 text-primary" />
+                <span className="text-[10px] text-primary uppercase tracking-[0.15em] font-semibold">Saldo previsto</span>
+              </div>
+            </div>
+            <p className={`font-display ${mobile ? "text-3xl" : "text-4xl"} font-bold tracking-tight tabular-nums leading-none ${saldoPrevisto >= 0 ? "text-primary" : "text-destructive"} my-[7px]`}>
+              {animatedPrevisto}
+            </p>
+            <div className="mt-4 flex items-center gap-2">
+              <div className="w-1 h-1 rounded-full bg-muted-foreground/40" />
+              <span className="text-[10px] text-muted-foreground/60">Projeção ao final do mês</span>
+            </div>
+          </>
+        ) : (
+          <>
+            {/* Current/past month: show both */}
+            <div className="flex items-center justify-between mb-2">
+              <div className="flex items-center gap-1.5">
+                <Scale className="w-3.5 h-3.5 text-muted-foreground" />
+                <span className="text-[10px] text-muted-foreground uppercase tracking-[0.15em] font-semibold">Saldo do mês</span>
+              </div>
+            </div>
+            <p className={`font-display ${mobile ? "text-3xl" : "text-4xl"} font-bold tracking-tight tabular-nums leading-none ${saldoAtual >= 0 ? "text-foreground" : "text-destructive"} my-[7px]`}>
+              {animatedSaldo}
+            </p>
+            <div className="mt-4 flex items-center gap-2">
+              <div className={`w-1 h-1 rounded-full ${saldoPrevisto >= 0 ? "bg-primary" : "bg-destructive"}`} />
+              <span className="text-[10px] text-muted-foreground/60">Previsto ao final do mês</span>
+              <span className={`text-[13px] font-semibold tabular-nums tracking-tight ${saldoPrevisto >= 0 ? "text-primary/80" : "text-destructive/80"}`}>
+                {animatedPrevisto}
+              </span>
+            </div>
+          </>
+        )}
       </div>
     </div>
   );
