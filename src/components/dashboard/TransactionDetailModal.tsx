@@ -110,8 +110,21 @@ const TransactionDetailModal = ({ open, tx, accountName, onClose, onRefresh, use
 
   const handleClose = () => {
     setStep("detail");
+    setShowDropdown(false);
     onClose();
   };
+
+  // Close dropdown on outside click
+  useEffect(() => {
+    if (!showDropdown) return;
+    const handler = (e: MouseEvent) => {
+      if (dropdownRef.current && !dropdownRef.current.contains(e.target as Node)) {
+        setShowDropdown(false);
+      }
+    };
+    document.addEventListener("mousedown", handler);
+    return () => document.removeEventListener("mousedown", handler);
+  }, [showDropdown]);
 
   const handlePay = async () => {
     setLoading(true);
