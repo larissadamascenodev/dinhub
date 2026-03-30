@@ -1,6 +1,7 @@
 import { useState, useCallback, useEffect } from "react";
 import { useNavigate, useOutletContext } from "react-router-dom";
 import { motion } from "framer-motion";
+import { TrendingUp, ChevronRight } from "lucide-react";
 import { useGreeting } from "@/components/dashboard/DashboardHeader";
 import SaldoCard from "@/components/dashboard/SaldoCard";
 import ReceitasDespesasCards from "@/components/dashboard/ReceitasDespesasCards";
@@ -102,6 +103,15 @@ const Index = () => {
             </div>
             <BalancoCard balanco={balanco} />
             {isCurrentMonth && <MicroInteracoesCard gastosHoje={data.gastosHoje} mediaGastosDiarios={data.mediaGastosDiarios} />}
+            <button onClick={() => navigate("/bot-finance/projecoes")} className="glass-card w-full p-3 flex items-center justify-between group hover:border-primary/20 transition-all">
+              <div className="flex items-center gap-2.5">
+                <div className="w-8 h-8 rounded-lg bg-primary/10 flex items-center justify-center">
+                  <TrendingUp className="w-4 h-4 text-primary" />
+                </div>
+                <span className="text-xs font-medium text-foreground">Veja suas projeções</span>
+              </div>
+              <ChevronRight className="w-4 h-4 text-muted-foreground/40 group-hover:text-primary transition-colors" />
+            </button>
             <TransacoesRecentes transactions={data.transactions} onDelete={refetch} />
           </div>
           <div className="space-y-4">
@@ -132,6 +142,15 @@ const Index = () => {
           <ReceitasDespesasCards receitas={receitas} receitasRecebidas={data.receitasRecebidas} receitasPendentes={data.receitasPendentes} despesas={despesas} despesasPagas={data.despesasPagas} despesasPendentes={data.despesasPendentes} compact />
           <BalancoCard balanco={balanco} />
           {isCurrentMonth && <MicroInteracoesCard gastosHoje={data.gastosHoje} mediaGastosDiarios={data.mediaGastosDiarios} />}
+          <button onClick={() => navigate("/bot-finance/projecoes")} className="glass-card w-full p-3 flex items-center justify-between group hover:border-primary/20 transition-all">
+            <div className="flex items-center gap-2.5">
+              <div className="w-8 h-8 rounded-lg bg-primary/10 flex items-center justify-center">
+                <TrendingUp className="w-4 h-4 text-primary" />
+              </div>
+              <span className="text-xs font-medium text-foreground">Veja suas projeções</span>
+            </div>
+            <ChevronRight className="w-4 h-4 text-muted-foreground/40 group-hover:text-primary transition-colors" />
+          </button>
           <TransacoesRecentes transactions={data.transactions} onDelete={refetch} />
           <ProximosEventos events={data.events} selectedMonth={selectedMonth} selectedYear={selectedYear} onEventClick={handleEventClick} />
         </div>
@@ -161,6 +180,15 @@ const Index = () => {
           </motion.div>
           <BalancoCard balanco={balanco} />
           {isCurrentMonth && <MicroInteracoesCard gastosHoje={data.gastosHoje} mediaGastosDiarios={data.mediaGastosDiarios} />}
+          <button onClick={() => navigate("/bot-finance/projecoes")} className="glass-card w-full p-3 flex items-center justify-between group hover:border-primary/20 transition-all">
+            <div className="flex items-center gap-2.5">
+              <div className="w-8 h-8 rounded-lg bg-primary/10 flex items-center justify-center">
+                <TrendingUp className="w-4 h-4 text-primary" />
+              </div>
+              <span className="text-xs font-medium text-foreground">Veja suas projeções</span>
+            </div>
+            <ChevronRight className="w-4 h-4 text-muted-foreground/40 group-hover:text-primary transition-colors" />
+          </button>
           <TransacoesRecentes transactions={data.transactions} onDelete={refetch} />
           <div className="-mt-3">
             <ProximosEventos events={data.events} selectedMonth={selectedMonth} selectedYear={selectedYear} onEventClick={handleEventClick} />
