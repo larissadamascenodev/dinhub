@@ -2,7 +2,7 @@ import { useState, useEffect, useMemo } from "react";
 import { motion } from "framer-motion";
 import {
   ArrowLeft, Plus, MoreVertical,
-  CalendarClock, CalendarCheck, Wallet, Shield, TrendingDown,
+  CalendarClock, CalendarCheck, Wallet, Shield,
 } from "lucide-react";
 import { useNavigate, useParams, useSearchParams } from "react-router-dom";
 import { Button } from "@/components/ui/button";
