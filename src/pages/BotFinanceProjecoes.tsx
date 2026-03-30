@@ -576,11 +576,13 @@ const BotFinanceProjecoes = () => {
                   <div className="relative z-10 flex-shrink-0 w-4 flex justify-center">
                     <div className={`w-2.5 h-2.5 rounded-full ${isCurrent ? "bg-primary ring-2 ring-primary/30" : rs.dot} ${rs.glow} transition-all duration-300 group-hover:scale-125`} />
                   </div>
-                  <div className="w-14 flex-shrink-0">
+                  <div className="flex-shrink-0">
                     <span className={`text-xs font-semibold ${isCurrent ? "text-primary" : "text-muted-foreground"}`}>
-                      {MONTH_NAMES[p.month]}
+                      {MONTH_FULL[p.month]}
                     </span>
-                    <span className="text-[9px] text-muted-foreground/50 ml-1">{p.year}</span>
+                    {p.year !== new Date().getFullYear() && (
+                      <span className="text-[9px] text-muted-foreground/50 ml-1">{String(p.year).slice(2)}</span>
+                    )}
                   </div>
                   <div className="flex-1 text-right">
                     <p className={`text-sm font-bold tabular-nums ${isCurrent ? "text-primary" : "text-foreground"}`}>
