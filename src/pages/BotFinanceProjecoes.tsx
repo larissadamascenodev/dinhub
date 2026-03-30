@@ -308,14 +308,24 @@ const BotFinanceProjecoes = () => {
     });
   }, [projections, data.previousMonthEndingBalance]);
 
+  // Timeline shows only first 6 months; rest goes to history
+  const timelineProjections = useMemo(
+    () => projectionsWithVariation.slice(0, TIMELINE_VISIBLE),
+    [projectionsWithVariation]
+  );
+  const historyProjections = useMemo(
+    () => projectionsWithVariation.slice(TIMELINE_VISIBLE),
+    [projectionsWithVariation]
+  );
+
   const chartData = useMemo(() => {
-    return projectionsWithVariation.map((p) => ({
+    return timelineProjections.map((p) => ({
       name: `${MONTH_NAMES[p.month]} ${p.year}`,
       value: timelineMode === "acumulado" ? p.balance : p.delta,
       balance: p.balance,
       delta: p.delta,
     }));
-  }, [projectionsWithVariation, timelineMode]);
+  }, [timelineProjections, timelineMode]);
 
   const selectedProjection = projectionsWithVariation[selectedProjectionIdx] ?? projectionsWithVariation[0];
 
