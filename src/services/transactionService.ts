@@ -229,6 +229,17 @@ export async function deleteAccount(id: string) {
   if (error) throw error;
 }
 
+export async function deactivateAccount(id: string) {
+  const { data, error } = await supabase
+    .from("accounts")
+    .update({ is_active: false } as any)
+    .eq("id", id)
+    .select()
+    .single();
+  if (error) throw error;
+  return data;
+}
+
 // Credit card update/delete
 export async function updateCreditCard(id: string, updates: {
   name?: string;
