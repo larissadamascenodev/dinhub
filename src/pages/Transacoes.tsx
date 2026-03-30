@@ -206,8 +206,8 @@ const Transacoes = () => {
   const [showTypeChooser, setShowTypeChooser] = useState(false);
   const [showNewModal, setShowNewModal] = useState(false);
   const [newModalType, setNewModalType] = useState<"receita" | "despesa">("despesa");
-  const [editTx, setEditTx] = useState<TransactionRow | null>(null);
-  const [showEditModal, setShowEditModal] = useState(false);
+  const [detailTx, setDetailTx] = useState<TransactionRow | null>(null);
+  const [showDetailModal, setShowDetailModal] = useState(false);
   const [deleteTarget, setDeleteTarget] = useState<TransactionRow | null>(null);
   const [showDeleteDialog, setShowDeleteDialog] = useState(false);
 
