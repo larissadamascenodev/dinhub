@@ -235,7 +235,7 @@ const GestaoFinanceira = () => {
           </div>
         ) : (
           <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-3">
-            {accounts.map((acc, idx) => {
+            {accounts.filter((a) => a.type !== "investment").map((acc, idx) => {
               const typeInfo = ACCOUNT_TYPE_LABELS[acc.type] ?? ACCOUNT_TYPE_LABELS.checking;
               const Icon = typeInfo.icon;
               const gradient = getGradient(acc.color);
