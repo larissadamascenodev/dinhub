@@ -324,8 +324,22 @@ const BotFinanceProjecoes = () => {
                             )}
                           </div>
 
+                          {/* Dynamic micro-copy */}
+                          {p.microCopy && (
+                            <motion.p
+                              initial={{ opacity: 0, x: -6 }}
+                              animate={{ opacity: 1, x: 0 }}
+                              transition={{ delay: 0.15 }}
+                              className={`text-[11px] font-medium ${
+                                p.delta >= 0 ? "text-foreground" : "text-warning"
+                              }`}
+                            >
+                              {p.microCopy}
+                            </motion.p>
+                          )}
+
                           {/* Contextual alert */}
-                          {p.alert && (
+                          {p.alert && !p.microCopy && (
                             <motion.div
                               initial={{ opacity: 0, scale: 0.95 }}
                               animate={{ opacity: 1, scale: 1 }}
