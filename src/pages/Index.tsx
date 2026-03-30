@@ -114,6 +114,8 @@ const Index = () => {
             <TransacoesRecentes transactions={data.transactions} onDelete={refetch} />
           </div>
           <div className="space-y-4">
+            {/* Wallet summary */}
+            <WalletSummaryCard />
             {/* Projection summary card */}
             <motion.div
               initial={{ opacity: 0, y: 10 }}

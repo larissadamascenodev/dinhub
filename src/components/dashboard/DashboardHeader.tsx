@@ -253,8 +253,18 @@ const DashboardHeader = memo(({ profile }: { profile?: { display_name: string | 
             </span>
           </div>
           <div className="flex items-center gap-1.5">
+            <button
+              onClick={() => navigate("/gestao")}
+              className="w-8 h-8 rounded-full border border-border/30 flex items-center justify-center text-muted-foreground hover:text-foreground transition-colors"
+            >
+              <Wallet className="h-4 w-4" />
+            </button>
             <button className="w-8 h-8 rounded-full border border-border/30 flex items-center justify-center text-muted-foreground">
               <Bell className="h-4 w-4" />
+            </button>
+            <button className="flex items-center gap-1 px-2.5 py-1.5 rounded-full bg-warning/10 border border-warning/20">
+              <Flame className="w-3.5 h-3.5 text-warning" />
+              <span className="text-xs font-bold text-warning">0</span>
             </button>
           </div>
         </div>
