@@ -104,7 +104,12 @@ const Index = () => {
             </div>
             <BalancoCard balanco={balanco} />
             {isCurrentMonth && <MicroInteracoesCard gastosHoje={data.gastosHoje} mediaGastosDiarios={data.mediaGastosDiarios} />}
-            {/* Projection CTA moved to sidebar */}
+            {data.categories.length > 0 && (
+              <GastosPorCategoria
+                categories={data.categories}
+                onVerAnalise={() => navigate("/transacoes")}
+              />
+            )}
             <TransacoesRecentes transactions={data.transactions} onDelete={refetch} />
           </div>
           <div className="space-y-4">
