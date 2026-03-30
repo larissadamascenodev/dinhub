@@ -11,13 +11,13 @@ interface Props {
 function InstallmentBar({ current, total }: { current: number; total: number }) {
   if (total <= 1) return null;
   return (
-    <div className="flex gap-1 mt-2">
+    <div className="flex gap-[3px] mt-2.5 w-full">
       {Array.from({ length: total }, (_, i) => (
         <div
           key={i}
           className={cn(
-            "h-1.5 rounded-full flex-1",
-            i < current ? "bg-foreground/70" : "bg-muted/40"
+            "h-[5px] rounded-[2px] flex-1",
+            i < current ? "bg-foreground/80" : "bg-muted/30"
           )}
         />
       ))}
