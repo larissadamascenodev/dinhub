@@ -28,6 +28,9 @@ const Configuracoes = () => {
   const [editModalOpen, setEditModalOpen] = useState(false);
   const [editName, setEditName] = useState("");
   const [activeTab, setActiveTab] = useState<"conta" | "config">("conta");
+  const [resetModalOpen, setResetModalOpen] = useState(false);
+  const [resetMode, setResetMode] = useState<"choose" | "confirm-transactions" | "confirm-all">("choose");
+  const [resetting, setResetting] = useState(false);
   const [uploadingAvatar, setUploadingAvatar] = useState(false);
   const [previewUrl, setPreviewUrl] = useState<string | null>(null);
   const [botPersonality, setBotPersonalityState] = useState<"casual" | "assessor">(() => {
@@ -77,6 +80,73 @@ const Configuracoes = () => {
     navigate("/auth");
   };
 
+  const openResetModal = () => {
+    setResetMode("choose");
+    setResetModalOpen(true);
+  };
+
+  const handleResetTransactions = async () => {
+    if (!user) return;
+    setResetting(true);
+    try {
+      // Delete invoice_items, invoices, recurring_exclusions, transactions
+      // Also reset account balances to initial_balance
+      await supabase.from("invoice_items").delete().neq("id", "00000000-0000-0000-0000-000000000000");
+      await supabase.from("invoices").delete().eq("user_id", user.id);
+      await supabase.from("recurring_exclusions").delete().eq("user_id", user.id);
+      await supabase.from("transactions").delete().eq("user_id", user.id);
+      await supabase.from("finance_events").delete().eq("user_id", user.id);
+
+      // Reset all account balances to initial_balance
+      const { data: accounts } = await supabase.from("accounts").select("id, initial_balance").eq("user_id", user.id);
+      if (accounts) {
+        for (const acc of accounts) {
+          await supabase.from("accounts").update({ current_balance: acc.initial_balance }).eq("id", acc.id);
+        }
+      }
+
+      // Reset credit card used_limit
+      await supabase.from("credit_cards").update({ used_limit: 0 }).eq("user_id", user.id);
+
+      // Update profile flags
+      await supabase.from("profiles").update({ has_transactions: false }).eq("id", user.id);
+
+      toast.success("Transações apagadas com sucesso!");
+      setResetModalOpen(false);
+    } catch {
+      toast.error("Erro ao apagar transações");
+    } finally {
+      setResetting(false);
+    }
+  };
+
+  const handleResetAll = async () => {
+    if (!user) return;
+    setResetting(true);
+    try {
+      await supabase.from("invoice_items").delete().neq("id", "00000000-0000-0000-0000-000000000000");
+      await supabase.from("invoices").delete().eq("user_id", user.id);
+      await supabase.from("recurring_exclusions").delete().eq("user_id", user.id);
+      await supabase.from("transactions").delete().eq("user_id", user.id);
+      await supabase.from("finance_events").delete().eq("user_id", user.id);
+      await supabase.from("credit_cards").delete().eq("user_id", user.id);
+      await supabase.from("accounts").delete().eq("user_id", user.id);
+
+      await supabase.from("profiles").update({
+        has_transactions: false,
+        has_account: false,
+        has_completed_profile: false,
+      }).eq("id", user.id);
+
+      toast.success("Todos os dados foram apagados!");
+      setResetModalOpen(false);
+    } catch {
+      toast.error("Erro ao apagar dados");
+    } finally {
+      setResetting(false);
+    }
+  };
+
   /* ── Feature cards ── */
   const featureCards = [
     { icon: Target, label: "Metas", sub: "Objetivos" },
@@ -99,7 +169,7 @@ const Configuracoes = () => {
     { icon: MessageCircle, label: "Conectar WhatsApp", sub: "Receba alertas no WhatsApp", badge: "EM BREVE" },
   ];
   const perigoItems = [
-    { icon: Trash2, label: "Apagar Dados", sub: "Resetar o aplicativo", danger: true },
+    { icon: Trash2, label: "Apagar Dados", sub: "Resetar o aplicativo", danger: true, onClick: openResetModal },
     { icon: LogOut, label: "Sair da conta", sub: "Encerrar sessão", danger: true, onClick: handleLogout },
   ];
 
@@ -212,6 +282,172 @@ const Configuracoes = () => {
             >
               {uploadingAvatar ? "Enviando..." : "Salvar"}
             </Button>
+          </div>
+        </DialogContent>
+      </Dialog>
+
+      {/* ═══ Reset Modal ═══ */}
+      <Dialog open={resetModalOpen} onOpenChange={(open) => { if (!resetting) setResetModalOpen(open); }}>
+        <DialogContent className="bg-card border-border/30 rounded-2xl max-w-sm mx-auto p-0 overflow-hidden">
+          <div className="p-6 space-y-5">
+            <AnimatePresence mode="wait">
+              {resetMode === "choose" && (
+                <motion.div
+                  key="choose"
+                  initial={{ opacity: 0, y: 8 }}
+                  animate={{ opacity: 1, y: 0 }}
+                  exit={{ opacity: 0, y: -8 }}
+                  className="space-y-5"
+                >
+                  <div className="text-center space-y-2">
+                    <div className="w-12 h-12 rounded-full bg-destructive/15 flex items-center justify-center mx-auto">
+                      <Trash2 className="w-6 h-6 text-destructive" />
+                    </div>
+                    <h3 className="text-lg font-bold text-foreground">Resetar Aplicativo</h3>
+                    <p className="text-xs text-muted-foreground">Escolha o que deseja apagar</p>
+                  </div>
+
+                  {/* Option 1: Transactions only */}
+                  <button
+                    onClick={() => setResetMode("confirm-transactions")}
+                    className="w-full rounded-xl border border-border/20 bg-muted/20 p-4 text-left hover:bg-muted/30 transition-colors space-y-2"
+                  >
+                    <p className="text-sm font-bold text-foreground">Apagar apenas transações</p>
+                    <p className="text-[11px] text-muted-foreground leading-relaxed">
+                      Remove todas as transações, faturas e saldos. Suas contas, cartões e configurações serão mantidos.
+                    </p>
+                    <div className="flex flex-wrap gap-1.5 pt-1">
+                      <span className="text-[9px] font-bold text-destructive bg-destructive/10 px-2 py-0.5 rounded-full">Transações</span>
+                      <span className="text-[9px] font-bold text-destructive bg-destructive/10 px-2 py-0.5 rounded-full">Faturas</span>
+                      <span className="text-[9px] font-bold text-destructive bg-destructive/10 px-2 py-0.5 rounded-full">Saldos</span>
+                      <span className="text-[9px] font-bold text-destructive bg-destructive/10 px-2 py-0.5 rounded-full">Eventos</span>
+                    </div>
+                    <div className="flex flex-wrap gap-1.5">
+                      <span className="text-[9px] font-bold text-primary bg-primary/10 px-2 py-0.5 rounded-full">✓ Contas mantidas</span>
+                      <span className="text-[9px] font-bold text-primary bg-primary/10 px-2 py-0.5 rounded-full">✓ Cartões mantidos</span>
+                      <span className="text-[9px] font-bold text-primary bg-primary/10 px-2 py-0.5 rounded-full">✓ Configurações</span>
+                    </div>
+                  </button>
+
+                  {/* Option 2: Everything */}
+                  <button
+                    onClick={() => setResetMode("confirm-all")}
+                    className="w-full rounded-xl border border-destructive/20 bg-destructive/5 p-4 text-left hover:bg-destructive/10 transition-colors space-y-2"
+                  >
+                    <p className="text-sm font-bold text-destructive">Apagar tudo</p>
+                    <p className="text-[11px] text-muted-foreground leading-relaxed">
+                      Remove absolutamente todos os dados: transações, contas, cartões e configurações.
+                    </p>
+                    <div className="flex flex-wrap gap-1.5 pt-1">
+                      <span className="text-[9px] font-bold text-destructive bg-destructive/10 px-2 py-0.5 rounded-full">Tudo será removido</span>
+                    </div>
+                  </button>
+                </motion.div>
+              )}
+
+              {resetMode === "confirm-transactions" && (
+                <motion.div
+                  key="confirm-tx"
+                  initial={{ opacity: 0, y: 8 }}
+                  animate={{ opacity: 1, y: 0 }}
+                  exit={{ opacity: 0, y: -8 }}
+                  className="space-y-5"
+                >
+                  <div className="text-center space-y-2">
+                    <div className="w-12 h-12 rounded-full bg-warning/15 flex items-center justify-center mx-auto">
+                      <Trash2 className="w-6 h-6 text-warning" />
+                    </div>
+                    <h3 className="text-lg font-bold text-foreground">Confirmar exclusão</h3>
+                    <p className="text-xs text-muted-foreground">Esta ação não pode ser desfeita</p>
+                  </div>
+
+                  <div className="rounded-xl bg-muted/20 border border-border/20 p-4 space-y-2">
+                    <p className="text-[11px] font-bold text-foreground">Será excluído:</p>
+                    <ul className="space-y-1 text-[11px] text-muted-foreground">
+                      <li>• Todas as transações (receitas e despesas)</li>
+                      <li>• Faturas de cartão de crédito</li>
+                      <li>• Saldos das contas (resetados ao valor inicial)</li>
+                      <li>• Limite usado dos cartões (zerado)</li>
+                      <li>• Eventos financeiros</li>
+                    </ul>
+                    <p className="text-[11px] font-bold text-primary mt-3">Será mantido:</p>
+                    <ul className="space-y-1 text-[11px] text-muted-foreground">
+                      <li>• Contas bancárias e carteiras</li>
+                      <li>• Cartões de crédito</li>
+                      <li>• Perfil e configurações</li>
+                    </ul>
+                  </div>
+
+                  <div className="flex gap-2">
+                    <Button
+                      variant="outline"
+                      onClick={() => setResetMode("choose")}
+                      disabled={resetting}
+                      className="flex-1 h-11 rounded-xl text-xs font-bold"
+                    >
+                      Voltar
+                    </Button>
+                    <Button
+                      variant="destructive"
+                      onClick={handleResetTransactions}
+                      disabled={resetting}
+                      className="flex-1 h-11 rounded-xl text-xs font-bold"
+                    >
+                      {resetting ? "Apagando..." : "Confirmar exclusão"}
+                    </Button>
+                  </div>
+                </motion.div>
+              )}
+
+              {resetMode === "confirm-all" && (
+                <motion.div
+                  key="confirm-all"
+                  initial={{ opacity: 0, y: 8 }}
+                  animate={{ opacity: 1, y: 0 }}
+                  exit={{ opacity: 0, y: -8 }}
+                  className="space-y-5"
+                >
+                  <div className="text-center space-y-2">
+                    <div className="w-12 h-12 rounded-full bg-destructive/15 flex items-center justify-center mx-auto">
+                      <Trash2 className="w-6 h-6 text-destructive" />
+                    </div>
+                    <h3 className="text-lg font-bold text-destructive">Atenção!</h3>
+                    <p className="text-xs text-muted-foreground">Todos os dados serão permanentemente removidos</p>
+                  </div>
+
+                  <div className="rounded-xl bg-destructive/5 border border-destructive/20 p-4 space-y-2">
+                    <p className="text-[11px] font-bold text-destructive">Será excluído permanentemente:</p>
+                    <ul className="space-y-1 text-[11px] text-muted-foreground">
+                      <li>• Todas as transações</li>
+                      <li>• Todas as contas e carteiras</li>
+                      <li>• Todos os cartões de crédito</li>
+                      <li>• Todas as faturas</li>
+                      <li>• Eventos financeiros</li>
+                      <li>• Configurações do perfil</li>
+                    </ul>
+                  </div>
+
+                  <div className="flex gap-2">
+                    <Button
+                      variant="outline"
+                      onClick={() => setResetMode("choose")}
+                      disabled={resetting}
+                      className="flex-1 h-11 rounded-xl text-xs font-bold"
+                    >
+                      Voltar
+                    </Button>
+                    <Button
+                      variant="destructive"
+                      onClick={handleResetAll}
+                      disabled={resetting}
+                      className="flex-1 h-11 rounded-xl text-xs font-bold"
+                    >
+                      {resetting ? "Apagando..." : "Apagar tudo"}
+                    </Button>
+                  </div>
+                </motion.div>
+              )}
+            </AnimatePresence>
           </div>
         </DialogContent>
       </Dialog>
