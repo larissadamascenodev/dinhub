@@ -70,11 +70,33 @@ const TrendIcon = ({ delta }: { delta: number }) => {
   return <ArrowDownRight className="w-3.5 h-3.5 text-destructive" />;
 };
 
-// Contextual risk colors — less green, more semantic variety
+// Contextual risk colors with hover glow
 const riskStyle = (risk: string) => {
-  if (risk === "positivo") return { dot: "bg-accent", text: "text-foreground", glow: "" };
-  if (risk === "atencao") return { dot: "bg-warning", text: "text-warning", glow: "" };
-  return { dot: "bg-destructive", text: "text-destructive", glow: "" };
+  if (risk === "positivo") return { dot: "bg-accent", text: "text-foreground", glow: "group-hover:shadow-[0_0_8px_hsl(var(--accent)/0.4)]" };
+  if (risk === "atencao") return { dot: "bg-warning", text: "text-warning", glow: "group-hover:shadow-[0_0_8px_hsl(var(--warning)/0.4)]" };
+  return { dot: "bg-destructive", text: "text-destructive", glow: "group-hover:shadow-[0_0_8px_hsl(var(--destructive)/0.4)]" };
+};
+
+// Dynamic contextual micro-copies per month situation
+const getMonthMicroCopy = (p: { delta: number; balance: number; variation: number; risk: string }, i: number, saldoAtual: number): string | null => {
+  if (i === 0) return null;
+  const seed = p.month;
+  if (p.balance < 0) {
+    return ["🚨 Aqui complica de vez", "🚨 Saldo negativo — hora de reagir"][seed % 2];
+  }
+  if (p.variation < -500) {
+    return ["Aqui começou a pesar um pouco 😬", "Essa queda merece atenção 👀", "Opa, caiu bastante aqui"][seed % 3];
+  }
+  if (p.delta < 0 && p.balance < saldoAtual * 0.5) {
+    return ["⚠️ Aqui começa a apertar um pouco", "Cuidado, tá afinando 👀"][seed % 2];
+  }
+  if (p.delta > 0 && p.risk === "positivo" && p.variation > 200) {
+    return ["Tá indo bem demais 🔥", "Mês forte esse 💪", "Segue o jogo, campeão 😎"][seed % 3];
+  }
+  if (p.delta > 0) {
+    return ["No caminho certo ✨", "Firme e forte"][seed % 2];
+  }
+  return null;
 };
 
 const deltaColor = (d: number) => (d >= 0 ? "text-foreground" : "text-destructive");
