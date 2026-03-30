@@ -1,4 +1,4 @@
-import { useState, useMemo, useCallback, memo } from "react";
+import React, { useState, useMemo, useCallback, memo } from "react";
 import type { MonthProjection } from "@/services/projection";
 import { useNavigate } from "react-router-dom";
 import { motion } from "framer-motion";
