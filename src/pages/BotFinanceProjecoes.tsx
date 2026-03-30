@@ -139,7 +139,7 @@ const ProjectionMonthSelector = memo(({
               whileTap={{ scale: 0.9 }}
               whileHover={{ scale: isActive ? 1 : 1.05 }}
               onClick={() => onSelect(i)}
-              className={`relative px-2.5 py-1 rounded-xl text-[11px] font-semibold whitespace-nowrap transition-colors duration-200 ${
+              className={`relative px-3 py-1.5 rounded-xl text-xs sm:text-sm font-semibold whitespace-nowrap transition-colors duration-200 ${
                 isActive
                   ? "text-primary"
                   : isCurrent
