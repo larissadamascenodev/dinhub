@@ -703,9 +703,6 @@ const BotFinanceProjecoes = () => {
             })}
           </div>
         </GlassSection>
-            ))}
-          </div>
-        </GlassSection>
       </div>
     </div>
   );
