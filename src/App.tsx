@@ -14,6 +14,7 @@ import Configuracoes from "./pages/Configuracoes.tsx";
 import Transacoes from "./pages/Transacoes.tsx";
 import BotFinance from "./pages/BotFinance.tsx";
 import BotFinanceProjecoes from "./pages/BotFinanceProjecoes.tsx";
+import BotFinanceSaude from "./pages/BotFinanceSaude.tsx";
 import NotFound from "./pages/NotFound.tsx";
 
 const queryClient = new QueryClient();
@@ -47,6 +48,7 @@ const App = () => (
               <Route path="/fatura/:cardId" element={<FaturaCartao />} />
               <Route path="/bot-finance" element={<BotFinance />} />
               <Route path="/bot-finance/projecoes" element={<BotFinanceProjecoes />} />
+              <Route path="/bot-finance/saude" element={<BotFinanceSaude />} />
               <Route path="/configuracoes" element={<Configuracoes />} />
             </Route>
             <Route path="*" element={<NotFound />} />

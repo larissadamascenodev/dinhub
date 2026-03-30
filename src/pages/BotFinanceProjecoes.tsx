@@ -10,7 +10,6 @@ import {
   ArrowUpRight,
   ArrowDownRight,
   Minus,
-  Heart,
   Zap,
   Brain,
   ChevronRight,
@@ -20,7 +19,7 @@ import {
   Settings2,
 } from "lucide-react";
 import { useFinancialProjection } from "@/hooks/useFinancialProjection";
-import { useFormattedCounter, useAnimatedCounter } from "@/hooks/useAnimatedCounter";
+import { useFormattedCounter } from "@/hooks/useAnimatedCounter";
 
 const MONTH_NAMES = [
   "Jan", "Fev", "Mar", "Abr", "Mai", "Jun",
@@ -94,7 +93,6 @@ const BotFinanceProjecoes = () => {
     projections,
     dailyLimit,
     simulation,
-    healthScore: healthData,
     insight,
     savingsBoost,
     setSavingsBoost,
@@ -108,7 +106,6 @@ const BotFinanceProjecoes = () => {
 
   // Animated values
   const formattedSafe = useFormattedCounter(dailyLimit.safeToSpend);
-  const animatedScore = useAnimatedCounter(healthData.score);
 
   // Derived UI classes
   const limitBarColor =
@@ -117,11 +114,6 @@ const BotFinanceProjecoes = () => {
     dailyLimit.tone === "positive" ? "text-primary" : dailyLimit.tone === "neutral" ? "text-warning" : "text-destructive";
   const limitBgColor =
     dailyLimit.tone === "positive" ? "bg-primary/10" : dailyLimit.tone === "neutral" ? "bg-warning/10" : "bg-destructive/10";
-
-  const scoreColor =
-    healthData.score >= 75 ? "text-primary" : healthData.score >= 50 ? "text-warning" : "text-destructive";
-  const scoreStroke =
-    healthData.score >= 75 ? "hsl(var(--primary))" : healthData.score >= 50 ? "hsl(var(--warning))" : "hsl(var(--destructive))";
 
   return (
     <div className="space-y-4 pb-4">
@@ -231,90 +223,39 @@ const BotFinanceProjecoes = () => {
           </div>
         </motion.div>
 
-        {/* Row: Score + Limite diário */}
-        <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-
-          {/* 3 — LIMITE DIÁRIO */}
-          <GlassSection delay={0.18}>
-            <SectionHeader icon={<Wallet className="w-4 h-4 text-primary" />} title="Limite Diário" />
-            <div className="text-center py-2">
-              <p className={`text-3xl font-bold font-display transition-colors duration-500 ${limitTextColor}`}>{formattedSafe}</p>
-              <p className="text-[10px] text-muted-foreground mt-1">por dia · {dailyLimit.daysLeft} dias restantes</p>
+        {/* Limite diário */}
+        <GlassSection delay={0.18}>
+          <SectionHeader icon={<Wallet className="w-4 h-4 text-primary" />} title="Limite Diário" />
+          <div className="text-center py-2">
+            <p className={`text-3xl font-bold font-display transition-colors duration-500 ${limitTextColor}`}>{formattedSafe}</p>
+            <p className="text-[10px] text-muted-foreground mt-1">por dia · {dailyLimit.daysLeft} dias restantes</p>
+          </div>
+          <div className="space-y-1.5">
+            <div className="flex items-center justify-between text-[10px]">
+              <span className="text-muted-foreground">Gasto hoje</span>
+              <span className={`font-semibold tabular-nums ${limitTextColor}`}>
+                {fmtCurrency(data.gastosHoje)} / {formattedSafe}
+              </span>
             </div>
-            <div className="space-y-1.5">
-              <div className="flex items-center justify-between text-[10px]">
-                <span className="text-muted-foreground">Gasto hoje</span>
-                <span className={`font-semibold tabular-nums ${limitTextColor}`}>
-                  {fmtCurrency(data.gastosHoje)} / {formattedSafe}
-                </span>
-              </div>
-              <div className="h-2 w-full rounded-full bg-secondary overflow-hidden">
-                <motion.div
-                  initial={{ width: 0 }}
-                  animate={{ width: `${dailyLimit.spendRatio * 100}%` }}
-                  transition={{ duration: 0.8, ease: "easeOut" }}
-                  className={`h-full rounded-full ${limitBarColor} transition-colors duration-500 ${dailyLimit.tone === "negative" ? "animate-pulse" : ""}`}
-                />
-              </div>
+            <div className="h-2 w-full rounded-full bg-secondary overflow-hidden">
+              <motion.div
+                initial={{ width: 0 }}
+                animate={{ width: `${dailyLimit.spendRatio * 100}%` }}
+                transition={{ duration: 0.8, ease: "easeOut" }}
+                className={`h-full rounded-full ${limitBarColor} transition-colors duration-500 ${dailyLimit.tone === "negative" ? "animate-pulse" : ""}`}
+              />
             </div>
-            <motion.div
-              key={dailyLimit.tone}
-              initial={{ opacity: 0, scale: 0.95 }}
-              animate={{ opacity: 1, scale: 1 }}
-              transition={{ duration: 0.25 }}
-              className={`rounded-xl px-3 py-2.5 text-center text-xs font-medium ${limitBgColor} ${limitTextColor}`}
-            >
-              {dailyLimit.message}
-            </motion.div>
-          </GlassSection>
-
-          {/* 5 — SCORE DE SAÚDE FINANCEIRA */}
-          <GlassSection delay={0.22}>
-            <SectionHeader icon={<Heart className="w-4 h-4 text-primary" />} title="Saúde Financeira" />
-            <div className="flex items-center gap-5 py-1">
-              <div className="relative w-20 h-20 flex-shrink-0">
-                <svg className="w-20 h-20 -rotate-90" viewBox="0 0 80 80">
-                  <circle cx="40" cy="40" r="34" fill="none" stroke="hsl(var(--secondary))" strokeWidth="5" />
-                  <circle
-                    cx="40" cy="40" r="34" fill="none"
-                    stroke={scoreStroke}
-                    strokeWidth="5" strokeLinecap="round"
-                    strokeDasharray={`${(healthData.score / 100) * 213.6} 213.6`}
-                    className="transition-all duration-700 ease-out"
-                  />
-                </svg>
-                <div className="absolute inset-0 flex flex-col items-center justify-center">
-                  <span className={`text-xl font-bold tabular-nums ${scoreColor}`}>{Math.round(animatedScore)}</span>
-                  <span className="text-[8px] text-muted-foreground">/100</span>
-                </div>
-              </div>
-              <div className="flex-1 min-w-0">
-                <p className={`text-sm font-bold ${scoreColor}`}>{healthData.label}</p>
-                <p className="text-[10px] text-muted-foreground mt-0.5 mb-2">
-                  {healthData.score >= 75 ? "Suas finanças estão ótimas!" : healthData.score >= 50 ? "Pode melhorar com ajustes" : "Precisa de atenção"}
-                </p>
-                <div className="space-y-1.5">
-                  {healthData.factors.map((f) => (
-                    <div key={f.label}>
-                      <div className="flex items-center justify-between mb-0.5">
-                        <span className="text-[9px] text-muted-foreground">{f.label}</span>
-                        <span className="text-[9px] tabular-nums text-muted-foreground">{f.value}/{f.max}</span>
-                      </div>
-                      <div className="h-1 w-full rounded-full bg-secondary overflow-hidden">
-                        <motion.div
-                          initial={{ width: 0 }}
-                          animate={{ width: `${(f.value / f.max) * 100}%` }}
-                          transition={{ duration: 0.6, delay: 0.3 }}
-                          className={`h-full rounded-full ${f.value / f.max >= 0.7 ? "bg-primary" : f.value / f.max >= 0.4 ? "bg-warning" : "bg-destructive"}`}
-                        />
-                      </div>
-                    </div>
-                  ))}
-                </div>
-              </div>
-            </div>
-          </GlassSection>
-        </div>
+          </div>
+          <motion.div
+            key={dailyLimit.tone}
+            initial={{ opacity: 0, scale: 0.95 }}
+            animate={{ opacity: 1, scale: 1 }}
+            transition={{ duration: 0.25 }}
+            className={`rounded-xl px-3 py-2.5 text-center text-xs font-medium ${limitBgColor} ${limitTextColor}`}
+          >
+            {dailyLimit.message}
+          </motion.div>
+        </GlassSection>
 
         {/* 4 — SIMULAÇÃO */}
         <GlassSection delay={0.26} className={simulation.hasSimulation ? "relative overflow-hidden" : ""}>
