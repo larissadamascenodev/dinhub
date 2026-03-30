@@ -70,11 +70,33 @@ const TrendIcon = ({ delta }: { delta: number }) => {
   return <ArrowDownRight className="w-3.5 h-3.5 text-destructive" />;
 };
 
-// Contextual risk colors — less green, more semantic variety
+// Contextual risk colors with hover glow
 const riskStyle = (risk: string) => {
-  if (risk === "positivo") return { dot: "bg-accent", text: "text-foreground", glow: "" };
-  if (risk === "atencao") return { dot: "bg-warning", text: "text-warning", glow: "" };
-  return { dot: "bg-destructive", text: "text-destructive", glow: "" };
+  if (risk === "positivo") return { dot: "bg-accent", text: "text-foreground", glow: "group-hover:shadow-[0_0_8px_hsl(var(--accent)/0.4)]" };
+  if (risk === "atencao") return { dot: "bg-warning", text: "text-warning", glow: "group-hover:shadow-[0_0_8px_hsl(var(--warning)/0.4)]" };
+  return { dot: "bg-destructive", text: "text-destructive", glow: "group-hover:shadow-[0_0_8px_hsl(var(--destructive)/0.4)]" };
+};
+
+// Dynamic contextual micro-copies per month situation
+const getMonthMicroCopy = (p: { delta: number; balance: number; variation: number; risk: string; month: number }, i: number, saldoAtual: number): string | null => {
+  if (i === 0) return null;
+  const seed = p.month;
+  if (p.balance < 0) {
+    return ["🚨 Aqui complica de vez", "🚨 Saldo negativo — hora de reagir"][seed % 2];
+  }
+  if (p.variation < -500) {
+    return ["Aqui começou a pesar um pouco 😬", "Essa queda merece atenção 👀", "Opa, caiu bastante aqui"][seed % 3];
+  }
+  if (p.delta < 0 && p.balance < saldoAtual * 0.5) {
+    return ["⚠️ Aqui começa a apertar um pouco", "Cuidado, tá afinando 👀"][seed % 2];
+  }
+  if (p.delta > 0 && p.risk === "positivo" && p.variation > 200) {
+    return ["Tá indo bem demais 🔥", "Mês forte esse 💪", "Segue o jogo, campeão 😎"][seed % 3];
+  }
+  if (p.delta > 0) {
+    return ["No caminho certo ✨", "Firme e forte"][seed % 2];
+  }
+  return null;
 };
 
 const deltaColor = (d: number) => (d >= 0 ? "text-foreground" : "text-destructive");
@@ -109,6 +131,8 @@ const BotFinanceProjecoes = () => {
       const variation = prev ? p.balance - prev.balance : 0;
       const variationPct = prev && prev.balance !== 0 ? ((p.balance - prev.balance) / Math.abs(prev.balance)) * 100 : 0;
 
+      const microCopy = getMonthMicroCopy({ ...p, variation }, i, data.saldoAtual);
+
       // Alert conditions
       let alert: string | null = null;
       if (i > 0 && p.balance < prev!.balance && p.balance < data.saldoAtual * 0.5) {
@@ -119,7 +143,7 @@ const BotFinanceProjecoes = () => {
         alert = "⚠️ Queda significativa de saldo";
       }
 
-      return { ...p, variation, variationPct, alert };
+      return { ...p, variation, variationPct, alert, microCopy };
     });
   }, [projections, data.saldoAtual]);
 
@@ -204,14 +228,14 @@ const BotFinanceProjecoes = () => {
                     initial={{ height: 0 }}
                     animate={{ height: `${h}%` }}
                     transition={{ duration: 0.5, delay: 0.08 + i * 0.05 }}
-                    className={`w-full rounded-t-md transition-colors ${
+                    className={`w-full rounded-t-md transition-all duration-300 ${
                       expandedMonth === i
-                        ? "bg-foreground"
+                        ? "bg-foreground shadow-[0_0_12px_hsl(var(--foreground)/0.15)]"
                         : isNeg
-                          ? "bg-destructive/40"
+                          ? "bg-destructive/40 group-hover:bg-destructive/60 group-hover:shadow-[0_0_8px_hsl(var(--destructive)/0.3)]"
                           : p.alert
-                            ? "bg-warning/40"
-                            : "bg-muted-foreground/20 group-hover:bg-muted-foreground/35"
+                            ? "bg-warning/40 group-hover:bg-warning/60 group-hover:shadow-[0_0_8px_hsl(var(--warning)/0.3)]"
+                            : "bg-muted-foreground/20 group-hover:bg-accent/40 group-hover:shadow-[0_0_8px_hsl(var(--accent)/0.2)]"
                     }`}
                   />
                   <span className={`text-[9px] tabular-nums ${expandedMonth === i ? "text-foreground font-semibold" : "text-muted-foreground"}`}>
@@ -237,7 +261,7 @@ const BotFinanceProjecoes = () => {
                     className="w-full flex items-center gap-3 py-2.5 border-b border-border/5 last:border-0 group text-left hover:bg-secondary/20 rounded-lg transition-colors px-1 -mx-1"
                   >
                     <div className="relative z-10 flex-shrink-0 w-4 flex justify-center">
-                      <div className={`w-2.5 h-2.5 rounded-full ${rs.dot} transition-all duration-300 group-hover:scale-125 ${isCurrent ? "ring-2 ring-foreground/20" : ""}`} />
+                      <div className={`w-2.5 h-2.5 rounded-full ${rs.dot} ${rs.glow} transition-all duration-300 group-hover:scale-125 ${isCurrent ? "ring-2 ring-foreground/20" : ""}`} />
                     </div>
                     <div className="w-14 flex-shrink-0">
                       <span className={`text-xs font-semibold ${isCurrent ? "text-foreground" : "text-muted-foreground"}`}>
@@ -300,8 +324,22 @@ const BotFinanceProjecoes = () => {
                             )}
                           </div>
 
+                          {/* Dynamic micro-copy */}
+                          {p.microCopy && (
+                            <motion.p
+                              initial={{ opacity: 0, x: -6 }}
+                              animate={{ opacity: 1, x: 0 }}
+                              transition={{ delay: 0.15 }}
+                              className={`text-[11px] font-medium ${
+                                p.delta >= 0 ? "text-foreground" : "text-warning"
+                              }`}
+                            >
+                              {p.microCopy}
+                            </motion.p>
+                          )}
+
                           {/* Contextual alert */}
-                          {p.alert && (
+                          {p.alert && !p.microCopy && (
                             <motion.div
                               initial={{ opacity: 0, scale: 0.95 }}
                               animate={{ opacity: 1, scale: 1 }}
