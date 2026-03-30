@@ -494,60 +494,254 @@ const TransactionDetailModal = ({ open, tx, accountName, onClose, onRefresh, use
           </div>
         );
 
-      case "edit-form":
+      case "edit-form": {
+        const accentHsl = isReceita ? "hsl(var(--primary))" : "hsl(var(--destructive))";
+        const editCategories = tx.type === "receita" ? CATEGORIES_INCOME : CATEGORIES_EXPENSE;
+        const formattedEditDate = format(editDate, "dd/MM/yy");
+
         return (
-          <div className="space-y-4">
-            <div className="flex items-center justify-between">
-              <h3 className="text-base font-bold text-foreground">Editar Transação</h3>
-              <button onClick={() => setStep("detail")} className="w-8 h-8 rounded-full bg-muted/40 flex items-center justify-center text-muted-foreground hover:text-foreground">
+          <div className="flex flex-col max-h-[85vh]">
+            {/* Header */}
+            <div className="relative flex items-center justify-center pt-3 pb-2 px-5">
+              <span className="text-base font-bold text-foreground">
+                {isReceita ? "Editar Receita" : "Editar Despesa"}
+              </span>
+              <button
+                onClick={() => setStep("detail")}
+                className="absolute right-4 w-8 h-8 rounded-full bg-muted/50 flex items-center justify-center text-muted-foreground hover:text-foreground transition-colors"
+              >
                 <X className="w-4 h-4" />
               </button>
             </div>
-            <div className="space-y-3">
-              <div>
-                <label className="text-[10px] text-muted-foreground/60 uppercase tracking-wider font-semibold">Nome</label>
-                <input
-                  value={editName}
-                  onChange={(e) => setEditName(e.target.value)}
-                  className="w-full mt-1 h-10 px-3 rounded-xl bg-muted/30 border border-border/20 text-sm text-foreground focus:outline-none focus:ring-1 focus:ring-primary/30"
-                />
-              </div>
-              <div>
-                <label className="text-[10px] text-muted-foreground/60 uppercase tracking-wider font-semibold">Valor</label>
-                <input
-                  type="number"
-                  step="0.01"
-                  value={editAmount}
-                  onChange={(e) => setEditAmount(e.target.value)}
-                  className="w-full mt-1 h-10 px-3 rounded-xl bg-muted/30 border border-border/20 text-sm text-foreground focus:outline-none focus:ring-1 focus:ring-primary/30"
-                />
-              </div>
-              <div>
-                <label className="text-[10px] text-muted-foreground/60 uppercase tracking-wider font-semibold">Categoria</label>
-                <input
-                  value={editCategory}
-                  onChange={(e) => setEditCategory(e.target.value)}
-                  className="w-full mt-1 h-10 px-3 rounded-xl bg-muted/30 border border-border/20 text-sm text-foreground focus:outline-none focus:ring-1 focus:ring-primary/30"
-                />
-              </div>
-            </div>
-            <div className="flex gap-2 pt-2">
-              <button
-                onClick={() => setStep("detail")}
-                className="flex-1 py-2.5 rounded-xl text-xs font-bold text-muted-foreground bg-muted/30 border border-border/20 hover:bg-muted/50 transition-all"
+
+            <div className="overflow-y-auto flex-1 pb-20 md:pb-4">
+              {/* Value display */}
+              <div
+                className="mx-5 mb-4 rounded-xl p-5 text-center cursor-text border border-border/10"
+                style={{ background: `${accentHsl.replace(")", " / 0.08)")}` }}
+                onClick={() => amountInputRef.current?.focus()}
               >
-                Cancelar
-              </button>
-              <button
-                onClick={handleSaveEdit}
-                disabled={loading}
-                className="flex-1 py-2.5 rounded-xl text-xs font-bold text-primary-foreground bg-primary hover:bg-primary/90 transition-all disabled:opacity-50"
-              >
-                {loading ? "Salvando..." : "Salvar"}
-              </button>
+                <p className="text-[10px] text-muted-foreground uppercase tracking-widest mb-2">Valor</p>
+                <div className="flex items-baseline justify-center gap-2">
+                  <span className="text-xl font-bold" style={{ color: accentHsl }}>R$</span>
+                  <motion.span
+                    key={editAmountCents}
+                    initial={{ scale: 1.05 }}
+                    animate={{ scale: 1 }}
+                    className="font-display text-4xl font-bold tabular-nums tracking-tight text-foreground/80"
+                  >
+                    {formatCurrency(editAmountCents)}
+                  </motion.span>
+                </div>
+                <input
+                  ref={amountInputRef}
+                  className="sr-only"
+                  onKeyDown={handleEditAmountKeyDown}
+                  aria-label="Valor da transação"
+                  autoFocus
+                />
+              </div>
+
+              {/* Status toggle */}
+              <div className="flex justify-center mb-5 px-5">
+                <div className="flex gap-2 w-full">
+                  <button
+                    type="button"
+                    onClick={() => setEditStatus("pago")}
+                    className={cn(
+                      "flex items-center justify-center gap-1.5 flex-1 py-2.5 rounded-xl text-xs font-bold transition-all border",
+                      editStatus === "pago"
+                        ? isReceita
+                          ? "bg-primary/15 text-primary border-primary/30"
+                          : "bg-destructive/15 text-destructive border-destructive/30"
+                        : "bg-muted/30 text-muted-foreground border-transparent hover:bg-muted/50"
+                    )}
+                  >
+                    <Check className="w-3.5 h-3.5" />
+                    {isReceita ? "Já recebi" : "Já paguei"}
+                  </button>
+                  <button
+                    type="button"
+                    onClick={() => setEditStatus("pendente")}
+                    className={cn(
+                      "flex items-center justify-center gap-1.5 flex-1 py-2.5 rounded-xl text-xs font-bold transition-all border",
+                      editStatus === "pendente"
+                        ? "bg-amber-500/15 text-amber-400 border-amber-500/30"
+                        : "bg-muted/30 text-muted-foreground border-transparent hover:bg-muted/50"
+                    )}
+                  >
+                    <Clock className="w-3.5 h-3.5" />
+                    Pendente
+                  </button>
+                </div>
+              </div>
+
+              {/* Form fields */}
+              <div className="px-5 space-y-5">
+                {/* Date */}
+                <div className="space-y-2">
+                  <div className="flex items-center gap-2 text-sm font-medium text-foreground">
+                    <CalendarDays className="w-4 h-4 text-muted-foreground" />
+                    Data
+                  </div>
+                  <div className="flex gap-2">
+                    {(["hoje", "ontem", "outros"] as const).map((mode) => (
+                      <button
+                        key={mode}
+                        type="button"
+                        onClick={() => handleEditDateMode(mode)}
+                        className={cn(
+                          "px-4 py-2 rounded-xl text-xs font-semibold transition-all border",
+                          editDateMode === mode
+                            ? "bg-primary/15 text-primary border-primary/25"
+                            : "bg-muted/30 text-muted-foreground hover:text-foreground border-transparent"
+                        )}
+                      >
+                        {mode === "outros" ? formattedEditDate : mode.charAt(0).toUpperCase() + mode.slice(1)}
+                      </button>
+                    ))}
+                  </div>
+                  <AnimatePresence>
+                    {editShowCalendar && (
+                      <motion.div
+                        initial={{ height: 0, opacity: 0 }}
+                        animate={{ height: "auto", opacity: 1 }}
+                        exit={{ height: 0, opacity: 0 }}
+                        className="overflow-hidden"
+                      >
+                        <Calendar
+                          mode="single"
+                          selected={editDate}
+                          onSelect={(d) => d && setEditDate(d)}
+                          className="p-3 pointer-events-auto rounded-xl border border-border/20"
+                        />
+                      </motion.div>
+                    )}
+                  </AnimatePresence>
+                </div>
+
+                {/* Description */}
+                <div className="space-y-2">
+                  <div className="flex items-center gap-2 text-sm font-medium text-foreground">
+                    <FileText className="w-4 h-4 text-muted-foreground" />
+                    Descrição
+                  </div>
+                  <input
+                    value={editName}
+                    onChange={(e) => setEditName(e.target.value)}
+                    placeholder="Nome da transação"
+                    className="w-full h-11 px-3 rounded-xl bg-muted/30 border border-border/20 text-sm text-foreground focus:outline-none focus:ring-1 focus:ring-primary/30"
+                    maxLength={100}
+                  />
+                </div>
+
+                {/* Category */}
+                <div className="space-y-2">
+                  <div className="flex items-center gap-2 text-sm font-medium text-foreground">
+                    <Tag className="w-4 h-4 text-muted-foreground" />
+                    Categoria
+                  </div>
+                  <button
+                    type="button"
+                    onClick={() => setShowCategoryPicker(!showCategoryPicker)}
+                    className={cn(
+                      "w-full flex items-center justify-between px-3 h-11 rounded-xl text-sm border transition-colors",
+                      editCategory
+                        ? "bg-muted/30 border-border/20 text-foreground"
+                        : "bg-muted/30 border-border/20 text-muted-foreground"
+                    )}
+                  >
+                    {editCategory || "Selecionar categoria"}
+                    <Tag className="w-3.5 h-3.5 text-muted-foreground" />
+                  </button>
+                  <AnimatePresence>
+                    {showCategoryPicker && (
+                      <motion.div
+                        initial={{ height: 0, opacity: 0 }}
+                        animate={{ height: "auto", opacity: 1 }}
+                        exit={{ height: 0, opacity: 0 }}
+                        className="overflow-hidden"
+                      >
+                        <div className="flex flex-wrap gap-1.5 pt-1">
+                          {editCategories.map((c) => (
+                            <button
+                              key={c}
+                              type="button"
+                              onClick={() => { setEditCategory(c); setShowCategoryPicker(false); }}
+                              className={cn(
+                                "px-3 py-1.5 rounded-lg text-[11px] font-medium transition-all border",
+                                editCategory === c
+                                  ? "bg-primary/15 text-primary border-primary/25"
+                                  : "bg-muted/30 text-muted-foreground border-border/20 hover:border-border/40"
+                              )}
+                            >
+                              {c}
+                            </button>
+                          ))}
+                        </div>
+                      </motion.div>
+                    )}
+                  </AnimatePresence>
+                </div>
+
+                {/* Account */}
+                {editAccounts.length > 0 && (
+                  <div className="space-y-2">
+                    <div className="flex items-center gap-2 text-sm font-medium text-foreground">
+                      <Wallet className="w-4 h-4 text-muted-foreground" />
+                      Conta
+                      <span className="text-destructive text-xs">*</span>
+                    </div>
+                    <div className="relative">
+                      <select
+                        value={editAccountId}
+                        onChange={(e) => setEditAccountId(e.target.value)}
+                        className="w-full h-11 px-3 rounded-xl bg-muted/30 border border-border/20 text-sm text-foreground focus:outline-none focus:ring-1 focus:ring-primary/30 appearance-none"
+                      >
+                        <option value="">Sem conta</option>
+                        {editAccounts.map((a) => (
+                          <option key={a.id} value={a.id}>{a.name}</option>
+                        ))}
+                      </select>
+                    </div>
+                  </div>
+                )}
+
+                {/* Observation */}
+                <div className="space-y-2">
+                  <div className="flex items-center gap-2 text-sm font-medium text-foreground">
+                    <StickyNote className="w-4 h-4 text-muted-foreground" />
+                    Observação
+                  </div>
+                  <input
+                    value={editObservation}
+                    onChange={(e) => setEditObservation(e.target.value)}
+                    placeholder="Adicionar nota (opcional)"
+                    className="w-full h-11 px-3 rounded-xl bg-muted/30 border border-border/20 text-sm text-foreground focus:outline-none focus:ring-1 focus:ring-primary/30"
+                  />
+                </div>
+
+                {/* Action buttons */}
+                <div className="flex gap-2 pt-2 pb-2">
+                  <button
+                    onClick={() => setStep("detail")}
+                    className="flex-1 py-3 rounded-xl text-sm font-bold text-muted-foreground bg-muted/30 border border-border/20 hover:bg-muted/50 transition-all"
+                  >
+                    Cancelar
+                  </button>
+                  <button
+                    onClick={handleSaveEdit}
+                    disabled={loading}
+                    className="flex-1 py-3 rounded-xl text-sm font-bold text-primary-foreground bg-primary hover:bg-primary/90 transition-all disabled:opacity-50"
+                  >
+                    {loading ? "Salvando..." : "Atualizar"}
+                  </button>
+                </div>
+              </div>
             </div>
           </div>
         );
+      }
 
       default:
         return null;
