@@ -516,8 +516,7 @@ const Transacoes = () => {
       </motion.div>
 
 
-      {/* Transactions content */}
-      <>
+
 
       {/* Tabs + Search + Filter */}
       <div className="space-y-3">
