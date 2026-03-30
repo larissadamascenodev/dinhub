@@ -31,7 +31,7 @@ export default function InvoiceTransactionList({ items, installmentCount = 0 }: 
       initial={{ opacity: 0, y: 12 }}
       animate={{ opacity: 1, y: 0 }}
       transition={{ delay: 0.15 }}
-      className="space-y-3"
+      className="space-y-2"
     >
       {/* Section header */}
       <div className="flex items-center justify-between">
@@ -53,7 +53,7 @@ export default function InvoiceTransactionList({ items, installmentCount = 0 }: 
           <p className="text-sm text-muted-foreground">Nenhuma compra nessa fatura</p>
         </div>
       ) : (
-        <div className="space-y-3">
+        <div className="space-y-1.5">
           {items.map((item, idx) => {
             const isInstallment = item.total_installments > 1;
             const totalValue = isInstallment
@@ -66,17 +66,17 @@ export default function InvoiceTransactionList({ items, installmentCount = 0 }: 
                 initial={{ opacity: 0, x: -6 }}
                 animate={{ opacity: 1, x: 0 }}
                 transition={{ delay: idx * 0.03 }}
-                className="rounded-2xl border border-border/15 bg-card/60 backdrop-blur-xl border-l-[3px] border-l-primary/40 px-4 py-4"
+                className="rounded-xl border border-border/15 bg-card/60 backdrop-blur-xl border-l-[3px] border-l-primary/40 px-3 py-2.5"
                 style={{ boxShadow: "0 2px 12px -4px rgba(0,0,0,0.25)" }}
               >
-                <div className="flex gap-4">
+              <div className="flex gap-3">
                   {/* Icon */}
-                  <div className="w-11 h-11 rounded-xl bg-muted/20 border border-border/10 flex items-center justify-center shrink-0 self-start mt-0.5">
-                    <Layers className="w-5 h-5 text-muted-foreground/60" />
+                  <div className="w-9 h-9 rounded-lg bg-muted/20 border border-border/10 flex items-center justify-center shrink-0 self-start mt-0.5">
+                    <Layers className="w-4 h-4 text-muted-foreground/60" />
                   </div>
 
                   {/* Content */}
-                  <div className="flex-1 min-w-0 space-y-2">
+                  <div className="flex-1 min-w-0 space-y-1">
                     {/* Row 1: Name + Value */}
                     <div className="flex items-start justify-between gap-3">
                       <p className="text-[13px] font-bold text-foreground leading-tight truncate">
