@@ -6,18 +6,22 @@ import { useProfile } from "@/hooks/useProfile";
 import { MonthProvider } from "@/contexts/MonthContext";
 import NovaTransacaoModal from "@/components/dashboard/NovaTransacaoModal";
 import TransactionTypeChooser from "@/components/dashboard/TransactionTypeChooser";
+import TransferModal from "@/components/dashboard/TransferModal";
 
 const DashboardLayout = () => {
   const { profile } = useProfile();
   const [showTypeChooser, setShowTypeChooser] = useState(false);
   const [showModal, setShowModal] = useState(false);
+  const [showTransferModal, setShowTransferModal] = useState(false);
   const [modalType, setModalType] = useState<"receita" | "despesa">("despesa");
 
   // Global listener for the mobile + button and desktop "Nova transação"
   useEffect(() => {
     const handleDirect = (e: Event) => {
       const detail = (e as CustomEvent).detail;
-      if (detail?.type === "receita" || detail?.type === "despesa") {
+      if (detail?.type === "transferencia") {
+        setShowTransferModal(true);
+      } else if (detail?.type === "receita" || detail?.type === "despesa") {
         setModalType(detail.type);
         setShowModal(true);
       }
@@ -33,10 +37,14 @@ const DashboardLayout = () => {
     };
   }, []);
 
-  const handleTypeSelected = useCallback((type: "receita" | "despesa") => {
-    setModalType(type);
+  const handleTypeSelected = useCallback((type: "receita" | "despesa" | "transferencia") => {
     setShowTypeChooser(false);
-    setShowModal(true);
+    if (type === "transferencia") {
+      setShowTransferModal(true);
+    } else {
+      setModalType(type);
+      setShowModal(true);
+    }
   }, []);
 
   const handleSuccess = useCallback(() => {
@@ -53,6 +61,7 @@ const DashboardLayout = () => {
         <MobileBottomNav />
         <TransactionTypeChooser open={showTypeChooser} onClose={() => setShowTypeChooser(false)} onSelect={handleTypeSelected} />
         <NovaTransacaoModal open={showModal} onClose={() => setShowModal(false)} onSuccess={handleSuccess} initialType={modalType} />
+        <TransferModal open={showTransferModal} onClose={() => setShowTransferModal(false)} onSuccess={handleSuccess} />
       </div>
     </MonthProvider>
   );

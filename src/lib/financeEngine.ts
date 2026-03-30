@@ -134,6 +134,8 @@ function aggregate(transactions: RawTransaction[]) {
   let paidExpense = 0;
   for (const t of transactions) {
     const amt = Number(t.amount);
+    // Skip transfers and investments — they don't affect income/expense
+    if (t.type === "transferencia" || t.type === "investimento") continue;
     if (t.type === "receita") {
       income += amt;
       if (t.status === "pago") paidIncome += amt;
