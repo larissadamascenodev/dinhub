@@ -216,15 +216,21 @@ const BotFinanceProjecoes = () => {
     });
   }, [projections, data.saldoAtual, data.previousMonthEndingBalance]);
 
+  // In "mensal" mode, show only the current month; in "acumulado", show all 6
+  const displayedProjections = useMemo(() => {
+    if (timelineMode === "mensal") return projectionsWithVariation.slice(0, 1);
+    return projectionsWithVariation;
+  }, [projectionsWithVariation, timelineMode]);
+
   // Chart data
   const chartData = useMemo(() => {
-    return projectionsWithVariation.map((p) => ({
+    return displayedProjections.map((p) => ({
       name: `${MONTH_NAMES[p.month]} ${p.year}`,
       value: timelineMode === "acumulado" ? p.balance : p.delta,
       balance: p.balance,
       delta: p.delta,
     }));
-  }, [projectionsWithVariation, timelineMode]);
+  }, [displayedProjections, timelineMode]);
 
   // Determine chart gradient color based on trend
   const chartTrend = useMemo(() => {
