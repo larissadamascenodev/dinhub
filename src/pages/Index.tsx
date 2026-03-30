@@ -9,6 +9,7 @@ import BalancoCard from "@/components/dashboard/BalancoCard";
 import MicroInteracoesCard from "@/components/dashboard/MicroInteracoesCard";
 import TransacoesRecentes from "@/components/dashboard/TransacoesRecentes";
 import ProximosEventos from "@/components/dashboard/ProximosEventos";
+import GastosPorCategoria from "@/components/dashboard/GastosPorCategoria";
 import MonthSelector from "@/components/dashboard/MonthSelector";
 import PagarEditarModal from "@/components/dashboard/PagarEditarModal";
 import OnboardingCard from "@/components/dashboard/OnboardingCard";
@@ -103,7 +104,12 @@ const Index = () => {
             </div>
             <BalancoCard balanco={balanco} />
             {isCurrentMonth && <MicroInteracoesCard gastosHoje={data.gastosHoje} mediaGastosDiarios={data.mediaGastosDiarios} />}
-            {/* Projection CTA moved to sidebar */}
+            {data.categories.length > 0 && (
+              <GastosPorCategoria
+                categories={data.categories}
+                onVerAnalise={() => navigate("/transacoes")}
+              />
+            )}
             <TransacoesRecentes transactions={data.transactions} onDelete={refetch} />
           </div>
           <div className="space-y-4">
@@ -191,6 +197,9 @@ const Index = () => {
             </div>
             <ChevronRight className="w-4 h-4 text-muted-foreground/40 group-hover:text-primary transition-colors" />
           </button>
+          {data.categories.length > 0 && (
+            <GastosPorCategoria categories={data.categories} onVerAnalise={() => navigate("/transacoes")} />
+          )}
           <TransacoesRecentes transactions={data.transactions} onDelete={refetch} />
           <ProximosEventos events={data.events} selectedMonth={selectedMonth} selectedYear={selectedYear} onEventClick={handleEventClick} />
         </div>
@@ -229,6 +238,9 @@ const Index = () => {
             </div>
             <ChevronRight className="w-4 h-4 text-muted-foreground/40 group-hover:text-primary transition-colors" />
           </button>
+          {data.categories.length > 0 && (
+            <GastosPorCategoria categories={data.categories} onVerAnalise={() => navigate("/transacoes")} />
+          )}
           <TransacoesRecentes transactions={data.transactions} onDelete={refetch} />
           <div className="-mt-3">
             <ProximosEventos events={data.events} selectedMonth={selectedMonth} selectedYear={selectedYear} onEventClick={handleEventClick} />
