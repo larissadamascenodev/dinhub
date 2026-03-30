@@ -1,6 +1,6 @@
 import { useState, useEffect } from "react";
 import { motion, AnimatePresence } from "framer-motion";
-import { CreditCard, Plus, X, Landmark, Banknote, PiggyBank, TrendingUp, ChevronRight } from "lucide-react";
+import { CreditCard, Plus, X, Landmark, Banknote, PiggyBank, TrendingUp, ChevronRight, EyeOff } from "lucide-react";
 import { useNavigate } from "react-router-dom";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -8,7 +8,7 @@ import { Label } from "@/components/ui/label";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { toast } from "sonner";
 import { useAuth } from "@/contexts/AuthContext";
-import { getAccounts, createAccount, getCreditCards, createCreditCard } from "@/services/transactionService";
+import { getAccounts, createAccount, getCreditCards, createCreditCard, deactivateAccount } from "@/services/transactionService";
 import { cn } from "@/lib/utils";
 
 interface Account {
@@ -267,6 +267,21 @@ const GestaoFinanceira = () => {
                         </div>
                       </div>
                       <ChevronRight className="w-4 h-4 text-white/30 group-hover:text-white/60 transition-colors mt-1 shrink-0" />
+                      <button
+                        onClick={(e) => {
+                          e.stopPropagation();
+                          if (confirm("Desativar esta conta? O histórico de transações será mantido.")) {
+                            deactivateAccount(acc.id).then(() => {
+                              toast.success("Conta desativada com sucesso");
+                              fetchData();
+                            }).catch(() => toast.error("Erro ao desativar conta"));
+                          }
+                        }}
+                        className="w-7 h-7 rounded-lg bg-white/10 flex items-center justify-center hover:bg-white/20 transition-colors mt-1 shrink-0"
+                        title="Desativar conta"
+                      >
+                        <EyeOff className="w-3.5 h-3.5 text-white/50 hover:text-white/80" />
+                      </button>
                     </div>
 
                     {acc.is_default && (

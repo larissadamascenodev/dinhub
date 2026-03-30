@@ -122,12 +122,17 @@ export async function deleteTransaction(id: string) {
 }
 
 // Account helpers
-export async function getAccounts() {
-  const { data, error } = await supabase
+export async function getAccounts(includeInactive = false) {
+  let query = supabase
     .from("accounts")
     .select("*")
     .order("is_default", { ascending: false });
 
+  if (!includeInactive) {
+    query = query.eq("is_active", true);
+  }
+
+  const { data, error } = await query;
   if (error) throw error;
   return data ?? [];
 }
@@ -222,6 +227,17 @@ export async function deleteAccount(id: string) {
     .delete()
     .eq("id", id);
   if (error) throw error;
+}
+
+export async function deactivateAccount(id: string) {
+  const { data, error } = await supabase
+    .from("accounts")
+    .update({ is_active: false } as any)
+    .eq("id", id)
+    .select()
+    .single();
+  if (error) throw error;
+  return data;
 }
 
 // Credit card update/delete

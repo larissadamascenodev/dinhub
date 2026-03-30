@@ -21,6 +21,7 @@ export type Database = {
           current_balance: number
           id: string
           initial_balance: number
+          is_active: boolean
           is_default: boolean
           name: string
           type: string
@@ -33,6 +34,7 @@ export type Database = {
           current_balance?: number
           id?: string
           initial_balance?: number
+          is_active?: boolean
           is_default?: boolean
           name?: string
           type?: string
@@ -45,6 +47,7 @@ export type Database = {
           current_balance?: number
           id?: string
           initial_balance?: number
+          is_active?: boolean
           is_default?: boolean
           name?: string
           type?: string
