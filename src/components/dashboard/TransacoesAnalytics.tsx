@@ -4,10 +4,6 @@ import {
   ArrowUpRight, ArrowDownRight,
   CalendarDays, ChevronDown,
 } from "lucide-react";
-import {
-  BarChart, Bar, XAxis, YAxis, Tooltip,
-  ResponsiveContainer, CartesianGrid,
-} from "recharts";
 import { supabase } from "@/integrations/supabase/client";
 import { useAuth } from "@/contexts/AuthContext";
 import { useMonth } from "@/contexts/MonthContext";
