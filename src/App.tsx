@@ -14,6 +14,7 @@ import Configuracoes from "./pages/Configuracoes.tsx";
 import Transacoes from "./pages/Transacoes.tsx";
 import BotFinance from "./pages/BotFinance.tsx";
 import BotFinanceProjecoes from "./pages/BotFinanceProjecoes.tsx";
+import BotFinanceSaude from "./pages/BotFinanceSaude.tsx";
 import NotFound from "./pages/NotFound.tsx";
 
 const queryClient = new QueryClient();
