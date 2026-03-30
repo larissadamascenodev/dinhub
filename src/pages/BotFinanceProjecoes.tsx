@@ -184,26 +184,26 @@ const CompositionBlock = ({ prev, income, expense, final: finalVal }: { prev: nu
     initial={{ opacity: 0, y: 6 }}
     animate={{ opacity: 1, y: 0 }}
     transition={{ delay: 0.1 }}
-    className="flex items-center gap-1.5 flex-wrap justify-center py-2"
+    className="flex items-center gap-2 sm:gap-3 flex-wrap justify-center py-3 sm:py-4"
   >
-    <div className="bg-secondary/50 rounded-lg px-2.5 py-1.5 text-center min-w-[70px]">
-      <p className="text-[8px] text-muted-foreground">Saldo anterior</p>
-      <p className="text-[11px] font-bold tabular-nums text-foreground">{fmtCurrency(prev)}</p>
+    <div className="bg-secondary/50 rounded-xl px-3 sm:px-5 py-2 sm:py-3 text-center min-w-[80px] sm:min-w-[110px]">
+      <p className="text-[9px] sm:text-xs text-muted-foreground">Saldo anterior</p>
+      <p className="text-xs sm:text-base font-bold tabular-nums text-foreground">{fmtCurrency(prev)}</p>
     </div>
-    <Plus className="w-3 h-3 text-primary/50 flex-shrink-0" />
-    <div className="bg-secondary/50 rounded-lg px-2.5 py-1.5 text-center min-w-[70px]">
-      <p className="text-[8px] text-muted-foreground">Receitas</p>
-      <p className="text-[11px] font-bold tabular-nums text-primary">{fmtCurrency(income)}</p>
+    <Plus className="w-3.5 h-3.5 sm:w-4 sm:h-4 text-primary/50 flex-shrink-0" />
+    <div className="bg-secondary/50 rounded-xl px-3 sm:px-5 py-2 sm:py-3 text-center min-w-[80px] sm:min-w-[110px]">
+      <p className="text-[9px] sm:text-xs text-muted-foreground">Receitas</p>
+      <p className="text-xs sm:text-base font-bold tabular-nums text-primary">{fmtCurrency(income)}</p>
     </div>
-    <Minus className="w-3 h-3 text-destructive/50 flex-shrink-0" />
-    <div className="bg-secondary/50 rounded-lg px-2.5 py-1.5 text-center min-w-[70px]">
-      <p className="text-[8px] text-muted-foreground">Despesas</p>
-      <p className="text-[11px] font-bold tabular-nums text-destructive">{fmtCurrency(expense)}</p>
+    <Minus className="w-3.5 h-3.5 sm:w-4 sm:h-4 text-destructive/50 flex-shrink-0" />
+    <div className="bg-secondary/50 rounded-xl px-3 sm:px-5 py-2 sm:py-3 text-center min-w-[80px] sm:min-w-[110px]">
+      <p className="text-[9px] sm:text-xs text-muted-foreground">Despesas</p>
+      <p className="text-xs sm:text-base font-bold tabular-nums text-destructive">{fmtCurrency(expense)}</p>
     </div>
-    <Equal className="w-3 h-3 text-muted-foreground/50 flex-shrink-0" />
-    <div className={`rounded-lg px-2.5 py-1.5 text-center min-w-[70px] ${finalVal >= 0 ? "bg-primary/10 border border-primary/20" : "bg-destructive/10 border border-destructive/20"}`}>
-      <p className="text-[8px] text-muted-foreground">Saldo final</p>
-      <p className={`text-[11px] font-bold tabular-nums ${finalVal >= 0 ? "text-primary" : "text-destructive"}`}>{fmtCurrency(finalVal)}</p>
+    <Equal className="w-3.5 h-3.5 sm:w-4 sm:h-4 text-muted-foreground/50 flex-shrink-0" />
+    <div className={`rounded-xl px-3 sm:px-5 py-2 sm:py-3 text-center min-w-[80px] sm:min-w-[110px] ${finalVal >= 0 ? "bg-primary/10 border border-primary/20" : "bg-destructive/10 border border-destructive/20"}`}>
+      <p className="text-[9px] sm:text-xs text-muted-foreground">Saldo final</p>
+      <p className={`text-xs sm:text-base font-bold tabular-nums ${finalVal >= 0 ? "text-primary" : "text-destructive"}`}>{fmtCurrency(finalVal)}</p>
     </div>
   </motion.div>
 );
