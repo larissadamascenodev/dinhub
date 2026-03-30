@@ -85,6 +85,12 @@ const SectionHeader = ({
   </div>
 );
 
+const riskColors = {
+  positivo: { dot: "bg-primary", text: "text-primary", glow: "shadow-[0_0_10px_hsl(150_100%_45%/0.4)]" },
+  atencao: { dot: "bg-warning", text: "text-warning", glow: "shadow-[0_0_10px_hsl(40_80%_50%/0.4)]" },
+  risco: { dot: "bg-destructive", text: "text-destructive", glow: "shadow-[0_0_10px_hsl(0_60%_50%/0.4)]" },
+};
+
 const BotFinanceProjecoes = () => {
   const navigate = useNavigate();
   const { selectedMonth, selectedYear } = useMonth();
