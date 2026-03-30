@@ -17,6 +17,7 @@ import SaldoCard from "@/components/dashboard/SaldoCard";
 import ReceitasDespesasCards from "@/components/dashboard/ReceitasDespesasCards";
 import NovaTransacaoModal from "@/components/dashboard/NovaTransacaoModal";
 import TransactionTypeChooser from "@/components/dashboard/TransactionTypeChooser";
+import TransactionDetailModal from "@/components/dashboard/TransactionDetailModal";
 
 
 // ── Types ──────────────────────────────────────────────
@@ -185,148 +186,7 @@ const SwipeableItem = ({
 };
 
 // ── Edit Modal ─────────────────────────────────────────
-const EditTransactionModal = ({
-  open,
-  tx,
-  onClose,
-  onSave,
-}: {
-  open: boolean;
-  tx: TransactionRow | null;
-  onClose: () => void;
-  onSave: () => void;
-}) => {
-  const [name, setName] = useState("");
-  const [amount, setAmount] = useState("");
-  const [category, setCategory] = useState("");
-  const [status, setStatus] = useState("");
-  const [saving, setSaving] = useState(false);
-
-  useEffect(() => {
-    if (tx) {
-      setName(tx.name);
-      setAmount(tx.amount.toString());
-      setCategory(tx.category);
-      setStatus(tx.status);
-    }
-  }, [tx]);
-
-  const handleSave = async () => {
-    if (!tx) return;
-    setSaving(true);
-    try {
-      await updateTransaction(tx.id, {
-        name,
-        amount: parseFloat(amount),
-        category,
-        status: status as "pago" | "pendente",
-      });
-      toast.success("Transação atualizada");
-      onSave();
-      onClose();
-    } catch {
-      toast.error("Erro ao atualizar");
-    } finally {
-      setSaving(false);
-    }
-  };
-
-  return (
-    <AnimatePresence>
-      {open && tx && (
-        <motion.div
-          initial={{ opacity: 0 }}
-          animate={{ opacity: 1 }}
-          exit={{ opacity: 0 }}
-          className="fixed inset-0 z-50 flex items-end md:items-center justify-center bg-black/70 backdrop-blur-sm"
-          onClick={onClose}
-        >
-          <motion.div
-            initial={{ opacity: 0, y: 80 }}
-            animate={{ opacity: 1, y: 0 }}
-            exit={{ opacity: 0, y: 80 }}
-            transition={{ type: "spring", damping: 28, stiffness: 300 }}
-            onClick={(e) => e.stopPropagation()}
-            className="w-full max-w-md mx-0 md:mx-4 rounded-t-3xl md:rounded-2xl bg-card border border-border/20 shadow-2xl p-5 pb-24 md:pb-5 space-y-4"
-          >
-            <div className="flex items-center justify-between">
-              <h2 className="text-base font-bold text-foreground">Editar Transação</h2>
-              <button onClick={onClose} className="w-8 h-8 rounded-full bg-muted/50 flex items-center justify-center text-muted-foreground hover:text-foreground">
-                <X className="w-4 h-4" />
-              </button>
-            </div>
-
-            <div className="space-y-3">
-              <div>
-                <label className="text-[10px] text-muted-foreground/60 uppercase tracking-wider font-semibold">Nome</label>
-                <input
-                  value={name}
-                  onChange={(e) => setName(e.target.value)}
-                  className="w-full mt-1 h-10 px-3 rounded-xl bg-muted/30 border border-border/20 text-sm text-foreground focus:outline-none focus:ring-1 focus:ring-primary/30"
-                />
-              </div>
-              <div>
-                <label className="text-[10px] text-muted-foreground/60 uppercase tracking-wider font-semibold">Valor</label>
-                <input
-                  type="number"
-                  step="0.01"
-                  value={amount}
-                  onChange={(e) => setAmount(e.target.value)}
-                  className="w-full mt-1 h-10 px-3 rounded-xl bg-muted/30 border border-border/20 text-sm text-foreground focus:outline-none focus:ring-1 focus:ring-primary/30"
-                />
-              </div>
-              <div>
-                <label className="text-[10px] text-muted-foreground/60 uppercase tracking-wider font-semibold">Categoria</label>
-                <input
-                  value={category}
-                  onChange={(e) => setCategory(e.target.value)}
-                  className="w-full mt-1 h-10 px-3 rounded-xl bg-muted/30 border border-border/20 text-sm text-foreground focus:outline-none focus:ring-1 focus:ring-primary/30"
-                />
-              </div>
-              <div>
-                <label className="text-[10px] text-muted-foreground/60 uppercase tracking-wider font-semibold">Status</label>
-                <div className="flex gap-2 mt-1">
-                  {["pago", "pendente"].map((s) => (
-                    <button
-                      key={s}
-                      onClick={() => setStatus(s)}
-                      className={`flex-1 py-2 rounded-xl text-xs font-bold border transition-all ${
-                        status === s
-                          ? s === "pago"
-                            ? "bg-primary/15 text-primary border-primary/30"
-                            : "bg-warning/15 text-warning border-warning/30"
-                          : "bg-muted/30 text-muted-foreground border-transparent hover:bg-muted/50"
-                      }`}
-                    >
-                      {s === "pago" ? "Pago" : "Pendente"}
-                    </button>
-                  ))}
-                </div>
-              </div>
-            </div>
-
-            <div className="flex gap-2 pt-2">
-              <button
-                onClick={onClose}
-                className="flex-1 py-2.5 rounded-xl text-xs font-bold text-muted-foreground bg-muted/30 border border-border/20 hover:bg-muted/50 transition-all"
-              >
-                Cancelar
-              </button>
-              <button
-                onClick={handleSave}
-                disabled={saving}
-                className="flex-1 py-2.5 rounded-xl text-xs font-bold text-primary-foreground bg-primary hover:bg-primary/90 transition-all disabled:opacity-50"
-              >
-                {saving ? "Salvando..." : "Salvar"}
-              </button>
-            </div>
-          </motion.div>
-        </motion.div>
-      )}
-    </AnimatePresence>
-  );
-};
-
+// EditTransactionModal removed – replaced by TransactionDetailModal
 // ── Main Page ──────────────────────────────────────────
 const Transacoes = () => {
   const { user } = useAuth();
@@ -346,8 +206,8 @@ const Transacoes = () => {
   const [showTypeChooser, setShowTypeChooser] = useState(false);
   const [showNewModal, setShowNewModal] = useState(false);
   const [newModalType, setNewModalType] = useState<"receita" | "despesa">("despesa");
-  const [editTx, setEditTx] = useState<TransactionRow | null>(null);
-  const [showEditModal, setShowEditModal] = useState(false);
+  const [detailTx, setDetailTx] = useState<TransactionRow | null>(null);
+  const [showDetailModal, setShowDetailModal] = useState(false);
   const [deleteTarget, setDeleteTarget] = useState<TransactionRow | null>(null);
   const [showDeleteDialog, setShowDeleteDialog] = useState(false);
 
@@ -690,8 +550,8 @@ const Transacoes = () => {
                     }}
                   />
                   {isToday ? (
-                    <div className="flex-1 flex items-center justify-between py-2 px-4 rounded-xl border border-primary/30" style={{ background: "linear-gradient(135deg, hsl(var(--primary) / 0.12) 0%, hsl(var(--primary) / 0.04) 100%)" }}>
-                      <span className="text-sm font-bold text-primary">Hoje, {label}</span>
+                    <div className="flex-1 flex items-center justify-between py-1.5 px-3 rounded-lg border border-primary/20" style={{ background: "hsl(var(--primary) / 0.06)" }}>
+                      <span className="text-xs font-bold text-primary">Hoje, {label}</span>
                       <span className="text-[10px] font-semibold text-muted-foreground/50">
                         {dayTotal.desp > 0 && <span className="text-destructive">−{fmt(dayTotal.desp)}</span>}
                         {dayTotal.rec > 0 && dayTotal.desp > 0 && " · "}
@@ -723,7 +583,7 @@ const Transacoes = () => {
                         tx={tx}
                         accountName={tx.account_id ? (accountMap[tx.account_id] || "Conta") : tx.payment_method === "cartao" ? "Cartão" : "Sem conta"}
                         onDelete={handleDelete}
-                        onEdit={(t) => { setEditTx(t); setShowEditModal(true); }}
+                        onEdit={(t) => { setDetailTx(t); setShowDetailModal(true); }}
                       />
                     </motion.div>
                   ))}
@@ -741,61 +601,17 @@ const Transacoes = () => {
         </p>
       )}
 
-      {/* Modals */}
-      <EditTransactionModal open={showEditModal} tx={editTx} onClose={() => { setShowEditModal(false); setEditTx(null); }} onSave={fetchData} />
-
-      {/* Delete Fixa Dialog */}
-      <AnimatePresence>
-        {showDeleteDialog && deleteTarget && (
-          <motion.div
-            initial={{ opacity: 0 }}
-            animate={{ opacity: 1 }}
-            exit={{ opacity: 0 }}
-            className="fixed inset-0 z-50 flex items-end md:items-center justify-center bg-black/70 backdrop-blur-sm"
-            onClick={() => { setShowDeleteDialog(false); setDeleteTarget(null); }}
-          >
-            <motion.div
-              initial={{ opacity: 0, y: 80 }}
-              animate={{ opacity: 1, y: 0 }}
-              exit={{ opacity: 0, y: 80 }}
-              transition={{ type: "spring", damping: 28, stiffness: 300 }}
-              onClick={(e) => e.stopPropagation()}
-              className="w-full max-w-sm mx-4 rounded-2xl bg-card border border-border/20 shadow-2xl p-5 space-y-4"
-            >
-              <div className="text-center space-y-2">
-                <div className="w-12 h-12 rounded-full bg-destructive/10 flex items-center justify-center mx-auto">
-                  <Trash2 className="w-5 h-5 text-destructive" />
-                </div>
-                <h3 className="text-base font-bold text-foreground">Remover transação fixa</h3>
-                <p className="text-xs text-muted-foreground">
-                  <span className="font-semibold text-foreground">{deleteTarget.name}</span> é uma transação fixa. Como deseja removê-la?
-                </p>
-              </div>
-
-              <div className="space-y-2">
-                <button
-                  onClick={handleDeleteFixaThisMonth}
-                  className="w-full py-3 rounded-xl text-sm font-bold text-foreground bg-muted/40 border border-border/20 hover:bg-muted/60 transition-all"
-                >
-                  Apagar apenas este mês
-                </button>
-                <button
-                  onClick={handleDeleteFixaAllFuture}
-                  className="w-full py-3 rounded-xl text-sm font-bold text-destructive bg-destructive/10 border border-destructive/20 hover:bg-destructive/20 transition-all"
-                >
-                  Apagar este e todos os meses futuros
-                </button>
-                <button
-                  onClick={() => { setShowDeleteDialog(false); setDeleteTarget(null); }}
-                  className="w-full py-2.5 rounded-xl text-xs font-semibold text-muted-foreground hover:text-foreground transition-all"
-                >
-                  Cancelar
-                </button>
-              </div>
-            </motion.div>
-          </motion.div>
-        )}
-      </AnimatePresence>
+      {/* Detail Modal */}
+      <TransactionDetailModal
+        open={showDetailModal}
+        tx={detailTx}
+        accountName={detailTx?.account_id ? (accountMap[detailTx.account_id] || "Conta") : detailTx?.payment_method === "cartao" ? "Cartão" : "Sem conta"}
+        onClose={() => { setShowDetailModal(false); setDetailTx(null); }}
+        onRefresh={fetchData}
+        userId={user?.id}
+        selectedMonth={selectedMonth}
+        selectedYear={selectedYear}
+      />
     </div>
   );
 };
