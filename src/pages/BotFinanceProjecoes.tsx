@@ -412,7 +412,7 @@ const BotFinanceProjecoes = () => {
           {/* Timeline list */}
           <div className="relative mt-1">
             <div className="absolute left-[7px] top-2 bottom-2 w-px bg-gradient-to-b from-border/40 via-border/20 to-transparent" />
-            {projectionsWithVariation.map((p, i) => {
+            {displayedProjections.map((p, i) => {
               const rs = riskStyle(p.risk);
               const isExpanded = expandedMonth === i;
               const isCurrent = i === 0;
