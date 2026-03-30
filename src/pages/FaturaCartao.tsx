@@ -246,7 +246,39 @@ const FaturaCartao = () => {
             }}
           />
           <div className="relative z-10 p-5 space-y-4">
-            <div className="flex items-center gap-2 mb-1">
+            {/* Card identity inside fatura card */}
+            <div className="flex items-center justify-between">
+              <div className="flex items-center gap-3">
+                <div className="relative">
+                  <div className="w-10 h-7 rounded-md shadow-lg" style={{ backgroundColor: cardColor }} />
+                  <div className="absolute inset-0 rounded-md bg-gradient-to-br from-white/20 to-transparent" />
+                </div>
+                <div>
+                  <h1 className="text-sm font-bold text-foreground">{card?.name}</h1>
+                  {card?.last_four_digits && (
+                    <span className="text-[10px] text-muted-foreground tracking-wider">•••• {card.last_four_digits}</span>
+                  )}
+                </div>
+              </div>
+              {invoiceStatus === "paid" ? (
+                <div className="flex items-center gap-1.5 border border-primary/30 bg-primary/10 px-2.5 py-1 rounded-full">
+                  <div className="w-1.5 h-1.5 rounded-full bg-primary animate-pulse" />
+                  <span className="text-[10px] font-bold text-primary">Paga</span>
+                </div>
+              ) : invoiceStatus === "closed" ? (
+                <div className="flex items-center gap-1.5 border border-[hsl(var(--warning))]/30 bg-[hsl(var(--warning))]/10 px-2.5 py-1 rounded-full">
+                  <div className="w-1.5 h-1.5 rounded-full bg-[hsl(var(--warning))]" />
+                  <span className="text-[10px] font-bold text-[hsl(var(--warning))]">Fechada</span>
+                </div>
+              ) : invoiceStatus === "open" ? (
+                <div className="flex items-center gap-1.5 border border-primary/20 bg-primary/5 px-2.5 py-1 rounded-full">
+                  <div className="w-1.5 h-1.5 rounded-full bg-primary/60" />
+                  <span className="text-[10px] font-bold text-primary/80">Aberta</span>
+                </div>
+              ) : null}
+            </div>
+
+            <div className="flex items-center gap-2">
               <Wallet className="w-4 h-4 text-primary/70" />
               <h2 className="text-sm font-bold text-foreground">Fatura de {MONTH_NAMES[selectedMonth - 1]}</h2>
             </div>
