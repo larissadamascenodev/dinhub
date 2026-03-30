@@ -193,14 +193,42 @@ const BotFinanceProjecoes = () => {
         ? "text-warning"
         : "text-destructive";
 
-  // ─── Insight ───
+  // ─── Insight IA ───
   const insight = useMemo(() => {
     const endBalance = projections[projections.length - 1]?.balance ?? 0;
-    if (endBalance > data.saldoAtual * 1.1)
-      return { text: "Se continuar assim, seu saldo cresce mês a mês 👏", tone: "positive" as const };
-    if (endBalance > 0)
-      return { text: "Se reduzir um pouco aqui, sobra bem mais no final 💡", tone: "neutral" as const };
-    return { text: "Você está gastando mais do que o ideal 😬", tone: "negative" as const };
+    const positiveMonths = projections.filter((p) => p.delta > 0).length;
+    const negativeMonths = projections.filter((p) => p.delta < 0).length;
+    const avgDelta = projections.reduce((s, p) => s + p.delta, 0) / projections.length;
+    const isConsistent = positiveMonths >= 4;
+    const isUnstable = positiveMonths >= 2 && negativeMonths >= 2;
+
+    let text: string;
+    let tip: string;
+    let tone: "positive" | "neutral" | "negative";
+
+    if (isConsistent && endBalance > data.saldoAtual) {
+      text = "Você tá mandando bem, seu dinheiro tá crescendo com consistência 👏";
+      tip = "Continue assim e considere reservar uma parte para investir.";
+      tone = "positive";
+    } else if (isUnstable) {
+      text = "Tem algo meio instável aqui… bora ajustar antes que vire problema 👀";
+      tip = "Tente manter suas despesas mais previsíveis nos próximos meses.";
+      tone = "neutral";
+    } else if (avgDelta < 0) {
+      text = "Se continuar assim, você pode apertar nos próximos meses 💸";
+      tip = "Use a simulação abaixo pra ver como pequenas mudanças fazem diferença.";
+      tone = "negative";
+    } else if (endBalance > 0) {
+      text = "Seu saldo se mantém estável. Pequenos ajustes podem trazer uma folga legal 💡";
+      tip = "Economizar um pouco a mais todo mês tem um efeito forte no longo prazo.";
+      tone = "neutral";
+    } else {
+      text = "Atenção: a projeção indica saldo negativo em breve 😬";
+      tip = "Revise suas despesas recorrentes e veja onde pode cortar.";
+      tone = "negative";
+    }
+
+    return { text, tip, tone };
   }, [projections, data.saldoAtual]);
 
   const toneClasses = {
