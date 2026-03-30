@@ -501,7 +501,7 @@ const BotFinanceProjecoes = () => {
                     <span className="text-[9px] text-muted-foreground/50 ml-1">{p.year}</span>
                   </div>
                   <div className="flex-1 text-right">
-                    <p className={`text-sm font-bold tabular-nums ${valueColor}`}>
+                    <p className={`text-sm font-bold tabular-nums ${isCurrent ? "text-primary" : "text-foreground"}`}>
                       {timelineMode === "mensal" && displayValue >= 0 ? "+" : ""}{fmtCurrency(displayValue)}
                     </p>
                   </div>
