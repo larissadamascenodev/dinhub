@@ -1,23 +1,19 @@
 import { useState, useEffect, useMemo } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import {
-  TrendingUp, ArrowUpRight, ArrowDownRight,
+  ArrowUpRight, ArrowDownRight,
   CalendarDays, ChevronDown,
 } from "lucide-react";
-import {
-  BarChart, Bar, XAxis, YAxis, Tooltip,
-  ResponsiveContainer, CartesianGrid,
-} from "recharts";
 import { supabase } from "@/integrations/supabase/client";
 import { useAuth } from "@/contexts/AuthContext";
 import { useMonth } from "@/contexts/MonthContext";
-import { getMonthHistory } from "@/lib/financeEngine";
+
 import { getRecurringForMonth } from "@/services/recurringService";
 
 const fmt = (v: number) =>
   v.toLocaleString("pt-BR", { style: "currency", currency: "BRL" });
 
-const MONTHS_SHORT = ["jan", "fev", "mar", "abr", "mai", "jun", "jul", "ago", "set", "out", "nov", "dez"];
+
 const WEEKDAYS_SHORT = ["D", "S", "T", "Q", "Q", "S", "S"];
 
 const CATEGORY_COLORS = [
@@ -58,7 +54,7 @@ const TransacoesAnalytics = () => {
   const { user } = useAuth();
   const { selectedMonth, selectedYear } = useMonth();
   const [transactions, setTransactions] = useState<TransactionRow[]>([]);
-  const [evolutionData, setEvolutionData] = useState<{ month: string; receitas: number; despesas: number }[]>([]);
+  
   const [loading, setLoading] = useState(true);
   const [dailyExpanded, setDailyExpanded] = useState(false);
 
@@ -86,25 +82,6 @@ const TransacoesAnalytics = () => {
     fetchTxs();
   }, [user, selectedMonth, selectedYear]);
 
-  useEffect(() => {
-    if (!user) return;
-    const fetchEvolution = async () => {
-      const data: { month: string; receitas: number; despesas: number }[] = [];
-      for (let i = 5; i >= 0; i--) {
-        const d = new Date(selectedYear, selectedMonth - i, 1);
-        const m = d.getMonth();
-        const y = d.getFullYear();
-        try {
-          const h = await getMonthHistory(m, y);
-          data.push({ month: MONTHS_SHORT[m], receitas: h.income, despesas: h.expense });
-        } catch {
-          data.push({ month: MONTHS_SHORT[m], receitas: 0, despesas: 0 });
-        }
-      }
-      setEvolutionData(data);
-    };
-    fetchEvolution();
-  }, [user, selectedMonth, selectedYear]);
 
   const totals = useMemo(() => {
     const receitas = transactions.filter(t => t.type === "receita").reduce((s, t) => s + t.amount, 0);
@@ -165,28 +142,6 @@ const TransacoesAnalytics = () => {
     return cells;
   }, [transactions, selectedMonth, selectedYear]);
 
-  const currentWeekDays = useMemo(() => {
-    const today = new Date();
-    const currentDay = today.getDay();
-    const weekStart = new Date(today);
-    weekStart.setDate(today.getDate() - currentDay);
-
-    const days: { day: number; inMonth: boolean; despesas: number; receitas: number }[] = [];
-    for (let i = 0; i < 7; i++) {
-      const d = new Date(weekStart);
-      d.setDate(weekStart.getDate() + i);
-      const inMonth = d.getMonth() === selectedMonth && d.getFullYear() === selectedYear;
-      const dayNum = d.getDate();
-      const dayData = dailyData.find(dd => dd.day === dayNum);
-      days.push({
-        day: dayNum,
-        inMonth,
-        despesas: inMonth && dayData ? dayData.despesas : 0,
-        receitas: inMonth && dayData ? dayData.receitas : 0,
-      });
-    }
-    return days;
-  }, [dailyData, selectedMonth, selectedYear]);
 
   if (loading) {
     return (
@@ -283,49 +238,47 @@ const TransacoesAnalytics = () => {
           </motion.div>
         </button>
 
-        {/* Collapsed: current week mini bars */}
+        {/* Collapsed: last 7 days mini bars */}
         {!dailyExpanded && (
-          <div className="px-4 pb-4">
-            <div className="flex gap-1.5">
-              {currentWeekDays.map((wd, i) => {
+          <div className="px-4 pb-3">
+            <div className="flex gap-1">
+              {(() => {
                 const today = new Date();
-                const isToday = wd.day === today.getDate() && wd.inMonth;
-                const maxVal = Math.max(...currentWeekDays.map(d => d.despesas + d.receitas), 1);
-                const barH = wd.inMonth ? Math.max(((wd.despesas + wd.receitas) / maxVal) * 32, 4) : 4;
-                return (
+                const days: { day: number; label: string; despesas: number; receitas: number; isToday: boolean }[] = [];
+                for (let i = 6; i >= 0; i--) {
+                  const d = new Date(today);
+                  d.setDate(today.getDate() - i);
+                  const inMonth = d.getMonth() === selectedMonth && d.getFullYear() === selectedYear;
+                  const dayNum = d.getDate();
+                  const dayData = dailyData.find(dd => dd.day === dayNum);
+                  days.push({
+                    day: dayNum,
+                    label: WEEKDAYS_SHORT[d.getDay()],
+                    despesas: inMonth && dayData ? dayData.despesas : 0,
+                    receitas: inMonth && dayData ? dayData.receitas : 0,
+                    isToday: i === 0,
+                  });
+                }
+                const maxVal = Math.max(...days.map(d => Math.max(d.despesas, d.receitas)), 1);
+                return days.map((wd, i) => (
                   <div key={i} className="flex-1 flex flex-col items-center gap-1">
                     <div className="h-8 w-full flex items-end justify-center gap-[2px]">
                       {wd.despesas > 0 && (
-                        <div
-                          className="w-[45%] rounded-t-sm"
-                          style={{
-                            height: `${Math.max((wd.despesas / maxVal) * 32, 3)}px`,
-                            background: "hsl(0 60% 50% / 0.5)",
-                          }}
-                        />
+                        <div className="w-[42%] rounded-full" style={{ height: `${Math.max((wd.despesas / maxVal) * 32, 3)}px`, background: "hsl(0 60% 50% / 0.5)" }} />
                       )}
                       {wd.receitas > 0 && (
-                        <div
-                          className="w-[45%] rounded-t-sm"
-                          style={{
-                            height: `${Math.max((wd.receitas / maxVal) * 32, 3)}px`,
-                            background: "hsl(150 100% 45% / 0.5)",
-                          }}
-                        />
+                        <div className="w-[42%] rounded-full" style={{ height: `${Math.max((wd.receitas / maxVal) * 32, 3)}px`, background: "hsl(150 100% 45% / 0.5)" }} />
                       )}
                       {wd.despesas === 0 && wd.receitas === 0 && (
-                        <div
-                          className="w-full rounded-t-sm"
-                          style={{ height: "4px", background: "hsl(220 10% 25% / 0.3)" }}
-                        />
+                        <div className="w-full rounded-full" style={{ height: "4px", background: "hsl(220 10% 25% / 0.3)" }} />
                       )}
                     </div>
-                    <span className={`text-[9px] font-medium ${isToday ? "text-primary font-bold" : "text-muted-foreground/50"}`}>
-                      {WEEKDAYS_SHORT[i]}
+                    <span className={`text-[8px] font-medium ${wd.isToday ? "text-primary font-bold" : "text-muted-foreground/50"}`}>
+                      {wd.label}
                     </span>
                   </div>
-                );
-              })}
+                ));
+              })()}
             </div>
           </div>
         )}
@@ -341,64 +294,85 @@ const TransacoesAnalytics = () => {
               className="overflow-hidden"
             >
               <div className="px-4 pb-4 space-y-4">
-                {/* Bar chart - receitas & despesas side by side */}
-                <div className="h-44">
-                  <ResponsiveContainer width="100%" height="100%">
-                    <BarChart data={dailyData} margin={{ top: 5, right: 5, left: -20, bottom: 0 }} barGap={1} barSize={6}>
-                      <CartesianGrid strokeDasharray="3 3" stroke="hsl(220 10% 20%)" />
-                      <XAxis dataKey="day" tick={{ fill: "hsl(220 10% 45%)", fontSize: 8 }} axisLine={false} tickLine={false} interval={2} />
-                      <YAxis tick={{ fill: "hsl(220 10% 45%)", fontSize: 9 }} axisLine={false} tickLine={false} tickFormatter={(v) => v >= 1000 ? `${(v / 1000).toFixed(0)}k` : v} />
-                      <Tooltip content={<ChartTooltip />} />
-                      <Bar dataKey="despesas" name="Despesas" fill="hsl(0 60% 50%)" radius={[2, 2, 0, 0]} />
-                      <Bar dataKey="receitas" name="Receitas" fill="hsl(150 100% 45%)" radius={[2, 2, 0, 0]} />
-                    </BarChart>
-                  </ResponsiveContainer>
+                {/* Full month bar chart - same style as collapsed */}
+                <div className="overflow-x-auto">
+                  <div className="flex gap-[3px]" style={{ minWidth: `${dailyData.length * 14}px` }}>
+                    {(() => {
+                      const maxVal = Math.max(...dailyData.map(d => Math.max(d.despesas, d.receitas)), 1);
+                      const today = new Date();
+                      return dailyData.map((dd, i) => {
+                        const isToday = dd.day === today.getDate() && selectedMonth === today.getMonth() && selectedYear === today.getFullYear();
+                        return (
+                          <div key={i} className="flex-1 flex flex-col items-center gap-0.5" style={{ minWidth: "12px" }}>
+                            <div className="h-10 w-full flex items-end justify-center gap-[1px]">
+                              {dd.despesas > 0 && (
+                                <div className="w-[42%] rounded-full" style={{ height: `${Math.max((dd.despesas / maxVal) * 40, 2)}px`, background: "hsl(0 60% 50% / 0.5)" }} />
+                              )}
+                              {dd.receitas > 0 && (
+                                <div className="w-[42%] rounded-full" style={{ height: `${Math.max((dd.receitas / maxVal) * 40, 2)}px`, background: "hsl(150 100% 45% / 0.5)" }} />
+                              )}
+                              {dd.despesas === 0 && dd.receitas === 0 && (
+                                <div className="w-full rounded-full" style={{ height: "3px", background: "hsl(220 10% 25% / 0.3)" }} />
+                              )}
+                            </div>
+                            <span className={`text-[7px] font-medium ${isToday ? "text-primary font-bold" : "text-muted-foreground/40"}`}>
+                              {dd.day}
+                            </span>
+                          </div>
+                        );
+                      });
+                    })()}
+                  </div>
                 </div>
 
                 {/* Mini Calendar Heatmap */}
                 <div>
-                  <h4 className="text-[10px] font-semibold text-muted-foreground uppercase tracking-widest mb-2">Mapa de Gastos</h4>
-                  <div className="grid grid-cols-7 gap-1 mb-1">
+                  <h4 className="text-[10px] font-semibold text-muted-foreground uppercase tracking-widest mb-1.5">Mapa de Gastos</h4>
+                  <div className="grid grid-cols-7 gap-0.5 mb-0.5">
                     {WEEKDAYS_SHORT.map((d, i) => (
-                      <div key={i} className="text-center text-[9px] text-muted-foreground/50 font-semibold py-0.5">{d}</div>
+                      <div key={i} className="text-center text-[8px] text-muted-foreground/50 font-semibold py-0.5">{d}</div>
                     ))}
                   </div>
-                  <div className="grid grid-cols-7 gap-1">
+                  <div className="grid grid-cols-7 gap-0.5">
                     {calendarDays.map((cell, i) => {
-                      if (cell.isEmpty) return <div key={`e-${i}`} className="aspect-square" />;
+                      if (cell.isEmpty) return <div key={`e-${i}`} className="w-full" style={{ paddingBottom: "100%" }} />;
                       const today = new Date();
                       const isToday = cell.day === today.getDate() && selectedMonth === today.getMonth() && selectedYear === today.getFullYear();
                       return (
                         <div
                           key={cell.day}
-                          className={`aspect-square rounded-md flex items-center justify-center relative text-[10px] font-medium transition-all ${isToday ? "ring-1 ring-primary" : ""}`}
+                          className={`rounded flex items-center justify-center relative text-[8px] font-medium transition-all ${isToday ? "ring-1 ring-primary" : ""}`}
                           style={{
+                            paddingBottom: "100%",
+                            position: "relative",
                             background: cell.intensity > 0
                               ? `hsl(340 60% ${55 - cell.intensity * 25}% / ${0.2 + cell.intensity * 0.5})`
                               : "hsl(220 15% 15% / 0.3)",
                             color: cell.intensity > 0.5 ? "hsl(0 0% 90%)" : "hsl(220 10% 55%)",
                           }}
                         >
-                          {cell.day}
-                          {cell.hasReceipt && (
-                            <span className="absolute top-0.5 right-0.5 w-1 h-1 rounded-full bg-primary" />
-                          )}
+                          <span className="absolute inset-0 flex items-center justify-center">
+                            {cell.day}
+                            {cell.hasReceipt && (
+                              <span className="absolute top-0 right-0 w-1 h-1 rounded-full bg-primary" />
+                            )}
+                          </span>
                         </div>
                       );
                     })}
                   </div>
-                  <div className="flex items-center justify-center gap-3 mt-2">
+                  <div className="flex items-center justify-center gap-3 mt-1.5">
                     <div className="flex items-center gap-1">
-                      <div className="w-2.5 h-2.5 rounded-sm" style={{ background: "hsl(340 60% 50% / 0.3)" }} />
-                      <span className="text-[8px] text-muted-foreground/50">Pouco</span>
+                      <div className="w-2 h-2 rounded-sm" style={{ background: "hsl(340 60% 50% / 0.3)" }} />
+                      <span className="text-[7px] text-muted-foreground/50">Pouco</span>
                     </div>
                     <div className="flex items-center gap-1">
-                      <div className="w-2.5 h-2.5 rounded-sm" style={{ background: "hsl(340 60% 40% / 0.7)" }} />
-                      <span className="text-[8px] text-muted-foreground/50">Muito</span>
+                      <div className="w-2 h-2 rounded-sm" style={{ background: "hsl(340 60% 40% / 0.7)" }} />
+                      <span className="text-[7px] text-muted-foreground/50">Muito</span>
                     </div>
                     <div className="flex items-center gap-1">
                       <div className="w-1.5 h-1.5 rounded-full bg-primary" />
-                      <span className="text-[8px] text-muted-foreground/50">Receita</span>
+                      <span className="text-[7px] text-muted-foreground/50">Receita</span>
                     </div>
                   </div>
                 </div>
@@ -408,25 +382,6 @@ const TransacoesAnalytics = () => {
         </AnimatePresence>
       </GlassCard>
 
-      {/* Evolução Mensal */}
-      <GlassCard>
-        <div className="flex items-center gap-2 mb-3">
-          <TrendingUp className="w-4 h-4 text-primary" />
-          <h3 className="text-sm font-bold text-foreground">Evolução Mensal</h3>
-        </div>
-        <div className="h-40">
-          <ResponsiveContainer width="100%" height="100%">
-            <BarChart data={evolutionData} margin={{ top: 5, right: 5, left: -20, bottom: 0 }} barGap={2} barSize={14}>
-              <CartesianGrid strokeDasharray="3 3" stroke="hsl(220 10% 20%)" />
-              <XAxis dataKey="month" tick={{ fill: "hsl(220 10% 45%)", fontSize: 11 }} axisLine={false} tickLine={false} />
-              <YAxis tick={{ fill: "hsl(220 10% 45%)", fontSize: 10 }} axisLine={false} tickLine={false} tickFormatter={(v) => v >= 1000 ? `${(v / 1000).toFixed(0)}k` : v} />
-              <Tooltip content={<ChartTooltip />} />
-              <Bar dataKey="receitas" name="Receitas" fill="hsl(150 100% 45% / 0.7)" radius={[3, 3, 0, 0]} />
-              <Bar dataKey="despesas" name="Despesas" fill="hsl(0 60% 50% / 0.7)" radius={[3, 3, 0, 0]} />
-            </BarChart>
-          </ResponsiveContainer>
-        </div>
-      </GlassCard>
     </motion.div>
   );
 };
