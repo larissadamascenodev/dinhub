@@ -97,10 +97,12 @@ const WalletSummaryCard = () => {
             {formatCurrency(totalAvailable)}
           </p>
         </div>
-        <div className="bg-background/40 backdrop-blur-sm rounded-xl p-2 text-center border border-border/10 opacity-50">
+        <div className="bg-background/40 backdrop-blur-sm rounded-xl p-2 text-center border border-border/10">
           <Briefcase className="w-3 h-3 text-primary/60 mx-auto mb-0.5" />
           <p className="text-[8px] text-muted-foreground leading-tight">Investimentos</p>
-          <p className="text-[11px] font-bold tabular-nums text-muted-foreground mt-0.5">Em breve</p>
+          <p className={cn("text-[11px] font-bold tabular-nums mt-0.5", totalInvested > 0 ? "text-foreground" : "text-muted-foreground")}>
+            {totalInvested > 0 ? formatCurrency(totalInvested) : "R$ 0,00"}
+          </p>
         </div>
       </div>
 
