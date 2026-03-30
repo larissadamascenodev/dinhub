@@ -80,6 +80,73 @@ const Configuracoes = () => {
     navigate("/auth");
   };
 
+  const openResetModal = () => {
+    setResetMode("choose");
+    setResetModalOpen(true);
+  };
+
+  const handleResetTransactions = async () => {
+    if (!user) return;
+    setResetting(true);
+    try {
+      // Delete invoice_items, invoices, recurring_exclusions, transactions
+      // Also reset account balances to initial_balance
+      await supabase.from("invoice_items").delete().neq("id", "00000000-0000-0000-0000-000000000000");
+      await supabase.from("invoices").delete().eq("user_id", user.id);
+      await supabase.from("recurring_exclusions").delete().eq("user_id", user.id);
+      await supabase.from("transactions").delete().eq("user_id", user.id);
+      await supabase.from("finance_events").delete().eq("user_id", user.id);
+
+      // Reset all account balances to initial_balance
+      const { data: accounts } = await supabase.from("accounts").select("id, initial_balance").eq("user_id", user.id);
+      if (accounts) {
+        for (const acc of accounts) {
+          await supabase.from("accounts").update({ current_balance: acc.initial_balance }).eq("id", acc.id);
+        }
+      }
+
+      // Reset credit card used_limit
+      await supabase.from("credit_cards").update({ used_limit: 0 }).eq("user_id", user.id);
+
+      // Update profile flags
+      await supabase.from("profiles").update({ has_transactions: false }).eq("id", user.id);
+
+      toast.success("Transações apagadas com sucesso!");
+      setResetModalOpen(false);
+    } catch {
+      toast.error("Erro ao apagar transações");
+    } finally {
+      setResetting(false);
+    }
+  };
+
+  const handleResetAll = async () => {
+    if (!user) return;
+    setResetting(true);
+    try {
+      await supabase.from("invoice_items").delete().neq("id", "00000000-0000-0000-0000-000000000000");
+      await supabase.from("invoices").delete().eq("user_id", user.id);
+      await supabase.from("recurring_exclusions").delete().eq("user_id", user.id);
+      await supabase.from("transactions").delete().eq("user_id", user.id);
+      await supabase.from("finance_events").delete().eq("user_id", user.id);
+      await supabase.from("credit_cards").delete().eq("user_id", user.id);
+      await supabase.from("accounts").delete().eq("user_id", user.id);
+
+      await supabase.from("profiles").update({
+        has_transactions: false,
+        has_account: false,
+        has_completed_profile: false,
+      }).eq("id", user.id);
+
+      toast.success("Todos os dados foram apagados!");
+      setResetModalOpen(false);
+    } catch {
+      toast.error("Erro ao apagar dados");
+    } finally {
+      setResetting(false);
+    }
+  };
+
   /* ── Feature cards ── */
   const featureCards = [
     { icon: Target, label: "Metas", sub: "Objetivos" },
