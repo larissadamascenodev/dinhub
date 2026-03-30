@@ -94,7 +94,6 @@ const BotFinanceProjecoes = () => {
     projections,
     dailyLimit,
     simulation,
-    healthScore: healthData,
     insight,
     savingsBoost,
     setSavingsBoost,
@@ -108,7 +107,6 @@ const BotFinanceProjecoes = () => {
 
   // Animated values
   const formattedSafe = useFormattedCounter(dailyLimit.safeToSpend);
-  const animatedScore = useAnimatedCounter(healthData.score);
 
   // Derived UI classes
   const limitBarColor =
@@ -117,11 +115,6 @@ const BotFinanceProjecoes = () => {
     dailyLimit.tone === "positive" ? "text-primary" : dailyLimit.tone === "neutral" ? "text-warning" : "text-destructive";
   const limitBgColor =
     dailyLimit.tone === "positive" ? "bg-primary/10" : dailyLimit.tone === "neutral" ? "bg-warning/10" : "bg-destructive/10";
-
-  const scoreColor =
-    healthData.score >= 75 ? "text-primary" : healthData.score >= 50 ? "text-warning" : "text-destructive";
-  const scoreStroke =
-    healthData.score >= 75 ? "hsl(var(--primary))" : healthData.score >= 50 ? "hsl(var(--warning))" : "hsl(var(--destructive))";
 
   return (
     <div className="space-y-4 pb-4">
