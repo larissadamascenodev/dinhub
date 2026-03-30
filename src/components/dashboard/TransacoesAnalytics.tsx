@@ -238,7 +238,7 @@ const TransacoesAnalytics = () => {
           </motion.div>
         </button>
 
-        {/* Collapsed: last 7 days mini bars */}
+        {/* Collapsed: last 7 days */}
         {!dailyExpanded && (
           <div className="px-4 pb-3">
             <div className="flex gap-1">
@@ -252,8 +252,7 @@ const TransacoesAnalytics = () => {
                   const dayNum = d.getDate();
                   const dayData = dailyData.find(dd => dd.day === dayNum);
                   days.push({
-                    day: dayNum,
-                    label: WEEKDAYS_SHORT[d.getDay()],
+                    day: dayNum, label: WEEKDAYS_SHORT[d.getDay()],
                     despesas: inMonth && dayData ? dayData.despesas : 0,
                     receitas: inMonth && dayData ? dayData.receitas : 0,
                     isToday: i === 0,
@@ -262,17 +261,7 @@ const TransacoesAnalytics = () => {
                 const maxVal = Math.max(...days.map(d => Math.max(d.despesas, d.receitas)), 1);
                 return days.map((wd, i) => (
                   <div key={i} className="flex-1 flex flex-col items-center gap-1">
-                    <div className="h-8 w-full flex items-end justify-center gap-[2px]">
-                      {wd.despesas > 0 && (
-                        <div className="w-[42%] rounded-full" style={{ height: `${Math.max((wd.despesas / maxVal) * 32, 3)}px`, background: "hsl(0 60% 50% / 0.5)" }} />
-                      )}
-                      {wd.receitas > 0 && (
-                        <div className="w-[42%] rounded-full" style={{ height: `${Math.max((wd.receitas / maxVal) * 32, 3)}px`, background: "hsl(150 100% 45% / 0.5)" }} />
-                      )}
-                      {wd.despesas === 0 && wd.receitas === 0 && (
-                        <div className="w-full rounded-full" style={{ height: "4px", background: "hsl(220 10% 25% / 0.3)" }} />
-                      )}
-                    </div>
+                    <DailyBarGroup despesas={wd.despesas} receitas={wd.receitas} maxVal={maxVal} height={28} />
                     <span className={`text-[8px] font-medium ${wd.isToday ? "text-primary font-bold" : "text-muted-foreground/50"}`}>
                       {wd.label}
                     </span>
@@ -283,7 +272,7 @@ const TransacoesAnalytics = () => {
           </div>
         )}
 
-        {/* Expanded: bar chart + heatmap calendar */}
+        {/* Expanded: full month bars + compact heatmap */}
         <AnimatePresence>
           {dailyExpanded && (
             <motion.div
@@ -293,29 +282,19 @@ const TransacoesAnalytics = () => {
               transition={{ type: "spring", stiffness: 300, damping: 28 }}
               className="overflow-hidden"
             >
-              <div className="px-4 pb-4 space-y-4">
-                {/* Full month bar chart - same style as collapsed */}
-                <div className="overflow-x-auto">
-                  <div className="flex gap-[3px]" style={{ minWidth: `${dailyData.length * 14}px` }}>
+              <div className="px-4 pb-4 space-y-3">
+                {/* Full month bars */}
+                <div className="overflow-x-auto -mx-1 px-1">
+                  <div className="flex gap-[2px]" style={{ minWidth: `${dailyData.length * 12}px` }}>
                     {(() => {
                       const maxVal = Math.max(...dailyData.map(d => Math.max(d.despesas, d.receitas)), 1);
                       const today = new Date();
                       return dailyData.map((dd, i) => {
                         const isToday = dd.day === today.getDate() && selectedMonth === today.getMonth() && selectedYear === today.getFullYear();
                         return (
-                          <div key={i} className="flex-1 flex flex-col items-center gap-0.5" style={{ minWidth: "12px" }}>
-                            <div className="h-10 w-full flex items-end justify-center gap-[1px]">
-                              {dd.despesas > 0 && (
-                                <div className="w-[42%] rounded-full" style={{ height: `${Math.max((dd.despesas / maxVal) * 40, 2)}px`, background: "hsl(0 60% 50% / 0.5)" }} />
-                              )}
-                              {dd.receitas > 0 && (
-                                <div className="w-[42%] rounded-full" style={{ height: `${Math.max((dd.receitas / maxVal) * 40, 2)}px`, background: "hsl(150 100% 45% / 0.5)" }} />
-                              )}
-                              {dd.despesas === 0 && dd.receitas === 0 && (
-                                <div className="w-full rounded-full" style={{ height: "3px", background: "hsl(220 10% 25% / 0.3)" }} />
-                              )}
-                            </div>
-                            <span className={`text-[7px] font-medium ${isToday ? "text-primary font-bold" : "text-muted-foreground/40"}`}>
+                          <div key={i} className="flex-1 flex flex-col items-center gap-0.5" style={{ minWidth: "10px" }}>
+                            <DailyBarGroup despesas={dd.despesas} receitas={dd.receitas} maxVal={maxVal} height={32} />
+                            <span className={`text-[6px] font-medium ${isToday ? "text-primary font-bold" : "text-muted-foreground/40"}`}>
                               {dd.day}
                             </span>
                           </div>
@@ -325,49 +304,45 @@ const TransacoesAnalytics = () => {
                   </div>
                 </div>
 
-                {/* Mini Calendar Heatmap */}
+                {/* Compact Heatmap */}
                 <div>
-                  <h4 className="text-[10px] font-semibold text-muted-foreground uppercase tracking-widest mb-1.5">Mapa de Gastos</h4>
-                  <div className="grid grid-cols-7 gap-0.5 mb-0.5">
+                  <h4 className="text-[9px] font-semibold text-muted-foreground uppercase tracking-widest mb-1">Mapa de Gastos</h4>
+                  <div className="grid grid-cols-7 gap-[3px] mb-[3px]">
                     {WEEKDAYS_SHORT.map((d, i) => (
-                      <div key={i} className="text-center text-[8px] text-muted-foreground/50 font-semibold py-0.5">{d}</div>
+                      <div key={i} className="text-center text-[7px] text-muted-foreground/40 font-semibold">{d}</div>
                     ))}
                   </div>
-                  <div className="grid grid-cols-7 gap-0.5">
+                  <div className="grid grid-cols-7 gap-[3px]">
                     {calendarDays.map((cell, i) => {
-                      if (cell.isEmpty) return <div key={`e-${i}`} className="w-full" style={{ paddingBottom: "100%" }} />;
+                      if (cell.isEmpty) return <div key={`e-${i}`} className="aspect-square" />;
                       const today = new Date();
                       const isToday = cell.day === today.getDate() && selectedMonth === today.getMonth() && selectedYear === today.getFullYear();
                       return (
                         <div
                           key={cell.day}
-                          className={`rounded flex items-center justify-center relative text-[8px] font-medium transition-all ${isToday ? "ring-1 ring-primary" : ""}`}
+                          className={`aspect-square rounded-[3px] flex items-center justify-center relative text-[7px] font-medium ${isToday ? "ring-1 ring-primary" : ""}`}
                           style={{
-                            paddingBottom: "100%",
-                            position: "relative",
                             background: cell.intensity > 0
-                              ? `hsl(340 60% ${55 - cell.intensity * 25}% / ${0.2 + cell.intensity * 0.5})`
-                              : "hsl(220 15% 15% / 0.3)",
-                            color: cell.intensity > 0.5 ? "hsl(0 0% 90%)" : "hsl(220 10% 55%)",
+                              ? `hsl(var(--destructive) / ${0.15 + cell.intensity * 0.45})`
+                              : "hsl(var(--muted) / 0.3)",
+                            color: cell.intensity > 0.5 ? "hsl(var(--foreground))" : "hsl(var(--muted-foreground) / 0.6)",
                           }}
                         >
-                          <span className="absolute inset-0 flex items-center justify-center">
-                            {cell.day}
-                            {cell.hasReceipt && (
-                              <span className="absolute top-0 right-0 w-1 h-1 rounded-full bg-primary" />
-                            )}
-                          </span>
+                          {cell.day}
+                          {cell.hasReceipt && (
+                            <span className="absolute top-0 right-0 w-[3px] h-[3px] rounded-full bg-primary" />
+                          )}
                         </div>
                       );
                     })}
                   </div>
-                  <div className="flex items-center justify-center gap-3 mt-1.5">
+                  <div className="flex items-center justify-center gap-2.5 mt-1.5">
                     <div className="flex items-center gap-1">
-                      <div className="w-2 h-2 rounded-sm" style={{ background: "hsl(340 60% 50% / 0.3)" }} />
+                      <div className="w-1.5 h-1.5 rounded-sm bg-destructive/30" />
                       <span className="text-[7px] text-muted-foreground/50">Pouco</span>
                     </div>
                     <div className="flex items-center gap-1">
-                      <div className="w-2 h-2 rounded-sm" style={{ background: "hsl(340 60% 40% / 0.7)" }} />
+                      <div className="w-1.5 h-1.5 rounded-sm bg-destructive/70" />
                       <span className="text-[7px] text-muted-foreground/50">Muito</span>
                     </div>
                     <div className="flex items-center gap-1">
