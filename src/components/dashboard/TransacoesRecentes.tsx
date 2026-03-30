@@ -104,10 +104,7 @@ const TxCard = ({ tx, onDelete }: { tx: Transaction; onDelete?: (id: string) => 
           >
             {isReceita ? "+" : "−"}{fmt(tx.amount)}
           </p>
-          <span
-            className="block mt-0.5 text-[8px] md:text-[9px] font-bold uppercase tracking-wide"
-            style={{ color: isPending ? "hsl(40 80% 50% / 0.7)" : `hsl(${catColor} / 0.4)` }}
-          >
+          <span className="block mt-0.5 text-[8px] md:text-[9px] font-bold uppercase tracking-wide text-muted-foreground/40">
             {isPaid ? "Pago" : "Pendente"}
           </span>
         </div>
