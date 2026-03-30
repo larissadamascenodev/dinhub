@@ -1,11 +1,15 @@
-import { useState } from "react";
+import { useState, useEffect, useRef } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import {
   X, MoreVertical, Pencil, Trash2, Bell, CalendarDays, Wallet, Tag, RefreshCw, Clock,
+  FileText, StickyNote, Check,
 } from "lucide-react";
 import { toast } from "sonner";
-import { updateTransactionStatus, updateTransaction, deleteTransaction } from "@/services/transactionService";
+import { cn } from "@/lib/utils";
+import { updateTransactionStatus, updateTransaction, deleteTransaction, getAccounts } from "@/services/transactionService";
 import { excludeRecurringForMonth, excludeRecurringFromMonthOnward } from "@/services/recurringService";
+import { format, subDays } from "date-fns";
+import { Calendar } from "@/components/ui/calendar";
 
 const CATEGORY_ICONS: Record<string, string> = {
   "Alimentação": "🍽️", "Transporte": "🚗", "Moradia": "🏠",
@@ -18,10 +22,27 @@ const CATEGORY_ICONS: Record<string, string> = {
   "Comissão": "🤝", "Mesada": "👛", "Plano de Saúde": "❤️",
 };
 
+const CATEGORIES_EXPENSE = [
+  "Alimentação", "Transporte", "Saúde", "Assinaturas",
+  "Lazer", "Moradia", "Educação", "Vestuário", "Pets",
+  "Beleza", "Presentes", "Viagem", "Tecnologia", "Impostos",
+];
+const CATEGORIES_INCOME = [
+  "Salário", "Freelance", "Investimentos", "Vendas",
+  "Aluguéis", "Bônus", "Comissão", "Mesada",
+];
+
 const MONTHS_FULL = ["janeiro", "fevereiro", "março", "abril", "maio", "junho", "julho", "agosto", "setembro", "outubro", "novembro", "dezembro"];
 
 const fmt = (v: number) =>
   v.toLocaleString("pt-BR", { style: "currency", currency: "BRL" });
+
+function formatCurrency(cents: number): string {
+  return (cents / 100).toLocaleString("pt-BR", {
+    minimumFractionDigits: 2,
+    maximumFractionDigits: 2,
+  });
+}
 
 const formatFullDate = (dateStr: string) => {
   const [y, m, d] = dateStr.split("-").map(Number);
@@ -44,6 +65,8 @@ interface TransactionRow {
   account_id: string | null;
   credit_card_id: string | null;
 }
+
+interface AccountRow { id: string; name: string; color: string | null; }
 
 type ModalStep = "detail" | "pay-confirm" | "delete-confirm" | "edit-scope" | "edit-form" | "menu";
 
