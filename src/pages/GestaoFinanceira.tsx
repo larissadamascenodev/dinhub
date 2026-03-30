@@ -623,7 +623,7 @@ const GestaoFinanceira = () => {
           <Button
             onClick={handleAddAccount}
             disabled={!newAccName.trim()}
-            className="w-full h-11 rounded-xl text-sm font-semibold"
+            className="w-full h-11 rounded-xl text-sm font-semibold bg-primary/15 text-primary hover:bg-primary/25 border-0"
           >
             Criar Conta
           </Button>
