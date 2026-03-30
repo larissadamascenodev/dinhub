@@ -246,12 +246,41 @@ const TransactionDetailModal = ({ open, tx, accountName, onClose, onRefresh, use
                     <Bell className="w-4 h-4" />
                   </button>
                 )}
-                <button
-                  onClick={() => setStep("menu")}
-                  className="w-8 h-8 rounded-full bg-muted/40 flex items-center justify-center text-muted-foreground hover:text-foreground transition-colors"
-                >
-                  <MoreVertical className="w-4 h-4" />
-                </button>
+                <div className="relative" ref={dropdownRef}>
+                  <button
+                    onClick={() => setShowDropdown(!showDropdown)}
+                    className="w-8 h-8 rounded-full bg-muted/40 flex items-center justify-center text-muted-foreground hover:text-foreground transition-colors"
+                  >
+                    <MoreVertical className="w-4 h-4" />
+                  </button>
+                  <AnimatePresence>
+                    {showDropdown && (
+                      <motion.div
+                        initial={{ opacity: 0, scale: 0.9, y: -4 }}
+                        animate={{ opacity: 1, scale: 1, y: 0 }}
+                        exit={{ opacity: 0, scale: 0.9, y: -4 }}
+                        transition={{ duration: 0.15 }}
+                        className="absolute right-0 top-10 z-10 w-40 rounded-xl bg-card border border-border/30 shadow-xl overflow-hidden"
+                      >
+                        <button
+                          onClick={() => { setShowDropdown(false); openEditForm(); }}
+                          className="w-full flex items-center gap-2.5 px-4 py-3 text-sm font-medium text-foreground hover:bg-muted/40 transition-colors"
+                        >
+                          <Pencil className="w-3.5 h-3.5 text-primary" />
+                          Editar
+                        </button>
+                        <div className="h-px bg-border/20" />
+                        <button
+                          onClick={() => { setShowDropdown(false); setStep("delete-confirm"); }}
+                          className="w-full flex items-center gap-2.5 px-4 py-3 text-sm font-medium text-destructive hover:bg-destructive/10 transition-colors"
+                        >
+                          <Trash2 className="w-3.5 h-3.5" />
+                          Excluir
+                        </button>
+                      </motion.div>
+                    )}
+                  </AnimatePresence>
+                </div>
               </div>
             </div>
 
