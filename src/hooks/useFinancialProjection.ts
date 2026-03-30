@@ -9,7 +9,7 @@ import {
   getInsight,
   invalidateProjectionCache,
   type SimulationParams,
-} from "@/services/financialProjectionEngine";
+} from "@/services/projection";
 
 /**
  * React hook that wires the financial projection engine to live data.
