@@ -760,12 +760,17 @@ const TransactionDetailModal = ({ open, tx, accountName, onClose, onRefresh, use
         >
           <motion.div
             key={step}
-            initial={{ opacity: 0, y: 60 }}
+            initial={{ opacity: 0, y: step === "edit-form" ? "100%" : 60 }}
             animate={{ opacity: 1, y: 0 }}
-            exit={{ opacity: 0, y: 60 }}
-            transition={{ type: "spring", damping: 28, stiffness: 300 }}
+            exit={{ opacity: 0, y: step === "edit-form" ? "100%" : 60 }}
+            transition={{ type: "spring", damping: 30, stiffness: 300 }}
             onClick={(e) => e.stopPropagation()}
-            className={`w-full max-w-md mx-0 md:mx-4 rounded-t-3xl md:rounded-2xl bg-card border border-border/20 shadow-2xl ${step === "edit-form" ? "p-0 pb-0" : "p-5 pb-24 md:pb-5"}`}
+            className={cn(
+              "w-full max-w-md mx-0 md:mx-4 bg-card shadow-2xl",
+              step === "edit-form"
+                ? "h-full md:h-auto md:max-h-[92vh] rounded-none md:rounded-2xl border-0 md:border md:border-border/20 p-0 flex flex-col overflow-hidden"
+                : "rounded-t-3xl md:rounded-2xl border border-border/20 p-5 pb-24 md:pb-5"
+            )}
           >
             {renderContent()}
           </motion.div>
