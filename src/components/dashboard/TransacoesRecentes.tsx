@@ -125,7 +125,7 @@ const TransacoesRecentes = memo(({ transactions, onDelete }: Props) => {
                 exit={{ top: 0, opacity: 0, scale: 1 }}
                 transition={{ type: "spring", stiffness: 500, damping: 35, delay: i * 0.03 }}
                 style={{
-                  height: "56px",
+                  height: "44px",
                   transformOrigin: "top center",
                   zIndex: STACK_COUNT - i,
                   background: `linear-gradient(145deg, hsl(220 18% ${8 - i}% / 0.9) 0%, hsl(220 20% ${4 - i * 0.5}% / 0.95) 100%)`,
