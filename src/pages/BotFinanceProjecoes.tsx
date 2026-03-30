@@ -1,4 +1,4 @@
-import { useState, useMemo, useCallback, memo } from "react";
+import React, { useState, useMemo, useCallback, memo } from "react";
 import type { MonthProjection } from "@/services/projection";
 import { useNavigate } from "react-router-dom";
 import { motion } from "framer-motion";
@@ -112,6 +112,9 @@ const GlowDot = (props: any) => {
 
 // ─── Month Selector (dashboard style) ───
 
+const VISIBLE_MONTHS_MOBILE = 6;
+const VISIBLE_MONTHS_DESKTOP = 12;
+
 const ProjectionMonthSelector = memo(({
   projections,
   selectedIdx,
@@ -125,11 +128,37 @@ const ProjectionMonthSelector = memo(({
   const currentMonth = now.getMonth();
   const currentYear = now.getFullYear();
 
+  // Compute visible window — on mobile show 6 months, shifts as selection moves forward
+  const [isMobile, setIsMobile] = useState(window.innerWidth < 640);
+  
+  React.useEffect(() => {
+    const handler = () => setIsMobile(window.innerWidth < 640);
+    window.addEventListener("resize", handler);
+    return () => window.removeEventListener("resize", handler);
+  }, []);
+
+  const maxVisible = isMobile ? VISIBLE_MONTHS_MOBILE : VISIBLE_MONTHS_DESKTOP;
+  const total = projections.length;
+
+  // Window starts at 0 but shifts so selectedIdx is always visible
+  const windowStart = useMemo(() => {
+    if (total <= maxVisible) return 0;
+    // Keep selected month within visible range, shifting window forward
+    const start = Math.min(
+      Math.max(0, selectedIdx - Math.floor(maxVisible / 2)),
+      total - maxVisible
+    );
+    return start;
+  }, [selectedIdx, total, maxVisible]);
+
+  const visibleProjections = projections.slice(windowStart, windowStart + maxVisible);
+
   return (
-    <div className="flex items-center bg-card/60 backdrop-blur-xl border border-border/15 rounded-2xl px-1.5 py-0.5 shadow-lg shadow-black/10 overflow-x-auto scrollbar-none">
+    <div className="flex items-center bg-card/60 backdrop-blur-xl border border-border/15 rounded-2xl px-1.5 py-0.5 shadow-lg shadow-black/10">
       <div className="flex items-center gap-0.5">
-        {projections.map((p, i) => {
-          const isActive = i === selectedIdx;
+        {visibleProjections.map((p, vi) => {
+          const realIdx = windowStart + vi;
+          const isActive = realIdx === selectedIdx;
           const isCurrent = p.month === currentMonth && p.year === currentYear;
 
           return (
@@ -138,8 +167,8 @@ const ProjectionMonthSelector = memo(({
               layout
               whileTap={{ scale: 0.9 }}
               whileHover={{ scale: isActive ? 1 : 1.05 }}
-              onClick={() => onSelect(i)}
-              className={`relative px-3 py-1.5 rounded-xl text-xs sm:text-sm font-semibold whitespace-nowrap transition-colors duration-200 ${
+              onClick={() => onSelect(realIdx)}
+              className={`relative px-2 py-1 sm:px-3 sm:py-1.5 rounded-xl text-[11px] sm:text-sm font-semibold whitespace-nowrap transition-colors duration-200 ${
                 isActive
                   ? "text-primary"
                   : isCurrent
@@ -184,26 +213,26 @@ const CompositionBlock = ({ prev, income, expense, final: finalVal }: { prev: nu
     initial={{ opacity: 0, y: 6 }}
     animate={{ opacity: 1, y: 0 }}
     transition={{ delay: 0.1 }}
-    className="flex items-center gap-2 sm:gap-3 flex-wrap justify-center py-3 sm:py-4"
+    className="flex items-center gap-1 sm:gap-3 justify-center py-2 sm:py-4 overflow-x-auto scrollbar-none"
   >
-    <div className="bg-secondary/50 rounded-xl px-3 sm:px-5 py-2 sm:py-3 text-center min-w-[80px] sm:min-w-[110px]">
-      <p className="text-[9px] sm:text-xs text-muted-foreground">Saldo anterior</p>
-      <p className="text-xs sm:text-base font-bold tabular-nums text-foreground">{fmtCurrency(prev)}</p>
+    <div className="bg-secondary/50 rounded-lg sm:rounded-xl px-1.5 sm:px-5 py-1 sm:py-3 text-center flex-shrink-0">
+      <p className="text-[7px] sm:text-xs text-muted-foreground leading-tight">Saldo anterior</p>
+      <p className="text-[10px] sm:text-base font-bold tabular-nums text-foreground">{fmtCurrency(prev)}</p>
     </div>
-    <Plus className="w-3.5 h-3.5 sm:w-4 sm:h-4 text-primary/50 flex-shrink-0" />
-    <div className="bg-secondary/50 rounded-xl px-3 sm:px-5 py-2 sm:py-3 text-center min-w-[80px] sm:min-w-[110px]">
-      <p className="text-[9px] sm:text-xs text-muted-foreground">Receitas</p>
-      <p className="text-xs sm:text-base font-bold tabular-nums text-primary">{fmtCurrency(income)}</p>
+    <Plus className="w-2.5 h-2.5 sm:w-4 sm:h-4 text-primary/50 flex-shrink-0" />
+    <div className="bg-secondary/50 rounded-lg sm:rounded-xl px-1.5 sm:px-5 py-1 sm:py-3 text-center flex-shrink-0">
+      <p className="text-[7px] sm:text-xs text-muted-foreground leading-tight">Receitas</p>
+      <p className="text-[10px] sm:text-base font-bold tabular-nums text-primary">{fmtCurrency(income)}</p>
     </div>
-    <Minus className="w-3.5 h-3.5 sm:w-4 sm:h-4 text-destructive/50 flex-shrink-0" />
-    <div className="bg-secondary/50 rounded-xl px-3 sm:px-5 py-2 sm:py-3 text-center min-w-[80px] sm:min-w-[110px]">
-      <p className="text-[9px] sm:text-xs text-muted-foreground">Despesas</p>
-      <p className="text-xs sm:text-base font-bold tabular-nums text-destructive">{fmtCurrency(expense)}</p>
+    <Minus className="w-2.5 h-2.5 sm:w-4 sm:h-4 text-destructive/50 flex-shrink-0" />
+    <div className="bg-secondary/50 rounded-lg sm:rounded-xl px-1.5 sm:px-5 py-1 sm:py-3 text-center flex-shrink-0">
+      <p className="text-[7px] sm:text-xs text-muted-foreground leading-tight">Despesas</p>
+      <p className="text-[10px] sm:text-base font-bold tabular-nums text-destructive">{fmtCurrency(expense)}</p>
     </div>
-    <Equal className="w-3.5 h-3.5 sm:w-4 sm:h-4 text-muted-foreground/50 flex-shrink-0" />
-    <div className={`rounded-xl px-3 sm:px-5 py-2 sm:py-3 text-center min-w-[80px] sm:min-w-[110px] ${finalVal >= 0 ? "bg-primary/10 border border-primary/20" : "bg-destructive/10 border border-destructive/20"}`}>
-      <p className="text-[9px] sm:text-xs text-muted-foreground">Saldo final</p>
-      <p className={`text-xs sm:text-base font-bold tabular-nums ${finalVal >= 0 ? "text-primary" : "text-destructive"}`}>{fmtCurrency(finalVal)}</p>
+    <Equal className="w-2.5 h-2.5 sm:w-4 sm:h-4 text-muted-foreground/50 flex-shrink-0" />
+    <div className={`rounded-lg sm:rounded-xl px-1.5 sm:px-5 py-1 sm:py-3 text-center flex-shrink-0 ${finalVal >= 0 ? "bg-primary/10 border border-primary/20" : "bg-destructive/10 border border-destructive/20"}`}>
+      <p className="text-[7px] sm:text-xs text-muted-foreground leading-tight">Saldo final</p>
+      <p className={`text-[10px] sm:text-base font-bold tabular-nums ${finalVal >= 0 ? "text-primary" : "text-destructive"}`}>{fmtCurrency(finalVal)}</p>
     </div>
   </motion.div>
 );
