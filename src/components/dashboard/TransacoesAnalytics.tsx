@@ -7,7 +7,7 @@ import {
 import { supabase } from "@/integrations/supabase/client";
 import { useAuth } from "@/contexts/AuthContext";
 import { useMonth } from "@/contexts/MonthContext";
-import { getMonthHistory } from "@/lib/financeEngine";
+
 import { getRecurringForMonth } from "@/services/recurringService";
 
 const fmt = (v: number) =>
