@@ -550,8 +550,8 @@ const Transacoes = () => {
                     }}
                   />
                   {isToday ? (
-                    <div className="flex-1 flex items-center justify-between py-2 px-4 rounded-xl border border-primary/30" style={{ background: "linear-gradient(135deg, hsl(var(--primary) / 0.12) 0%, hsl(var(--primary) / 0.04) 100%)" }}>
-                      <span className="text-sm font-bold text-primary">Hoje, {label}</span>
+                    <div className="flex-1 flex items-center justify-between py-1.5 px-3 rounded-lg border border-primary/20" style={{ background: "hsl(var(--primary) / 0.06)" }}>
+                      <span className="text-xs font-bold text-primary">Hoje, {label}</span>
                       <span className="text-[10px] font-semibold text-muted-foreground/50">
                         {dayTotal.desp > 0 && <span className="text-destructive">−{fmt(dayTotal.desp)}</span>}
                         {dayTotal.rec > 0 && dayTotal.desp > 0 && " · "}
