@@ -170,13 +170,9 @@ const SwipeableItem = ({
             className="text-xs md:text-sm font-bold tabular-nums"
             style={{ color: isReceita ? "hsl(var(--primary))" : "hsl(var(--destructive))" }}
           >
-            {fmt(tx.amount)}
+            {isReceita ? "+" : "−"}{fmt(tx.amount)}
           </p>
-          <span
-            className={`block mt-0.5 text-[8px] md:text-[9px] font-bold uppercase tracking-wide ${
-              tx.status === "pago" ? "text-primary" : "text-destructive"
-            }`}
-          >
+          <span className="block mt-0.5 text-[8px] md:text-[9px] font-bold uppercase tracking-wide text-muted-foreground/40">
             {tx.status === "pago" ? "Pago" : "A pagar"}
           </span>
         </div>
