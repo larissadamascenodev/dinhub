@@ -381,11 +381,9 @@ const BotFinanceProjecoes = () => {
         {/* ══════════════════════════════════════════ */}
         {/* 1. PROJEÇÃO DO MÊS SELECIONADO            */}
         {/* ══════════════════════════════════════════ */}
-        <GlassSection delay={0.05}>
-          <div className="flex items-center justify-between">
-            <SectionHeader icon={<CalendarDays className="w-4 h-4 text-primary" />} title="Projeção do Mês" />
-          </div>
+        <SectionHeader icon={<CalendarDays className="w-4 h-4 text-primary" />} title="Projeção do Mês" />
 
+        <GlassSection delay={0.05}>
           {/* Month selector — dashboard style */}
           <div className="flex justify-center">
             <ProjectionMonthSelector
@@ -402,7 +400,7 @@ const BotFinanceProjecoes = () => {
               initial={{ opacity: 0, y: 6 }}
               animate={{ opacity: 1, y: 0 }}
               transition={{ duration: 0.25 }}
-              className="space-y-3"
+              className="space-y-2"
             >
               <div className="text-center py-3 sm:py-5">
                 <p className="text-xs sm:text-sm text-muted-foreground mb-1.5">
@@ -418,7 +416,7 @@ const BotFinanceProjecoes = () => {
                 )}
               </div>
 
-              {/* Composition */}
+              {/* Collapsible Composition */}
               <CompositionBlock
                 prev={selectedProjection.prevBalance}
                 income={selectedProjection.income}
