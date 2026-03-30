@@ -82,7 +82,6 @@ const formatDateHeader = (dateStr: string) => {
   return { label, isToday };
 };
 
-type MainTab = "transacoes" | "analytics";
 type TabFilter = "todos" | "receita" | "despesa";
 
 // ── Swipeable Transaction Item ─────────────────────────
