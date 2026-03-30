@@ -346,23 +346,30 @@ const BotFinanceProjecoes = () => {
           </div>
         </GlassSection>
 
-        {/* 2 — INSIGHT IA (destaque com gradiente sutil) */}
+        {/* 2 — INSIGHT IA */}
         <motion.div
           initial={{ opacity: 0, y: 16 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ delay: 0.12 }}
-          className={`glass-card p-4 border-l-2 ${toneClasses[insight.tone].border}`}
+          className={`glass-card p-5 border-l-2 ${toneClasses[insight.tone].border} overflow-hidden relative`}
           style={{
             background: "linear-gradient(135deg, hsl(260 60% 50% / 0.06) 0%, transparent 60%)",
           }}
         >
-          <div className="flex items-start gap-3">
-            <div className="w-8 h-8 rounded-xl bg-[hsl(260,60%,50%)]/10 flex items-center justify-center flex-shrink-0">
-              <Brain className="w-4 h-4 text-[hsl(260,60%,65%)]" />
+          {/* Subtle glow */}
+          <div className="absolute -top-10 -right-10 w-32 h-32 rounded-full bg-[hsl(260,60%,50%)]/5 blur-2xl pointer-events-none" />
+
+          <div className="relative flex items-start gap-3">
+            <div className="w-9 h-9 rounded-xl bg-[hsl(260,60%,50%)]/10 flex items-center justify-center flex-shrink-0">
+              <Brain className="w-4.5 h-4.5 text-[hsl(260,60%,65%)]" />
             </div>
-            <div className="flex-1 min-w-0">
-              <p className="text-[10px] font-medium text-[hsl(260,60%,65%)] mb-1">Insight da IA</p>
-              <p className="text-sm text-foreground leading-relaxed">{insight.text}</p>
+            <div className="flex-1 min-w-0 space-y-2">
+              <p className="text-[10px] font-semibold uppercase tracking-wider text-[hsl(260,60%,65%)]">Insight da IA</p>
+              <p className="text-sm text-foreground leading-relaxed font-medium">{insight.text}</p>
+              <div className="flex items-start gap-2 pt-1 border-t border-border/10">
+                <Sparkles className="w-3 h-3 text-[hsl(260,60%,65%)] mt-0.5 flex-shrink-0" />
+                <p className="text-[11px] text-muted-foreground leading-relaxed">{insight.tip}</p>
+              </div>
             </div>
           </div>
         </motion.div>
