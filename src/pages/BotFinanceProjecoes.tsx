@@ -6,21 +6,10 @@ import {
   ArrowLeft,
   TrendingUp,
   TrendingDown,
-  Sparkles,
-  Wallet,
-  PiggyBank,
   ArrowUpRight,
   ArrowDownRight,
   Minus,
-  Brain,
-  ChevronRight,
   ChevronDown,
-  RotateCcw,
-  Target,
-  Scissors,
-  Settings2,
-  ShieldCheck,
-  Banknote,
   CalendarDays,
   Plus,
   Equal,
@@ -35,7 +24,6 @@ import {
   ResponsiveContainer,
 } from "recharts";
 import { useFinancialProjection } from "@/hooks/useFinancialProjection";
-import { useFormattedCounter } from "@/hooks/useAnimatedCounter";
 
 const MONTH_NAMES = [
   "Jan", "Fev", "Mar", "Abr", "Mai", "Jun",
