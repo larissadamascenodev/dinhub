@@ -515,36 +515,8 @@ const Transacoes = () => {
         <ReceitasDespesasCards receitas={totals.receitas} receitasRecebidas={totals.receitasRecebidas} receitasPendentes={totals.receitasPendentes} despesas={totals.despesas} despesasPagas={totals.despesasPagas} despesasPendentes={totals.despesasPendentes} mobile />
       </motion.div>
 
-      {/* Tab Switcher */}
-      <div className="relative rounded-xl bg-background/60 border border-border/20 flex overflow-hidden">
-        <motion.div
-          className="absolute inset-y-0 bg-primary/15 border border-primary/40 rounded-xl"
-          initial={false}
-          animate={{
-            left: mainTab === "transacoes" ? "0px" : "50%",
-            width: "50%",
-          }}
-          transition={{ type: "spring", stiffness: 350, damping: 30 }}
-        />
-        {([
-          { key: "transacoes" as MainTab, label: "Transações" },
-          { key: "analytics" as MainTab, label: "Analytics" },
-        ]).map(tab => (
-          <button
-            key={tab.key}
-            onClick={() => setMainTab(tab.key)}
-            className={`relative z-10 flex-1 h-10 rounded-xl text-xs font-bold flex items-center justify-center transition-colors duration-200 ${
-              mainTab === tab.key ? "text-primary" : "text-muted-foreground hover:text-foreground"
-            }`}
-          >
-            {tab.label}
-          </button>
-        ))}
-      </div>
 
-      {mainTab === "analytics" ? (
-        <TransacoesAnalytics />
-      ) : (
+      {/* Transactions content */}
       <>
 
       {/* Tabs + Search + Filter */}
