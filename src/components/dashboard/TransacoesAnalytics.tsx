@@ -1,7 +1,7 @@
 import { useState, useEffect, useMemo } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import {
-  TrendingUp, ArrowUpRight, ArrowDownRight,
+  ArrowUpRight, ArrowDownRight,
   CalendarDays, ChevronDown,
 } from "lucide-react";
 import {
