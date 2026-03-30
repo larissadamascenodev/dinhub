@@ -137,22 +137,22 @@ const SwipeableItem = ({
         dragElastic={0.3}
         onDragEnd={handleDragEnd}
         style={{ x }}
-        className="relative flex items-center gap-3 px-4 py-3.5 bg-card/95 backdrop-blur-xl cursor-grab active:cursor-grabbing"
+        className="relative flex items-center gap-2.5 px-3 py-2.5 md:gap-3 md:px-4 md:py-3.5 bg-card/95 backdrop-blur-xl cursor-grab active:cursor-grabbing"
         onClick={() => onEdit(tx)}
         whileTap={{ scale: 0.99 }}
       >
         {/* Category icon */}
         <div
-          className="w-10 h-10 rounded-full flex items-center justify-center flex-shrink-0"
+          className="w-8 h-8 md:w-10 md:h-10 rounded-full flex items-center justify-center flex-shrink-0"
           style={{ background: `hsl(${catColor} / 0.12)` }}
         >
-          <CatIcon className="w-[18px] h-[18px]" style={{ color: `hsl(${catColor})` }} />
+          <CatIcon className="w-4 h-4 md:w-[18px] md:h-[18px]" style={{ color: `hsl(${catColor})` }} />
         </div>
 
         {/* Info */}
         <div className="flex-1 min-w-0">
           <div className="flex items-center gap-2">
-            <p className="text-[13px] font-bold text-foreground truncate">{tx.name}</p>
+            <p className="text-xs md:text-[13px] font-bold text-foreground truncate">{tx.name}</p>
             <span
               className={`px-1.5 py-0.5 rounded text-[8px] font-bold uppercase border ${
                 tx.status === "pago"
@@ -164,7 +164,7 @@ const SwipeableItem = ({
             </span>
             {isRecurring && <RefreshCw className="w-3 h-3 text-muted-foreground/30" />}
           </div>
-          <p className="text-[10px] text-muted-foreground/40 mt-0.5">
+          <p className="text-[9px] md:text-[10px] text-muted-foreground/40 mt-0.5">
             {tx.category}
             {tx.installments && tx.installment_current ? ` · ${tx.installment_current}/${tx.installments}x` : ""}
             {" · "}
@@ -174,7 +174,7 @@ const SwipeableItem = ({
 
         {/* Amount */}
         <p
-          className="text-sm font-bold tabular-nums shrink-0"
+          className="text-xs md:text-sm font-bold tabular-nums shrink-0"
           style={{ color: isReceita ? "hsl(var(--primary))" : "hsl(var(--destructive))" }}
         >
           {fmt(tx.amount)}
