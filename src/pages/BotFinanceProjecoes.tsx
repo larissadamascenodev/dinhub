@@ -112,6 +112,9 @@ const GlowDot = (props: any) => {
 
 // ─── Month Selector (dashboard style) ───
 
+const VISIBLE_MONTHS_MOBILE = 6;
+const VISIBLE_MONTHS_DESKTOP = 12;
+
 const ProjectionMonthSelector = memo(({
   projections,
   selectedIdx,
@@ -125,11 +128,37 @@ const ProjectionMonthSelector = memo(({
   const currentMonth = now.getMonth();
   const currentYear = now.getFullYear();
 
+  // Compute visible window — on mobile show 6 months, shifts as selection moves forward
+  const [isMobile, setIsMobile] = useState(window.innerWidth < 640);
+  
+  React.useEffect(() => {
+    const handler = () => setIsMobile(window.innerWidth < 640);
+    window.addEventListener("resize", handler);
+    return () => window.removeEventListener("resize", handler);
+  }, []);
+
+  const maxVisible = isMobile ? VISIBLE_MONTHS_MOBILE : VISIBLE_MONTHS_DESKTOP;
+  const total = projections.length;
+
+  // Window starts at 0 but shifts so selectedIdx is always visible
+  const windowStart = useMemo(() => {
+    if (total <= maxVisible) return 0;
+    // Keep selected month within visible range, shifting window forward
+    const start = Math.min(
+      Math.max(0, selectedIdx - Math.floor(maxVisible / 2)),
+      total - maxVisible
+    );
+    return start;
+  }, [selectedIdx, total, maxVisible]);
+
+  const visibleProjections = projections.slice(windowStart, windowStart + maxVisible);
+
   return (
-    <div className="flex items-center bg-card/60 backdrop-blur-xl border border-border/15 rounded-2xl px-1.5 py-0.5 shadow-lg shadow-black/10 overflow-x-auto scrollbar-none">
+    <div className="flex items-center bg-card/60 backdrop-blur-xl border border-border/15 rounded-2xl px-1.5 py-0.5 shadow-lg shadow-black/10">
       <div className="flex items-center gap-0.5">
-        {projections.map((p, i) => {
-          const isActive = i === selectedIdx;
+        {visibleProjections.map((p, vi) => {
+          const realIdx = windowStart + vi;
+          const isActive = realIdx === selectedIdx;
           const isCurrent = p.month === currentMonth && p.year === currentYear;
 
           return (
@@ -138,8 +167,8 @@ const ProjectionMonthSelector = memo(({
               layout
               whileTap={{ scale: 0.9 }}
               whileHover={{ scale: isActive ? 1 : 1.05 }}
-              onClick={() => onSelect(i)}
-              className={`relative px-3 py-1.5 rounded-xl text-xs sm:text-sm font-semibold whitespace-nowrap transition-colors duration-200 ${
+              onClick={() => onSelect(realIdx)}
+              className={`relative px-2 py-1 sm:px-3 sm:py-1.5 rounded-xl text-[11px] sm:text-sm font-semibold whitespace-nowrap transition-colors duration-200 ${
                 isActive
                   ? "text-primary"
                   : isCurrent
