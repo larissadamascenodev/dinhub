@@ -583,7 +583,7 @@ const Transacoes = () => {
                         tx={tx}
                         accountName={tx.account_id ? (accountMap[tx.account_id] || "Conta") : tx.payment_method === "cartao" ? "Cartão" : "Sem conta"}
                         onDelete={handleDelete}
-                        onEdit={(t) => { setEditTx(t); setShowEditModal(true); }}
+                        onEdit={(t) => { setDetailTx(t); setShowDetailModal(true); }}
                       />
                     </motion.div>
                   ))}
