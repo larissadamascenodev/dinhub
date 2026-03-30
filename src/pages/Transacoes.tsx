@@ -139,7 +139,7 @@ const SwipeableItem = ({
         dragElastic={0.3}
         onDragEnd={handleDragEnd}
         style={{ x }}
-        className={`relative flex items-center gap-2.5 px-3 py-2.5 md:gap-3 md:px-4 md:py-3.5 backdrop-blur-xl cursor-grab active:cursor-grabbing ${
+        className={`relative flex items-center gap-2.5 px-3 py-2.5 md:gap-3 md:px-4 md:py-3.5 backdrop-blur-xl cursor-grab active:cursor-grabbing rounded-xl ${
           isPending ? "border border-[hsl(40_80%_50%_/_0.15)]" : "bg-card/95"
         }`}
         onClick={() => onEdit(tx)}
