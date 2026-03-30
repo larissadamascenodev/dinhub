@@ -171,8 +171,18 @@ const TransactionDetailModal = ({ open, tx, accountName, onClose, onRefresh, use
 
   const openEditForm = () => {
     setEditName(tx.name);
-    setEditAmount(tx.amount.toString());
+    setEditAmountCents(Math.round(tx.amount * 100));
     setEditCategory(tx.category);
+    setEditStatus(tx.status as "pago" | "pendente");
+    setEditObservation(tx.observation || "");
+    setEditAccountId(tx.account_id || "");
+    // Parse date
+    const [y, m, d] = tx.date.split("-").map(Number);
+    setEditDate(new Date(y, m - 1, d));
+    setEditDateMode("outros");
+    setEditShowCalendar(false);
+    // Fetch accounts
+    getAccounts().then((accs) => setEditAccounts(accs as AccountRow[]));
     if (isRecurring) {
       setStep("edit-scope");
     } else {
@@ -180,13 +190,33 @@ const TransactionDetailModal = ({ open, tx, accountName, onClose, onRefresh, use
     }
   };
 
+  const handleEditDateMode = (mode: "hoje" | "ontem" | "outros") => {
+    setEditDateMode(mode);
+    if (mode === "hoje") { setEditDate(new Date()); setEditShowCalendar(false); }
+    else if (mode === "ontem") { setEditDate(subDays(new Date(), 1)); setEditShowCalendar(false); }
+    else { setEditShowCalendar(true); }
+  };
+
+  const handleEditAmountKeyDown = (e: React.KeyboardEvent<HTMLInputElement>) => {
+    if (e.key === "Backspace") {
+      e.preventDefault();
+      setEditAmountCents((prev) => Math.floor(prev / 10));
+    } else if (/^\d$/.test(e.key)) {
+      e.preventDefault();
+      setEditAmountCents((prev) => prev * 10 + parseInt(e.key));
+    }
+  };
+
   const handleSaveEdit = async () => {
     setLoading(true);
     try {
+      const dateStr = `${editDate.getFullYear()}-${String(editDate.getMonth() + 1).padStart(2, "0")}-${String(editDate.getDate()).padStart(2, "0")}`;
       await updateTransaction(tx.id, {
         name: editName,
-        amount: parseFloat(editAmount),
+        amount: editAmountCents / 100,
         category: editCategory,
+        status: editStatus,
+        date: dateStr,
       });
       toast.success("Transação atualizada");
       onRefresh();
