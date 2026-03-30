@@ -411,7 +411,7 @@ const BotFinanceProjecoes = () => {
             initial={{ opacity: 0 }}
             animate={{ opacity: 1 }}
             transition={{ delay: 0.1, duration: 0.4 }}
-            className="h-44 sm:h-52 w-full -mx-2"
+            className="h-44 sm:h-64 lg:h-72 w-full -mx-2"
           >
             <ResponsiveContainer width="100%" height="100%">
               <AreaChart data={chartData} onClick={handleChartClick} margin={{ top: 8, right: 12, left: -12, bottom: 0 }}>
