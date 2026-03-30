@@ -321,6 +321,7 @@ export type Database = {
           payment_method: string
           recurrence_type: string
           status: string
+          to_account_id: string | null
           type: string
           updated_at: string
           user_id: string
@@ -341,6 +342,7 @@ export type Database = {
           payment_method?: string
           recurrence_type?: string
           status?: string
+          to_account_id?: string | null
           type: string
           updated_at?: string
           user_id: string
@@ -361,6 +363,7 @@ export type Database = {
           payment_method?: string
           recurrence_type?: string
           status?: string
+          to_account_id?: string | null
           type?: string
           updated_at?: string
           user_id?: string
@@ -385,6 +388,13 @@ export type Database = {
             columns: ["parent_transaction_id"]
             isOneToOne: false
             referencedRelation: "transactions"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "transactions_to_account_id_fkey"
+            columns: ["to_account_id"]
+            isOneToOne: false
+            referencedRelation: "accounts"
             referencedColumns: ["id"]
           },
         ]
