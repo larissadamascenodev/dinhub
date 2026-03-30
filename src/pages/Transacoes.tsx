@@ -152,17 +152,8 @@ const SwipeableItem = ({
 
         {/* Info */}
         <div className="flex-1 min-w-0">
-          <div className="flex items-center gap-2">
+          <div className="flex items-center gap-1.5">
             <p className="text-xs md:text-[13px] font-bold text-foreground truncate">{tx.name}</p>
-            <span
-              className={`px-1.5 py-0.5 rounded text-[8px] font-bold uppercase border ${
-                tx.status === "pago"
-                  ? "bg-primary/10 text-primary border-primary/20"
-                  : "bg-warning/10 text-warning border-warning/20"
-              }`}
-            >
-              {tx.status === "pago" ? "Pago" : "Pendente"}
-            </span>
             {isRecurring && <RefreshCw className="w-3 h-3 text-muted-foreground/30" />}
           </div>
           <p className="text-[9px] md:text-[10px] text-muted-foreground/40 mt-0.5">
@@ -173,13 +164,22 @@ const SwipeableItem = ({
           </p>
         </div>
 
-        {/* Amount */}
-        <p
-          className="text-xs md:text-sm font-bold tabular-nums shrink-0"
-          style={{ color: isReceita ? "hsl(var(--primary))" : "hsl(var(--destructive))" }}
-        >
-          {fmt(tx.amount)}
-        </p>
+        {/* Amount + status tag */}
+        <div className="text-right shrink-0">
+          <p
+            className="text-xs md:text-sm font-bold tabular-nums"
+            style={{ color: isReceita ? "hsl(var(--primary))" : "hsl(var(--destructive))" }}
+          >
+            {fmt(tx.amount)}
+          </p>
+          <span
+            className={`block mt-0.5 text-[8px] md:text-[9px] font-bold uppercase tracking-wide ${
+              tx.status === "pago" ? "text-primary" : "text-destructive"
+            }`}
+          >
+            {tx.status === "pago" ? "Pago" : "A pagar"}
+          </span>
+        </div>
       </motion.div>
     </div>
   );
