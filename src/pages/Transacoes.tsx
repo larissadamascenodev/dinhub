@@ -5,7 +5,6 @@ import {
   Briefcase, GraduationCap, Shirt, TrendingUp, DollarSign, MoreHorizontal,
   Trash2, RefreshCw, Layers, X, Search, Plus, Pencil, CreditCard, Wallet,
   Sparkles, Calendar as CalendarIcon, Clock,
-  Sparkles, Calendar as CalendarIcon,
 } from "lucide-react";
 import { toast } from "sonner";
 import { supabase } from "@/integrations/supabase/client";
