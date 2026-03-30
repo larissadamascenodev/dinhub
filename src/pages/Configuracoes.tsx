@@ -169,7 +169,7 @@ const Configuracoes = () => {
     { icon: MessageCircle, label: "Conectar WhatsApp", sub: "Receba alertas no WhatsApp", badge: "EM BREVE" },
   ];
   const perigoItems = [
-    { icon: Trash2, label: "Apagar Dados", sub: "Resetar o aplicativo", danger: true },
+    { icon: Trash2, label: "Apagar Dados", sub: "Resetar o aplicativo", danger: true, onClick: openResetModal },
     { icon: LogOut, label: "Sair da conta", sub: "Encerrar sessão", danger: true, onClick: handleLogout },
   ];
 
