@@ -396,21 +396,44 @@ const BotFinanceProjecoes = () => {
           {/* 3 — LIMITE DIÁRIO */}
           <GlassSection delay={0.18}>
             <SectionHeader icon={<Wallet className="w-4 h-4 text-primary" />} title="Limite Diário" />
-            <div className="text-center py-1">
-              <p className="text-3xl font-bold text-primary font-display">{formattedSafe}</p>
-              <p className="text-[10px] text-muted-foreground mt-1">{daysLeft} dias restantes</p>
+
+            <div className="text-center py-2">
+              <p className={`text-3xl font-bold font-display transition-colors duration-500 ${limitTextColor}`}>
+                {formattedSafe}
+              </p>
+              <p className="text-[10px] text-muted-foreground mt-1">por dia · {daysLeft} dias restantes</p>
             </div>
-            <div
-              className={`rounded-xl px-3 py-2 text-center text-xs font-medium ${
-                limitTone === "positive"
-                  ? "bg-primary/10 text-primary"
-                  : limitTone === "negative"
-                    ? "bg-destructive/10 text-destructive"
-                    : "bg-warning/10 text-warning"
-              }`}
+
+            {/* Progress bar */}
+            <div className="space-y-1.5">
+              <div className="flex items-center justify-between text-[10px]">
+                <span className="text-muted-foreground">Gasto hoje</span>
+                <span className={`font-semibold tabular-nums ${limitTextColor}`}>
+                  {fmtCurrency(gastoHoje)} / {formattedSafe}
+                </span>
+              </div>
+              <div className="h-2 w-full rounded-full bg-secondary overflow-hidden">
+                <motion.div
+                  initial={{ width: 0 }}
+                  animate={{ width: `${spendRatio * 100}%` }}
+                  transition={{ duration: 0.8, ease: "easeOut" }}
+                  className={`h-full rounded-full ${limitBarColor} transition-colors duration-500 ${
+                    limitTone === "negative" ? "animate-pulse" : ""
+                  }`}
+                />
+              </div>
+            </div>
+
+            {/* State message */}
+            <motion.div
+              key={limitTone}
+              initial={{ opacity: 0, scale: 0.95 }}
+              animate={{ opacity: 1, scale: 1 }}
+              transition={{ duration: 0.25 }}
+              className={`rounded-xl px-3 py-2.5 text-center text-xs font-medium ${limitBgColor} ${limitTextColor}`}
             >
               {limitMsg}
-            </div>
+            </motion.div>
           </GlassSection>
 
           {/* 5 — SCORE DE SAÚDE FINANCEIRA */}
