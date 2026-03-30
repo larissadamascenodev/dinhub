@@ -247,22 +247,22 @@ const TransactionDetailModal = ({ open, tx, accountName, onClose, onRefresh, use
     switch (step) {
       case "detail":
         return (
-          <div className="space-y-6">
-            {/* Header */}
+          <div className="space-y-4">
+            {/* Header row */}
             <div className="flex items-center justify-between">
-              <button onClick={handleClose} className="w-8 h-8 rounded-full bg-muted/40 flex items-center justify-center text-muted-foreground hover:text-foreground transition-colors">
+              <button onClick={handleClose} className="w-8 h-8 rounded-full bg-muted/50 flex items-center justify-center text-muted-foreground hover:text-foreground transition-colors">
                 <X className="w-4 h-4" />
               </button>
-              <div className="flex items-center gap-2">
+              <div className="flex items-center gap-1.5">
                 {!isPaid && (
-                  <button className="w-8 h-8 rounded-full bg-muted/40 flex items-center justify-center text-muted-foreground hover:text-foreground transition-colors">
+                  <button className="w-8 h-8 rounded-full bg-muted/50 flex items-center justify-center text-muted-foreground hover:text-foreground transition-colors">
                     <Bell className="w-4 h-4" />
                   </button>
                 )}
                 <div className="relative" ref={dropdownRef}>
                   <button
                     onClick={() => setShowDropdown(!showDropdown)}
-                    className="w-8 h-8 rounded-full bg-muted/40 flex items-center justify-center text-muted-foreground hover:text-foreground transition-colors"
+                    className="w-8 h-8 rounded-full bg-muted/50 flex items-center justify-center text-muted-foreground hover:text-foreground transition-colors"
                   >
                     <MoreVertical className="w-4 h-4" />
                   </button>
@@ -273,11 +273,11 @@ const TransactionDetailModal = ({ open, tx, accountName, onClose, onRefresh, use
                         animate={{ opacity: 1, scale: 1, y: 0 }}
                         exit={{ opacity: 0, scale: 0.9, y: -4 }}
                         transition={{ duration: 0.15 }}
-                        className="absolute right-0 top-10 z-10 w-40 rounded-xl bg-card border border-border/30 shadow-xl overflow-hidden"
+                        className="absolute right-0 top-10 z-10 w-40 rounded-xl bg-popover border border-border/30 shadow-xl overflow-hidden backdrop-blur-xl"
                       >
                         <button
                           onClick={() => { setShowDropdown(false); openEditForm(); }}
-                          className="w-full flex items-center gap-2.5 px-4 py-3 text-sm font-medium text-foreground hover:bg-muted/40 transition-colors"
+                          className="w-full flex items-center gap-2.5 px-4 py-2.5 text-sm font-medium text-foreground hover:bg-muted/40 transition-colors"
                         >
                           <Pencil className="w-3.5 h-3.5 text-primary" />
                           Editar
@@ -285,7 +285,7 @@ const TransactionDetailModal = ({ open, tx, accountName, onClose, onRefresh, use
                         <div className="h-px bg-border/20" />
                         <button
                           onClick={() => { setShowDropdown(false); setStep("delete-confirm"); }}
-                          className="w-full flex items-center gap-2.5 px-4 py-3 text-sm font-medium text-destructive hover:bg-destructive/10 transition-colors"
+                          className="w-full flex items-center gap-2.5 px-4 py-2.5 text-sm font-medium text-destructive hover:bg-destructive/10 transition-colors"
                         >
                           <Trash2 className="w-3.5 h-3.5" />
                           Excluir
@@ -297,83 +297,87 @@ const TransactionDetailModal = ({ open, tx, accountName, onClose, onRefresh, use
               </div>
             </div>
 
-            {/* Icon + Name */}
-            <div className="text-center space-y-1">
+            {/* Compact hero: icon + name + amount */}
+            <div className="flex items-center gap-3">
               <div
-                className="w-14 h-14 rounded-2xl flex items-center justify-center mx-auto text-2xl"
+                className="w-11 h-11 rounded-xl flex items-center justify-center text-xl shrink-0"
                 style={{ background: isReceita ? "hsl(var(--primary) / 0.12)" : "hsl(var(--destructive) / 0.12)" }}
               >
                 {icon}
               </div>
-              <h2 className="text-lg font-bold text-foreground">{tx.name}</h2>
-              <p className="text-xs text-muted-foreground/60">
-                {tx.payment_method === "cartao" ? "Cartão" : accountName}
-              </p>
+              <div className="flex-1 min-w-0">
+                <h2 className="text-base font-bold text-foreground truncate">{tx.name}</h2>
+                <p className="text-[11px] text-muted-foreground">
+                  {tx.payment_method === "cartao" ? "Cartão" : accountName}
+                </p>
+              </div>
+              <div className="text-right shrink-0">
+                <p className={cn("text-lg font-bold tabular-nums", isReceita ? "text-primary" : "text-destructive")}>
+                  {fmt(tx.amount)}
+                </p>
+              </div>
             </div>
 
-            {/* Amount */}
-            <div className="text-center">
-              <p className={`text-3xl font-bold tabular-nums ${isReceita ? "text-primary" : "text-destructive"}`}>
-                {fmt(tx.amount)}
-              </p>
-              <div className="flex items-center justify-center gap-2 mt-1.5">
-                {isRecurring && (
-                  <span className="flex items-center gap-1 text-[10px] text-muted-foreground/60">
-                    <RefreshCw className="w-3 h-3" /> Fixa
-                  </span>
+            {/* Tags row */}
+            <div className="flex flex-wrap items-center gap-1.5">
+              <span
+                className={cn(
+                  "inline-flex items-center gap-1 px-2.5 py-1 rounded-lg text-[10px] font-bold border",
+                  isPaid
+                    ? "bg-primary/10 text-primary border-primary/20"
+                    : "bg-warning/10 text-warning border-warning/20"
                 )}
-                {tx.installments && tx.installment_current && (
-                  <span className="flex items-center gap-1 text-[10px] text-muted-foreground/60">
-                    <RefreshCw className="w-3 h-3" /> {tx.installment_current}/{tx.installments}x
-                  </span>
-                )}
-                <span
-                  className={`flex items-center gap-1 px-2 py-0.5 rounded-full text-[10px] font-bold border ${
-                    isPaid
-                      ? "bg-primary/10 text-primary border-primary/20"
-                      : "bg-warning/10 text-warning border-warning/20"
-                  }`}
-                >
-                  <Clock className="w-3 h-3" />
-                  {isPaid ? "Pago" : "Pendente"}
+              >
+                <Clock className="w-3 h-3" />
+                {isPaid ? "Pago" : "Pendente"}
+              </span>
+              {isRecurring && (
+                <span className="inline-flex items-center gap-1 px-2.5 py-1 rounded-lg text-[10px] font-bold bg-muted/40 text-muted-foreground border border-border/20">
+                  <RefreshCw className="w-3 h-3" /> Fixa
+                </span>
+              )}
+              {tx.installments && tx.installment_current && (
+                <span className="inline-flex items-center gap-1 px-2.5 py-1 rounded-lg text-[10px] font-bold bg-muted/40 text-muted-foreground border border-border/20">
+                  <RefreshCw className="w-3 h-3" /> {tx.installment_current}/{tx.installments}x
+                </span>
+              )}
+            </div>
+
+            {/* Info grid */}
+            <div className="rounded-xl bg-muted/20 border border-border/10 divide-y divide-border/10">
+              <div className="flex items-center gap-3 px-3.5 py-2.5">
+                <CalendarDays className="w-4 h-4 text-muted-foreground/50 shrink-0" />
+                <span className="text-xs text-muted-foreground flex-1">Data</span>
+                <span className="text-xs font-semibold text-foreground">{formatFullDate(tx.date)}</span>
+              </div>
+              <div className="flex items-center gap-3 px-3.5 py-2.5">
+                <Tag className="w-4 h-4 text-muted-foreground/50 shrink-0" />
+                <span className="text-xs text-muted-foreground flex-1">Categoria</span>
+                <span className="text-xs font-semibold text-foreground">{tx.category}</span>
+              </div>
+              <div className="flex items-center gap-3 px-3.5 py-2.5">
+                <Wallet className="w-4 h-4 text-muted-foreground/50 shrink-0" />
+                <span className="text-xs text-muted-foreground flex-1">Conta</span>
+                <span className="text-xs font-semibold text-foreground">
+                  {tx.payment_method === "cartao" ? "Cartão de crédito" : accountName}
                 </span>
               </div>
-            </div>
-
-            {/* Details */}
-            <div className="space-y-0 divide-y divide-border/10">
-              <div className="flex items-center gap-3 py-3.5">
-                <CalendarDays className="w-4 h-4 text-muted-foreground/40 shrink-0" />
-                <div>
-                  <p className="text-[9px] text-muted-foreground/50 uppercase tracking-wider font-semibold">Data</p>
-                  <p className="text-sm font-semibold text-foreground">{formatFullDate(tx.date)}</p>
+              {tx.observation && (
+                <div className="flex items-center gap-3 px-3.5 py-2.5">
+                  <StickyNote className="w-4 h-4 text-muted-foreground/50 shrink-0" />
+                  <span className="text-xs text-muted-foreground flex-1">Nota</span>
+                  <span className="text-xs font-semibold text-foreground truncate max-w-[150px]">{tx.observation}</span>
                 </div>
-              </div>
-              <div className="flex items-center gap-3 py-3.5">
-                <Wallet className="w-4 h-4 text-muted-foreground/40 shrink-0" />
-                <div>
-                  <p className="text-[9px] text-muted-foreground/50 uppercase tracking-wider font-semibold">Conta</p>
-                  <p className="text-sm font-semibold text-foreground">
-                    {tx.payment_method === "cartao" ? "Cartão de crédito" : accountName}
-                  </p>
-                </div>
-              </div>
-              <div className="flex items-center gap-3 py-3.5">
-                <Tag className="w-4 h-4 text-muted-foreground/40 shrink-0" />
-                <div>
-                  <p className="text-[9px] text-muted-foreground/50 uppercase tracking-wider font-semibold">Categoria</p>
-                  <p className="text-sm font-semibold text-foreground">{tx.category}</p>
-                </div>
-              </div>
+              )}
             </div>
 
             {/* Pay button */}
             {!isPaid && (
               <button
                 onClick={() => setStep("pay-confirm")}
-                className="w-full py-3.5 rounded-xl text-sm font-bold bg-primary text-primary-foreground hover:bg-primary/90 transition-all"
+                className="w-full py-3 rounded-xl text-sm font-bold bg-primary text-primary-foreground hover:bg-primary/90 transition-all"
               >
-                Pagar
+                Marcar como pago
               </button>
             )}
           </div>
