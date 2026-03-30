@@ -12,6 +12,7 @@ import {
   CalendarDays,
   Plus,
   Equal,
+  ChevronDown,
 } from "lucide-react";
 import {
   AreaChart,
