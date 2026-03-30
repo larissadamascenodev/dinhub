@@ -199,6 +199,58 @@ export async function createCreditCard(input: CreditCardInput, userId: string) {
   return data;
 }
 
+// Account update/delete
+export async function updateAccount(id: string, updates: {
+  name?: string;
+  type?: string;
+  color?: string | null;
+  initial_balance?: number;
+}) {
+  const { data, error } = await supabase
+    .from("accounts")
+    .update(updates)
+    .eq("id", id)
+    .select()
+    .single();
+  if (error) throw error;
+  return data;
+}
+
+export async function deleteAccount(id: string) {
+  const { error } = await supabase
+    .from("accounts")
+    .delete()
+    .eq("id", id);
+  if (error) throw error;
+}
+
+// Credit card update/delete
+export async function updateCreditCard(id: string, updates: {
+  name?: string;
+  limit?: number;
+  closing_day?: number;
+  due_day?: number;
+  color?: string | null;
+  last_four_digits?: string | null;
+}) {
+  const { data, error } = await supabase
+    .from("credit_cards" as any)
+    .update(updates)
+    .eq("id", id)
+    .select()
+    .single();
+  if (error) throw error;
+  return data;
+}
+
+export async function deleteCreditCard(id: string) {
+  const { error } = await supabase
+    .from("credit_cards" as any)
+    .delete()
+    .eq("id", id);
+  if (error) throw error;
+}
+
 // AI category suggestion
 export async function suggestCategory(description: string, type: "receita" | "despesa"): Promise<string | null> {
   try {

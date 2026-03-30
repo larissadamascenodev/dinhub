@@ -271,8 +271,12 @@ const NovaTransacaoModal = ({ open, onClose, onSuccess, initialType = "despesa" 
       toast.error("Selecione uma categoria");
       return;
     }
-    if (paymentMethod === "conta" && accounts.length === 0) {
+    if ((paymentMethod === "conta" || type === "receita") && accounts.length === 0) {
       toast.error("Você precisa cadastrar uma conta antes");
+      return;
+    }
+    if ((paymentMethod === "conta" || type === "receita") && !accountId) {
+      toast.error("Selecione uma conta");
       return;
     }
 

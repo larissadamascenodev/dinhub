@@ -247,9 +247,10 @@ const GestaoFinanceira = () => {
                   initial={{ opacity: 0, y: 16 }}
                   animate={{ opacity: 1, y: 0 }}
                   transition={{ delay: idx * 0.05 }}
+                  onClick={() => navigate(`/conta/${acc.id}`)}
                   className={cn(
                     "relative rounded-2xl p-4 overflow-hidden bg-gradient-to-br cursor-pointer group",
-                    "border border-white/[0.06] hover:border-white/[0.12] transition-all duration-300",
+                    "border border-white/[0.06] hover:border-white/[0.12] transition-all duration-300 active:scale-[0.98]",
                     gradient
                   )}
                 >
