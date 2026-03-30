@@ -21,6 +21,7 @@ export function useFinancialProjection() {
 
   const [savingsBoost, setSavingsBoost] = useState(0);
   const [incomeBoost, setIncomeBoost] = useState(0);
+  const [savingsGoal, setSavingsGoal] = useState(0);
 
   const params: SimulationParams = useMemo(
     () => ({ savingsBoost, incomeBoost }),
@@ -34,8 +35,8 @@ export function useFinancialProjection() {
   );
 
   const dailyLimit = useMemo(
-    () => getDailyLimit(data, selectedMonth, selectedYear, savingsBoost),
-    [data, selectedMonth, selectedYear, savingsBoost]
+    () => getDailyLimit(data, selectedMonth, selectedYear, savingsGoal),
+    [data, selectedMonth, selectedYear, savingsGoal]
   );
 
   const simulation = useMemo(
@@ -80,6 +81,8 @@ export function useFinancialProjection() {
     setSavingsBoost,
     incomeBoost,
     setIncomeBoost,
+    savingsGoal,
+    setSavingsGoal,
     resetSimulation,
 
     // Actions

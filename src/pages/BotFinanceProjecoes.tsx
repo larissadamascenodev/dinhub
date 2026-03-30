@@ -90,9 +90,13 @@ const BotFinanceProjecoes = () => {
     setSavingsBoost,
     incomeBoost,
     setIncomeBoost,
+    savingsGoal,
+    setSavingsGoal,
     resetSimulation,
     data,
   } = useFinancialProjection();
+
+  const [showGoalInput, setShowGoalInput] = useState(false);
 
   const [expandedMonth, setExpandedMonth] = useState<number | null>(null);
   const [timelineMode, setTimelineMode] = useState<"mensal" | "acumulado">("acumulado");
@@ -346,7 +350,7 @@ const BotFinanceProjecoes = () => {
         </motion.div>
 
         {/* ── 4. LIMITE DIÁRIO COM OBJETIVO ── */}
-        <GlassSection delay={0.18}>
+        <GlassSection delay={0.18} data-section="limite">
           <SectionHeader icon={<Wallet className="w-4 h-4 text-foreground" />} title="Limite Diário" />
 
           <div className="text-center py-2">
@@ -378,11 +382,11 @@ const BotFinanceProjecoes = () => {
             </div>
           </div>
 
-          {/* Objective indicator */}
+          {/* Status message */}
           <div className="flex items-center gap-2">
             <ShieldCheck className={`w-3.5 h-3.5 flex-shrink-0 ${lt.text}`} />
             <motion.p
-              key={dailyLimit.tone}
+              key={dailyLimit.tone + String(savingsGoal)}
               initial={{ opacity: 0, x: -4 }}
               animate={{ opacity: 1, x: 0 }}
               className={`text-xs font-medium ${lt.text}`}
@@ -391,16 +395,92 @@ const BotFinanceProjecoes = () => {
             </motion.p>
           </div>
 
+          {/* Savings goal section */}
+          <AnimatePresence>
+            {showGoalInput ? (
+              <motion.div
+                initial={{ opacity: 0, height: 0 }}
+                animate={{ opacity: 1, height: "auto" }}
+                exit={{ opacity: 0, height: 0 }}
+                className="overflow-hidden"
+              >
+                <div className="bg-secondary/30 rounded-xl p-3 space-y-3">
+                  <p className="text-[11px] text-muted-foreground">Quanto você quer guardar esse mês?</p>
+                  <div className="flex items-center gap-2">
+                    <div className="flex-1 relative">
+                      <span className="absolute left-3 top-1/2 -translate-y-1/2 text-xs text-muted-foreground">R$</span>
+                      <input
+                        type="number"
+                        min={0}
+                        max={Math.max(data.saldoAtual, 10000)}
+                        step={50}
+                        value={savingsGoal || ""}
+                        placeholder="0"
+                        onChange={(e) => {
+                          const val = Math.max(0, Math.min(Number(e.target.value), Math.max(data.saldoAtual, 10000)));
+                          setSavingsGoal(val);
+                        }}
+                        className="w-full h-9 pl-9 pr-3 rounded-lg bg-background border border-border/30 text-sm font-semibold tabular-nums text-foreground focus:outline-none focus:border-foreground/30 transition-colors"
+                      />
+                    </div>
+                    <button
+                      onClick={() => { setSavingsGoal(0); setShowGoalInput(false); }}
+                      className="text-[10px] text-muted-foreground hover:text-foreground transition-colors px-2 py-2"
+                    >
+                      Limpar
+                    </button>
+                  </div>
+                  {/* Quick presets */}
+                  <div className="flex gap-1.5">
+                    {[100, 200, 500, 1000].map((val) => (
+                      <button
+                        key={val}
+                        onClick={() => setSavingsGoal(val)}
+                        className={`flex-1 text-[10px] font-medium py-1.5 rounded-lg transition-all ${
+                          savingsGoal === val
+                            ? "bg-foreground text-background"
+                            : "bg-secondary text-muted-foreground hover:text-foreground"
+                        }`}
+                      >
+                        {fmtCurrency(val)}
+                      </button>
+                    ))}
+                  </div>
+                  {savingsGoal > 0 && (
+                    <motion.p
+                      initial={{ opacity: 0 }}
+                      animate={{ opacity: 1 }}
+                      className="text-[11px] text-muted-foreground"
+                    >
+                      Guardando <span className="font-semibold text-foreground">{fmtCurrency(savingsGoal)}</span>, seu limite diário fica em{" "}
+                      <span className="font-semibold text-foreground">{formattedSafe}</span>
+                    </motion.p>
+                  )}
+                </div>
+              </motion.div>
+            ) : (
+              <motion.button
+                initial={{ opacity: 0 }}
+                animate={{ opacity: 1 }}
+                onClick={() => setShowGoalInput(true)}
+                className="w-full text-xs font-medium py-2.5 rounded-xl bg-secondary text-foreground hover:bg-secondary/80 active:scale-[0.97] transition-all flex items-center justify-center gap-1.5"
+              >
+                <Target className="w-3.5 h-3.5" />
+                {savingsGoal > 0
+                  ? `Meta: guardar ${fmtCurrency(savingsGoal)} · Editar`
+                  : "Definir quanto quero guardar"}
+              </motion.button>
+            )}
+          </AnimatePresence>
+
           {/* Remaining budget */}
           <div className="bg-secondary/30 rounded-xl px-3 py-2 flex items-center justify-between">
             <span className="text-[10px] text-muted-foreground">Orçamento restante do mês</span>
             <span className="text-xs font-bold tabular-nums text-foreground">
-              {fmtCurrency(Math.max(data.saldoAtual - data.despesasPendentes, 0))}
+              {fmtCurrency(Math.max(data.saldoAtual + data.receitasPendentes - data.despesasPendentes - savingsGoal, 0))}
             </span>
           </div>
         </GlassSection>
-
-        {/* ── 5. SIMULAÇÃO INTERATIVA ── */}
         <GlassSection delay={0.26} className={hasSimulation ? "relative overflow-hidden" : ""}>
           {hasSimulation && (
             <div className="absolute -top-16 -right-16 w-40 h-40 rounded-full bg-accent/5 blur-3xl pointer-events-none" />
