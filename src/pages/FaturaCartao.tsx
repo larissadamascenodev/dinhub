@@ -195,7 +195,7 @@ const FaturaCartao = () => {
 
   return (
     <div className="pt-2 pb-24 space-y-5">
-      {/* Header */}
+      {/* Header — Back + 3-dot menu */}
       <div className="flex items-center justify-between">
         <button
           onClick={() => navigate(-1)}
@@ -204,55 +204,30 @@ const FaturaCartao = () => {
           <ArrowLeft className="w-4 h-4" />
           Voltar
         </button>
-        <div className="flex items-center gap-2">
-          <Button
-            variant="outline"
-            size="sm"
-            className="border-primary/30 bg-primary/10 text-primary hover:bg-primary/20 rounded-xl text-xs font-semibold gap-1.5"
-            onClick={() => navigate(`/transacoes`)}
-          >
-            <Plus className="w-3.5 h-3.5" />
-            Adicionar lançamento
-          </Button>
-          <button className="w-8 h-8 rounded-lg bg-muted/30 flex items-center justify-center text-muted-foreground hover:text-foreground transition-colors">
-            <MoreVertical className="w-4 h-4" />
-          </button>
-        </div>
+        <button className="w-8 h-8 rounded-lg bg-muted/30 flex items-center justify-center text-muted-foreground hover:text-foreground transition-colors">
+          <MoreVertical className="w-4 h-4" />
+        </button>
       </div>
 
-      {/* ===== CARD IDENTITY — Name + badge ===== */}
-      <motion.div
-        initial={{ opacity: 0, y: 16 }}
-        animate={{ opacity: 1, y: 0 }}
-        className="flex items-center gap-3.5"
-      >
-        <div className="relative">
-          <div className="w-12 h-8 rounded-lg shadow-lg" style={{ backgroundColor: cardColor }} />
-          <div className="absolute inset-0 rounded-lg bg-gradient-to-br from-white/20 to-transparent" />
-        </div>
-        <div className="flex-1">
-          <h1 className="text-base font-bold text-foreground">{card?.name}</h1>
-          {card?.last_four_digits && (
-            <span className="text-[11px] text-muted-foreground tracking-wider">•••• {card.last_four_digits}</span>
-          )}
-        </div>
-        {invoiceStatus === "paid" ? (
-          <div className="flex items-center gap-1.5 border border-primary/30 bg-primary/10 px-3 py-1.5 rounded-full">
-            <div className="w-1.5 h-1.5 rounded-full bg-primary animate-pulse" />
-            <span className="text-xs font-bold text-primary">Paga</span>
-          </div>
-        ) : invoiceStatus === "closed" ? (
-          <div className="flex items-center gap-1.5 border border-[hsl(var(--warning))]/30 bg-[hsl(var(--warning))]/10 px-3 py-1.5 rounded-full">
-            <div className="w-1.5 h-1.5 rounded-full bg-[hsl(var(--warning))]" />
-            <span className="text-xs font-bold text-[hsl(var(--warning))]">Fechada</span>
-          </div>
-        ) : invoiceStatus === "open" ? (
-          <div className="flex items-center gap-1.5 border border-primary/20 bg-primary/5 px-3 py-1.5 rounded-full">
-            <div className="w-1.5 h-1.5 rounded-full bg-primary/60" />
-            <span className="text-xs font-bold text-primary/80">Aberta</span>
-          </div>
-        ) : null}
-      </motion.div>
+      {/* Month selector + Add button row */}
+      <div className="flex items-center justify-between">
+        <InvoiceTimeline
+          selectedMonth={selectedMonth}
+          selectedYear={selectedYear}
+          invoices={invoices}
+          onSelect={(m, y) => { setSelectedMonth(m); setSelectedYear(y); }}
+        />
+        <Button
+          variant="outline"
+          size="sm"
+          className="border-primary/30 bg-primary/10 text-primary hover:bg-primary/20 rounded-xl text-xs font-semibold gap-1.5 shrink-0 ml-3"
+          onClick={() => navigate(`/transacoes`)}
+        >
+          <Plus className="w-3.5 h-3.5" />
+          <span className="hidden sm:inline">Adicionar lançamento</span>
+          <span className="sm:hidden">Novo</span>
+        </Button>
+      </div>
 
       {/* ===== SPLIT CARD: Fatura Info + Limite ===== */}
       <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
