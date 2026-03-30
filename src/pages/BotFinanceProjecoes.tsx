@@ -192,19 +192,43 @@ const BotFinanceProjecoes = () => {
   const impact3m = (savingsBoost + incomeBoost) * 3;
 
   // ─── Health score (0–100) ───
-  const healthScore = useMemo(() => {
-    let score = 50;
-    // Positive balance = good
-    if (balanco > 0) score += Math.min(balanco / 100, 25);
-    else score += Math.max(balanco / 100, -25);
-    // Low pending expenses ratio
-    const pendingRatio = data.despesas > 0 ? data.despesasPendentes / data.despesas : 0;
-    score += (1 - pendingRatio) * 15;
-    // Savings boost bonus
-    if (savingsBoost > 0) score += Math.min(savingsBoost / 200, 10);
-    return Math.round(Math.max(0, Math.min(100, score)));
-  }, [balanco, data.despesas, data.despesasPendentes, savingsBoost]);
+  const healthData = useMemo(() => {
+    // Factor 1: Balance trend (0-30)
+    let balanceScore = 15;
+    if (balanco > 0) balanceScore += Math.min(balanco / 100, 15);
+    else balanceScore += Math.max(balanco / 50, -15);
 
+    // Factor 2: Spending control (0-30) — gasto_hoje vs media
+    let controlScore = 15;
+    if (data.mediaGastosDiarios > 0) {
+      const ratio = data.gastosHoje / data.mediaGastosDiarios;
+      if (ratio <= 0.8) controlScore = 30;
+      else if (ratio <= 1.2) controlScore = 20;
+      else controlScore = Math.max(5, 15 - (ratio - 1.2) * 10);
+    }
+
+    // Factor 3: Consistency — positive months in projection (0-25)
+    const positiveMonths = projections.filter((p) => p.delta > 0).length;
+    const consistencyScore = (positiveMonths / 6) * 25;
+
+    // Factor 4: Pending ratio (0-15) — fewer pending = better
+    const pendingRatio = data.despesas > 0 ? data.despesasPendentes / data.despesas : 0;
+    const pendingScore = (1 - pendingRatio) * 15;
+
+    const total = Math.round(Math.max(0, Math.min(100, balanceScore + controlScore + consistencyScore + pendingScore)));
+
+    return {
+      score: total,
+      factors: [
+        { label: "Saldo crescente", value: Math.round(balanceScore), max: 30 },
+        { label: "Controle de gastos", value: Math.round(controlScore), max: 30 },
+        { label: "Consistência", value: Math.round(consistencyScore), max: 25 },
+        { label: "Despesas em dia", value: Math.round(pendingScore), max: 15 },
+      ],
+    };
+  }, [balanco, data.gastosHoje, data.mediaGastosDiarios, data.despesas, data.despesasPendentes, projections]);
+
+  const healthScore = healthData.score;
   const animatedScore = useAnimatedCounter(healthScore);
   const scoreLabel =
     healthScore >= 75 ? "Excelente" : healthScore >= 50 ? "Estável" : healthScore >= 30 ? "Atenção" : "Crítico";
@@ -214,6 +238,12 @@ const BotFinanceProjecoes = () => {
       : healthScore >= 50
         ? "text-warning"
         : "text-destructive";
+  const scoreStroke =
+    healthScore >= 75
+      ? "hsl(var(--primary))"
+      : healthScore >= 50
+        ? "hsl(var(--warning))"
+        : "hsl(var(--destructive))";
 
   // ─── Insight IA ───
   const insight = useMemo(() => {
