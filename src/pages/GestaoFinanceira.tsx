@@ -572,7 +572,6 @@ const GestaoFinanceira = () => {
               <SelectItem value="checking">Conta Corrente</SelectItem>
               <SelectItem value="savings">Poupança</SelectItem>
               <SelectItem value="cash">Dinheiro</SelectItem>
-              <SelectItem value="investment">Carteira de Investimentos</SelectItem>
             </SelectContent>
           </Select>
           <div>
