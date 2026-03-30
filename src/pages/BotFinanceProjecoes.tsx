@@ -103,7 +103,9 @@ const BotFinanceProjecoes = () => {
   const projections = useMemo<MonthProjection[]>(() => {
     const avgIncome = data.projection.avgIncome3m || data.receitas;
     const avgExpense = data.projection.avgExpense3m || data.despesas;
-    const monthlyNet = avgIncome + incomeBoost - (avgExpense - savingsBoost);
+    const incomeWithBoost = avgIncome + incomeBoost;
+    const expenseWithBoost = avgExpense - savingsBoost;
+    const monthlyNet = incomeWithBoost - expenseWithBoost;
 
     let balance = data.saldoPrevisto;
     const result: MonthProjection[] = [];
@@ -115,12 +117,21 @@ const BotFinanceProjecoes = () => {
       const isFirst = i === 0;
       const projected = isFirst ? balance : balance + monthlyNet;
       const delta = isFirst ? data.balanco : monthlyNet;
+      const income = isFirst ? data.receitas : incomeWithBoost;
+      const expense = isFirst ? data.despesas : expenseWithBoost;
+
+      // Risk classification
+      const risk: MonthProjection["risk"] =
+        delta > 0 ? "positivo" : delta > -200 ? "atencao" : "risco";
 
       result.push({
         month: m,
         year: y,
         balance: isFirst ? balance : projected,
         delta,
+        income,
+        expense,
+        risk,
       });
 
       if (!isFirst) balance = projected;
