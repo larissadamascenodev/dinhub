@@ -1,6 +1,6 @@
 import { useState, useEffect } from "react";
 import { motion, AnimatePresence } from "framer-motion";
-import { CreditCard, Plus, X, Landmark, Banknote, PiggyBank, TrendingUp, ChevronRight } from "lucide-react";
+import { CreditCard, Plus, X, Landmark, Banknote, PiggyBank, TrendingUp, ChevronRight, EyeOff } from "lucide-react";
 import { useNavigate } from "react-router-dom";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -8,7 +8,7 @@ import { Label } from "@/components/ui/label";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { toast } from "sonner";
 import { useAuth } from "@/contexts/AuthContext";
-import { getAccounts, createAccount, getCreditCards, createCreditCard } from "@/services/transactionService";
+import { getAccounts, createAccount, getCreditCards, createCreditCard, deactivateAccount } from "@/services/transactionService";
 import { cn } from "@/lib/utils";
 
 interface Account {
