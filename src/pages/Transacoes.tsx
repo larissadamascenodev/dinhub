@@ -491,8 +491,9 @@ const Transacoes = () => {
   };
 
   const getDayTotal = (txs: TransactionRow[]) => {
-    const rec = txs.filter((t) => t.type === "receita").reduce((s, t) => s + t.amount, 0);
-    const desp = txs.filter((t) => t.type === "despesa").reduce((s, t) => s + t.amount, 0);
+    const paid = txs.filter((t) => t.status === "pago");
+    const rec = paid.filter((t) => t.type === "receita").reduce((s, t) => s + t.amount, 0);
+    const desp = paid.filter((t) => t.type === "despesa").reduce((s, t) => s + t.amount, 0);
     return { rec, desp, net: rec - desp };
   };
 
