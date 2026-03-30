@@ -15,7 +15,7 @@ import InvoiceCategoryBreakdown from "@/components/fatura/InvoiceCategoryBreakdo
 import InvoiceTransactionList from "@/components/fatura/InvoiceTransactionList";
 import InvoicePayModal from "@/components/fatura/InvoicePayModal";
 import InvoiceHistoryChart from "@/components/fatura/InvoiceHistoryChart";
-import InvoiceTimeline from "@/components/fatura/InvoiceTimeline";
+import MonthSelector from "@/components/dashboard/MonthSelector";
 
 export interface EnrichedItem {
   id: string;
@@ -212,11 +212,10 @@ const FaturaCartao = () => {
 
       {/* Month selector + Add button row */}
       <div className="flex items-center justify-between">
-        <InvoiceTimeline
-          selectedMonth={selectedMonth}
+        <MonthSelector
+          selectedMonth={selectedMonth - 1}
           selectedYear={selectedYear}
-          invoices={invoices}
-          onSelect={(m, y) => { setSelectedMonth(m); setSelectedYear(y); }}
+          onMonthChange={(m, y) => { setSelectedMonth(m + 1); setSelectedYear(y); }}
         />
         <Button
           variant="outline"
