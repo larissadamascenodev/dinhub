@@ -31,7 +31,7 @@ export default function InvoiceTransactionList({ items, installmentCount = 0 }: 
       initial={{ opacity: 0, y: 12 }}
       animate={{ opacity: 1, y: 0 }}
       transition={{ delay: 0.15 }}
-      className="space-y-3"
+      className="space-y-2"
     >
       {/* Section header */}
       <div className="flex items-center justify-between">
