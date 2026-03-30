@@ -7,84 +7,59 @@ interface Props {
   onVerAnalise?: () => void;
 }
 
-const fmtShort = (v: number) => v.toLocaleString("pt-BR", { style: "currency", currency: "BRL", minimumFractionDigits: 0, maximumFractionDigits: 0 });
+const fmt = (v: number) => v.toLocaleString("pt-BR", { style: "currency", currency: "BRL" });
 
 const GastosPorCategoria = memo(({ categories, onVerAnalise }: Props) => {
-  const top = [...categories].sort((a, b) => b.amount - a.amount).slice(0, 5);
-  const maxValue = top[0]?.amount || 1;
+  const top = [...categories].sort((a, b) => b.amount - a.amount).slice(0, 6);
   const totalExpenses = top.reduce((sum, c) => sum + c.amount, 0);
 
   return (
     <div
-      className="rounded-xl border border-border/20 bg-card shadow-[0_2px_8px_-2px_rgba(0,0,0,0.4),inset_0_1px_0_0_rgba(255,255,255,0.06)] overflow-hidden p-4"
-      style={{ background: "linear-gradient(135deg, hsl(var(--primary) / 0.06) 0%, transparent 60%)" }}
+      className="rounded-2xl border border-border/20 bg-card/60 backdrop-blur-xl p-4"
+      style={{ boxShadow: "0 4px 24px -4px rgba(0,0,0,0.3)" }}
     >
-      <div className="space-y-3">
-        <div className="flex items-center justify-between">
-          <h3 className="text-[10px] font-semibold text-muted-foreground uppercase tracking-widest">Gastos por Categoria</h3>
-          <button
-            onClick={onVerAnalise}
-            className="text-[10px] text-primary/70 hover:text-primary transition-colors"
-          >
-            Ver todas
-          </button>
-        </div>
+      <div className="flex items-center justify-between mb-3">
+        <h3 className="text-[10px] font-semibold text-muted-foreground uppercase tracking-widest">Gastos por Categoria</h3>
+        <button
+          onClick={onVerAnalise}
+          className="text-[10px] text-primary/70 hover:text-primary transition-colors"
+        >
+          Ver todas
+        </button>
+      </div>
 
-        <div className="space-y-2">
-          {top.map((cat, index) => {
-            const barPct = Math.round((cat.amount / maxValue) * 100);
-            const color = cat.color;
+      <div className="space-y-2.5">
+        {top.map((cat, index) => {
+          const pct = totalExpenses > 0 ? Math.round((cat.amount / totalExpenses) * 100) : 0;
 
-            return (
-              <motion.div
-                key={cat.name}
-                initial={{ opacity: 0 }}
-                animate={{ opacity: 1 }}
-                transition={{ delay: index * 0.03 }}
-                className="w-full flex items-center gap-3 px-3 py-2.5 rounded-xl cursor-pointer hover:-translate-y-0.5 transition-all duration-200 border border-border/10 bg-card"
-                style={{
-                  boxShadow: "0 1px 4px -1px rgba(0,0,0,0.2), inset 0 1px 0 0 rgba(255,255,255,0.04)",
-                }}
-              >
-                <div
-                  className="w-10 h-10 rounded-xl flex items-center justify-center flex-shrink-0 text-lg"
-                  style={{
-                    background: `${color}18`,
-                    border: `1px solid ${color}25`,
-                  }}
-                >
-                  {cat.icon}
+          return (
+            <motion.div
+              key={cat.name}
+              initial={{ opacity: 0 }}
+              animate={{ opacity: 1 }}
+              transition={{ delay: index * 0.03 }}
+              className="flex items-center gap-3"
+            >
+              <div className="w-2.5 h-2.5 rounded-full shrink-0 bg-primary" style={{ opacity: 1 - index * 0.12 }} />
+              <div className="flex-1 min-w-0">
+                <p className="text-xs font-semibold text-foreground truncate">{cat.name}</p>
+                <div className="w-full h-1 bg-border/20 rounded-full mt-1 overflow-hidden">
+                  <motion.div
+                    initial={{ width: 0 }}
+                    animate={{ width: `${pct}%` }}
+                    transition={{ delay: 0.1 + index * 0.04, duration: 0.5, ease: "easeOut" }}
+                    className="h-full rounded-full bg-primary"
+                    style={{ opacity: 1 - index * 0.12 }}
+                  />
                 </div>
-
-                <div className="flex-1 min-w-0">
-                  <div className="flex items-center justify-between mb-1">
-                    <span className="text-sm font-semibold text-foreground truncate">{cat.name}</span>
-                    <span className="text-sm font-bold text-foreground tabular-nums ml-2">
-                      {fmtShort(cat.amount)}
-                    </span>
-                  </div>
-                  <div className="h-1.5 rounded-full overflow-hidden" style={{ background: `${color}12` }}>
-                    <motion.div
-                      initial={{ width: 0 }}
-                      animate={{ width: `${barPct}%` }}
-                      transition={{ delay: 0.1 + index * 0.04, duration: 0.5, ease: "easeOut" }}
-                      className="h-full rounded-full"
-                      style={{
-                        background: `linear-gradient(90deg, ${color}, ${color}cc)`,
-                        boxShadow: `0 0 8px ${color}40`,
-                      }}
-                    />
-                  </div>
-                  <div className="flex items-center justify-between mt-1">
-                    <span className="text-[10px] text-muted-foreground/50 tabular-nums">
-                      {totalExpenses > 0 ? Math.round((cat.amount / totalExpenses) * 100) : 0}% do total
-                    </span>
-                  </div>
-                </div>
-              </motion.div>
-            );
-          })}
-        </div>
+              </div>
+              <div className="text-right shrink-0">
+                <p className="text-xs font-bold text-foreground tabular-nums">{fmt(cat.amount)}</p>
+                <p className="text-[9px] text-muted-foreground/50">{pct}%</p>
+              </div>
+            </motion.div>
+          );
+        })}
       </div>
     </div>
   );
