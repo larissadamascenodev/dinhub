@@ -381,18 +381,25 @@ const BotFinanceProjecoes = () => {
         <GlassSection delay={0.12}>
           <div className="flex items-center justify-between">
             <SectionHeader icon={<TrendingUp className="w-4 h-4 text-primary" />} title="Timeline de Saldo" />
-            <div className="flex bg-secondary rounded-lg p-0.5 gap-0.5">
+            <div className="flex bg-card/60 backdrop-blur-xl border border-border/15 rounded-2xl p-0.5 gap-0.5">
               {(["mensal", "acumulado"] as const).map((mode) => (
                 <button
                   key={mode}
                   onClick={() => setTimelineMode(mode)}
-                  className={`text-[10px] px-2.5 py-1 rounded-md font-medium transition-all ${
+                  className={`relative text-[10px] px-3 py-1.5 rounded-xl font-medium transition-all ${
                     timelineMode === mode
-                      ? "bg-background text-foreground shadow-sm"
+                      ? "text-primary"
                       : "text-muted-foreground hover:text-foreground"
                   }`}
                 >
-                  {mode === "mensal" ? "Mensal" : "Acumulado"}
+                  {timelineMode === mode && (
+                    <motion.div
+                      layoutId="timeline-mode-bg"
+                      className="absolute inset-0 rounded-xl bg-primary/15 border border-primary/20"
+                      transition={{ type: "spring", stiffness: 400, damping: 28 }}
+                    />
+                  )}
+                  <span className="relative z-10">{mode === "mensal" ? "Mensal" : "Acumulado"}</span>
                 </button>
               ))}
             </div>
