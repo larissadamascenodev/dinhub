@@ -27,7 +27,7 @@ const tools: ToolCard[] = [
     icon: <HeartPulse className="w-5 h-5" />,
     title: "Saúde Financeira",
     description: "Um score completo da sua vida financeira com dicas personalizadas",
-    disabled: true,
+    path: "/bot-finance/saude",
   },
   {
     icon: <PieChart className="w-5 h-5" />,

@@ -48,6 +48,7 @@ const App = () => (
               <Route path="/fatura/:cardId" element={<FaturaCartao />} />
               <Route path="/bot-finance" element={<BotFinance />} />
               <Route path="/bot-finance/projecoes" element={<BotFinanceProjecoes />} />
+              <Route path="/bot-finance/saude" element={<BotFinanceSaude />} />
               <Route path="/configuracoes" element={<Configuracoes />} />
             </Route>
             <Route path="*" element={<NotFound />} />
