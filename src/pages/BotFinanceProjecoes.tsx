@@ -363,51 +363,85 @@ const BotFinanceProjecoes = () => {
             </div>
           </div>
 
-          {/* Line Chart */}
-          <motion.div
-            initial={{ opacity: 0 }}
-            animate={{ opacity: 1 }}
-            transition={{ delay: 0.15, duration: 0.5 }}
-            className="h-44 sm:h-52 w-full -mx-2"
-          >
-            <ResponsiveContainer width="100%" height="100%">
-              <AreaChart data={chartData} onClick={handleChartClick} margin={{ top: 8, right: 12, left: -12, bottom: 0 }}>
-                <defs>
-                  <linearGradient id="chartGradient" x1="0" y1="0" x2="0" y2="1">
-                    <stop offset="0%" stopColor={cc.fill} stopOpacity={0.25} />
-                    <stop offset="95%" stopColor={cc.fill} stopOpacity={0} />
-                  </linearGradient>
-                </defs>
-                <CartesianGrid strokeDasharray="3 3" stroke="hsl(220 12% 16%)" strokeOpacity={0.4} vertical={false} />
-                <XAxis
-                  dataKey="name"
-                  tick={{ fill: "hsl(220 8% 50%)", fontSize: 10 }}
-                  tickLine={false}
-                  axisLine={false}
-                  tickFormatter={(v) => v.split(" ")[0]}
-                />
-                <YAxis
-                  tick={{ fill: "hsl(220 8% 50%)", fontSize: 9 }}
-                  tickLine={false}
-                  axisLine={false}
-                  tickFormatter={(v: number) => fmtCompact(v)}
-                  width={52}
-                />
-                <RechartsTooltip content={<ChartTooltipContent />} cursor={{ stroke: "hsl(220 8% 50%)", strokeWidth: 1, strokeDasharray: "4 4" }} />
-                <Area
-                  type="monotone"
-                  dataKey="value"
-                  stroke={cc.stroke}
-                  strokeWidth={2.5}
-                  fill="url(#chartGradient)"
-                  activeDot={<GlowDot />}
-                  dot={{ r: 3, fill: cc.stroke, stroke: "hsl(220 20% 5%)", strokeWidth: 2 }}
-                  animationDuration={1200}
-                  animationEasing="ease-out"
-                />
-              </AreaChart>
-            </ResponsiveContainer>
-          </motion.div>
+          {/* Chart / Month Summary */}
+          {timelineMode === "acumulado" ? (
+            /* Line Chart — 6 months */
+            <motion.div
+              initial={{ opacity: 0 }}
+              animate={{ opacity: 1 }}
+              transition={{ delay: 0.15, duration: 0.5 }}
+              className="h-44 sm:h-52 w-full -mx-2"
+            >
+              <ResponsiveContainer width="100%" height="100%">
+                <AreaChart data={chartData} onClick={handleChartClick} margin={{ top: 8, right: 12, left: -12, bottom: 0 }}>
+                  <defs>
+                    <linearGradient id="chartGradient" x1="0" y1="0" x2="0" y2="1">
+                      <stop offset="0%" stopColor={cc.fill} stopOpacity={0.25} />
+                      <stop offset="95%" stopColor={cc.fill} stopOpacity={0} />
+                    </linearGradient>
+                  </defs>
+                  <CartesianGrid strokeDasharray="3 3" stroke="hsl(220 12% 16%)" strokeOpacity={0.4} vertical={false} />
+                  <XAxis
+                    dataKey="name"
+                    tick={{ fill: "hsl(220 8% 50%)", fontSize: 10 }}
+                    tickLine={false}
+                    axisLine={false}
+                    tickFormatter={(v) => v.split(" ")[0]}
+                  />
+                  <YAxis
+                    tick={{ fill: "hsl(220 8% 50%)", fontSize: 9 }}
+                    tickLine={false}
+                    axisLine={false}
+                    tickFormatter={(v: number) => fmtCompact(v)}
+                    width={52}
+                  />
+                  <RechartsTooltip content={<ChartTooltipContent />} cursor={{ stroke: "hsl(220 8% 50%)", strokeWidth: 1, strokeDasharray: "4 4" }} />
+                  <Area
+                    type="monotone"
+                    dataKey="value"
+                    stroke={cc.stroke}
+                    strokeWidth={2.5}
+                    fill="url(#chartGradient)"
+                    activeDot={<GlowDot />}
+                    dot={{ r: 3, fill: cc.stroke, stroke: "hsl(220 20% 5%)", strokeWidth: 2 }}
+                    animationDuration={1200}
+                    animationEasing="ease-out"
+                  />
+                </AreaChart>
+              </ResponsiveContainer>
+            </motion.div>
+          ) : (
+            /* Single month focus — mensal */
+            (() => {
+              const current = displayedProjections[0];
+              if (!current) return null;
+              const balanceColor = current.delta >= 0 ? "text-foreground" : "text-destructive";
+              return (
+                <motion.div
+                  key="mensal-focus"
+                  initial={{ opacity: 0, scale: 0.97 }}
+                  animate={{ opacity: 1, scale: 1 }}
+                  transition={{ duration: 0.3 }}
+                  className="space-y-3"
+                >
+                  <div className="text-center py-3">
+                    <p className="text-[10px] text-muted-foreground mb-1">
+                      Variação do saldo em {MONTH_NAMES[current.month]} {current.year}
+                    </p>
+                    <p className={`text-3xl font-bold font-display tabular-nums ${balanceColor}`}>
+                      {current.delta >= 0 ? "+" : ""}{fmtCurrency(current.delta)}
+                    </p>
+                  </div>
+                  <CompositionBlock
+                    prev={current.prevBalance}
+                    income={current.income}
+                    expense={current.expense}
+                    final={current.balance}
+                  />
+                </motion.div>
+              );
+            })()
+          )}
 
           {/* Timeline list */}
           <div className="relative mt-1">
