@@ -475,44 +475,54 @@ const BotFinanceProjecoes = () => {
           {/* 5 — SCORE DE SAÚDE FINANCEIRA */}
           <GlassSection delay={0.22}>
             <SectionHeader icon={<Heart className="w-4 h-4 text-primary" />} title="Saúde Financeira" />
-            <div className="flex items-center justify-center gap-5 py-1">
-              {/* Circular score indicator */}
-              <div className="relative w-20 h-20">
+            <div className="flex items-center gap-5 py-1">
+              {/* Circular score */}
+              <div className="relative w-20 h-20 flex-shrink-0">
                 <svg className="w-20 h-20 -rotate-90" viewBox="0 0 80 80">
                   <circle cx="40" cy="40" r="34" fill="none" stroke="hsl(var(--secondary))" strokeWidth="5" />
                   <circle
-                    cx="40"
-                    cy="40"
-                    r="34"
-                    fill="none"
-                    stroke={
-                      healthScore >= 75
-                        ? "hsl(var(--primary))"
-                        : healthScore >= 50
-                          ? "hsl(var(--warning))"
-                          : "hsl(var(--destructive))"
-                    }
-                    strokeWidth="5"
-                    strokeLinecap="round"
+                    cx="40" cy="40" r="34" fill="none"
+                    stroke={scoreStroke}
+                    strokeWidth="5" strokeLinecap="round"
                     strokeDasharray={`${(healthScore / 100) * 213.6} 213.6`}
                     className="transition-all duration-700 ease-out"
                   />
                 </svg>
                 <div className="absolute inset-0 flex flex-col items-center justify-center">
-                  <span className={`text-xl font-bold tabular-nums ${scoreColor}`}>
-                    {Math.round(animatedScore)}
-                  </span>
+                  <span className={`text-xl font-bold tabular-nums ${scoreColor}`}>{Math.round(animatedScore)}</span>
+                  <span className="text-[8px] text-muted-foreground">/100</span>
                 </div>
               </div>
-              <div>
+              <div className="flex-1 min-w-0">
                 <p className={`text-sm font-bold ${scoreColor}`}>{scoreLabel}</p>
-                <p className="text-[10px] text-muted-foreground mt-0.5">
+                <p className="text-[10px] text-muted-foreground mt-0.5 mb-2">
                   {healthScore >= 75
                     ? "Suas finanças estão ótimas!"
                     : healthScore >= 50
                       ? "Pode melhorar com ajustes"
                       : "Precisa de atenção"}
                 </p>
+                {/* Factor breakdown bars */}
+                <div className="space-y-1.5">
+                  {healthData.factors.map((f) => (
+                    <div key={f.label}>
+                      <div className="flex items-center justify-between mb-0.5">
+                        <span className="text-[9px] text-muted-foreground">{f.label}</span>
+                        <span className="text-[9px] tabular-nums text-muted-foreground">{f.value}/{f.max}</span>
+                      </div>
+                      <div className="h-1 w-full rounded-full bg-secondary overflow-hidden">
+                        <motion.div
+                          initial={{ width: 0 }}
+                          animate={{ width: `${(f.value / f.max) * 100}%` }}
+                          transition={{ duration: 0.6, delay: 0.3 }}
+                          className={`h-full rounded-full ${
+                            f.value / f.max >= 0.7 ? "bg-primary" : f.value / f.max >= 0.4 ? "bg-warning" : "bg-destructive"
+                          }`}
+                        />
+                      </div>
+                    </div>
+                  ))}
+                </div>
               </div>
             </div>
           </GlassSection>
