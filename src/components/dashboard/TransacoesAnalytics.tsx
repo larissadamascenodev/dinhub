@@ -142,28 +142,6 @@ const TransacoesAnalytics = () => {
     return cells;
   }, [transactions, selectedMonth, selectedYear]);
 
-  const currentWeekDays = useMemo(() => {
-    const today = new Date();
-    const currentDay = today.getDay();
-    const weekStart = new Date(today);
-    weekStart.setDate(today.getDate() - currentDay);
-
-    const days: { day: number; inMonth: boolean; despesas: number; receitas: number }[] = [];
-    for (let i = 0; i < 7; i++) {
-      const d = new Date(weekStart);
-      d.setDate(weekStart.getDate() + i);
-      const inMonth = d.getMonth() === selectedMonth && d.getFullYear() === selectedYear;
-      const dayNum = d.getDate();
-      const dayData = dailyData.find(dd => dd.day === dayNum);
-      days.push({
-        day: dayNum,
-        inMonth,
-        despesas: inMonth && dayData ? dayData.despesas : 0,
-        receitas: inMonth && dayData ? dayData.receitas : 0,
-      });
-    }
-    return days;
-  }, [dailyData, selectedMonth, selectedYear]);
 
   if (loading) {
     return (
