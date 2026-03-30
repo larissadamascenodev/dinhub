@@ -1,4 +1,5 @@
 import { useState, useMemo } from "react";
+import type { MonthProjection } from "@/services/financialProjectionEngine";
 import { useNavigate } from "react-router-dom";
 import { motion, AnimatePresence } from "framer-motion";
 import {
