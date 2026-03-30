@@ -755,7 +755,10 @@ const TransactionDetailModal = ({ open, tx, accountName, onClose, onRefresh, use
           initial={{ opacity: 0 }}
           animate={{ opacity: 1 }}
           exit={{ opacity: 0 }}
-          className="fixed inset-0 z-50 flex items-end md:items-center justify-center bg-black/70 backdrop-blur-sm"
+          className={cn(
+            "fixed inset-0 z-50 flex justify-center bg-black/70 backdrop-blur-sm",
+            step === "edit-form" ? "items-stretch md:items-center" : "items-end md:items-center"
+          )}
           onClick={handleClose}
         >
           <motion.div
