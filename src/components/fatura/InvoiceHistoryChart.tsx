@@ -1,9 +1,9 @@
-import { useMemo } from "react";
-import { BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer, ReferenceLine, Cell } from "recharts";
+import { useMemo, useRef, useEffect } from "react";
 import { motion } from "framer-motion";
 import { TrendingUp } from "lucide-react";
 import { MONTH_SHORT, formatCurrency } from "@/pages/FaturaCartao";
 import type { Invoice } from "@/services/invoiceService";
+import { cn } from "@/lib/utils";
 
 interface Props {
   invoices: Invoice[];
@@ -13,14 +13,15 @@ interface Props {
 }
 
 export default function InvoiceHistoryChart({ invoices, selectedMonth, selectedYear, onSelect }: Props) {
+  const scrollRef = useRef<HTMLDivElement>(null);
+
   const chartData = useMemo(() => {
-    // Show 8 months: 4 past + current + 3 future
     const now = new Date();
     const currentMonth = now.getMonth() + 1;
     const currentYear = now.getFullYear();
 
-    return Array.from({ length: 8 }, (_, i) => {
-      const offset = i - 4;
+    const data = Array.from({ length: 10 }, (_, i) => {
+      const offset = i - 5;
       let m = currentMonth + offset;
       let y = currentYear;
       while (m > 12) { m -= 12; y++; }
@@ -32,108 +33,105 @@ export default function InvoiceHistoryChart({ invoices, selectedMonth, selectedY
       const isSelected = m === selectedMonth && y === selectedYear;
       const isFuture = y > currentYear || (y === currentYear && m > currentMonth);
 
-      return {
-        month: m,
-        year: y,
-        label: MONTH_SHORT[m - 1],
-        amount,
-        isPaid,
-        isSelected,
-        isFuture,
-        projected: isFuture ? amount || 0 : 0,
-        actual: !isFuture ? amount : 0,
-      };
+      return { month: m, year: y, amount, isPaid, isSelected, isFuture };
     });
+
+    return data;
   }, [invoices, selectedMonth, selectedYear]);
 
-  const CustomTooltip = ({ active, payload }: any) => {
-    if (!active || !payload?.length) return null;
-    const data = payload[0].payload;
-    return (
-      <div className="glass-card p-3 text-xs space-y-1">
-        <p className="font-bold text-foreground">{MONTH_SHORT[data.month - 1]} {data.year}</p>
-        <p className="text-primary font-semibold">{formatCurrency(data.amount)}</p>
-        {data.isPaid && <p className="text-primary/70">✓ Paga</p>}
-        {data.isFuture && <p className="text-muted-foreground">Projeção</p>}
-      </div>
-    );
-  };
+  const maxAmount = useMemo(() => Math.max(...chartData.map((d) => d.amount), 1), [chartData]);
+
+  useEffect(() => {
+    if (scrollRef.current) {
+      const active = scrollRef.current.querySelector("[data-active='true']");
+      if (active) {
+        active.scrollIntoView({ behavior: "smooth", block: "nearest", inline: "center" });
+      }
+    }
+  }, [selectedMonth, selectedYear]);
 
   return (
     <motion.div
       initial={{ opacity: 0, y: 12 }}
       animate={{ opacity: 1, y: 0 }}
       transition={{ delay: 0.08 }}
-      className="glass-card p-5 space-y-3"
+      className="glass-card p-5 space-y-4"
     >
-      <div className="flex items-center gap-2">
-        <TrendingUp className="w-4 h-4 text-primary" />
-        <h2 className="text-sm font-bold text-foreground">Histórico de Faturas</h2>
+      <div className="flex items-center justify-between">
+        <div className="flex items-center gap-2">
+          <TrendingUp className="w-4 h-4 text-primary" />
+          <h2 className="text-sm font-bold text-foreground">Histórico de Faturas</h2>
+        </div>
+        {/* Legend */}
+        <div className="flex items-center gap-3 text-[10px] text-muted-foreground">
+          <div className="flex items-center gap-1">
+            <div className="w-2 h-2 rounded-sm bg-primary/50" />
+            <span>Paga</span>
+          </div>
+          <div className="flex items-center gap-1">
+            <div className="w-2 h-2 rounded-sm bg-muted-foreground/40" />
+            <span>Aberta</span>
+          </div>
+          <div className="flex items-center gap-1">
+            <div className="w-2 h-2 rounded-sm bg-primary/20 border border-primary/30" />
+            <span>Projeção</span>
+          </div>
+        </div>
       </div>
 
-      <div className="h-[160px] w-full">
-        <ResponsiveContainer width="100%" height="100%">
-          <BarChart
-            data={chartData}
-            margin={{ top: 8, right: 4, left: -20, bottom: 0 }}
-            onClick={(e) => {
-              if (e?.activePayload?.[0]?.payload) {
-                const d = e.activePayload[0].payload;
-                onSelect(d.month, d.year);
-              }
-            }}
-          >
-            <CartesianGrid strokeDasharray="3 3" stroke="hsl(220 12% 16% / 0.5)" vertical={false} />
-            <XAxis
-              dataKey="label"
-              tick={{ fill: "hsl(220 8% 50%)", fontSize: 10, fontWeight: 500 }}
-              axisLine={false}
-              tickLine={false}
-            />
-            <YAxis
-              tick={{ fill: "hsl(220 8% 50%)", fontSize: 9 }}
-              axisLine={false}
-              tickLine={false}
-              tickFormatter={(v) => `${(v / 1000).toFixed(0)}k`}
-            />
-            <Tooltip content={<CustomTooltip />} cursor={{ fill: "hsl(220 12% 16% / 0.3)" }} />
-            <Bar dataKey="amount" radius={[4, 4, 0, 0]} maxBarSize={32}>
-              {chartData.map((entry, idx) => (
-                <Cell
-                  key={idx}
-                  fill={
-                    entry.isSelected
-                      ? "hsl(150 100% 45%)"
-                      : entry.isFuture
-                      ? "hsl(150 100% 45% / 0.2)"
-                      : entry.isPaid
-                      ? "hsl(150 100% 45% / 0.5)"
-                      : "hsl(220 8% 50% / 0.4)"
-                  }
-                  stroke={entry.isSelected ? "hsl(150 100% 45%)" : "transparent"}
-                  strokeWidth={entry.isSelected ? 1 : 0}
-                  style={{ cursor: "pointer" }}
-                />
-              ))}
-            </Bar>
-          </BarChart>
-        </ResponsiveContainer>
-      </div>
+      {/* Bar chart as blocks */}
+      <div
+        ref={scrollRef}
+        className="flex items-end gap-1.5 overflow-x-auto scrollbar-none pb-1"
+        style={{ minHeight: 120 }}
+      >
+        {chartData.map((entry) => {
+          const barHeight = entry.amount > 0
+            ? Math.max(20, (entry.amount / maxAmount) * 90)
+            : 16;
 
-      {/* Legend */}
-      <div className="flex items-center gap-4 text-[10px] text-muted-foreground">
-        <div className="flex items-center gap-1.5">
-          <div className="w-2.5 h-2.5 rounded-sm bg-primary/50" />
-          <span>Paga</span>
-        </div>
-        <div className="flex items-center gap-1.5">
-          <div className="w-2.5 h-2.5 rounded-sm bg-[hsl(220_8%_50%_/_0.4)]" />
-          <span>Em aberto</span>
-        </div>
-        <div className="flex items-center gap-1.5">
-          <div className="w-2.5 h-2.5 rounded-sm bg-primary/20 border border-primary/30" />
-          <span>Projeção</span>
-        </div>
+          return (
+            <button
+              key={`${entry.year}-${entry.month}`}
+              data-active={entry.isSelected}
+              onClick={() => onSelect(entry.month, entry.year)}
+              className="flex flex-col items-center gap-1.5 min-w-[60px] flex-1 group"
+            >
+              {/* Tooltip on hover */}
+              <div className={cn(
+                "text-[10px] font-bold transition-opacity duration-150",
+                entry.isSelected ? "opacity-100 text-primary" : "opacity-0 group-hover:opacity-100 text-muted-foreground"
+              )}>
+                {entry.amount > 0 ? formatCurrency(entry.amount) : "—"}
+              </div>
+
+              {/* Bar block */}
+              <motion.div
+                initial={{ height: 0 }}
+                animate={{ height: barHeight }}
+                transition={{ duration: 0.5, ease: "easeOut", delay: 0.02 }}
+                className={cn(
+                  "w-full rounded-lg transition-all duration-200 cursor-pointer",
+                  entry.isSelected
+                    ? "bg-primary/30 border-2 border-primary shadow-[0_0_12px_-2px_hsl(var(--primary)/0.4)]"
+                    : entry.isFuture
+                    ? "bg-primary/10 border border-primary/15 group-hover:bg-primary/15"
+                    : entry.isPaid
+                    ? "bg-primary/25 border border-primary/20 group-hover:bg-primary/35"
+                    : "bg-muted/50 border border-border/20 group-hover:bg-muted/70"
+                )}
+              />
+
+              {/* Month label */}
+              <span className={cn(
+                "text-[10px] font-semibold transition-colors",
+                entry.isSelected ? "text-primary" : "text-muted-foreground/60"
+              )}>
+                {MONTH_SHORT[entry.month - 1]}
+              </span>
+            </button>
+          );
+        })}
       </div>
     </motion.div>
   );
