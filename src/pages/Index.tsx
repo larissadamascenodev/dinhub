@@ -9,6 +9,7 @@ import BalancoCard from "@/components/dashboard/BalancoCard";
 import MicroInteracoesCard from "@/components/dashboard/MicroInteracoesCard";
 import TransacoesRecentes from "@/components/dashboard/TransacoesRecentes";
 import ProximosEventos from "@/components/dashboard/ProximosEventos";
+import GastosPorCategoria from "@/components/dashboard/GastosPorCategoria";
 import MonthSelector from "@/components/dashboard/MonthSelector";
 import PagarEditarModal from "@/components/dashboard/PagarEditarModal";
 import OnboardingCard from "@/components/dashboard/OnboardingCard";
