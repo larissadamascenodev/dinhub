@@ -294,6 +294,9 @@ const BotFinanceProjecoes = () => {
 
   const [timelineMode, setTimelineMode] = useState<"mensal" | "acumulado">("acumulado");
   const [selectedProjectionIdx, setSelectedProjectionIdx] = useState(0);
+  const [showHistory, setShowHistory] = useState(false);
+
+  const TIMELINE_VISIBLE = 6;
 
   const projectionsWithVariation = useMemo(() => {
     return projections.map((p, i) => {
