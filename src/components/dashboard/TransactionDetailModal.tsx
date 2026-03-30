@@ -87,8 +87,17 @@ const TransactionDetailModal = ({ open, tx, accountName, onClose, onRefresh, use
 
   // Edit form state
   const [editName, setEditName] = useState("");
-  const [editAmount, setEditAmount] = useState("");
+  const [editAmountCents, setEditAmountCents] = useState(0);
   const [editCategory, setEditCategory] = useState("");
+  const [editStatus, setEditStatus] = useState<"pago" | "pendente">("pago");
+  const [editDate, setEditDate] = useState<Date>(new Date());
+  const [editDateMode, setEditDateMode] = useState<"hoje" | "ontem" | "outros">("outros");
+  const [editShowCalendar, setEditShowCalendar] = useState(false);
+  const [editObservation, setEditObservation] = useState("");
+  const [editAccountId, setEditAccountId] = useState<string>("");
+  const [editAccounts, setEditAccounts] = useState<AccountRow[]>([]);
+  const [showCategoryPicker, setShowCategoryPicker] = useState(false);
+  const amountInputRef = useRef<HTMLInputElement>(null);
 
   if (!tx) return null;
 
