@@ -765,7 +765,7 @@ const TransactionDetailModal = ({ open, tx, accountName, onClose, onRefresh, use
             exit={{ opacity: 0, y: 60 }}
             transition={{ type: "spring", damping: 28, stiffness: 300 }}
             onClick={(e) => e.stopPropagation()}
-            className="w-full max-w-md mx-0 md:mx-4 rounded-t-3xl md:rounded-2xl bg-card border border-border/20 shadow-2xl p-5 pb-24 md:pb-5"
+            className={`w-full max-w-md mx-0 md:mx-4 rounded-t-3xl md:rounded-2xl bg-card border border-border/20 shadow-2xl ${step === "edit-form" ? "p-0 pb-0" : "p-5 pb-24 md:pb-5"}`}
           >
             {renderContent()}
           </motion.div>
