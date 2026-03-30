@@ -1,5 +1,10 @@
 import { memo, useState } from "react";
-import { ArrowUpRight, ArrowDownRight, Layers, ChevronUp, Trash2 } from "lucide-react";
+import {
+  Layers, ChevronUp, Trash2, Clock, RefreshCw,
+  ShoppingCart, Heart, Car, Utensils, Home as HomeIcon,
+  Briefcase, GraduationCap, Shirt, TrendingUp, DollarSign, MoreHorizontal,
+  CreditCard, Wallet, Sparkles,
+} from "lucide-react";
 import { motion, AnimatePresence } from "framer-motion";
 import { toast } from "sonner";
 import type { Transaction } from "@/types/finance";
@@ -21,10 +26,37 @@ const formatDate = () => {
   return `${day} de ${months[now.getMonth()]}`;
 };
 
+const CATEGORY_ICONS: Record<string, typeof ShoppingCart> = {
+  "Alimentação": Utensils, "Transporte": Car, "Moradia": HomeIcon,
+  "Saúde": Heart, "Educação": GraduationCap, "Vestuário": Shirt,
+  "Salário": DollarSign, "Freelance": Briefcase, "Investimentos": TrendingUp,
+  "Supermercado": ShoppingCart, "Lazer": Sparkles, "Assinaturas": CreditCard,
+  "Pets": Heart, "Beleza": Sparkles, "Presentes": Sparkles,
+  "Viagem": Car, "Tecnologia": Sparkles, "Impostos": Wallet,
+  "Vendas": DollarSign, "Aluguéis": HomeIcon, "Bônus": DollarSign,
+  "Comissão": DollarSign, "Mesada": Wallet,
+};
+
+const CATEGORY_COLORS: Record<string, string> = {
+  "Alimentação": "0 60% 50%", "Transporte": "199 70% 48%", "Moradia": "150 100% 45%",
+  "Saúde": "150 100% 45%", "Educação": "40 80% 50%", "Vestuário": "280 60% 55%",
+  "Salário": "150 100% 45%", "Freelance": "199 70% 48%", "Investimentos": "150 100% 45%",
+  "Supermercado": "150 100% 45%", "Lazer": "40 80% 50%", "Assinaturas": "280 60% 55%",
+  "Pets": "30 80% 55%", "Beleza": "320 60% 55%", "Presentes": "340 60% 55%",
+  "Viagem": "199 70% 48%", "Tecnologia": "220 70% 55%", "Impostos": "0 60% 50%",
+  "Vendas": "150 100% 45%", "Aluguéis": "40 80% 50%", "Bônus": "150 100% 45%",
+  "Comissão": "199 70% 48%", "Mesada": "150 100% 45%",
+};
+
+const getCategoryIcon = (category: string) => CATEGORY_ICONS[category] || MoreHorizontal;
+const getCategoryColor = (category: string) => CATEGORY_COLORS[category] || "220 10% 55%";
+
 const TxCard = ({ tx, onDelete }: { tx: Transaction; onDelete?: (id: string) => void }) => {
   const isReceita = tx.type === "receita";
-  const Icon = isReceita ? ArrowUpRight : ArrowDownRight;
   const isPaid = tx.status === "pago";
+  const isPending = tx.status !== "pago";
+  const catColor = getCategoryColor(tx.category);
+  const CatIcon = getCategoryIcon(tx.category);
 
   const handleDelete = async (e: React.MouseEvent) => {
     e.stopPropagation();
@@ -38,24 +70,45 @@ const TxCard = ({ tx, onDelete }: { tx: Transaction; onDelete?: (id: string) => 
   };
 
   return (
-    <div className="group relative flex items-center gap-2.5 px-3 py-2 md:px-4 md:py-3 rounded-xl md:rounded-[14px] overflow-hidden bg-card/90 backdrop-blur-xl border border-border/30 shadow-2xl shadow-black/40">
+    <div className={`group relative flex items-center gap-2.5 px-3 py-2.5 md:gap-3 md:px-4 md:py-3.5 rounded-xl backdrop-blur-xl ${
+      isPending ? "border border-[hsl(40_80%_50%_/_0.15)]" : "bg-card/95"
+    }`}
+    style={isPending ? { background: "hsl(40 80% 50% / 0.06)" } : undefined}
+    >
+      {/* Category icon */}
       <div
-        className="w-7 h-7 md:w-9 md:h-9 rounded-full flex items-center justify-center flex-shrink-0"
-        style={{ background: isReceita ? "hsl(150 100% 45% / 0.1)" : "hsl(0 60% 50% / 0.1)" }}
+        className="w-8 h-8 md:w-10 md:h-10 rounded-full flex items-center justify-center flex-shrink-0"
+        style={{ background: isPending ? "hsl(40 80% 50% / 0.12)" : `hsl(${catColor} / 0.12)` }}
       >
-        <Icon className="w-3.5 h-3.5 md:w-4 md:h-4" style={{ color: isReceita ? "hsl(150 100% 45%)" : "hsl(0 60% 50%)" }} />
+        {isPending ? (
+          <Clock className="w-4 h-4 md:w-[18px] md:h-[18px]" style={{ color: "hsl(40 80% 50%)" }} />
+        ) : (
+          <CatIcon className="w-4 h-4 md:w-[18px] md:h-[18px]" style={{ color: `hsl(${catColor})` }} />
+        )}
       </div>
+
+      {/* Info */}
       <div className="flex-1 min-w-0">
-        <p className="text-xs md:text-[13px] font-semibold text-foreground truncate">{tx.name}</p>
-        <p className="text-[9px] md:text-[10px] text-muted-foreground/40 mt-px">{tx.category} · {tx.date}</p>
+        <p className="text-xs md:text-[13px] font-bold text-foreground truncate">{tx.name}</p>
+        <p className="text-[9px] md:text-[10px] mt-0.5" style={{ color: isPending ? "hsl(40 80% 50% / 0.5)" : `hsl(${catColor} / 0.6)` }}>
+          {tx.category} · {tx.date}
+        </p>
       </div>
+
+      {/* Amount + status */}
       <div className="text-right shrink-0 flex items-center gap-2">
         <div className="text-right">
-          <p className="text-xs md:text-[13px] font-bold tabular-nums" style={{ color: isReceita ? "hsl(150 100% 45%)" : "hsl(0 60% 50%)" }}>
+          <p
+            className="text-xs md:text-sm font-bold tabular-nums"
+            style={{ color: isPending ? "hsl(40 80% 50%)" : isReceita ? "hsl(var(--primary))" : "hsl(var(--destructive))" }}
+          >
             {isReceita ? "+" : "−"}{fmt(tx.amount)}
           </p>
-          <span className={`block mt-0.5 text-[8px] md:text-[9px] font-bold uppercase tracking-wide ${isPaid ? "text-primary" : "text-destructive"}`}>
-            {isPaid ? "Pago" : "A pagar"}
+          <span
+            className="block mt-0.5 text-[8px] md:text-[9px] font-bold uppercase tracking-wide"
+            style={{ color: isPending ? "hsl(40 80% 50% / 0.7)" : `hsl(${catColor} / 0.4)` }}
+          >
+            {isPaid ? "Pago" : "Pendente"}
           </span>
         </div>
         <button
