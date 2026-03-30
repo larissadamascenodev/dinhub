@@ -141,7 +141,7 @@ export async function createAccount(
   userId: string,
   input: {
     name: string;
-    type?: "checking" | "cash" | "savings";
+    type?: "checking" | "cash" | "savings" | "investment";
     initial_balance?: number;
     color?: string | null;
   }
