@@ -90,7 +90,7 @@ const TxCard = ({ tx, onDelete }: { tx: Transaction; onDelete?: (id: string) => 
       {/* Info */}
       <div className="flex-1 min-w-0">
         <p className="text-xs md:text-[13px] font-bold text-foreground truncate">{tx.name}</p>
-        <p className="text-[9px] md:text-[10px] mt-0.5" style={{ color: isPending ? "hsl(40 80% 50% / 0.5)" : `hsl(${catColor} / 0.6)` }}>
+        <p className="text-[9px] md:text-[10px] mt-0.5 text-muted-foreground/50">
           {tx.category} · {tx.date}
         </p>
       </div>
