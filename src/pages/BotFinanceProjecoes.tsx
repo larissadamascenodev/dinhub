@@ -646,38 +646,63 @@ const BotFinanceProjecoes = () => {
           </div>
         </GlassSection>
 
-        {/* 6 — AÇÕES RÁPIDAS */}
+        {/* 6 — AÇÕES INTELIGENTES */}
         <GlassSection delay={0.3}>
-          <SectionHeader icon={<Zap className="w-4 h-4 text-primary" />} title="Ações Rápidas" />
+          <SectionHeader icon={<Zap className="w-4 h-4 text-primary" />} title="Ações Inteligentes" />
           <div className="grid grid-cols-1 sm:grid-cols-3 gap-2">
             {[
               {
-                label: "Nova transação",
-                desc: "Registrar receita ou despesa",
-                action: () => window.dispatchEvent(new CustomEvent("open-nova-transacao-direct", { detail: { type: "despesa" } })),
+                icon: Target,
+                label: "Criar meta",
+                desc: "Com base na sua projeção",
+                color: "text-primary",
+                bgColor: "bg-primary/10 group-hover:bg-primary/20",
+                action: () => navigate("/bot-finance"),
               },
               {
-                label: "Ver transações",
-                desc: "Histórico completo",
+                icon: Settings2,
+                label: "Ajustar limite",
+                desc: "Configurar gasto diário",
+                color: "text-warning",
+                bgColor: "bg-warning/10 group-hover:bg-warning/20",
+                action: () => {
+                  const el = document.querySelector('[data-section="limite"]');
+                  el?.scrollIntoView({ behavior: "smooth" });
+                },
+              },
+              {
+                icon: Scissors,
+                label: "Reduzir gastos",
+                desc: "Sugestões automáticas",
+                color: "text-destructive",
+                bgColor: "bg-destructive/10 group-hover:bg-destructive/20",
                 action: () => navigate("/transacoes"),
               },
-              {
-                label: "Gestão financeira",
-                desc: "Contas e cartões",
-                action: () => navigate("/gestao"),
-              },
-            ].map((item) => (
-              <button
-                key={item.label}
-                onClick={item.action}
-                className="group flex items-center gap-2.5 p-3 rounded-xl bg-secondary/40 hover:bg-secondary/70 active:scale-[0.97] transition-all text-left"
-              >
-                <div className="flex-1 min-w-0">
-                  <p className="text-xs font-medium text-foreground truncate">{item.label}</p>
-                  <p className="text-[10px] text-muted-foreground truncate">{item.desc}</p>
-                </div>
-                <ChevronRight className="w-3.5 h-3.5 text-muted-foreground/30 group-hover:text-primary transition-colors flex-shrink-0" />
-              </button>
+            ].map((item) => {
+              const Icon = item.icon;
+              return (
+                <button
+                  key={item.label}
+                  onClick={item.action}
+                  className="group flex items-center gap-3 p-3 rounded-xl bg-secondary/30 hover:bg-secondary/50 active:scale-[0.96] transition-all text-left relative overflow-hidden"
+                >
+                  {/* Hover glow */}
+                  <div className="absolute inset-0 opacity-0 group-hover:opacity-100 transition-opacity duration-300 pointer-events-none"
+                    style={{ background: "radial-gradient(ellipse at 30% 50%, hsl(var(--primary) / 0.06) 0%, transparent 70%)" }}
+                  />
+                  <div className={`relative w-9 h-9 rounded-xl ${item.bgColor} flex items-center justify-center flex-shrink-0 transition-colors`}>
+                    <Icon className={`w-4 h-4 ${item.color}`} />
+                  </div>
+                  <div className="relative flex-1 min-w-0">
+                    <p className="text-xs font-medium text-foreground truncate">{item.label}</p>
+                    <p className="text-[10px] text-muted-foreground truncate">{item.desc}</p>
+                  </div>
+                  <ChevronRight className="relative w-3.5 h-3.5 text-muted-foreground/30 group-hover:text-primary transition-colors flex-shrink-0" />
+                </button>
+              );
+            })}
+          </div>
+        </GlassSection>
             ))}
           </div>
         </GlassSection>
