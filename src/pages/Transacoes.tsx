@@ -550,8 +550,12 @@ const Transacoes = () => {
                     }}
                   />
                   {isToday ? (
-                    <div className="flex-1 flex items-center justify-between py-1.5 px-3 rounded-lg border border-primary/20" style={{ background: "hsl(var(--primary) / 0.06)" }}>
-                      <span className="text-xs font-bold text-primary">Hoje, {label}</span>
+                    <div className="flex-1 flex items-center justify-between">
+                      <div className="flex items-center gap-2">
+                        <span className="py-1 px-2.5 rounded-lg border border-primary/20 text-[11px] md:text-xs font-bold text-primary" style={{ background: "hsl(var(--primary) / 0.06)" }}>
+                          Hoje, {label}
+                        </span>
+                      </div>
                       <span className="text-[10px] font-semibold text-muted-foreground/50">
                         {dayTotal.desp > 0 && <span className="text-destructive">−{fmt(dayTotal.desp)}</span>}
                         {dayTotal.rec > 0 && dayTotal.desp > 0 && " · "}
@@ -560,7 +564,7 @@ const Transacoes = () => {
                     </div>
                   ) : (
                     <div className="flex-1 flex items-center justify-between">
-                      <span className="text-sm font-semibold text-muted-foreground/70">{label}</span>
+                      <span className="text-[11px] md:text-xs font-semibold text-muted-foreground/70">{label}</span>
                       <span className="text-[10px] font-semibold text-muted-foreground/40">
                         {dayTotal.desp > 0 && <span className="text-destructive/60">−{fmt(dayTotal.desp)}</span>}
                         {dayTotal.rec > 0 && dayTotal.desp > 0 && " · "}
