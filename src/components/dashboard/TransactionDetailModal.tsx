@@ -97,7 +97,9 @@ const TransactionDetailModal = ({ open, tx, accountName, onClose, onRefresh, use
   const [editAccountId, setEditAccountId] = useState<string>("");
   const [editAccounts, setEditAccounts] = useState<AccountRow[]>([]);
   const [showCategoryPicker, setShowCategoryPicker] = useState(false);
+  const [showDropdown, setShowDropdown] = useState(false);
   const amountInputRef = useRef<HTMLInputElement>(null);
+  const dropdownRef = useRef<HTMLDivElement>(null);
 
   if (!tx) return null;
 
