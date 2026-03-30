@@ -238,6 +238,9 @@ const Index = () => {
             </div>
             <ChevronRight className="w-4 h-4 text-muted-foreground/40 group-hover:text-primary transition-colors" />
           </button>
+          {data.categories.length > 0 && (
+            <GastosPorCategoria categories={data.categories} onVerAnalise={() => navigate("/transacoes")} />
+          )}
           <TransacoesRecentes transactions={data.transactions} onDelete={refetch} />
           <div className="-mt-3">
             <ProximosEventos events={data.events} selectedMonth={selectedMonth} selectedYear={selectedYear} onEventClick={handleEventClick} />
