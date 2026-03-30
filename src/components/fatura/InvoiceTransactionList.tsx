@@ -11,13 +11,13 @@ interface Props {
 function InstallmentBar({ current, total }: { current: number; total: number }) {
   if (total <= 1) return null;
   return (
-    <div className="flex gap-[3px] mt-2.5 w-full">
+    <div className="flex gap-[4px] w-full">
       {Array.from({ length: total }, (_, i) => (
         <div
           key={i}
           className={cn(
-            "h-[5px] rounded-[2px] flex-1",
-            i < current ? "bg-foreground/80" : "bg-muted/30"
+            "h-[4px] rounded-[1.5px] flex-1",
+            i < current ? "bg-white/70" : "bg-white/15"
           )}
         />
       ))}
@@ -36,26 +36,24 @@ export default function InvoiceTransactionList({ items, installmentCount = 0 }: 
       {/* Section header */}
       <div className="flex items-center justify-between">
         <div className="flex items-center gap-2">
-          <div className="w-1 h-4 rounded-full bg-primary" />
+          <div className="w-1 h-5 rounded-full bg-primary" />
           <h2 className="text-sm font-bold text-foreground">Lançamentos</h2>
         </div>
-        <div className="flex items-center gap-3 text-[10px] text-muted-foreground">
-          {installmentCount > 0 && (
-            <div className="flex items-center gap-1">
-              <Layers className="w-3 h-3" />
-              <span className="font-semibold">{installmentCount}</span>
-            </div>
-          )}
-        </div>
+        {installmentCount > 0 && (
+          <div className="flex items-center gap-1.5 text-muted-foreground">
+            <Layers className="w-3.5 h-3.5" />
+            <span className="text-xs font-semibold">{installmentCount}</span>
+          </div>
+        )}
       </div>
 
       {items.length === 0 ? (
-        <div className="glass-card p-6 text-center">
+        <div className="rounded-2xl border border-border/15 bg-card/60 backdrop-blur-xl p-8 text-center">
           <Receipt className="w-8 h-8 text-muted-foreground mx-auto mb-2" />
           <p className="text-sm text-muted-foreground">Nenhuma compra nessa fatura</p>
         </div>
       ) : (
-        <div className="space-y-2.5">
+        <div className="space-y-3">
           {items.map((item, idx) => {
             const isInstallment = item.total_installments > 1;
             const totalValue = isInstallment
@@ -65,50 +63,57 @@ export default function InvoiceTransactionList({ items, installmentCount = 0 }: 
             return (
               <motion.div
                 key={item.id}
-                initial={{ opacity: 0, x: -8 }}
+                initial={{ opacity: 0, x: -6 }}
                 animate={{ opacity: 1, x: 0 }}
                 transition={{ delay: idx * 0.03 }}
-                className="glass-card p-4 border-l-2 border-l-primary/50"
+                className="rounded-2xl border border-border/15 bg-card/60 backdrop-blur-xl border-l-[3px] border-l-primary/40 px-4 py-4"
+                style={{ boxShadow: "0 2px 12px -4px rgba(0,0,0,0.25)" }}
               >
-                <div className="flex gap-3">
+                <div className="flex gap-4">
                   {/* Icon */}
-                  <div className="w-10 h-10 rounded-xl bg-muted/30 flex items-center justify-center shrink-0">
-                    <Layers className="w-4.5 h-4.5 text-muted-foreground" />
+                  <div className="w-11 h-11 rounded-xl bg-muted/20 border border-border/10 flex items-center justify-center shrink-0 self-start mt-0.5">
+                    <Layers className="w-5 h-5 text-muted-foreground/60" />
                   </div>
 
                   {/* Content */}
-                  <div className="flex-1 min-w-0">
-                    <div className="flex items-start justify-between gap-2">
-                      <p className="text-sm font-bold text-foreground truncate">
+                  <div className="flex-1 min-w-0 space-y-2">
+                    {/* Row 1: Name + Value */}
+                    <div className="flex items-start justify-between gap-3">
+                      <p className="text-[13px] font-bold text-foreground leading-tight truncate">
                         {item.transaction_name}
                       </p>
                       <div className="text-right shrink-0">
-                        <p className="text-sm font-bold text-foreground tabular-nums">
+                        <p className="text-[13px] font-bold text-foreground tabular-nums leading-tight">
                           {formatCurrency(Number(item.amount))}
                         </p>
                         {totalValue && (
-                          <p className="text-[10px] text-muted-foreground tabular-nums">
+                          <p className="text-[10px] text-muted-foreground/60 tabular-nums leading-tight mt-0.5">
                             Total: {formatCurrency(totalValue)}
                           </p>
                         )}
                       </div>
                     </div>
 
-                    {/* Installment segmented bar */}
-                    <InstallmentBar
-                      current={item.installment_number}
-                      total={item.total_installments}
-                    />
+                    {/* Row 2: Installment bar (full width) */}
+                    {isInstallment && (
+                      <InstallmentBar
+                        current={item.installment_number}
+                        total={item.total_installments}
+                      />
+                    )}
 
-                    {/* Bottom row: category/date left, installment info right */}
-                    <div className="flex items-center justify-between mt-2">
-                      <span className="text-[11px] text-muted-foreground">
+                    {/* Row 3: Date left, installment count right */}
+                    <div className="flex items-center justify-between">
+                      <span className="text-[11px] text-muted-foreground/50">
                         {item.transaction_category}
                       </span>
-                      {isInstallment && (
-                        <span className="text-[11px] font-bold text-primary tabular-nums">
-                          {item.installment_number} de {item.total_installments} parcelas
+                      {isInstallment ? (
+                        <span className="text-[11px] tabular-nums">
+                          <span className="font-bold text-primary">{item.installment_number}</span>
+                          <span className="text-muted-foreground/50"> de {item.total_installments} parcelas</span>
                         </span>
+                      ) : (
+                        <span className="text-[10px] text-muted-foreground/40">Pagamento único</span>
                       )}
                     </div>
                   </div>
