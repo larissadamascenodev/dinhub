@@ -1,12 +1,11 @@
-import { useState, useEffect, useMemo, useRef } from "react";
+import { useState, useEffect, useMemo } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import {
-  ArrowLeft, CreditCard, Calendar, CheckCircle2, Receipt,
-  Sparkles, ChevronLeft, ChevronRight, Plus, MoreVertical, Tag,
+  ArrowLeft, CreditCard, Calendar, Plus, MoreVertical,
+  CalendarClock, CalendarCheck,
 } from "lucide-react";
 import { useNavigate, useParams, useSearchParams } from "react-router-dom";
 import { Button } from "@/components/ui/button";
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { toast } from "sonner";
 import { useAuth } from "@/contexts/AuthContext";
 import { getInvoices, getInvoiceItems, payInvoice, type Invoice } from "@/services/invoiceService";
@@ -17,6 +16,7 @@ import InvoiceSummaryCard from "@/components/fatura/InvoiceSummaryCard";
 import InvoiceCategoryBreakdown from "@/components/fatura/InvoiceCategoryBreakdown";
 import InvoiceTransactionList from "@/components/fatura/InvoiceTransactionList";
 import InvoicePayModal from "@/components/fatura/InvoicePayModal";
+import InvoiceHistoryChart from "@/components/fatura/InvoiceHistoryChart";
 
 export interface EnrichedItem {
   id: string;
@@ -37,6 +37,7 @@ export interface CreditCardInfo {
   closing_day: number;
   due_day: number;
   color: string | null;
+  last_four_digits: string | null;
 }
 
 export interface AccountInfo {
@@ -112,7 +113,7 @@ const FaturaCartao = () => {
       }
     };
     load();
-  }, [user, cardId, selectedMonth, selectedYear]);
+  }, [user, cardId]);
 
   useEffect(() => {
     if (!currentInvoice) { setItems([]); return; }
@@ -150,7 +151,6 @@ const FaturaCartao = () => {
   const availableLimit = limitTotal - usedLimit;
   const usedPct = limitTotal > 0 ? Math.min((usedLimit / limitTotal) * 100, 100) : 0;
 
-  // Calculate days until due / overdue
   const dueInfo = useMemo(() => {
     if (!card) return null;
     const dueDate = new Date(selectedYear, selectedMonth - 1, card.due_day);
@@ -163,11 +163,9 @@ const FaturaCartao = () => {
     return { text: `Vence em ${diffDays} dias`, overdue: false };
   }, [card, selectedMonth, selectedYear]);
 
-  // Determine invoice status
   const invoiceStatus = useMemo(() => {
     if (!currentInvoice) return null;
     if (currentInvoice.is_paid) return "paid";
-    // Check if closing day has passed
     if (card) {
       const closingDate = new Date(selectedYear, selectedMonth - 1, card.closing_day);
       const today = new Date();
@@ -176,7 +174,6 @@ const FaturaCartao = () => {
     return "open";
   }, [currentInvoice, card, selectedMonth, selectedYear]);
 
-  // Category breakdown
   const categoryBreakdown = useMemo(() => {
     if (items.length === 0) return [];
     const map = new Map<string, { total: number; count: number }>();
@@ -206,7 +203,7 @@ const FaturaCartao = () => {
   }
 
   return (
-    <div className="pt-2 pb-24 space-y-5">
+    <div className="pt-2 pb-24 space-y-4">
       {/* Header */}
       <div className="flex items-center justify-between">
         <button
@@ -216,61 +213,94 @@ const FaturaCartao = () => {
           <ArrowLeft className="w-4 h-4" />
           Voltar
         </button>
-        <Button
-          variant="outline"
-          size="sm"
-          className="border-primary/30 bg-primary/10 text-primary hover:bg-primary/20 rounded-xl text-xs font-semibold gap-1.5"
-          onClick={() => navigate(`/transacoes`)}
-        >
-          <Plus className="w-3.5 h-3.5" />
-          Adicionar lançamento
-        </Button>
+        <div className="flex items-center gap-2">
+          <Button
+            variant="outline"
+            size="sm"
+            className="border-primary/30 bg-primary/10 text-primary hover:bg-primary/20 rounded-xl text-xs font-semibold gap-1.5"
+            onClick={() => navigate(`/transacoes`)}
+          >
+            <Plus className="w-3.5 h-3.5" />
+            Adicionar lançamento
+          </Button>
+          <button className="w-8 h-8 rounded-lg bg-muted/30 flex items-center justify-center text-muted-foreground hover:text-foreground transition-colors">
+            <MoreVertical className="w-4 h-4" />
+          </button>
+        </div>
       </div>
 
-      {/* Main Card */}
+      {/* Card Hero */}
       <motion.div
         initial={{ opacity: 0, y: 16 }}
         animate={{ opacity: 1, y: 0 }}
-        className="glass-card-lg p-5 space-y-4"
+        className="glass-card-lg overflow-hidden"
       >
-        {/* Card name + status */}
-        <div className="flex items-center justify-between">
-          <div className="flex items-center gap-3">
-            <div
-              className="w-10 h-7 rounded-md"
-              style={{ backgroundColor: card?.color || "hsl(var(--primary))" }}
-            />
-            <span className="text-sm font-bold text-foreground">{card?.name}</span>
-          </div>
-          {invoiceStatus === "paid" && (
-            <div className="flex items-center gap-1.5 border border-primary/30 bg-primary/10 px-3 py-1 rounded-full">
-              <div className="w-1.5 h-1.5 rounded-full bg-primary" />
-              <span className="text-xs font-bold text-primary">Fatura paga</span>
+        {/* Card header with gradient accent */}
+        <div
+          className="px-5 pt-5 pb-4"
+          style={{
+            background: `linear-gradient(135deg, ${card?.color || "hsl(150 100% 45%)"}15 0%, transparent 60%)`,
+          }}
+        >
+          <div className="flex items-center justify-between mb-4">
+            <div className="flex items-center gap-3">
+              <div
+                className="w-11 h-8 rounded-lg shadow-md"
+                style={{ backgroundColor: card?.color || "hsl(var(--primary))" }}
+              />
+              <div>
+                <h1 className="text-sm font-bold text-foreground">{card?.name}</h1>
+                {card?.last_four_digits && (
+                  <span className="text-[10px] text-muted-foreground">•••• {card.last_four_digits}</span>
+                )}
+              </div>
             </div>
-          )}
+            {invoiceStatus === "paid" && (
+              <div className="flex items-center gap-1.5 border border-primary/30 bg-primary/10 px-3 py-1 rounded-full">
+                <div className="w-1.5 h-1.5 rounded-full bg-primary" />
+                <span className="text-xs font-bold text-primary">Fatura paga</span>
+              </div>
+            )}
+          </div>
+
+          {/* Card info: closing/due dates */}
+          <div className="flex items-center gap-4 text-[11px] text-muted-foreground">
+            <div className="flex items-center gap-1.5">
+              <CalendarClock className="w-3.5 h-3.5" />
+              <span>Fecha dia <span className="font-semibold text-foreground">{card?.closing_day}</span></span>
+            </div>
+            <div className="flex items-center gap-1.5">
+              <CalendarCheck className="w-3.5 h-3.5" />
+              <span>Vence dia <span className="font-semibold text-foreground">{card?.due_day}</span></span>
+            </div>
+          </div>
         </div>
 
         {/* Timeline */}
-        <InvoiceTimeline
-          selectedMonth={selectedMonth}
-          selectedYear={selectedYear}
-          invoices={invoices}
-          onSelect={(m, y) => { setSelectedMonth(m); setSelectedYear(y); }}
-        />
+        <div className="px-5 pb-3">
+          <InvoiceTimeline
+            selectedMonth={selectedMonth}
+            selectedYear={selectedYear}
+            invoices={invoices}
+            onSelect={(m, y) => { setSelectedMonth(m); setSelectedYear(y); }}
+          />
+        </div>
 
         {/* Invoice amount */}
-        <InvoiceSummaryCard
-          total={total}
-          selectedMonth={selectedMonth}
-          selectedYear={selectedYear}
-          invoiceStatus={invoiceStatus}
-          dueInfo={dueInfo}
-          onPrev={() => handleMonthNav(-1)}
-          onNext={() => handleMonthNav(1)}
-        />
+        <div className="px-5 pb-4">
+          <InvoiceSummaryCard
+            total={total}
+            selectedMonth={selectedMonth}
+            selectedYear={selectedYear}
+            invoiceStatus={invoiceStatus}
+            dueInfo={dueInfo}
+            onPrev={() => handleMonthNav(-1)}
+            onNext={() => handleMonthNav(1)}
+          />
+        </div>
 
         {/* Limit bar */}
-        <div className="space-y-2 pt-1">
+        <div className="px-5 pb-5 space-y-2">
           <div className="flex items-center justify-between text-xs">
             <span className="text-foreground">
               <span className="font-bold">{formatCurrency(usedLimit)}</span>
@@ -298,6 +328,14 @@ const FaturaCartao = () => {
           </div>
         </div>
       </motion.div>
+
+      {/* Invoice History Chart */}
+      <InvoiceHistoryChart
+        invoices={invoices}
+        selectedMonth={selectedMonth}
+        selectedYear={selectedYear}
+        onSelect={(m, y) => { setSelectedMonth(m); setSelectedYear(y); }}
+      />
 
       {/* Category Breakdown */}
       {categoryBreakdown.length > 0 && (
