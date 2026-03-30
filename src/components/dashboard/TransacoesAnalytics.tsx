@@ -264,49 +264,47 @@ const TransacoesAnalytics = () => {
           </motion.div>
         </button>
 
-        {/* Collapsed: current week mini bars */}
+        {/* Collapsed: last 7 days mini bars */}
         {!dailyExpanded && (
-          <div className="px-4 pb-4">
-            <div className="flex gap-1.5">
-              {currentWeekDays.map((wd, i) => {
+          <div className="px-4 pb-3">
+            <div className="flex gap-1">
+              {(() => {
                 const today = new Date();
-                const isToday = wd.day === today.getDate() && wd.inMonth;
-                const maxVal = Math.max(...currentWeekDays.map(d => d.despesas + d.receitas), 1);
-                const barH = wd.inMonth ? Math.max(((wd.despesas + wd.receitas) / maxVal) * 32, 4) : 4;
-                return (
+                const days: { day: number; label: string; despesas: number; receitas: number; isToday: boolean }[] = [];
+                for (let i = 6; i >= 0; i--) {
+                  const d = new Date(today);
+                  d.setDate(today.getDate() - i);
+                  const inMonth = d.getMonth() === selectedMonth && d.getFullYear() === selectedYear;
+                  const dayNum = d.getDate();
+                  const dayData = dailyData.find(dd => dd.day === dayNum);
+                  days.push({
+                    day: dayNum,
+                    label: WEEKDAYS_SHORT[d.getDay()],
+                    despesas: inMonth && dayData ? dayData.despesas : 0,
+                    receitas: inMonth && dayData ? dayData.receitas : 0,
+                    isToday: i === 0,
+                  });
+                }
+                const maxVal = Math.max(...days.map(d => Math.max(d.despesas, d.receitas)), 1);
+                return days.map((wd, i) => (
                   <div key={i} className="flex-1 flex flex-col items-center gap-1">
                     <div className="h-8 w-full flex items-end justify-center gap-[2px]">
                       {wd.despesas > 0 && (
-                        <div
-                          className="w-[45%] rounded-t-sm"
-                          style={{
-                            height: `${Math.max((wd.despesas / maxVal) * 32, 3)}px`,
-                            background: "hsl(0 60% 50% / 0.5)",
-                          }}
-                        />
+                        <div className="w-[42%] rounded-full" style={{ height: `${Math.max((wd.despesas / maxVal) * 32, 3)}px`, background: "hsl(0 60% 50% / 0.5)" }} />
                       )}
                       {wd.receitas > 0 && (
-                        <div
-                          className="w-[45%] rounded-t-sm"
-                          style={{
-                            height: `${Math.max((wd.receitas / maxVal) * 32, 3)}px`,
-                            background: "hsl(150 100% 45% / 0.5)",
-                          }}
-                        />
+                        <div className="w-[42%] rounded-full" style={{ height: `${Math.max((wd.receitas / maxVal) * 32, 3)}px`, background: "hsl(150 100% 45% / 0.5)" }} />
                       )}
                       {wd.despesas === 0 && wd.receitas === 0 && (
-                        <div
-                          className="w-full rounded-t-sm"
-                          style={{ height: "4px", background: "hsl(220 10% 25% / 0.3)" }}
-                        />
+                        <div className="w-full rounded-full" style={{ height: "4px", background: "hsl(220 10% 25% / 0.3)" }} />
                       )}
                     </div>
-                    <span className={`text-[9px] font-medium ${isToday ? "text-primary font-bold" : "text-muted-foreground/50"}`}>
-                      {WEEKDAYS_SHORT[i]}
+                    <span className={`text-[8px] font-medium ${wd.isToday ? "text-primary font-bold" : "text-muted-foreground/50"}`}>
+                      {wd.label}
                     </span>
                   </div>
-                );
-              })}
+                ));
+              })()}
             </div>
           </div>
         )}
