@@ -261,7 +261,7 @@ const BotFinanceProjecoes = () => {
                     className="w-full flex items-center gap-3 py-2.5 border-b border-border/5 last:border-0 group text-left hover:bg-secondary/20 rounded-lg transition-colors px-1 -mx-1"
                   >
                     <div className="relative z-10 flex-shrink-0 w-4 flex justify-center">
-                      <div className={`w-2.5 h-2.5 rounded-full ${rs.dot} transition-all duration-300 group-hover:scale-125 ${isCurrent ? "ring-2 ring-foreground/20" : ""}`} />
+                      <div className={`w-2.5 h-2.5 rounded-full ${rs.dot} ${rs.glow} transition-all duration-300 group-hover:scale-125 ${isCurrent ? "ring-2 ring-foreground/20" : ""}`} />
                     </div>
                     <div className="w-14 flex-shrink-0">
                       <span className={`text-xs font-semibold ${isCurrent ? "text-foreground" : "text-muted-foreground"}`}>
