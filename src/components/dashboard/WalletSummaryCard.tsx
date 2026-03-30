@@ -41,11 +41,14 @@ const WalletSummaryCard = () => {
     });
   }, [user]);
 
-  const totalBalance = accounts.reduce((s, a) => s + Number(a.current_balance), 0);
+  const bankAccounts = accounts.filter(a => a.type !== "investment");
+  const investmentAccounts = accounts.filter(a => a.type === "investment");
+  const totalBalance = bankAccounts.reduce((s, a) => s + Number(a.current_balance), 0);
+  const totalInvested = investmentAccounts.reduce((s, a) => s + Number(a.current_balance), 0);
   const totalCreditLimit = cards.reduce((s, c) => s + Number(c.limit), 0);
   const totalCreditUsed = cards.reduce((s, c) => s + Number(c.used_limit), 0);
   const totalAvailable = totalCreditLimit - totalCreditUsed;
-  const patrimonio = totalBalance + totalAvailable;
+  const patrimonio = totalBalance + totalInvested;
 
   return (
     <motion.div
