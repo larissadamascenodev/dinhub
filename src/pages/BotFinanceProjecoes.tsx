@@ -228,14 +228,14 @@ const BotFinanceProjecoes = () => {
                     initial={{ height: 0 }}
                     animate={{ height: `${h}%` }}
                     transition={{ duration: 0.5, delay: 0.08 + i * 0.05 }}
-                    className={`w-full rounded-t-md transition-colors ${
+                    className={`w-full rounded-t-md transition-all duration-300 ${
                       expandedMonth === i
-                        ? "bg-foreground"
+                        ? "bg-foreground shadow-[0_0_12px_hsl(var(--foreground)/0.15)]"
                         : isNeg
-                          ? "bg-destructive/40"
+                          ? "bg-destructive/40 group-hover:bg-destructive/60 group-hover:shadow-[0_0_8px_hsl(var(--destructive)/0.3)]"
                           : p.alert
-                            ? "bg-warning/40"
-                            : "bg-muted-foreground/20 group-hover:bg-muted-foreground/35"
+                            ? "bg-warning/40 group-hover:bg-warning/60 group-hover:shadow-[0_0_8px_hsl(var(--warning)/0.3)]"
+                            : "bg-muted-foreground/20 group-hover:bg-accent/40 group-hover:shadow-[0_0_8px_hsl(var(--accent)/0.2)]"
                     }`}
                   />
                   <span className={`text-[9px] tabular-nums ${expandedMonth === i ? "text-foreground font-semibold" : "text-muted-foreground"}`}>
