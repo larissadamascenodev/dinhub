@@ -209,58 +209,75 @@ ProjectionMonthSelector.displayName = "ProjectionMonthSelector";
 
 // ─── Composition Block ───
 
-const CompositionBlock = ({ prev, income, expense, final: finalVal }: { prev: number; income: number; expense: number; final: number }) => (
-  <motion.div
-    initial={{ opacity: 0, y: 6 }}
-    animate={{ opacity: 1, y: 0 }}
-    transition={{ delay: 0.1 }}
-  >
-    {/* Desktop: single row */}
-    <div className="hidden sm:flex items-center gap-3 justify-center py-4">
-      <div className="bg-secondary/50 rounded-xl px-5 py-3 text-center min-w-[110px]">
-        <p className="text-xs text-muted-foreground">Saldo anterior</p>
-        <p className="text-base font-bold tabular-nums text-foreground">{fmtCurrency(prev)}</p>
-      </div>
-      <Plus className="w-4 h-4 text-primary/50 flex-shrink-0" />
-      <div className="bg-secondary/50 rounded-xl px-5 py-3 text-center min-w-[110px]">
-        <p className="text-xs text-muted-foreground">Receitas</p>
-        <p className="text-base font-bold tabular-nums text-primary">{fmtCurrency(income)}</p>
-      </div>
-      <Minus className="w-4 h-4 text-destructive/50 flex-shrink-0" />
-      <div className="bg-secondary/50 rounded-xl px-5 py-3 text-center min-w-[110px]">
-        <p className="text-xs text-muted-foreground">Despesas</p>
-        <p className="text-base font-bold tabular-nums text-destructive">{fmtCurrency(expense)}</p>
-      </div>
-      <Equal className="w-4 h-4 text-muted-foreground/50 flex-shrink-0" />
-      <div className={`rounded-xl px-5 py-3 text-center min-w-[110px] ${finalVal >= 0 ? "bg-primary/10 border border-primary/20" : "bg-destructive/10 border border-destructive/20"}`}>
-        <p className="text-xs text-muted-foreground">Saldo final</p>
-        <p className={`text-base font-bold tabular-nums ${finalVal >= 0 ? "text-primary" : "text-destructive"}`}>{fmtCurrency(finalVal)}</p>
-      </div>
-    </div>
+const CompositionBlock = ({ prev, income, expense, final: finalVal }: { prev: number; income: number; expense: number; final: number }) => {
+  const [expanded, setExpanded] = useState(false);
 
-    {/* Mobile: 2x2 grid + saldo final below */}
-    <div className="sm:hidden py-2 space-y-2">
-      <div className="grid grid-cols-2 gap-2">
-        <div className="bg-secondary/50 rounded-lg px-2 py-2 text-center">
-          <p className="text-[9px] text-muted-foreground">Saldo anterior</p>
-          <p className="text-xs font-bold tabular-nums text-foreground">{fmtCurrency(prev)}</p>
+  return (
+    <div>
+      <button
+        onClick={() => setExpanded(!expanded)}
+        className="flex items-center justify-center gap-1.5 w-full py-1.5 text-[10px] sm:text-xs text-muted-foreground hover:text-foreground transition-colors"
+      >
+        <span>Ver composição</span>
+        <motion.div animate={{ rotate: expanded ? 180 : 0 }} transition={{ duration: 0.2 }}>
+          <ChevronDown className="w-3.5 h-3.5" />
+        </motion.div>
+      </button>
+
+      <motion.div
+        initial={false}
+        animate={{ height: expanded ? "auto" : 0, opacity: expanded ? 1 : 0 }}
+        transition={{ duration: 0.25, ease: "easeInOut" }}
+        className="overflow-hidden"
+      >
+        {/* Desktop: single row */}
+        <div className="hidden sm:flex items-center gap-3 justify-center py-4">
+          <div className="bg-secondary/50 rounded-xl px-5 py-3 text-center min-w-[110px]">
+            <p className="text-xs text-muted-foreground">Saldo anterior</p>
+            <p className="text-base font-bold tabular-nums text-foreground">{fmtCurrency(prev)}</p>
+          </div>
+          <Plus className="w-4 h-4 text-primary/50 flex-shrink-0" />
+          <div className="bg-secondary/50 rounded-xl px-5 py-3 text-center min-w-[110px]">
+            <p className="text-xs text-muted-foreground">Receitas</p>
+            <p className="text-base font-bold tabular-nums text-primary">{fmtCurrency(income)}</p>
+          </div>
+          <Minus className="w-4 h-4 text-destructive/50 flex-shrink-0" />
+          <div className="bg-secondary/50 rounded-xl px-5 py-3 text-center min-w-[110px]">
+            <p className="text-xs text-muted-foreground">Despesas</p>
+            <p className="text-base font-bold tabular-nums text-destructive">{fmtCurrency(expense)}</p>
+          </div>
+          <Equal className="w-4 h-4 text-muted-foreground/50 flex-shrink-0" />
+          <div className={`rounded-xl px-5 py-3 text-center min-w-[110px] ${finalVal >= 0 ? "bg-primary/10 border border-primary/20" : "bg-destructive/10 border border-destructive/20"}`}>
+            <p className="text-xs text-muted-foreground">Saldo final</p>
+            <p className={`text-base font-bold tabular-nums ${finalVal >= 0 ? "text-primary" : "text-destructive"}`}>{fmtCurrency(finalVal)}</p>
+          </div>
         </div>
-        <div className="bg-secondary/50 rounded-lg px-2 py-2 text-center">
-          <p className="text-[9px] text-muted-foreground">Receitas</p>
-          <p className="text-xs font-bold tabular-nums text-primary">{fmtCurrency(income)}</p>
+
+        {/* Mobile: 2x2 grid */}
+        <div className="sm:hidden py-2 space-y-2">
+          <div className="grid grid-cols-2 gap-2">
+            <div className="bg-secondary/50 rounded-lg px-2 py-2 text-center">
+              <p className="text-[9px] text-muted-foreground">Saldo anterior</p>
+              <p className="text-xs font-bold tabular-nums text-foreground">{fmtCurrency(prev)}</p>
+            </div>
+            <div className="bg-secondary/50 rounded-lg px-2 py-2 text-center">
+              <p className="text-[9px] text-muted-foreground">Receitas</p>
+              <p className="text-xs font-bold tabular-nums text-primary">{fmtCurrency(income)}</p>
+            </div>
+            <div className="bg-secondary/50 rounded-lg px-2 py-2 text-center">
+              <p className="text-[9px] text-muted-foreground">Despesas</p>
+              <p className="text-xs font-bold tabular-nums text-destructive">{fmtCurrency(expense)}</p>
+            </div>
+            <div className={`rounded-lg px-2 py-2 text-center ${finalVal >= 0 ? "bg-primary/10 border border-primary/20" : "bg-destructive/10 border border-destructive/20"}`}>
+              <p className="text-[9px] text-muted-foreground">Saldo final</p>
+              <p className={`text-xs font-bold tabular-nums ${finalVal >= 0 ? "text-primary" : "text-destructive"}`}>{fmtCurrency(finalVal)}</p>
+            </div>
+          </div>
         </div>
-        <div className="bg-secondary/50 rounded-lg px-2 py-2 text-center">
-          <p className="text-[9px] text-muted-foreground">Despesas</p>
-          <p className="text-xs font-bold tabular-nums text-destructive">{fmtCurrency(expense)}</p>
-        </div>
-        <div className={`rounded-lg px-2 py-2 text-center ${finalVal >= 0 ? "bg-primary/10 border border-primary/20" : "bg-destructive/10 border border-destructive/20"}`}>
-          <p className="text-[9px] text-muted-foreground">Saldo final</p>
-          <p className={`text-xs font-bold tabular-nums ${finalVal >= 0 ? "text-primary" : "text-destructive"}`}>{fmtCurrency(finalVal)}</p>
-        </div>
-      </div>
+      </motion.div>
     </div>
-  </motion.div>
-);
+  );
+};
 
 // ═══════════════════════════════════════════
 // MAIN COMPONENT
