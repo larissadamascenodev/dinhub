@@ -123,9 +123,9 @@ const TxCard = ({ tx, onDelete }: { tx: Transaction; onDelete?: (id: string) => 
 };
 
 // Stack card spacing & scale
-const STACK_OFFSET = 10;
-const STACK_SCALE_STEP = 0.03;
-const STACK_COUNT = 4;
+const STACK_OFFSET = 12;
+const STACK_SCALE_STEP = 0.025;
+const STACK_COUNT = 3;
 
 const TransacoesRecentes = memo(({ transactions, onDelete }: Props) => {
   const [expanded, setExpanded] = useState(false);
@@ -184,11 +184,13 @@ const TransacoesRecentes = memo(({ transactions, onDelete }: Props) => {
                 exit={{ top: 0, opacity: 0, scale: 1 }}
                 transition={{ type: "spring", stiffness: 500, damping: 35, delay: i * 0.03 }}
                 style={{
-                  height: "44px",
+                  height: "48px",
                   transformOrigin: "top center",
                   zIndex: STACK_COUNT - i,
-                  background: `linear-gradient(145deg, hsl(220 18% ${8 - i}% / 0.9) 0%, hsl(220 20% ${4 - i * 0.5}% / 0.95) 100%)`,
-                  border: "1px solid hsl(220 12% 16% / 0.2)",
+                  background: `hsl(220 15% ${16 + i * 3}% / 0.95)`,
+                  border: `1px solid hsl(220 15% ${24 + i * 4}% / 0.5)`,
+                  boxShadow: "0 2px 8px rgba(0,0,0,0.3)",
+                  borderRadius: "12px",
                 }}
               />
             ))
