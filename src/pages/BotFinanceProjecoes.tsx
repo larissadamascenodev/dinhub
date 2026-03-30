@@ -31,6 +31,9 @@ interface MonthProjection {
   year: number;
   balance: number;
   delta: number;
+  income: number;
+  expense: number;
+  risk: "positivo" | "atencao" | "risco";
 }
 
 // ─── Helpers ───
