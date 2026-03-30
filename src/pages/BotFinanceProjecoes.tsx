@@ -297,12 +297,12 @@ const BotFinanceProjecoes = () => {
               ].map((item) => (
                 <div
                   key={item.label}
-                  className="bg-secondary/40 rounded-xl p-3 text-center"
+                  className="bg-secondary/40 rounded-xl p-2.5 text-center min-w-0"
                 >
-                  <p className="text-[10px] text-muted-foreground mb-1">
+                  <p className="text-[9px] text-muted-foreground mb-1 truncate">
                     {item.label}
                   </p>
-                  <p className={`text-sm font-bold tabular-nums ${item.color}`}>
+                  <p className={`text-[11px] sm:text-sm font-bold tabular-nums truncate ${item.color}`}>
                     {fmtCurrency(item.value)}
                   </p>
                 </div>
