@@ -390,23 +390,6 @@ const FaturaCartao = () => {
         installmentCount={items.filter((i) => i.total_installments > 1).length}
       />
 
-      {/* Mobile fixed pay button */}
-      {currentInvoice && !currentInvoice.is_paid && total > 0 && (
-        <motion.div
-          initial={{ opacity: 0, y: 12 }}
-          animate={{ opacity: 1, y: 0 }}
-          transition={{ delay: 0.2 }}
-          className="fixed bottom-20 left-4 right-4 z-40 max-w-lg mx-auto md:hidden"
-        >
-          <Button
-            onClick={() => setShowPayModal(true)}
-            className="w-full h-12 rounded-2xl text-sm font-bold bg-primary/15 text-primary border border-primary/30 hover:bg-primary/25 backdrop-blur-md shadow-lg"
-          >
-            <Wallet className="w-4 h-4 mr-2" />
-            Pagar Fatura · {formatCurrency(total)}
-          </Button>
-        </motion.div>
-      )}
 
       {/* Pay Modal */}
       <InvoicePayModal
