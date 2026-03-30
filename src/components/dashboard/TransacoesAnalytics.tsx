@@ -86,25 +86,6 @@ const TransacoesAnalytics = () => {
     fetchTxs();
   }, [user, selectedMonth, selectedYear]);
 
-  useEffect(() => {
-    if (!user) return;
-    const fetchEvolution = async () => {
-      const data: { month: string; receitas: number; despesas: number }[] = [];
-      for (let i = 5; i >= 0; i--) {
-        const d = new Date(selectedYear, selectedMonth - i, 1);
-        const m = d.getMonth();
-        const y = d.getFullYear();
-        try {
-          const h = await getMonthHistory(m, y);
-          data.push({ month: MONTHS_SHORT[m], receitas: h.income, despesas: h.expense });
-        } catch {
-          data.push({ month: MONTHS_SHORT[m], receitas: 0, despesas: 0 });
-        }
-      }
-      setEvolutionData(data);
-    };
-    fetchEvolution();
-  }, [user, selectedMonth, selectedYear]);
 
   const totals = useMemo(() => {
     const receitas = transactions.filter(t => t.type === "receita").reduce((s, t) => s + t.amount, 0);
