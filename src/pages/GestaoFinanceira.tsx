@@ -572,7 +572,6 @@ const GestaoFinanceira = () => {
               <SelectItem value="checking">Conta Corrente</SelectItem>
               <SelectItem value="savings">Poupança</SelectItem>
               <SelectItem value="cash">Dinheiro</SelectItem>
-              <SelectItem value="investment">Carteira de Investimentos</SelectItem>
             </SelectContent>
           </Select>
           <div>
@@ -587,7 +586,7 @@ const GestaoFinanceira = () => {
           </div>
           <div>
             <Label className="text-xs text-muted-foreground mb-2 block">Cor do cartão</Label>
-            <div className="flex flex-wrap gap-2">
+            <div className="flex flex-wrap gap-2 items-center">
               {COLOR_OPTIONS.map((c) => (
                 <button
                   key={c.value}
@@ -596,19 +595,35 @@ const GestaoFinanceira = () => {
                   className={cn(
                     "w-8 h-8 rounded-full transition-all duration-200",
                     c.accent,
-                    newAccColor === c.value
+                    newAccColor === c.value && !newAccColor.startsWith("#")
                       ? "ring-2 ring-white ring-offset-2 ring-offset-card scale-110"
                       : "opacity-60 hover:opacity-100"
                   )}
                   title={c.label}
                 />
               ))}
+              {/* Custom color picker */}
+              <label
+                className={cn(
+                  "w-8 h-8 rounded-full border-2 border-dashed border-muted-foreground/30 flex items-center justify-center cursor-pointer hover:border-muted-foreground/60 transition-all overflow-hidden",
+                  newAccColor.startsWith("#") && "ring-2 ring-white ring-offset-2 ring-offset-card scale-110 border-0"
+                )}
+                style={newAccColor.startsWith("#") ? { background: newAccColor } : undefined}
+                title="Cor personalizada"
+              >
+                {!newAccColor.startsWith("#") && <Plus className="w-3.5 h-3.5 text-muted-foreground/50" />}
+                <input
+                  type="color"
+                  className="sr-only"
+                  onChange={(e) => setNewAccColor(e.target.value)}
+                />
+              </label>
             </div>
           </div>
           <Button
             onClick={handleAddAccount}
             disabled={!newAccName.trim()}
-            className="w-full h-11 rounded-xl text-sm font-semibold"
+            className="w-full h-11 rounded-xl text-sm font-semibold bg-primary/15 text-primary hover:bg-primary/25 border-0"
           >
             Criar Conta
           </Button>
