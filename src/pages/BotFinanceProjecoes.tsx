@@ -16,6 +16,9 @@ import {
   Brain,
   ChevronRight,
   RotateCcw,
+  Target,
+  Scissors,
+  Settings2,
 } from "lucide-react";
 import { useMonth } from "@/contexts/MonthContext";
 import { useFinanceData } from "@/hooks/useFinanceData";
@@ -189,19 +192,43 @@ const BotFinanceProjecoes = () => {
   const impact3m = (savingsBoost + incomeBoost) * 3;
 
   // ─── Health score (0–100) ───
-  const healthScore = useMemo(() => {
-    let score = 50;
-    // Positive balance = good
-    if (balanco > 0) score += Math.min(balanco / 100, 25);
-    else score += Math.max(balanco / 100, -25);
-    // Low pending expenses ratio
-    const pendingRatio = data.despesas > 0 ? data.despesasPendentes / data.despesas : 0;
-    score += (1 - pendingRatio) * 15;
-    // Savings boost bonus
-    if (savingsBoost > 0) score += Math.min(savingsBoost / 200, 10);
-    return Math.round(Math.max(0, Math.min(100, score)));
-  }, [balanco, data.despesas, data.despesasPendentes, savingsBoost]);
+  const healthData = useMemo(() => {
+    // Factor 1: Balance trend (0-30)
+    let balanceScore = 15;
+    if (balanco > 0) balanceScore += Math.min(balanco / 100, 15);
+    else balanceScore += Math.max(balanco / 50, -15);
 
+    // Factor 2: Spending control (0-30) — gasto_hoje vs media
+    let controlScore = 15;
+    if (data.mediaGastosDiarios > 0) {
+      const ratio = data.gastosHoje / data.mediaGastosDiarios;
+      if (ratio <= 0.8) controlScore = 30;
+      else if (ratio <= 1.2) controlScore = 20;
+      else controlScore = Math.max(5, 15 - (ratio - 1.2) * 10);
+    }
+
+    // Factor 3: Consistency — positive months in projection (0-25)
+    const positiveMonths = projections.filter((p) => p.delta > 0).length;
+    const consistencyScore = (positiveMonths / 6) * 25;
+
+    // Factor 4: Pending ratio (0-15) — fewer pending = better
+    const pendingRatio = data.despesas > 0 ? data.despesasPendentes / data.despesas : 0;
+    const pendingScore = (1 - pendingRatio) * 15;
+
+    const total = Math.round(Math.max(0, Math.min(100, balanceScore + controlScore + consistencyScore + pendingScore)));
+
+    return {
+      score: total,
+      factors: [
+        { label: "Saldo crescente", value: Math.round(balanceScore), max: 30 },
+        { label: "Controle de gastos", value: Math.round(controlScore), max: 30 },
+        { label: "Consistência", value: Math.round(consistencyScore), max: 25 },
+        { label: "Despesas em dia", value: Math.round(pendingScore), max: 15 },
+      ],
+    };
+  }, [balanco, data.gastosHoje, data.mediaGastosDiarios, data.despesas, data.despesasPendentes, projections]);
+
+  const healthScore = healthData.score;
   const animatedScore = useAnimatedCounter(healthScore);
   const scoreLabel =
     healthScore >= 75 ? "Excelente" : healthScore >= 50 ? "Estável" : healthScore >= 30 ? "Atenção" : "Crítico";
@@ -211,6 +238,12 @@ const BotFinanceProjecoes = () => {
       : healthScore >= 50
         ? "text-warning"
         : "text-destructive";
+  const scoreStroke =
+    healthScore >= 75
+      ? "hsl(var(--primary))"
+      : healthScore >= 50
+        ? "hsl(var(--warning))"
+        : "hsl(var(--destructive))";
 
   // ─── Insight IA ───
   const insight = useMemo(() => {
@@ -442,44 +475,54 @@ const BotFinanceProjecoes = () => {
           {/* 5 — SCORE DE SAÚDE FINANCEIRA */}
           <GlassSection delay={0.22}>
             <SectionHeader icon={<Heart className="w-4 h-4 text-primary" />} title="Saúde Financeira" />
-            <div className="flex items-center justify-center gap-5 py-1">
-              {/* Circular score indicator */}
-              <div className="relative w-20 h-20">
+            <div className="flex items-center gap-5 py-1">
+              {/* Circular score */}
+              <div className="relative w-20 h-20 flex-shrink-0">
                 <svg className="w-20 h-20 -rotate-90" viewBox="0 0 80 80">
                   <circle cx="40" cy="40" r="34" fill="none" stroke="hsl(var(--secondary))" strokeWidth="5" />
                   <circle
-                    cx="40"
-                    cy="40"
-                    r="34"
-                    fill="none"
-                    stroke={
-                      healthScore >= 75
-                        ? "hsl(var(--primary))"
-                        : healthScore >= 50
-                          ? "hsl(var(--warning))"
-                          : "hsl(var(--destructive))"
-                    }
-                    strokeWidth="5"
-                    strokeLinecap="round"
+                    cx="40" cy="40" r="34" fill="none"
+                    stroke={scoreStroke}
+                    strokeWidth="5" strokeLinecap="round"
                     strokeDasharray={`${(healthScore / 100) * 213.6} 213.6`}
                     className="transition-all duration-700 ease-out"
                   />
                 </svg>
                 <div className="absolute inset-0 flex flex-col items-center justify-center">
-                  <span className={`text-xl font-bold tabular-nums ${scoreColor}`}>
-                    {Math.round(animatedScore)}
-                  </span>
+                  <span className={`text-xl font-bold tabular-nums ${scoreColor}`}>{Math.round(animatedScore)}</span>
+                  <span className="text-[8px] text-muted-foreground">/100</span>
                 </div>
               </div>
-              <div>
+              <div className="flex-1 min-w-0">
                 <p className={`text-sm font-bold ${scoreColor}`}>{scoreLabel}</p>
-                <p className="text-[10px] text-muted-foreground mt-0.5">
+                <p className="text-[10px] text-muted-foreground mt-0.5 mb-2">
                   {healthScore >= 75
                     ? "Suas finanças estão ótimas!"
                     : healthScore >= 50
                       ? "Pode melhorar com ajustes"
                       : "Precisa de atenção"}
                 </p>
+                {/* Factor breakdown bars */}
+                <div className="space-y-1.5">
+                  {healthData.factors.map((f) => (
+                    <div key={f.label}>
+                      <div className="flex items-center justify-between mb-0.5">
+                        <span className="text-[9px] text-muted-foreground">{f.label}</span>
+                        <span className="text-[9px] tabular-nums text-muted-foreground">{f.value}/{f.max}</span>
+                      </div>
+                      <div className="h-1 w-full rounded-full bg-secondary overflow-hidden">
+                        <motion.div
+                          initial={{ width: 0 }}
+                          animate={{ width: `${(f.value / f.max) * 100}%` }}
+                          transition={{ duration: 0.6, delay: 0.3 }}
+                          className={`h-full rounded-full ${
+                            f.value / f.max >= 0.7 ? "bg-primary" : f.value / f.max >= 0.4 ? "bg-warning" : "bg-destructive"
+                          }`}
+                        />
+                      </div>
+                    </div>
+                  ))}
+                </div>
               </div>
             </div>
           </GlassSection>
@@ -603,39 +646,61 @@ const BotFinanceProjecoes = () => {
           </div>
         </GlassSection>
 
-        {/* 6 — AÇÕES RÁPIDAS */}
+        {/* 6 — AÇÕES INTELIGENTES */}
         <GlassSection delay={0.3}>
-          <SectionHeader icon={<Zap className="w-4 h-4 text-primary" />} title="Ações Rápidas" />
+          <SectionHeader icon={<Zap className="w-4 h-4 text-primary" />} title="Ações Inteligentes" />
           <div className="grid grid-cols-1 sm:grid-cols-3 gap-2">
             {[
               {
-                label: "Nova transação",
-                desc: "Registrar receita ou despesa",
-                action: () => window.dispatchEvent(new CustomEvent("open-nova-transacao-direct", { detail: { type: "despesa" } })),
+                icon: Target,
+                label: "Criar meta",
+                desc: "Com base na sua projeção",
+                color: "text-primary",
+                bgColor: "bg-primary/10 group-hover:bg-primary/20",
+                action: () => navigate("/bot-finance"),
               },
               {
-                label: "Ver transações",
-                desc: "Histórico completo",
+                icon: Settings2,
+                label: "Ajustar limite",
+                desc: "Configurar gasto diário",
+                color: "text-warning",
+                bgColor: "bg-warning/10 group-hover:bg-warning/20",
+                action: () => {
+                  const el = document.querySelector('[data-section="limite"]');
+                  el?.scrollIntoView({ behavior: "smooth" });
+                },
+              },
+              {
+                icon: Scissors,
+                label: "Reduzir gastos",
+                desc: "Sugestões automáticas",
+                color: "text-destructive",
+                bgColor: "bg-destructive/10 group-hover:bg-destructive/20",
                 action: () => navigate("/transacoes"),
               },
-              {
-                label: "Gestão financeira",
-                desc: "Contas e cartões",
-                action: () => navigate("/gestao"),
-              },
-            ].map((item) => (
-              <button
-                key={item.label}
-                onClick={item.action}
-                className="group flex items-center gap-2.5 p-3 rounded-xl bg-secondary/40 hover:bg-secondary/70 active:scale-[0.97] transition-all text-left"
-              >
-                <div className="flex-1 min-w-0">
-                  <p className="text-xs font-medium text-foreground truncate">{item.label}</p>
-                  <p className="text-[10px] text-muted-foreground truncate">{item.desc}</p>
-                </div>
-                <ChevronRight className="w-3.5 h-3.5 text-muted-foreground/30 group-hover:text-primary transition-colors flex-shrink-0" />
-              </button>
-            ))}
+            ].map((item) => {
+              const Icon = item.icon;
+              return (
+                <button
+                  key={item.label}
+                  onClick={item.action}
+                  className="group flex items-center gap-3 p-3 rounded-xl bg-secondary/30 hover:bg-secondary/50 active:scale-[0.96] transition-all text-left relative overflow-hidden"
+                >
+                  {/* Hover glow */}
+                  <div className="absolute inset-0 opacity-0 group-hover:opacity-100 transition-opacity duration-300 pointer-events-none"
+                    style={{ background: "radial-gradient(ellipse at 30% 50%, hsl(var(--primary) / 0.06) 0%, transparent 70%)" }}
+                  />
+                  <div className={`relative w-9 h-9 rounded-xl ${item.bgColor} flex items-center justify-center flex-shrink-0 transition-colors`}>
+                    <Icon className={`w-4 h-4 ${item.color}`} />
+                  </div>
+                  <div className="relative flex-1 min-w-0">
+                    <p className="text-xs font-medium text-foreground truncate">{item.label}</p>
+                    <p className="text-[10px] text-muted-foreground truncate">{item.desc}</p>
+                  </div>
+                  <ChevronRight className="relative w-3.5 h-3.5 text-muted-foreground/30 group-hover:text-primary transition-colors flex-shrink-0" />
+                </button>
+              );
+            })}
           </div>
         </GlassSection>
       </div>
