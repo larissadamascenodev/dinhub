@@ -16,6 +16,9 @@ import {
   Brain,
   ChevronRight,
   RotateCcw,
+  Target,
+  Scissors,
+  Settings2,
 } from "lucide-react";
 import { useMonth } from "@/contexts/MonthContext";
 import { useFinanceData } from "@/hooks/useFinanceData";
