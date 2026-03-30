@@ -156,13 +156,29 @@ const BotFinanceProjecoes = () => {
   const safeToSpend = limitRestante / daysLeft;
   const formattedSafe = useFormattedCounter(safeToSpend);
 
-  const limitTone = safeToSpend > 200 ? "positive" : safeToSpend > 50 ? "neutral" : "negative";
+  // Compare today's spending vs daily average
+  const gastoHoje = data.gastosHoje;
+  const mediaDiaria = data.mediaGastosDiarios;
+  const spendRatio = safeToSpend > 0 ? Math.min(gastoHoje / safeToSpend, 1) : 1;
+
+  const limitTone: "positive" | "neutral" | "negative" =
+    gastoHoje <= mediaDiaria * 0.8 ? "positive"
+    : gastoHoje <= safeToSpend ? "neutral"
+    : "negative";
+
   const limitMsg =
     limitTone === "positive"
-      ? "Tá com folga hoje 👏"
-      : limitTone === "negative"
-        ? "Melhor segurar um pouco hoje 😅"
-        : "Gaste com consciência 👀";
+      ? "Tá suave hoje 😎"
+      : limitTone === "neutral"
+        ? "Já acelerou um pouco hoje 👀"
+        : "Se continuar assim, vai estourar o mês 💸";
+
+  const limitBarColor =
+    limitTone === "positive" ? "bg-primary" : limitTone === "neutral" ? "bg-warning" : "bg-destructive";
+  const limitTextColor =
+    limitTone === "positive" ? "text-primary" : limitTone === "neutral" ? "text-warning" : "text-destructive";
+  const limitBgColor =
+    limitTone === "positive" ? "bg-primary/10" : limitTone === "neutral" ? "bg-warning/10" : "bg-destructive/10";
 
   // ─── Month projection ───
   const saldoInicial = data.previousMonthEndingBalance;
