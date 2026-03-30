@@ -10,7 +10,6 @@ import {
   ArrowUpRight,
   ArrowDownRight,
   Minus,
-  Heart,
   Zap,
   Brain,
   ChevronRight,
@@ -20,7 +19,7 @@ import {
   Settings2,
 } from "lucide-react";
 import { useFinancialProjection } from "@/hooks/useFinancialProjection";
-import { useFormattedCounter, useAnimatedCounter } from "@/hooks/useAnimatedCounter";
+import { useFormattedCounter } from "@/hooks/useAnimatedCounter";
 
 const MONTH_NAMES = [
   "Jan", "Fev", "Mar", "Abr", "Mai", "Jun",
