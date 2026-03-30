@@ -164,7 +164,7 @@ const SwipeableItem = ({
             </span>
             {isRecurring && <RefreshCw className="w-3 h-3 text-muted-foreground/30" />}
           </div>
-          <p className="text-[10px] text-muted-foreground/40 mt-0.5">
+          <p className="text-[9px] md:text-[10px] text-muted-foreground/40 mt-0.5">
             {tx.category}
             {tx.installments && tx.installment_current ? ` · ${tx.installment_current}/${tx.installments}x` : ""}
             {" · "}
