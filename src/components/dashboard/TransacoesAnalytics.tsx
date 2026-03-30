@@ -13,7 +13,7 @@ import { getRecurringForMonth } from "@/services/recurringService";
 const fmt = (v: number) =>
   v.toLocaleString("pt-BR", { style: "currency", currency: "BRL" });
 
-const MONTHS_SHORT = ["jan", "fev", "mar", "abr", "mai", "jun", "jul", "ago", "set", "out", "nov", "dez"];
+
 const WEEKDAYS_SHORT = ["D", "S", "T", "Q", "Q", "S", "S"];
 
 const CATEGORY_COLORS = [
