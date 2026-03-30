@@ -13,6 +13,7 @@ import {
   Plus,
   Equal,
   ChevronDown,
+  History,
 } from "lucide-react";
 import {
   AreaChart,
@@ -293,6 +294,9 @@ const BotFinanceProjecoes = () => {
 
   const [timelineMode, setTimelineMode] = useState<"mensal" | "acumulado">("acumulado");
   const [selectedProjectionIdx, setSelectedProjectionIdx] = useState(0);
+  const [showHistory, setShowHistory] = useState(false);
+
+  const TIMELINE_VISIBLE = 6;
 
   const projectionsWithVariation = useMemo(() => {
     return projections.map((p, i) => {
@@ -304,14 +308,24 @@ const BotFinanceProjecoes = () => {
     });
   }, [projections, data.previousMonthEndingBalance]);
 
+  // Timeline shows only first 6 months; rest goes to history
+  const timelineProjections = useMemo(
+    () => projectionsWithVariation.slice(0, TIMELINE_VISIBLE),
+    [projectionsWithVariation]
+  );
+  const historyProjections = useMemo(
+    () => projectionsWithVariation.slice(TIMELINE_VISIBLE),
+    [projectionsWithVariation]
+  );
+
   const chartData = useMemo(() => {
-    return projectionsWithVariation.map((p) => ({
+    return timelineProjections.map((p) => ({
       name: `${MONTH_NAMES[p.month]} ${p.year}`,
       value: timelineMode === "acumulado" ? p.balance : p.delta,
       balance: p.balance,
       delta: p.delta,
     }));
-  }, [projectionsWithVariation, timelineMode]);
+  }, [timelineProjections, timelineMode]);
 
   const selectedProjection = projectionsWithVariation[selectedProjectionIdx] ?? projectionsWithVariation[0];
 
@@ -521,12 +535,11 @@ const BotFinanceProjecoes = () => {
             </ResponsiveContainer>
           </motion.div>
 
-          {/* Timeline list */}
+          {/* Timeline list — 6 months */}
           <div className="relative mt-1">
-            {/* Timeline line — green up to current month, then fades */}
             <div className="absolute left-[7px] top-2 bottom-2 w-px">
-              {projectionsWithVariation.map((_, i) => {
-                const total = projectionsWithVariation.length;
+              {timelineProjections.map((_, i) => {
+                const total = timelineProjections.length;
                 const topPct = (i / total) * 100;
                 const heightPct = (1 / total) * 100;
                 const isPastOrCurrent = i === 0;
@@ -547,11 +560,10 @@ const BotFinanceProjecoes = () => {
                 );
               })}
             </div>
-            {projectionsWithVariation.map((p, i) => {
+            {timelineProjections.map((p, i) => {
               const rs = riskStyle(p.risk);
               const isCurrent = i === 0;
               const displayValue = timelineMode === "acumulado" ? p.balance : p.delta;
-              const valueColor = displayValue >= 0 ? "text-primary" : "text-destructive";
               return (
                 <button
                   key={`tl-${p.month}-${p.year}`}
@@ -587,6 +599,71 @@ const BotFinanceProjecoes = () => {
             })}
           </div>
         </GlassSection>
+
+        {/* ══════════════════════════════════════════ */}
+        {/* 3. HISTÓRICO — meses além dos 6 visíveis  */}
+        {/* ══════════════════════════════════════════ */}
+        {historyProjections.length > 0 && (
+          <GlassSection delay={0.18}>
+            <button
+              onClick={() => setShowHistory(!showHistory)}
+              className="flex items-center justify-between w-full"
+            >
+              <SectionHeader icon={<History className="w-4 h-4 text-primary" />} title="Projeção Futura" />
+              <motion.div animate={{ rotate: showHistory ? 180 : 0 }} transition={{ duration: 0.2 }}>
+                <ChevronDown className="w-4 h-4 text-muted-foreground" />
+              </motion.div>
+            </button>
+
+            <motion.div
+              initial={false}
+              animate={{ height: showHistory ? "auto" : 0, opacity: showHistory ? 1 : 0 }}
+              transition={{ duration: 0.3, ease: "easeInOut" }}
+              className="overflow-hidden"
+            >
+              <div className="relative mt-1">
+                <div className="absolute left-[7px] top-2 bottom-2 w-px bg-border/20" />
+                {historyProjections.map((p, i) => {
+                  const realIdx = TIMELINE_VISIBLE + i;
+                  const rs = riskStyle(p.risk);
+                  const displayValue = timelineMode === "acumulado" ? p.balance : p.delta;
+                  return (
+                    <button
+                      key={`hist-${p.month}-${p.year}`}
+                      onClick={() => setSelectedProjectionIdx(realIdx)}
+                      className={`w-full flex items-center gap-3 py-2.5 border-b border-border/5 last:border-0 group text-left hover:bg-secondary/20 rounded-lg transition-colors px-1 -mx-1 ${
+                        selectedProjectionIdx === realIdx ? "bg-primary/5" : ""
+                      }`}
+                    >
+                      <div className="relative z-10 flex-shrink-0 w-4 flex justify-center">
+                        <div className={`w-2.5 h-2.5 rounded-full ${rs.dot} ${rs.glow} transition-all duration-300 group-hover:scale-125`} />
+                      </div>
+                      <div className="w-14 flex-shrink-0">
+                        <span className="text-xs font-semibold text-muted-foreground">
+                          {MONTH_NAMES[p.month]}
+                        </span>
+                        <span className="text-[9px] text-muted-foreground/50 ml-1">{p.year}</span>
+                      </div>
+                      <div className="flex-1 text-right">
+                        <p className="text-sm font-bold tabular-nums text-foreground">
+                          {timelineMode === "mensal" && displayValue >= 0 ? "+" : ""}{fmtCurrency(displayValue)}
+                        </p>
+                      </div>
+                      {i > 0 || TIMELINE_VISIBLE > 0 ? (
+                        <div className="flex items-center gap-0.5 flex-shrink-0">
+                          <span className={`text-[9px] font-medium tabular-nums ${p.variation >= 0 ? "text-primary" : "text-destructive"}`}>
+                            {p.variation >= 0 ? "+" : ""}{p.variationPct.toFixed(0)}%
+                          </span>
+                          <TrendIcon delta={p.variation} />
+                        </div>
+                      ) : null}
+                    </button>
+                  );
+                })}
+              </div>
+            </motion.div>
+          </GlassSection>
+        )}
 
       </div>
     </div>
