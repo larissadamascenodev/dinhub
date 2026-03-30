@@ -36,19 +36,19 @@ const GlassCard = ({ children, className = "" }: { children: React.ReactNode; cl
   </div>
 );
 
-const ChartTooltip = ({ active, payload, label }: any) => {
-  if (!active || !payload?.length) return null;
-  return (
-    <div className="rounded-xl bg-card/95 backdrop-blur-xl border border-border/30 px-3 py-2 shadow-xl text-xs">
-      <p className="font-semibold text-foreground mb-1">{label}</p>
-      {payload.map((p: any, i: number) => (
-        <p key={i} style={{ color: p.color }} className="tabular-nums">
-          {p.name}: {fmt(p.value)}
-        </p>
-      ))}
-    </div>
-  );
-};
+const DailyBarGroup = ({ despesas, receitas, maxVal, height = 32 }: { despesas: number; receitas: number; maxVal: number; height?: number }) => (
+  <div className={`w-full flex items-end justify-center gap-[2px]`} style={{ height: `${height}px` }}>
+    {despesas > 0 && (
+      <div className="w-[40%] rounded-full bg-destructive/50" style={{ height: `${Math.max((despesas / maxVal) * height, 3)}px` }} />
+    )}
+    {receitas > 0 && (
+      <div className="w-[40%] rounded-full bg-primary/50" style={{ height: `${Math.max((receitas / maxVal) * height, 3)}px` }} />
+    )}
+    {despesas === 0 && receitas === 0 && (
+      <div className="w-full rounded-full bg-muted/30" style={{ height: "3px" }} />
+    )}
+  </div>
+);
 
 const TransacoesAnalytics = () => {
   const { user } = useAuth();
