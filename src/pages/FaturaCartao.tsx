@@ -1,8 +1,8 @@
 import { useState, useEffect, useMemo } from "react";
-import { motion, AnimatePresence } from "framer-motion";
+import { motion } from "framer-motion";
 import {
-  ArrowLeft, CreditCard, Calendar, Plus, MoreVertical,
-  CalendarClock, CalendarCheck,
+  ArrowLeft, Plus, MoreVertical,
+  CalendarClock, CalendarCheck, Wallet, Shield, TrendingDown,
 } from "lucide-react";
 import { useNavigate, useParams, useSearchParams } from "react-router-dom";
 import { Button } from "@/components/ui/button";
@@ -202,8 +202,10 @@ const FaturaCartao = () => {
     );
   }
 
+  const cardColor = card?.color || "hsl(150 100% 45%)";
+
   return (
-    <div className="pt-2 pb-24 space-y-4">
+    <div className="pt-2 pb-24 space-y-5">
       {/* Header */}
       <div className="flex items-center justify-between">
         <button
@@ -229,134 +231,244 @@ const FaturaCartao = () => {
         </div>
       </div>
 
-      {/* Card Hero */}
+      {/* ===== CARD HERO — Full width ===== */}
       <motion.div
         initial={{ opacity: 0, y: 16 }}
         animate={{ opacity: 1, y: 0 }}
-        className="glass-card-lg overflow-hidden"
+        className="glass-card-lg overflow-hidden relative"
       >
-        {/* Card header with gradient accent */}
+        {/* Glow accent from card color */}
         <div
-          className="px-5 pt-5 pb-4"
+          className="absolute inset-0 opacity-[0.07] pointer-events-none"
           style={{
-            background: `linear-gradient(135deg, ${card?.color || "hsl(150 100% 45%)"}15 0%, transparent 60%)`,
+            background: `radial-gradient(ellipse at 20% 0%, ${cardColor} 0%, transparent 55%)`,
           }}
-        >
-          <div className="flex items-center justify-between mb-4">
+        />
+
+        <div className="relative z-10">
+          {/* Card identity row */}
+          <div className="px-5 pt-5 pb-4">
+            <div className="flex items-center justify-between mb-5">
+              <div className="flex items-center gap-3.5">
+                {/* Card chip visual */}
+                <div className="relative">
+                  <div
+                    className="w-12 h-8 rounded-lg shadow-lg"
+                    style={{ backgroundColor: cardColor }}
+                  />
+                  <div className="absolute inset-0 rounded-lg bg-gradient-to-br from-white/20 to-transparent" />
+                </div>
+                <div>
+                  <h1 className="text-base font-bold text-foreground">{card?.name}</h1>
+                  {card?.last_four_digits && (
+                    <span className="text-[11px] text-muted-foreground tracking-wider">•••• {card.last_four_digits}</span>
+                  )}
+                </div>
+              </div>
+              {invoiceStatus === "paid" ? (
+                <div className="flex items-center gap-1.5 border border-primary/30 bg-primary/10 px-3 py-1.5 rounded-full">
+                  <div className="w-1.5 h-1.5 rounded-full bg-primary animate-pulse" />
+                  <span className="text-xs font-bold text-primary">Paga</span>
+                </div>
+              ) : invoiceStatus === "closed" ? (
+                <div className="flex items-center gap-1.5 border border-[hsl(var(--warning))]/30 bg-[hsl(var(--warning))]/10 px-3 py-1.5 rounded-full">
+                  <div className="w-1.5 h-1.5 rounded-full bg-[hsl(var(--warning))]" />
+                  <span className="text-xs font-bold text-[hsl(var(--warning))]">Fechada</span>
+                </div>
+              ) : invoiceStatus === "open" ? (
+                <div className="flex items-center gap-1.5 border border-primary/20 bg-primary/5 px-3 py-1.5 rounded-full">
+                  <div className="w-1.5 h-1.5 rounded-full bg-primary/60" />
+                  <span className="text-xs font-bold text-primary/80">Aberta</span>
+                </div>
+              ) : null}
+            </div>
+
+            {/* Info chips */}
             <div className="flex items-center gap-3">
-              <div
-                className="w-11 h-8 rounded-lg shadow-md"
-                style={{ backgroundColor: card?.color || "hsl(var(--primary))" }}
-              />
-              <div>
-                <h1 className="text-sm font-bold text-foreground">{card?.name}</h1>
-                {card?.last_four_digits && (
-                  <span className="text-[10px] text-muted-foreground">•••• {card.last_four_digits}</span>
-                )}
+              <div className="flex items-center gap-1.5 text-[11px] text-muted-foreground bg-muted/20 px-3 py-1.5 rounded-lg">
+                <CalendarClock className="w-3.5 h-3.5 text-primary/60" />
+                <span>Fecha dia <span className="font-semibold text-foreground">{card?.closing_day}</span></span>
+              </div>
+              <div className="flex items-center gap-1.5 text-[11px] text-muted-foreground bg-muted/20 px-3 py-1.5 rounded-lg">
+                <CalendarCheck className="w-3.5 h-3.5 text-primary/60" />
+                <span>Vence dia <span className="font-semibold text-foreground">{card?.due_day}</span></span>
               </div>
             </div>
-            {invoiceStatus === "paid" && (
-              <div className="flex items-center gap-1.5 border border-primary/30 bg-primary/10 px-3 py-1 rounded-full">
-                <div className="w-1.5 h-1.5 rounded-full bg-primary" />
-                <span className="text-xs font-bold text-primary">Fatura paga</span>
-              </div>
-            )}
           </div>
 
-          {/* Card info: closing/due dates */}
-          <div className="flex items-center gap-4 text-[11px] text-muted-foreground">
-            <div className="flex items-center gap-1.5">
-              <CalendarClock className="w-3.5 h-3.5" />
-              <span>Fecha dia <span className="font-semibold text-foreground">{card?.closing_day}</span></span>
-            </div>
-            <div className="flex items-center gap-1.5">
-              <CalendarCheck className="w-3.5 h-3.5" />
-              <span>Vence dia <span className="font-semibold text-foreground">{card?.due_day}</span></span>
-            </div>
-          </div>
-        </div>
-
-        {/* Timeline */}
-        <div className="px-5 pb-3">
-          <InvoiceTimeline
-            selectedMonth={selectedMonth}
-            selectedYear={selectedYear}
-            invoices={invoices}
-            onSelect={(m, y) => { setSelectedMonth(m); setSelectedYear(y); }}
-          />
-        </div>
-
-        {/* Invoice amount */}
-        <div className="px-5 pb-4">
-          <InvoiceSummaryCard
-            total={total}
-            selectedMonth={selectedMonth}
-            selectedYear={selectedYear}
-            invoiceStatus={invoiceStatus}
-            dueInfo={dueInfo}
-            onPrev={() => handleMonthNav(-1)}
-            onNext={() => handleMonthNav(1)}
-          />
-        </div>
-
-        {/* Limit bar */}
-        <div className="px-5 pb-5 space-y-2">
-          <div className="flex items-center justify-between text-xs">
-            <span className="text-foreground">
-              <span className="font-bold">{formatCurrency(usedLimit)}</span>
-              <span className="text-muted-foreground ml-1">usado</span>
-            </span>
-            <span className="text-foreground">
-              <span className="font-bold">{formatCurrency(availableLimit)}</span>
-              <span className="text-muted-foreground ml-1">disponível</span>
-            </span>
-          </div>
-          <div className="w-full h-2.5 rounded-full bg-muted/50 overflow-hidden">
-            <motion.div
-              initial={{ width: 0 }}
-              animate={{ width: `${usedPct}%` }}
-              transition={{ duration: 0.8, ease: "easeOut" }}
-              className={cn(
-                "h-full rounded-full",
-                usedPct > 80 ? "bg-destructive" : usedPct > 50 ? "bg-[hsl(var(--warning))]" : "bg-primary"
-              )}
+          {/* Timeline */}
+          <div className="px-5 pb-3">
+            <InvoiceTimeline
+              selectedMonth={selectedMonth}
+              selectedYear={selectedYear}
+              invoices={invoices}
+              onSelect={(m, y) => { setSelectedMonth(m); setSelectedYear(y); }}
             />
           </div>
-          <div className="flex items-center justify-between text-[11px] text-muted-foreground">
-            <span>{usedPct.toFixed(0)}% do limite</span>
-            <span>Limite: <span className="font-semibold text-foreground">{formatCurrency(limitTotal)}</span></span>
+
+          {/* Invoice value */}
+          <div className="px-5 pb-5">
+            <InvoiceSummaryCard
+              total={total}
+              selectedMonth={selectedMonth}
+              selectedYear={selectedYear}
+              invoiceStatus={invoiceStatus}
+              dueInfo={dueInfo}
+              onPrev={() => handleMonthNav(-1)}
+              onNext={() => handleMonthNav(1)}
+            />
           </div>
         </div>
       </motion.div>
 
-      {/* Invoice History Chart */}
-      <InvoiceHistoryChart
-        invoices={invoices}
-        selectedMonth={selectedMonth}
-        selectedYear={selectedYear}
-        onSelect={(m, y) => { setSelectedMonth(m); setSelectedYear(y); }}
-      />
+      {/* ===== 2-COLUMN DESKTOP / STACKED MOBILE ===== */}
+      <div className="grid grid-cols-1 lg:grid-cols-12 gap-4">
 
-      {/* Category Breakdown */}
-      {categoryBreakdown.length > 0 && (
-        <InvoiceCategoryBreakdown categories={categoryBreakdown} total={total} />
-      )}
+        {/* LEFT COLUMN — Main content */}
+        <div className="lg:col-span-7 xl:col-span-8 space-y-4">
 
-      {/* Transactions */}
-      <InvoiceTransactionList items={items} />
+          {/* Limit card */}
+          <motion.div
+            initial={{ opacity: 0, y: 12 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ delay: 0.05 }}
+            className="glass-card p-5 space-y-3"
+          >
+            <div className="flex items-center gap-2 mb-1">
+              <Shield className="w-4 h-4 text-primary/70" />
+              <h2 className="text-sm font-bold text-foreground">Limite do Cartão</h2>
+            </div>
 
-      {/* Pay Button */}
+            {/* Limit stats row */}
+            <div className="grid grid-cols-3 gap-3">
+              <div className="bg-muted/20 rounded-xl p-3 text-center">
+                <p className="text-[10px] text-muted-foreground mb-0.5">Usado</p>
+                <p className="text-sm font-bold text-foreground">{formatCurrency(usedLimit)}</p>
+              </div>
+              <div className="bg-muted/20 rounded-xl p-3 text-center">
+                <p className="text-[10px] text-muted-foreground mb-0.5">Disponível</p>
+                <p className="text-sm font-bold text-primary">{formatCurrency(availableLimit)}</p>
+              </div>
+              <div className="bg-muted/20 rounded-xl p-3 text-center">
+                <p className="text-[10px] text-muted-foreground mb-0.5">Total</p>
+                <p className="text-sm font-bold text-foreground">{formatCurrency(limitTotal)}</p>
+              </div>
+            </div>
+
+            {/* Progress bar */}
+            <div className="space-y-1.5">
+              <div className="w-full h-3 rounded-full bg-muted/40 overflow-hidden">
+                <motion.div
+                  initial={{ width: 0 }}
+                  animate={{ width: `${usedPct}%` }}
+                  transition={{ duration: 0.8, ease: "easeOut" }}
+                  className={cn(
+                    "h-full rounded-full transition-colors",
+                    usedPct > 80 ? "bg-destructive" : usedPct > 50 ? "bg-[hsl(var(--warning))]" : "bg-primary"
+                  )}
+                />
+              </div>
+              <p className="text-[11px] text-muted-foreground text-right">
+                <span className={cn(
+                  "font-bold",
+                  usedPct > 80 ? "text-destructive" : usedPct > 50 ? "text-[hsl(var(--warning))]" : "text-primary"
+                )}>
+                  {usedPct.toFixed(0)}%
+                </span>
+                {" "}do limite utilizado
+              </p>
+            </div>
+          </motion.div>
+
+          {/* Invoice History Chart */}
+          <InvoiceHistoryChart
+            invoices={invoices}
+            selectedMonth={selectedMonth}
+            selectedYear={selectedYear}
+            onSelect={(m, y) => { setSelectedMonth(m); setSelectedYear(y); }}
+          />
+
+          {/* Transactions — below chart on mobile, main column on desktop */}
+          <InvoiceTransactionList items={items} />
+        </div>
+
+        {/* RIGHT COLUMN — Sidebar content */}
+        <div className="lg:col-span-5 xl:col-span-4 space-y-4">
+
+          {/* Category Breakdown */}
+          {categoryBreakdown.length > 0 && (
+            <InvoiceCategoryBreakdown categories={categoryBreakdown} total={total} />
+          )}
+
+          {/* Quick stats cards */}
+          <motion.div
+            initial={{ opacity: 0, y: 12 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ delay: 0.15 }}
+            className="glass-card p-5 space-y-3"
+          >
+            <div className="flex items-center gap-2 mb-1">
+              <TrendingDown className="w-4 h-4 text-primary/70" />
+              <h2 className="text-sm font-bold text-foreground">Resumo da Fatura</h2>
+            </div>
+
+            <div className="space-y-2.5">
+              <div className="flex items-center justify-between py-2 border-b border-border/20">
+                <span className="text-xs text-muted-foreground">Total de lançamentos</span>
+                <span className="text-xs font-bold text-foreground">{items.length}</span>
+              </div>
+              <div className="flex items-center justify-between py-2 border-b border-border/20">
+                <span className="text-xs text-muted-foreground">Categorias</span>
+                <span className="text-xs font-bold text-foreground">{categoryBreakdown.length}</span>
+              </div>
+              <div className="flex items-center justify-between py-2 border-b border-border/20">
+                <span className="text-xs text-muted-foreground">Parcelamentos ativos</span>
+                <span className="text-xs font-bold text-foreground">
+                  {items.filter((i) => i.total_installments > 1).length}
+                </span>
+              </div>
+              <div className="flex items-center justify-between py-2">
+                <span className="text-xs text-muted-foreground">Valor médio por lançamento</span>
+                <span className="text-xs font-bold text-primary">
+                  {items.length > 0 ? formatCurrency(total / items.length) : "—"}
+                </span>
+              </div>
+            </div>
+          </motion.div>
+
+          {/* Pay button on sidebar for desktop */}
+          {currentInvoice && !currentInvoice.is_paid && total > 0 && (
+            <motion.div
+              initial={{ opacity: 0, y: 12 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ delay: 0.2 }}
+              className="hidden lg:block"
+            >
+              <Button
+                onClick={() => setShowPayModal(true)}
+                className="w-full h-12 rounded-2xl text-sm font-bold bg-primary/15 text-primary border border-primary/30 hover:bg-primary/25 backdrop-blur-md"
+              >
+                <Wallet className="w-4 h-4 mr-2" />
+                Pagar Fatura · {formatCurrency(total)}
+              </Button>
+            </motion.div>
+          )}
+        </div>
+      </div>
+
+      {/* Mobile fixed pay button */}
       {currentInvoice && !currentInvoice.is_paid && total > 0 && (
         <motion.div
           initial={{ opacity: 0, y: 12 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ delay: 0.2 }}
-          className="fixed bottom-20 left-4 right-4 z-40 max-w-lg mx-auto"
+          className="fixed bottom-20 left-4 right-4 z-40 max-w-lg mx-auto lg:hidden"
         >
           <Button
             onClick={() => setShowPayModal(true)}
             className="w-full h-12 rounded-2xl text-sm font-bold bg-primary/15 text-primary border border-primary/30 hover:bg-primary/25 backdrop-blur-md shadow-lg"
           >
+            <Wallet className="w-4 h-4 mr-2" />
             Pagar Fatura · {formatCurrency(total)}
           </Button>
         </motion.div>
