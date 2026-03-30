@@ -13,10 +13,6 @@ interface Props {
   compact?: boolean;
 }
 
-function fmt(value: number) {
-  return value.toLocaleString("pt-BR", { style: "currency", currency: "BRL" });
-}
-
 const ReceitasDespesasCards = memo(({
   receitas, receitasRecebidas, receitasPendentes,
   despesas, despesasPagas, despesasPendentes,
@@ -27,7 +23,6 @@ const ReceitasDespesasCards = memo(({
 
   return (
     <div className={`grid ${mobile ? "grid-cols-2 gap-2" : "grid-rows-2 gap-3"} w-full`}>
-      {/* Receitas */}
       <button
         className={`relative rounded-xl border border-primary/15 transition-all text-left overflow-hidden backdrop-blur-sm bg-primary/[0.06] ${mobile ? "px-2.5 py-2" : "px-3 py-3"}`}
         style={{
@@ -38,43 +33,11 @@ const ReceitasDespesasCards = memo(({
           <ArrowUpRight className={`${mobile ? "w-3 h-3" : "w-3.5 h-3.5"} text-primary`} />
           <span className="text-[9px] text-muted-foreground uppercase tracking-wider font-semibold">Receitas</span>
         </div>
-        {/* Desktop: value + details inline */}
-        {!mobile ? (
-          <div className="flex items-end justify-between gap-2">
-            <p className="font-display text-xl font-bold text-primary tabular-nums leading-none">
-              {animatedReceitas}
-            </p>
-            <div className="flex flex-col items-end gap-0.5 shrink-0">
-              <div className="flex items-center gap-1">
-                <span className="text-[8px] text-muted-foreground/60">Recebido</span>
-                <span className="text-[9px] font-semibold text-primary/80 tabular-nums">{fmt(receitasRecebidas)}</span>
-              </div>
-              <div className="flex items-center gap-1">
-                <span className="text-[8px] text-muted-foreground/60">Pendente</span>
-                <span className="text-[9px] font-semibold text-muted-foreground tabular-nums">{fmt(receitasPendentes)}</span>
-              </div>
-            </div>
-          </div>
-        ) : (
-          <>
-            <p className="font-display text-base font-bold text-primary tabular-nums leading-none">
-              {animatedReceitas}
-            </p>
-            <div className="mt-1.5 space-y-0.5">
-              <div className="flex items-center justify-between">
-                <span className="text-[8px] text-muted-foreground/60">Recebido</span>
-                <span className="text-[9px] font-semibold text-primary/80 tabular-nums">{fmt(receitasRecebidas)}</span>
-              </div>
-              <div className="flex items-center justify-between">
-                <span className="text-[8px] text-muted-foreground/60">Pendente</span>
-                <span className="text-[9px] font-semibold text-muted-foreground tabular-nums">{fmt(receitasPendentes)}</span>
-              </div>
-            </div>
-          </>
-        )}
+        <p className={`font-display ${mobile ? "text-base" : "text-xl"} font-bold text-primary tabular-nums leading-none`}>
+          {animatedReceitas}
+        </p>
       </button>
 
-      {/* Despesas */}
       <button
         className={`relative rounded-xl border border-destructive/15 transition-all text-left overflow-hidden backdrop-blur-sm bg-destructive/[0.06] ${mobile ? "px-2.5 py-2" : "px-3 py-3"}`}
         style={{
@@ -85,39 +48,9 @@ const ReceitasDespesasCards = memo(({
           <ArrowDownRight className={`${mobile ? "w-3 h-3" : "w-3.5 h-3.5"} text-destructive`} />
           <span className="text-[9px] text-muted-foreground uppercase tracking-wider font-semibold">Despesas</span>
         </div>
-        {!mobile ? (
-          <div className="flex items-end justify-between gap-2">
-            <p className="font-display text-xl font-bold text-destructive tabular-nums leading-none">
-              {animatedDespesas}
-            </p>
-            <div className="flex flex-col items-end gap-0.5 shrink-0">
-              <div className="flex items-center gap-1">
-                <span className="text-[8px] text-muted-foreground/60">Pago</span>
-                <span className="text-[9px] font-semibold text-destructive/80 tabular-nums">{fmt(despesasPagas)}</span>
-              </div>
-              <div className="flex items-center gap-1">
-                <span className="text-[8px] text-muted-foreground/60">Pendente</span>
-                <span className="text-[9px] font-semibold text-muted-foreground tabular-nums">{fmt(despesasPendentes)}</span>
-              </div>
-            </div>
-          </div>
-        ) : (
-          <>
-            <p className="font-display text-base font-bold text-destructive tabular-nums leading-none">
-              {animatedDespesas}
-            </p>
-            <div className="mt-1.5 space-y-0.5">
-              <div className="flex items-center justify-between">
-                <span className="text-[8px] text-muted-foreground/60">Pago</span>
-                <span className="text-[9px] font-semibold text-destructive/80 tabular-nums">{fmt(despesasPagas)}</span>
-              </div>
-              <div className="flex items-center justify-between">
-                <span className="text-[8px] text-muted-foreground/60">Pendente</span>
-                <span className="text-[9px] font-semibold text-muted-foreground tabular-nums">{fmt(despesasPendentes)}</span>
-              </div>
-            </div>
-          </>
-        )}
+        <p className={`font-display ${mobile ? "text-base" : "text-xl"} font-bold text-destructive tabular-nums leading-none`}>
+          {animatedDespesas}
+        </p>
       </button>
     </div>
   );
