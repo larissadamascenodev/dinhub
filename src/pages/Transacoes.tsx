@@ -336,7 +336,7 @@ const Transacoes = () => {
   const [loading, setLoading] = useState(true);
   const [search, setSearch] = useState("");
   const [activeTab, setActiveTab] = useState<TabFilter>("todos");
-  const [mainTab, setMainTab] = useState<MainTab>("transacoes");
+  
   const [showFilters, setShowFilters] = useState(false);
   const [filterCategory, setFilterCategory] = useState("todos");
   const [filterStatus, setFilterStatus] = useState("todos");
