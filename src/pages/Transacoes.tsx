@@ -152,7 +152,7 @@ const SwipeableItem = ({
         {/* Info */}
         <div className="flex-1 min-w-0">
           <div className="flex items-center gap-2">
-            <p className="text-[13px] font-bold text-foreground truncate">{tx.name}</p>
+            <p className="text-xs md:text-[13px] font-bold text-foreground truncate">{tx.name}</p>
             <span
               className={`px-1.5 py-0.5 rounded text-[8px] font-bold uppercase border ${
                 tx.status === "pago"
