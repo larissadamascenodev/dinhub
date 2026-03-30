@@ -189,10 +189,9 @@ const BotFinanceProjecoes = () => {
     loading,
   } = useFinancialProjection();
 
-  const [showGoalInput, setShowGoalInput] = useState(false);
   const [expandedMonth, setExpandedMonth] = useState<number | null>(null);
   const [timelineMode, setTimelineMode] = useState<"mensal" | "acumulado">("acumulado");
-  const formattedSafe = useFormattedCounter(dailyLimit.safeToSpend);
+  const [selectedProjectionIdx, setSelectedProjectionIdx] = useState(0);
 
   // Enriched projections with variation, micro-copy, prev balance
   const projectionsWithVariation = useMemo(() => {
@@ -216,21 +215,18 @@ const BotFinanceProjecoes = () => {
     });
   }, [projections, data.saldoAtual, data.previousMonthEndingBalance]);
 
-  // In "mensal" mode, show only the current month; in "acumulado", show all 6
-  const displayedProjections = useMemo(() => {
-    if (timelineMode === "mensal") return projectionsWithVariation.slice(0, 1);
-    return projectionsWithVariation;
-  }, [projectionsWithVariation, timelineMode]);
-
-  // Chart data
+  // Chart data — always all 6 months
   const chartData = useMemo(() => {
-    return displayedProjections.map((p) => ({
+    return projectionsWithVariation.map((p) => ({
       name: `${MONTH_NAMES[p.month]} ${p.year}`,
       value: timelineMode === "acumulado" ? p.balance : p.delta,
       balance: p.balance,
       delta: p.delta,
     }));
-  }, [displayedProjections, timelineMode]);
+  }, [projectionsWithVariation, timelineMode]);
+
+  // Selected month for the top card
+  const selectedProjection = projectionsWithVariation[selectedProjectionIdx] ?? projectionsWithVariation[0];
 
   // Determine chart gradient color based on trend
   const chartTrend = useMemo(() => {
