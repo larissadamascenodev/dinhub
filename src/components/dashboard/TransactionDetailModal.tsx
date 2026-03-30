@@ -768,22 +768,22 @@ const TransactionDetailModal = ({ open, tx, accountName, onClose, onRefresh, use
           exit={{ opacity: 0 }}
           className={cn(
             "fixed inset-0 z-50 flex justify-center bg-black/70 backdrop-blur-sm",
-            step === "edit-form" ? "items-stretch md:items-center" : "items-end md:items-center"
+            step === "edit-form" ? "items-stretch md:items-center" : "items-center"
           )}
           onClick={handleClose}
         >
           <motion.div
             key={step}
-            initial={{ opacity: 0, y: step === "edit-form" ? "100%" : 60 }}
+            initial={{ opacity: 0, y: step === "edit-form" ? "100%" : 40 }}
             animate={{ opacity: 1, y: 0 }}
-            exit={{ opacity: 0, y: step === "edit-form" ? "100%" : 60 }}
+            exit={{ opacity: 0, y: step === "edit-form" ? "100%" : 40 }}
             transition={{ type: "spring", damping: 30, stiffness: 300 }}
             onClick={(e) => e.stopPropagation()}
             className={cn(
-              "w-full max-w-md mx-0 md:mx-4 bg-card shadow-2xl",
+              "w-full max-w-md bg-card shadow-2xl",
               step === "edit-form"
-                ? "h-full md:h-auto md:max-h-[92vh] rounded-none md:rounded-2xl border-0 md:border md:border-border/20 p-0 flex flex-col overflow-hidden"
-                : "rounded-t-3xl md:rounded-2xl border border-border/20 p-5 pb-24 md:pb-5"
+                ? "h-full md:h-auto md:max-h-[92vh] mx-0 md:mx-4 rounded-none md:rounded-2xl border-0 md:border md:border-border/20 p-0 flex flex-col overflow-hidden"
+                : "mx-4 rounded-2xl border border-border/20 p-5"
             )}
           >
             {renderContent()}
