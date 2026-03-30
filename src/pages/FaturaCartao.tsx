@@ -15,7 +15,7 @@ import InvoiceCategoryBreakdown from "@/components/fatura/InvoiceCategoryBreakdo
 import InvoiceTransactionList from "@/components/fatura/InvoiceTransactionList";
 import InvoicePayModal from "@/components/fatura/InvoicePayModal";
 import InvoiceHistoryChart from "@/components/fatura/InvoiceHistoryChart";
-import InvoiceTimeline from "@/components/fatura/InvoiceTimeline";
+import MonthSelector from "@/components/dashboard/MonthSelector";
 
 export interface EnrichedItem {
   id: string;
