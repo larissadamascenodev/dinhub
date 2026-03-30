@@ -408,25 +408,6 @@ const TransacoesAnalytics = () => {
         </AnimatePresence>
       </GlassCard>
 
-      {/* Evolução Mensal */}
-      <GlassCard>
-        <div className="flex items-center gap-2 mb-3">
-          <TrendingUp className="w-4 h-4 text-primary" />
-          <h3 className="text-sm font-bold text-foreground">Evolução Mensal</h3>
-        </div>
-        <div className="h-40">
-          <ResponsiveContainer width="100%" height="100%">
-            <BarChart data={evolutionData} margin={{ top: 5, right: 5, left: -20, bottom: 0 }} barGap={2} barSize={14}>
-              <CartesianGrid strokeDasharray="3 3" stroke="hsl(220 10% 20%)" />
-              <XAxis dataKey="month" tick={{ fill: "hsl(220 10% 45%)", fontSize: 11 }} axisLine={false} tickLine={false} />
-              <YAxis tick={{ fill: "hsl(220 10% 45%)", fontSize: 10 }} axisLine={false} tickLine={false} tickFormatter={(v) => v >= 1000 ? `${(v / 1000).toFixed(0)}k` : v} />
-              <Tooltip content={<ChartTooltip />} />
-              <Bar dataKey="receitas" name="Receitas" fill="hsl(150 100% 45% / 0.7)" radius={[3, 3, 0, 0]} />
-              <Bar dataKey="despesas" name="Despesas" fill="hsl(0 60% 50% / 0.7)" radius={[3, 3, 0, 0]} />
-            </BarChart>
-          </ResponsiveContainer>
-        </div>
-      </GlassCard>
     </motion.div>
   );
 };
