@@ -47,6 +47,7 @@ const App = () => (
               <Route path="/transacoes" element={<Transacoes />} />
               <Route path="/gestao" element={<GestaoFinanceira />} />
               <Route path="/fatura/:cardId" element={<FaturaCartao />} />
+              <Route path="/conta/:accountId" element={<ContaDetalhe />} />
               <Route path="/bot-finance" element={<BotFinance />} />
               <Route path="/bot-finance/projecoes" element={<BotFinanceProjecoes />} />
               <Route path="/bot-finance/saude" element={<BotFinanceSaude />} />
