@@ -101,6 +101,18 @@ const TransactionDetailModal = ({ open, tx, accountName, onClose, onRefresh, use
   const amountInputRef = useRef<HTMLInputElement>(null);
   const dropdownRef = useRef<HTMLDivElement>(null);
 
+  // Close dropdown on outside click
+  useEffect(() => {
+    if (!showDropdown) return;
+    const handler = (e: MouseEvent) => {
+      if (dropdownRef.current && !dropdownRef.current.contains(e.target as Node)) {
+        setShowDropdown(false);
+      }
+    };
+    document.addEventListener("mousedown", handler);
+    return () => document.removeEventListener("mousedown", handler);
+  }, [showDropdown]);
+
   if (!tx) return null;
 
   const isReceita = tx.type === "receita";
@@ -113,18 +125,6 @@ const TransactionDetailModal = ({ open, tx, accountName, onClose, onRefresh, use
     setShowDropdown(false);
     onClose();
   };
-
-  // Close dropdown on outside click
-  useEffect(() => {
-    if (!showDropdown) return;
-    const handler = (e: MouseEvent) => {
-      if (dropdownRef.current && !dropdownRef.current.contains(e.target as Node)) {
-        setShowDropdown(false);
-      }
-    };
-    document.addEventListener("mousedown", handler);
-    return () => document.removeEventListener("mousedown", handler);
-  }, [showDropdown]);
 
   const handlePay = async () => {
     setLoading(true);
