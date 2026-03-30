@@ -381,18 +381,25 @@ const BotFinanceProjecoes = () => {
         <GlassSection delay={0.12}>
           <div className="flex items-center justify-between">
             <SectionHeader icon={<TrendingUp className="w-4 h-4 text-primary" />} title="Timeline de Saldo" />
-            <div className="flex bg-secondary rounded-lg p-0.5 gap-0.5">
+            <div className="flex bg-card/60 backdrop-blur-xl border border-border/15 rounded-2xl p-0.5 gap-0.5">
               {(["mensal", "acumulado"] as const).map((mode) => (
                 <button
                   key={mode}
                   onClick={() => setTimelineMode(mode)}
-                  className={`text-[10px] px-2.5 py-1 rounded-md font-medium transition-all ${
+                  className={`relative text-[10px] px-3 py-1.5 rounded-xl font-medium transition-all ${
                     timelineMode === mode
-                      ? "bg-background text-foreground shadow-sm"
+                      ? "text-primary"
                       : "text-muted-foreground hover:text-foreground"
                   }`}
                 >
-                  {mode === "mensal" ? "Mensal" : "Acumulado"}
+                  {timelineMode === mode && (
+                    <motion.div
+                      layoutId="timeline-mode-bg"
+                      className="absolute inset-0 rounded-xl bg-primary/15 border border-primary/20"
+                      transition={{ type: "spring", stiffness: 400, damping: 28 }}
+                    />
+                  )}
+                  <span className="relative z-10">{mode === "mensal" ? "Mensal" : "Acumulado"}</span>
                 </button>
               ))}
             </div>
@@ -404,7 +411,7 @@ const BotFinanceProjecoes = () => {
             initial={{ opacity: 0 }}
             animate={{ opacity: 1 }}
             transition={{ delay: 0.1, duration: 0.4 }}
-            className="h-44 sm:h-52 w-full -mx-2"
+            className="h-44 sm:h-64 lg:h-72 w-full -mx-2"
           >
             <ResponsiveContainer width="100%" height="100%">
               <AreaChart data={chartData} onClick={handleChartClick} margin={{ top: 8, right: 12, left: -12, bottom: 0 }}>
@@ -494,7 +501,7 @@ const BotFinanceProjecoes = () => {
                     <span className="text-[9px] text-muted-foreground/50 ml-1">{p.year}</span>
                   </div>
                   <div className="flex-1 text-right">
-                    <p className={`text-sm font-bold tabular-nums ${valueColor}`}>
+                    <p className={`text-sm font-bold tabular-nums ${isCurrent ? "text-primary" : "text-foreground"}`}>
                       {timelineMode === "mensal" && displayValue >= 0 ? "+" : ""}{fmtCurrency(displayValue)}
                     </p>
                   </div>
