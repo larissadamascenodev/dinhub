@@ -174,7 +174,7 @@ const SwipeableItem = ({
 
         {/* Amount */}
         <p
-          className="text-sm font-bold tabular-nums shrink-0"
+          className="text-xs md:text-sm font-bold tabular-nums shrink-0"
           style={{ color: isReceita ? "hsl(var(--primary))" : "hsl(var(--destructive))" }}
         >
           {fmt(tx.amount)}
