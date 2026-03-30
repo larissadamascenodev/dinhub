@@ -90,9 +90,13 @@ const BotFinanceProjecoes = () => {
     setSavingsBoost,
     incomeBoost,
     setIncomeBoost,
+    savingsGoal,
+    setSavingsGoal,
     resetSimulation,
     data,
   } = useFinancialProjection();
+
+  const [showGoalInput, setShowGoalInput] = useState(false);
 
   const [expandedMonth, setExpandedMonth] = useState<number | null>(null);
   const [timelineMode, setTimelineMode] = useState<"mensal" | "acumulado">("acumulado");
