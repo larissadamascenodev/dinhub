@@ -183,7 +183,10 @@ const BotFinanceProjecoes = () => {
   // ─── Month projection ───
   const saldoInicial = data.previousMonthEndingBalance;
   const balanco = data.balanco;
-  const saldoFinal = saldoInicial + balanco + savingsBoost + incomeBoost;
+  const saldoFinalBase = saldoInicial + balanco;
+  const saldoFinal = saldoFinalBase + savingsBoost + incomeBoost;
+  const totalImpact = (savingsBoost + incomeBoost) * 6; // accumulated over 6 months
+  const impact3m = (savingsBoost + incomeBoost) * 3;
 
   // ─── Health score (0–100) ───
   const healthScore = useMemo(() => {
