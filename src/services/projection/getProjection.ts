@@ -45,7 +45,7 @@ export function getMonthlyProjection(
   let balance = data.saldoPrevisto;
   const result: MonthProjection[] = [];
 
-  for (let i = 0; i < 6; i++) {
+  for (let i = 0; i < 12; i++) {
     const d = new Date(selectedYear, selectedMonth + i, 1);
     const m = d.getMonth();
     const y = d.getFullYear();

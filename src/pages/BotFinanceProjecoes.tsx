@@ -1,7 +1,7 @@
 import { useState, useMemo, useCallback, memo } from "react";
 import type { MonthProjection } from "@/services/projection";
 import { useNavigate } from "react-router-dom";
-import { motion, AnimatePresence } from "framer-motion";
+import { motion } from "framer-motion";
 import {
   ArrowLeft,
   TrendingUp,
@@ -9,7 +9,6 @@ import {
   ArrowUpRight,
   ArrowDownRight,
   Minus,
-  ChevronDown,
   CalendarDays,
   Plus,
   Equal,
@@ -70,20 +69,18 @@ const SectionHeader = ({ icon, title }: { icon: React.ReactNode; title: string }
 );
 
 const TrendIcon = ({ delta }: { delta: number }) => {
-  if (delta > 500) return <ArrowUpRight className="w-3.5 h-3.5 text-accent-foreground" />;
-  if (delta > 0) return <TrendingUp className="w-3.5 h-3.5 text-accent-foreground" />;
+  if (delta > 500) return <ArrowUpRight className="w-3.5 h-3.5 text-primary" />;
+  if (delta > 0) return <TrendingUp className="w-3.5 h-3.5 text-primary" />;
   if (delta === 0) return <Minus className="w-3.5 h-3.5 text-muted-foreground" />;
   if (delta > -500) return <TrendingDown className="w-3.5 h-3.5 text-destructive" />;
   return <ArrowDownRight className="w-3.5 h-3.5 text-destructive" />;
 };
 
 const riskStyle = (risk: string) => {
-  if (risk === "positivo") return { dot: "bg-accent", text: "text-foreground", glow: "group-hover:shadow-[0_0_8px_hsl(var(--accent)/0.4)]" };
+  if (risk === "positivo") return { dot: "bg-primary", text: "text-primary", glow: "group-hover:shadow-[0_0_8px_hsl(var(--primary)/0.4)]" };
   if (risk === "atencao") return { dot: "bg-warning", text: "text-warning", glow: "group-hover:shadow-[0_0_8px_hsl(var(--warning)/0.4)]" };
   return { dot: "bg-destructive", text: "text-destructive", glow: "group-hover:shadow-[0_0_8px_hsl(var(--destructive)/0.4)]" };
 };
-
-const deltaColor = (d: number) => (d >= 0 ? "text-foreground" : "text-destructive");
 
 // ─── Custom Chart Tooltip ───
 
@@ -93,7 +90,7 @@ const ChartTooltipContent = ({ active, payload, label }: any) => {
   return (
     <div className="bg-popover border border-border/40 rounded-xl px-3 py-2 shadow-xl">
       <p className="text-[10px] text-muted-foreground">{label}</p>
-      <p className={`text-sm font-bold tabular-nums ${val >= 0 ? "text-foreground" : "text-destructive"}`}>
+      <p className={`text-sm font-bold tabular-nums ${val >= 0 ? "text-primary" : "text-destructive"}`}>
         {fmtCurrency(val)}
       </p>
     </div>
@@ -115,13 +112,13 @@ const GlowDot = (props: any) => {
 
 // ─── Month Selector (dashboard style) ───
 
-const ProjectionMonthSelector = memo(({ 
-  projections, 
-  selectedIdx, 
-  onSelect 
-}: { 
-  projections: { month: number; year: number }[]; 
-  selectedIdx: number; 
+const ProjectionMonthSelector = memo(({
+  projections,
+  selectedIdx,
+  onSelect
+}: {
+  projections: { month: number; year: number }[];
+  selectedIdx: number;
   onSelect: (idx: number) => void;
 }) => {
   const now = new Date();
@@ -129,7 +126,7 @@ const ProjectionMonthSelector = memo(({
   const currentYear = now.getFullYear();
 
   return (
-    <div className="flex items-center bg-card/60 backdrop-blur-xl border border-border/15 rounded-2xl px-1.5 py-0.5 shadow-lg shadow-black/10">
+    <div className="flex items-center bg-card/60 backdrop-blur-xl border border-border/15 rounded-2xl px-1.5 py-0.5 shadow-lg shadow-black/10 overflow-x-auto scrollbar-none">
       <div className="flex items-center gap-0.5">
         {projections.map((p, i) => {
           const isActive = i === selectedIdx;
@@ -193,20 +190,20 @@ const CompositionBlock = ({ prev, income, expense, final: finalVal }: { prev: nu
       <p className="text-[8px] text-muted-foreground">Saldo anterior</p>
       <p className="text-[11px] font-bold tabular-nums text-foreground">{fmtCurrency(prev)}</p>
     </div>
-    <Plus className="w-3 h-3 text-muted-foreground/50 flex-shrink-0" />
+    <Plus className="w-3 h-3 text-primary/50 flex-shrink-0" />
     <div className="bg-secondary/50 rounded-lg px-2.5 py-1.5 text-center min-w-[70px]">
       <p className="text-[8px] text-muted-foreground">Receitas</p>
-      <p className="text-[11px] font-bold tabular-nums text-foreground">{fmtCurrency(income)}</p>
+      <p className="text-[11px] font-bold tabular-nums text-primary">{fmtCurrency(income)}</p>
     </div>
-    <Minus className="w-3 h-3 text-muted-foreground/50 flex-shrink-0" />
+    <Minus className="w-3 h-3 text-destructive/50 flex-shrink-0" />
     <div className="bg-secondary/50 rounded-lg px-2.5 py-1.5 text-center min-w-[70px]">
       <p className="text-[8px] text-muted-foreground">Despesas</p>
       <p className="text-[11px] font-bold tabular-nums text-destructive">{fmtCurrency(expense)}</p>
     </div>
     <Equal className="w-3 h-3 text-muted-foreground/50 flex-shrink-0" />
-    <div className={`rounded-lg px-2.5 py-1.5 text-center min-w-[70px] ${finalVal >= 0 ? "bg-accent/10" : "bg-destructive/10"}`}>
+    <div className={`rounded-lg px-2.5 py-1.5 text-center min-w-[70px] ${finalVal >= 0 ? "bg-primary/10 border border-primary/20" : "bg-destructive/10 border border-destructive/20"}`}>
       <p className="text-[8px] text-muted-foreground">Saldo final</p>
-      <p className={`text-[11px] font-bold tabular-nums ${finalVal >= 0 ? "text-foreground" : "text-destructive"}`}>{fmtCurrency(finalVal)}</p>
+      <p className={`text-[11px] font-bold tabular-nums ${finalVal >= 0 ? "text-primary" : "text-destructive"}`}>{fmtCurrency(finalVal)}</p>
     </div>
   </motion.div>
 );
@@ -219,13 +216,10 @@ const BotFinanceProjecoes = () => {
   const navigate = useNavigate();
   const {
     projections,
-    dailyLimit,
-    simulation,
     data,
     loading,
   } = useFinancialProjection();
 
-  const [expandedMonth, setExpandedMonth] = useState<number | null>(null);
   const [timelineMode, setTimelineMode] = useState<"mensal" | "acumulado">("acumulado");
   const [selectedProjectionIdx, setSelectedProjectionIdx] = useState(0);
 
@@ -261,17 +255,16 @@ const BotFinanceProjecoes = () => {
 
   const chartColors = {
     positive: { stroke: "hsl(150, 100%, 45%)", fill: "hsl(150, 100%, 45%)" },
-    neutral: { stroke: "hsl(199, 70%, 48%)", fill: "hsl(199, 70%, 48%)" },
+    neutral: { stroke: "hsl(150, 100%, 45%)", fill: "hsl(150, 100%, 45%)" },
     negative: { stroke: "hsl(0, 60%, 50%)", fill: "hsl(0, 60%, 50%)" },
   };
   const cc = chartColors[chartTrend];
 
   const handleChartClick = useCallback((state: any) => {
     if (state?.activeTooltipIndex !== undefined) {
-      const idx = state.activeTooltipIndex;
-      setExpandedMonth(expandedMonth === idx ? null : idx);
+      setSelectedProjectionIdx(state.activeTooltipIndex);
     }
-  }, [expandedMonth]);
+  }, []);
 
   // ─── Loading State ───
   if (loading) {
@@ -279,12 +272,9 @@ const BotFinanceProjecoes = () => {
       <div className="space-y-4 pb-4">
         <div className="flex items-center gap-3">
           <div className="w-8 h-8 rounded-xl bg-secondary animate-pulse" />
-          <div className="space-y-1.5">
-            <div className="h-5 w-40 bg-secondary rounded animate-pulse" />
-            <div className="h-3 w-56 bg-secondary/60 rounded animate-pulse" />
-          </div>
+          <div className="h-5 w-40 bg-secondary rounded animate-pulse" />
         </div>
-        <div className="space-y-4 max-w-3xl mx-auto">
+        <div className="space-y-4">
           <div className="glass-card p-4 space-y-3">
             <div className="h-4 w-32 bg-secondary rounded animate-pulse" />
             <div className="h-48 w-full bg-secondary/30 rounded-xl animate-pulse" />
@@ -321,7 +311,7 @@ const BotFinanceProjecoes = () => {
 
   return (
     <div className="space-y-4 pb-4">
-      {/* Header */}
+      {/* Header — no subtitle */}
       <motion.div initial={{ opacity: 0, y: 8 }} animate={{ opacity: 1, y: 0 }} className="flex items-center gap-3">
         <button
           onClick={() => navigate("/bot-finance")}
@@ -329,20 +319,17 @@ const BotFinanceProjecoes = () => {
         >
           <ArrowLeft className="w-4 h-4 text-foreground" />
         </button>
-        <div>
-          <h1 className="font-display text-lg font-bold">Projeções Inteligentes</h1>
-          <p className="text-[11px] text-muted-foreground">Evolução do saldo nos próximos 6 meses</p>
-        </div>
+        <h1 className="font-display text-lg font-bold">Projeções Inteligentes</h1>
       </motion.div>
 
-      <div className="space-y-4 max-w-3xl mx-auto">
+      <div className="space-y-4">
 
         {/* ══════════════════════════════════════════ */}
         {/* 1. PROJEÇÃO DO MÊS SELECIONADO            */}
         {/* ══════════════════════════════════════════ */}
         <GlassSection delay={0.05}>
           <div className="flex items-center justify-between">
-            <SectionHeader icon={<CalendarDays className="w-4 h-4 text-foreground" />} title="Projeção do Mês" />
+            <SectionHeader icon={<CalendarDays className="w-4 h-4 text-primary" />} title="Projeção do Mês" />
           </div>
 
           {/* Month selector — dashboard style */}
@@ -371,7 +358,7 @@ const BotFinanceProjecoes = () => {
                   {fmtCurrency(selectedProjection.balance)}
                 </p>
                 {selectedProjectionIdx > 0 && (
-                  <p className={`text-xs tabular-nums mt-1 ${selectedProjection.delta >= 0 ? "text-muted-foreground" : "text-destructive"}`}>
+                  <p className={`text-xs tabular-nums mt-1 font-semibold ${selectedProjection.delta >= 0 ? "text-primary" : "text-destructive"}`}>
                     {selectedProjection.delta >= 0 ? "+" : ""}{fmtCurrency(selectedProjection.delta)} no mês
                   </p>
                 )}
@@ -393,7 +380,7 @@ const BotFinanceProjecoes = () => {
         {/* ══════════════════════════════════════════ */}
         <GlassSection delay={0.12}>
           <div className="flex items-center justify-between">
-            <SectionHeader icon={<TrendingUp className="w-4 h-4 text-foreground" />} title="Timeline de Saldo" />
+            <SectionHeader icon={<TrendingUp className="w-4 h-4 text-primary" />} title="Timeline de Saldo" />
             <div className="flex bg-secondary rounded-lg p-0.5 gap-0.5">
               {(["mensal", "acumulado"] as const).map((mode) => (
                 <button
@@ -460,38 +447,60 @@ const BotFinanceProjecoes = () => {
 
           {/* Timeline list */}
           <div className="relative mt-1">
-            <div className="absolute left-[7px] top-2 bottom-2 w-px bg-gradient-to-b from-border/40 via-border/20 to-transparent" />
+            {/* Timeline line — green up to current month, then fades */}
+            <div className="absolute left-[7px] top-2 bottom-2 w-px">
+              {projectionsWithVariation.map((_, i) => {
+                const total = projectionsWithVariation.length;
+                const topPct = (i / total) * 100;
+                const heightPct = (1 / total) * 100;
+                const isPastOrCurrent = i === 0;
+                return (
+                  <div
+                    key={`line-${i}`}
+                    className="absolute w-full"
+                    style={{
+                      top: `${topPct}%`,
+                      height: `${heightPct}%`,
+                      background: isPastOrCurrent
+                        ? "hsl(150 100% 45%)"
+                        : i <= 1
+                        ? "hsl(150 100% 45% / 0.4)"
+                        : "hsl(220 12% 20% / 0.4)",
+                    }}
+                  />
+                );
+              })}
+            </div>
             {projectionsWithVariation.map((p, i) => {
               const rs = riskStyle(p.risk);
               const isCurrent = i === 0;
               const displayValue = timelineMode === "acumulado" ? p.balance : p.delta;
+              const valueColor = displayValue >= 0 ? "text-primary" : "text-destructive";
               return (
                 <button
                   key={`tl-${p.month}-${p.year}`}
                   onClick={() => setSelectedProjectionIdx(i)}
                   className={`w-full flex items-center gap-3 py-2.5 border-b border-border/5 last:border-0 group text-left hover:bg-secondary/20 rounded-lg transition-colors px-1 -mx-1 ${
-                    selectedProjectionIdx === i ? "bg-secondary/30" : ""
+                    selectedProjectionIdx === i ? "bg-primary/5" : ""
                   }`}
                 >
                   <div className="relative z-10 flex-shrink-0 w-4 flex justify-center">
-                    <div className={`w-2.5 h-2.5 rounded-full ${rs.dot} ${rs.glow} transition-all duration-300 group-hover:scale-125 ${isCurrent ? "ring-2 ring-foreground/20" : ""}`} />
+                    <div className={`w-2.5 h-2.5 rounded-full ${isCurrent ? "bg-primary ring-2 ring-primary/30" : rs.dot} ${rs.glow} transition-all duration-300 group-hover:scale-125`} />
                   </div>
                   <div className="w-14 flex-shrink-0">
-                    <span className={`text-xs font-semibold ${isCurrent ? "text-foreground" : "text-muted-foreground"}`}>
+                    <span className={`text-xs font-semibold ${isCurrent ? "text-primary" : "text-muted-foreground"}`}>
                       {MONTH_NAMES[p.month]}
                     </span>
                     <span className="text-[9px] text-muted-foreground/50 ml-1">{p.year}</span>
                   </div>
                   <div className="flex-1 text-right">
-                    <p className={`text-sm font-bold tabular-nums ${
-                      timelineMode === "acumulado" ? rs.text : deltaColor(displayValue)
-                    }`}>
+                    <p className={`text-sm font-bold tabular-nums ${valueColor}`}>
                       {timelineMode === "mensal" && displayValue >= 0 ? "+" : ""}{fmtCurrency(displayValue)}
                     </p>
                   </div>
                   {i > 0 && (
                     <div className="flex items-center gap-0.5 flex-shrink-0">
-                      <span className={`text-[9px] font-medium tabular-nums ${p.variation >= 0 ? "text-muted-foreground" : "text-destructive"}`}>
+                      <span className={`text-[9px] font-medium tabular-nums ${p.variation >= 0 ? "text-primary" : "text-destructive"}`}>
                         {p.variation >= 0 ? "+" : ""}{p.variationPct.toFixed(0)}%
                       </span>
                       <TrendIcon delta={p.variation} />
