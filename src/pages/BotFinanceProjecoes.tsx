@@ -98,6 +98,7 @@ const BotFinanceProjecoes = () => {
 
   const [savingsBoost, setSavingsBoost] = useState(0);
   const [incomeBoost, setIncomeBoost] = useState(0);
+  const [expandedMonth, setExpandedMonth] = useState<number | null>(null);
 
   // ─── 6-month projection ───
   const projections = useMemo<MonthProjection[]>(() => {
