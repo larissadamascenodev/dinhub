@@ -11,13 +11,13 @@ interface Props {
 function InstallmentBar({ current, total }: { current: number; total: number }) {
   if (total <= 1) return null;
   return (
-    <div className="flex gap-0.5 mt-1.5">
+    <div className="flex gap-1 mt-2">
       {Array.from({ length: total }, (_, i) => (
         <div
           key={i}
           className={cn(
-            "h-1.5 rounded-full flex-1 max-w-[28px]",
-            i < current ? "bg-muted-foreground" : "bg-muted/40"
+            "h-1.5 rounded-full flex-1",
+            i < current ? "bg-foreground/70" : "bg-muted/40"
           )}
         />
       ))}
@@ -40,14 +40,10 @@ export default function InvoiceTransactionList({ items, installmentCount = 0 }: 
           <h2 className="text-sm font-bold text-foreground">Lançamentos</h2>
         </div>
         <div className="flex items-center gap-3 text-[10px] text-muted-foreground">
-          <div className="flex items-center gap-1">
-            <Receipt className="w-3 h-3" />
-            <span className="font-semibold">{items.length} total</span>
-          </div>
           {installmentCount > 0 && (
             <div className="flex items-center gap-1">
               <Layers className="w-3 h-3" />
-              <span className="font-semibold">{installmentCount} parcelados</span>
+              <span className="font-semibold">{installmentCount}</span>
             </div>
           )}
         </div>
@@ -59,9 +55,10 @@ export default function InvoiceTransactionList({ items, installmentCount = 0 }: 
           <p className="text-sm text-muted-foreground">Nenhuma compra nessa fatura</p>
         </div>
       ) : (
-        <div className="space-y-2">
+        <div className="space-y-2.5">
           {items.map((item, idx) => {
-            const totalValue = item.total_installments > 1
+            const isInstallment = item.total_installments > 1;
+            const totalValue = isInstallment
               ? Number(item.amount) * item.total_installments
               : null;
 
@@ -73,36 +70,43 @@ export default function InvoiceTransactionList({ items, installmentCount = 0 }: 
                 transition={{ delay: idx * 0.03 }}
                 className="glass-card p-4 border-l-2 border-l-primary/50"
               >
-                <div className="flex items-start gap-3">
-                  <div className="w-9 h-9 rounded-lg bg-muted/40 flex items-center justify-center shrink-0 mt-0.5">
-                    <Layers className="w-4 h-4 text-muted-foreground" />
+                <div className="flex gap-3">
+                  {/* Icon */}
+                  <div className="w-10 h-10 rounded-xl bg-muted/30 flex items-center justify-center shrink-0">
+                    <Layers className="w-4.5 h-4.5 text-muted-foreground" />
                   </div>
+
+                  {/* Content */}
                   <div className="flex-1 min-w-0">
                     <div className="flex items-start justify-between gap-2">
-                      <p className="text-sm font-semibold text-foreground truncate">
+                      <p className="text-sm font-bold text-foreground truncate">
                         {item.transaction_name}
                       </p>
                       <div className="text-right shrink-0">
-                        <p className="text-sm font-bold text-foreground">
+                        <p className="text-sm font-bold text-foreground tabular-nums">
                           {formatCurrency(Number(item.amount))}
                         </p>
                         {totalValue && (
-                          <p className="text-[10px] text-muted-foreground">
+                          <p className="text-[10px] text-muted-foreground tabular-nums">
                             Total: {formatCurrency(totalValue)}
                           </p>
                         )}
                       </div>
                     </div>
+
+                    {/* Installment segmented bar */}
                     <InstallmentBar
                       current={item.installment_number}
                       total={item.total_installments}
                     />
-                    <div className="flex items-center justify-between mt-1.5">
+
+                    {/* Bottom row: category/date left, installment info right */}
+                    <div className="flex items-center justify-between mt-2">
                       <span className="text-[11px] text-muted-foreground">
                         {item.transaction_category}
                       </span>
-                      {item.total_installments > 1 && (
-                        <span className="text-[11px] font-semibold text-primary">
+                      {isInstallment && (
+                        <span className="text-[11px] font-bold text-primary tabular-nums">
                           {item.installment_number} de {item.total_installments} parcelas
                         </span>
                       )}
