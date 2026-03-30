@@ -6,21 +6,10 @@ import {
   ArrowLeft,
   TrendingUp,
   TrendingDown,
-  Sparkles,
-  Wallet,
-  PiggyBank,
   ArrowUpRight,
   ArrowDownRight,
   Minus,
-  Brain,
-  ChevronRight,
   ChevronDown,
-  RotateCcw,
-  Target,
-  Scissors,
-  Settings2,
-  ShieldCheck,
-  Banknote,
   CalendarDays,
   Plus,
   Equal,
@@ -35,7 +24,6 @@ import {
   ResponsiveContainer,
 } from "recharts";
 import { useFinancialProjection } from "@/hooks/useFinancialProjection";
-import { useFormattedCounter } from "@/hooks/useAnimatedCounter";
 
 const MONTH_NAMES = [
   "Jan", "Fev", "Mar", "Abr", "Mai", "Jun",
@@ -189,10 +177,9 @@ const BotFinanceProjecoes = () => {
     loading,
   } = useFinancialProjection();
 
-  const [showGoalInput, setShowGoalInput] = useState(false);
   const [expandedMonth, setExpandedMonth] = useState<number | null>(null);
   const [timelineMode, setTimelineMode] = useState<"mensal" | "acumulado">("acumulado");
-  const formattedSafe = useFormattedCounter(dailyLimit.safeToSpend);
+  const [selectedProjectionIdx, setSelectedProjectionIdx] = useState(0);
 
   // Enriched projections with variation, micro-copy, prev balance
   const projectionsWithVariation = useMemo(() => {
@@ -216,21 +203,18 @@ const BotFinanceProjecoes = () => {
     });
   }, [projections, data.saldoAtual, data.previousMonthEndingBalance]);
 
-  // In "mensal" mode, show only the current month; in "acumulado", show all 6
-  const displayedProjections = useMemo(() => {
-    if (timelineMode === "mensal") return projectionsWithVariation.slice(0, 1);
-    return projectionsWithVariation;
-  }, [projectionsWithVariation, timelineMode]);
-
-  // Chart data
+  // Chart data — always all 6 months
   const chartData = useMemo(() => {
-    return displayedProjections.map((p) => ({
+    return projectionsWithVariation.map((p) => ({
       name: `${MONTH_NAMES[p.month]} ${p.year}`,
       value: timelineMode === "acumulado" ? p.balance : p.delta,
       balance: p.balance,
       delta: p.delta,
     }));
-  }, [displayedProjections, timelineMode]);
+  }, [projectionsWithVariation, timelineMode]);
+
+  // Selected month for the top card
+  const selectedProjection = projectionsWithVariation[selectedProjectionIdx] ?? projectionsWithVariation[0];
 
   // Determine chart gradient color based on trend
   const chartTrend = useMemo(() => {
@@ -341,11 +325,86 @@ const BotFinanceProjecoes = () => {
       <div className="space-y-4 max-w-3xl mx-auto">
 
         {/* ══════════════════════════════════════════ */}
-        {/* 1. GRÁFICO DE EVOLUÇÃO + TIMELINE         */}
+        {/* 1. PROJEÇÃO DO MÊS SELECIONADO            */}
         {/* ══════════════════════════════════════════ */}
         <GlassSection delay={0.05}>
           <div className="flex items-center justify-between">
-            <SectionHeader icon={<CalendarDays className="w-4 h-4 text-foreground" />} title="Timeline de Saldo" />
+            <SectionHeader icon={<CalendarDays className="w-4 h-4 text-foreground" />} title="Projeção do Mês" />
+          </div>
+
+          {/* Month selector pills */}
+          <div className="flex gap-1.5 overflow-x-auto pb-1 -mx-1 px-1 scrollbar-none">
+            {projectionsWithVariation.map((p, i) => (
+              <button
+                key={`pill-${p.month}-${p.year}`}
+                onClick={() => setSelectedProjectionIdx(i)}
+                className={`flex-shrink-0 text-[10px] px-3 py-1.5 rounded-lg font-medium transition-all ${
+                  selectedProjectionIdx === i
+                    ? "bg-foreground text-background shadow-sm"
+                    : "bg-secondary text-muted-foreground hover:text-foreground"
+                }`}
+              >
+                {MONTH_NAMES[p.month]} {p.year}
+              </button>
+            ))}
+          </div>
+
+          {/* Selected month summary */}
+          {selectedProjection && (
+            <motion.div
+              key={`proj-${selectedProjection.month}-${selectedProjection.year}`}
+              initial={{ opacity: 0, y: 6 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ duration: 0.25 }}
+              className="space-y-3"
+            >
+              <div className="text-center py-2">
+                <p className="text-[10px] text-muted-foreground mb-1">
+                  Saldo previsto no final de {MONTH_NAMES[selectedProjection.month]} {selectedProjection.year}
+                </p>
+                <p className={`text-3xl font-bold font-display tabular-nums ${selectedProjection.balance >= 0 ? "text-foreground" : "text-destructive"}`}>
+                  {fmtCurrency(selectedProjection.balance)}
+                </p>
+                {selectedProjectionIdx > 0 && (
+                  <p className={`text-xs tabular-nums mt-1 ${selectedProjection.delta >= 0 ? "text-muted-foreground" : "text-destructive"}`}>
+                    {selectedProjection.delta >= 0 ? "+" : ""}{fmtCurrency(selectedProjection.delta)} no mês
+                  </p>
+                )}
+              </div>
+
+              {/* Composition: saldo anterior + receitas - despesas = saldo final */}
+              <CompositionBlock
+                prev={selectedProjection.prevBalance}
+                income={selectedProjection.income}
+                expense={selectedProjection.expense}
+                final={selectedProjection.balance}
+              />
+
+              {/* Micro-copy */}
+              {selectedProjection.microCopy && (
+                <motion.p
+                  initial={{ opacity: 0 }}
+                  animate={{ opacity: 1 }}
+                  className={`text-[11px] font-medium text-center ${selectedProjection.delta >= 0 ? "text-foreground" : "text-warning"}`}
+                >
+                  {selectedProjection.microCopy}
+                </motion.p>
+              )}
+              {selectedProjection.alert && !selectedProjection.microCopy && (
+                <div className="rounded-lg px-3 py-2 bg-warning/10 border border-warning/20 text-xs text-warning font-medium text-center">
+                  {selectedProjection.alert}
+                </div>
+              )}
+            </motion.div>
+          )}
+        </GlassSection>
+
+        {/* ══════════════════════════════════════════ */}
+        {/* 2. GRÁFICO + TIMELINE                     */}
+        {/* ══════════════════════════════════════════ */}
+        <GlassSection delay={0.12}>
+          <div className="flex items-center justify-between">
+            <SectionHeader icon={<TrendingUp className="w-4 h-4 text-foreground" />} title="Timeline de Saldo" />
             <div className="flex bg-secondary rounded-lg p-0.5 gap-0.5">
               {(["mensal", "acumulado"] as const).map((mode) => (
                 <button
@@ -363,90 +422,57 @@ const BotFinanceProjecoes = () => {
             </div>
           </div>
 
-          {/* Chart / Month Summary */}
-          {timelineMode === "acumulado" ? (
-            /* Line Chart — 6 months */
-            <motion.div
-              initial={{ opacity: 0 }}
-              animate={{ opacity: 1 }}
-              transition={{ delay: 0.15, duration: 0.5 }}
-              className="h-44 sm:h-52 w-full -mx-2"
-            >
-              <ResponsiveContainer width="100%" height="100%">
-                <AreaChart data={chartData} onClick={handleChartClick} margin={{ top: 8, right: 12, left: -12, bottom: 0 }}>
-                  <defs>
-                    <linearGradient id="chartGradient" x1="0" y1="0" x2="0" y2="1">
-                      <stop offset="0%" stopColor={cc.fill} stopOpacity={0.25} />
-                      <stop offset="95%" stopColor={cc.fill} stopOpacity={0} />
-                    </linearGradient>
-                  </defs>
-                  <CartesianGrid strokeDasharray="3 3" stroke="hsl(220 12% 16%)" strokeOpacity={0.4} vertical={false} />
-                  <XAxis
-                    dataKey="name"
-                    tick={{ fill: "hsl(220 8% 50%)", fontSize: 10 }}
-                    tickLine={false}
-                    axisLine={false}
-                    tickFormatter={(v) => v.split(" ")[0]}
-                  />
-                  <YAxis
-                    tick={{ fill: "hsl(220 8% 50%)", fontSize: 9 }}
-                    tickLine={false}
-                    axisLine={false}
-                    tickFormatter={(v: number) => fmtCompact(v)}
-                    width={52}
-                  />
-                  <RechartsTooltip content={<ChartTooltipContent />} cursor={{ stroke: "hsl(220 8% 50%)", strokeWidth: 1, strokeDasharray: "4 4" }} />
-                  <Area
-                    type="monotone"
-                    dataKey="value"
-                    stroke={cc.stroke}
-                    strokeWidth={2.5}
-                    fill="url(#chartGradient)"
-                    activeDot={<GlowDot />}
-                    dot={{ r: 3, fill: cc.stroke, stroke: "hsl(220 20% 5%)", strokeWidth: 2 }}
-                    animationDuration={1200}
-                    animationEasing="ease-out"
-                  />
-                </AreaChart>
-              </ResponsiveContainer>
-            </motion.div>
-          ) : (
-            /* Single month focus — mensal */
-            (() => {
-              const current = displayedProjections[0];
-              if (!current) return null;
-              const balanceColor = current.delta >= 0 ? "text-foreground" : "text-destructive";
-              return (
-                <motion.div
-                  key="mensal-focus"
-                  initial={{ opacity: 0, scale: 0.97 }}
-                  animate={{ opacity: 1, scale: 1 }}
-                  transition={{ duration: 0.3 }}
-                  className="space-y-3"
-                >
-                  <div className="text-center py-3">
-                    <p className="text-[10px] text-muted-foreground mb-1">
-                      Variação do saldo em {MONTH_NAMES[current.month]} {current.year}
-                    </p>
-                    <p className={`text-3xl font-bold font-display tabular-nums ${balanceColor}`}>
-                      {current.delta >= 0 ? "+" : ""}{fmtCurrency(current.delta)}
-                    </p>
-                  </div>
-                  <CompositionBlock
-                    prev={current.prevBalance}
-                    income={current.income}
-                    expense={current.expense}
-                    final={current.balance}
-                  />
-                </motion.div>
-              );
-            })()
-          )}
+          {/* Line Chart — always 6 months */}
+          <motion.div
+            key={`chart-${timelineMode}`}
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            transition={{ delay: 0.1, duration: 0.4 }}
+            className="h-44 sm:h-52 w-full -mx-2"
+          >
+            <ResponsiveContainer width="100%" height="100%">
+              <AreaChart data={chartData} onClick={handleChartClick} margin={{ top: 8, right: 12, left: -12, bottom: 0 }}>
+                <defs>
+                  <linearGradient id="chartGradient" x1="0" y1="0" x2="0" y2="1">
+                    <stop offset="0%" stopColor={cc.fill} stopOpacity={0.25} />
+                    <stop offset="95%" stopColor={cc.fill} stopOpacity={0} />
+                  </linearGradient>
+                </defs>
+                <CartesianGrid strokeDasharray="3 3" stroke="hsl(220 12% 16%)" strokeOpacity={0.4} vertical={false} />
+                <XAxis
+                  dataKey="name"
+                  tick={{ fill: "hsl(220 8% 50%)", fontSize: 10 }}
+                  tickLine={false}
+                  axisLine={false}
+                  tickFormatter={(v) => v.split(" ")[0]}
+                />
+                <YAxis
+                  tick={{ fill: "hsl(220 8% 50%)", fontSize: 9 }}
+                  tickLine={false}
+                  axisLine={false}
+                  tickFormatter={(v: number) => fmtCompact(v)}
+                  width={52}
+                />
+                <RechartsTooltip content={<ChartTooltipContent />} cursor={{ stroke: "hsl(220 8% 50%)", strokeWidth: 1, strokeDasharray: "4 4" }} />
+                <Area
+                  type="monotone"
+                  dataKey="value"
+                  stroke={cc.stroke}
+                  strokeWidth={2.5}
+                  fill="url(#chartGradient)"
+                  activeDot={<GlowDot />}
+                  dot={{ r: 3, fill: cc.stroke, stroke: "hsl(220 20% 5%)", strokeWidth: 2 }}
+                  animationDuration={1200}
+                  animationEasing="ease-out"
+                />
+              </AreaChart>
+            </ResponsiveContainer>
+          </motion.div>
 
-          {/* Timeline list */}
+          {/* Timeline list — always all 6 months */}
           <div className="relative mt-1">
             <div className="absolute left-[7px] top-2 bottom-2 w-px bg-gradient-to-b from-border/40 via-border/20 to-transparent" />
-            {displayedProjections.map((p, i) => {
+            {projectionsWithVariation.map((p, i) => {
               const rs = riskStyle(p.risk);
               const isExpanded = expandedMonth === i;
               const isCurrent = i === 0;
@@ -454,7 +480,10 @@ const BotFinanceProjecoes = () => {
               return (
                 <div key={`tl-${p.month}-${p.year}`} className="relative">
                   <button
-                    onClick={() => setExpandedMonth(isExpanded ? null : i)}
+                    onClick={() => {
+                      setExpandedMonth(isExpanded ? null : i);
+                      setSelectedProjectionIdx(i);
+                    }}
                     className="w-full flex items-center gap-3 py-2.5 border-b border-border/5 last:border-0 group text-left hover:bg-secondary/20 rounded-lg transition-colors px-1 -mx-1"
                   >
                     <div className="relative z-10 flex-shrink-0 w-4 flex justify-center">
@@ -495,15 +524,12 @@ const BotFinanceProjecoes = () => {
                         className="overflow-hidden"
                       >
                         <div className="ml-7 mb-3 space-y-2">
-                          {/* Composition formula */}
                           <CompositionBlock
                             prev={p.prevBalance}
                             income={p.income}
                             expense={p.expense}
                             final={p.balance}
                           />
-
-                          {/* Detail cards */}
                           <div className="grid grid-cols-2 sm:grid-cols-4 gap-2">
                             <motion.div initial={{ opacity: 0, y: 4 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.05 }} className="bg-secondary/40 rounded-xl p-2.5 text-center">
                               <p className="text-[9px] text-muted-foreground mb-0.5">Receitas prev.</p>
@@ -526,24 +552,15 @@ const BotFinanceProjecoes = () => {
                               </p>
                             </motion.div>
                           </div>
-
-                          {/* Micro-copy */}
                           {p.microCopy && (
-                            <motion.p
-                              initial={{ opacity: 0, x: -6 }}
-                              animate={{ opacity: 1, x: 0 }}
-                              transition={{ delay: 0.25 }}
+                            <motion.p initial={{ opacity: 0, x: -6 }} animate={{ opacity: 1, x: 0 }} transition={{ delay: 0.25 }}
                               className={`text-[11px] font-medium ${p.delta >= 0 ? "text-foreground" : "text-warning"}`}
                             >
                               {p.microCopy}
                             </motion.p>
                           )}
-
-                          {/* Alert */}
                           {p.alert && !p.microCopy && (
-                            <motion.div
-                              initial={{ opacity: 0, scale: 0.95 }}
-                              animate={{ opacity: 1, scale: 1 }}
+                            <motion.div initial={{ opacity: 0, scale: 0.95 }} animate={{ opacity: 1, scale: 1 }}
                               className="rounded-lg px-3 py-2 bg-warning/10 border border-warning/20 text-xs text-warning font-medium"
                             >
                               {p.alert}
