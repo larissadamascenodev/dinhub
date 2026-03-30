@@ -131,6 +131,8 @@ const BotFinanceProjecoes = () => {
       const variation = prev ? p.balance - prev.balance : 0;
       const variationPct = prev && prev.balance !== 0 ? ((p.balance - prev.balance) / Math.abs(prev.balance)) * 100 : 0;
 
+      const microCopy = getMonthMicroCopy({ ...p, variation }, i, data.saldoAtual);
+
       // Alert conditions
       let alert: string | null = null;
       if (i > 0 && p.balance < prev!.balance && p.balance < data.saldoAtual * 0.5) {
@@ -141,7 +143,7 @@ const BotFinanceProjecoes = () => {
         alert = "⚠️ Queda significativa de saldo";
       }
 
-      return { ...p, variation, variationPct, alert };
+      return { ...p, variation, variationPct, alert, microCopy };
     });
   }, [projections, data.saldoAtual]);
 
