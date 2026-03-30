@@ -292,6 +292,14 @@ const Transacoes = () => {
       if (!groups[tx.date]) groups[tx.date] = [];
       groups[tx.date].push(tx);
     });
+    // Sort pendentes first within each day
+    for (const date in groups) {
+      groups[date].sort((a, b) => {
+        if (a.status === "pendente" && b.status !== "pendente") return -1;
+        if (a.status !== "pendente" && b.status === "pendente") return 1;
+        return 0;
+      });
+    }
     return Object.entries(groups).sort(([a], [b]) => b.localeCompare(a));
   }, [filtered]);
 
