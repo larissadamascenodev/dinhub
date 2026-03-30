@@ -36,6 +36,7 @@ const ACCOUNT_TYPE_LABELS: Record<string, { label: string; icon: typeof Landmark
   cash: { label: "Dinheiro", icon: Banknote },
   checking: { label: "Conta corrente", icon: Landmark },
   savings: { label: "Poupança", icon: PiggyBank },
+  investment: { label: "Investimento", icon: Briefcase },
 };
 
 const COLOR_OPTIONS = [
