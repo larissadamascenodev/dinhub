@@ -448,7 +448,108 @@ const GestaoFinanceira = () => {
         )}
       </section>
 
-      {/* ═══════ MODAL: Nova Conta ═══════ */}
+      {/* ═══════ Carteira de Investimentos ═══════ */}
+      <section>
+        <div className="flex items-center justify-between mb-4">
+          <h2 className="text-base font-bold text-foreground flex items-center gap-2">
+            <Briefcase className="w-4 h-4 text-primary" />
+            Investimentos
+          </h2>
+          <button
+            onClick={() => {
+              setNewAccType("investment" as any);
+              setShowAddAccount(true);
+            }}
+            className="w-7 h-7 rounded-lg bg-primary/10 flex items-center justify-center hover:bg-primary/20 transition-colors"
+          >
+            <Plus className="w-4 h-4 text-primary" />
+          </button>
+        </div>
+
+        {(() => {
+          const investmentAccounts = accounts.filter((a) => a.type === "investment");
+          const totalInvested = investmentAccounts.reduce((s, a) => s + Number(a.current_balance), 0);
+
+          if (loading) {
+            return (
+              <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-3">
+                <div className="h-44 rounded-2xl bg-card animate-pulse" />
+              </div>
+            );
+          }
+
+          if (investmentAccounts.length === 0) {
+            return (
+              <div className="rounded-2xl bg-card/60 backdrop-blur-sm border border-border/20 p-8 text-center">
+                <Briefcase className="w-10 h-10 text-muted-foreground mx-auto mb-3" />
+                <p className="text-sm text-muted-foreground mb-1">Nenhuma carteira de investimento</p>
+                <p className="text-xs text-muted-foreground/60 mb-4">Crie uma carteira para organizar seus investimentos</p>
+                <Button
+                  onClick={() => {
+                    setNewAccType("investment" as any);
+                    setShowAddAccount(true);
+                  }}
+                  size="sm"
+                  className="rounded-xl bg-primary/15 text-primary hover:bg-primary/25 border-0"
+                >
+                  <Plus className="w-4 h-4 mr-1" /> Criar Carteira
+                </Button>
+              </div>
+            );
+          }
+
+          return (
+            <div className="space-y-3">
+              {/* Total invested summary */}
+              <div className="rounded-2xl bg-amber-500/[0.06] border border-amber-500/15 p-4 flex items-center justify-between">
+                <div>
+                  <p className="text-[10px] text-muted-foreground uppercase tracking-wide">Total investido</p>
+                  <p className="text-lg font-bold text-foreground">{formatCurrency(totalInvested)}</p>
+                </div>
+                <div className="w-10 h-10 rounded-xl bg-amber-500/15 flex items-center justify-center">
+                  <TrendingUp className="w-5 h-5 text-amber-400" />
+                </div>
+              </div>
+
+              <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-3">
+                {investmentAccounts.map((acc, idx) => {
+                  const gradient = getGradient(acc.color);
+                  const balance = Number(acc.current_balance);
+
+                  return (
+                    <motion.div
+                      key={acc.id}
+                      initial={{ opacity: 0, y: 16 }}
+                      animate={{ opacity: 1, y: 0 }}
+                      transition={{ delay: idx * 0.05 }}
+                      onClick={() => navigate(`/conta/${acc.id}`)}
+                      className={cn(
+                        "relative rounded-2xl p-4 overflow-hidden bg-gradient-to-br cursor-pointer group",
+                        "border border-white/[0.06] hover:border-white/[0.12] transition-all duration-300 active:scale-[0.98]",
+                        gradient
+                      )}
+                    >
+                      <div className="absolute -right-6 -top-6 w-20 h-20 rounded-full bg-white/[0.04]" />
+                      <div className="relative z-10 flex flex-col h-full min-h-[120px]">
+                        <div className="flex items-center gap-2.5">
+                          <div className="w-9 h-9 rounded-xl bg-white/10 flex items-center justify-center backdrop-blur-sm">
+                            <Briefcase className="w-4 h-4 text-white/80" />
+                          </div>
+                          <p className="text-sm font-bold text-white truncate">{acc.name}</p>
+                        </div>
+                        <div className="mt-auto pt-3">
+                          <p className="text-[10px] text-white/40 font-medium uppercase tracking-wide mb-0.5">Saldo</p>
+                          <p className="text-lg font-bold text-white">{formatCurrency(balance)}</p>
+                        </div>
+                      </div>
+                    </motion.div>
+                  );
+                })}
+              </div>
+            </div>
+          );
+        })()}
+      </section>
       <ModalOverlay open={showAddAccount} onClose={resetAddAccount}>
         <div className="space-y-4">
           <div className="flex items-center justify-between">
