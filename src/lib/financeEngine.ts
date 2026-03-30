@@ -95,10 +95,11 @@ async function fetchMonthEvents(month: number, year: number) {
 }
 
 async function fetchTotalAccountBalance(): Promise<number> {
-  // Sum initial balances from all accounts
+  // Sum initial balances from non-investment accounts only (investments are patrimônio, not saldo disponível)
   const { data: accounts } = await supabase
     .from("accounts")
-    .select("initial_balance");
+    .select("initial_balance, type")
+    .neq("type", "investment");
 
   const initialBalance = (accounts ?? []).reduce(
     (sum, acc) => sum + Number(acc.initial_balance), 0
