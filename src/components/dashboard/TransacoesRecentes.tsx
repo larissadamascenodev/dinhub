@@ -123,9 +123,9 @@ const TxCard = ({ tx, onDelete }: { tx: Transaction; onDelete?: (id: string) => 
 };
 
 // Stack card spacing & scale
-const STACK_OFFSET = 10;
-const STACK_SCALE_STEP = 0.03;
-const STACK_COUNT = 4;
+const STACK_OFFSET = 12;
+const STACK_SCALE_STEP = 0.025;
+const STACK_COUNT = 3;
 
 const TransacoesRecentes = memo(({ transactions, onDelete }: Props) => {
   const [expanded, setExpanded] = useState(false);
