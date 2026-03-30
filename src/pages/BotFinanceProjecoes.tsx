@@ -350,11 +350,11 @@ const BotFinanceProjecoes = () => {
               transition={{ duration: 0.25 }}
               className="space-y-3"
             >
-              <div className="text-center py-2">
-                <p className="text-[10px] text-muted-foreground mb-1">
+              <div className="text-center py-3 sm:py-5">
+                <p className="text-xs sm:text-sm text-muted-foreground mb-1.5">
                   Saldo previsto — {MONTH_FULL[selectedProjection.month]} {selectedProjection.year}
                 </p>
-                <p className={`text-3xl font-bold font-display tabular-nums ${selectedProjection.balance >= 0 ? "text-foreground" : "text-destructive"}`}>
+                <p className={`text-4xl sm:text-5xl font-bold font-display tabular-nums ${selectedProjection.balance >= 0 ? "text-foreground" : "text-destructive"}`}>
                   {fmtCurrency(selectedProjection.balance)}
                 </p>
                 {selectedProjectionIdx > 0 && (
