@@ -5,6 +5,7 @@ import { formatCurrency, type EnrichedItem } from "@/pages/FaturaCartao";
 
 interface Props {
   items: EnrichedItem[];
+  installmentCount?: number;
 }
 
 function InstallmentBar({ current, total }: { current: number; total: number }) {
@@ -24,7 +25,7 @@ function InstallmentBar({ current, total }: { current: number; total: number }) 
   );
 }
 
-export default function InvoiceTransactionList({ items }: Props) {
+export default function InvoiceTransactionList({ items, installmentCount = 0 }: Props) {
   return (
     <motion.div
       initial={{ opacity: 0, y: 12 }}
@@ -38,9 +39,17 @@ export default function InvoiceTransactionList({ items }: Props) {
           <div className="w-1 h-4 rounded-full bg-primary" />
           <h2 className="text-sm font-bold text-foreground">Lançamentos</h2>
         </div>
-        <div className="flex items-center gap-1.5 text-muted-foreground">
-          <Receipt className="w-3.5 h-3.5" />
-          <span className="text-xs font-semibold">{items.length}</span>
+        <div className="flex items-center gap-3 text-[10px] text-muted-foreground">
+          <div className="flex items-center gap-1">
+            <Receipt className="w-3 h-3" />
+            <span className="font-semibold">{items.length} total</span>
+          </div>
+          {installmentCount > 0 && (
+            <div className="flex items-center gap-1">
+              <Layers className="w-3 h-3" />
+              <span className="font-semibold">{installmentCount} parcelados</span>
+            </div>
+          )}
         </div>
       </div>
 

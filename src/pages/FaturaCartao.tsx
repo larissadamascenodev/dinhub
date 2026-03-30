@@ -2,7 +2,7 @@ import { useState, useEffect, useMemo } from "react";
 import { motion } from "framer-motion";
 import {
   ArrowLeft, Plus, MoreVertical,
-  CalendarClock, CalendarCheck, Wallet, Shield, TrendingDown,
+  CalendarClock, CalendarCheck, Wallet, Shield,
 } from "lucide-react";
 import { useNavigate, useParams, useSearchParams } from "react-router-dom";
 import { Button } from "@/components/ui/button";
@@ -379,51 +379,16 @@ const FaturaCartao = () => {
         onSelect={(m, y) => { setSelectedMonth(m); setSelectedYear(y); }}
       />
 
-      {/* ===== SUMMARY STATS ===== */}
-      <motion.div
-        initial={{ opacity: 0, y: 12 }}
-        animate={{ opacity: 1, y: 0 }}
-        transition={{ delay: 0.15 }}
-        className="glass-card p-5 space-y-3"
-      >
-        <div className="flex items-center gap-2 mb-1">
-          <TrendingDown className="w-4 h-4 text-primary/70" />
-          <h2 className="text-sm font-bold text-foreground">Resumo da Fatura</h2>
-        </div>
-        <div className="grid grid-cols-3 gap-3">
-          <div className="bg-muted/20 rounded-xl p-3 text-center">
-            <p className="text-[10px] text-muted-foreground mb-0.5">Total de lançamentos</p>
-            <p className="text-sm font-bold text-foreground">{items.length}</p>
-          </div>
-          <div className="bg-muted/20 rounded-xl p-3 text-center">
-            <p className="text-[10px] text-muted-foreground mb-0.5">Parcelamentos ativos</p>
-            <p className="text-sm font-bold text-foreground">
-              {items.filter((i) => i.total_installments > 1).length}
-            </p>
-          </div>
-          <div className="bg-muted/20 rounded-xl p-3 text-center">
-            <p className="text-[10px] text-muted-foreground mb-0.5">Valor médio</p>
-            <p className="text-sm font-bold text-primary">
-              {items.length > 0 ? formatCurrency(total / items.length) : "—"}
-            </p>
-          </div>
-        </div>
-      </motion.div>
+      {/* ===== CATEGORIES — right after chart ===== */}
+      {categoryBreakdown.length > 0 && (
+        <InvoiceCategoryBreakdown categories={categoryBreakdown} total={total} />
+      )}
 
-      {/* ===== 2-COLUMN: Categories + Transactions ===== */}
-      <div className="grid grid-cols-1 lg:grid-cols-12 gap-4">
-        {/* Categories */}
-        <div className="lg:col-span-5 xl:col-span-4">
-          {categoryBreakdown.length > 0 && (
-            <InvoiceCategoryBreakdown categories={categoryBreakdown} total={total} />
-          )}
-        </div>
-
-        {/* Transactions */}
-        <div className="lg:col-span-7 xl:col-span-8">
-          <InvoiceTransactionList items={items} />
-        </div>
-      </div>
+      {/* ===== TRANSACTIONS ===== */}
+      <InvoiceTransactionList
+        items={items}
+        installmentCount={items.filter((i) => i.total_installments > 1).length}
+      />
 
       {/* Mobile fixed pay button */}
       {currentInvoice && !currentInvoice.is_paid && total > 0 && (
