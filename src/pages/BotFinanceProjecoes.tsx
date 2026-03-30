@@ -13,6 +13,7 @@ import {
   Plus,
   Equal,
   ChevronDown,
+  History,
 } from "lucide-react";
 import {
   AreaChart,
