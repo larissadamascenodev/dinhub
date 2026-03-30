@@ -81,6 +81,8 @@ export function useFinancialProjection() {
     setSavingsBoost,
     incomeBoost,
     setIncomeBoost,
+    savingsGoal,
+    setSavingsGoal,
     resetSimulation,
 
     // Actions
