@@ -796,7 +796,6 @@ const Transacoes = () => {
         )}
       </AnimatePresence>
     </div>
-    </div>
   );
 };
 
