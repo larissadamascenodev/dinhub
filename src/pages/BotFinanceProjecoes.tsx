@@ -95,9 +95,37 @@ const BotFinanceProjecoes = () => {
   } = useFinancialProjection();
 
   const [expandedMonth, setExpandedMonth] = useState<number | null>(null);
+  const [timelineMode, setTimelineMode] = useState<"mensal" | "acumulado">("acumulado");
   const formattedSafe = useFormattedCounter(dailyLimit.safeToSpend);
 
-  // Tone-based classes for daily limit
+  // Compute variation vs previous month for each projection
+  const projectionsWithVariation = useMemo(() => {
+    return projections.map((p, i) => {
+      const prev = i > 0 ? projections[i - 1] : null;
+      const variation = prev ? p.balance - prev.balance : 0;
+      const variationPct = prev && prev.balance !== 0 ? ((p.balance - prev.balance) / Math.abs(prev.balance)) * 100 : 0;
+
+      // Alert conditions
+      let alert: string | null = null;
+      if (i > 0 && p.balance < prev!.balance && p.balance < data.saldoAtual * 0.5) {
+        alert = "⚠️ Aqui começa a apertar um pouco";
+      } else if (p.balance < 0) {
+        alert = "🚨 Saldo negativo previsto";
+      } else if (i > 0 && variation < -500) {
+        alert = "⚠️ Queda significativa de saldo";
+      }
+
+      return { ...p, variation, variationPct, alert };
+    });
+  }, [projections, data.saldoAtual]);
+
+  // Values for bar chart depend on mode
+  const barValues = useMemo(() => {
+    return projectionsWithVariation.map((p) =>
+      timelineMode === "acumulado" ? p.balance : p.delta
+    );
+  }, [projectionsWithVariation, timelineMode]);
+
   const toneMap = {
     positive: { bar: "bg-accent", text: "text-foreground", badge: "bg-secondary text-foreground" },
     neutral: { bar: "bg-warning", text: "text-warning", badge: "bg-warning/10 text-warning" },
@@ -134,14 +162,33 @@ const BotFinanceProjecoes = () => {
 
         {/* ── 1. TIMELINE DE PROJEÇÃO ── */}
         <GlassSection delay={0.05}>
-          <SectionHeader icon={<CalendarDays className="w-4 h-4 text-foreground" />} title="Timeline de Saldo" />
+          <div className="flex items-center justify-between">
+            <SectionHeader icon={<CalendarDays className="w-4 h-4 text-foreground" />} title="Timeline de Saldo" />
+            {/* Mode toggle */}
+            <div className="flex bg-secondary rounded-lg p-0.5 gap-0.5">
+              {(["mensal", "acumulado"] as const).map((mode) => (
+                <button
+                  key={mode}
+                  onClick={() => setTimelineMode(mode)}
+                  className={`text-[10px] px-2.5 py-1 rounded-md font-medium transition-all ${
+                    timelineMode === mode
+                      ? "bg-background text-foreground shadow-sm"
+                      : "text-muted-foreground hover:text-foreground"
+                  }`}
+                >
+                  {mode === "mensal" ? "Mensal" : "Acumulado"}
+                </button>
+              ))}
+            </div>
+          </div>
 
           {/* Mini bar chart overview */}
-          <div className="flex items-end gap-1.5 h-16 px-1">
-            {projections.map((p, i) => {
-              const maxBal = Math.max(...projections.map((x) => Math.abs(x.balance)), 1);
-              const h = Math.max((Math.abs(p.balance) / maxBal) * 100, 8);
-              const isNeg = p.balance < 0;
+          <div className="flex items-end gap-1.5 h-20 px-1">
+            {projectionsWithVariation.map((p, i) => {
+              const maxVal = Math.max(...barValues.map(Math.abs), 1);
+              const val = barValues[i];
+              const h = Math.max((Math.abs(val) / maxVal) * 100, 6);
+              const isNeg = val < 0;
               return (
                 <button
                   key={`bar-${p.month}-${p.year}`}
@@ -149,15 +196,18 @@ const BotFinanceProjecoes = () => {
                   className="flex-1 flex flex-col items-center gap-1 group"
                 >
                   <motion.div
+                    key={`${timelineMode}-${i}`}
                     initial={{ height: 0 }}
                     animate={{ height: `${h}%` }}
-                    transition={{ duration: 0.5, delay: 0.1 + i * 0.06 }}
+                    transition={{ duration: 0.5, delay: 0.08 + i * 0.05 }}
                     className={`w-full rounded-t-md transition-colors ${
                       expandedMonth === i
                         ? "bg-foreground"
                         : isNeg
                           ? "bg-destructive/40"
-                          : "bg-muted-foreground/20 group-hover:bg-muted-foreground/35"
+                          : p.alert
+                            ? "bg-warning/40"
+                            : "bg-muted-foreground/20 group-hover:bg-muted-foreground/35"
                     }`}
                   />
                   <span className={`text-[9px] tabular-nums ${expandedMonth === i ? "text-foreground font-semibold" : "text-muted-foreground"}`}>
@@ -171,10 +221,11 @@ const BotFinanceProjecoes = () => {
           {/* Timeline list */}
           <div className="relative mt-1">
             <div className="absolute left-[7px] top-2 bottom-2 w-px bg-gradient-to-b from-border/40 via-border/20 to-transparent" />
-            {projections.map((p, i) => {
+            {projectionsWithVariation.map((p, i) => {
               const rs = riskStyle(p.risk);
               const isExpanded = expandedMonth === i;
               const isCurrent = i === 0;
+              const displayValue = timelineMode === "acumulado" ? p.balance : p.delta;
               return (
                 <div key={`tl-${p.month}-${p.year}`} className="relative">
                   <button
@@ -191,18 +242,25 @@ const BotFinanceProjecoes = () => {
                       <span className="text-[9px] text-muted-foreground/50 ml-1">{p.year}</span>
                     </div>
                     <div className="flex-1 text-right">
-                      <p className={`text-sm font-bold tabular-nums ${rs.text}`}>{fmtCurrency(p.balance)}</p>
+                      <p className={`text-sm font-bold tabular-nums ${
+                        timelineMode === "acumulado" ? rs.text : deltaColor(displayValue)
+                      }`}>
+                        {timelineMode === "mensal" && displayValue >= 0 ? "+" : ""}{fmtCurrency(displayValue)}
+                      </p>
                     </div>
-                    <div className="flex items-center gap-1 w-20 justify-end flex-shrink-0">
-                      <span className={`text-[10px] font-medium tabular-nums ${deltaColor(p.delta)}`}>
-                        {p.delta >= 0 ? "+" : ""}{fmtCurrency(p.delta)}
-                      </span>
-                      <TrendIcon delta={p.delta} />
-                    </div>
+                    {/* Variation badge */}
+                    {i > 0 && (
+                      <div className="flex items-center gap-0.5 flex-shrink-0">
+                        <span className={`text-[9px] font-medium tabular-nums ${p.variation >= 0 ? "text-muted-foreground" : "text-destructive"}`}>
+                          {p.variation >= 0 ? "+" : ""}{p.variationPct.toFixed(0)}%
+                        </span>
+                        <TrendIcon delta={p.variation} />
+                      </div>
+                    )}
                     <ChevronDown className={`w-3 h-3 text-muted-foreground/30 transition-transform ${isExpanded ? "rotate-180" : ""}`} />
                   </button>
 
-                  {/* ── 2. DRILLDOWN ── */}
+                  {/* Drilldown */}
                   <AnimatePresence>
                     {isExpanded && (
                       <motion.div
@@ -212,21 +270,42 @@ const BotFinanceProjecoes = () => {
                         transition={{ duration: 0.25 }}
                         className="overflow-hidden"
                       >
-                        <div className="ml-7 mb-2 grid grid-cols-3 gap-2">
-                          <div className="bg-secondary/40 rounded-xl p-2.5 text-center">
-                            <p className="text-[9px] text-muted-foreground mb-0.5">Receitas</p>
-                            <p className="text-xs font-bold tabular-nums text-foreground">{fmtCurrency(p.income)}</p>
+                        <div className="ml-7 mb-2 space-y-2">
+                          <div className="grid grid-cols-2 sm:grid-cols-4 gap-2">
+                            <div className="bg-secondary/40 rounded-xl p-2.5 text-center">
+                              <p className="text-[9px] text-muted-foreground mb-0.5">Receitas prev.</p>
+                              <p className="text-xs font-bold tabular-nums text-foreground">{fmtCurrency(p.income)}</p>
+                            </div>
+                            <div className="bg-secondary/40 rounded-xl p-2.5 text-center">
+                              <p className="text-[9px] text-muted-foreground mb-0.5">Despesas prev.</p>
+                              <p className="text-xs font-bold tabular-nums text-destructive">{fmtCurrency(p.expense)}</p>
+                            </div>
+                            <div className="bg-secondary/40 rounded-xl p-2.5 text-center">
+                              <p className="text-[9px] text-muted-foreground mb-0.5">Saldo final</p>
+                              <p className={`text-xs font-bold tabular-nums ${p.balance >= 0 ? "text-foreground" : "text-destructive"}`}>
+                                {fmtCurrency(p.balance)}
+                              </p>
+                            </div>
+                            {i > 0 && (
+                              <div className="bg-secondary/40 rounded-xl p-2.5 text-center">
+                                <p className="text-[9px] text-muted-foreground mb-0.5">vs mês anterior</p>
+                                <p className={`text-xs font-bold tabular-nums ${p.variation >= 0 ? "text-foreground" : "text-destructive"}`}>
+                                  {p.variation >= 0 ? "+" : ""}{fmtCurrency(p.variation)}
+                                </p>
+                              </div>
+                            )}
                           </div>
-                          <div className="bg-secondary/40 rounded-xl p-2.5 text-center">
-                            <p className="text-[9px] text-muted-foreground mb-0.5">Despesas</p>
-                            <p className="text-xs font-bold tabular-nums text-destructive">{fmtCurrency(p.expense)}</p>
-                          </div>
-                          <div className="bg-secondary/40 rounded-xl p-2.5 text-center">
-                            <p className="text-[9px] text-muted-foreground mb-0.5">Balanço</p>
-                            <p className={`text-xs font-bold tabular-nums ${p.delta >= 0 ? "text-foreground" : "text-destructive"}`}>
-                              {p.delta >= 0 ? "+" : ""}{fmtCurrency(p.delta)}
-                            </p>
-                          </div>
+
+                          {/* Contextual alert */}
+                          {p.alert && (
+                            <motion.div
+                              initial={{ opacity: 0, scale: 0.95 }}
+                              animate={{ opacity: 1, scale: 1 }}
+                              className="rounded-lg px-3 py-2 bg-warning/10 border border-warning/20 text-xs text-warning font-medium"
+                            >
+                              {p.alert}
+                            </motion.div>
+                          )}
                         </div>
                       </motion.div>
                     )}
