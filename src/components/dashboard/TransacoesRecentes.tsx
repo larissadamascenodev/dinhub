@@ -24,6 +24,7 @@ const formatDate = () => {
 const TxCard = ({ tx, onDelete }: { tx: Transaction; onDelete?: (id: string) => void }) => {
   const isReceita = tx.type === "receita";
   const Icon = isReceita ? ArrowUpRight : ArrowDownRight;
+  const isPaid = tx.status === "pago";
 
   const handleDelete = async (e: React.MouseEvent) => {
     e.stopPropagation();
@@ -49,9 +50,14 @@ const TxCard = ({ tx, onDelete }: { tx: Transaction; onDelete?: (id: string) => 
         <p className="text-[9px] md:text-[10px] text-muted-foreground/40 mt-px">{tx.category} · {tx.date}</p>
       </div>
       <div className="text-right shrink-0 flex items-center gap-2">
-        <p className="text-xs md:text-[13px] font-bold tabular-nums" style={{ color: isReceita ? "hsl(150 100% 45%)" : "hsl(0 60% 50%)" }}>
-          {isReceita ? "+" : "−"}{fmt(tx.amount)}
-        </p>
+        <div className="text-right">
+          <p className="text-xs md:text-[13px] font-bold tabular-nums" style={{ color: isReceita ? "hsl(150 100% 45%)" : "hsl(0 60% 50%)" }}>
+            {isReceita ? "+" : "−"}{fmt(tx.amount)}
+          </p>
+          <span className={`block mt-0.5 text-[8px] md:text-[9px] font-bold uppercase tracking-wide ${isPaid ? "text-primary" : "text-destructive"}`}>
+            {isPaid ? "Pago" : "A pagar"}
+          </span>
+        </div>
         <button
           onClick={handleDelete}
           className="opacity-0 group-hover:opacity-100 transition-opacity text-muted-foreground/40 hover:text-destructive"
