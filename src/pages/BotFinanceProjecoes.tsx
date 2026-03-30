@@ -1,4 +1,4 @@
-import { useState, useMemo, useCallback } from "react";
+import { useState, useMemo, useCallback, memo } from "react";
 import type { MonthProjection } from "@/services/projection";
 import { useNavigate } from "react-router-dom";
 import { motion, AnimatePresence } from "framer-motion";
@@ -30,13 +30,13 @@ const MONTH_NAMES = [
   "Jul", "Ago", "Set", "Out", "Nov", "Dez",
 ];
 
+const MONTH_FULL = [
+  "Janeiro", "Fevereiro", "Março", "Abril", "Maio", "Junho",
+  "Julho", "Agosto", "Setembro", "Outubro", "Novembro", "Dezembro",
+];
+
 const fmtCurrency = (v: number) =>
   v.toLocaleString("pt-BR", { style: "currency", currency: "BRL" });
-
-const fmtCompact = (v: number) => {
-  if (Math.abs(v) >= 1000) return `R$ ${(v / 1000).toFixed(1)}k`;
-  return fmtCurrency(v);
-};
 
 // ─── Shared UI ───
 
@@ -83,17 +83,6 @@ const riskStyle = (risk: string) => {
   return { dot: "bg-destructive", text: "text-destructive", glow: "group-hover:shadow-[0_0_8px_hsl(var(--destructive)/0.4)]" };
 };
 
-const getMonthMicroCopy = (p: { delta: number; balance: number; variation: number; risk: string; month: number }, i: number, saldoAtual: number): string | null => {
-  if (i === 0) return null;
-  const seed = p.month;
-  if (p.balance < 0) return ["🚨 Aqui complica de vez", "🚨 Saldo negativo — hora de reagir"][seed % 2];
-  if (p.variation < -500) return ["Aqui começou a pesar um pouco 😬", "Essa queda merece atenção 👀", "Opa, caiu bastante aqui"][seed % 3];
-  if (p.delta < 0 && p.balance < saldoAtual * 0.5) return ["⚠️ Aqui começa a apertar um pouco", "Cuidado, tá afinando 👀"][seed % 2];
-  if (p.delta > 0 && p.risk === "positivo" && p.variation > 200) return ["Tá indo bem demais 🔥", "Mês forte esse 💪", "Segue o jogo, campeão 😎"][seed % 3];
-  if (p.delta > 0) return ["No caminho certo ✨", "Firme e forte"][seed % 2];
-  return null;
-};
-
 const deltaColor = (d: number) => (d >= 0 ? "text-foreground" : "text-destructive");
 
 // ─── Custom Chart Tooltip ───
@@ -124,6 +113,73 @@ const GlowDot = (props: any) => {
   );
 };
 
+// ─── Month Selector (dashboard style) ───
+
+const ProjectionMonthSelector = memo(({ 
+  projections, 
+  selectedIdx, 
+  onSelect 
+}: { 
+  projections: { month: number; year: number }[]; 
+  selectedIdx: number; 
+  onSelect: (idx: number) => void;
+}) => {
+  const now = new Date();
+  const currentMonth = now.getMonth();
+  const currentYear = now.getFullYear();
+
+  return (
+    <div className="flex items-center bg-card/60 backdrop-blur-xl border border-border/15 rounded-2xl px-1.5 py-0.5 shadow-lg shadow-black/10">
+      <div className="flex items-center gap-0.5">
+        {projections.map((p, i) => {
+          const isActive = i === selectedIdx;
+          const isCurrent = p.month === currentMonth && p.year === currentYear;
+
+          return (
+            <motion.button
+              key={`${p.year}-${p.month}`}
+              layout
+              whileTap={{ scale: 0.9 }}
+              whileHover={{ scale: isActive ? 1 : 1.05 }}
+              onClick={() => onSelect(i)}
+              className={`relative px-2.5 py-1 rounded-xl text-[11px] font-semibold whitespace-nowrap transition-colors duration-200 ${
+                isActive
+                  ? "text-primary"
+                  : isCurrent
+                  ? "text-primary/70"
+                  : "text-muted-foreground/50 hover:text-foreground/80"
+              }`}
+            >
+              {isActive && (
+                <motion.div
+                  layoutId="proj-month-active-bg"
+                  className="absolute inset-0 rounded-xl bg-primary/15 border border-primary/20 shadow-[0_0_10px_-3px_hsl(var(--primary)/0.25)]"
+                  transition={{ type: "spring", stiffness: 400, damping: 28 }}
+                  style={{ zIndex: 0 }}
+                />
+              )}
+              <span className="relative z-10">
+                {MONTH_NAMES[p.month]}
+                {p.year !== currentYear && (
+                  <span className="text-[8px] ml-0.5 opacity-60">{String(p.year).slice(2)}</span>
+                )}
+              </span>
+              {isCurrent && !isActive && (
+                <motion.span
+                  initial={{ scale: 0 }}
+                  animate={{ scale: 1 }}
+                  className="absolute -bottom-0.5 left-1/2 -translate-x-1/2 w-1 h-1 rounded-full bg-primary shadow-[0_0_4px_hsl(var(--primary)/0.5)]"
+                />
+              )}
+            </motion.button>
+          );
+        })}
+      </div>
+    </div>
+  );
+});
+ProjectionMonthSelector.displayName = "ProjectionMonthSelector";
+
 // ─── Composition Block ───
 
 const CompositionBlock = ({ prev, income, expense, final: finalVal }: { prev: number; income: number; expense: number; final: number }) => (
@@ -135,22 +191,22 @@ const CompositionBlock = ({ prev, income, expense, final: finalVal }: { prev: nu
   >
     <div className="bg-secondary/50 rounded-lg px-2.5 py-1.5 text-center min-w-[70px]">
       <p className="text-[8px] text-muted-foreground">Saldo anterior</p>
-      <p className="text-[11px] font-bold tabular-nums text-foreground">{fmtCompact(prev)}</p>
+      <p className="text-[11px] font-bold tabular-nums text-foreground">{fmtCurrency(prev)}</p>
     </div>
     <Plus className="w-3 h-3 text-muted-foreground/50 flex-shrink-0" />
     <div className="bg-secondary/50 rounded-lg px-2.5 py-1.5 text-center min-w-[70px]">
       <p className="text-[8px] text-muted-foreground">Receitas</p>
-      <p className="text-[11px] font-bold tabular-nums text-foreground">{fmtCompact(income)}</p>
+      <p className="text-[11px] font-bold tabular-nums text-foreground">{fmtCurrency(income)}</p>
     </div>
     <Minus className="w-3 h-3 text-muted-foreground/50 flex-shrink-0" />
     <div className="bg-secondary/50 rounded-lg px-2.5 py-1.5 text-center min-w-[70px]">
       <p className="text-[8px] text-muted-foreground">Despesas</p>
-      <p className="text-[11px] font-bold tabular-nums text-destructive">{fmtCompact(expense)}</p>
+      <p className="text-[11px] font-bold tabular-nums text-destructive">{fmtCurrency(expense)}</p>
     </div>
     <Equal className="w-3 h-3 text-muted-foreground/50 flex-shrink-0" />
     <div className={`rounded-lg px-2.5 py-1.5 text-center min-w-[70px] ${finalVal >= 0 ? "bg-accent/10" : "bg-destructive/10"}`}>
       <p className="text-[8px] text-muted-foreground">Saldo final</p>
-      <p className={`text-[11px] font-bold tabular-nums ${finalVal >= 0 ? "text-foreground" : "text-destructive"}`}>{fmtCompact(finalVal)}</p>
+      <p className={`text-[11px] font-bold tabular-nums ${finalVal >= 0 ? "text-foreground" : "text-destructive"}`}>{fmtCurrency(finalVal)}</p>
     </div>
   </motion.div>
 );
@@ -165,14 +221,6 @@ const BotFinanceProjecoes = () => {
     projections,
     dailyLimit,
     simulation,
-    insight,
-    savingsBoost,
-    setSavingsBoost,
-    incomeBoost,
-    setIncomeBoost,
-    savingsGoal,
-    setSavingsGoal,
-    resetSimulation,
     data,
     loading,
   } = useFinancialProjection();
@@ -181,29 +229,16 @@ const BotFinanceProjecoes = () => {
   const [timelineMode, setTimelineMode] = useState<"mensal" | "acumulado">("acumulado");
   const [selectedProjectionIdx, setSelectedProjectionIdx] = useState(0);
 
-  // Enriched projections with variation, micro-copy, prev balance
   const projectionsWithVariation = useMemo(() => {
     return projections.map((p, i) => {
       const prev = i > 0 ? projections[i - 1] : null;
       const variation = prev ? p.balance - prev.balance : 0;
       const variationPct = prev && prev.balance !== 0 ? ((p.balance - prev.balance) / Math.abs(prev.balance)) * 100 : 0;
-      const microCopy = getMonthMicroCopy({ ...p, variation }, i, data.saldoAtual);
       const prevBalance = prev ? prev.balance : data.previousMonthEndingBalance;
-
-      let alert: string | null = null;
-      if (i > 0 && p.balance < prev!.balance && p.balance < data.saldoAtual * 0.5) {
-        alert = "⚠️ Aqui começa a apertar um pouco";
-      } else if (p.balance < 0) {
-        alert = "🚨 Saldo negativo previsto";
-      } else if (i > 0 && variation < -500) {
-        alert = "⚠️ Queda significativa de saldo";
-      }
-
-      return { ...p, variation, variationPct, alert, microCopy, prevBalance };
+      return { ...p, variation, variationPct, prevBalance };
     });
-  }, [projections, data.saldoAtual, data.previousMonthEndingBalance]);
+  }, [projections, data.previousMonthEndingBalance]);
 
-  // Chart data — always all 6 months
   const chartData = useMemo(() => {
     return projectionsWithVariation.map((p) => ({
       name: `${MONTH_NAMES[p.month]} ${p.year}`,
@@ -213,10 +248,8 @@ const BotFinanceProjecoes = () => {
     }));
   }, [projectionsWithVariation, timelineMode]);
 
-  // Selected month for the top card
   const selectedProjection = projectionsWithVariation[selectedProjectionIdx] ?? projectionsWithVariation[0];
 
-  // Determine chart gradient color based on trend
   const chartTrend = useMemo(() => {
     const last = projectionsWithVariation[projectionsWithVariation.length - 1];
     const first = projectionsWithVariation[0];
@@ -232,21 +265,6 @@ const BotFinanceProjecoes = () => {
     negative: { stroke: "hsl(0, 60%, 50%)", fill: "hsl(0, 60%, 50%)" },
   };
   const cc = chartColors[chartTrend];
-
-  const toneMap = {
-    positive: { bar: "bg-accent", text: "text-foreground", badge: "bg-secondary text-foreground" },
-    neutral: { bar: "bg-warning", text: "text-warning", badge: "bg-warning/10 text-warning" },
-    negative: { bar: "bg-destructive", text: "text-destructive", badge: "bg-destructive/10 text-destructive" },
-  };
-  const lt = toneMap[dailyLimit.tone];
-
-  const potentialSavings = useMemo(() => {
-    const avgExpense = data.projection.avgExpense3m || data.despesas;
-    const tenPct = avgExpense * 0.1;
-    return { monthly: tenPct, sixMonth: tenPct * 6 };
-  }, [data]);
-
-  const hasSimulation = simulation.hasSimulation;
 
   const handleChartClick = useCallback((state: any) => {
     if (state?.activeTooltipIndex !== undefined) {
@@ -270,11 +288,6 @@ const BotFinanceProjecoes = () => {
           <div className="glass-card p-4 space-y-3">
             <div className="h-4 w-32 bg-secondary rounded animate-pulse" />
             <div className="h-48 w-full bg-secondary/30 rounded-xl animate-pulse" />
-            <div className="space-y-2">
-              {[...Array(4)].map((_, i) => (
-                <div key={i} className="h-10 bg-secondary/20 rounded-lg animate-pulse" />
-              ))}
-            </div>
           </div>
         </div>
       </div>
@@ -332,21 +345,13 @@ const BotFinanceProjecoes = () => {
             <SectionHeader icon={<CalendarDays className="w-4 h-4 text-foreground" />} title="Projeção do Mês" />
           </div>
 
-          {/* Month selector pills */}
-          <div className="flex gap-1.5 overflow-x-auto pb-1 -mx-1 px-1 scrollbar-none">
-            {projectionsWithVariation.map((p, i) => (
-              <button
-                key={`pill-${p.month}-${p.year}`}
-                onClick={() => setSelectedProjectionIdx(i)}
-                className={`flex-shrink-0 text-[10px] px-3 py-1.5 rounded-lg font-medium transition-all ${
-                  selectedProjectionIdx === i
-                    ? "bg-foreground text-background shadow-sm"
-                    : "bg-secondary text-muted-foreground hover:text-foreground"
-                }`}
-              >
-                {MONTH_NAMES[p.month]} {p.year}
-              </button>
-            ))}
+          {/* Month selector — dashboard style */}
+          <div className="flex justify-center">
+            <ProjectionMonthSelector
+              projections={projectionsWithVariation}
+              selectedIdx={selectedProjectionIdx}
+              onSelect={setSelectedProjectionIdx}
+            />
           </div>
 
           {/* Selected month summary */}
@@ -360,7 +365,7 @@ const BotFinanceProjecoes = () => {
             >
               <div className="text-center py-2">
                 <p className="text-[10px] text-muted-foreground mb-1">
-                  Saldo previsto no final de {MONTH_NAMES[selectedProjection.month]} {selectedProjection.year}
+                  Saldo previsto — {MONTH_FULL[selectedProjection.month]} {selectedProjection.year}
                 </p>
                 <p className={`text-3xl font-bold font-display tabular-nums ${selectedProjection.balance >= 0 ? "text-foreground" : "text-destructive"}`}>
                   {fmtCurrency(selectedProjection.balance)}
@@ -372,29 +377,13 @@ const BotFinanceProjecoes = () => {
                 )}
               </div>
 
-              {/* Composition: saldo anterior + receitas - despesas = saldo final */}
+              {/* Composition */}
               <CompositionBlock
                 prev={selectedProjection.prevBalance}
                 income={selectedProjection.income}
                 expense={selectedProjection.expense}
                 final={selectedProjection.balance}
               />
-
-              {/* Micro-copy */}
-              {selectedProjection.microCopy && (
-                <motion.p
-                  initial={{ opacity: 0 }}
-                  animate={{ opacity: 1 }}
-                  className={`text-[11px] font-medium text-center ${selectedProjection.delta >= 0 ? "text-foreground" : "text-warning"}`}
-                >
-                  {selectedProjection.microCopy}
-                </motion.p>
-              )}
-              {selectedProjection.alert && !selectedProjection.microCopy && (
-                <div className="rounded-lg px-3 py-2 bg-warning/10 border border-warning/20 text-xs text-warning font-medium text-center">
-                  {selectedProjection.alert}
-                </div>
-              )}
             </motion.div>
           )}
         </GlassSection>
@@ -422,7 +411,7 @@ const BotFinanceProjecoes = () => {
             </div>
           </div>
 
-          {/* Line Chart — always 6 months */}
+          {/* Chart */}
           <motion.div
             key={`chart-${timelineMode}`}
             initial={{ opacity: 0 }}
@@ -450,8 +439,8 @@ const BotFinanceProjecoes = () => {
                   tick={{ fill: "hsl(220 8% 50%)", fontSize: 9 }}
                   tickLine={false}
                   axisLine={false}
-                  tickFormatter={(v: number) => fmtCompact(v)}
-                  width={52}
+                  tickFormatter={(v: number) => fmtCurrency(v)}
+                  width={72}
                 />
                 <RechartsTooltip content={<ChartTooltipContent />} cursor={{ stroke: "hsl(220 8% 50%)", strokeWidth: 1, strokeDasharray: "4 4" }} />
                 <Area
@@ -469,108 +458,46 @@ const BotFinanceProjecoes = () => {
             </ResponsiveContainer>
           </motion.div>
 
-          {/* Timeline list — always all 6 months */}
+          {/* Timeline list */}
           <div className="relative mt-1">
             <div className="absolute left-[7px] top-2 bottom-2 w-px bg-gradient-to-b from-border/40 via-border/20 to-transparent" />
             {projectionsWithVariation.map((p, i) => {
               const rs = riskStyle(p.risk);
-              const isExpanded = expandedMonth === i;
               const isCurrent = i === 0;
               const displayValue = timelineMode === "acumulado" ? p.balance : p.delta;
               return (
-                <div key={`tl-${p.month}-${p.year}`} className="relative">
-                  <button
-                    onClick={() => {
-                      setExpandedMonth(isExpanded ? null : i);
-                      setSelectedProjectionIdx(i);
-                    }}
-                    className="w-full flex items-center gap-3 py-2.5 border-b border-border/5 last:border-0 group text-left hover:bg-secondary/20 rounded-lg transition-colors px-1 -mx-1"
-                  >
-                    <div className="relative z-10 flex-shrink-0 w-4 flex justify-center">
-                      <div className={`w-2.5 h-2.5 rounded-full ${rs.dot} ${rs.glow} transition-all duration-300 group-hover:scale-125 ${isCurrent ? "ring-2 ring-foreground/20" : ""}`} />
-                    </div>
-                    <div className="w-14 flex-shrink-0">
-                      <span className={`text-xs font-semibold ${isCurrent ? "text-foreground" : "text-muted-foreground"}`}>
-                        {MONTH_NAMES[p.month]}
+                <button
+                  key={`tl-${p.month}-${p.year}`}
+                  onClick={() => setSelectedProjectionIdx(i)}
+                  className={`w-full flex items-center gap-3 py-2.5 border-b border-border/5 last:border-0 group text-left hover:bg-secondary/20 rounded-lg transition-colors px-1 -mx-1 ${
+                    selectedProjectionIdx === i ? "bg-secondary/30" : ""
+                  }`}
+                >
+                  <div className="relative z-10 flex-shrink-0 w-4 flex justify-center">
+                    <div className={`w-2.5 h-2.5 rounded-full ${rs.dot} ${rs.glow} transition-all duration-300 group-hover:scale-125 ${isCurrent ? "ring-2 ring-foreground/20" : ""}`} />
+                  </div>
+                  <div className="w-14 flex-shrink-0">
+                    <span className={`text-xs font-semibold ${isCurrent ? "text-foreground" : "text-muted-foreground"}`}>
+                      {MONTH_NAMES[p.month]}
+                    </span>
+                    <span className="text-[9px] text-muted-foreground/50 ml-1">{p.year}</span>
+                  </div>
+                  <div className="flex-1 text-right">
+                    <p className={`text-sm font-bold tabular-nums ${
+                      timelineMode === "acumulado" ? rs.text : deltaColor(displayValue)
+                    }`}>
+                      {timelineMode === "mensal" && displayValue >= 0 ? "+" : ""}{fmtCurrency(displayValue)}
+                    </p>
+                  </div>
+                  {i > 0 && (
+                    <div className="flex items-center gap-0.5 flex-shrink-0">
+                      <span className={`text-[9px] font-medium tabular-nums ${p.variation >= 0 ? "text-muted-foreground" : "text-destructive"}`}>
+                        {p.variation >= 0 ? "+" : ""}{p.variationPct.toFixed(0)}%
                       </span>
-                      <span className="text-[9px] text-muted-foreground/50 ml-1">{p.year}</span>
+                      <TrendIcon delta={p.variation} />
                     </div>
-                    <div className="flex-1 text-right">
-                      <p className={`text-sm font-bold tabular-nums ${
-                        timelineMode === "acumulado" ? rs.text : deltaColor(displayValue)
-                      }`}>
-                        {timelineMode === "mensal" && displayValue >= 0 ? "+" : ""}{fmtCurrency(displayValue)}
-                      </p>
-                    </div>
-                    {i > 0 && (
-                      <div className="flex items-center gap-0.5 flex-shrink-0">
-                        <span className={`text-[9px] font-medium tabular-nums ${p.variation >= 0 ? "text-muted-foreground" : "text-destructive"}`}>
-                          {p.variation >= 0 ? "+" : ""}{p.variationPct.toFixed(0)}%
-                        </span>
-                        <TrendIcon delta={p.variation} />
-                      </div>
-                    )}
-                    <ChevronDown className={`w-3 h-3 text-muted-foreground/30 transition-transform ${isExpanded ? "rotate-180" : ""}`} />
-                  </button>
-
-                  {/* Drilldown */}
-                  <AnimatePresence>
-                    {isExpanded && (
-                      <motion.div
-                        initial={{ opacity: 0, height: 0 }}
-                        animate={{ opacity: 1, height: "auto" }}
-                        exit={{ opacity: 0, height: 0 }}
-                        transition={{ duration: 0.25 }}
-                        className="overflow-hidden"
-                      >
-                        <div className="ml-7 mb-3 space-y-2">
-                          <CompositionBlock
-                            prev={p.prevBalance}
-                            income={p.income}
-                            expense={p.expense}
-                            final={p.balance}
-                          />
-                          <div className="grid grid-cols-2 sm:grid-cols-4 gap-2">
-                            <motion.div initial={{ opacity: 0, y: 4 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.05 }} className="bg-secondary/40 rounded-xl p-2.5 text-center">
-                              <p className="text-[9px] text-muted-foreground mb-0.5">Receitas prev.</p>
-                              <p className="text-xs font-bold tabular-nums text-foreground">{fmtCurrency(p.income)}</p>
-                            </motion.div>
-                            <motion.div initial={{ opacity: 0, y: 4 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.1 }} className="bg-secondary/40 rounded-xl p-2.5 text-center">
-                              <p className="text-[9px] text-muted-foreground mb-0.5">Despesas prev.</p>
-                              <p className="text-xs font-bold tabular-nums text-destructive">{fmtCurrency(p.expense)}</p>
-                            </motion.div>
-                            <motion.div initial={{ opacity: 0, y: 4 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.15 }} className="bg-secondary/40 rounded-xl p-2.5 text-center">
-                              <p className="text-[9px] text-muted-foreground mb-0.5">Balanço</p>
-                              <p className={`text-xs font-bold tabular-nums ${p.delta >= 0 ? "text-foreground" : "text-destructive"}`}>
-                                {p.delta >= 0 ? "+" : ""}{fmtCurrency(p.delta)}
-                              </p>
-                            </motion.div>
-                            <motion.div initial={{ opacity: 0, y: 4 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.2 }} className="bg-secondary/40 rounded-xl p-2.5 text-center">
-                              <p className="text-[9px] text-muted-foreground mb-0.5">Saldo final</p>
-                              <p className={`text-xs font-bold tabular-nums ${p.balance >= 0 ? "text-foreground" : "text-destructive"}`}>
-                                {fmtCurrency(p.balance)}
-                              </p>
-                            </motion.div>
-                          </div>
-                          {p.microCopy && (
-                            <motion.p initial={{ opacity: 0, x: -6 }} animate={{ opacity: 1, x: 0 }} transition={{ delay: 0.25 }}
-                              className={`text-[11px] font-medium ${p.delta >= 0 ? "text-foreground" : "text-warning"}`}
-                            >
-                              {p.microCopy}
-                            </motion.p>
-                          )}
-                          {p.alert && !p.microCopy && (
-                            <motion.div initial={{ opacity: 0, scale: 0.95 }} animate={{ opacity: 1, scale: 1 }}
-                              className="rounded-lg px-3 py-2 bg-warning/10 border border-warning/20 text-xs text-warning font-medium"
-                            >
-                              {p.alert}
-                            </motion.div>
-                          )}
-                        </div>
-                      </motion.div>
-                    )}
-                  </AnimatePresence>
-                </div>
+                  )}
+                </button>
               );
             })}
           </div>
