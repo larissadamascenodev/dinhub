@@ -220,12 +220,11 @@ const FaturaCartao = () => {
         <Button
           variant="outline"
           size="sm"
-          className="border-primary/30 bg-primary/10 text-primary hover:bg-primary/20 rounded-xl text-xs font-semibold gap-1.5 shrink-0 ml-3"
+          className="border-primary/30 bg-primary/10 text-primary hover:bg-primary/20 rounded-xl text-[10px] sm:text-xs font-semibold gap-1 sm:gap-1.5 shrink-0 ml-2 px-2.5 sm:px-3 h-7 sm:h-8"
           onClick={() => navigate(`/transacoes`)}
         >
-          <Plus className="w-3.5 h-3.5" />
-          <span className="hidden sm:inline">Adicionar lançamento</span>
-          <span className="sm:hidden">Novo</span>
+          <Plus className="w-3 h-3 sm:w-3.5 sm:h-3.5" />
+          Adicionar lançamento
         </Button>
       </div>
 
