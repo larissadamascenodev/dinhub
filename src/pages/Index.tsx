@@ -2,6 +2,7 @@ import { useState, useCallback, useEffect } from "react";
 import { useNavigate, useOutletContext } from "react-router-dom";
 import { motion } from "framer-motion";
 import { TrendingUp, ChevronRight } from "lucide-react";
+import WalletSummaryCard from "@/components/dashboard/WalletSummaryCard";
 import { useGreeting } from "@/components/dashboard/DashboardHeader";
 import SaldoCard from "@/components/dashboard/SaldoCard";
 import ReceitasDespesasCards from "@/components/dashboard/ReceitasDespesasCards";
