@@ -31,6 +31,9 @@ interface MonthProjection {
   year: number;
   balance: number;
   delta: number;
+  income: number;
+  expense: number;
+  risk: "positivo" | "atencao" | "risco";
 }
 
 // ─── Helpers ───
@@ -82,6 +85,12 @@ const SectionHeader = ({
   </div>
 );
 
+const riskColors = {
+  positivo: { dot: "bg-primary", text: "text-primary", glow: "shadow-[0_0_10px_hsl(150_100%_45%/0.4)]" },
+  atencao: { dot: "bg-warning", text: "text-warning", glow: "shadow-[0_0_10px_hsl(40_80%_50%/0.4)]" },
+  risco: { dot: "bg-destructive", text: "text-destructive", glow: "shadow-[0_0_10px_hsl(0_60%_50%/0.4)]" },
+};
+
 const BotFinanceProjecoes = () => {
   const navigate = useNavigate();
   const { selectedMonth, selectedYear } = useMonth();
@@ -89,12 +98,15 @@ const BotFinanceProjecoes = () => {
 
   const [savingsBoost, setSavingsBoost] = useState(0);
   const [incomeBoost, setIncomeBoost] = useState(0);
+  const [expandedMonth, setExpandedMonth] = useState<number | null>(null);
 
   // ─── 6-month projection ───
   const projections = useMemo<MonthProjection[]>(() => {
     const avgIncome = data.projection.avgIncome3m || data.receitas;
     const avgExpense = data.projection.avgExpense3m || data.despesas;
-    const monthlyNet = avgIncome + incomeBoost - (avgExpense - savingsBoost);
+    const incomeWithBoost = avgIncome + incomeBoost;
+    const expenseWithBoost = avgExpense - savingsBoost;
+    const monthlyNet = incomeWithBoost - expenseWithBoost;
 
     let balance = data.saldoPrevisto;
     const result: MonthProjection[] = [];
@@ -106,12 +118,21 @@ const BotFinanceProjecoes = () => {
       const isFirst = i === 0;
       const projected = isFirst ? balance : balance + monthlyNet;
       const delta = isFirst ? data.balanco : monthlyNet;
+      const income = isFirst ? data.receitas : incomeWithBoost;
+      const expense = isFirst ? data.despesas : expenseWithBoost;
+
+      // Risk classification
+      const risk: MonthProjection["risk"] =
+        delta > 0 ? "positivo" : delta > -200 ? "atencao" : "risco";
 
       result.push({
         month: m,
         year: y,
         balance: isFirst ? balance : projected,
         delta,
+        income,
+        expense,
+        risk,
       });
 
       if (!isFirst) balance = projected;
@@ -212,44 +233,88 @@ const BotFinanceProjecoes = () => {
         {/* 1 — TIMELINE */}
         <GlassSection delay={0.05}>
           <SectionHeader icon={<TrendingUp className="w-4 h-4 text-primary" />} title="Timeline de Saldo" />
-          <div className="space-y-0">
-            {projections.map((p, i) => (
-              <motion.div
-                key={`${p.month}-${p.year}`}
-                initial={{ opacity: 0, x: -8 }}
-                animate={{ opacity: 1, x: 0 }}
-                transition={{ delay: 0.08 + i * 0.04 }}
-                className="flex items-center gap-3 py-3 border-b border-border/15 last:border-0 group"
-              >
-                {/* Dot + line */}
-                <div className="flex flex-col items-center gap-0.5 w-4">
-                  <div
-                    className={`w-2.5 h-2.5 rounded-full transition-transform duration-200 group-hover:scale-125 ${
-                      i === 0 ? "bg-primary shadow-[0_0_8px_hsl(150_100%_45%/0.4)]" : "bg-muted-foreground/25"
-                    }`}
-                  />
-                  {i < projections.length - 1 && <div className="w-px h-5 bg-border/30" />}
-                </div>
+          <div className="relative">
+            {/* Glow line */}
+            <div className="absolute left-[7px] top-4 bottom-4 w-px bg-gradient-to-b from-primary/30 via-border/20 to-transparent" />
 
-                {/* Month */}
-                <div className="w-16">
-                  <span className={`text-xs font-medium ${i === 0 ? "text-primary" : "text-muted-foreground"}`}>
-                    {MONTH_NAMES[p.month]}
-                  </span>
-                  <span className="text-[10px] text-muted-foreground/50 ml-1">{p.year}</span>
-                </div>
+            {projections.map((p, i) => {
+              const rc = riskColors[p.risk];
+              const isExpanded = expandedMonth === i;
+              const isCurrent = i === 0;
 
-                {/* Balance */}
-                <div className="flex-1 text-right">
-                  <p className="text-base font-bold tabular-nums">{fmtCurrency(p.balance)}</p>
-                </div>
+              return (
+                <motion.div
+                  key={`${p.month}-${p.year}`}
+                  initial={{ opacity: 0, x: -10 }}
+                  animate={{ opacity: 1, x: 0 }}
+                  transition={{ delay: 0.08 + i * 0.05 }}
+                  className="relative"
+                >
+                  <button
+                    onClick={() => setExpandedMonth(isExpanded ? null : i)}
+                    className="w-full flex items-center gap-3 py-3 border-b border-border/10 last:border-0 group text-left hover:bg-secondary/20 rounded-lg transition-colors px-1 -mx-1"
+                  >
+                    {/* Dot */}
+                    <div className="relative z-10 flex-shrink-0 w-4 flex justify-center">
+                      <div
+                        className={`w-3 h-3 rounded-full ${rc.dot} ${rc.glow} transition-all duration-300 group-hover:scale-125 ${
+                          isCurrent ? "animate-pulse" : ""
+                        }`}
+                      />
+                    </div>
 
-                {/* Trend */}
-                <div className="w-8 flex justify-end">
-                  <TrendIcon delta={p.delta} />
-                </div>
-              </motion.div>
-            ))}
+                    {/* Month */}
+                    <div className="w-14 flex-shrink-0">
+                      <span className={`text-xs font-semibold ${isCurrent ? rc.text : "text-muted-foreground"}`}>
+                        {MONTH_NAMES[p.month]}
+                      </span>
+                      <span className="text-[9px] text-muted-foreground/50 ml-1">{p.year}</span>
+                    </div>
+
+                    {/* Balance */}
+                    <div className="flex-1 text-right">
+                      <p className={`text-base font-bold tabular-nums ${rc.text}`}>
+                        {fmtCurrency(p.balance)}
+                      </p>
+                    </div>
+
+                    {/* Delta + trend */}
+                    <div className="flex items-center gap-1 w-24 justify-end flex-shrink-0">
+                      <span className={`text-[10px] font-medium tabular-nums ${p.delta >= 0 ? "text-primary" : "text-destructive"}`}>
+                        {p.delta >= 0 ? "+" : ""}{fmtCurrency(p.delta)}
+                      </span>
+                      <TrendIcon delta={p.delta} />
+                    </div>
+                  </button>
+
+                  {/* Expanded details */}
+                  {isExpanded && (
+                    <motion.div
+                      initial={{ opacity: 0, height: 0 }}
+                      animate={{ opacity: 1, height: "auto" }}
+                      exit={{ opacity: 0, height: 0 }}
+                      transition={{ duration: 0.25 }}
+                      className="ml-7 mb-2 grid grid-cols-3 gap-2"
+                    >
+                      <div className="bg-secondary/40 rounded-xl p-2.5 text-center">
+                        <p className="text-[9px] text-muted-foreground mb-0.5">Receitas</p>
+                        <p className="text-xs font-bold tabular-nums text-primary">{fmtCurrency(p.income)}</p>
+                      </div>
+                      <div className="bg-secondary/40 rounded-xl p-2.5 text-center">
+                        <p className="text-[9px] text-muted-foreground mb-0.5">Despesas</p>
+                        <p className="text-xs font-bold tabular-nums text-destructive">{fmtCurrency(p.expense)}</p>
+                      </div>
+                      <div className="bg-secondary/40 rounded-xl p-2.5 text-center">
+                        <p className="text-[9px] text-muted-foreground mb-0.5">Acumulado</p>
+                        <p className={`text-xs font-bold tabular-nums ${p.balance >= 0 ? "text-primary" : "text-destructive"}`}>
+                          {fmtCurrency(p.balance)}
+                        </p>
+                      </div>
+                    </motion.div>
+                  )}
+                </motion.div>
+              );
+            })}
           </div>
         </GlassSection>
 
