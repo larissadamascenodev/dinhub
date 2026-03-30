@@ -78,7 +78,7 @@ const riskStyle = (risk: string) => {
 };
 
 // Dynamic contextual micro-copies per month situation
-const getMonthMicroCopy = (p: { delta: number; balance: number; variation: number; risk: string }, i: number, saldoAtual: number): string | null => {
+const getMonthMicroCopy = (p: { delta: number; balance: number; variation: number; risk: string; month: number }, i: number, saldoAtual: number): string | null => {
   if (i === 0) return null;
   const seed = p.month;
   if (p.balance < 0) {
