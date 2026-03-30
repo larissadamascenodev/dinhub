@@ -54,7 +54,7 @@ const TransacoesAnalytics = () => {
   const { user } = useAuth();
   const { selectedMonth, selectedYear } = useMonth();
   const [transactions, setTransactions] = useState<TransactionRow[]>([]);
-  const [evolutionData, setEvolutionData] = useState<{ month: string; receitas: number; despesas: number }[]>([]);
+  
   const [loading, setLoading] = useState(true);
   const [dailyExpanded, setDailyExpanded] = useState(false);
 
