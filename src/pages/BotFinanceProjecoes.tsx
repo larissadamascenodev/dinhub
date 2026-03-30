@@ -308,15 +308,16 @@ const BotFinanceProjecoes = () => {
     });
   }, [projections, data.previousMonthEndingBalance]);
 
-  // Timeline shows only first 6 months; rest goes to history
+  // Timeline shows 6 months from current forward
   const timelineProjections = useMemo(
     () => projectionsWithVariation.slice(0, TIMELINE_VISIBLE),
     [projectionsWithVariation]
   );
-  const historyProjections = useMemo(
-    () => projectionsWithVariation.slice(TIMELINE_VISIBLE),
-    [projectionsWithVariation]
-  );
+
+  // History: months that have already passed (before real current month)
+  // As months pass, the projection engine regenerates starting from the new current month,
+  // so past months won't appear in projections. For now, history is empty but ready.
+  // TODO: persist past projections to show actual history
 
   const chartData = useMemo(() => {
     return timelineProjections.map((p) => ({
