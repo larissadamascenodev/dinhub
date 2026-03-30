@@ -297,50 +297,47 @@ const TransactionDetailModal = ({ open, tx, accountName, onClose, onRefresh, use
               </div>
             </div>
 
-            {/* Compact hero: icon + name + amount */}
-            <div className="flex items-center gap-3">
+            {/* Hero card – inspired by event/recurring card style */}
+            <div className="flex items-center gap-3 px-3.5 py-3 rounded-xl bg-muted/20 border border-border/10">
               <div
-                className="w-11 h-11 rounded-xl flex items-center justify-center text-xl shrink-0"
+                className="w-10 h-10 rounded-lg flex items-center justify-center text-lg shrink-0"
                 style={{ background: isReceita ? "hsl(var(--primary) / 0.12)" : "hsl(var(--destructive) / 0.12)" }}
               >
                 {icon}
               </div>
               <div className="flex-1 min-w-0">
-                <h2 className="text-base font-bold text-foreground truncate">{tx.name}</h2>
-                <p className="text-[11px] text-muted-foreground">
-                  {tx.payment_method === "cartao" ? "Cartão" : accountName}
+                <div className="flex items-center gap-2">
+                  <h2 className="text-sm font-bold text-foreground uppercase truncate">{tx.name}</h2>
+                  {isRecurring && (
+                    <span className="inline-flex items-center gap-1 px-1.5 py-0.5 rounded text-[9px] font-bold bg-muted/40 text-muted-foreground border border-border/20">
+                      <RefreshCw className="w-2.5 h-2.5" /> Fixa
+                    </span>
+                  )}
+                  {tx.installments && tx.installment_current && (
+                    <span className="inline-flex items-center gap-1 px-1.5 py-0.5 rounded text-[9px] font-bold bg-muted/40 text-muted-foreground border border-border/20">
+                      {tx.installment_current}/{tx.installments}x
+                    </span>
+                  )}
+                </div>
+                <p className="text-[11px] text-muted-foreground mt-0.5">
+                  {tx.category} · {isPaid ? "já pago" : "agendada"}
                 </p>
               </div>
               <div className="text-right shrink-0">
-                <p className={cn("text-lg font-bold tabular-nums", isReceita ? "text-primary" : "text-destructive")}>
+                <p className={cn("text-sm font-bold tabular-nums", isReceita ? "text-primary" : "text-foreground")}>
                   {fmt(tx.amount)}
                 </p>
+                <span
+                  className={cn(
+                    "inline-block mt-1 px-2 py-0.5 rounded text-[9px] font-bold uppercase tracking-wide",
+                    isPaid
+                      ? "bg-primary/10 text-primary"
+                      : "bg-destructive/10 text-destructive"
+                  )}
+                >
+                  {isPaid ? "Pago" : "A pagar"}
+                </span>
               </div>
-            </div>
-
-            {/* Tags row */}
-            <div className="flex flex-wrap items-center gap-1.5">
-              <span
-                className={cn(
-                  "inline-flex items-center gap-1 px-2.5 py-1 rounded-lg text-[10px] font-bold border",
-                  isPaid
-                    ? "bg-primary/10 text-primary border-primary/20"
-                    : "bg-warning/10 text-warning border-warning/20"
-                )}
-              >
-                <Clock className="w-3 h-3" />
-                {isPaid ? "Pago" : "Pendente"}
-              </span>
-              {isRecurring && (
-                <span className="inline-flex items-center gap-1 px-2.5 py-1 rounded-lg text-[10px] font-bold bg-muted/40 text-muted-foreground border border-border/20">
-                  <RefreshCw className="w-3 h-3" /> Fixa
-                </span>
-              )}
-              {tx.installments && tx.installment_current && (
-                <span className="inline-flex items-center gap-1 px-2.5 py-1 rounded-lg text-[10px] font-bold bg-muted/40 text-muted-foreground border border-border/20">
-                  <RefreshCw className="w-3 h-3" /> {tx.installment_current}/{tx.installments}x
-                </span>
-              )}
             </div>
 
             {/* Info grid */}
