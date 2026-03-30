@@ -1,4 +1,4 @@
-import { useState, useMemo } from "react";
+import { useState, useMemo, useCallback } from "react";
 import type { MonthProjection } from "@/services/projection";
 import { useNavigate } from "react-router-dom";
 import { motion, AnimatePresence } from "framer-motion";
@@ -22,7 +22,18 @@ import {
   ShieldCheck,
   Banknote,
   CalendarDays,
+  Plus,
+  Equal,
 } from "lucide-react";
+import {
+  AreaChart,
+  Area,
+  XAxis,
+  YAxis,
+  CartesianGrid,
+  Tooltip as RechartsTooltip,
+  ResponsiveContainer,
+} from "recharts";
 import { useFinancialProjection } from "@/hooks/useFinancialProjection";
 import { useFormattedCounter } from "@/hooks/useAnimatedCounter";
 
@@ -34,22 +45,30 @@ const MONTH_NAMES = [
 const fmtCurrency = (v: number) =>
   v.toLocaleString("pt-BR", { style: "currency", currency: "BRL" });
 
+const fmtCompact = (v: number) => {
+  if (Math.abs(v) >= 1000) return `R$ ${(v / 1000).toFixed(1)}k`;
+  return fmtCurrency(v);
+};
+
 // ─── Shared UI ───
 
 const GlassSection = ({
   children,
   delay = 0,
   className = "",
+  ...rest
 }: {
   children: React.ReactNode;
   delay?: number;
   className?: string;
+  [key: string]: unknown;
 }) => (
   <motion.div
     initial={{ opacity: 0, y: 16 }}
     animate={{ opacity: 1, y: 0 }}
     transition={{ delay, duration: 0.35, ease: "easeOut" }}
     className={`glass-card p-4 space-y-3 ${className}`}
+    {...rest}
   >
     {children}
   </motion.div>
@@ -70,36 +89,87 @@ const TrendIcon = ({ delta }: { delta: number }) => {
   return <ArrowDownRight className="w-3.5 h-3.5 text-destructive" />;
 };
 
-// Contextual risk colors with hover glow
 const riskStyle = (risk: string) => {
   if (risk === "positivo") return { dot: "bg-accent", text: "text-foreground", glow: "group-hover:shadow-[0_0_8px_hsl(var(--accent)/0.4)]" };
   if (risk === "atencao") return { dot: "bg-warning", text: "text-warning", glow: "group-hover:shadow-[0_0_8px_hsl(var(--warning)/0.4)]" };
   return { dot: "bg-destructive", text: "text-destructive", glow: "group-hover:shadow-[0_0_8px_hsl(var(--destructive)/0.4)]" };
 };
 
-// Dynamic contextual micro-copies per month situation
 const getMonthMicroCopy = (p: { delta: number; balance: number; variation: number; risk: string; month: number }, i: number, saldoAtual: number): string | null => {
   if (i === 0) return null;
   const seed = p.month;
-  if (p.balance < 0) {
-    return ["🚨 Aqui complica de vez", "🚨 Saldo negativo — hora de reagir"][seed % 2];
-  }
-  if (p.variation < -500) {
-    return ["Aqui começou a pesar um pouco 😬", "Essa queda merece atenção 👀", "Opa, caiu bastante aqui"][seed % 3];
-  }
-  if (p.delta < 0 && p.balance < saldoAtual * 0.5) {
-    return ["⚠️ Aqui começa a apertar um pouco", "Cuidado, tá afinando 👀"][seed % 2];
-  }
-  if (p.delta > 0 && p.risk === "positivo" && p.variation > 200) {
-    return ["Tá indo bem demais 🔥", "Mês forte esse 💪", "Segue o jogo, campeão 😎"][seed % 3];
-  }
-  if (p.delta > 0) {
-    return ["No caminho certo ✨", "Firme e forte"][seed % 2];
-  }
+  if (p.balance < 0) return ["🚨 Aqui complica de vez", "🚨 Saldo negativo — hora de reagir"][seed % 2];
+  if (p.variation < -500) return ["Aqui começou a pesar um pouco 😬", "Essa queda merece atenção 👀", "Opa, caiu bastante aqui"][seed % 3];
+  if (p.delta < 0 && p.balance < saldoAtual * 0.5) return ["⚠️ Aqui começa a apertar um pouco", "Cuidado, tá afinando 👀"][seed % 2];
+  if (p.delta > 0 && p.risk === "positivo" && p.variation > 200) return ["Tá indo bem demais 🔥", "Mês forte esse 💪", "Segue o jogo, campeão 😎"][seed % 3];
+  if (p.delta > 0) return ["No caminho certo ✨", "Firme e forte"][seed % 2];
   return null;
 };
 
 const deltaColor = (d: number) => (d >= 0 ? "text-foreground" : "text-destructive");
+
+// ─── Custom Chart Tooltip ───
+
+const ChartTooltipContent = ({ active, payload, label }: any) => {
+  if (!active || !payload?.length) return null;
+  const val = payload[0].value;
+  return (
+    <div className="bg-popover border border-border/40 rounded-xl px-3 py-2 shadow-xl">
+      <p className="text-[10px] text-muted-foreground">{label}</p>
+      <p className={`text-sm font-bold tabular-nums ${val >= 0 ? "text-foreground" : "text-destructive"}`}>
+        {fmtCurrency(val)}
+      </p>
+    </div>
+  );
+};
+
+// ─── Custom Active Dot ───
+
+const GlowDot = (props: any) => {
+  const { cx, cy, value } = props;
+  const isNeg = value < 0;
+  return (
+    <g>
+      <circle cx={cx} cy={cy} r={8} fill={isNeg ? "hsl(0 60% 50%)" : "hsl(150 100% 45%)"} opacity={0.15} />
+      <circle cx={cx} cy={cy} r={4} fill={isNeg ? "hsl(0 60% 50%)" : "hsl(150 100% 45%)"} stroke="hsl(220 20% 5%)" strokeWidth={2} />
+    </g>
+  );
+};
+
+// ─── Composition Block ───
+
+const CompositionBlock = ({ prev, income, expense, final: finalVal }: { prev: number; income: number; expense: number; final: number }) => (
+  <motion.div
+    initial={{ opacity: 0, y: 6 }}
+    animate={{ opacity: 1, y: 0 }}
+    transition={{ delay: 0.1 }}
+    className="flex items-center gap-1.5 flex-wrap justify-center py-2"
+  >
+    <div className="bg-secondary/50 rounded-lg px-2.5 py-1.5 text-center min-w-[70px]">
+      <p className="text-[8px] text-muted-foreground">Saldo anterior</p>
+      <p className="text-[11px] font-bold tabular-nums text-foreground">{fmtCompact(prev)}</p>
+    </div>
+    <Plus className="w-3 h-3 text-muted-foreground/50 flex-shrink-0" />
+    <div className="bg-secondary/50 rounded-lg px-2.5 py-1.5 text-center min-w-[70px]">
+      <p className="text-[8px] text-muted-foreground">Receitas</p>
+      <p className="text-[11px] font-bold tabular-nums text-foreground">{fmtCompact(income)}</p>
+    </div>
+    <Minus className="w-3 h-3 text-muted-foreground/50 flex-shrink-0" />
+    <div className="bg-secondary/50 rounded-lg px-2.5 py-1.5 text-center min-w-[70px]">
+      <p className="text-[8px] text-muted-foreground">Despesas</p>
+      <p className="text-[11px] font-bold tabular-nums text-destructive">{fmtCompact(expense)}</p>
+    </div>
+    <Equal className="w-3 h-3 text-muted-foreground/50 flex-shrink-0" />
+    <div className={`rounded-lg px-2.5 py-1.5 text-center min-w-[70px] ${finalVal >= 0 ? "bg-accent/10" : "bg-destructive/10"}`}>
+      <p className="text-[8px] text-muted-foreground">Saldo final</p>
+      <p className={`text-[11px] font-bold tabular-nums ${finalVal >= 0 ? "text-foreground" : "text-destructive"}`}>{fmtCompact(finalVal)}</p>
+    </div>
+  </motion.div>
+);
+
+// ═══════════════════════════════════════════
+// MAIN COMPONENT
+// ═══════════════════════════════════════════
 
 const BotFinanceProjecoes = () => {
   const navigate = useNavigate();
@@ -116,24 +186,23 @@ const BotFinanceProjecoes = () => {
     setSavingsGoal,
     resetSimulation,
     data,
+    loading,
   } = useFinancialProjection();
 
   const [showGoalInput, setShowGoalInput] = useState(false);
-
   const [expandedMonth, setExpandedMonth] = useState<number | null>(null);
   const [timelineMode, setTimelineMode] = useState<"mensal" | "acumulado">("acumulado");
   const formattedSafe = useFormattedCounter(dailyLimit.safeToSpend);
 
-  // Compute variation vs previous month for each projection
+  // Enriched projections with variation, micro-copy, prev balance
   const projectionsWithVariation = useMemo(() => {
     return projections.map((p, i) => {
       const prev = i > 0 ? projections[i - 1] : null;
       const variation = prev ? p.balance - prev.balance : 0;
       const variationPct = prev && prev.balance !== 0 ? ((p.balance - prev.balance) / Math.abs(prev.balance)) * 100 : 0;
-
       const microCopy = getMonthMicroCopy({ ...p, variation }, i, data.saldoAtual);
+      const prevBalance = prev ? prev.balance : data.previousMonthEndingBalance;
 
-      // Alert conditions
       let alert: string | null = null;
       if (i > 0 && p.balance < prev!.balance && p.balance < data.saldoAtual * 0.5) {
         alert = "⚠️ Aqui começa a apertar um pouco";
@@ -143,16 +212,36 @@ const BotFinanceProjecoes = () => {
         alert = "⚠️ Queda significativa de saldo";
       }
 
-      return { ...p, variation, variationPct, alert, microCopy };
+      return { ...p, variation, variationPct, alert, microCopy, prevBalance };
     });
-  }, [projections, data.saldoAtual]);
+  }, [projections, data.saldoAtual, data.previousMonthEndingBalance]);
 
-  // Values for bar chart depend on mode
-  const barValues = useMemo(() => {
-    return projectionsWithVariation.map((p) =>
-      timelineMode === "acumulado" ? p.balance : p.delta
-    );
+  // Chart data
+  const chartData = useMemo(() => {
+    return projectionsWithVariation.map((p) => ({
+      name: `${MONTH_NAMES[p.month]} ${p.year}`,
+      value: timelineMode === "acumulado" ? p.balance : p.delta,
+      balance: p.balance,
+      delta: p.delta,
+    }));
   }, [projectionsWithVariation, timelineMode]);
+
+  // Determine chart gradient color based on trend
+  const chartTrend = useMemo(() => {
+    const last = projectionsWithVariation[projectionsWithVariation.length - 1];
+    const first = projectionsWithVariation[0];
+    if (!last || !first) return "neutral";
+    if (last.balance > first.balance * 1.05) return "positive";
+    if (last.balance < first.balance * 0.95) return "negative";
+    return "neutral";
+  }, [projectionsWithVariation]);
+
+  const chartColors = {
+    positive: { stroke: "hsl(150, 100%, 45%)", fill: "hsl(150, 100%, 45%)" },
+    neutral: { stroke: "hsl(199, 70%, 48%)", fill: "hsl(199, 70%, 48%)" },
+    negative: { stroke: "hsl(0, 60%, 50%)", fill: "hsl(0, 60%, 50%)" },
+  };
+  const cc = chartColors[chartTrend];
 
   const toneMap = {
     positive: { bar: "bg-accent", text: "text-foreground", badge: "bg-secondary text-foreground" },
@@ -161,7 +250,6 @@ const BotFinanceProjecoes = () => {
   };
   const lt = toneMap[dailyLimit.tone];
 
-  // Savings incentive
   const potentialSavings = useMemo(() => {
     const avgExpense = data.projection.avgExpense3m || data.despesas;
     const tenPct = avgExpense * 0.1;
@@ -169,6 +257,64 @@ const BotFinanceProjecoes = () => {
   }, [data]);
 
   const hasSimulation = simulation.hasSimulation;
+
+  const handleChartClick = useCallback((state: any) => {
+    if (state?.activeTooltipIndex !== undefined) {
+      const idx = state.activeTooltipIndex;
+      setExpandedMonth(expandedMonth === idx ? null : idx);
+    }
+  }, [expandedMonth]);
+
+  // ─── Loading State ───
+  if (loading) {
+    return (
+      <div className="space-y-4 pb-4">
+        <div className="flex items-center gap-3">
+          <div className="w-8 h-8 rounded-xl bg-secondary animate-pulse" />
+          <div className="space-y-1.5">
+            <div className="h-5 w-40 bg-secondary rounded animate-pulse" />
+            <div className="h-3 w-56 bg-secondary/60 rounded animate-pulse" />
+          </div>
+        </div>
+        <div className="space-y-4 max-w-3xl mx-auto">
+          <div className="glass-card p-4 space-y-3">
+            <div className="h-4 w-32 bg-secondary rounded animate-pulse" />
+            <div className="h-48 w-full bg-secondary/30 rounded-xl animate-pulse" />
+            <div className="space-y-2">
+              {[...Array(4)].map((_, i) => (
+                <div key={i} className="h-10 bg-secondary/20 rounded-lg animate-pulse" />
+              ))}
+            </div>
+          </div>
+        </div>
+      </div>
+    );
+  }
+
+  // ─── Empty State ───
+  if (!data.transactions.length && !data.events.length) {
+    return (
+      <div className="space-y-4 pb-4">
+        <motion.div initial={{ opacity: 0, y: 8 }} animate={{ opacity: 1, y: 0 }} className="flex items-center gap-3">
+          <button onClick={() => navigate("/bot-finance")} className="w-8 h-8 rounded-xl bg-secondary flex items-center justify-center hover:bg-secondary/80 transition-colors">
+            <ArrowLeft className="w-4 h-4 text-foreground" />
+          </button>
+          <h1 className="font-display text-lg font-bold">Projeções Inteligentes</h1>
+        </motion.div>
+        <GlassSection delay={0.1} className="text-center py-10">
+          <CalendarDays className="w-10 h-10 text-muted-foreground/30 mx-auto mb-3" />
+          <p className="text-sm text-foreground font-medium">Você ainda não tem dados suficientes</p>
+          <p className="text-xs text-muted-foreground mt-1">Adicione transações para ver suas projeções</p>
+          <button
+            onClick={() => navigate("/transacoes")}
+            className="mt-4 text-xs font-medium px-5 py-2.5 rounded-xl bg-secondary text-foreground hover:bg-secondary/80 active:scale-[0.97] transition-all"
+          >
+            Adicionar transações
+          </button>
+        </GlassSection>
+      </div>
+    );
+  }
 
   return (
     <div className="space-y-4 pb-4">
@@ -182,17 +328,18 @@ const BotFinanceProjecoes = () => {
         </button>
         <div>
           <h1 className="font-display text-lg font-bold">Projeções Inteligentes</h1>
-          <p className="text-[11px] text-muted-foreground">Previsão e simulação dos próximos 6 meses</p>
+          <p className="text-[11px] text-muted-foreground">Evolução do saldo nos próximos 6 meses</p>
         </div>
       </motion.div>
 
       <div className="space-y-4 max-w-3xl mx-auto">
 
-        {/* ── 1. TIMELINE DE PROJEÇÃO ── */}
+        {/* ══════════════════════════════════════════ */}
+        {/* 1. GRÁFICO DE EVOLUÇÃO + TIMELINE         */}
+        {/* ══════════════════════════════════════════ */}
         <GlassSection delay={0.05}>
           <div className="flex items-center justify-between">
             <SectionHeader icon={<CalendarDays className="w-4 h-4 text-foreground" />} title="Timeline de Saldo" />
-            {/* Mode toggle */}
             <div className="flex bg-secondary rounded-lg p-0.5 gap-0.5">
               {(["mensal", "acumulado"] as const).map((mode) => (
                 <button
@@ -210,41 +357,51 @@ const BotFinanceProjecoes = () => {
             </div>
           </div>
 
-          {/* Mini bar chart overview */}
-          <div className="flex items-end gap-1.5 h-20 px-1">
-            {projectionsWithVariation.map((p, i) => {
-              const maxVal = Math.max(...barValues.map(Math.abs), 1);
-              const val = barValues[i];
-              const h = Math.max((Math.abs(val) / maxVal) * 100, 6);
-              const isNeg = val < 0;
-              return (
-                <button
-                  key={`bar-${p.month}-${p.year}`}
-                  onClick={() => setExpandedMonth(expandedMonth === i ? null : i)}
-                  className="flex-1 flex flex-col items-center gap-1 group"
-                >
-                  <motion.div
-                    key={`${timelineMode}-${i}`}
-                    initial={{ height: 0 }}
-                    animate={{ height: `${h}%` }}
-                    transition={{ duration: 0.5, delay: 0.08 + i * 0.05 }}
-                    className={`w-full rounded-t-md transition-all duration-300 ${
-                      expandedMonth === i
-                        ? "bg-foreground shadow-[0_0_12px_hsl(var(--foreground)/0.15)]"
-                        : isNeg
-                          ? "bg-destructive/40 group-hover:bg-destructive/60 group-hover:shadow-[0_0_8px_hsl(var(--destructive)/0.3)]"
-                          : p.alert
-                            ? "bg-warning/40 group-hover:bg-warning/60 group-hover:shadow-[0_0_8px_hsl(var(--warning)/0.3)]"
-                            : "bg-muted-foreground/20 group-hover:bg-accent/40 group-hover:shadow-[0_0_8px_hsl(var(--accent)/0.2)]"
-                    }`}
-                  />
-                  <span className={`text-[9px] tabular-nums ${expandedMonth === i ? "text-foreground font-semibold" : "text-muted-foreground"}`}>
-                    {MONTH_NAMES[p.month]}
-                  </span>
-                </button>
-              );
-            })}
-          </div>
+          {/* Line Chart */}
+          <motion.div
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            transition={{ delay: 0.15, duration: 0.5 }}
+            className="h-44 sm:h-52 w-full -mx-2"
+          >
+            <ResponsiveContainer width="100%" height="100%">
+              <AreaChart data={chartData} onClick={handleChartClick} margin={{ top: 8, right: 12, left: -12, bottom: 0 }}>
+                <defs>
+                  <linearGradient id="chartGradient" x1="0" y1="0" x2="0" y2="1">
+                    <stop offset="0%" stopColor={cc.fill} stopOpacity={0.25} />
+                    <stop offset="95%" stopColor={cc.fill} stopOpacity={0} />
+                  </linearGradient>
+                </defs>
+                <CartesianGrid strokeDasharray="3 3" stroke="hsl(220 12% 16%)" strokeOpacity={0.4} vertical={false} />
+                <XAxis
+                  dataKey="name"
+                  tick={{ fill: "hsl(220 8% 50%)", fontSize: 10 }}
+                  tickLine={false}
+                  axisLine={false}
+                  tickFormatter={(v) => v.split(" ")[0]}
+                />
+                <YAxis
+                  tick={{ fill: "hsl(220 8% 50%)", fontSize: 9 }}
+                  tickLine={false}
+                  axisLine={false}
+                  tickFormatter={(v: number) => fmtCompact(v)}
+                  width={52}
+                />
+                <RechartsTooltip content={<ChartTooltipContent />} cursor={{ stroke: "hsl(220 8% 50%)", strokeWidth: 1, strokeDasharray: "4 4" }} />
+                <Area
+                  type="monotone"
+                  dataKey="value"
+                  stroke={cc.stroke}
+                  strokeWidth={2.5}
+                  fill="url(#chartGradient)"
+                  activeDot={<GlowDot />}
+                  dot={{ r: 3, fill: cc.stroke, stroke: "hsl(220 20% 5%)", strokeWidth: 2 }}
+                  animationDuration={1200}
+                  animationEasing="ease-out"
+                />
+              </AreaChart>
+            </ResponsiveContainer>
+          </motion.div>
 
           {/* Timeline list */}
           <div className="relative mt-1">
@@ -276,7 +433,6 @@ const BotFinanceProjecoes = () => {
                         {timelineMode === "mensal" && displayValue >= 0 ? "+" : ""}{fmtCurrency(displayValue)}
                       </p>
                     </div>
-                    {/* Variation badge */}
                     {i > 0 && (
                       <div className="flex items-center gap-0.5 flex-shrink-0">
                         <span className={`text-[9px] font-medium tabular-nums ${p.variation >= 0 ? "text-muted-foreground" : "text-destructive"}`}>
@@ -298,47 +454,52 @@ const BotFinanceProjecoes = () => {
                         transition={{ duration: 0.25 }}
                         className="overflow-hidden"
                       >
-                        <div className="ml-7 mb-2 space-y-2">
+                        <div className="ml-7 mb-3 space-y-2">
+                          {/* Composition formula */}
+                          <CompositionBlock
+                            prev={p.prevBalance}
+                            income={p.income}
+                            expense={p.expense}
+                            final={p.balance}
+                          />
+
+                          {/* Detail cards */}
                           <div className="grid grid-cols-2 sm:grid-cols-4 gap-2">
-                            <div className="bg-secondary/40 rounded-xl p-2.5 text-center">
+                            <motion.div initial={{ opacity: 0, y: 4 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.05 }} className="bg-secondary/40 rounded-xl p-2.5 text-center">
                               <p className="text-[9px] text-muted-foreground mb-0.5">Receitas prev.</p>
                               <p className="text-xs font-bold tabular-nums text-foreground">{fmtCurrency(p.income)}</p>
-                            </div>
-                            <div className="bg-secondary/40 rounded-xl p-2.5 text-center">
+                            </motion.div>
+                            <motion.div initial={{ opacity: 0, y: 4 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.1 }} className="bg-secondary/40 rounded-xl p-2.5 text-center">
                               <p className="text-[9px] text-muted-foreground mb-0.5">Despesas prev.</p>
                               <p className="text-xs font-bold tabular-nums text-destructive">{fmtCurrency(p.expense)}</p>
-                            </div>
-                            <div className="bg-secondary/40 rounded-xl p-2.5 text-center">
+                            </motion.div>
+                            <motion.div initial={{ opacity: 0, y: 4 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.15 }} className="bg-secondary/40 rounded-xl p-2.5 text-center">
+                              <p className="text-[9px] text-muted-foreground mb-0.5">Balanço</p>
+                              <p className={`text-xs font-bold tabular-nums ${p.delta >= 0 ? "text-foreground" : "text-destructive"}`}>
+                                {p.delta >= 0 ? "+" : ""}{fmtCurrency(p.delta)}
+                              </p>
+                            </motion.div>
+                            <motion.div initial={{ opacity: 0, y: 4 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.2 }} className="bg-secondary/40 rounded-xl p-2.5 text-center">
                               <p className="text-[9px] text-muted-foreground mb-0.5">Saldo final</p>
                               <p className={`text-xs font-bold tabular-nums ${p.balance >= 0 ? "text-foreground" : "text-destructive"}`}>
                                 {fmtCurrency(p.balance)}
                               </p>
-                            </div>
-                            {i > 0 && (
-                              <div className="bg-secondary/40 rounded-xl p-2.5 text-center">
-                                <p className="text-[9px] text-muted-foreground mb-0.5">vs mês anterior</p>
-                                <p className={`text-xs font-bold tabular-nums ${p.variation >= 0 ? "text-foreground" : "text-destructive"}`}>
-                                  {p.variation >= 0 ? "+" : ""}{fmtCurrency(p.variation)}
-                                </p>
-                              </div>
-                            )}
+                            </motion.div>
                           </div>
 
-                          {/* Dynamic micro-copy */}
+                          {/* Micro-copy */}
                           {p.microCopy && (
                             <motion.p
                               initial={{ opacity: 0, x: -6 }}
                               animate={{ opacity: 1, x: 0 }}
-                              transition={{ delay: 0.15 }}
-                              className={`text-[11px] font-medium ${
-                                p.delta >= 0 ? "text-foreground" : "text-warning"
-                              }`}
+                              transition={{ delay: 0.25 }}
+                              className={`text-[11px] font-medium ${p.delta >= 0 ? "text-foreground" : "text-warning"}`}
                             >
                               {p.microCopy}
                             </motion.p>
                           )}
 
-                          {/* Contextual alert */}
+                          {/* Alert */}
                           {p.alert && !p.microCopy && (
                             <motion.div
                               initial={{ opacity: 0, scale: 0.95 }}
@@ -358,7 +519,9 @@ const BotFinanceProjecoes = () => {
           </div>
         </GlassSection>
 
-        {/* ── 3. INSIGHT INTELIGENTE ── */}
+        {/* ══════════════════════════════════════════ */}
+        {/* 2. INSIGHT INTELIGENTE                    */}
+        {/* ══════════════════════════════════════════ */}
         <motion.div
           initial={{ opacity: 0, y: 16 }}
           animate={{ opacity: 1, y: 0 }}
@@ -387,7 +550,9 @@ const BotFinanceProjecoes = () => {
           </div>
         </motion.div>
 
-        {/* ── 4. LIMITE DIÁRIO COM OBJETIVO ── */}
+        {/* ══════════════════════════════════════════ */}
+        {/* 3. LIMITE DIÁRIO                          */}
+        {/* ══════════════════════════════════════════ */}
         <GlassSection delay={0.18} data-section="limite">
           <SectionHeader icon={<Wallet className="w-4 h-4 text-foreground" />} title="Limite Diário" />
 
@@ -400,7 +565,6 @@ const BotFinanceProjecoes = () => {
             </p>
           </div>
 
-          {/* Progress */}
           <div className="space-y-1.5">
             <div className="flex items-center justify-between text-[10px]">
               <span className="text-muted-foreground">Gasto hoje</span>
@@ -420,7 +584,6 @@ const BotFinanceProjecoes = () => {
             </div>
           </div>
 
-          {/* Status message */}
           <div className="flex items-center gap-2">
             <ShieldCheck className={`w-3.5 h-3.5 flex-shrink-0 ${lt.text}`} />
             <motion.p
@@ -433,7 +596,6 @@ const BotFinanceProjecoes = () => {
             </motion.p>
           </div>
 
-          {/* Savings goal section */}
           <AnimatePresence>
             {showGoalInput ? (
               <motion.div
@@ -468,7 +630,6 @@ const BotFinanceProjecoes = () => {
                       Limpar
                     </button>
                   </div>
-                  {/* Quick presets */}
                   <div className="flex gap-1.5">
                     {[100, 200, 500, 1000].map((val) => (
                       <button
@@ -485,11 +646,7 @@ const BotFinanceProjecoes = () => {
                     ))}
                   </div>
                   {savingsGoal > 0 && (
-                    <motion.p
-                      initial={{ opacity: 0 }}
-                      animate={{ opacity: 1 }}
-                      className="text-[11px] text-muted-foreground"
-                    >
+                    <motion.p initial={{ opacity: 0 }} animate={{ opacity: 1 }} className="text-[11px] text-muted-foreground">
                       Guardando <span className="font-semibold text-foreground">{fmtCurrency(savingsGoal)}</span>, seu limite diário fica em{" "}
                       <span className="font-semibold text-foreground">{formattedSafe}</span>
                     </motion.p>
@@ -511,7 +668,6 @@ const BotFinanceProjecoes = () => {
             )}
           </AnimatePresence>
 
-          {/* Remaining budget */}
           <div className="bg-secondary/30 rounded-xl px-3 py-2 flex items-center justify-between">
             <span className="text-[10px] text-muted-foreground">Orçamento restante do mês</span>
             <span className="text-xs font-bold tabular-nums text-foreground">
@@ -519,6 +675,10 @@ const BotFinanceProjecoes = () => {
             </span>
           </div>
         </GlassSection>
+
+        {/* ══════════════════════════════════════════ */}
+        {/* 4. SIMULAÇÃO                              */}
+        {/* ══════════════════════════════════════════ */}
         <GlassSection delay={0.26} className={hasSimulation ? "relative overflow-hidden" : ""}>
           {hasSimulation && (
             <div className="absolute -top-16 -right-16 w-40 h-40 rounded-full bg-accent/5 blur-3xl pointer-events-none" />
@@ -617,7 +777,9 @@ const BotFinanceProjecoes = () => {
           </div>
         </GlassSection>
 
-        {/* ── 6. INCENTIVO DE ECONOMIA ── */}
+        {/* ══════════════════════════════════════════ */}
+        {/* 5. RESERVA INTELIGENTE                    */}
+        {/* ══════════════════════════════════════════ */}
         <GlassSection delay={0.32}>
           <SectionHeader icon={<Banknote className="w-4 h-4 text-foreground" />} title="Reserva Inteligente" />
           <div className="bg-secondary/30 rounded-xl p-3 space-y-2">
@@ -640,7 +802,9 @@ const BotFinanceProjecoes = () => {
           </button>
         </GlassSection>
 
-        {/* ── 7. AÇÕES RÁPIDAS ── */}
+        {/* ══════════════════════════════════════════ */}
+        {/* 6. AÇÕES RÁPIDAS                          */}
+        {/* ══════════════════════════════════════════ */}
         <GlassSection delay={0.38}>
           <SectionHeader icon={<Target className="w-4 h-4 text-foreground" />} title="Ações Rápidas" />
           <div className="grid grid-cols-1 sm:grid-cols-3 gap-2">
