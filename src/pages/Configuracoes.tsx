@@ -28,6 +28,9 @@ const Configuracoes = () => {
   const [editModalOpen, setEditModalOpen] = useState(false);
   const [editName, setEditName] = useState("");
   const [activeTab, setActiveTab] = useState<"conta" | "config">("conta");
+  const [resetModalOpen, setResetModalOpen] = useState(false);
+  const [resetMode, setResetMode] = useState<"choose" | "confirm-transactions" | "confirm-all">("choose");
+  const [resetting, setResetting] = useState(false);
   const [uploadingAvatar, setUploadingAvatar] = useState(false);
   const [previewUrl, setPreviewUrl] = useState<string | null>(null);
   const [botPersonality, setBotPersonalityState] = useState<"casual" | "assessor">(() => {
