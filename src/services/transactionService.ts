@@ -122,12 +122,17 @@ export async function deleteTransaction(id: string) {
 }
 
 // Account helpers
-export async function getAccounts() {
-  const { data, error } = await supabase
+export async function getAccounts(includeInactive = false) {
+  let query = supabase
     .from("accounts")
     .select("*")
     .order("is_default", { ascending: false });
 
+  if (!includeInactive) {
+    query = query.eq("is_active", true);
+  }
+
+  const { data, error } = await query;
   if (error) throw error;
   return data ?? [];
 }
