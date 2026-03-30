@@ -183,7 +183,10 @@ const BotFinanceProjecoes = () => {
   // ─── Month projection ───
   const saldoInicial = data.previousMonthEndingBalance;
   const balanco = data.balanco;
-  const saldoFinal = saldoInicial + balanco + savingsBoost + incomeBoost;
+  const saldoFinalBase = saldoInicial + balanco;
+  const saldoFinal = saldoFinalBase + savingsBoost + incomeBoost;
+  const totalImpact = (savingsBoost + incomeBoost) * 6; // accumulated over 6 months
+  const impact3m = (savingsBoost + incomeBoost) * 3;
 
   // ─── Health score (0–100) ───
   const healthScore = useMemo(() => {
@@ -483,91 +486,121 @@ const BotFinanceProjecoes = () => {
         </div>
 
         {/* 4 — SIMULAÇÃO */}
-        <GlassSection delay={0.26}>
-          <SectionHeader icon={<PiggyBank className="w-4 h-4 text-primary" />} title="Simulação" />
-
-          {/* Quick action buttons */}
-          <div className="grid grid-cols-2 gap-2">
-            <button
-              onClick={() => setSavingsBoost((p) => Math.min(p + 200, 2000))}
-              className="text-xs font-medium py-2.5 rounded-xl bg-primary/10 text-primary hover:bg-primary/20 active:scale-[0.97] transition-all"
-            >
-              E se eu economizar?
-            </button>
-            <button
-              onClick={() => setIncomeBoost((p) => Math.min(p + 500, 5000))}
-              className="text-xs font-medium py-2.5 rounded-xl bg-secondary text-foreground hover:bg-secondary/80 active:scale-[0.97] transition-all"
-            >
-              E se eu ganhar mais?
-            </button>
-          </div>
-
-          {/* Sliders */}
-          <div className="space-y-3">
-            <div>
-              <div className="flex items-center justify-between mb-1.5">
-                <label className="text-[11px] text-muted-foreground">Economia mensal</label>
-                <span className="text-xs font-semibold text-primary tabular-nums">{fmtCurrency(savingsBoost)}</span>
-              </div>
-              <input
-                type="range"
-                min={0}
-                max={2000}
-                step={50}
-                value={savingsBoost}
-                onChange={(e) => setSavingsBoost(Number(e.target.value))}
-                className="w-full h-1.5 rounded-full bg-secondary appearance-none cursor-pointer [&::-webkit-slider-thumb]:appearance-none [&::-webkit-slider-thumb]:w-4 [&::-webkit-slider-thumb]:h-4 [&::-webkit-slider-thumb]:rounded-full [&::-webkit-slider-thumb]:bg-primary [&::-webkit-slider-thumb]:shadow-lg [&::-webkit-slider-thumb]:transition-transform [&::-webkit-slider-thumb]:hover:scale-125"
-              />
-            </div>
-            <div>
-              <div className="flex items-center justify-between mb-1.5">
-                <label className="text-[11px] text-muted-foreground">Renda extra</label>
-                <span className="text-xs font-semibold text-primary tabular-nums">{fmtCurrency(incomeBoost)}</span>
-              </div>
-              <input
-                type="range"
-                min={0}
-                max={5000}
-                step={100}
-                value={incomeBoost}
-                onChange={(e) => setIncomeBoost(Number(e.target.value))}
-                className="w-full h-1.5 rounded-full bg-secondary appearance-none cursor-pointer [&::-webkit-slider-thumb]:appearance-none [&::-webkit-slider-thumb]:w-4 [&::-webkit-slider-thumb]:h-4 [&::-webkit-slider-thumb]:rounded-full [&::-webkit-slider-thumb]:bg-primary [&::-webkit-slider-thumb]:shadow-lg [&::-webkit-slider-thumb]:transition-transform [&::-webkit-slider-thumb]:hover:scale-125"
-              />
-            </div>
-          </div>
-
-          {/* Simulation result */}
+        <GlassSection delay={0.26} className={hasSimulation ? "relative overflow-hidden" : ""}>
+          {/* Glow when simulation active */}
           {hasSimulation && (
-            <motion.div
-              initial={{ opacity: 0, height: 0 }}
-              animate={{ opacity: 1, height: "auto" }}
-              className="rounded-xl bg-primary/5 border border-primary/10 p-3 space-y-1"
-            >
-              {savingsBoost > 0 && (
-                <p className="text-xs text-foreground">
-                  Economia: <span className="font-semibold text-primary">{fmtCurrency(savingsBoost)}</span>
-                </p>
-              )}
-              {incomeBoost > 0 && (
-                <p className="text-xs text-foreground">
-                  Renda extra: <span className="font-semibold text-primary">{fmtCurrency(incomeBoost)}</span>
-                </p>
-              )}
-              <p className="text-xs font-semibold pt-1 border-t border-primary/10">
-                Saldo final → <span className="text-primary">{fmtCurrency(saldoFinal)}</span>
-              </p>
-            </motion.div>
+            <div className="absolute -top-16 -right-16 w-40 h-40 rounded-full bg-primary/5 blur-3xl pointer-events-none transition-opacity duration-500" />
           )}
 
-          {hasSimulation && (
-            <button
-              onClick={() => { setSavingsBoost(0); setIncomeBoost(0); }}
-              className="flex items-center gap-1 text-[10px] text-muted-foreground hover:text-foreground transition-colors"
-            >
-              <RotateCcw className="w-3 h-3" />
-              Resetar simulação
-            </button>
-          )}
+          <div className="relative">
+            <SectionHeader icon={<PiggyBank className="w-4 h-4 text-primary" />} title="Simulação Financeira" />
+
+            {/* Quick action buttons */}
+            <div className="grid grid-cols-2 gap-2 mt-3">
+              <button
+                onClick={() => setSavingsBoost((p) => Math.min(p + 200, 2000))}
+                className="text-xs font-medium py-2.5 rounded-xl bg-primary/10 text-primary hover:bg-primary/20 active:scale-[0.97] transition-all"
+              >
+                + Economizar
+              </button>
+              <button
+                onClick={() => setIncomeBoost((p) => Math.min(p + 500, 5000))}
+                className="text-xs font-medium py-2.5 rounded-xl bg-secondary text-foreground hover:bg-secondary/80 active:scale-[0.97] transition-all"
+              >
+                + Renda extra
+              </button>
+            </div>
+
+            {/* Sliders */}
+            <div className="space-y-4 mt-4">
+              <div>
+                <div className="flex items-center justify-between mb-1.5">
+                  <label className="text-[11px] text-muted-foreground">Economia mensal</label>
+                  <span className="text-xs font-semibold text-primary tabular-nums">{fmtCurrency(savingsBoost)}</span>
+                </div>
+                <input
+                  type="range"
+                  min={0}
+                  max={2000}
+                  step={50}
+                  value={savingsBoost}
+                  onChange={(e) => setSavingsBoost(Number(e.target.value))}
+                  className="w-full h-1.5 rounded-full bg-secondary appearance-none cursor-pointer [&::-webkit-slider-thumb]:appearance-none [&::-webkit-slider-thumb]:w-4 [&::-webkit-slider-thumb]:h-4 [&::-webkit-slider-thumb]:rounded-full [&::-webkit-slider-thumb]:bg-primary [&::-webkit-slider-thumb]:shadow-lg [&::-webkit-slider-thumb]:transition-transform [&::-webkit-slider-thumb]:hover:scale-125"
+                />
+              </div>
+              <div>
+                <div className="flex items-center justify-between mb-1.5">
+                  <label className="text-[11px] text-muted-foreground">Renda extra</label>
+                  <span className="text-xs font-semibold text-primary tabular-nums">{fmtCurrency(incomeBoost)}</span>
+                </div>
+                <input
+                  type="range"
+                  min={0}
+                  max={5000}
+                  step={100}
+                  value={incomeBoost}
+                  onChange={(e) => setIncomeBoost(Number(e.target.value))}
+                  className="w-full h-1.5 rounded-full bg-secondary appearance-none cursor-pointer [&::-webkit-slider-thumb]:appearance-none [&::-webkit-slider-thumb]:w-4 [&::-webkit-slider-thumb]:h-4 [&::-webkit-slider-thumb]:rounded-full [&::-webkit-slider-thumb]:bg-primary [&::-webkit-slider-thumb]:shadow-lg [&::-webkit-slider-thumb]:transition-transform [&::-webkit-slider-thumb]:hover:scale-125"
+                />
+              </div>
+            </div>
+
+            {/* Simulation result panel */}
+            {hasSimulation && (
+              <motion.div
+                initial={{ opacity: 0, y: 8 }}
+                animate={{ opacity: 1, y: 0 }}
+                transition={{ duration: 0.3 }}
+                className="mt-4 rounded-xl bg-primary/5 border border-primary/15 p-4 space-y-3"
+              >
+                {/* Accumulated impact highlights */}
+                <div className="grid grid-cols-2 gap-2">
+                  <div className="bg-secondary/40 rounded-xl p-2.5 text-center">
+                    <p className="text-[9px] text-muted-foreground mb-0.5">Impacto em 3 meses</p>
+                    <p className="text-sm font-bold tabular-nums text-primary">
+                      +{fmtCurrency(impact3m)}
+                    </p>
+                  </div>
+                  <div className="bg-secondary/40 rounded-xl p-2.5 text-center">
+                    <p className="text-[9px] text-muted-foreground mb-0.5">Impacto em 6 meses</p>
+                    <p className="text-sm font-bold tabular-nums text-primary">
+                      +{fmtCurrency(totalImpact)}
+                    </p>
+                  </div>
+                </div>
+
+                {/* Summary */}
+                <div className="border-t border-primary/10 pt-2 space-y-1">
+                  {savingsBoost > 0 && (
+                    <p className="text-[11px] text-foreground">
+                      💰 Economizando <span className="font-semibold text-primary">{fmtCurrency(savingsBoost)}</span>/mês
+                    </p>
+                  )}
+                  {incomeBoost > 0 && (
+                    <p className="text-[11px] text-foreground">
+                      📈 Renda extra de <span className="font-semibold text-primary">{fmtCurrency(incomeBoost)}</span>/mês
+                    </p>
+                  )}
+                  <p className="text-xs font-semibold pt-1">
+                    Saldo final do mês → <span className="text-primary">{fmtCurrency(saldoFinal)}</span>
+                    <span className="text-[10px] text-muted-foreground ml-1.5">
+                      (antes: {fmtCurrency(saldoFinalBase)})
+                    </span>
+                  </p>
+                </div>
+              </motion.div>
+            )}
+
+            {hasSimulation && (
+              <button
+                onClick={() => { setSavingsBoost(0); setIncomeBoost(0); }}
+                className="flex items-center gap-1 mt-2 text-[10px] text-muted-foreground hover:text-foreground transition-colors"
+              >
+                <RotateCcw className="w-3 h-3" />
+                Resetar simulação
+              </button>
+            )}
+          </div>
         </GlassSection>
 
         {/* 6 — AÇÕES RÁPIDAS */}
