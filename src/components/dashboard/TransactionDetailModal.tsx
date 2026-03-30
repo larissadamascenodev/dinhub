@@ -379,40 +379,7 @@ const TransactionDetailModal = ({ open, tx, accountName, onClose, onRefresh, use
           </div>
         );
 
-      case "menu":
-        return (
-          <div className="space-y-4">
-            <div className="flex items-center justify-between">
-              <h3 className="text-base font-bold text-foreground">Opções</h3>
-              <button onClick={() => setStep("detail")} className="w-8 h-8 rounded-full bg-muted/40 flex items-center justify-center text-muted-foreground hover:text-foreground">
-                <X className="w-4 h-4" />
-              </button>
-            </div>
-            <div className="space-y-2">
-              <button
-                onClick={openEditForm}
-                className="w-full flex items-center gap-3 px-4 py-3 rounded-xl bg-muted/20 border border-border/20 hover:bg-muted/40 transition-all text-left"
-              >
-                <Pencil className="w-4 h-4 text-primary" />
-                <span className="text-sm font-semibold text-foreground">Editar</span>
-              </button>
-              <button
-                onClick={() => setStep("delete-confirm")}
-                className="w-full flex items-center gap-3 px-4 py-3 rounded-xl bg-muted/20 border border-border/20 hover:bg-destructive/10 transition-all text-left"
-              >
-                <Trash2 className="w-4 h-4 text-destructive" />
-                <span className="text-sm font-semibold text-foreground">Excluir</span>
-              </button>
-              <button
-                onClick={handleClose}
-                className="w-full flex items-center gap-3 px-4 py-3 rounded-xl bg-muted/20 border border-border/20 hover:bg-muted/40 transition-all text-left"
-              >
-                <X className="w-4 h-4 text-muted-foreground" />
-                <span className="text-sm font-semibold text-foreground">Fechar</span>
-              </button>
-            </div>
-          </div>
-        );
+
 
       case "pay-confirm":
         return (
