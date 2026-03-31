@@ -144,7 +144,7 @@ async function buildDashboardData(month: number, year: number): Promise<Dashboar
     isTransaction: false,
   }));
 
-  const allEvents = [...events, ...pendingAsEvents].sort((a, b) => parseInt(a.date) - parseInt(b.date));
+  const allEvents = [...events, ...pendingAsEvents, ...faturaPendingEvents].sort((a, b) => parseInt(a.date) - parseInt(b.date));
 
   const catMap = new Map<string, number>();
   paidTxs
