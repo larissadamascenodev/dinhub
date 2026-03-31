@@ -183,7 +183,7 @@ const SwipeableItem = ({
           <span className={`block mt-0.5 text-[8px] md:text-[9px] font-bold uppercase tracking-wide ${
             isPending ? "text-[hsl(40_80%_50%)]" : "text-muted-foreground/40"
           }`} style={isPending ? { color: "hsl(40 80% 50% / 0.7)" } : undefined}>
-            {isPending ? "Pendente" : "Pago"}
+            {isPending ? (isReceita ? "A Receber" : "Pendente") : (isReceita ? "Recebido" : "Pago")}
           </span>
         </div>
       </motion.div>
@@ -239,9 +239,13 @@ const Transacoes = () => {
     else {
       const baseTxs = (txRes.data as TransactionRow[]) ?? [];
       // Materialize recurring with adjusted date
+      // Force status to "pendente" for future months
+      const now = new Date();
+      const isFutureMonth = selectedYear > now.getFullYear() || (selectedYear === now.getFullYear() && selectedMonth > now.getMonth());
       const materializedRecurring = recurringTxs.map((t: any) => ({
         ...t,
         date: `${selectedYear}-${String(selectedMonth + 1).padStart(2, "0")}-${String(new Date(t.date).getDate()).padStart(2, "0")}`,
+        status: isFutureMonth ? "pendente" : t.status,
         _isRecurringMaterialized: true,
       })) as TransactionRow[];
       setTransactions([...baseTxs, ...materializedRecurring]);
