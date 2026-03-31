@@ -552,45 +552,16 @@ const NovaTransacaoModal = ({ open, onClose, onSuccess, initialType = "despesa" 
                   </button>
                 </div>
 
-                {/* Account section */}
+                {/* Account / Credit Card section */}
                 <div className="space-y-2">
                   <div className="flex items-center gap-2 text-sm font-medium text-foreground">
-                    <Wallet className="w-4 h-4 text-muted-foreground" />
-                    Conta
-                    {type === "despesa" && <span className="text-destructive text-xs">*</span>}
+                    {paymentMethod === "cartao" && type === "despesa" ? (
+                      <CreditCard className="w-4 h-4 text-muted-foreground" />
+                    ) : (
+                      <Wallet className="w-4 h-4 text-muted-foreground" />
+                    )}
+                    {paymentMethod === "cartao" && type === "despesa" ? "Cartão de Crédito" : "Conta"}
                   </div>
-
-                  {/* Payment method toggle (expenses only) */}
-                  {type === "despesa" && (
-                    <div className="flex gap-2 mb-2">
-                      <button
-                        type="button"
-                        onClick={() => setPaymentMethod("conta")}
-                        className={cn(
-                          "flex items-center gap-1.5 px-4 py-2 rounded-xl text-xs font-semibold transition-all border",
-                          paymentMethod === "conta"
-                            ? "bg-primary/15 text-primary border-primary/25"
-                            : "bg-muted/30 text-muted-foreground border-transparent"
-                        )}
-                      >
-                        <Wallet className="w-3.5 h-3.5" />
-                        Conta
-                      </button>
-                      <button
-                        type="button"
-                        onClick={() => setPaymentMethod("cartao")}
-                        className={cn(
-                          "flex items-center gap-1.5 px-4 py-2 rounded-xl text-xs font-semibold transition-all border",
-                          paymentMethod === "cartao"
-                            ? "bg-primary/15 text-primary border-primary/25"
-                            : "bg-muted/30 text-muted-foreground border-transparent"
-                        )}
-                      >
-                        <CreditCard className="w-3.5 h-3.5" />
-                        Cartão
-                      </button>
-                    </div>
-                  )}
 
                   {paymentMethod === "conta" || type === "receita" ? (
                     accounts.length === 0 ? (
