@@ -35,6 +35,8 @@ export interface RawTransaction {
   user_id: string;
   created_at: string;
   updated_at: string;
+  payment_method?: string;
+  credit_card_id?: string | null;
 }
 
 export interface RawEvent {

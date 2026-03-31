@@ -1,4 +1,5 @@
 import { memo, useState } from "react";
+import { useNavigate } from "react-router-dom";
 import {
   Layers, ChevronUp, Trash2, Clock, RefreshCw,
   ShoppingCart, Heart, Car, Utensils, Home as HomeIcon,
@@ -51,7 +52,40 @@ const CATEGORY_COLORS: Record<string, string> = {
 const getCategoryIcon = (category: string) => CATEGORY_ICONS[category] || MoreHorizontal;
 const getCategoryColor = (category: string) => CATEGORY_COLORS[category] || "220 10% 55%";
 
+const FaturaCard = ({ tx }: { tx: Transaction }) => {
+  const navigate = useNavigate();
+  return (
+    <div
+      className="group relative flex items-center gap-2.5 px-3 py-2.5 md:gap-3 md:px-4 md:py-3.5 rounded-xl bg-card/95 border border-primary/10 cursor-pointer hover:border-primary/25 transition-colors"
+      onClick={() => navigate("/fatura-cartao")}
+    >
+      <div
+        className="w-8 h-8 md:w-10 md:h-10 rounded-full flex items-center justify-center flex-shrink-0"
+        style={{ background: "hsl(var(--primary) / 0.12)" }}
+      >
+        <CreditCard className="w-4 h-4 md:w-[18px] md:h-[18px] text-primary" />
+      </div>
+      <div className="flex-1 min-w-0">
+        <p className="text-xs md:text-[13px] font-bold text-foreground truncate">{tx.name}</p>
+        <p className="text-[9px] md:text-[10px] mt-0.5 text-muted-foreground/50">
+          {tx.faturaItemCount} lançamento{tx.faturaItemCount !== 1 ? "s" : ""} · {tx.date}
+        </p>
+      </div>
+      <div className="text-right shrink-0">
+        <p className="text-xs md:text-sm font-bold tabular-nums text-destructive">
+          −{fmt(tx.amount)}
+        </p>
+        <span className="block mt-0.5 text-[8px] md:text-[9px] font-bold uppercase tracking-wide text-primary/60">
+          Fatura
+        </span>
+      </div>
+    </div>
+  );
+};
+
 const TxCard = ({ tx, onDelete }: { tx: Transaction; onDelete?: (id: string) => void }) => {
+  if (tx.isFatura) return <FaturaCard tx={tx} />;
+
   const isReceita = tx.type === "receita";
   const isPaid = tx.status === "pago";
   const isPending = tx.status !== "pago";

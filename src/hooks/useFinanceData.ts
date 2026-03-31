@@ -2,6 +2,7 @@ import { useEffect, useState, useCallback, useRef } from "react";
 import { supabase } from "@/integrations/supabase/client";
 import { useAuth } from "@/contexts/AuthContext";
 import { getFinancialSummary, computeDailyBehavior } from "@/lib/financeEngine";
+import { getCreditCards } from "@/services/transactionService";
 import type { DashboardData, Transaction, FinanceEvent } from "@/types/finance";
 
 const EMPTY_DATA: DashboardData = {
@@ -49,13 +50,49 @@ function offsetMonth(month: number, year: number, offset: number) {
 
 /** Build DashboardData from the finance engine (pure async, no React state) */
 async function buildDashboardData(month: number, year: number): Promise<DashboardData> {
-  const { summary, transactions: rawTxs, events: rawEvents } =
-    await getFinancialSummary(month, year);
+  const [{ summary, transactions: rawTxs, events: rawEvents }, creditCards] =
+    await Promise.all([
+      getFinancialSummary(month, year),
+      getCreditCards(),
+    ]);
+
+  const cardMap = new Map((creditCards as any[]).map((c: any) => [c.id, c.name]));
 
   const paidTxs = rawTxs.filter((t) => t.status === "pago");
   const pendingTxs = rawTxs.filter((t) => t.status === "pendente");
 
-  const transactions: Transaction[] = paidTxs.map((t) => ({
+  // Separate credit card vs regular transactions
+  const regularPaid = paidTxs.filter((t) => t.payment_method !== "cartao");
+  const ccPaid = paidTxs.filter((t) => t.payment_method === "cartao" && t.credit_card_id);
+  const regularPending = pendingTxs.filter((t) => t.payment_method !== "cartao");
+  const ccPending = pendingTxs.filter((t) => t.payment_method === "cartao" && t.credit_card_id);
+
+  // Group credit card transactions by card into single "Fatura" entries
+  function groupByCard(txs: typeof paidTxs, status: "pago" | "pendente"): Transaction[] {
+    const grouped = new Map<string, { total: number; count: number; name: string }>();
+    for (const t of txs) {
+      const cardId = t.credit_card_id!;
+      const existing = grouped.get(cardId) || { total: 0, count: 0, name: cardMap.get(cardId) || "Cartão" };
+      existing.total += Number(t.amount);
+      existing.count += 1;
+      grouped.set(cardId, existing);
+    }
+    return Array.from(grouped.entries()).map(([cardId, info]) => ({
+      id: `fatura-${cardId}-${month}-${year}`,
+      name: `Fatura ${info.name}`,
+      category: "Cartão de Crédito",
+      date: new Date(year, month, 1).toLocaleDateString("pt-BR", { day: "numeric", month: "short" }),
+      amount: info.total,
+      type: "despesa" as const,
+      status,
+      isFatura: true,
+      creditCardId: cardId,
+      creditCardName: info.name,
+      faturaItemCount: info.count,
+    }));
+  }
+
+  const regularTransactions: Transaction[] = regularPaid.map((t) => ({
     id: t.id,
     name: t.name,
     category: t.category,
@@ -65,7 +102,13 @@ async function buildDashboardData(month: number, year: number): Promise<Dashboar
     status: "pago" as const,
   }));
 
-  const pendingAsEvents: FinanceEvent[] = pendingTxs.map((t) => ({
+  const faturasPaid = groupByCard(ccPaid, "pago");
+  const faturasPending = groupByCard(ccPending, "pendente");
+
+  const transactions: Transaction[] = [...regularTransactions, ...faturasPaid];
+
+  // For pending events, only show regular pending (cc pending are shown as fatura cards)
+  const pendingAsEvents: FinanceEvent[] = regularPending.map((t) => ({
     id: t.id,
     name: t.name,
     category: t.category,
@@ -74,6 +117,19 @@ async function buildDashboardData(month: number, year: number): Promise<Dashboar
     amount: Number(t.amount),
     status: "pendente" as const,
     type: t.type as "receita" | "despesa",
+    isTransaction: true,
+  }));
+
+  // Add fatura pending as events too
+  const faturaPendingEvents: FinanceEvent[] = faturasPending.map((f) => ({
+    id: f.id,
+    name: f.name,
+    category: f.category,
+    date: f.date,
+    rawDate: `${year}-${String(month + 1).padStart(2, "0")}-01`,
+    amount: f.amount,
+    status: "pendente" as const,
+    type: "despesa" as const,
     isTransaction: true,
   }));
 
@@ -88,7 +144,7 @@ async function buildDashboardData(month: number, year: number): Promise<Dashboar
     isTransaction: false,
   }));
 
-  const allEvents = [...events, ...pendingAsEvents].sort((a, b) => parseInt(a.date) - parseInt(b.date));
+  const allEvents = [...events, ...pendingAsEvents, ...faturaPendingEvents].sort((a, b) => parseInt(a.date) - parseInt(b.date));
 
   const catMap = new Map<string, number>();
   paidTxs
@@ -125,15 +181,18 @@ async function buildDashboardData(month: number, year: number): Promise<Dashboar
     transactions,
     categories,
     events: allEvents,
-    pendingTransactions: pendingTxs.map((t) => ({
-      id: t.id,
-      name: t.name,
-      category: t.category,
-      date: t.date,
-      amount: Number(t.amount),
-      type: t.type as Transaction["type"],
-      status: "pendente" as const,
-    })),
+    pendingTransactions: [
+      ...regularPending.map((t) => ({
+        id: t.id,
+        name: t.name,
+        category: t.category,
+        date: t.date,
+        amount: Number(t.amount),
+        type: t.type as Transaction["type"],
+        status: "pendente" as const,
+      })),
+      ...faturasPending,
+    ],
   };
 }
 
