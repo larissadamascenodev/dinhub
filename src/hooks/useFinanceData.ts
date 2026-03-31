@@ -182,14 +182,18 @@ async function buildDashboardData(month: number, year: number): Promise<Dashboar
     categories,
     events: allEvents,
     pendingTransactions: pendingTxs.map((t) => ({
-      id: t.id,
-      name: t.name,
-      category: t.category,
-      date: t.date,
-      amount: Number(t.amount),
-      type: t.type as Transaction["type"],
-      status: "pendente" as const,
-    })),
+    pendingTransactions: [
+      ...regularPending.map((t) => ({
+        id: t.id,
+        name: t.name,
+        category: t.category,
+        date: t.date,
+        amount: Number(t.amount),
+        type: t.type as Transaction["type"],
+        status: "pendente" as const,
+      })),
+      ...faturasPending,
+    ],
   };
 }
 
