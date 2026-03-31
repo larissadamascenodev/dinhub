@@ -107,7 +107,8 @@ async function buildDashboardData(month: number, year: number): Promise<Dashboar
 
   const transactions: Transaction[] = [...regularTransactions, ...faturasPaid];
 
-  const pendingAsEvents: FinanceEvent[] = pendingTxs.map((t) => ({
+  // For pending events, only show regular pending (cc pending are shown as fatura cards)
+  const pendingAsEvents: FinanceEvent[] = regularPending.map((t) => ({
     id: t.id,
     name: t.name,
     category: t.category,
@@ -116,6 +117,19 @@ async function buildDashboardData(month: number, year: number): Promise<Dashboar
     amount: Number(t.amount),
     status: "pendente" as const,
     type: t.type as "receita" | "despesa",
+    isTransaction: true,
+  }));
+
+  // Add fatura pending as events too
+  const faturaPendingEvents: FinanceEvent[] = faturasPending.map((f) => ({
+    id: f.id,
+    name: f.name,
+    category: f.category,
+    date: f.date,
+    rawDate: `${year}-${String(month + 1).padStart(2, "0")}-01`,
+    amount: f.amount,
+    status: "pendente" as const,
+    type: "despesa" as const,
     isTransaction: true,
   }));
 
