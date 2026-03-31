@@ -5,6 +5,7 @@ import {
   Wallet, Repeat, StickyNote, Check, Clock, CreditCard, Plus,
   Sparkles, Search, Settings,
 } from "lucide-react";
+import { Switch } from "@/components/ui/switch";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
