@@ -183,7 +183,7 @@ const SwipeableItem = ({
           <span className={`block mt-0.5 text-[8px] md:text-[9px] font-bold uppercase tracking-wide ${
             isPending ? "text-[hsl(40_80%_50%)]" : "text-muted-foreground/40"
           }`} style={isPending ? { color: "hsl(40 80% 50% / 0.7)" } : undefined}>
-            {isPending ? "Pendente" : "Pago"}
+            {isPending ? (isReceita ? "A Receber" : "Pendente") : (isReceita ? "Recebido" : "Pago")}
           </span>
         </div>
       </motion.div>

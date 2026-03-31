@@ -72,9 +72,16 @@ async function fetchMonthTransactions(month: number, year: number) {
   const baseTxs = (data ?? []) as RawTransaction[];
 
   // Materialize recurring transactions with adjusted date for this month
+  // Force status to "pendente" for future months (transactions can't be paid in advance)
+  const today = new Date();
+  const currentMonth = today.getMonth();
+  const currentYear = today.getFullYear();
+  const isFutureMonth = year > currentYear || (year === currentYear && month > currentMonth);
+
   const materializedRecurring = recurringTxs.map((t: any) => ({
     ...t,
     date: `${year}-${String(month + 1).padStart(2, "0")}-${String(new Date(t.date).getDate()).padStart(2, "0")}`,
+    status: isFutureMonth ? "pendente" : t.status,
     _isRecurringMaterialized: true,
   })) as RawTransaction[];
 

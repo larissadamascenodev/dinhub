@@ -105,7 +105,7 @@ const TxCard = ({ tx, onDelete }: { tx: Transaction; onDelete?: (id: string) => 
             {isReceita ? "+" : "−"}{fmt(tx.amount)}
           </p>
           <span className="block mt-0.5 text-[8px] md:text-[9px] font-bold uppercase tracking-wide text-muted-foreground/40">
-            {isPaid ? (isReceita ? "Recebido" : "Pago") : "Pendente"}
+            {isPaid ? (isReceita ? "Recebido" : "Pago") : (isReceita ? "A Receber" : "Pendente")}
           </span>
         </div>
         <button
