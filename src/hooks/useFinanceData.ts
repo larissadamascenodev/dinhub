@@ -181,7 +181,6 @@ async function buildDashboardData(month: number, year: number): Promise<Dashboar
     transactions,
     categories,
     events: allEvents,
-    pendingTransactions: pendingTxs.map((t) => ({
     pendingTransactions: [
       ...regularPending.map((t) => ({
         id: t.id,
