@@ -398,39 +398,73 @@ const NovaTransacaoModal = ({ open, onClose, onSuccess, initialType = "despesa" 
                 />
               </div>
 
-              {/* Status toggle - translucent style */}
-              <div className="flex justify-center mb-5 px-5">
-                <div className="flex gap-2 w-full">
+              {/* Payment method toggle (expenses only) - below value */}
+              {type === "despesa" && (
+                <div className="flex gap-2 mx-5 mb-4">
                   <button
                     type="button"
-                    onClick={() => setStatus("pago")}
+                    onClick={() => { setPaymentMethod("conta"); }}
                     className={cn(
                       "flex items-center justify-center gap-1.5 flex-1 py-2.5 rounded-xl text-xs font-bold transition-all border",
-                      status === "pago"
-                        ? isReceita
-                          ? "bg-primary/15 text-primary border-primary/30"
-                          : "bg-destructive/15 text-destructive border-destructive/30"
+                      paymentMethod === "conta"
+                        ? "bg-primary/15 text-primary border-primary/25"
                         : "bg-muted/30 text-muted-foreground border-transparent hover:bg-muted/50"
                     )}
                   >
-                    <Check className="w-3.5 h-3.5" />
-                    {isReceita ? "Já recebi" : "Já paguei"}
+                    <Wallet className="w-3.5 h-3.5" />
+                    Conta
                   </button>
                   <button
                     type="button"
-                    onClick={() => setStatus("pendente")}
+                    onClick={() => { setPaymentMethod("cartao"); setStatus("pendente"); }}
                     className={cn(
                       "flex items-center justify-center gap-1.5 flex-1 py-2.5 rounded-xl text-xs font-bold transition-all border",
-                      status === "pendente"
-                        ? "bg-amber-500/15 text-amber-400 border-amber-500/30"
+                      paymentMethod === "cartao"
+                        ? "bg-primary/15 text-primary border-primary/25"
                         : "bg-muted/30 text-muted-foreground border-transparent hover:bg-muted/50"
                     )}
                   >
-                    <Clock className="w-3.5 h-3.5" />
-                    Pendente
+                    <CreditCard className="w-3.5 h-3.5" />
+                    Cartão de Crédito
                   </button>
                 </div>
-              </div>
+              )}
+
+              {/* Status toggle - hidden when payment method is cartão */}
+              {(type === "receita" || paymentMethod === "conta") && (
+                <div className="flex justify-center mb-5 px-5">
+                  <div className="flex gap-2 w-full">
+                    <button
+                      type="button"
+                      onClick={() => setStatus("pago")}
+                      className={cn(
+                        "flex items-center justify-center gap-1.5 flex-1 py-2.5 rounded-xl text-xs font-bold transition-all border",
+                        status === "pago"
+                          ? isReceita
+                            ? "bg-primary/15 text-primary border-primary/30"
+                            : "bg-destructive/15 text-destructive border-destructive/30"
+                          : "bg-muted/30 text-muted-foreground border-transparent hover:bg-muted/50"
+                      )}
+                    >
+                      <Check className="w-3.5 h-3.5" />
+                      {isReceita ? "Já recebi" : "Já paguei"}
+                    </button>
+                    <button
+                      type="button"
+                      onClick={() => setStatus("pendente")}
+                      className={cn(
+                        "flex items-center justify-center gap-1.5 flex-1 py-2.5 rounded-xl text-xs font-bold transition-all border",
+                        status === "pendente"
+                          ? "bg-amber-500/15 text-amber-400 border-amber-500/30"
+                          : "bg-muted/30 text-muted-foreground border-transparent hover:bg-muted/50"
+                      )}
+                    >
+                      <Clock className="w-3.5 h-3.5" />
+                      {isReceita ? "A receber" : "Pendente"}
+                    </button>
+                  </div>
+                </div>
+              )}
 
               {/* Form fields */}
               <form onSubmit={handleSubmit} className="px-5 space-y-5">
