@@ -71,7 +71,22 @@ async function fetchMonthTransactions(month: number, year: number) {
 
   if (error) throw error;
 
-  const baseTxs = (data ?? []) as RawTransaction[];
+  let baseTxs = (data ?? []) as RawTransaction[];
+
+  // Filter out fixa transactions that have been excluded for this month
+  const fixaIds = baseTxs.filter((t) => t.recurrence_type === "fixa").map((t) => t.id);
+  if (fixaIds.length > 0) {
+    const { data: exclusions } = await supabase
+      .from("recurring_exclusions")
+      .select("transaction_id")
+      .eq("month", month)
+      .eq("year", year)
+      .in("transaction_id", fixaIds);
+    if (exclusions && exclusions.length > 0) {
+      const excludedIds = new Set(exclusions.map((e: any) => e.transaction_id));
+      baseTxs = baseTxs.filter((t) => !excludedIds.has(t.id));
+    }
+  }
 
   // Materialize recurring transactions with adjusted date for this month
   // Force status to "pendente" for future months (transactions can't be paid in advance)
