@@ -297,7 +297,7 @@ const NovaTransacaoModal = ({ open, onClose, onSuccess, initialType = "despesa" 
           amount: perInstallmentAmount,
           category,
           date: dateStr,
-          status,
+          status: paymentMethod === "cartao" ? "pendente" : status,
           account_id: paymentMethod === "cartao" ? null : (accountId || null),
           payment_method: type === "despesa" ? paymentMethod : "conta",
           recurrence_type: recurrenceType,
