@@ -237,7 +237,23 @@ const Transacoes = () => {
 
     if (txRes.error) toast.error("Erro ao carregar transações");
     else {
-      const baseTxs = (txRes.data as TransactionRow[]) ?? [];
+      let baseTxs = (txRes.data as TransactionRow[]) ?? [];
+
+      // Filter out fixa transactions excluded for this month
+      const fixaIds = baseTxs.filter((t) => t.recurrence_type === "fixa").map((t) => t.id);
+      if (fixaIds.length > 0) {
+        const { data: exclusions } = await supabase
+          .from("recurring_exclusions")
+          .select("transaction_id")
+          .eq("month", selectedMonth)
+          .eq("year", selectedYear)
+          .in("transaction_id", fixaIds);
+        if (exclusions && exclusions.length > 0) {
+          const excludedIds = new Set(exclusions.map((e: any) => e.transaction_id));
+          baseTxs = baseTxs.filter((t) => !excludedIds.has(t.id));
+        }
+      }
+
       // Materialize recurring with adjusted date
       // Force status to "pendente" for future months
       const now = new Date();
