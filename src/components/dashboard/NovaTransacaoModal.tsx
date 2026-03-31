@@ -838,7 +838,31 @@ const NovaTransacaoModal = ({ open, onClose, onSuccess, initialType = "despesa" 
                   )}
                 </div>
 
-                {/* Observation */}
+                {/* Status toggle switch - hidden when cartão */}
+                {(type === "receita" || paymentMethod === "conta") && (
+                  <div className="flex items-center justify-between rounded-xl bg-muted/30 border border-border/20 px-4 py-3">
+                    <div className="flex items-center gap-2">
+                      {status === "pago" ? (
+                        <Check className="w-4 h-4 text-primary" />
+                      ) : (
+                        <Clock className="w-4 h-4 text-amber-400" />
+                      )}
+                      <span className="text-sm font-medium text-foreground">
+                        {status === "pago"
+                          ? (isReceita ? "Recebido" : "Pago")
+                          : (isReceita ? "A receber" : "Pendente")}
+                      </span>
+                    </div>
+                    <Switch
+                      checked={status === "pago"}
+                      onCheckedChange={(checked) => setStatus(checked ? "pago" : "pendente")}
+                      className={cn(
+                        "data-[state=checked]:bg-primary data-[state=unchecked]:bg-amber-500"
+                      )}
+                    />
+                  </div>
+                )}
+
                 <div className="space-y-2">
                   <div className="flex items-center gap-2 text-sm font-medium text-foreground">
                     <StickyNote className="w-4 h-4 text-muted-foreground" />
