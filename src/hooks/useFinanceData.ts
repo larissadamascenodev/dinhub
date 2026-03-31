@@ -50,13 +50,49 @@ function offsetMonth(month: number, year: number, offset: number) {
 
 /** Build DashboardData from the finance engine (pure async, no React state) */
 async function buildDashboardData(month: number, year: number): Promise<DashboardData> {
-  const { summary, transactions: rawTxs, events: rawEvents } =
-    await getFinancialSummary(month, year);
+  const [{ summary, transactions: rawTxs, events: rawEvents }, creditCards] =
+    await Promise.all([
+      getFinancialSummary(month, year),
+      getCreditCards(),
+    ]);
+
+  const cardMap = new Map((creditCards as any[]).map((c: any) => [c.id, c.name]));
 
   const paidTxs = rawTxs.filter((t) => t.status === "pago");
   const pendingTxs = rawTxs.filter((t) => t.status === "pendente");
 
-  const transactions: Transaction[] = paidTxs.map((t) => ({
+  // Separate credit card vs regular transactions
+  const regularPaid = paidTxs.filter((t) => t.payment_method !== "cartao");
+  const ccPaid = paidTxs.filter((t) => t.payment_method === "cartao" && t.credit_card_id);
+  const regularPending = pendingTxs.filter((t) => t.payment_method !== "cartao");
+  const ccPending = pendingTxs.filter((t) => t.payment_method === "cartao" && t.credit_card_id);
+
+  // Group credit card transactions by card into single "Fatura" entries
+  function groupByCard(txs: typeof paidTxs, status: "pago" | "pendente"): Transaction[] {
+    const grouped = new Map<string, { total: number; count: number; name: string }>();
+    for (const t of txs) {
+      const cardId = t.credit_card_id!;
+      const existing = grouped.get(cardId) || { total: 0, count: 0, name: cardMap.get(cardId) || "Cartão" };
+      existing.total += Number(t.amount);
+      existing.count += 1;
+      grouped.set(cardId, existing);
+    }
+    return Array.from(grouped.entries()).map(([cardId, info]) => ({
+      id: `fatura-${cardId}-${month}-${year}`,
+      name: `Fatura ${info.name}`,
+      category: "Cartão de Crédito",
+      date: new Date(year, month, 1).toLocaleDateString("pt-BR", { day: "numeric", month: "short" }),
+      amount: info.total,
+      type: "despesa" as const,
+      status,
+      isFatura: true,
+      creditCardId: cardId,
+      creditCardName: info.name,
+      faturaItemCount: info.count,
+    }));
+  }
+
+  const regularTransactions: Transaction[] = regularPaid.map((t) => ({
     id: t.id,
     name: t.name,
     category: t.category,
@@ -65,6 +101,11 @@ async function buildDashboardData(month: number, year: number): Promise<Dashboar
     type: t.type as Transaction["type"],
     status: "pago" as const,
   }));
+
+  const faturasPaid = groupByCard(ccPaid, "pago");
+  const faturasPending = groupByCard(ccPending, "pendente");
+
+  const transactions: Transaction[] = [...regularTransactions, ...faturasPaid];
 
   const pendingAsEvents: FinanceEvent[] = pendingTxs.map((t) => ({
     id: t.id,
