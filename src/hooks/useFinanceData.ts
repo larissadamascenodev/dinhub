@@ -2,6 +2,7 @@ import { useEffect, useState, useCallback, useRef } from "react";
 import { supabase } from "@/integrations/supabase/client";
 import { useAuth } from "@/contexts/AuthContext";
 import { getFinancialSummary, computeDailyBehavior } from "@/lib/financeEngine";
+import { getCreditCards } from "@/services/transactionService";
 import type { DashboardData, Transaction, FinanceEvent } from "@/types/finance";
 
 const EMPTY_DATA: DashboardData = {
