@@ -6,6 +6,10 @@ export interface Transaction {
   amount: number;
   type: "receita" | "despesa";
   status?: "pago" | "pendente";
+  isFatura?: boolean;
+  creditCardId?: string;
+  creditCardName?: string;
+  faturaItemCount?: number;
 }
 
 export interface CategoryExpense {
