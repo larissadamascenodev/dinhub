@@ -840,7 +840,7 @@ const GestaoFinanceira = () => {
                     </SelectContent>
                   </Select>
                   <Input
-                    placeholder={newRateType === "percent_cdi" ? "Ex: 115" : newRateType === "cdi_plus" ? "Ex: 2.5" : "Ex: 14.5"}
+                    placeholder={newRateType === "percent_cdi" ? "Ex: 115" : newRateType === "cdi_plus" ? "Ex: 2.5" : newRateType === "ipca_plus" ? "Ex: 5.5" : newRateType === "fixed_monthly" ? "Ex: 1.2" : newRateType === "custom" ? "% a.a." : "Ex: 14.5"}
                     type="number"
                     value={newAnnualRate}
                     onChange={(e) => setNewAnnualRate(e.target.value)}
