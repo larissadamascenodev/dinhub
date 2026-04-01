@@ -234,96 +234,174 @@ const GestaoFinanceira = () => {
             </Button>
           </div>
         ) : (
-          <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-3">
-            {accounts.filter((a) => a.type !== "investment").map((acc, idx) => {
-              const typeInfo = ACCOUNT_TYPE_LABELS[acc.type] ?? ACCOUNT_TYPE_LABELS.checking;
-              const Icon = typeInfo.icon;
-              const gradient = getGradient(acc.color);
-              const balance = Number(acc.current_balance);
-              const isPositive = balance >= 0;
+          <>
+            {/* Mobile carousel */}
+            <div className="flex gap-3 overflow-x-auto pb-2 snap-x snap-mandatory scrollbar-hide sm:hidden -mx-4 px-4">
+              {accounts.filter((a) => a.type !== "investment").map((acc, idx) => {
+                const typeInfo = ACCOUNT_TYPE_LABELS[acc.type] ?? ACCOUNT_TYPE_LABELS.checking;
+                const Icon = typeInfo.icon;
+                const gradient = getGradient(acc.color);
+                const balance = Number(acc.current_balance);
+                const isPositive = balance >= 0;
 
-              return (
-                <motion.div
-                  key={acc.id}
-                  initial={{ opacity: 0, y: 16 }}
-                  animate={{ opacity: 1, y: 0 }}
-                  transition={{ delay: idx * 0.05 }}
-                  onClick={() => navigate(`/conta/${acc.id}`)}
-                  className={cn(
-                    "relative rounded-2xl p-4 overflow-hidden bg-gradient-to-br cursor-pointer group",
-                    "border border-white/[0.06] hover:border-white/[0.12] transition-all duration-300 active:scale-[0.98]",
-                    gradient
-                  )}
-                >
-                  <div className="absolute -right-6 -top-6 w-20 h-20 rounded-full bg-white/[0.04]" />
-                  <div className="relative z-10 flex flex-col h-full min-h-[148px]">
-                    <div className="flex items-start justify-between mb-1">
-                      <div className="flex items-center gap-2.5">
-                        <div className="w-9 h-9 rounded-xl bg-white/10 flex items-center justify-center backdrop-blur-sm">
-                          <Icon className="w-4 h-4 text-white/80" />
-                        </div>
-                        <div className="min-w-0">
-                          <p className="text-sm font-bold text-white truncate">{acc.name}</p>
-                          <p className="text-[10px] text-white/40">{typeInfo.label}</p>
-                        </div>
-                      </div>
-                      <ChevronRight className="w-4 h-4 text-white/30 group-hover:text-white/60 transition-colors mt-1 shrink-0" />
-                      <button
-                        onClick={(e) => {
-                          e.stopPropagation();
-                          if (confirm("Desativar esta conta? O histórico de transações será mantido.")) {
-                            deactivateAccount(acc.id).then(() => {
-                              toast.success("Conta desativada com sucesso");
-                              fetchData();
-                            }).catch(() => toast.error("Erro ao desativar conta"));
-                          }
-                        }}
-                        className="w-7 h-7 rounded-lg bg-white/10 flex items-center justify-center hover:bg-white/20 transition-colors mt-1 shrink-0"
-                        title="Desativar conta"
-                      >
-                        <EyeOff className="w-3.5 h-3.5 text-white/50 hover:text-white/80" />
-                      </button>
-                    </div>
-
-                    {acc.is_default && (
-                      <span className="self-start text-[9px] bg-white/10 text-white/70 px-2 py-0.5 rounded-full font-semibold mt-1">
-                        Principal
-                      </span>
+                return (
+                  <motion.div
+                    key={acc.id}
+                    initial={{ opacity: 0, y: 16 }}
+                    animate={{ opacity: 1, y: 0 }}
+                    transition={{ delay: idx * 0.05 }}
+                    onClick={() => navigate(`/conta/${acc.id}`)}
+                    className={cn(
+                      "relative rounded-2xl p-4 overflow-hidden bg-gradient-to-br cursor-pointer group snap-start shrink-0 w-[75vw] max-w-[280px]",
+                      "border border-white/[0.06] hover:border-white/[0.12] transition-all duration-300 active:scale-[0.98]",
+                      gradient
                     )}
-
-                    <div className="mt-auto pt-3">
-                      <p className="text-[10px] text-white/40 font-medium uppercase tracking-wide mb-0.5">Saldo disponível</p>
-                      <p className="text-lg font-bold text-white">{formatCurrency(balance)}</p>
-                      <div className="flex items-center gap-1 mt-1">
-                        <TrendingUp className={cn("w-3 h-3", isPositive ? "text-emerald-400" : "text-red-400")} />
-                        <span className={cn("text-[10px] font-medium", isPositive ? "text-emerald-400" : "text-red-400")}>
-                          {isPositive ? "Saldo positivo" : "Saldo negativo"}
+                  >
+                    <div className="absolute -right-6 -top-6 w-20 h-20 rounded-full bg-white/[0.04]" />
+                    <div className="relative z-10 flex flex-col h-full min-h-[148px]">
+                      <div className="flex items-start justify-between mb-1">
+                        <div className="flex items-center gap-2.5">
+                          <div className="w-9 h-9 rounded-xl bg-white/10 flex items-center justify-center backdrop-blur-sm">
+                            <Icon className="w-4 h-4 text-white/80" />
+                          </div>
+                          <div className="min-w-0">
+                            <p className="text-sm font-bold text-white truncate">{acc.name}</p>
+                            <p className="text-[10px] text-white/40">{typeInfo.label}</p>
+                          </div>
+                        </div>
+                        <ChevronRight className="w-4 h-4 text-white/30 group-hover:text-white/60 transition-colors mt-1 shrink-0" />
+                        <button
+                          onClick={(e) => {
+                            e.stopPropagation();
+                            if (confirm("Desativar esta conta? O histórico de transações será mantido.")) {
+                              deactivateAccount(acc.id).then(() => {
+                                toast.success("Conta desativada com sucesso");
+                                fetchData();
+                              }).catch(() => toast.error("Erro ao desativar conta"));
+                            }
+                          }}
+                          className="w-7 h-7 rounded-lg bg-white/10 flex items-center justify-center hover:bg-white/20 transition-colors mt-1 shrink-0"
+                          title="Desativar conta"
+                        >
+                          <EyeOff className="w-3.5 h-3.5 text-white/50 hover:text-white/80" />
+                        </button>
+                      </div>
+                      {acc.is_default && (
+                        <span className="self-start text-[9px] bg-white/10 text-white/70 px-2 py-0.5 rounded-full font-semibold mt-1">
+                          Principal
                         </span>
+                      )}
+                      <div className="mt-auto pt-3">
+                        <p className="text-[10px] text-white/40 font-medium uppercase tracking-wide mb-0.5">Saldo disponível</p>
+                        <p className="text-lg font-bold text-white">{formatCurrency(balance)}</p>
+                        <div className="flex items-center gap-1 mt-1">
+                          <TrendingUp className={cn("w-3 h-3", isPositive ? "text-emerald-400" : "text-red-400")} />
+                          <span className={cn("text-[10px] font-medium", isPositive ? "text-emerald-400" : "text-red-400")}>
+                            {isPositive ? "Saldo positivo" : "Saldo negativo"}
+                          </span>
+                        </div>
                       </div>
                     </div>
-                  </div>
-                </motion.div>
-              );
-            })}
+                  </motion.div>
+                );
+              })}
+              <motion.button
+                initial={{ opacity: 0, y: 16 }}
+                animate={{ opacity: 1, y: 0 }}
+                onClick={() => setShowAddAccount(true)}
+                className="rounded-2xl p-4 min-h-[148px] w-[60vw] max-w-[200px] shrink-0 snap-start flex flex-col items-center justify-center gap-2 border-2 border-dashed border-primary/20 hover:border-primary/40 bg-primary/[0.03] transition-all cursor-pointer"
+              >
+                <div className="w-10 h-10 rounded-xl bg-primary/10 flex items-center justify-center">
+                  <Plus className="w-5 h-5 text-primary" />
+                </div>
+                <span className="text-xs text-primary/70 font-medium">Adicionar conta</span>
+              </motion.button>
+            </div>
 
-            {/* Add account card */}
-            <motion.button
-              initial={{ opacity: 0, y: 16 }}
-              animate={{ opacity: 1, y: 0 }}
-              transition={{ delay: accounts.length * 0.05 }}
-              onClick={() => setShowAddAccount(true)}
-              className={cn(
-                "rounded-2xl p-4 sm:min-h-[148px] min-h-[80px] flex flex-col items-center justify-center gap-2",
-                "border-2 border-dashed border-primary/20 hover:border-primary/40",
-                "bg-primary/[0.03] hover:bg-primary/[0.06] transition-all duration-300 cursor-pointer"
-              )}
-            >
-              <div className="w-10 h-10 rounded-xl bg-primary/10 flex items-center justify-center">
-                <Plus className="w-5 h-5 text-primary" />
-              </div>
-              <span className="text-xs text-primary/70 font-medium">Adicionar conta</span>
-            </motion.button>
-          </div>
+            {/* Desktop grid */}
+            <div className="hidden sm:grid sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-3">
+              {accounts.filter((a) => a.type !== "investment").map((acc, idx) => {
+                const typeInfo = ACCOUNT_TYPE_LABELS[acc.type] ?? ACCOUNT_TYPE_LABELS.checking;
+                const Icon = typeInfo.icon;
+                const gradient = getGradient(acc.color);
+                const balance = Number(acc.current_balance);
+                const isPositive = balance >= 0;
+
+                return (
+                  <motion.div
+                    key={acc.id}
+                    initial={{ opacity: 0, y: 16 }}
+                    animate={{ opacity: 1, y: 0 }}
+                    transition={{ delay: idx * 0.05 }}
+                    onClick={() => navigate(`/conta/${acc.id}`)}
+                    className={cn(
+                      "relative rounded-2xl p-4 overflow-hidden bg-gradient-to-br cursor-pointer group",
+                      "border border-white/[0.06] hover:border-white/[0.12] transition-all duration-300 active:scale-[0.98]",
+                      gradient
+                    )}
+                  >
+                    <div className="absolute -right-6 -top-6 w-20 h-20 rounded-full bg-white/[0.04]" />
+                    <div className="relative z-10 flex flex-col h-full min-h-[148px]">
+                      <div className="flex items-start justify-between mb-1">
+                        <div className="flex items-center gap-2.5">
+                          <div className="w-9 h-9 rounded-xl bg-white/10 flex items-center justify-center backdrop-blur-sm">
+                            <Icon className="w-4 h-4 text-white/80" />
+                          </div>
+                          <div className="min-w-0">
+                            <p className="text-sm font-bold text-white truncate">{acc.name}</p>
+                            <p className="text-[10px] text-white/40">{typeInfo.label}</p>
+                          </div>
+                        </div>
+                        <ChevronRight className="w-4 h-4 text-white/30 group-hover:text-white/60 transition-colors mt-1 shrink-0" />
+                        <button
+                          onClick={(e) => {
+                            e.stopPropagation();
+                            if (confirm("Desativar esta conta? O histórico de transações será mantido.")) {
+                              deactivateAccount(acc.id).then(() => {
+                                toast.success("Conta desativada com sucesso");
+                                fetchData();
+                              }).catch(() => toast.error("Erro ao desativar conta"));
+                            }
+                          }}
+                          className="w-7 h-7 rounded-lg bg-white/10 flex items-center justify-center hover:bg-white/20 transition-colors mt-1 shrink-0"
+                          title="Desativar conta"
+                        >
+                          <EyeOff className="w-3.5 h-3.5 text-white/50 hover:text-white/80" />
+                        </button>
+                      </div>
+                      {acc.is_default && (
+                        <span className="self-start text-[9px] bg-white/10 text-white/70 px-2 py-0.5 rounded-full font-semibold mt-1">
+                          Principal
+                        </span>
+                      )}
+                      <div className="mt-auto pt-3">
+                        <p className="text-[10px] text-white/40 font-medium uppercase tracking-wide mb-0.5">Saldo disponível</p>
+                        <p className="text-lg font-bold text-white">{formatCurrency(balance)}</p>
+                        <div className="flex items-center gap-1 mt-1">
+                          <TrendingUp className={cn("w-3 h-3", isPositive ? "text-emerald-400" : "text-red-400")} />
+                          <span className={cn("text-[10px] font-medium", isPositive ? "text-emerald-400" : "text-red-400")}>
+                            {isPositive ? "Saldo positivo" : "Saldo negativo"}
+                          </span>
+                        </div>
+                      </div>
+                    </div>
+                  </motion.div>
+                );
+              })}
+              <motion.button
+                initial={{ opacity: 0, y: 16 }}
+                animate={{ opacity: 1, y: 0 }}
+                transition={{ delay: accounts.length * 0.05 }}
+                onClick={() => setShowAddAccount(true)}
+                className="rounded-2xl p-4 min-h-[148px] flex flex-col items-center justify-center gap-2 border-2 border-dashed border-primary/20 hover:border-primary/40 bg-primary/[0.03] hover:bg-primary/[0.06] transition-all duration-300 cursor-pointer"
+              >
+                <div className="w-10 h-10 rounded-xl bg-primary/10 flex items-center justify-center">
+                  <Plus className="w-5 h-5 text-primary" />
+                </div>
+                <span className="text-xs text-primary/70 font-medium">Adicionar conta</span>
+              </motion.button>
+            </div>
+          </>
         )}
       </section>
 
