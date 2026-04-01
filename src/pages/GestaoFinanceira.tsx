@@ -975,7 +975,7 @@ const GestaoFinanceira = () => {
           </Select>
 
           <div>
-            <Label className="text-xs text-muted-foreground mb-1.5 block">Valor do aporte</Label>
+            <Label className="text-xs text-muted-foreground mb-1.5 block">Valor do depósito</Label>
             <Input
               placeholder="0,00"
               inputMode="numeric"
