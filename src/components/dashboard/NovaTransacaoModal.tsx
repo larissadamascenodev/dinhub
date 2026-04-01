@@ -750,7 +750,7 @@ const NovaTransacaoModal = ({ open, onClose, onSuccess, initialType = "despesa",
                             : "bg-muted/30 text-muted-foreground border-transparent"
                         )}
                       >
-                        ∞ Fixa
+                        {paymentMethod === "cartao" ? "∞ Assinatura" : "∞ Fixa"}
                       </button>
                     </div>
                   ) : (
@@ -768,7 +768,7 @@ const NovaTransacaoModal = ({ open, onClose, onSuccess, initialType = "despesa",
                                 : "bg-muted/30 text-muted-foreground border-transparent"
                             )}
                           >
-                            {rt === "unica" ? "Única" : rt === "parcelado" ? "Parcelado" : "∞ Fixa"}
+                            {rt === "unica" ? "Única" : rt === "parcelado" ? "Parcelado" : paymentMethod === "cartao" ? "∞ Assinatura" : "∞ Fixa"}
                           </button>
                         ))}
                       </div>
