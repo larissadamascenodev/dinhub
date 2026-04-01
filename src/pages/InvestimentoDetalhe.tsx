@@ -55,11 +55,17 @@ const RATE_TYPE_LABELS: Record<string, string> = {
 };
 
 const SIMULATION_PERIODS = [
-  { label: "1m", months: 1 },
-  { label: "3m", months: 3 },
   { label: "6m", months: 6 },
   { label: "1a", months: 12 },
   { label: "3a", months: 36 },
+  { label: "5a", months: 60 },
+];
+
+const RECURRING_MESSAGES = [
+  "Se você fizer isso todo mês… olha onde você chega 👀",
+  "Isso aqui vira uma bola de neve… do bem 😏",
+  "Disciplina > sorte. Sempre. 💪",
+  "Pequenos aportes, grandes resultados 🚀",
 ];
 
 const MICRO_MESSAGES = [
@@ -94,15 +100,19 @@ function getAnnualRate(rateType: string | null, annualRate: number | null, inves
   }
 }
 
-function simulateInvestment(principal: number, annualRatePct: number, months: number) {
+function simulateInvestment(principal: number, annualRatePct: number, months: number, monthlyContribution: number = 0) {
   const monthlyRate = (1 + annualRatePct / 100) ** (1 / 12) - 1;
-  const data: { month: number; label: string; value: number }[] = [];
+  const data: { month: number; label: string; value: number; invested: number; profit: number }[] = [];
   let current = principal;
-  data.push({ month: 0, label: "Hoje", value: current });
+  let totalInvested = principal;
+  data.push({ month: 0, label: "Hoje", value: current, invested: totalInvested, profit: 0 });
   for (let i = 1; i <= months; i++) {
     current *= (1 + monthlyRate);
-    const label = i <= 12 ? `${i}m` : `${(i / 12).toFixed(0)}a${i % 12 > 0 ? `${i % 12}m` : ""}`;
-    data.push({ month: i, label, value: current });
+    current += monthlyContribution;
+    totalInvested += monthlyContribution;
+    const profit = current - totalInvested;
+    const label = i <= 12 ? `${i}m` : `${Math.floor(i / 12)}a${i % 12 > 0 ? `${i % 12}m` : ""}`;
+    data.push({ month: i, label, value: current, invested: totalInvested, profit });
   }
   return data;
 }
@@ -163,10 +173,15 @@ const ModalOverlay = ({ open, onClose, children }: { open: boolean; onClose: () 
 /* ═══════ Custom Tooltip ═══════ */
 const ChartTooltip = ({ active, payload, label }: any) => {
   if (!active || !payload?.length) return null;
+  const invested = payload.find((p: any) => p.dataKey === "invested");
+  const profit = payload.find((p: any) => p.dataKey === "profit");
+  const total = payload.find((p: any) => p.dataKey === "value");
   return (
-    <div className="rounded-xl bg-card/95 border border-border/30 px-3 py-2 shadow-lg backdrop-blur-sm">
+    <div className="rounded-xl bg-card/95 border border-border/30 px-3 py-2 shadow-lg backdrop-blur-sm space-y-0.5">
       <p className="text-[10px] text-muted-foreground">{label}</p>
-      <p className="text-sm font-bold text-primary">{formatCurrency(payload[0].value)}</p>
+      {total && <p className="text-sm font-bold text-primary">{formatCurrency(total.value)}</p>}
+      {invested && <p className="text-[10px] text-muted-foreground">Investido: {formatCurrency(invested.value)}</p>}
+      {profit && <p className="text-[10px] text-primary">Rendimento: {formatCurrency(profit.value)}</p>}
     </div>
   );
 };
@@ -189,9 +204,11 @@ const InvestimentoDetalhe = () => {
   const [modalSubmitting, setModalSubmitting] = useState(false);
 
   // Simulation
-  const [simPeriodIdx, setSimPeriodIdx] = useState(3); // default 1 year
+  const [simPeriodIdx, setSimPeriodIdx] = useState(1); // default 1 year
   const [customMonths, setCustomMonths] = useState("");
   const [showCustom, setShowCustom] = useState(false);
+  const [monthlyContribution, setMonthlyContribution] = useState(0);
+  const [contributionCents, setContributionCents] = useState(0);
 
   // Micro-interaction
   const [microMsg] = useState(() => MICRO_MESSAGES[Math.floor(Math.random() * MICRO_MESSAGES.length)]);
@@ -248,17 +265,24 @@ const InvestimentoDetalhe = () => {
   }, [account, transactions, accountId]);
 
   // Simulation data
+  const contribution = contributionCents / 100;
   const simData = useMemo(() => {
-    if (!account) return { chartData: [], finalValue: 0, totalYield: 0, avgMonthly: 0, months: 0 };
-    const balance = Number(account.current_balance);
+    if (!account) return { chartData: [], finalValue: 0, totalInvested: 0, totalYield: 0, growthPct: 0, avgMonthly: 0, months: 0 };
+    const bal = Number(account.current_balance);
     const annualRate = yieldData.annualRate;
     const months = showCustom ? Math.min(Math.max(parseInt(customMonths) || 1, 1), 360) : SIMULATION_PERIODS[simPeriodIdx].months;
-    const chartData = simulateInvestment(balance, annualRate, months);
-    const finalValue = chartData[chartData.length - 1]?.value ?? balance;
-    const totalYield = finalValue - balance;
+    const chartData = simulateInvestment(bal, annualRate, months, contribution);
+    const last = chartData[chartData.length - 1];
+    const finalValue = last?.value ?? bal;
+    const totalInvested = last?.invested ?? bal;
+    const totalYield = last?.profit ?? 0;
+    const growthPct = totalInvested > 0 ? (totalYield / totalInvested) * 100 : 0;
     const avgMonthly = months > 0 ? totalYield / months : 0;
-    return { chartData, finalValue, totalYield, avgMonthly, months };
-  }, [account, yieldData.annualRate, simPeriodIdx, showCustom, customMonths]);
+    return { chartData, finalValue, totalInvested, totalYield, growthPct, avgMonthly, months };
+  }, [account, yieldData.annualRate, simPeriodIdx, showCustom, customMonths, contribution]);
+
+  // Smart suggestion: suggest investing part of free monthly balance
+  const recurringMsg = useMemo(() => RECURRING_MESSAGES[Math.floor(Math.random() * RECURRING_MESSAGES.length)], []);
 
   const openModal = (mode: "deposit" | "withdraw") => {
     setModalMode(mode);
@@ -453,7 +477,7 @@ const InvestimentoDetalhe = () => {
         </div>
       </motion.div>
 
-      {/* ═══════ Simulação de Investimento ═══════ */}
+      {/* ═══════ Simular Crescimento ═══════ */}
       <motion.div initial={{ opacity: 0, y: 12 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.15 }}>
         <div className="rounded-2xl border border-border/10 p-4 space-y-4" style={{ background: "linear-gradient(135deg, hsl(var(--card)) 0%, hsl(var(--background)) 100%)" }}>
           <div className="flex items-center justify-between">
@@ -461,8 +485,32 @@ const InvestimentoDetalhe = () => {
               <div className="w-6 h-6 rounded-lg bg-primary/15 flex items-center justify-center">
                 <TrendingUp className="w-3 h-3 text-primary" />
               </div>
-              <span className="text-[9px] text-muted-foreground uppercase tracking-widest font-medium">Simulação</span>
+              <span className="text-[9px] text-muted-foreground uppercase tracking-widest font-medium">Simular crescimento</span>
             </div>
+          </div>
+
+          {/* Aporte mensal */}
+          <div>
+            <Label className="text-[10px] text-muted-foreground uppercase tracking-wider mb-1.5 block">Aporte mensal</Label>
+            <Input
+              placeholder="0,00"
+              inputMode="numeric"
+              value={contributionCents > 0 ? (contributionCents / 100).toLocaleString("pt-BR", { minimumFractionDigits: 2, maximumFractionDigits: 2 }) : ""}
+              onKeyDown={(e) => {
+                if (e.key === "Backspace") {
+                  e.preventDefault();
+                  setContributionCents(prev => Math.floor(prev / 10));
+                } else if (e.key >= "0" && e.key <= "9") {
+                  e.preventDefault();
+                  setContributionCents(prev => {
+                    const next = prev * 10 + parseInt(e.key);
+                    return next > 99999999 ? prev : next;
+                  });
+                }
+              }}
+              readOnly
+              className="bg-muted/30 border-border/20 h-10 rounded-xl text-base font-bold text-center"
+            />
           </div>
 
           {/* Period selector */}
@@ -507,14 +555,18 @@ const InvestimentoDetalhe = () => {
             </div>
           )}
 
-          {/* Chart */}
-          <div className="h-48 w-full">
+          {/* Stacked area chart: invested + profit */}
+          <div className="h-52 w-full">
             <ResponsiveContainer width="100%" height="100%">
               <AreaChart data={simData.chartData} margin={{ top: 5, right: 5, left: 0, bottom: 0 }}>
                 <defs>
-                  <linearGradient id="colorValue" x1="0" y1="0" x2="0" y2="1">
-                    <stop offset="5%" stopColor="hsl(var(--primary))" stopOpacity={0.3} />
-                    <stop offset="95%" stopColor="hsl(var(--primary))" stopOpacity={0} />
+                  <linearGradient id="colorInvested" x1="0" y1="0" x2="0" y2="1">
+                    <stop offset="5%" stopColor="hsl(var(--muted-foreground))" stopOpacity={0.15} />
+                    <stop offset="95%" stopColor="hsl(var(--muted-foreground))" stopOpacity={0} />
+                  </linearGradient>
+                  <linearGradient id="colorProfit" x1="0" y1="0" x2="0" y2="1">
+                    <stop offset="5%" stopColor="hsl(var(--primary))" stopOpacity={0.35} />
+                    <stop offset="95%" stopColor="hsl(var(--primary))" stopOpacity={0.05} />
                   </linearGradient>
                 </defs>
                 <XAxis
@@ -528,16 +580,27 @@ const InvestimentoDetalhe = () => {
                   tick={{ fontSize: 9, fill: "hsl(var(--muted-foreground))" }}
                   axisLine={false}
                   tickLine={false}
-                  tickFormatter={(v) => `${(v / 1000).toFixed(0)}k`}
-                  width={40}
+                  tickFormatter={(v) => v >= 1000 ? `${(v / 1000).toFixed(0)}k` : `${v}`}
+                  width={45}
                 />
                 <Tooltip content={<ChartTooltip />} />
+                <Area
+                  type="monotone"
+                  dataKey="invested"
+                  stackId="1"
+                  stroke="hsl(var(--muted-foreground))"
+                  strokeWidth={1.5}
+                  strokeOpacity={0.4}
+                  fill="url(#colorInvested)"
+                  dot={false}
+                  animationDuration={1200}
+                />
                 <Area
                   type="monotone"
                   dataKey="value"
                   stroke="hsl(var(--primary))"
                   strokeWidth={2}
-                  fill="url(#colorValue)"
+                  fill="url(#colorProfit)"
                   dot={false}
                   animationDuration={1200}
                 />
@@ -545,35 +608,65 @@ const InvestimentoDetalhe = () => {
             </ResponsiveContainer>
           </div>
 
-          {/* Simulation results */}
-          <div className="grid grid-cols-2 gap-3">
-            <div className="rounded-xl border border-border/10 p-3 bg-muted/[0.03]">
-              <p className="text-[9px] text-muted-foreground uppercase tracking-wider mb-1">Valor final</p>
-              <AnimatedCurrency value={simData.finalValue} className="text-base font-bold text-foreground tabular-nums block" />
+          {/* Legend */}
+          <div className="flex items-center gap-4 justify-center">
+            <div className="flex items-center gap-1.5">
+              <div className="w-2.5 h-2.5 rounded-sm bg-muted-foreground/30" />
+              <span className="text-[10px] text-muted-foreground">Investido</span>
             </div>
-            <div className="rounded-xl border border-border/10 p-3 bg-muted/[0.03]">
-              <p className="text-[9px] text-muted-foreground uppercase tracking-wider mb-1">Rendimento total</p>
-              <AnimatedCurrency value={simData.totalYield} className="text-base font-bold text-primary tabular-nums block" />
-            </div>
-            <div className="rounded-xl border border-border/10 p-3 bg-muted/[0.03]">
-              <p className="text-[9px] text-muted-foreground uppercase tracking-wider mb-1">Média mensal</p>
-              <p className="text-base font-bold text-primary tabular-nums">{formatCurrency(simData.avgMonthly)}</p>
-            </div>
-            <div className="rounded-xl border border-border/10 p-3 bg-muted/[0.03]">
-              <p className="text-[9px] text-muted-foreground uppercase tracking-wider mb-1">Período</p>
-              <p className="text-base font-bold text-foreground tabular-nums">{simData.months} {simData.months === 1 ? "mês" : "meses"}</p>
+            <div className="flex items-center gap-1.5">
+              <div className="w-2.5 h-2.5 rounded-sm bg-primary" />
+              <span className="text-[10px] text-muted-foreground">Valor total</span>
             </div>
           </div>
 
-          {/* Projection callout */}
+          {/* Simulation results */}
+          <div className="grid grid-cols-2 gap-3">
+            <div className="rounded-xl border border-border/10 p-3 bg-muted/[0.03]">
+              <p className="text-[9px] text-muted-foreground uppercase tracking-wider mb-1">Valor investido</p>
+              <AnimatedCurrency value={simData.totalInvested} className="text-base font-bold text-foreground tabular-nums block" />
+            </div>
+            <div className="rounded-xl border border-border/10 p-3 bg-muted/[0.03]">
+              <p className="text-[9px] text-muted-foreground uppercase tracking-wider mb-1">Valor final projetado</p>
+              <AnimatedCurrency value={simData.finalValue} className="text-base font-bold text-primary tabular-nums block" />
+            </div>
+            <div className="rounded-xl border border-border/10 p-3 bg-muted/[0.03]">
+              <p className="text-[9px] text-muted-foreground uppercase tracking-wider mb-1">Total de rendimentos</p>
+              <AnimatedCurrency value={simData.totalYield} className="text-base font-bold text-primary tabular-nums block" />
+            </div>
+            <div className="rounded-xl border border-border/10 p-3 bg-muted/[0.03]">
+              <p className="text-[9px] text-muted-foreground uppercase tracking-wider mb-1">Crescimento</p>
+              <p className="text-base font-bold text-primary tabular-nums">{formatPct(simData.growthPct)}</p>
+            </div>
+          </div>
+
+          {/* Highlight callout */}
           {balance > 0 && (
             <div className="flex items-start gap-2.5 rounded-xl border border-primary/10 bg-primary/[0.04] p-3">
-              <Info className="w-4 h-4 text-primary shrink-0 mt-0.5" />
+              <Sparkles className="w-4 h-4 text-primary shrink-0 mt-0.5" />
               <p className="text-xs text-muted-foreground leading-relaxed">
-                Se continuar assim, seu investimento vira{" "}
-                <span className="font-bold text-primary">{formatCurrency(simData.finalValue)}</span>{" "}
-                em {simData.months} {simData.months === 1 ? "mês" : "meses"} 🚀
+                {contribution > 0 ? (
+                  <>
+                    Você investiu <span className="font-bold text-foreground">{formatCurrency(simData.totalInvested)}</span> →
+                    virou <span className="font-bold text-primary">{formatCurrency(simData.finalValue)}</span> em{" "}
+                    {simData.months} {simData.months === 1 ? "mês" : "meses"} 🚀
+                  </>
+                ) : (
+                  <>
+                    Se continuar assim, seu investimento vira{" "}
+                    <span className="font-bold text-primary">{formatCurrency(simData.finalValue)}</span>{" "}
+                    em {simData.months} {simData.months === 1 ? "mês" : "meses"} 🚀
+                  </>
+                )}
               </p>
+            </div>
+          )}
+
+          {/* Micro-interaction for recurring contributions */}
+          {contribution > 0 && (
+            <div className="flex items-start gap-2.5 rounded-xl border border-primary/10 bg-primary/[0.04] p-3">
+              <Info className="w-4 h-4 text-primary shrink-0 mt-0.5" />
+              <p className="text-xs text-muted-foreground leading-relaxed italic">{recurringMsg}</p>
             </div>
           )}
         </div>
