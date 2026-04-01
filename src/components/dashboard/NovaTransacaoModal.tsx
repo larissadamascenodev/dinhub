@@ -454,7 +454,9 @@ const NovaTransacaoModal = ({ open, onClose, onSuccess, initialType = "despesa",
                   <TrendingDown className="w-5 h-5 text-destructive" />
                 )}
                 <span className="text-lg font-bold text-foreground">
-                  {isReceita ? "Nova Receita" : "Nova Despesa"}
+                  {isEditMode
+                    ? "Editar Lançamento"
+                    : isReceita ? "Nova Receita" : "Nova Despesa"}
                 </span>
               </div>
               <button
