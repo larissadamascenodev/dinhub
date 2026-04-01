@@ -955,7 +955,7 @@ const GestaoFinanceira = () => {
       <ModalOverlay open={showAporteModal} onClose={() => setShowAporteModal(false)}>
         <div className="space-y-4">
           <div className="flex items-center justify-between">
-            <p className="text-base font-bold text-foreground">Aporte em {aporteTargetName}</p>
+            <p className="text-base font-bold text-foreground">Depósito em {aporteTargetName}</p>
             <button onClick={() => setShowAporteModal(false)} className="w-8 h-8 rounded-lg bg-muted/50 flex items-center justify-center hover:bg-muted transition-colors">
               <X className="w-4 h-4 text-muted-foreground" />
             </button>
