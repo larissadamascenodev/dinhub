@@ -88,6 +88,35 @@ export default function GerenciarCategorias() {
     }
   };
 
+  const handleDeleteDefault = async (name: string) => {
+    if (!user) return;
+    try {
+      await hideDefaultCategory(user.id, name, tab);
+      toast.success("Categoria removida");
+      fetchCategories();
+    } catch {
+      toast.error("Erro ao remover");
+    }
+  };
+
+  const handleEditDefault = (name: string) => {
+    setEditingDefault(name);
+  };
+
+  const handleSaveEditedDefault = async (data: { name: string; icon: string; color: string }) => {
+    if (!user || !editingDefault) return;
+    try {
+      // Hide the default and create a custom one
+      await hideDefaultCategory(user.id, editingDefault, tab);
+      await createCustomCategory(user.id, { ...data, type: tab });
+      toast.success("Categoria atualizada!");
+      setEditingDefault(null);
+      fetchCategories();
+    } catch {
+      toast.error("Erro ao editar categoria");
+    }
+  };
+
   return (
     <div className="min-h-screen pb-24">
       {/* Header */}
