@@ -434,7 +434,7 @@ const GestaoFinanceira = () => {
           <>
             {/* Mobile carousel */}
             <div className="overflow-hidden sm:hidden" ref={cardsRef}>
-              <div className="flex gap-3 pl-0 pr-4">
+              <div className="flex gap-3 px-4">
               {creditCards.map((card, idx) => {
                 const usedPct = card.limit > 0 ? Math.min((Number(card.used_limit) / Number(card.limit)) * 100, 100) : 0;
                 const available = Math.max(Number(card.limit) - Number(card.used_limit), 0);
