@@ -22,17 +22,15 @@ interface Props {
 }
 
 export default function InvoiceItemDetailModal({ item, cardName, onClose, onEdit, onDelete }: Props) {
-  if (!item) return null;
-
-  const isInstallment = item.total_installments > 1;
-  const installmentAmount = Number(item.amount);
-  const totalValue = isInstallment ? installmentAmount * item.total_installments : installmentAmount;
-  const paidInstallments = item.installment_number - 1;
+  const isInstallment = item ? item.total_installments > 1 : false;
+  const installmentAmount = item ? Number(item.amount) : 0;
+  const totalValue = isInstallment ? installmentAmount * (item?.total_installments ?? 1) : installmentAmount;
+  const paidInstallments = item ? item.installment_number - 1 : 0;
   const paidAmount = paidInstallments * installmentAmount;
-  const remainingInstallments = item.total_installments - item.installment_number;
+  const remainingInstallments = item ? item.total_installments - item.installment_number : 0;
   const remainingAmount = (remainingInstallments + 1) * installmentAmount;
 
-  const purchaseDate = item.transaction_date
+  const purchaseDate = item?.transaction_date
     ? new Date(item.transaction_date + "T12:00:00")
     : null;
 
@@ -40,11 +38,11 @@ export default function InvoiceItemDetailModal({ item, cardName, onClose, onEdit
     ? `${String(purchaseDate.getDate()).padStart(2, "0")} de ${MONTH_NAMES[purchaseDate.getMonth()]?.substring(0, 3)}.`
     : "—";
 
-  const isPending = item.transaction_status === "pendente";
+  const isPending = item?.transaction_status === "pendente";
 
   // Generate installment timeline
   const installments = useMemo(() => {
-    if (!isInstallment || !purchaseDate) return [];
+    if (!isInstallment || !purchaseDate || !item) return [];
     return Array.from({ length: item.total_installments }, (_, i) => {
       const num = i + 1;
       const date = new Date(purchaseDate);
@@ -56,6 +54,8 @@ export default function InvoiceItemDetailModal({ item, cardName, onClose, onEdit
       return { num, monthName, year, isPast, isCurrent };
     });
   }, [item, purchaseDate, isInstallment]);
+
+  if (!item) return null;
 
   return (
     <AnimatePresence>
