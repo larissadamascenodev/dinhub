@@ -326,6 +326,7 @@ const GestaoFinanceira = () => {
                 </div>
                 <span className="text-xs text-primary/70 font-medium">Adicionar conta</span>
               </motion.button>
+              </div>
             </div>
 
             {/* Desktop grid */}
