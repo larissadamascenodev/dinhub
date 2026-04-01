@@ -135,6 +135,33 @@ const FaturaCartao = () => {
     }
   };
 
+  const refreshItems = async () => {
+    if (!currentInvoice) return;
+    const [updatedItems, updatedInvoices] = await Promise.all([
+      getInvoiceItems(currentInvoice.id),
+      getInvoices(cardId!),
+    ]);
+    setItems(updatedItems as EnrichedItem[]);
+    setInvoices(updatedInvoices);
+  };
+
+  const handleEditItem = async (transactionId: string, updates: { name?: string; amount?: number; category?: string }) => {
+    const cleanUpdates: any = {};
+    if (updates.name) cleanUpdates.name = updates.name;
+    if (updates.amount) cleanUpdates.amount = updates.amount;
+    if (updates.category) cleanUpdates.category = updates.category;
+    if (Object.keys(cleanUpdates).length === 0) return;
+    await updateTransaction(transactionId, cleanUpdates);
+    toast.success("Lançamento atualizado ✅");
+    await refreshItems();
+  };
+
+  const handleDeleteItem = async (transactionId: string) => {
+    await deleteTransaction(transactionId);
+    toast.success("Lançamento excluído ✅");
+    await refreshItems();
+  };
+
   const total = currentInvoice ? Number(currentInvoice.total_amount) : 0;
   const limitTotal = card ? Number(card.limit) : 0;
   const usedLimit = card ? Number(card.used_limit) : 0;
