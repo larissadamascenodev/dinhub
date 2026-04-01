@@ -71,7 +71,7 @@ export default function InvoicePayModal({
                   <SelectTrigger className="bg-muted/20 border-border/20 h-11 rounded-xl text-sm">
                     <SelectValue placeholder="Selecionar conta" />
                   </SelectTrigger>
-                  <SelectContent>
+                  <SelectContent className="z-[70]">
                     {accounts.map((acc) => (
                       <SelectItem key={acc.id} value={acc.id}>
                         {acc.name} ({formatCurrency(Number(acc.current_balance))})
