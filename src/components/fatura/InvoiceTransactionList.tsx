@@ -1,14 +1,8 @@
 import { useState } from "react";
 import { motion } from "framer-motion";
-import { Receipt, Layers, MoreVertical, Pencil, Trash2 } from "lucide-react";
+import { Receipt, Layers } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { formatCurrency, type EnrichedItem } from "@/pages/FaturaCartao";
-import {
-  DropdownMenu,
-  DropdownMenuContent,
-  DropdownMenuItem,
-  DropdownMenuTrigger,
-} from "@/components/ui/dropdown-menu";
 import {
   AlertDialog,
   AlertDialogAction,
@@ -20,6 +14,7 @@ import {
   AlertDialogTitle,
 } from "@/components/ui/alert-dialog";
 import InvoiceItemDetailModal from "./InvoiceItemDetailModal";
+import InvoiceItemEditModal from "./InvoiceItemEditModal";
 
 interface Props {
   items: EnrichedItem[];
@@ -48,6 +43,7 @@ function InstallmentBar({ current, total }: { current: number; total: number }) 
 
 export default function InvoiceTransactionList({ items, installmentCount = 0, cardName, onEditItem, onDeleteItem }: Props) {
   const [selectedItem, setSelectedItem] = useState<EnrichedItem | null>(null);
+  const [editItem, setEditItem] = useState<EnrichedItem | null>(null);
   const [deleteTarget, setDeleteTarget] = useState<EnrichedItem | null>(null);
   const [deleting, setDeleting] = useState(false);
 
@@ -60,6 +56,22 @@ export default function InvoiceTransactionList({ items, installmentCount = 0, ca
     } finally {
       setDeleting(false);
       setDeleteTarget(null);
+    }
+  };
+
+  const handleEditFromDetail = (txId: string) => {
+    const target = items.find(i => i.transaction_id === txId);
+    if (target) {
+      setSelectedItem(null);
+      setEditItem(target);
+    }
+  };
+
+  const handleDeleteFromDetail = (txId: string) => {
+    const target = items.find(i => i.transaction_id === txId);
+    if (target) {
+      setSelectedItem(null);
+      setDeleteTarget(target);
     }
   };
 
@@ -155,16 +167,21 @@ export default function InvoiceTransactionList({ items, installmentCount = 0, ca
           item={selectedItem}
           cardName={cardName}
           onClose={() => setSelectedItem(null)}
-          onEdit={onEditItem ? (txId) => {
-            // For now, close detail and we could navigate to edit
-            setSelectedItem(null);
-          } : undefined}
-          onDelete={onDeleteItem ? (txId) => {
-            const target = items.find(i => i.transaction_id === txId);
-            if (target) setDeleteTarget(target);
-          } : undefined}
+          onEdit={onEditItem ? handleEditFromDetail : undefined}
+          onDelete={onDeleteItem ? handleDeleteFromDetail : undefined}
         />
       )}
+
+      {/* Edit Modal */}
+      <InvoiceItemEditModal
+        item={editItem}
+        open={!!editItem}
+        onClose={() => setEditItem(null)}
+        onSave={async (txId, updates) => {
+          if (onEditItem) await onEditItem(txId, updates);
+          setEditItem(null);
+        }}
+      />
 
       {/* Delete confirmation */}
       <AlertDialog open={!!deleteTarget} onOpenChange={(open) => !open && setDeleteTarget(null)}>
