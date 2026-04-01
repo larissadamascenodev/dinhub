@@ -165,15 +165,41 @@ const FaturaCartao = () => {
     setInvoices(updatedInvoices);
   };
 
-  const handleEditItem = async (transactionId: string, updates: { name?: string; amount?: number; category?: string }) => {
-    const cleanUpdates: any = {};
-    if (updates.name) cleanUpdates.name = updates.name;
-    if (updates.amount) cleanUpdates.amount = updates.amount;
-    if (updates.category) cleanUpdates.category = updates.category;
-    if (Object.keys(cleanUpdates).length === 0) return;
-    await updateTransaction(transactionId, cleanUpdates);
-    toast.success("Lançamento atualizado ✅");
-    await refreshItems();
+  const handleEditItem = async (transactionId: string, updates?: { name?: string; amount?: number; category?: string }) => {
+    if (updates && Object.keys(updates).length > 0) {
+      // Direct update from inline edit
+      const cleanUpdates: any = {};
+      if (updates.name) cleanUpdates.name = updates.name;
+      if (updates.amount) cleanUpdates.amount = updates.amount;
+      if (updates.category) cleanUpdates.category = updates.category;
+      if (Object.keys(cleanUpdates).length === 0) return;
+      await updateTransaction(transactionId, cleanUpdates);
+      toast.success("Lançamento atualizado ✅");
+      await refreshItems();
+    } else {
+      // Open NovaTransacaoModal in edit mode — fetch full transaction
+      try {
+        const tx = await getTransactionById(transactionId);
+        setEditingTransaction({
+          id: tx.id,
+          name: tx.name,
+          type: tx.type as "receita" | "despesa",
+          amount: Number(tx.amount),
+          category: tx.category,
+          date: tx.date,
+          status: tx.status as "pago" | "pendente",
+          payment_method: tx.payment_method as "conta" | "cartao",
+          account_id: tx.account_id,
+          credit_card_id: tx.credit_card_id,
+          recurrence_type: tx.recurrence_type as any,
+          installments: tx.installments,
+          installment_current: tx.installment_current,
+          observation: tx.observation,
+        });
+      } catch {
+        toast.error("Erro ao carregar transação");
+      }
+    }
   };
 
   const handleDeleteItem = async (transactionId: string) => {
