@@ -648,45 +648,53 @@ const GestaoFinanceira = () => {
           return (
             <div className="space-y-3">
               {/* Total invested summary */}
-              <div className="rounded-2xl bg-amber-500/[0.06] border border-amber-500/15 p-4 flex items-center justify-between">
+              <div
+                className="rounded-2xl border border-border/10 p-4 flex items-center justify-between"
+                style={{ background: "linear-gradient(135deg, hsl(var(--card)) 0%, hsl(var(--background)) 100%)" }}
+              >
                 <div>
-                  <p className="text-[10px] text-muted-foreground uppercase tracking-wide">Total investido</p>
-                  <p className="text-lg font-bold text-foreground">{formatCurrency(totalInvested)}</p>
+                  <p className="text-[9px] text-muted-foreground uppercase tracking-widest font-medium">Total investido</p>
+                  <p className="text-xl font-extrabold text-foreground tabular-nums">{formatCurrency(totalInvested)}</p>
                 </div>
-                <div className="w-10 h-10 rounded-xl bg-amber-500/15 flex items-center justify-center">
-                  <TrendingUp className="w-5 h-5 text-amber-400" />
+                <div className="w-8 h-8 rounded-xl bg-primary/15 flex items-center justify-center">
+                  <TrendingUp className="w-4 h-4 text-primary" />
                 </div>
               </div>
 
               <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-3">
                 {investmentAccounts.map((acc, idx) => {
-                  const gradient = getGradient(acc.color);
+                  const accent = getAccent(acc.color);
                   const balance = Number(acc.current_balance);
 
                   return (
                     <motion.div
                       key={acc.id}
-                      initial={{ opacity: 0, y: 16 }}
+                      initial={{ opacity: 0, y: 12 }}
                       animate={{ opacity: 1, y: 0 }}
-                      transition={{ delay: idx * 0.05 }}
+                      transition={{ delay: idx * 0.06 }}
                       onClick={() => navigate(`/conta/${acc.id}`)}
-                      className={cn(
-                        "relative rounded-2xl p-4 overflow-hidden bg-gradient-to-br cursor-pointer group",
-                        "border border-white/[0.06] hover:border-white/[0.12] transition-all duration-300 active:scale-[0.98]",
-                        gradient
-                      )}
+                      className="relative rounded-2xl overflow-hidden cursor-pointer group border border-border/10 hover:border-primary/30 transition-all duration-300 active:scale-[0.98]"
+                      style={{ background: "linear-gradient(135deg, hsl(var(--card)) 0%, hsl(var(--background)) 100%)" }}
                     >
-                      <div className="absolute -right-6 -top-6 w-20 h-20 rounded-full bg-white/[0.04]" />
-                      <div className="relative z-10 flex flex-col h-full min-h-[120px]">
-                        <div className="flex items-center gap-2.5">
-                          <div className="w-9 h-9 rounded-xl bg-white/10 flex items-center justify-center backdrop-blur-sm">
-                            <Briefcase className="w-4 h-4 text-white/80" />
+                      <div className="p-4 space-y-4">
+                        <div className="flex items-center justify-between">
+                          <div className="flex items-center gap-3">
+                            <div className={cn("w-8 h-8 rounded-xl flex items-center justify-center", accent.iconBg)}>
+                              <Briefcase className={cn("w-4 h-4", accent.dot.replace("bg-", "text-"))} />
+                            </div>
+                            <p className="text-sm font-bold text-foreground leading-tight truncate">{acc.name}</p>
                           </div>
-                          <p className="text-sm font-bold text-white truncate">{acc.name}</p>
+                          <ChevronRight className="w-4 h-4 text-muted-foreground/25 group-hover:text-primary transition-colors" />
                         </div>
-                        <div className="mt-auto pt-3">
-                          <p className="text-[10px] text-white/40 font-medium uppercase tracking-wide mb-0.5">Saldo</p>
-                          <p className="text-lg font-bold text-white">{formatCurrency(balance)}</p>
+                        <div className="h-px bg-border/10" />
+                        <div>
+                          <div className="flex items-center gap-1.5 mb-1.5">
+                            <div className="w-1.5 h-1.5 rounded-full bg-primary" />
+                            <p className="text-[9px] text-muted-foreground uppercase tracking-widest font-medium">Saldo</p>
+                          </div>
+                          <p className="text-2xl font-extrabold tabular-nums tracking-tight text-foreground">
+                            {formatCurrency(balance)}
+                          </p>
                         </div>
                       </div>
                     </motion.div>
