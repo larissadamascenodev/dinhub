@@ -273,7 +273,7 @@ const GestaoFinanceira = () => {
                     animate={{ opacity: 1, y: 0 }}
                     transition={{ delay: idx * 0.06 }}
                     onClick={() => navigate(`/conta/${acc.id}`)}
-                    className="relative rounded-2xl overflow-hidden cursor-pointer group snap-start shrink-0 w-[78vw] max-w-[290px] bg-background/60 backdrop-blur-xl border border-border/15 hover:border-primary/20 transition-all duration-300 active:scale-[0.98]"
+                    className="relative rounded-2xl overflow-hidden cursor-pointer group min-w-0 shrink-0 basis-[80%] bg-background/60 backdrop-blur-xl border border-border/15 hover:border-primary/20 transition-all duration-300 active:scale-[0.98]"
                   >
                     {/* Top accent gradient */}
                     <div className={cn("absolute top-0 left-0 right-0 h-[3px]", accent.dot)} />
@@ -319,7 +319,7 @@ const GestaoFinanceira = () => {
                 initial={{ opacity: 0, y: 16 }}
                 animate={{ opacity: 1, y: 0 }}
                 onClick={() => setShowAddAccount(true)}
-                className="rounded-2xl p-4 min-h-[148px] w-[60vw] max-w-[200px] shrink-0 snap-start flex flex-col items-center justify-center gap-2 border-2 border-dashed border-primary/20 hover:border-primary/40 bg-primary/[0.03] transition-all cursor-pointer"
+                className="rounded-2xl p-4 min-h-[148px] min-w-0 shrink-0 basis-[60%] flex flex-col items-center justify-center gap-2 border-2 border-dashed border-primary/20 hover:border-primary/40 bg-primary/[0.03] transition-all cursor-pointer"
               >
                 <div className="w-10 h-10 rounded-xl bg-primary/10 flex items-center justify-center">
                   <Plus className="w-5 h-5 text-primary" />
@@ -448,7 +448,7 @@ const GestaoFinanceira = () => {
                     transition={{ delay: idx * 0.05 }}
                     onClick={() => navigate(`/fatura/${card.id}`)}
                     className={cn(
-                      "relative rounded-2xl p-4 overflow-hidden bg-gradient-to-br cursor-pointer group snap-start shrink-0 w-[75vw] max-w-[280px]",
+                      "relative rounded-2xl p-4 overflow-hidden bg-gradient-to-br cursor-pointer group min-w-0 shrink-0 basis-[80%]",
                       "border border-white/[0.06] hover:border-white/[0.12] transition-all duration-300 active:scale-[0.98]",
                       gradient
                     )}
@@ -495,7 +495,7 @@ const GestaoFinanceira = () => {
                 initial={{ opacity: 0, y: 16 }}
                 animate={{ opacity: 1, y: 0 }}
                 onClick={() => setShowAddCard(true)}
-                className="rounded-2xl p-4 min-h-[148px] w-[60vw] max-w-[200px] shrink-0 snap-start flex flex-col items-center justify-center gap-2 border-2 border-dashed border-primary/20 hover:border-primary/40 bg-primary/[0.03] transition-all cursor-pointer"
+                className="rounded-2xl p-4 min-h-[148px] min-w-0 shrink-0 basis-[60%] flex flex-col items-center justify-center gap-2 border-2 border-dashed border-primary/20 hover:border-primary/40 bg-primary/[0.03] transition-all cursor-pointer"
               >
                 <div className="w-10 h-10 rounded-xl bg-primary/10 flex items-center justify-center">
                   <Plus className="w-5 h-5 text-primary" />
