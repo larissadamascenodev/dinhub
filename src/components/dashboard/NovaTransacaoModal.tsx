@@ -20,6 +20,7 @@ import { toast } from "sonner";
 import { useAuth } from "@/contexts/AuthContext";
 import {
   createTransaction,
+  updateTransaction,
   getAccounts,
   createAccount,
   suggestCategory,
