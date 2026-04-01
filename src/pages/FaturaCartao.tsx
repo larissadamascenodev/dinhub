@@ -435,6 +435,22 @@ const FaturaCartao = () => {
         onConfirm={handlePay}
         paying={paying}
       />
+
+      {/* Add Chooser Modal */}
+      <InvoiceAddChooserModal
+        open={showAddChooser}
+        onClose={() => setShowAddChooser(false)}
+        onManual={() => navigate(`/transacoes`)}
+        onImage={(file) => {
+          toast.info("Processamento de imagem em breve!");
+        }}
+        onPdf={(file) => {
+          toast.info("Processamento de PDF em breve!");
+        }}
+        onCsv={(file) => {
+          toast.info("Processamento de CSV em breve!");
+        }}
+      />
     </div>
   );
 };
