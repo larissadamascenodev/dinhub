@@ -669,8 +669,6 @@ const InvestimentoDetalhe = () => {
               <p className="text-xs text-muted-foreground leading-relaxed italic">{recurringMsg}</p>
             </div>
           )}
-            </div>
-          )}
         </div>
       </motion.div>
 
