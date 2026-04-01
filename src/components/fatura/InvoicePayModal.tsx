@@ -141,7 +141,7 @@ export default function InvoicePayModal({
 
               {/* Amount */}
               <div className="text-center py-1">
-                <p className="text-[10px] text-muted-foreground uppercase tracking-wider font-bold mb-1">Valor da fatura</p>
+                <p className="text-[10px] text-muted-foreground uppercase tracking-wider font-bold mb-1">Saldo em aberto</p>
                 <p className="text-2xl font-extrabold text-primary tracking-tight">{formatCurrency(total)}</p>
               </div>
 
