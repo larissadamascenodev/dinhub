@@ -832,8 +832,11 @@ const GestaoFinanceira = () => {
                     </SelectTrigger>
                     <SelectContent>
                       <SelectItem value="percent_cdi">% do CDI</SelectItem>
-                      <SelectItem value="fixed_annual">% a.a.</SelectItem>
-                      <SelectItem value="cdi_plus">CDI +</SelectItem>
+                      <SelectItem value="fixed_annual">Taxa fixa anual</SelectItem>
+                      <SelectItem value="fixed_monthly">Taxa fixa mensal</SelectItem>
+                      <SelectItem value="ipca_plus">IPCA + %</SelectItem>
+                      <SelectItem value="cdi_plus">CDI + %</SelectItem>
+                      <SelectItem value="custom">Personalizado</SelectItem>
                     </SelectContent>
                   </Select>
                   <Input
