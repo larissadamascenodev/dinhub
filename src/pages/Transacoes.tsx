@@ -20,7 +20,7 @@ import ReceitasDespesasCards from "@/components/dashboard/ReceitasDespesasCards"
 import NovaTransacaoModal from "@/components/dashboard/NovaTransacaoModal";
 import TransactionTypeChooser from "@/components/dashboard/TransactionTypeChooser";
 import TransactionDetailModal from "@/components/dashboard/TransactionDetailModal";
-
+import FaturaDetailModal from "@/components/fatura/FaturaDetailModal";
 
 // ── Types ──────────────────────────────────────────────
 type TransactionRow = {
@@ -202,6 +202,7 @@ const Transacoes = () => {
   const { selectedMonth, selectedYear, setMonth } = useMonth();
   const [transactions, setTransactions] = useState<TransactionRow[]>([]);
   const [accounts, setAccounts] = useState<AccountRow[]>([]);
+  const [creditCards, setCreditCards] = useState<any[]>([]);
   const [loading, setLoading] = useState(true);
   const [search, setSearch] = useState("");
   const [activeTab, setActiveTab] = useState<TabFilter>("todos");
@@ -219,6 +220,8 @@ const Transacoes = () => {
   const [showDetailModal, setShowDetailModal] = useState(false);
   const [deleteTarget, setDeleteTarget] = useState<TransactionRow | null>(null);
   const [showDeleteDialog, setShowDeleteDialog] = useState(false);
+  const [faturaDetailTx, setFaturaDetailTx] = useState<TransactionRow | null>(null);
+  const [showFaturaDetail, setShowFaturaDetail] = useState(false);
 
   const accountMap = useMemo(() => {
     const map: Record<string, string> = {};
@@ -353,6 +356,7 @@ const Transacoes = () => {
       setTransactions([...regularTxs, ...faturaEntries, ...regularRecurring]);
     }
     setAccounts(accRes as AccountRow[]);
+    setCreditCards(creditCards as any[]);
     setLoading(false);
   }, [user, selectedMonth, selectedYear]);
 
@@ -709,7 +713,8 @@ const Transacoes = () => {
                         onDelete={handleDelete}
                         onEdit={(t) => {
                           if (t.id.startsWith("fatura-") && t.credit_card_id) {
-                            navigate(`/fatura/${t.credit_card_id}?month=${selectedMonth + 1}&year=${selectedYear}`);
+                            setFaturaDetailTx(t);
+                            setShowFaturaDetail(true);
                           } else {
                             setDetailTx(t); setShowDetailModal(true);
                           }
@@ -742,6 +747,31 @@ const Transacoes = () => {
         selectedMonth={selectedMonth}
         selectedYear={selectedYear}
       />
+
+      {/* Fatura Detail Modal */}
+      {(() => {
+        const cardData = faturaDetailTx?.credit_card_id
+          ? creditCards.find((c: any) => c.id === faturaDetailTx.credit_card_id)
+          : null;
+        return (
+          <FaturaDetailModal
+            open={showFaturaDetail}
+            onClose={() => { setShowFaturaDetail(false); setFaturaDetailTx(null); }}
+            card={cardData ? {
+              cardId: cardData.id,
+              cardName: cardData.name,
+              closingDay: cardData.closing_day,
+              dueDay: cardData.due_day,
+              color: cardData.color,
+              lastFourDigits: cardData.last_four_digits,
+            } : null}
+            month={selectedMonth}
+            year={selectedYear}
+            totalAmount={faturaDetailTx?.amount || 0}
+            isPaid={faturaDetailTx?.status === "pago"}
+          />
+        );
+      })()}
     </div>
   );
 };
