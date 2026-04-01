@@ -1,6 +1,6 @@
 import { useState, useEffect } from "react";
 import { motion, AnimatePresence } from "framer-motion";
-import { CreditCard, Plus, X, Landmark, Banknote, PiggyBank, TrendingUp, ChevronRight, EyeOff, Briefcase } from "lucide-react";
+import { CreditCard, Plus, X, Landmark, Banknote, PiggyBank, TrendingUp, ChevronRight, Briefcase } from "lucide-react";
 import { useNavigate } from "react-router-dom";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -8,7 +8,7 @@ import { Label } from "@/components/ui/label";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { toast } from "sonner";
 import { useAuth } from "@/contexts/AuthContext";
-import { getAccounts, createAccount, getCreditCards, createCreditCard, deactivateAccount } from "@/services/transactionService";
+import { getAccounts, createAccount, getCreditCards, createCreditCard } from "@/services/transactionService";
 import { cn } from "@/lib/utils";
 
 interface Account {
@@ -265,26 +265,13 @@ const GestaoFinanceira = () => {
                             <Icon className="w-4 h-4 text-white/80" />
                           </div>
                           <div className="min-w-0">
-                            <p className="text-sm font-bold text-white truncate">{acc.name}</p>
+                            <div className="flex items-center gap-1">
+                              <p className="text-sm font-bold text-white truncate">{acc.name}</p>
+                              <ChevronRight className="w-3.5 h-3.5 text-white/30 group-hover:text-white/60 transition-colors shrink-0" />
+                            </div>
                             <p className="text-[10px] text-white/40">{typeInfo.label}</p>
                           </div>
                         </div>
-                        <ChevronRight className="w-4 h-4 text-white/30 group-hover:text-white/60 transition-colors mt-1 shrink-0" />
-                        <button
-                          onClick={(e) => {
-                            e.stopPropagation();
-                            if (confirm("Desativar esta conta? O histórico de transações será mantido.")) {
-                              deactivateAccount(acc.id).then(() => {
-                                toast.success("Conta desativada com sucesso");
-                                fetchData();
-                              }).catch(() => toast.error("Erro ao desativar conta"));
-                            }
-                          }}
-                          className="w-7 h-7 rounded-lg bg-white/10 flex items-center justify-center hover:bg-white/20 transition-colors mt-1 shrink-0"
-                          title="Desativar conta"
-                        >
-                          <EyeOff className="w-3.5 h-3.5 text-white/50 hover:text-white/80" />
-                        </button>
                       </div>
                       {acc.is_default && (
                         <span className="self-start text-[9px] bg-white/10 text-white/70 px-2 py-0.5 rounded-full font-semibold mt-1">
@@ -292,14 +279,8 @@ const GestaoFinanceira = () => {
                         </span>
                       )}
                       <div className="mt-auto pt-3">
-                        <p className="text-[10px] text-white/40 font-medium uppercase tracking-wide mb-0.5">Saldo disponível</p>
-                        <p className="text-lg font-bold text-white">{formatCurrency(balance)}</p>
-                        <div className="flex items-center gap-1 mt-1">
-                          <TrendingUp className={cn("w-3 h-3", isPositive ? "text-emerald-400" : "text-red-400")} />
-                          <span className={cn("text-[10px] font-medium", isPositive ? "text-emerald-400" : "text-red-400")}>
-                            {isPositive ? "Saldo positivo" : "Saldo negativo"}
-                          </span>
-                        </div>
+                        <p className="text-[10px] text-white/50 font-medium uppercase tracking-wide mb-0.5">Saldo disponível</p>
+                        <p className="text-xl font-bold text-white">{formatCurrency(balance)}</p>
                       </div>
                     </div>
                   </motion.div>
@@ -348,26 +329,13 @@ const GestaoFinanceira = () => {
                             <Icon className="w-4 h-4 text-white/80" />
                           </div>
                           <div className="min-w-0">
-                            <p className="text-sm font-bold text-white truncate">{acc.name}</p>
+                            <div className="flex items-center gap-1">
+                              <p className="text-sm font-bold text-white truncate">{acc.name}</p>
+                              <ChevronRight className="w-3.5 h-3.5 text-white/30 group-hover:text-white/60 transition-colors shrink-0" />
+                            </div>
                             <p className="text-[10px] text-white/40">{typeInfo.label}</p>
                           </div>
                         </div>
-                        <ChevronRight className="w-4 h-4 text-white/30 group-hover:text-white/60 transition-colors mt-1 shrink-0" />
-                        <button
-                          onClick={(e) => {
-                            e.stopPropagation();
-                            if (confirm("Desativar esta conta? O histórico de transações será mantido.")) {
-                              deactivateAccount(acc.id).then(() => {
-                                toast.success("Conta desativada com sucesso");
-                                fetchData();
-                              }).catch(() => toast.error("Erro ao desativar conta"));
-                            }
-                          }}
-                          className="w-7 h-7 rounded-lg bg-white/10 flex items-center justify-center hover:bg-white/20 transition-colors mt-1 shrink-0"
-                          title="Desativar conta"
-                        >
-                          <EyeOff className="w-3.5 h-3.5 text-white/50 hover:text-white/80" />
-                        </button>
                       </div>
                       {acc.is_default && (
                         <span className="self-start text-[9px] bg-white/10 text-white/70 px-2 py-0.5 rounded-full font-semibold mt-1">
@@ -375,14 +343,8 @@ const GestaoFinanceira = () => {
                         </span>
                       )}
                       <div className="mt-auto pt-3">
-                        <p className="text-[10px] text-white/40 font-medium uppercase tracking-wide mb-0.5">Saldo disponível</p>
-                        <p className="text-lg font-bold text-white">{formatCurrency(balance)}</p>
-                        <div className="flex items-center gap-1 mt-1">
-                          <TrendingUp className={cn("w-3 h-3", isPositive ? "text-emerald-400" : "text-red-400")} />
-                          <span className={cn("text-[10px] font-medium", isPositive ? "text-emerald-400" : "text-red-400")}>
-                            {isPositive ? "Saldo positivo" : "Saldo negativo"}
-                          </span>
-                        </div>
+                        <p className="text-[10px] text-white/50 font-medium uppercase tracking-wide mb-0.5">Saldo disponível</p>
+                        <p className="text-xl font-bold text-white">{formatCurrency(balance)}</p>
                       </div>
                     </div>
                   </motion.div>
