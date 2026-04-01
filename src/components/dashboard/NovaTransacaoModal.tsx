@@ -91,7 +91,7 @@ interface CreditCardItem {
   color: string | null;
 }
 
-const NovaTransacaoModal = ({ open, onClose, onSuccess, initialType = "despesa", initialPaymentMethod, initialCreditCardId }: Props) => {
+const NovaTransacaoModal = ({ open, onClose, onSuccess, initialType = "despesa", initialPaymentMethod, initialCreditCardId, editTransaction }: Props) => {
   const { user } = useAuth();
   const navigate = useNavigate();
   const [type, setType] = useState<"receita" | "despesa">(initialType);
