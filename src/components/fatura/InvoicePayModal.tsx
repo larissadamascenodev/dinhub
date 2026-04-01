@@ -24,17 +24,17 @@ export default function InvoicePayModal({
           initial={{ opacity: 0 }}
           animate={{ opacity: 1 }}
           exit={{ opacity: 0 }}
-          className="fixed inset-0 z-[60] flex items-end justify-center bg-black/60 backdrop-blur-sm"
+          className="fixed inset-0 z-[60] flex items-center justify-center bg-black/60 backdrop-blur-sm p-4"
           onClick={onClose}
         >
           <motion.div
-            initial={{ y: 100 }}
-            animate={{ y: 0 }}
-            exit={{ y: 100 }}
+            initial={{ opacity: 0, scale: 0.95, y: 20 }}
+            animate={{ opacity: 1, scale: 1, y: 0 }}
+            exit={{ opacity: 0, scale: 0.95, y: 20 }}
+            transition={{ type: "spring", damping: 25, stiffness: 350 }}
             onClick={(e) => e.stopPropagation()}
-            className="w-full max-w-lg rounded-t-3xl bg-card border-t border-border/30 p-6 space-y-4"
+            className="w-full max-w-sm rounded-2xl bg-card border border-border/30 p-6 space-y-4"
           >
-            <div className="w-10 h-1 rounded-full bg-border/40 mx-auto mb-2" />
             <h3 className="text-base font-bold text-foreground text-center">Pagar Fatura</h3>
             <p className="text-center text-2xl font-bold text-primary">{formatCurrency(total)}</p>
 
