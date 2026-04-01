@@ -125,7 +125,11 @@ const NovaTransacaoModal = ({ open, onClose, onSuccess, initialType = "despesa",
       getCreditCards().then((cards) => {
         const typedCards = cards as unknown as CreditCardItem[];
         setCreditCards(typedCards);
-        if (typedCards.length > 0) setCreditCardId(typedCards[0].id);
+        if (initialCreditCardId && typedCards.some(c => c.id === initialCreditCardId)) {
+          setCreditCardId(initialCreditCardId);
+        } else if (typedCards.length > 0) {
+          setCreditCardId(typedCards[0].id);
+        }
       });
     }
   }, [open, user]);
