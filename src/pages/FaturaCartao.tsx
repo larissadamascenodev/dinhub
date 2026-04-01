@@ -453,6 +453,19 @@ const FaturaCartao = () => {
           toast.info("Processamento de CSV em breve!");
         }}
       />
+
+      {/* Manual Add Modal — pre-set to credit card */}
+      <NovaTransacaoModal
+        open={showManualAdd}
+        onClose={() => setShowManualAdd(false)}
+        onSuccess={async () => {
+          setShowManualAdd(false);
+          await refreshItems();
+        }}
+        initialType="despesa"
+        initialPaymentMethod="cartao"
+        initialCreditCardId={cardId}
+      />
     </div>
   );
 };
