@@ -1,6 +1,6 @@
 import { useState, useEffect, useMemo } from "react";
 import { motion } from "framer-motion";
-import { ArrowLeft, Landmark, Banknote, PiggyBank, Pencil, Trash2, X, TrendingUp, TrendingDown } from "lucide-react";
+import { ArrowLeft, Landmark, Banknote, PiggyBank, Pencil, Trash2, X, TrendingUp, TrendingDown, ChevronRight, ArrowUpRight, ArrowDownLeft } from "lucide-react";
 import { useNavigate, useParams } from "react-router-dom";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -40,24 +40,39 @@ const ACCOUNT_TYPE_LABELS: Record<string, { label: string; icon: typeof Landmark
 };
 
 const COLOR_OPTIONS = [
-  { value: "violet", label: "Roxo", bg: "from-violet-700/80 to-violet-950/90", accent: "bg-violet-500" },
-  { value: "emerald", label: "Verde", bg: "from-emerald-700/80 to-emerald-950/90", accent: "bg-emerald-500" },
-  { value: "sky", label: "Azul", bg: "from-sky-700/80 to-sky-950/90", accent: "bg-sky-500" },
-  { value: "amber", label: "Laranja", bg: "from-amber-700/80 to-amber-950/90", accent: "bg-amber-500" },
-  { value: "rose", label: "Rosa", bg: "from-rose-700/80 to-rose-950/90", accent: "bg-rose-500" },
-  { value: "cyan", label: "Ciano", bg: "from-cyan-700/80 to-cyan-950/90", accent: "bg-cyan-500" },
-  { value: "fuchsia", label: "Fúcsia", bg: "from-fuchsia-700/80 to-fuchsia-950/90", accent: "bg-fuchsia-500" },
-  { value: "lime", label: "Lima", bg: "from-lime-700/80 to-lime-950/90", accent: "bg-lime-500" },
+  { value: "violet", label: "Roxo", accent: "bg-violet-500" },
+  { value: "emerald", label: "Verde", accent: "bg-emerald-500" },
+  { value: "sky", label: "Azul", accent: "bg-sky-500" },
+  { value: "amber", label: "Laranja", accent: "bg-amber-500" },
+  { value: "rose", label: "Rosa", accent: "bg-rose-500" },
+  { value: "cyan", label: "Ciano", accent: "bg-cyan-500" },
+  { value: "fuchsia", label: "Fúcsia", accent: "bg-fuchsia-500" },
+  { value: "lime", label: "Lima", accent: "bg-lime-500" },
 ];
 
-function getGradient(color: string | null): string {
-  const found = COLOR_OPTIONS.find((c) => c.value === color);
-  return found?.bg ?? COLOR_OPTIONS[0].bg;
+const ACCENT_MAP: Record<string, { iconBg: string; dot: string }> = {
+  violet: { iconBg: "bg-violet-500/15", dot: "bg-violet-400" },
+  emerald: { iconBg: "bg-emerald-500/15", dot: "bg-emerald-400" },
+  sky: { iconBg: "bg-sky-500/15", dot: "bg-sky-400" },
+  amber: { iconBg: "bg-amber-500/15", dot: "bg-amber-400" },
+  rose: { iconBg: "bg-rose-500/15", dot: "bg-rose-400" },
+  cyan: { iconBg: "bg-cyan-500/15", dot: "bg-cyan-400" },
+  fuchsia: { iconBg: "bg-fuchsia-500/15", dot: "bg-fuchsia-400" },
+  lime: { iconBg: "bg-lime-500/15", dot: "bg-lime-400" },
+};
+
+function getAccent(color: string | null) {
+  return ACCENT_MAP[color ?? "violet"] ?? ACCENT_MAP.violet;
 }
 
 function formatCurrency(value: number) {
   return value.toLocaleString("pt-BR", { style: "currency", currency: "BRL" });
 }
+
+const MONTH_NAMES = [
+  "Janeiro", "Fevereiro", "Março", "Abril", "Maio", "Junho",
+  "Julho", "Agosto", "Setembro", "Outubro", "Novembro", "Dezembro",
+];
 
 const ContaDetalhe = () => {
   const navigate = useNavigate();
@@ -70,7 +85,6 @@ const ContaDetalhe = () => {
   const [loading, setLoading] = useState(true);
   const [editing, setEditing] = useState(false);
 
-  // Edit state
   const [editName, setEditName] = useState("");
   const [editType, setEditType] = useState<string>("checking");
   const [editColor, setEditColor] = useState("violet");
@@ -131,7 +145,6 @@ const ContaDetalhe = () => {
     }
   };
 
-  // Category aggregation
   const categoryData = useMemo(() => {
     const map: Record<string, number> = {};
     transactions
@@ -162,116 +175,209 @@ const ContaDetalhe = () => {
 
   const typeInfo = ACCOUNT_TYPE_LABELS[account.type] ?? ACCOUNT_TYPE_LABELS.checking;
   const Icon = typeInfo.icon;
-  const gradient = getGradient(account.color);
+  const accent = getAccent(account.color);
+  const balance = Number(account.current_balance);
 
   return (
-    <div className="pt-2 pb-8 space-y-6">
+    <div className="pt-2 pb-8 space-y-5">
       {/* Header */}
-      <div className="flex items-center gap-3">
-        <button onClick={() => navigate("/gestao")} className="w-9 h-9 rounded-xl bg-card border border-border/20 flex items-center justify-center">
-          <ArrowLeft className="w-4 h-4 text-foreground" />
+      <div className="flex items-center justify-between">
+        <button
+          onClick={() => navigate("/gestao")}
+          className="flex items-center gap-1.5 text-sm text-muted-foreground hover:text-foreground transition-colors"
+        >
+          <ArrowLeft className="w-4 h-4" />
+          Voltar
         </button>
-        <h1 className="text-lg font-bold text-foreground flex-1">{account.name}</h1>
-        <button onClick={() => setEditing(true)} className="w-9 h-9 rounded-xl bg-primary/10 flex items-center justify-center">
-          <Pencil className="w-4 h-4 text-primary" />
-        </button>
-        <button onClick={handleDelete} className="w-9 h-9 rounded-xl bg-destructive/10 flex items-center justify-center">
-          <Trash2 className="w-4 h-4 text-destructive" />
-        </button>
+        <div className="flex items-center gap-2">
+          <button
+            onClick={() => setEditing(true)}
+            className="w-8 h-8 rounded-xl bg-primary/10 flex items-center justify-center hover:bg-primary/20 transition-colors"
+          >
+            <Pencil className="w-3.5 h-3.5 text-primary" />
+          </button>
+          <button
+            onClick={handleDelete}
+            className="w-8 h-8 rounded-xl bg-destructive/10 flex items-center justify-center hover:bg-destructive/20 transition-colors"
+          >
+            <Trash2 className="w-3.5 h-3.5 text-destructive" />
+          </button>
+        </div>
       </div>
 
-      {/* Account card */}
-      <div className={cn("rounded-2xl p-5 bg-gradient-to-br border border-white/[0.06]", gradient)}>
-        <div className="flex items-center gap-3 mb-4">
-          <div className="w-11 h-11 rounded-xl bg-white/10 flex items-center justify-center">
-            <Icon className="w-5 h-5 text-white/80" />
+      {/* ===== Account Card ===== */}
+      <motion.div
+        initial={{ opacity: 0, y: 12 }}
+        animate={{ opacity: 1, y: 0 }}
+        className="relative rounded-2xl overflow-hidden border border-primary/20"
+        style={{ background: "linear-gradient(135deg, hsl(var(--card)) 0%, hsl(var(--background)) 100%)" }}
+      >
+        <div className="p-5 space-y-4">
+          {/* Account info row */}
+          <div className="flex items-center justify-between">
+            <div className="flex items-center gap-3">
+              <div className={cn("w-8 h-8 rounded-xl flex items-center justify-center", accent.iconBg)}>
+                <Icon className={cn("w-4 h-4", accent.dot.replace("bg-", "text-"))} />
+              </div>
+              <div>
+                <p className="text-sm font-bold text-foreground leading-tight">{account.name}</p>
+                <p className="text-[10px] text-muted-foreground mt-0.5">{typeInfo.label}</p>
+              </div>
+            </div>
+            {account.is_default && (
+              <span className="text-[8px] bg-primary/10 text-primary px-2.5 py-1 rounded-lg font-bold uppercase tracking-wider">
+                Principal
+              </span>
+            )}
           </div>
+
+          {/* Divider */}
+          <div className="h-px bg-border/10" />
+
+          {/* Balance */}
           <div>
-            <p className="text-base font-bold text-white">{account.name}</p>
-            <p className="text-[11px] text-white/50">{typeInfo.label}</p>
+            <div className="flex items-center gap-1.5 mb-1.5">
+              <div className={cn("w-1.5 h-1.5 rounded-full", balance >= 0 ? "bg-primary" : "bg-destructive")} />
+              <p className="text-[9px] text-muted-foreground uppercase tracking-widest font-medium">Saldo disponível</p>
+            </div>
+            <p className={cn("text-3xl font-extrabold tabular-nums tracking-tight", balance >= 0 ? "text-foreground" : "text-destructive")}>
+              {formatCurrency(balance)}
+            </p>
           </div>
         </div>
-        <p className="text-[10px] text-white/40 uppercase tracking-wide mb-0.5">Saldo disponível</p>
-        <p className="text-2xl font-bold text-white">{formatCurrency(Number(account.current_balance))}</p>
-      </div>
+      </motion.div>
 
-      {/* Summary */}
-      <div className="grid grid-cols-2 gap-3">
-        <div className="rounded-xl bg-card/60 border border-border/20 p-4">
-          <div className="flex items-center gap-2 mb-1">
-            <TrendingUp className="w-4 h-4 text-primary" />
-            <span className="text-[10px] text-muted-foreground uppercase">Receitas</span>
-          </div>
-          <p className="text-lg font-bold text-primary">{formatCurrency(totalReceitas)}</p>
-        </div>
-        <div className="rounded-xl bg-card/60 border border-border/20 p-4">
-          <div className="flex items-center gap-2 mb-1">
-            <TrendingDown className="w-4 h-4 text-destructive" />
-            <span className="text-[10px] text-muted-foreground uppercase">Despesas</span>
-          </div>
-          <p className="text-lg font-bold text-destructive">{formatCurrency(totalDespesas)}</p>
-        </div>
-      </div>
+      {/* ===== Resumo do mês ===== */}
+      <motion.div
+        initial={{ opacity: 0, y: 12 }}
+        animate={{ opacity: 1, y: 0 }}
+        transition={{ delay: 0.05 }}
+        className="space-y-3"
+      >
+        <h2 className="text-[9px] text-muted-foreground uppercase tracking-widest font-medium px-1">
+          Resumo · {MONTH_NAMES[selectedMonth]} {selectedYear}
+        </h2>
 
-      {/* Categories */}
+        <div className="grid grid-cols-2 gap-3">
+          <div
+            className="rounded-2xl border border-primary/20 p-4"
+            style={{ background: "linear-gradient(135deg, hsl(var(--card)) 0%, hsl(var(--background)) 100%)" }}
+          >
+            <div className="flex items-center gap-2 mb-2">
+              <div className="w-6 h-6 rounded-lg bg-primary/15 flex items-center justify-center">
+                <ArrowDownLeft className="w-3 h-3 text-primary" />
+              </div>
+              <span className="text-[9px] text-muted-foreground uppercase tracking-widest font-medium">Receitas</span>
+            </div>
+            <p className="text-lg font-extrabold text-primary tabular-nums">{formatCurrency(totalReceitas)}</p>
+          </div>
+          <div
+            className="rounded-2xl border border-primary/20 p-4"
+            style={{ background: "linear-gradient(135deg, hsl(var(--card)) 0%, hsl(var(--background)) 100%)" }}
+          >
+            <div className="flex items-center gap-2 mb-2">
+              <div className="w-6 h-6 rounded-lg bg-destructive/15 flex items-center justify-center">
+                <ArrowUpRight className="w-3 h-3 text-destructive" />
+              </div>
+              <span className="text-[9px] text-muted-foreground uppercase tracking-widest font-medium">Despesas</span>
+            </div>
+            <p className="text-lg font-extrabold text-destructive tabular-nums">{formatCurrency(totalDespesas)}</p>
+          </div>
+        </div>
+      </motion.div>
+
+      {/* ===== Gastos por Categoria ===== */}
       {categoryData.length > 0 && (
-        <section>
-          <h2 className="text-sm font-bold text-foreground mb-3">Gastos por Categoria</h2>
-          <div className="space-y-2">
-            {categoryData.map((cat) => {
+        <motion.section
+          initial={{ opacity: 0, y: 12 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ delay: 0.1 }}
+        >
+          <h2 className="text-[9px] text-muted-foreground uppercase tracking-widest font-medium px-1 mb-3">
+            Gastos por categoria
+          </h2>
+          <div
+            className="rounded-2xl border border-primary/20 overflow-hidden"
+            style={{ background: "linear-gradient(135deg, hsl(var(--card)) 0%, hsl(var(--background)) 100%)" }}
+          >
+            {categoryData.map((cat, idx) => {
               const pct = totalDespesas > 0 ? (cat.amount / totalDespesas) * 100 : 0;
               return (
-                <div key={cat.name} className="rounded-xl bg-card/60 border border-border/20 p-3">
-                  <div className="flex items-center justify-between mb-1.5">
+                <div
+                  key={cat.name}
+                  className={cn("p-4", idx < categoryData.length - 1 && "border-b border-border/10")}
+                >
+                  <div className="flex items-center justify-between mb-2">
                     <span className="text-xs font-semibold text-foreground">{cat.name}</span>
-                    <span className="text-xs font-bold text-foreground">{formatCurrency(cat.amount)}</span>
+                    <span className="text-xs font-bold text-foreground tabular-nums">{formatCurrency(cat.amount)}</span>
                   </div>
                   <div className="w-full h-1.5 rounded-full bg-muted/30 overflow-hidden">
                     <motion.div
                       initial={{ width: 0 }}
                       animate={{ width: `${pct}%` }}
-                      transition={{ duration: 0.6 }}
-                      className="h-full rounded-full bg-primary"
+                      transition={{ duration: 0.6, delay: idx * 0.05 }}
+                      className="h-full rounded-full bg-primary/40"
                     />
                   </div>
+                  <p className="text-[10px] text-muted-foreground mt-1">{pct.toFixed(0)}% do total</p>
                 </div>
               );
             })}
           </div>
-        </section>
+        </motion.section>
       )}
 
-      {/* Transactions */}
-      <section>
-        <h2 className="text-sm font-bold text-foreground mb-3">Transações</h2>
+      {/* ===== Transações ===== */}
+      <motion.section
+        initial={{ opacity: 0, y: 12 }}
+        animate={{ opacity: 1, y: 0 }}
+        transition={{ delay: 0.15 }}
+      >
+        <h2 className="text-[9px] text-muted-foreground uppercase tracking-widest font-medium px-1 mb-3">
+          Transações
+        </h2>
         {transactions.length === 0 ? (
-          <div className="rounded-xl bg-card/60 border border-border/20 p-6 text-center">
+          <div
+            className="rounded-2xl border border-primary/20 p-8 text-center"
+            style={{ background: "linear-gradient(135deg, hsl(var(--card)) 0%, hsl(var(--background)) 100%)" }}
+          >
             <p className="text-sm text-muted-foreground">Nenhuma transação neste mês</p>
           </div>
         ) : (
-          <div className="space-y-2">
-            {transactions.map((tx) => (
-              <div key={tx.id} className="flex items-center gap-3 rounded-xl bg-card/60 border border-border/20 p-3">
+          <div
+            className="rounded-2xl border border-primary/20 overflow-hidden"
+            style={{ background: "linear-gradient(135deg, hsl(var(--card)) 0%, hsl(var(--background)) 100%)" }}
+          >
+            {transactions.map((tx, idx) => (
+              <div
+                key={tx.id}
+                className={cn(
+                  "flex items-center gap-3 p-4",
+                  idx < transactions.length - 1 && "border-b border-border/10"
+                )}
+              >
                 <div className={cn(
-                  "w-9 h-9 rounded-xl flex items-center justify-center",
-                  tx.type === "receita" ? "bg-primary/10" : "bg-destructive/10"
+                  "w-8 h-8 rounded-xl flex items-center justify-center",
+                  tx.type === "receita" ? "bg-primary/15" : "bg-destructive/15"
                 )}>
                   {tx.type === "receita"
-                    ? <TrendingUp className="w-4 h-4 text-primary" />
-                    : <TrendingDown className="w-4 h-4 text-destructive" />}
+                    ? <ArrowDownLeft className="w-4 h-4 text-primary" />
+                    : <ArrowUpRight className="w-4 h-4 text-destructive" />}
                 </div>
                 <div className="flex-1 min-w-0">
                   <p className="text-sm font-semibold text-foreground truncate">{tx.name}</p>
-                  <p className="text-[10px] text-muted-foreground">{tx.category} · {new Date(tx.date + "T12:00:00").toLocaleDateString("pt-BR")}</p>
+                  <p className="text-[10px] text-muted-foreground">
+                    {tx.category} · {new Date(tx.date + "T12:00:00").toLocaleDateString("pt-BR")}
+                  </p>
                 </div>
-                <p className={cn("text-sm font-bold", tx.type === "receita" ? "text-primary" : "text-destructive")}>
+                <p className={cn("text-sm font-bold tabular-nums", tx.type === "receita" ? "text-primary" : "text-destructive")}>
                   {tx.type === "receita" ? "+" : "-"}{formatCurrency(Number(tx.amount))}
                 </p>
               </div>
             ))}
           </div>
         )}
-      </section>
+      </motion.section>
 
       {/* Edit modal */}
       {editing && (
@@ -327,7 +433,11 @@ const ContaDetalhe = () => {
                 ))}
               </div>
             </div>
-            <Button onClick={handleSaveEdit} disabled={!editName.trim()} className="w-full h-11 rounded-xl">
+            <Button
+              onClick={handleSaveEdit}
+              disabled={!editName.trim()}
+              className="w-full h-11 rounded-xl bg-primary/15 text-primary border border-primary/30 hover:bg-primary/25 font-bold"
+            >
               Salvar
             </Button>
           </motion.div>
