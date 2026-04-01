@@ -442,7 +442,7 @@ const FaturaCartao = () => {
       <InvoiceAddChooserModal
         open={showAddChooser}
         onClose={() => setShowAddChooser(false)}
-        onManual={() => navigate(`/transacoes`)}
+        onManual={() => setShowManualAdd(true)}
         onImage={(file) => {
           toast.info("Processamento de imagem em breve!");
         }}
