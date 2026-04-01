@@ -434,7 +434,7 @@ const GestaoFinanceira = () => {
               transition={{ delay: creditCards.length * 0.05 }}
               onClick={() => setShowAddCard(true)}
               className={cn(
-                "rounded-2xl p-4 min-h-[148px] flex flex-col items-center justify-center gap-2",
+                "rounded-2xl p-4 sm:min-h-[148px] min-h-[80px] flex flex-col items-center justify-center gap-2",
                 "border-2 border-dashed border-primary/20 hover:border-primary/40",
                 "bg-primary/[0.03] hover:bg-primary/[0.06] transition-all duration-300 cursor-pointer"
               )}
