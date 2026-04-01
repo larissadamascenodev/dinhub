@@ -142,7 +142,7 @@ const NovaTransacaoModal = ({ open, onClose, onSuccess, initialType = "despesa",
       setDate(new Date());
       setDateMode("hoje");
       setShowCalendar(false);
-      setPaymentMethod("conta");
+      setPaymentMethod(initialPaymentMethod ?? "conta");
       setRecurrenceType("unica");
       setInstallments(2);
       setPaidInstallments(0);
