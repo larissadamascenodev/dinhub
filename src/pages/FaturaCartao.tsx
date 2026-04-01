@@ -1,7 +1,7 @@
 import { useState, useEffect, useMemo } from "react";
 import { motion } from "framer-motion";
 import {
-  ArrowLeft, Plus, MoreVertical,
+  ArrowLeft, Plus, MoreVertical, CreditCard,
   CalendarClock, CalendarCheck, Wallet, Shield,
   Pencil, Trash2,
 } from "lucide-react";
