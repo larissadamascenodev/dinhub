@@ -750,6 +750,14 @@ const GestaoFinanceira = () => {
                             {formatCurrency(balance)}
                           </p>
                         </div>
+                        {/* Aporte button */}
+                        <button
+                          onClick={(e) => { e.stopPropagation(); openAporte(acc.id, acc.name); }}
+                          className="flex items-center justify-center gap-1.5 w-full py-2 rounded-xl bg-primary/10 text-primary text-[11px] font-semibold hover:bg-primary/20 transition-colors border border-primary/20"
+                        >
+                          <ArrowDownLeft className="w-3.5 h-3.5" />
+                          Aporte
+                        </button>
                       </div>
                     </motion.div>
                   );
