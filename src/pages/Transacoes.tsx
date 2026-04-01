@@ -202,6 +202,7 @@ const Transacoes = () => {
   const { selectedMonth, selectedYear, setMonth } = useMonth();
   const [transactions, setTransactions] = useState<TransactionRow[]>([]);
   const [accounts, setAccounts] = useState<AccountRow[]>([]);
+  const [creditCards, setCreditCards] = useState<any[]>([]);
   const [loading, setLoading] = useState(true);
   const [search, setSearch] = useState("");
   const [activeTab, setActiveTab] = useState<TabFilter>("todos");
@@ -219,6 +220,8 @@ const Transacoes = () => {
   const [showDetailModal, setShowDetailModal] = useState(false);
   const [deleteTarget, setDeleteTarget] = useState<TransactionRow | null>(null);
   const [showDeleteDialog, setShowDeleteDialog] = useState(false);
+  const [faturaDetailTx, setFaturaDetailTx] = useState<TransactionRow | null>(null);
+  const [showFaturaDetail, setShowFaturaDetail] = useState(false);
 
   const accountMap = useMemo(() => {
     const map: Record<string, string> = {};
