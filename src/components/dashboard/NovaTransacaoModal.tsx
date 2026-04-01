@@ -5,6 +5,7 @@ import {
   Wallet, Repeat, StickyNote, Check, Clock, CreditCard, Plus,
   Sparkles, Search, Settings,
 } from "lucide-react";
+import { useNavigate } from "react-router-dom";
 import { Switch } from "@/components/ui/switch";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -25,6 +26,8 @@ import {
   getCreditCards,
   createCreditCard,
 } from "@/services/transactionService";
+import { getCustomCategories, createCustomCategory, type CustomCategory } from "@/services/categoryService";
+import CategoryCreateModal from "@/components/dashboard/CategoryCreateModal";
 
 interface Props {
   open: boolean;
@@ -71,6 +74,7 @@ interface CreditCardItem {
 
 const NovaTransacaoModal = ({ open, onClose, onSuccess, initialType = "despesa", initialPaymentMethod, initialCreditCardId }: Props) => {
   const { user } = useAuth();
+  const navigate = useNavigate();
   const [type, setType] = useState<"receita" | "despesa">(initialType);
   const [status, setStatus] = useState<"pago" | "pendente">("pago");
   const [description, setDescription] = useState("");
@@ -101,21 +105,22 @@ const NovaTransacaoModal = ({ open, onClose, onSuccess, initialType = "despesa",
   const [submitting, setSubmitting] = useState(false);
   const [showCategoryModal, setShowCategoryModal] = useState(false);
   const [categorySearch, setCategorySearch] = useState("");
-  const [customCategories, setCustomCategories] = useState<string[]>([]);
+  const [customCategories, setCustomCategories] = useState<CustomCategory[]>([]);
   const [newCategoryName, setNewCategoryName] = useState("");
+  const [showCategoryCreate, setShowCategoryCreate] = useState(false);
   const amountInputRef = useRef<HTMLInputElement>(null);
   const suggestTimeoutRef = useRef<ReturnType<typeof setTimeout>>();
 
   const allCategories = [
     ...(type === "receita" ? CATEGORIES_INCOME : CATEGORIES_EXPENSE),
-    ...customCategories,
+    ...customCategories.filter((c) => c.type === type).map((c) => c.name),
   ];
 
   const filteredCategories = categorySearch
     ? allCategories.filter((c) => c.toLowerCase().includes(categorySearch.toLowerCase()))
     : allCategories;
 
-  // Fetch accounts and credit cards
+  // Fetch accounts, credit cards and custom categories
   useEffect(() => {
     if (open && user) {
       getAccounts().then((accs) => {
@@ -132,6 +137,7 @@ const NovaTransacaoModal = ({ open, onClose, onSuccess, initialType = "despesa",
           setCreditCardId(typedCards[0].id);
         }
       });
+      getCustomCategories().then((cats) => setCustomCategories(cats)).catch(() => {});
     }
   }, [open, user]);
 
@@ -259,12 +265,23 @@ const NovaTransacaoModal = ({ open, onClose, onSuccess, initialType = "despesa",
   const handleCreateCategory = (nameOverride?: string) => {
     const name = (nameOverride || newCategoryName).trim();
     if (!name) return;
-    if (!allCategories.includes(name)) {
-      setCustomCategories((prev) => [...prev, name]);
-    }
     setCategory(name);
     setNewCategoryName("");
     setShowCategoryModal(false);
+  };
+
+  const handleCreateCategoryFromModal = async (data: { name: string; icon: string; color: string }) => {
+    if (!user) return;
+    try {
+      const cat = await createCustomCategory(user.id, { ...data, type });
+      setCustomCategories((prev) => [...prev, cat]);
+      setCategory(data.name);
+      setShowCategoryCreate(false);
+    } catch {
+      // fallback: just use the name
+      setCategory(data.name);
+      setShowCategoryCreate(false);
+    }
   };
 
   const handleSubmit = async (e: React.FormEvent) => {
@@ -963,26 +980,41 @@ const NovaTransacaoModal = ({ open, onClose, onSuccess, initialType = "despesa",
                   </div>
 
                   {/* Category list */}
-                  <div className="max-h-48 overflow-y-auto space-y-1 mb-3">
+                  <div className="max-h-48 overflow-y-auto space-y-1 mb-3 scrollbar-none">
                     {filteredCategories.length > 0 ? (
-                      filteredCategories.map((cat) => (
-                        <button
-                          key={cat}
-                          type="button"
-                          onClick={() => {
-                            setCategory(cat);
-                            setShowCategoryModal(false);
-                          }}
-                          className={cn(
-                            "w-full text-left px-3 py-2 rounded-xl text-sm transition-colors",
-                            category === cat
-                              ? "bg-primary/15 text-primary font-semibold"
-                              : "text-foreground hover:bg-muted/50"
-                          )}
-                        >
-                          {cat}
-                        </button>
-                      ))
+                      filteredCategories.map((cat) => {
+                        const customCat = customCategories.find((c) => c.name === cat && c.type === type);
+                        return (
+                          <button
+                            key={cat}
+                            type="button"
+                            onClick={() => {
+                              setCategory(cat);
+                              setShowCategoryModal(false);
+                            }}
+                            className={cn(
+                              "w-full flex items-center gap-2.5 text-left px-3 py-2 rounded-xl text-sm transition-colors",
+                              category === cat
+                                ? "bg-primary/15 text-primary font-semibold"
+                                : "text-foreground hover:bg-muted/50"
+                            )}
+                          >
+                            {customCat ? (
+                              <span
+                                className="w-7 h-7 rounded-lg flex items-center justify-center text-sm shrink-0"
+                                style={{ backgroundColor: `${customCat.color}20`, border: `1px solid ${customCat.color}30` }}
+                              >
+                                {customCat.icon}
+                              </span>
+                            ) : (
+                              <span className="w-7 h-7 rounded-lg flex items-center justify-center text-sm shrink-0 bg-muted/20">
+                                📋
+                              </span>
+                            )}
+                            {cat}
+                          </button>
+                        );
+                      })
                     ) : (
                       <p className="text-center text-sm text-muted-foreground py-4">
                         Nenhuma categoria encontrada
@@ -994,12 +1026,7 @@ const NovaTransacaoModal = ({ open, onClose, onSuccess, initialType = "despesa",
                   <div className="flex items-center justify-between pt-2 border-t border-border/20">
                     <button
                       type="button"
-                      onClick={() => {
-                        const name = categorySearch.trim() || prompt("Nome da nova categoria:");
-                        if (name) {
-                          handleCreateCategory(name);
-                        }
-                      }}
+                      onClick={() => setShowCategoryCreate(true)}
                       className="flex items-center gap-1 text-xs text-primary font-medium hover:opacity-80"
                     >
                       <Plus className="w-3.5 h-3.5" />
@@ -1007,6 +1034,11 @@ const NovaTransacaoModal = ({ open, onClose, onSuccess, initialType = "despesa",
                     </button>
                     <button
                       type="button"
+                      onClick={() => {
+                        setShowCategoryModal(false);
+                        onClose();
+                        navigate("/categorias");
+                      }}
                       className="flex items-center gap-1 text-xs text-muted-foreground font-medium hover:text-foreground"
                     >
                       <Settings className="w-3.5 h-3.5" />
@@ -1017,6 +1049,14 @@ const NovaTransacaoModal = ({ open, onClose, onSuccess, initialType = "despesa",
               </motion.div>
             )}
           </AnimatePresence>
+
+          {/* Category Create Modal */}
+          <CategoryCreateModal
+            open={showCategoryCreate}
+            onClose={() => setShowCategoryCreate(false)}
+            onSave={handleCreateCategoryFromModal}
+            title="Nova Categoria"
+          />
         </motion.div>
       )}
     </AnimatePresence>

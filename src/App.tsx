@@ -16,6 +16,7 @@ import ContaDetalhe from "./pages/ContaDetalhe.tsx";
 import BotFinance from "./pages/BotFinance.tsx";
 import BotFinanceProjecoes from "./pages/BotFinanceProjecoes.tsx";
 import BotFinanceSaude from "./pages/BotFinanceSaude.tsx";
+import GerenciarCategorias from "./pages/GerenciarCategorias.tsx";
 import NotFound from "./pages/NotFound.tsx";
 
 const queryClient = new QueryClient();
@@ -52,6 +53,7 @@ const App = () => (
               <Route path="/bot-finance/projecoes" element={<BotFinanceProjecoes />} />
               <Route path="/bot-finance/saude" element={<BotFinanceSaude />} />
               <Route path="/configuracoes" element={<Configuracoes />} />
+              <Route path="/categorias" element={<GerenciarCategorias />} />
             </Route>
             <Route path="*" element={<NotFound />} />
           </Routes>
