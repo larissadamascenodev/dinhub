@@ -264,50 +264,46 @@ const GestaoFinanceira = () => {
                 return (
                   <motion.div
                     key={acc.id}
-                    initial={{ opacity: 0, y: 16 }}
-                    animate={{ opacity: 1, y: 0 }}
-                    transition={{ delay: idx * 0.05 }}
+                    initial={{ opacity: 0, x: -10 }}
+                    animate={{ opacity: 1, x: 0 }}
+                    transition={{ delay: idx * 0.06 }}
                     onClick={() => navigate(`/conta/${acc.id}`)}
-                    className={cn(
-                      "relative rounded-2xl p-4 overflow-hidden cursor-pointer group snap-start shrink-0 w-[75vw] max-w-[280px]",
-                      "bg-card/80 backdrop-blur-xl border transition-all duration-300 active:scale-[0.98]",
-                      accent.border, "hover:border-primary/20"
-                    )}
+                    className="relative rounded-2xl overflow-hidden cursor-pointer group snap-start shrink-0 w-[80vw] max-w-[300px] bg-card border border-border/20 hover:border-border/40 transition-all duration-300 active:scale-[0.98]"
                   >
-                    {/* Accent glow */}
-                    <div className={cn("absolute -right-8 -top-8 w-24 h-24 rounded-full blur-2xl opacity-30", accent.dot)} />
+                    {/* Left accent stripe */}
+                    <div className={cn("absolute left-0 top-0 bottom-0 w-1 rounded-l-2xl", accent.dot)} />
 
-                    <div className="relative z-10 flex flex-col h-full min-h-[148px]">
-                      {/* Header */}
-                      <div className="flex items-center gap-2.5">
-                        <div className={cn("w-9 h-9 rounded-xl flex items-center justify-center", accent.iconBg)}>
-                          <Icon className="w-4 h-4 text-foreground/80" />
-                        </div>
-                        <div className="min-w-0 flex-1">
-                          <div className="flex items-center gap-1">
-                            <p className="text-sm font-bold text-foreground truncate">{acc.name}</p>
-                            <ChevronRight className="w-3.5 h-3.5 text-muted-foreground/40 group-hover:text-primary transition-colors shrink-0" />
+                    <div className="pl-5 pr-4 py-4 flex flex-col min-h-[140px]">
+                      {/* Top row: icon + name + badge */}
+                      <div className="flex items-center justify-between">
+                        <div className="flex items-center gap-3">
+                          <div className={cn("w-10 h-10 rounded-full flex items-center justify-center", accent.iconBg)}>
+                            <Icon className="w-4.5 h-4.5 text-foreground/70" />
                           </div>
-                          <p className="text-[10px] text-muted-foreground">{typeInfo.label}</p>
+                          <div>
+                            <p className="text-[13px] font-semibold text-foreground">{acc.name}</p>
+                            <p className="text-[10px] text-muted-foreground mt-0.5">{typeInfo.label}</p>
+                          </div>
+                        </div>
+                        {acc.is_default && (
+                          <span className="text-[8px] bg-primary/10 text-primary px-2 py-0.5 rounded-full font-bold uppercase tracking-wider">
+                            Principal
+                          </span>
+                        )}
+                      </div>
+
+                      {/* Balance section */}
+                      <div className="mt-auto pt-3 flex items-end justify-between">
+                        <div>
+                          <p className="text-[9px] text-muted-foreground uppercase tracking-widest mb-1">Saldo</p>
+                          <p className={cn("text-2xl font-bold tabular-nums tracking-tight", balance >= 0 ? "text-foreground" : "text-destructive")}>
+                            {formatCurrency(balance)}
+                          </p>
+                        </div>
+                        <div className="w-8 h-8 rounded-full bg-primary/5 flex items-center justify-center group-hover:bg-primary/10 transition-colors">
+                          <ChevronRight className="w-4 h-4 text-muted-foreground/50 group-hover:text-primary transition-colors" />
                         </div>
                       </div>
-
-                      {acc.is_default && (
-                        <span className="self-start text-[9px] bg-primary/10 text-primary px-2 py-0.5 rounded-full font-semibold mt-2">
-                          Principal
-                        </span>
-                      )}
-
-                      {/* Balance */}
-                      <div className="mt-auto pt-4">
-                        <p className="text-[10px] text-muted-foreground font-medium uppercase tracking-wide mb-0.5">Saldo disponível</p>
-                        <p className={cn("text-xl font-bold tabular-nums", balance >= 0 ? "text-primary" : "text-destructive")}>
-                          {formatCurrency(balance)}
-                        </p>
-                      </div>
-
-                      {/* Accent bar at bottom */}
-                      <div className={cn("absolute bottom-0 left-4 right-4 h-[2px] rounded-full opacity-40", accent.dot)} />
                     </div>
                   </motion.div>
                 );
@@ -336,42 +332,41 @@ const GestaoFinanceira = () => {
                 return (
                   <motion.div
                     key={acc.id}
-                    initial={{ opacity: 0, y: 16 }}
-                    animate={{ opacity: 1, y: 0 }}
-                    transition={{ delay: idx * 0.05 }}
+                    initial={{ opacity: 0, x: -10 }}
+                    animate={{ opacity: 1, x: 0 }}
+                    transition={{ delay: idx * 0.06 }}
                     onClick={() => navigate(`/conta/${acc.id}`)}
-                    className={cn(
-                      "relative rounded-2xl p-4 overflow-hidden cursor-pointer group",
-                      "bg-card/80 backdrop-blur-xl border transition-all duration-300 active:scale-[0.98]",
-                      accent.border, "hover:border-primary/20"
-                    )}
+                    className="relative rounded-2xl overflow-hidden cursor-pointer group bg-card border border-border/20 hover:border-border/40 transition-all duration-300 active:scale-[0.98]"
                   >
-                    <div className={cn("absolute -right-8 -top-8 w-24 h-24 rounded-full blur-2xl opacity-30", accent.dot)} />
-                    <div className="relative z-10 flex flex-col h-full min-h-[148px]">
-                      <div className="flex items-center gap-2.5">
-                        <div className={cn("w-9 h-9 rounded-xl flex items-center justify-center", accent.iconBg)}>
-                          <Icon className="w-4 h-4 text-foreground/80" />
-                        </div>
-                        <div className="min-w-0 flex-1">
-                          <div className="flex items-center gap-1">
-                            <p className="text-sm font-bold text-foreground truncate">{acc.name}</p>
-                            <ChevronRight className="w-3.5 h-3.5 text-muted-foreground/40 group-hover:text-primary transition-colors shrink-0" />
+                    <div className={cn("absolute left-0 top-0 bottom-0 w-1 rounded-l-2xl", accent.dot)} />
+                    <div className="pl-5 pr-4 py-4 flex flex-col min-h-[140px]">
+                      <div className="flex items-center justify-between">
+                        <div className="flex items-center gap-3">
+                          <div className={cn("w-10 h-10 rounded-full flex items-center justify-center", accent.iconBg)}>
+                            <Icon className="w-4.5 h-4.5 text-foreground/70" />
                           </div>
-                          <p className="text-[10px] text-muted-foreground">{typeInfo.label}</p>
+                          <div>
+                            <p className="text-[13px] font-semibold text-foreground">{acc.name}</p>
+                            <p className="text-[10px] text-muted-foreground mt-0.5">{typeInfo.label}</p>
+                          </div>
+                        </div>
+                        {acc.is_default && (
+                          <span className="text-[8px] bg-primary/10 text-primary px-2 py-0.5 rounded-full font-bold uppercase tracking-wider">
+                            Principal
+                          </span>
+                        )}
+                      </div>
+                      <div className="mt-auto pt-3 flex items-end justify-between">
+                        <div>
+                          <p className="text-[9px] text-muted-foreground uppercase tracking-widest mb-1">Saldo</p>
+                          <p className={cn("text-2xl font-bold tabular-nums tracking-tight", balance >= 0 ? "text-foreground" : "text-destructive")}>
+                            {formatCurrency(balance)}
+                          </p>
+                        </div>
+                        <div className="w-8 h-8 rounded-full bg-primary/5 flex items-center justify-center group-hover:bg-primary/10 transition-colors">
+                          <ChevronRight className="w-4 h-4 text-muted-foreground/50 group-hover:text-primary transition-colors" />
                         </div>
                       </div>
-                      {acc.is_default && (
-                        <span className="self-start text-[9px] bg-primary/10 text-primary px-2 py-0.5 rounded-full font-semibold mt-2">
-                          Principal
-                        </span>
-                      )}
-                      <div className="mt-auto pt-4">
-                        <p className="text-[10px] text-muted-foreground font-medium uppercase tracking-wide mb-0.5">Saldo disponível</p>
-                        <p className={cn("text-xl font-bold tabular-nums", balance >= 0 ? "text-primary" : "text-destructive")}>
-                          {formatCurrency(balance)}
-                        </p>
-                      </div>
-                      <div className={cn("absolute bottom-0 left-4 right-4 h-[2px] rounded-full opacity-40", accent.dot)} />
                     </div>
                   </motion.div>
                 );
