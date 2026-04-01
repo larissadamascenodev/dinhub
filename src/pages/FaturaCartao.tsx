@@ -26,6 +26,8 @@ export interface EnrichedItem {
   total_installments: number;
   transaction_name: string;
   transaction_category: string;
+  transaction_date: string;
+  transaction_status: string;
 }
 
 export interface CreditCardInfo {
