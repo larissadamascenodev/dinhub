@@ -713,7 +713,8 @@ const Transacoes = () => {
                         onDelete={handleDelete}
                         onEdit={(t) => {
                           if (t.id.startsWith("fatura-") && t.credit_card_id) {
-                            navigate(`/fatura/${t.credit_card_id}?month=${selectedMonth + 1}&year=${selectedYear}`);
+                            setFaturaDetailTx(t);
+                            setShowFaturaDetail(true);
                           } else {
                             setDetailTx(t); setShowDetailModal(true);
                           }
