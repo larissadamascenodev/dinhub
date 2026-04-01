@@ -440,89 +440,150 @@ const GestaoFinanceira = () => {
             </Button>
           </div>
         ) : (
-          <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-3">
-            {creditCards.map((card, idx) => {
-              const usedPct = card.limit > 0 ? Math.min((Number(card.used_limit) / Number(card.limit)) * 100, 100) : 0;
-              const available = Math.max(Number(card.limit) - Number(card.used_limit), 0);
-              const gradient = getGradient(card.color);
+          <>
+            {/* Mobile carousel */}
+            <div className="flex gap-3 overflow-x-auto pb-2 snap-x snap-mandatory scrollbar-hide sm:hidden -mx-4 px-4">
+              {creditCards.map((card, idx) => {
+                const usedPct = card.limit > 0 ? Math.min((Number(card.used_limit) / Number(card.limit)) * 100, 100) : 0;
+                const available = Math.max(Number(card.limit) - Number(card.used_limit), 0);
+                const gradient = getGradient(card.color);
 
-              return (
-                <motion.div
-                  key={card.id}
-                  initial={{ opacity: 0, y: 16 }}
-                  animate={{ opacity: 1, y: 0 }}
-                  transition={{ delay: idx * 0.05 }}
-                  onClick={() => navigate(`/fatura/${card.id}`)}
-                  className={cn(
-                    "relative rounded-2xl p-4 overflow-hidden bg-gradient-to-br cursor-pointer group",
-                    "border border-white/[0.06] hover:border-white/[0.12] transition-all duration-300 active:scale-[0.98]",
-                    gradient
-                  )}
-                >
-                  <div className="absolute -right-6 -top-6 w-20 h-20 rounded-full bg-white/[0.04]" />
-                  <div className="relative z-10 flex flex-col h-full min-h-[148px]">
-                    {/* Card header */}
-                    <div className="flex items-start justify-between mb-1">
-                      <div className="flex items-center gap-2.5">
-                        <div className="w-9 h-9 rounded-xl bg-white/10 flex items-center justify-center backdrop-blur-sm">
-                          <CreditCard className="w-4 h-4 text-white/80" />
-                        </div>
-                        <div className="min-w-0">
-                          <div className="flex items-center gap-1">
-                            <p className="text-sm font-bold text-white truncate">{card.name}</p>
-                            <ChevronRight className="w-3.5 h-3.5 text-white/30 group-hover:text-white/60 transition-colors shrink-0" />
+                return (
+                  <motion.div
+                    key={card.id}
+                    initial={{ opacity: 0, y: 16 }}
+                    animate={{ opacity: 1, y: 0 }}
+                    transition={{ delay: idx * 0.05 }}
+                    onClick={() => navigate(`/fatura/${card.id}`)}
+                    className={cn(
+                      "relative rounded-2xl p-4 overflow-hidden bg-gradient-to-br cursor-pointer group snap-start shrink-0 w-[75vw] max-w-[280px]",
+                      "border border-white/[0.06] hover:border-white/[0.12] transition-all duration-300 active:scale-[0.98]",
+                      gradient
+                    )}
+                  >
+                    <div className="absolute -right-6 -top-6 w-20 h-20 rounded-full bg-white/[0.04]" />
+                    <div className="relative z-10 flex flex-col h-full min-h-[148px]">
+                      <div className="flex items-start justify-between mb-1">
+                        <div className="flex items-center gap-2.5">
+                          <div className="w-9 h-9 rounded-xl bg-white/10 flex items-center justify-center backdrop-blur-sm">
+                            <CreditCard className="w-4 h-4 text-white/80" />
                           </div>
-                          {card.last_four_digits && (
-                            <p className="text-[10px] text-white/40">•••• {card.last_four_digits}</p>
-                          )}
+                          <div className="min-w-0">
+                            <div className="flex items-center gap-1">
+                              <p className="text-sm font-bold text-white truncate">{card.name}</p>
+                              <ChevronRight className="w-3.5 h-3.5 text-white/30 shrink-0" />
+                            </div>
+                            {card.last_four_digits && (
+                              <p className="text-[10px] text-white/40">•••• {card.last_four_digits}</p>
+                            )}
+                          </div>
+                        </div>
+                      </div>
+                      <div className="mt-auto pt-3">
+                        <p className="text-[10px] text-white/50 font-medium uppercase tracking-wide mb-0.5">Disponível</p>
+                        <p className="text-xl font-bold text-white">{formatCurrency(available)}</p>
+                        <div className="w-full h-1.5 rounded-full bg-white/10 overflow-hidden mt-2.5 mb-1.5">
+                          <motion.div
+                            initial={{ width: 0 }}
+                            animate={{ width: `${usedPct}%` }}
+                            transition={{ duration: 0.8, ease: "easeOut" }}
+                            className="h-full rounded-full bg-white/60"
+                          />
+                        </div>
+                        <div className="flex items-center justify-between">
+                          <span className="text-[10px] font-medium text-white/60">{usedPct.toFixed(0)}% usado</span>
+                          <span className="text-[10px] text-white/40">Dia {card.due_day}</span>
                         </div>
                       </div>
                     </div>
+                  </motion.div>
+                );
+              })}
+              <motion.button
+                initial={{ opacity: 0, y: 16 }}
+                animate={{ opacity: 1, y: 0 }}
+                onClick={() => setShowAddCard(true)}
+                className="rounded-2xl p-4 min-h-[148px] w-[60vw] max-w-[200px] shrink-0 snap-start flex flex-col items-center justify-center gap-2 border-2 border-dashed border-primary/20 hover:border-primary/40 bg-primary/[0.03] transition-all cursor-pointer"
+              >
+                <div className="w-10 h-10 rounded-xl bg-primary/10 flex items-center justify-center">
+                  <Plus className="w-5 h-5 text-primary" />
+                </div>
+                <span className="text-xs text-primary/70 font-medium">Adicionar cartão</span>
+              </motion.button>
+            </div>
 
-                    {/* Available balance */}
-                    <div className="mt-auto pt-3">
-                      <p className="text-[10px] text-white/50 font-medium uppercase tracking-wide mb-0.5">Disponível</p>
-                      <p className="text-xl font-bold text-white">{formatCurrency(available)}</p>
+            {/* Desktop grid */}
+            <div className="hidden sm:grid sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-3">
+              {creditCards.map((card, idx) => {
+                const usedPct = card.limit > 0 ? Math.min((Number(card.used_limit) / Number(card.limit)) * 100, 100) : 0;
+                const available = Math.max(Number(card.limit) - Number(card.used_limit), 0);
+                const gradient = getGradient(card.color);
 
-                      {/* Limit bar — uses card gradient color */}
-                      <div className="w-full h-1.5 rounded-full bg-white/10 overflow-hidden mt-2.5 mb-1.5">
-                        <motion.div
-                          initial={{ width: 0 }}
-                          animate={{ width: `${usedPct}%` }}
-                          transition={{ duration: 0.8, ease: "easeOut" }}
-                          className="h-full rounded-full bg-white/60"
-                        />
+                return (
+                  <motion.div
+                    key={card.id}
+                    initial={{ opacity: 0, y: 16 }}
+                    animate={{ opacity: 1, y: 0 }}
+                    transition={{ delay: idx * 0.05 }}
+                    onClick={() => navigate(`/fatura/${card.id}`)}
+                    className={cn(
+                      "relative rounded-2xl p-4 overflow-hidden bg-gradient-to-br cursor-pointer group",
+                      "border border-white/[0.06] hover:border-white/[0.12] transition-all duration-300 active:scale-[0.98]",
+                      gradient
+                    )}
+                  >
+                    <div className="absolute -right-6 -top-6 w-20 h-20 rounded-full bg-white/[0.04]" />
+                    <div className="relative z-10 flex flex-col h-full min-h-[148px]">
+                      <div className="flex items-start justify-between mb-1">
+                        <div className="flex items-center gap-2.5">
+                          <div className="w-9 h-9 rounded-xl bg-white/10 flex items-center justify-center backdrop-blur-sm">
+                            <CreditCard className="w-4 h-4 text-white/80" />
+                          </div>
+                          <div className="min-w-0">
+                            <div className="flex items-center gap-1">
+                              <p className="text-sm font-bold text-white truncate">{card.name}</p>
+                              <ChevronRight className="w-3.5 h-3.5 text-white/30 group-hover:text-white/60 transition-colors shrink-0" />
+                            </div>
+                            {card.last_four_digits && (
+                              <p className="text-[10px] text-white/40">•••• {card.last_four_digits}</p>
+                            )}
+                          </div>
+                        </div>
                       </div>
-                      <div className="flex items-center justify-between">
-                        <span className="text-[10px] font-medium text-white/60">
-                          {usedPct.toFixed(0)}% usado
-                        </span>
-                        <span className="text-[10px] text-white/40">Dia {card.due_day}</span>
+                      <div className="mt-auto pt-3">
+                        <p className="text-[10px] text-white/50 font-medium uppercase tracking-wide mb-0.5">Disponível</p>
+                        <p className="text-xl font-bold text-white">{formatCurrency(available)}</p>
+                        <div className="w-full h-1.5 rounded-full bg-white/10 overflow-hidden mt-2.5 mb-1.5">
+                          <motion.div
+                            initial={{ width: 0 }}
+                            animate={{ width: `${usedPct}%` }}
+                            transition={{ duration: 0.8, ease: "easeOut" }}
+                            className="h-full rounded-full bg-white/60"
+                          />
+                        </div>
+                        <div className="flex items-center justify-between">
+                          <span className="text-[10px] font-medium text-white/60">{usedPct.toFixed(0)}% usado</span>
+                          <span className="text-[10px] text-white/40">Dia {card.due_day}</span>
+                        </div>
                       </div>
                     </div>
-                  </div>
-                </motion.div>
-              );
-            })}
-
-            {/* Add card */}
-            <motion.button
-              initial={{ opacity: 0, y: 16 }}
-              animate={{ opacity: 1, y: 0 }}
-              transition={{ delay: creditCards.length * 0.05 }}
-              onClick={() => setShowAddCard(true)}
-              className={cn(
-                "rounded-2xl p-4 sm:min-h-[148px] min-h-[80px] flex flex-col items-center justify-center gap-2",
-                "border-2 border-dashed border-primary/20 hover:border-primary/40",
-                "bg-primary/[0.03] hover:bg-primary/[0.06] transition-all duration-300 cursor-pointer"
-              )}
-            >
-              <div className="w-10 h-10 rounded-xl bg-primary/10 flex items-center justify-center">
-                <Plus className="w-5 h-5 text-primary" />
-              </div>
-              <span className="text-xs text-primary/70 font-medium">Adicionar cartão</span>
-            </motion.button>
-          </div>
+                  </motion.div>
+                );
+              })}
+              <motion.button
+                initial={{ opacity: 0, y: 16 }}
+                animate={{ opacity: 1, y: 0 }}
+                transition={{ delay: creditCards.length * 0.05 }}
+                onClick={() => setShowAddCard(true)}
+                className="rounded-2xl p-4 min-h-[148px] flex flex-col items-center justify-center gap-2 border-2 border-dashed border-primary/20 hover:border-primary/40 bg-primary/[0.03] hover:bg-primary/[0.06] transition-all duration-300 cursor-pointer"
+              >
+                <div className="w-10 h-10 rounded-xl bg-primary/10 flex items-center justify-center">
+                  <Plus className="w-5 h-5 text-primary" />
+                </div>
+                <span className="text-xs text-primary/70 font-medium">Adicionar cartão</span>
+              </motion.button>
+            </div>
+          </>
         )}
       </section>
 
