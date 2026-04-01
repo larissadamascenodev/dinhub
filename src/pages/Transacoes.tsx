@@ -56,7 +56,7 @@ const CATEGORY_ICONS: Record<string, typeof ShoppingCart> = {
   "Pets": Heart, "Beleza": Sparkles, "Presentes": Sparkles,
   "Viagem": Car, "Tecnologia": Sparkles, "Impostos": Wallet,
   "Vendas": DollarSign, "Aluguéis": HomeIcon, "Bônus": DollarSign,
-  "Comissão": DollarSign, "Mesada": Wallet,
+  "Comissão": DollarSign, "Mesada": Wallet, "Cartão de Crédito": CreditCard,
 };
 
 const CATEGORY_COLORS: Record<string, string> = {
