@@ -68,3 +68,33 @@ export async function deleteCustomCategory(id: string) {
 
   if (error) throw error;
 }
+
+export async function hideDefaultCategory(
+  userId: string,
+  name: string,
+  type: string
+) {
+  const { error } = await supabase
+    .from("custom_categories" as any)
+    .insert({
+      user_id: userId,
+      name,
+      icon: "📋",
+      color: "#888888",
+      type,
+      is_hidden_default: true,
+    });
+
+  if (error) throw error;
+}
+
+export async function unhideDefaultCategory(userId: string, name: string, type: string) {
+  const { error } = await supabase
+    .from("custom_categories" as any)
+    .delete()
+    .eq("name", name)
+    .eq("type", type)
+    .eq("is_hidden_default", true);
+
+  if (error) throw error;
+}
