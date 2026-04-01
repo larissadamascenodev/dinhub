@@ -173,10 +173,15 @@ const ModalOverlay = ({ open, onClose, children }: { open: boolean; onClose: () 
 /* ═══════ Custom Tooltip ═══════ */
 const ChartTooltip = ({ active, payload, label }: any) => {
   if (!active || !payload?.length) return null;
+  const invested = payload.find((p: any) => p.dataKey === "invested");
+  const profit = payload.find((p: any) => p.dataKey === "profit");
+  const total = payload.find((p: any) => p.dataKey === "value");
   return (
-    <div className="rounded-xl bg-card/95 border border-border/30 px-3 py-2 shadow-lg backdrop-blur-sm">
+    <div className="rounded-xl bg-card/95 border border-border/30 px-3 py-2 shadow-lg backdrop-blur-sm space-y-0.5">
       <p className="text-[10px] text-muted-foreground">{label}</p>
-      <p className="text-sm font-bold text-primary">{formatCurrency(payload[0].value)}</p>
+      {total && <p className="text-sm font-bold text-primary">{formatCurrency(total.value)}</p>}
+      {invested && <p className="text-[10px] text-muted-foreground">Investido: {formatCurrency(invested.value)}</p>}
+      {profit && <p className="text-[10px] text-primary">Rendimento: {formatCurrency(profit.value)}</p>}
     </div>
   );
 };
