@@ -49,8 +49,10 @@ export default function GerenciarCategorias() {
 
   useEffect(() => { fetchCategories(); }, [fetchCategories]);
 
-  const filteredCustom = customCats.filter((c) => c.type === tab);
-  const defaults = tab === "despesa" ? DEFAULT_EXPENSE : DEFAULT_INCOME;
+  const filteredCustom = customCats.filter((c) => c.type === tab && !c.is_hidden_default);
+  const hiddenDefaults = customCats.filter((c) => c.type === tab && c.is_hidden_default).map((c) => c.name);
+  const defaults = (tab === "despesa" ? DEFAULT_EXPENSE : DEFAULT_INCOME).filter((d) => !hiddenDefaults.includes(d));
+  const [editingDefault, setEditingDefault] = useState<string | null>(null);
 
   const handleCreate = async (data: { name: string; icon: string; color: string }) => {
     if (!user) return;
