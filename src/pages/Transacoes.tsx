@@ -67,7 +67,7 @@ const CATEGORY_COLORS: Record<string, string> = {
   "Pets": "30 80% 55%", "Beleza": "320 60% 55%", "Presentes": "340 60% 55%",
   "Viagem": "199 70% 48%", "Tecnologia": "220 70% 55%", "Impostos": "0 60% 50%",
   "Vendas": "150 100% 45%", "Aluguéis": "40 80% 50%", "Bônus": "150 100% 45%",
-  "Comissão": "199 70% 48%", "Mesada": "150 100% 45%",
+  "Comissão": "199 70% 48%", "Mesada": "150 100% 45%", "Cartão de Crédito": "260 60% 55%",
 };
 
 const getCategoryIcon = (category: string) => CATEGORY_ICONS[category] || MoreHorizontal;
