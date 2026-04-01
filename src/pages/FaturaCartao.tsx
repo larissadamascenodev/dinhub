@@ -101,6 +101,7 @@ const FaturaCartao = () => {
   const [showReviewModal, setShowReviewModal] = useState(false);
   const [confirmingImport, setConfirmingImport] = useState(false);
   const [editingTransaction, setEditingTransaction] = useState<EditTransactionData | null>(null);
+  const [showEditCard, setShowEditCard] = useState(false);
 
   const currentInvoice = useMemo(
     () => invoices.find((i) => i.month === selectedMonth && i.year === selectedYear),
