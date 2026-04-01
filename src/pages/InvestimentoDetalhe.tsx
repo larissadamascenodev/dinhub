@@ -265,17 +265,24 @@ const InvestimentoDetalhe = () => {
   }, [account, transactions, accountId]);
 
   // Simulation data
+  const contribution = contributionCents / 100;
   const simData = useMemo(() => {
-    if (!account) return { chartData: [], finalValue: 0, totalYield: 0, avgMonthly: 0, months: 0 };
-    const balance = Number(account.current_balance);
+    if (!account) return { chartData: [], finalValue: 0, totalInvested: 0, totalYield: 0, growthPct: 0, avgMonthly: 0, months: 0 };
+    const bal = Number(account.current_balance);
     const annualRate = yieldData.annualRate;
     const months = showCustom ? Math.min(Math.max(parseInt(customMonths) || 1, 1), 360) : SIMULATION_PERIODS[simPeriodIdx].months;
-    const chartData = simulateInvestment(balance, annualRate, months);
-    const finalValue = chartData[chartData.length - 1]?.value ?? balance;
-    const totalYield = finalValue - balance;
+    const chartData = simulateInvestment(bal, annualRate, months, contribution);
+    const last = chartData[chartData.length - 1];
+    const finalValue = last?.value ?? bal;
+    const totalInvested = last?.invested ?? bal;
+    const totalYield = last?.profit ?? 0;
+    const growthPct = totalInvested > 0 ? (totalYield / totalInvested) * 100 : 0;
     const avgMonthly = months > 0 ? totalYield / months : 0;
-    return { chartData, finalValue, totalYield, avgMonthly, months };
-  }, [account, yieldData.annualRate, simPeriodIdx, showCustom, customMonths]);
+    return { chartData, finalValue, totalInvested, totalYield, growthPct, avgMonthly, months };
+  }, [account, yieldData.annualRate, simPeriodIdx, showCustom, customMonths, contribution]);
+
+  // Smart suggestion: suggest investing part of free monthly balance
+  const recurringMsg = useMemo(() => RECURRING_MESSAGES[Math.floor(Math.random() * RECURRING_MESSAGES.length)], []);
 
   const openModal = (mode: "deposit" | "withdraw") => {
     setModalMode(mode);
