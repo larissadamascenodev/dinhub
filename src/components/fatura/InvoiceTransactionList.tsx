@@ -1,6 +1,6 @@
 import { useState } from "react";
 import { motion } from "framer-motion";
-import { Receipt, Layers } from "lucide-react";
+import { Receipt, Layers, Trash2 } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { formatCurrency, type EnrichedItem } from "@/pages/FaturaCartao";
 import {
@@ -185,22 +185,36 @@ export default function InvoiceTransactionList({ items, installmentCount = 0, ca
 
       {/* Delete confirmation */}
       <AlertDialog open={!!deleteTarget} onOpenChange={(open) => !open && setDeleteTarget(null)}>
-        <AlertDialogContent>
-          <AlertDialogHeader>
-            <AlertDialogTitle>Excluir transação</AlertDialogTitle>
-            <AlertDialogDescription>
-              Tem certeza que deseja excluir "{deleteTarget?.transaction_name}"?
-              {deleteTarget && deleteTarget.total_installments > 1 && " Isso removerá todas as parcelas desta compra."}
+        <AlertDialogContent className="max-w-sm rounded-2xl bg-card border border-border/30 shadow-2xl p-5 gap-4">
+          <AlertDialogHeader className="space-y-3">
+            <div className="w-12 h-12 rounded-xl bg-destructive/15 border border-destructive/20 flex items-center justify-center mx-auto">
+              <Trash2 className="w-5 h-5 text-destructive" />
+            </div>
+            <AlertDialogTitle className="text-sm font-bold text-foreground text-center">
+              Excluir lançamento
+            </AlertDialogTitle>
+            <AlertDialogDescription className="text-xs text-muted-foreground text-center leading-relaxed">
+              Tem certeza que deseja excluir <span className="font-bold text-foreground">"{deleteTarget?.transaction_name}"</span>?
+              {deleteTarget && deleteTarget.total_installments > 1 && (
+                <span className="block mt-1 text-destructive font-medium">
+                  Isso removerá todas as {deleteTarget.total_installments} parcelas desta compra.
+                </span>
+              )}
             </AlertDialogDescription>
           </AlertDialogHeader>
-          <AlertDialogFooter>
-            <AlertDialogCancel disabled={deleting}>Cancelar</AlertDialogCancel>
+          <AlertDialogFooter className="flex gap-2 sm:flex-row">
+            <AlertDialogCancel
+              disabled={deleting}
+              className="flex-1 h-11 rounded-xl text-xs font-bold border border-border/30 text-muted-foreground hover:text-foreground bg-transparent"
+            >
+              Cancelar
+            </AlertDialogCancel>
             <AlertDialogAction
               onClick={handleDelete}
               disabled={deleting}
-              className="bg-destructive text-destructive-foreground hover:bg-destructive/90"
+              className="flex-1 h-11 rounded-xl text-xs font-bold bg-destructive/20 text-destructive border border-destructive/30 hover:bg-destructive/30 shadow-[0_0_12px_-3px_hsl(var(--destructive)/0.4)]"
             >
-              {deleting ? "Excluindo..." : "Excluir"}
+              {deleting ? "Excluindo..." : "Confirmar exclusão"}
             </AlertDialogAction>
           </AlertDialogFooter>
         </AlertDialogContent>
