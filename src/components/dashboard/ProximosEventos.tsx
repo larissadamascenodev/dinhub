@@ -13,9 +13,22 @@ interface Props {
 
 const STATUS_CONFIG = {
   pago: { label: "Pago", accent: "150 100% 45%", Icon: Check },
-  pendente: { label: "A pagar", accent: "40 80% 50%", Icon: Clock },
+  pendente: { label: "Pendente", accent: "40 80% 50%", Icon: Clock },
   atrasado: { label: "Atrasado", accent: "0 60% 50%", Icon: AlertTriangle },
   recebido: { label: "Recebido", accent: "150 100% 45%", Icon: Check },
+};
+
+const getStatusLabel = (status: string, type?: string) => {
+  if (type === "receita") {
+    if (status === "pago" || status === "recebido") return "Recebido";
+    if (status === "pendente") return "A Receber";
+  }
+  if (type === "despesa") {
+    if (status === "pago") return "Pago";
+    if (status === "pendente") return "Pendente";
+  }
+  if (status === "atrasado") return "A Pagar";
+  return STATUS_CONFIG[status as keyof typeof STATUS_CONFIG]?.label ?? status;
 };
 
 const LEGEND = [
@@ -323,7 +336,7 @@ const ProximosEventos = memo(({ events, selectedMonth, selectedYear, onVerTodos,
                           {fmt(ev.amount)}
                         </p>
                         <span className="text-[8px] font-semibold uppercase mt-0.5" style={{ color: `hsl(${a} / 0.7)` }}>
-                          {cfg.label}
+                          {getStatusLabel(ev.status, ev.type)}
                         </span>
                       </div>
                     </div>
