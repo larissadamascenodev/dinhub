@@ -57,7 +57,7 @@ export async function getInvoiceItems(invoiceId: string) {
 
   const { data: txs } = await supabase
     .from("transactions")
-    .select("id, name, category")
+    .select("id, name, category, date, status")
     .in("id", txIds);
 
   const txMap = new Map((txs ?? []).map((t: any) => [t.id, t]));
@@ -66,6 +66,8 @@ export async function getInvoiceItems(invoiceId: string) {
     ...item,
     transaction_name: (txMap.get(item.transaction_id) as any)?.name ?? "Transação",
     transaction_category: (txMap.get(item.transaction_id) as any)?.category ?? "",
+    transaction_date: (txMap.get(item.transaction_id) as any)?.date ?? "",
+    transaction_status: (txMap.get(item.transaction_id) as any)?.status ?? "pendente",
   }));
 }
 
