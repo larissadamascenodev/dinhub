@@ -747,6 +747,31 @@ const Transacoes = () => {
         selectedMonth={selectedMonth}
         selectedYear={selectedYear}
       />
+
+      {/* Fatura Detail Modal */}
+      {(() => {
+        const cardData = faturaDetailTx?.credit_card_id
+          ? creditCards.find((c: any) => c.id === faturaDetailTx.credit_card_id)
+          : null;
+        return (
+          <FaturaDetailModal
+            open={showFaturaDetail}
+            onClose={() => { setShowFaturaDetail(false); setFaturaDetailTx(null); }}
+            card={cardData ? {
+              cardId: cardData.id,
+              cardName: cardData.name,
+              closingDay: cardData.closing_day,
+              dueDay: cardData.due_day,
+              color: cardData.color,
+              lastFourDigits: cardData.last_four_digits,
+            } : null}
+            month={selectedMonth}
+            year={selectedYear}
+            totalAmount={faturaDetailTx?.amount || 0}
+            isPaid={faturaDetailTx?.status === "pago"}
+          />
+        );
+      })()}
     </div>
   );
 };
