@@ -1,6 +1,11 @@
 import { useState, useEffect, useCallback } from "react";
 import { motion, AnimatePresence } from "framer-motion";
-import { Tag, Plus, Pencil, Trash2, ArrowLeft } from "lucide-react";
+import {
+  Tag, Plus, Pencil, Trash2, ArrowLeft,
+  Utensils, Car, Heart, Repeat, Gamepad2, Home, GraduationCap, Shirt,
+  PawPrint, Scissors, Gift, Plane, Smartphone, Receipt,
+  Briefcase, TrendingUp, ShoppingBag, DollarSign, Award, Users, Wallet, PiggyBank,
+} from "lucide-react";
 import { useNavigate } from "react-router-dom";
 import { toast } from "sonner";
 import { useAuth } from "@/contexts/AuthContext";
