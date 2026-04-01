@@ -90,7 +90,7 @@ export default function InvoiceItemDetailModal({ item, cardName, onClose, onEdit
                       <MoreVertical className="w-4 h-4" />
                     </button>
                   </DropdownMenuTrigger>
-                  <DropdownMenuContent align="end" className="min-w-[140px]">
+                  <DropdownMenuContent align="end" className="min-w-[140px] z-[70]">
                     {onEdit && (
                       <DropdownMenuItem onClick={() => onEdit(item.transaction_id)} className="text-xs gap-2">
                         <Pencil className="w-3.5 h-3.5" /> Editar
