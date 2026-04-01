@@ -16,40 +16,49 @@ export type Database = {
     Tables: {
       accounts: {
         Row: {
+          annual_rate: number | null
           color: string | null
           created_at: string
           current_balance: number
           id: string
           initial_balance: number
+          investment_type: string | null
           is_active: boolean
           is_default: boolean
           name: string
+          rate_type: string | null
           type: string
           updated_at: string
           user_id: string
         }
         Insert: {
+          annual_rate?: number | null
           color?: string | null
           created_at?: string
           current_balance?: number
           id?: string
           initial_balance?: number
+          investment_type?: string | null
           is_active?: boolean
           is_default?: boolean
           name?: string
+          rate_type?: string | null
           type?: string
           updated_at?: string
           user_id: string
         }
         Update: {
+          annual_rate?: number | null
           color?: string | null
           created_at?: string
           current_balance?: number
           id?: string
           initial_balance?: number
+          investment_type?: string | null
           is_active?: boolean
           is_default?: boolean
           name?: string
+          rate_type?: string | null
           type?: string
           updated_at?: string
           user_id?: string
