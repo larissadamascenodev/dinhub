@@ -10,6 +10,7 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@
 import { toast } from "sonner";
 import { useAuth } from "@/contexts/AuthContext";
 import { getAccounts, createAccount, getCreditCards, createCreditCard } from "@/services/transactionService";
+import { supabase } from "@/integrations/supabase/client";
 import { cn } from "@/lib/utils";
 
 interface Account {
