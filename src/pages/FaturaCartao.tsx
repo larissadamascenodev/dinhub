@@ -86,6 +86,7 @@ const FaturaCartao = () => {
   const [paying, setPaying] = useState(false);
   const [showPayModal, setShowPayModal] = useState(false);
   const [showAddChooser, setShowAddChooser] = useState(false);
+  const [showManualAdd, setShowManualAdd] = useState(false);
   const [payAccountId, setPayAccountId] = useState("");
 
   const currentInvoice = useMemo(
