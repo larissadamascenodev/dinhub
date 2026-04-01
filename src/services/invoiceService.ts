@@ -7,6 +7,7 @@ export interface Invoice {
   month: number;
   year: number;
   total_amount: number;
+  paid_amount: number;
   is_paid: boolean;
   paid_at: string | null;
   paid_from_account_id: string | null;
