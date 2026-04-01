@@ -577,6 +577,13 @@ const FaturaCartao = () => {
         onSuccess={async () => {
           setShowManualAdd(false);
           await refreshItems();
+          // Reload card to update used_limit
+          if (cardId) {
+            const cards = await getCreditCards();
+            const typedCards = cards as unknown as CreditCardInfo[];
+            const foundCard = typedCards.find((c) => c.id === cardId);
+            setCard(foundCard ?? null);
+          }
         }}
         initialType="despesa"
         initialPaymentMethod="cartao"
