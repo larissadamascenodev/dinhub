@@ -115,7 +115,7 @@ export default function InvoiceTransactionList({ items, installmentCount = 0, ca
                   animate={{ opacity: 1, x: 0 }}
                   transition={{ delay: idx * 0.03 }}
                   onClick={() => setSelectedItem(item)}
-                  className="rounded-xl border border-border/15 bg-card/60 backdrop-blur-xl border-l-[3px] border-l-primary/40 px-3 py-2.5 cursor-pointer active:scale-[0.98] transition-transform"
+                  className="rounded-xl border border-border/15 bg-card/60 backdrop-blur-xl border-l-[3px] border-l-primary/40 px-3 py-2.5 cursor-pointer active:scale-[0.98] transition-transform select-none"
                   style={{ boxShadow: "0 2px 12px -4px rgba(0,0,0,0.25)" }}
                 >
                   <div className="flex gap-3">
