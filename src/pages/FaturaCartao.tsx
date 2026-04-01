@@ -3,7 +3,11 @@ import { motion } from "framer-motion";
 import {
   ArrowLeft, Plus, MoreVertical,
   CalendarClock, CalendarCheck, Wallet, Shield,
+  Pencil, Trash2,
 } from "lucide-react";
+import {
+  DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigger,
+} from "@/components/ui/dropdown-menu";
 import { useNavigate, useParams, useSearchParams } from "react-router-dom";
 import { Button } from "@/components/ui/button";
 import { toast } from "sonner";
@@ -20,6 +24,7 @@ import InvoiceAddChooserModal from "@/components/fatura/InvoiceAddChooserModal";
 import InvoiceUploadReviewModal, { type ExtractedItem } from "@/components/fatura/InvoiceUploadReviewModal";
 import NovaTransacaoModal, { type EditTransactionData } from "@/components/dashboard/NovaTransacaoModal";
 import MonthSelector from "@/components/dashboard/MonthSelector";
+import CreditCardEditModal from "@/components/fatura/CreditCardEditModal";
 
 export interface EnrichedItem {
   id: string;
@@ -96,6 +101,7 @@ const FaturaCartao = () => {
   const [showReviewModal, setShowReviewModal] = useState(false);
   const [confirmingImport, setConfirmingImport] = useState(false);
   const [editingTransaction, setEditingTransaction] = useState<EditTransactionData | null>(null);
+  const [showEditCard, setShowEditCard] = useState(false);
 
   const currentInvoice = useMemo(
     () => invoices.find((i) => i.month === selectedMonth && i.year === selectedYear),
@@ -360,9 +366,19 @@ const FaturaCartao = () => {
           <ArrowLeft className="w-4 h-4" />
           Voltar
         </button>
-        <button className="w-8 h-8 rounded-lg bg-muted/30 flex items-center justify-center text-muted-foreground hover:text-foreground transition-colors">
-          <MoreVertical className="w-4 h-4" />
-        </button>
+        <DropdownMenu>
+          <DropdownMenuTrigger asChild>
+            <button className="w-8 h-8 rounded-lg bg-muted/30 flex items-center justify-center text-muted-foreground hover:text-foreground transition-colors">
+              <MoreVertical className="w-4 h-4" />
+            </button>
+          </DropdownMenuTrigger>
+          <DropdownMenuContent align="end" className="min-w-[160px]">
+            <DropdownMenuItem onClick={() => setShowEditCard(true)} className="gap-2 text-xs">
+              <Pencil className="w-3.5 h-3.5" />
+              Editar cartão
+            </DropdownMenuItem>
+          </DropdownMenuContent>
+        </DropdownMenu>
       </div>
 
       {/* Month selector + Add button row */}
@@ -623,6 +639,22 @@ const FaturaCartao = () => {
         initialCreditCardId={cardId}
         editTransaction={editingTransaction}
       />
+
+      {/* Edit Card Modal */}
+      {card && (
+        <CreditCardEditModal
+          open={showEditCard}
+          onClose={() => setShowEditCard(false)}
+          card={card}
+          onUpdated={async () => {
+            const cards = await getCreditCards();
+            const typedCards = cards as unknown as CreditCardInfo[];
+            const foundCard = typedCards.find((c) => c.id === cardId);
+            setCard(foundCard ?? null);
+          }}
+          onDeleted={() => navigate(-1)}
+        />
+      )}
     </div>
   );
 };
