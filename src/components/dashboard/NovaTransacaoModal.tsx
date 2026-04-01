@@ -20,6 +20,7 @@ import { toast } from "sonner";
 import { useAuth } from "@/contexts/AuthContext";
 import {
   createTransaction,
+  updateTransaction,
   getAccounts,
   createAccount,
   suggestCategory,
@@ -30,6 +31,23 @@ import { getCustomCategories, createCustomCategory, type CustomCategory } from "
 import CategoryCreateModal, { getIconComponent } from "@/components/dashboard/CategoryCreateModal";
 import { getDefaultCategoryIcon } from "@/lib/categoryIcons";
 
+export interface EditTransactionData {
+  id: string;
+  name: string;
+  type: "receita" | "despesa";
+  amount: number;
+  category: string;
+  date: string;
+  status: "pago" | "pendente";
+  payment_method: "conta" | "cartao";
+  account_id?: string | null;
+  credit_card_id?: string | null;
+  recurrence_type?: "unica" | "parcelado" | "fixa";
+  installments?: number | null;
+  installment_current?: number | null;
+  observation?: string | null;
+}
+
 interface Props {
   open: boolean;
   onClose: () => void;
@@ -37,6 +55,7 @@ interface Props {
   initialType?: "receita" | "despesa";
   initialPaymentMethod?: "conta" | "cartao";
   initialCreditCardId?: string;
+  editTransaction?: EditTransactionData | null;
 }
 
 const CATEGORIES_EXPENSE = [
@@ -73,7 +92,7 @@ interface CreditCardItem {
   color: string | null;
 }
 
-const NovaTransacaoModal = ({ open, onClose, onSuccess, initialType = "despesa", initialPaymentMethod, initialCreditCardId }: Props) => {
+const NovaTransacaoModal = ({ open, onClose, onSuccess, initialType = "despesa", initialPaymentMethod, initialCreditCardId, editTransaction }: Props) => {
   const { user } = useAuth();
   const navigate = useNavigate();
   const [type, setType] = useState<"receita" | "despesa">(initialType);
@@ -142,36 +161,70 @@ const NovaTransacaoModal = ({ open, onClose, onSuccess, initialType = "despesa",
     }
   }, [open, user]);
 
+  const isEditMode = !!editTransaction;
+
   // Reset form
   useEffect(() => {
     if (open) {
-      setType(initialType);
-      setStatus("pago");
-      setDescription("");
-      setAmountCents(0);
-      setCategory("");
-      setSuggestedCategory(null);
-      setDate(new Date());
-      setDateMode("hoje");
-      setShowCalendar(false);
-      setPaymentMethod(initialPaymentMethod ?? "conta");
-      setRecurrenceType("unica");
-      setInstallments(2);
-      setPaidInstallments(0);
-      setInstallmentFrequency("mensal");
-      setObservation("");
-      setShowNewAccount(false);
-      setNewAccountName("");
-      setShowCategoryModal(false);
-      setCategorySearch("");
-      setCreditCardId("");
-      setShowNewCard(false);
-      setNewCardName("");
-      setNewCardLimit("");
-      setNewCardClosingDay("10");
-      setNewCardDueDay("20");
+      if (editTransaction) {
+        // Edit mode: pre-fill with transaction data
+        setType(editTransaction.type);
+        setStatus(editTransaction.status);
+        setDescription(editTransaction.name);
+        setAmountCents(Math.round(editTransaction.amount * 100));
+        setCategory(editTransaction.category);
+        setSuggestedCategory(null);
+        const txDate = new Date(editTransaction.date + "T12:00:00");
+        setDate(txDate);
+        setDateMode("outros");
+        setShowCalendar(false);
+        setPaymentMethod(editTransaction.payment_method || "conta");
+        setRecurrenceType((editTransaction.recurrence_type as any) || "unica");
+        setInstallments(editTransaction.installments || 2);
+        setPaidInstallments(editTransaction.installment_current ? editTransaction.installment_current - 1 : 0);
+        setInstallmentFrequency("mensal");
+        setObservation(editTransaction.observation || "");
+        setShowNewAccount(false);
+        setNewAccountName("");
+        setShowCategoryModal(false);
+        setCategorySearch("");
+        if (editTransaction.credit_card_id) setCreditCardId(editTransaction.credit_card_id);
+        if (editTransaction.account_id) setAccountId(editTransaction.account_id);
+        setShowNewCard(false);
+        setNewCardName("");
+        setNewCardLimit("");
+        setNewCardClosingDay("10");
+        setNewCardDueDay("20");
+      } else {
+        // Create mode: reset form
+        setType(initialType);
+        setStatus("pago");
+        setDescription("");
+        setAmountCents(0);
+        setCategory("");
+        setSuggestedCategory(null);
+        setDate(new Date());
+        setDateMode("hoje");
+        setShowCalendar(false);
+        setPaymentMethod(initialPaymentMethod ?? "conta");
+        setRecurrenceType("unica");
+        setInstallments(2);
+        setPaidInstallments(0);
+        setInstallmentFrequency("mensal");
+        setObservation("");
+        setShowNewAccount(false);
+        setNewAccountName("");
+        setShowCategoryModal(false);
+        setCategorySearch("");
+        setCreditCardId("");
+        setShowNewCard(false);
+        setNewCardName("");
+        setNewCardLimit("");
+        setNewCardClosingDay("10");
+        setNewCardDueDay("20");
+      }
     }
-  }, [open, initialType]);
+  }, [open, initialType, editTransaction]);
 
   // AI category suggestion with debounce - faster
   const triggerSuggest = useCallback(
@@ -316,32 +369,48 @@ const NovaTransacaoModal = ({ open, onClose, onSuccess, initialType = "despesa",
 
     setSubmitting(true);
     try {
-      await createTransaction(
-        {
+      if (isEditMode && editTransaction) {
+        // Edit mode: update existing transaction
+        await updateTransaction(editTransaction.id, {
           name: finalName,
           type,
-          amount: perInstallmentAmount,
+          amount: isParcelado ? perInstallmentAmount : realAmount,
           category,
           date: dateStr,
           status: paymentMethod === "cartao" ? "pendente" : status,
-          account_id: paymentMethod === "cartao" ? null : (accountId || null),
-          payment_method: type === "despesa" ? paymentMethod : "conta",
-          recurrence_type: recurrenceType,
-          installments: isParcelado ? installments : null,
-          installment_current: currentInstallment,
-          observation: isParcelado && paidInstallments > 0
-            ? `paid_installments:${paidInstallments}${observation.trim() ? ` | ${observation.trim()}` : ""}`
-            : (observation.trim() || null),
-          credit_card_id: paymentMethod === "cartao" ? (creditCardId || null) : null,
-        },
-        user.id
-      );
-      const statusLabel = status === "pago"
-        ? (type === "receita" ? "recebida" : "registrada")
-        : "agendada";
-      toast.success(`Transação ${statusLabel} 🎯`, {
-        description: `${type === "receita" ? "Receita" : "Despesa"} de R$ ${formatCurrency(amountCents)}`,
-      });
+        });
+        toast.success("Transação atualizada ✏️", {
+          description: `${type === "receita" ? "Receita" : "Despesa"} de R$ ${formatCurrency(amountCents)}`,
+        });
+      } else {
+        // Create mode
+        await createTransaction(
+          {
+            name: finalName,
+            type,
+            amount: perInstallmentAmount,
+            category,
+            date: dateStr,
+            status: paymentMethod === "cartao" ? "pendente" : status,
+            account_id: paymentMethod === "cartao" ? null : (accountId || null),
+            payment_method: type === "despesa" ? paymentMethod : "conta",
+            recurrence_type: recurrenceType,
+            installments: isParcelado ? installments : null,
+            installment_current: currentInstallment,
+            observation: isParcelado && paidInstallments > 0
+              ? `paid_installments:${paidInstallments}${observation.trim() ? ` | ${observation.trim()}` : ""}`
+              : (observation.trim() || null),
+            credit_card_id: paymentMethod === "cartao" ? (creditCardId || null) : null,
+          },
+          user.id
+        );
+        const statusLabel = status === "pago"
+          ? (type === "receita" ? "recebida" : "registrada")
+          : "agendada";
+        toast.success(`Transação ${statusLabel} 🎯`, {
+          description: `${type === "receita" ? "Receita" : "Despesa"} de R$ ${formatCurrency(amountCents)}`,
+        });
+      }
       onSuccess();
       onClose();
     } catch (err: any) {
@@ -385,7 +454,9 @@ const NovaTransacaoModal = ({ open, onClose, onSuccess, initialType = "despesa",
                   <TrendingDown className="w-5 h-5 text-destructive" />
                 )}
                 <span className="text-lg font-bold text-foreground">
-                  {isReceita ? "Nova Receita" : "Nova Despesa"}
+                  {isEditMode
+                    ? "Editar Lançamento"
+                    : isReceita ? "Nova Receita" : "Nova Despesa"}
                 </span>
               </div>
               <button

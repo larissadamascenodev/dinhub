@@ -20,7 +20,7 @@ interface Props {
   items: EnrichedItem[];
   installmentCount?: number;
   cardName?: string;
-  onEditItem?: (transactionId: string, updates: { name?: string; amount?: number; category?: string }) => Promise<void>;
+  onEditItem?: (transactionId: string, updates?: { name?: string; amount?: number; category?: string }) => Promise<void>;
   onDeleteItem?: (transactionId: string) => Promise<void>;
 }
 
@@ -60,11 +60,8 @@ export default function InvoiceTransactionList({ items, installmentCount = 0, ca
   };
 
   const handleEditFromDetail = (txId: string) => {
-    const target = items.find(i => i.transaction_id === txId);
-    if (target) {
-      setSelectedItem(null);
-      setEditItem(target);
-    }
+    setSelectedItem(null);
+    if (onEditItem) onEditItem(txId);
   };
 
   const handleDeleteFromDetail = (txId: string) => {

@@ -10,7 +10,7 @@ import { toast } from "sonner";
 import { useAuth } from "@/contexts/AuthContext";
 import { supabase } from "@/integrations/supabase/client";
 import { getInvoices, getInvoiceItems, payInvoice, type Invoice } from "@/services/invoiceService";
-import { getAccounts, getCreditCards, createTransaction, updateTransaction, deleteTransaction } from "@/services/transactionService";
+import { getAccounts, getCreditCards, createTransaction, updateTransaction, deleteTransaction, getTransactionById } from "@/services/transactionService";
 import { cn } from "@/lib/utils";
 import InvoiceCategoryBreakdown from "@/components/fatura/InvoiceCategoryBreakdown";
 import InvoiceTransactionList from "@/components/fatura/InvoiceTransactionList";
@@ -18,7 +18,7 @@ import InvoicePayModal from "@/components/fatura/InvoicePayModal";
 import InvoiceHistoryChart from "@/components/fatura/InvoiceHistoryChart";
 import InvoiceAddChooserModal from "@/components/fatura/InvoiceAddChooserModal";
 import InvoiceUploadReviewModal, { type ExtractedItem } from "@/components/fatura/InvoiceUploadReviewModal";
-import NovaTransacaoModal from "@/components/dashboard/NovaTransacaoModal";
+import NovaTransacaoModal, { type EditTransactionData } from "@/components/dashboard/NovaTransacaoModal";
 import MonthSelector from "@/components/dashboard/MonthSelector";
 
 export interface EnrichedItem {
@@ -95,6 +95,7 @@ const FaturaCartao = () => {
   const [extractedMessage, setExtractedMessage] = useState("");
   const [showReviewModal, setShowReviewModal] = useState(false);
   const [confirmingImport, setConfirmingImport] = useState(false);
+  const [editingTransaction, setEditingTransaction] = useState<EditTransactionData | null>(null);
 
   const currentInvoice = useMemo(
     () => invoices.find((i) => i.month === selectedMonth && i.year === selectedYear),
@@ -164,15 +165,41 @@ const FaturaCartao = () => {
     setInvoices(updatedInvoices);
   };
 
-  const handleEditItem = async (transactionId: string, updates: { name?: string; amount?: number; category?: string }) => {
-    const cleanUpdates: any = {};
-    if (updates.name) cleanUpdates.name = updates.name;
-    if (updates.amount) cleanUpdates.amount = updates.amount;
-    if (updates.category) cleanUpdates.category = updates.category;
-    if (Object.keys(cleanUpdates).length === 0) return;
-    await updateTransaction(transactionId, cleanUpdates);
-    toast.success("Lançamento atualizado ✅");
-    await refreshItems();
+  const handleEditItem = async (transactionId: string, updates?: { name?: string; amount?: number; category?: string }) => {
+    if (updates && Object.keys(updates).length > 0) {
+      // Direct update from inline edit
+      const cleanUpdates: any = {};
+      if (updates.name) cleanUpdates.name = updates.name;
+      if (updates.amount) cleanUpdates.amount = updates.amount;
+      if (updates.category) cleanUpdates.category = updates.category;
+      if (Object.keys(cleanUpdates).length === 0) return;
+      await updateTransaction(transactionId, cleanUpdates);
+      toast.success("Lançamento atualizado ✅");
+      await refreshItems();
+    } else {
+      // Open NovaTransacaoModal in edit mode — fetch full transaction
+      try {
+        const tx = await getTransactionById(transactionId);
+        setEditingTransaction({
+          id: tx.id,
+          name: tx.name,
+          type: tx.type as "receita" | "despesa",
+          amount: Number(tx.amount),
+          category: tx.category,
+          date: tx.date,
+          status: tx.status as "pago" | "pendente",
+          payment_method: tx.payment_method as "conta" | "cartao",
+          account_id: tx.account_id,
+          credit_card_id: tx.credit_card_id,
+          recurrence_type: tx.recurrence_type as any,
+          installments: tx.installments,
+          installment_current: tx.installment_current,
+          observation: tx.observation,
+        });
+      } catch {
+        toast.error("Erro ao carregar transação");
+      }
+    }
   };
 
   const handleDeleteItem = async (transactionId: string) => {
@@ -550,10 +577,38 @@ const FaturaCartao = () => {
         onSuccess={async () => {
           setShowManualAdd(false);
           await refreshItems();
+          // Reload card to update used_limit
+          if (cardId) {
+            const cards = await getCreditCards();
+            const typedCards = cards as unknown as CreditCardInfo[];
+            const foundCard = typedCards.find((c) => c.id === cardId);
+            setCard(foundCard ?? null);
+          }
         }}
         initialType="despesa"
         initialPaymentMethod="cartao"
         initialCreditCardId={cardId}
+      />
+
+      {/* Edit Transaction Modal */}
+      <NovaTransacaoModal
+        open={!!editingTransaction}
+        onClose={() => setEditingTransaction(null)}
+        onSuccess={async () => {
+          setEditingTransaction(null);
+          await refreshItems();
+          // Reload card to update used_limit
+          if (cardId) {
+            const cards = await getCreditCards();
+            const typedCards = cards as unknown as CreditCardInfo[];
+            const foundCard = typedCards.find((c) => c.id === cardId);
+            setCard(foundCard ?? null);
+          }
+        }}
+        initialType="despesa"
+        initialPaymentMethod="cartao"
+        initialCreditCardId={cardId}
+        editTransaction={editingTransaction}
       />
     </div>
   );
