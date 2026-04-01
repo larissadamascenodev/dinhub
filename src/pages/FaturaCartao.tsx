@@ -9,7 +9,7 @@ import { Button } from "@/components/ui/button";
 import { toast } from "sonner";
 import { useAuth } from "@/contexts/AuthContext";
 import { getInvoices, getInvoiceItems, payInvoice, type Invoice } from "@/services/invoiceService";
-import { getAccounts, getCreditCards } from "@/services/transactionService";
+import { getAccounts, getCreditCards, updateTransaction, deleteTransaction } from "@/services/transactionService";
 import { cn } from "@/lib/utils";
 import InvoiceCategoryBreakdown from "@/components/fatura/InvoiceCategoryBreakdown";
 import InvoiceTransactionList from "@/components/fatura/InvoiceTransactionList";
