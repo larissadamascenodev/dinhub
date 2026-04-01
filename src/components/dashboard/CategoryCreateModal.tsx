@@ -35,6 +35,7 @@ export default function CategoryCreateModal({
   const [name, setName] = useState(initialName);
   const [icon, setIcon] = useState(initialIcon);
   const [color, setColor] = useState(initialColor);
+  const colorInputRef = useRef<HTMLInputElement>(null);
 
   const handleSave = () => {
     if (!name.trim()) return;
