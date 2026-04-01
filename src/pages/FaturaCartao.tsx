@@ -522,15 +522,19 @@ const FaturaCartao = () => {
         open={showAddChooser}
         onClose={() => setShowAddChooser(false)}
         onManual={() => setShowManualAdd(true)}
-        onImage={(file) => {
-          toast.info("Processamento de imagem em breve!");
-        }}
-        onPdf={(file) => {
-          toast.info("Processamento de PDF em breve!");
-        }}
-        onCsv={(file) => {
-          toast.info("Processamento de CSV em breve!");
-        }}
+        onImage={(file) => handleFileUpload(file)}
+        onPdf={(file) => handleFileUpload(file)}
+        onCsv={(file) => handleFileUpload(file)}
+      />
+
+      {/* Upload Review Modal */}
+      <InvoiceUploadReviewModal
+        open={showReviewModal}
+        onClose={() => setShowReviewModal(false)}
+        items={extractedItems}
+        message={extractedMessage}
+        onConfirm={handleConfirmImport}
+        confirming={confirmingImport}
       />
 
       {/* Manual Add Modal — pre-set to credit card */}
