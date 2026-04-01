@@ -336,7 +336,7 @@ const ProximosEventos = memo(({ events, selectedMonth, selectedYear, onVerTodos,
                           {fmt(ev.amount)}
                         </p>
                         <span className="text-[8px] font-semibold uppercase mt-0.5" style={{ color: `hsl(${a} / 0.7)` }}>
-                          {cfg.label}
+                          {getStatusLabel(ev.status, ev.type)}
                         </span>
                       </div>
                     </div>
