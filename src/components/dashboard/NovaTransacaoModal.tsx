@@ -980,26 +980,41 @@ const NovaTransacaoModal = ({ open, onClose, onSuccess, initialType = "despesa",
                   </div>
 
                   {/* Category list */}
-                  <div className="max-h-48 overflow-y-auto space-y-1 mb-3">
+                  <div className="max-h-48 overflow-y-auto space-y-1 mb-3 scrollbar-none">
                     {filteredCategories.length > 0 ? (
-                      filteredCategories.map((cat) => (
-                        <button
-                          key={cat}
-                          type="button"
-                          onClick={() => {
-                            setCategory(cat);
-                            setShowCategoryModal(false);
-                          }}
-                          className={cn(
-                            "w-full text-left px-3 py-2 rounded-xl text-sm transition-colors",
-                            category === cat
-                              ? "bg-primary/15 text-primary font-semibold"
-                              : "text-foreground hover:bg-muted/50"
-                          )}
-                        >
-                          {cat}
-                        </button>
-                      ))
+                      filteredCategories.map((cat) => {
+                        const customCat = customCategories.find((c) => c.name === cat && c.type === type);
+                        return (
+                          <button
+                            key={cat}
+                            type="button"
+                            onClick={() => {
+                              setCategory(cat);
+                              setShowCategoryModal(false);
+                            }}
+                            className={cn(
+                              "w-full flex items-center gap-2.5 text-left px-3 py-2 rounded-xl text-sm transition-colors",
+                              category === cat
+                                ? "bg-primary/15 text-primary font-semibold"
+                                : "text-foreground hover:bg-muted/50"
+                            )}
+                          >
+                            {customCat ? (
+                              <span
+                                className="w-7 h-7 rounded-lg flex items-center justify-center text-sm shrink-0"
+                                style={{ backgroundColor: `${customCat.color}20`, border: `1px solid ${customCat.color}30` }}
+                              >
+                                {customCat.icon}
+                              </span>
+                            ) : (
+                              <span className="w-7 h-7 rounded-lg flex items-center justify-center text-sm shrink-0 bg-muted/20">
+                                📋
+                              </span>
+                            )}
+                            {cat}
+                          </button>
+                        );
+                      })
                     ) : (
                       <p className="text-center text-sm text-muted-foreground py-4">
                         Nenhuma categoria encontrada
