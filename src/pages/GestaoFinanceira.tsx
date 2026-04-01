@@ -383,40 +383,40 @@ const GestaoFinanceira = () => {
                 >
                   <div className="absolute -right-6 -top-6 w-20 h-20 rounded-full bg-white/[0.04]" />
                   <div className="relative z-10 flex flex-col h-full min-h-[148px]">
+                    {/* Card header */}
                     <div className="flex items-start justify-between mb-1">
                       <div className="flex items-center gap-2.5">
-                        <div className="w-9 h-9 rounded-xl bg-amber-500/20 flex items-center justify-center">
-                          <CreditCard className="w-4 h-4 text-amber-400" />
+                        <div className="w-9 h-9 rounded-xl bg-white/10 flex items-center justify-center backdrop-blur-sm">
+                          <CreditCard className="w-4 h-4 text-white/80" />
                         </div>
                         <div className="min-w-0">
-                          <p className="text-sm font-bold text-white truncate">{card.name}</p>
+                          <div className="flex items-center gap-1">
+                            <p className="text-sm font-bold text-white truncate">{card.name}</p>
+                            <ChevronRight className="w-3.5 h-3.5 text-white/30 group-hover:text-white/60 transition-colors shrink-0" />
+                          </div>
                           {card.last_four_digits && (
                             <p className="text-[10px] text-white/40">•••• {card.last_four_digits}</p>
                           )}
                         </div>
                       </div>
-                      <ChevronRight className="w-4 h-4 text-white/30 group-hover:text-white/60 transition-colors mt-1 shrink-0" />
                     </div>
 
+                    {/* Available balance */}
                     <div className="mt-auto pt-3">
-                      <p className="text-[10px] text-white/40 font-medium uppercase tracking-wide mb-0.5">Disponível</p>
-                      <p className="text-lg font-bold text-white">{formatCurrency(available)}</p>
-                      <div className="w-full h-1.5 rounded-full bg-white/10 overflow-hidden mt-2 mb-1.5">
+                      <p className="text-[10px] text-white/50 font-medium uppercase tracking-wide mb-0.5">Disponível</p>
+                      <p className="text-xl font-bold text-white">{formatCurrency(available)}</p>
+
+                      {/* Limit bar — uses card gradient color */}
+                      <div className="w-full h-1.5 rounded-full bg-white/10 overflow-hidden mt-2.5 mb-1.5">
                         <motion.div
                           initial={{ width: 0 }}
                           animate={{ width: `${usedPct}%` }}
                           transition={{ duration: 0.8, ease: "easeOut" }}
-                          className={cn(
-                            "h-full rounded-full",
-                            usedPct > 80 ? "bg-red-400" : usedPct > 50 ? "bg-amber-400" : "bg-emerald-400"
-                          )}
+                          className="h-full rounded-full bg-white/60"
                         />
                       </div>
                       <div className="flex items-center justify-between">
-                        <span className={cn(
-                          "text-[10px] font-medium",
-                          usedPct > 80 ? "text-red-400" : usedPct > 50 ? "text-amber-400" : "text-emerald-400"
-                        )}>
+                        <span className="text-[10px] font-medium text-white/60">
                           {usedPct.toFixed(0)}% usado
                         </span>
                         <span className="text-[10px] text-white/40">Dia {card.due_day}</span>
