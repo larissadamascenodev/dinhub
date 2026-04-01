@@ -80,9 +80,9 @@ export default function InvoicePayModal({
   }, [mode, total, parsedEntryAmount, parsedInstallments, parsedInstallmentAmount]);
 
   const canConfirm = (() => {
-    if (!payAccountId) return false;
-    if (mode === "minimo") return parsedMinAmount > 0 && parsedMinAmount < total;
-    if (mode === "parcelado") return parsedInstallments >= 2 && parsedInstallmentAmount > 0;
+    if (!payAccountId) { console.log("canConfirm: no payAccountId"); return false; }
+    if (mode === "minimo") { const r = parsedMinAmount > 0 && parsedMinAmount < total; console.log("canConfirm minimo:", r, {parsedMinAmount, total}); return r; }
+    if (mode === "parcelado") { const r = parsedInstallments >= 2 && parsedInstallmentAmount > 0; console.log("canConfirm parcelado:", r, {parsedInstallments, parsedInstallmentAmount, installmentAmount}); return r; }
     return true;
   })();
 
