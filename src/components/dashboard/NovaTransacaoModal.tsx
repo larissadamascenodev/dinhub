@@ -28,6 +28,8 @@ import {
 } from "@/services/transactionService";
 import { getCustomCategories, createCustomCategory, type CustomCategory } from "@/services/categoryService";
 import CategoryCreateModal from "@/components/dashboard/CategoryCreateModal";
+
+interface Props {
   open: boolean;
   onClose: () => void;
   onSuccess: () => void;
