@@ -8,7 +8,7 @@ import { Label } from "@/components/ui/label";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { toast } from "sonner";
 import { useAuth } from "@/contexts/AuthContext";
-import { getAccounts, createAccount, getCreditCards, createCreditCard, deactivateAccount } from "@/services/transactionService";
+import { getAccounts, createAccount, getCreditCards, createCreditCard } from "@/services/transactionService";
 import { cn } from "@/lib/utils";
 
 interface Account {
