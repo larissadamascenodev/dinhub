@@ -259,6 +259,8 @@ const GestaoFinanceira = () => {
                 const balance = Number(acc.current_balance);
                 const isPositive = balance >= 0;
 
+                const accent = getAccent(acc.color);
+
                 return (
                   <motion.div
                     key={acc.id}
@@ -267,36 +269,45 @@ const GestaoFinanceira = () => {
                     transition={{ delay: idx * 0.05 }}
                     onClick={() => navigate(`/conta/${acc.id}`)}
                     className={cn(
-                      "relative rounded-2xl p-4 overflow-hidden bg-gradient-to-br cursor-pointer group snap-start shrink-0 w-[75vw] max-w-[280px]",
-                      "border border-white/[0.06] hover:border-white/[0.12] transition-all duration-300 active:scale-[0.98]",
-                      gradient
+                      "relative rounded-2xl p-4 overflow-hidden cursor-pointer group snap-start shrink-0 w-[75vw] max-w-[280px]",
+                      "bg-card/80 backdrop-blur-xl border transition-all duration-300 active:scale-[0.98]",
+                      accent.border, "hover:border-primary/20"
                     )}
                   >
-                    <div className="absolute -right-6 -top-6 w-20 h-20 rounded-full bg-white/[0.04]" />
+                    {/* Accent glow */}
+                    <div className={cn("absolute -right-8 -top-8 w-24 h-24 rounded-full blur-2xl opacity-30", accent.dot)} />
+
                     <div className="relative z-10 flex flex-col h-full min-h-[148px]">
-                      <div className="flex items-start justify-between mb-1">
-                        <div className="flex items-center gap-2.5">
-                          <div className="w-9 h-9 rounded-xl bg-white/10 flex items-center justify-center backdrop-blur-sm">
-                            <Icon className="w-4 h-4 text-white/80" />
+                      {/* Header */}
+                      <div className="flex items-center gap-2.5">
+                        <div className={cn("w-9 h-9 rounded-xl flex items-center justify-center", accent.iconBg)}>
+                          <Icon className="w-4 h-4 text-foreground/80" />
+                        </div>
+                        <div className="min-w-0 flex-1">
+                          <div className="flex items-center gap-1">
+                            <p className="text-sm font-bold text-foreground truncate">{acc.name}</p>
+                            <ChevronRight className="w-3.5 h-3.5 text-muted-foreground/40 group-hover:text-primary transition-colors shrink-0" />
                           </div>
-                          <div className="min-w-0">
-                            <div className="flex items-center gap-1">
-                              <p className="text-sm font-bold text-white truncate">{acc.name}</p>
-                              <ChevronRight className="w-3.5 h-3.5 text-white/30 group-hover:text-white/60 transition-colors shrink-0" />
-                            </div>
-                            <p className="text-[10px] text-white/40">{typeInfo.label}</p>
-                          </div>
+                          <p className="text-[10px] text-muted-foreground">{typeInfo.label}</p>
                         </div>
                       </div>
+
                       {acc.is_default && (
-                        <span className="self-start text-[9px] bg-white/10 text-white/70 px-2 py-0.5 rounded-full font-semibold mt-1">
+                        <span className="self-start text-[9px] bg-primary/10 text-primary px-2 py-0.5 rounded-full font-semibold mt-2">
                           Principal
                         </span>
                       )}
-                      <div className="mt-auto pt-3">
-                        <p className="text-[10px] text-white/50 font-medium uppercase tracking-wide mb-0.5">Saldo disponível</p>
-                        <p className="text-xl font-bold text-white">{formatCurrency(balance)}</p>
+
+                      {/* Balance */}
+                      <div className="mt-auto pt-4">
+                        <p className="text-[10px] text-muted-foreground font-medium uppercase tracking-wide mb-0.5">Saldo disponível</p>
+                        <p className={cn("text-xl font-bold tabular-nums", balance >= 0 ? "text-primary" : "text-destructive")}>
+                          {formatCurrency(balance)}
+                        </p>
                       </div>
+
+                      {/* Accent bar at bottom */}
+                      <div className={cn("absolute bottom-0 left-4 right-4 h-[2px] rounded-full opacity-40", accent.dot)} />
                     </div>
                   </motion.div>
                 );
