@@ -12,6 +12,7 @@ export interface PaymentDetails {
   amountPaid?: number;
   installments?: number;
   entryAmount?: number;
+  installmentAmount?: number;
 }
 
 interface Props {
@@ -25,11 +26,15 @@ interface Props {
   paying: boolean;
 }
 
-const modeOptions: { value: PaymentMode; label: string; icon: React.ReactNode; desc: string }[] = [
-  { value: "total", label: "Valor Total", icon: <CheckCircle2 className="w-4 h-4" />, desc: "Pagar fatura inteira" },
-  { value: "minimo", label: "Valor Mínimo", icon: <Banknote className="w-4 h-4" />, desc: "Pagar parcialmente" },
-  { value: "parcelado", label: "Parcelado", icon: <CalendarClock className="w-4 h-4" />, desc: "Dividir em parcelas" },
+const modeOptions: { value: PaymentMode; label: string; icon: React.ReactNode }[] = [
+  { value: "total", label: "Valor Total", icon: <CheckCircle2 className="w-4 h-4" /> },
+  { value: "minimo", label: "Valor Mínimo", icon: <Banknote className="w-4 h-4" /> },
+  { value: "parcelado", label: "Parcelado", icon: <CalendarClock className="w-4 h-4" /> },
 ];
+
+function parseAmount(val: string): number {
+  return parseFloat(val.replace(/\s/g, "").replace(",", ".")) || 0;
+}
 
 export default function InvoicePayModal({
   open, onClose, total, accounts, payAccountId, setPayAccountId, onConfirm, paying,
@@ -38,44 +43,44 @@ export default function InvoicePayModal({
   const [minAmount, setMinAmount] = useState("");
   const [entryAmount, setEntryAmount] = useState("");
   const [installments, setInstallments] = useState("2");
+  const [installmentAmount, setInstallmentAmount] = useState("");
 
-  // Reset state when modal opens
   useEffect(() => {
     if (open) {
       setMode("total");
       setMinAmount("");
       setEntryAmount("");
       setInstallments("2");
+      setInstallmentAmount("");
     }
   }, [open]);
 
-  const parsedMinAmount = parseFloat(minAmount.replace(",", ".")) || 0;
-  const parsedEntryAmount = parseFloat(entryAmount.replace(",", ".")) || 0;
+  const parsedMinAmount = parseAmount(minAmount);
+  const parsedEntryAmount = parseAmount(entryAmount);
   const parsedInstallments = parseInt(installments) || 2;
+  const parsedInstallmentAmount = parseAmount(installmentAmount);
 
   const remainder = mode === "minimo" ? Math.max(0, total - parsedMinAmount) : 0;
 
+  // Parcelado: user defines entry + installment count + installment value
+  // Interest = (entry + installments × installmentValue) - total
   const installmentCalc = useMemo(() => {
     if (mode !== "parcelado") return null;
-    const remaining = total - parsedEntryAmount;
-    if (remaining <= 0 || parsedInstallments < 2) return null;
-    // Standard interest rate assumption: 1.99% per month (typical credit card)
-    const monthlyRate = 0.0199;
-    const installmentValue = remaining * (monthlyRate * Math.pow(1 + monthlyRate, parsedInstallments)) / (Math.pow(1 + monthlyRate, parsedInstallments) - 1);
-    const totalWithInterest = parsedEntryAmount + installmentValue * parsedInstallments;
-    const totalInterest = totalWithInterest - total;
+    if (parsedInstallments < 2 || parsedInstallmentAmount <= 0) return null;
+    const financedTotal = parsedInstallmentAmount * parsedInstallments;
+    const totalPaid = parsedEntryAmount + financedTotal;
+    const interest = Math.max(0, totalPaid - total);
     return {
-      installmentValue,
-      totalWithInterest,
-      totalInterest,
-      effectiveRate: monthlyRate * 100,
+      installmentValue: parsedInstallmentAmount,
+      totalPaid,
+      interest,
     };
-  }, [mode, total, parsedEntryAmount, parsedInstallments]);
+  }, [mode, total, parsedEntryAmount, parsedInstallments, parsedInstallmentAmount]);
 
   const canConfirm = (() => {
     if (!payAccountId) return false;
     if (mode === "minimo") return parsedMinAmount > 0 && parsedMinAmount < total;
-    if (mode === "parcelado") return parsedInstallments >= 2 && parsedEntryAmount >= 0 && installmentCalc !== null;
+    if (mode === "parcelado") return parsedInstallments >= 2 && parsedInstallmentAmount > 0;
     return true;
   })();
 
@@ -85,7 +90,12 @@ export default function InvoicePayModal({
     } else if (mode === "minimo") {
       onConfirm({ mode: "minimo", amountPaid: parsedMinAmount });
     } else {
-      onConfirm({ mode: "parcelado", entryAmount: parsedEntryAmount, installments: parsedInstallments });
+      onConfirm({
+        mode: "parcelado",
+        entryAmount: parsedEntryAmount,
+        installments: parsedInstallments,
+        installmentAmount: parsedInstallmentAmount,
+      });
     }
   };
 
@@ -177,7 +187,7 @@ export default function InvoicePayModal({
                 </div>
               </div>
 
-              {/* Minimum payment fields */}
+              {/* Dynamic fields */}
               <AnimatePresence mode="wait">
                 {mode === "minimo" && (
                   <motion.div
@@ -219,7 +229,7 @@ export default function InvoicePayModal({
                     )}
                     {parsedMinAmount >= total && parsedMinAmount > 0 && (
                       <p className="text-[10px] text-destructive font-medium">
-                        Valor deve ser menor que o total da fatura
+                        Valor deve ser menor que o total da fatura. Para pagar tudo, use "Valor Total".
                       </p>
                     )}
                   </motion.div>
@@ -271,6 +281,24 @@ export default function InvoicePayModal({
                       </Select>
                     </div>
 
+                    {/* Installment value — user-defined */}
+                    <div className="space-y-1.5">
+                      <label className="text-[10px] text-muted-foreground uppercase tracking-wider font-bold flex items-center gap-1">
+                        <Banknote className="w-3 h-3" /> Valor de cada parcela
+                      </label>
+                      <div className="relative">
+                        <span className="absolute left-3 top-1/2 -translate-y-1/2 text-xs text-muted-foreground">R$</span>
+                        <input
+                          type="text"
+                          inputMode="decimal"
+                          value={installmentAmount}
+                          onChange={(e) => setInstallmentAmount(e.target.value.replace(/[^0-9.,]/g, ""))}
+                          placeholder="0,00"
+                          className="w-full h-11 rounded-xl bg-muted/20 border border-border/20 pl-9 pr-3 text-sm text-foreground placeholder:text-muted-foreground/50 focus:outline-none focus:ring-2 focus:ring-primary/30"
+                        />
+                      </div>
+                    </div>
+
                     {/* Calculation summary */}
                     {installmentCalc && (
                       <motion.div
@@ -278,31 +306,33 @@ export default function InvoicePayModal({
                         animate={{ opacity: 1 }}
                         className="bg-primary/5 border border-primary/15 rounded-xl p-3 space-y-2"
                       >
-                        <div className="flex items-center justify-between">
-                          <span className="text-[10px] text-muted-foreground font-bold uppercase">Valor da parcela</span>
-                          <span className="text-sm font-bold text-foreground">
-                            {parsedInstallments}x de {formatCurrency(installmentCalc.installmentValue)}
-                          </span>
-                        </div>
                         {parsedEntryAmount > 0 && (
                           <div className="flex items-center justify-between">
                             <span className="text-[10px] text-muted-foreground font-bold uppercase">Entrada</span>
                             <span className="text-sm font-bold text-foreground">{formatCurrency(parsedEntryAmount)}</span>
                           </div>
                         )}
+                        <div className="flex items-center justify-between">
+                          <span className="text-[10px] text-muted-foreground font-bold uppercase">Parcelas</span>
+                          <span className="text-sm font-bold text-foreground">
+                            {parsedInstallments}x de {formatCurrency(installmentCalc.installmentValue)}
+                          </span>
+                        </div>
                         <div className="h-px bg-border/20" />
                         <div className="flex items-center justify-between">
-                          <span className="text-[10px] text-muted-foreground font-bold uppercase">Total com juros</span>
-                          <span className="text-sm font-bold text-foreground">{formatCurrency(installmentCalc.totalWithInterest)}</span>
+                          <span className="text-[10px] text-muted-foreground font-bold uppercase">Total a pagar</span>
+                          <span className="text-sm font-bold text-foreground">{formatCurrency(installmentCalc.totalPaid)}</span>
                         </div>
-                        <div className="flex items-center justify-between">
-                          <span className="text-[10px] text-destructive font-bold uppercase flex items-center gap-1">
-                            <Percent className="w-3 h-3" /> Juros ({installmentCalc.effectiveRate.toFixed(2)}% a.m.)
-                          </span>
-                          <span className="text-sm font-bold text-destructive">
-                            + {formatCurrency(installmentCalc.totalInterest)}
-                          </span>
-                        </div>
+                        {installmentCalc.interest > 0 && (
+                          <div className="flex items-center justify-between">
+                            <span className="text-[10px] text-destructive font-bold uppercase flex items-center gap-1">
+                              <Percent className="w-3 h-3" /> Juros
+                            </span>
+                            <span className="text-sm font-bold text-destructive">
+                              + {formatCurrency(installmentCalc.interest)}
+                            </span>
+                          </div>
+                        )}
                       </motion.div>
                     )}
                   </motion.div>
