@@ -471,10 +471,7 @@ const FaturaCartao = () => {
                 <Shield className="w-3.5 h-3.5 text-primary/60" />
                 <span className="text-xs font-bold text-foreground">Limite</span>
               </div>
-              <span className={cn(
-                "text-xs font-bold",
-                usedPct > 80 ? "text-destructive" : usedPct > 50 ? "text-[hsl(var(--warning))]" : "text-primary"
-              )}>
+              <span className="text-xs font-bold text-primary">
                 {usedPct.toFixed(0)}% utilizado
               </span>
             </div>
