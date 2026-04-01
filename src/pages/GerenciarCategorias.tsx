@@ -235,18 +235,35 @@ export default function GerenciarCategorias() {
           Categorias padrão
         </p>
         <div className="space-y-1">
-          {defaults.map((cat) => (
-            <div
-              key={cat}
-              className="flex items-center gap-3 px-3 py-2.5 rounded-xl bg-muted/5"
-            >
-              <div className="w-9 h-9 rounded-xl flex items-center justify-center text-lg shrink-0 bg-muted/10 border border-border/10">
-                📋
-              </div>
-              <span className="flex-1 text-sm text-muted-foreground">{cat}</span>
-              <span className="text-[9px] text-muted-foreground/40 uppercase">padrão</span>
-            </div>
-          ))}
+          <AnimatePresence>
+            {defaults.map((cat) => (
+              <motion.div
+                key={cat}
+                layout
+                initial={{ opacity: 0, y: 8 }}
+                animate={{ opacity: 1, y: 0 }}
+                exit={{ opacity: 0, x: -40 }}
+                className="flex items-center gap-3 px-3 py-2.5 rounded-xl bg-muted/5"
+              >
+                <div className="w-9 h-9 rounded-xl flex items-center justify-center text-lg shrink-0 bg-muted/10 border border-border/10">
+                  <span style={{ filter: "saturate(1.3) brightness(1.2)" }}>📋</span>
+                </div>
+                <span className="flex-1 text-sm text-muted-foreground">{cat}</span>
+                <button
+                  onClick={() => handleEditDefault(cat)}
+                  className="w-7 h-7 rounded-full bg-muted/20 flex items-center justify-center text-muted-foreground hover:text-foreground transition-colors"
+                >
+                  <Pencil className="w-3 h-3" />
+                </button>
+                <button
+                  onClick={() => handleDeleteDefault(cat)}
+                  className="w-7 h-7 rounded-full bg-destructive/10 flex items-center justify-center text-destructive/60 hover:text-destructive transition-colors"
+                >
+                  <Trash2 className="w-3 h-3" />
+                </button>
+              </motion.div>
+            ))}
+          </AnimatePresence>
         </div>
       </div>
 
