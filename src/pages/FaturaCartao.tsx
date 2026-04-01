@@ -9,7 +9,7 @@ import { Button } from "@/components/ui/button";
 import { toast } from "sonner";
 import { useAuth } from "@/contexts/AuthContext";
 import { getInvoices, getInvoiceItems, payInvoice, type Invoice } from "@/services/invoiceService";
-import { getAccounts, getCreditCards } from "@/services/transactionService";
+import { getAccounts, getCreditCards, updateTransaction, deleteTransaction } from "@/services/transactionService";
 import { cn } from "@/lib/utils";
 import InvoiceCategoryBreakdown from "@/components/fatura/InvoiceCategoryBreakdown";
 import InvoiceTransactionList from "@/components/fatura/InvoiceTransactionList";
@@ -133,6 +133,33 @@ const FaturaCartao = () => {
     } finally {
       setPaying(false);
     }
+  };
+
+  const refreshItems = async () => {
+    if (!currentInvoice) return;
+    const [updatedItems, updatedInvoices] = await Promise.all([
+      getInvoiceItems(currentInvoice.id),
+      getInvoices(cardId!),
+    ]);
+    setItems(updatedItems as EnrichedItem[]);
+    setInvoices(updatedInvoices);
+  };
+
+  const handleEditItem = async (transactionId: string, updates: { name?: string; amount?: number; category?: string }) => {
+    const cleanUpdates: any = {};
+    if (updates.name) cleanUpdates.name = updates.name;
+    if (updates.amount) cleanUpdates.amount = updates.amount;
+    if (updates.category) cleanUpdates.category = updates.category;
+    if (Object.keys(cleanUpdates).length === 0) return;
+    await updateTransaction(transactionId, cleanUpdates);
+    toast.success("Lançamento atualizado ✅");
+    await refreshItems();
+  };
+
+  const handleDeleteItem = async (transactionId: string) => {
+    await deleteTransaction(transactionId);
+    toast.success("Lançamento excluído ✅");
+    await refreshItems();
   };
 
   const total = currentInvoice ? Number(currentInvoice.total_amount) : 0;
@@ -387,6 +414,8 @@ const FaturaCartao = () => {
       <InvoiceTransactionList
         items={items}
         installmentCount={items.filter((i) => i.total_installments > 1).length}
+        onEditItem={handleEditItem}
+        onDeleteItem={handleDeleteItem}
       />
 
 
