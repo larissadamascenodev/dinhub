@@ -1,6 +1,13 @@
 import { useState, useRef } from "react";
 import { motion, AnimatePresence } from "framer-motion";
-import { X, Check, Plus } from "lucide-react";
+import {
+  X, Check, Plus,
+  ShoppingCart, Utensils, Car, Pill, Home, BookOpen, Shirt, PawPrint,
+  Scissors, Gamepad2, Gift, Plane, Smartphone, DollarSign, Briefcase, Music,
+  Coffee, Dumbbell, Clapperboard, FileText, Wrench, ShoppingBag, Lightbulb, Target,
+  Heart, Repeat, GraduationCap, TrendingUp, Award, Users, Wallet, PiggyBank,
+  Zap, Star, Globe, Camera, Headphones, Monitor, Tv, Bus,
+} from "lucide-react";
 import { Input } from "@/components/ui/input";
 import { cn } from "@/lib/utils";
 
@@ -14,10 +21,47 @@ interface Props {
   title?: string;
 }
 
-const ICON_OPTIONS = [
-  "🛒", "🍔", "🚗", "💊", "🏠", "📚", "👔", "🐾",
-  "💇", "🎮", "🎁", "✈️", "📱", "💰", "💼", "🎵",
-  "☕", "🏋️", "🎬", "📋", "🔧", "🛍️", "💡", "🎯",
+const ICON_OPTIONS: { name: string; Icon: any }[] = [
+  { name: "shopping-cart", Icon: ShoppingCart },
+  { name: "utensils", Icon: Utensils },
+  { name: "car", Icon: Car },
+  { name: "pill", Icon: Pill },
+  { name: "home", Icon: Home },
+  { name: "book-open", Icon: BookOpen },
+  { name: "shirt", Icon: Shirt },
+  { name: "paw-print", Icon: PawPrint },
+  { name: "scissors", Icon: Scissors },
+  { name: "gamepad-2", Icon: Gamepad2 },
+  { name: "gift", Icon: Gift },
+  { name: "plane", Icon: Plane },
+  { name: "smartphone", Icon: Smartphone },
+  { name: "dollar-sign", Icon: DollarSign },
+  { name: "briefcase", Icon: Briefcase },
+  { name: "music", Icon: Music },
+  { name: "coffee", Icon: Coffee },
+  { name: "dumbbell", Icon: Dumbbell },
+  { name: "clapperboard", Icon: Clapperboard },
+  { name: "file-text", Icon: FileText },
+  { name: "wrench", Icon: Wrench },
+  { name: "shopping-bag", Icon: ShoppingBag },
+  { name: "lightbulb", Icon: Lightbulb },
+  { name: "target", Icon: Target },
+  { name: "heart", Icon: Heart },
+  { name: "repeat", Icon: Repeat },
+  { name: "graduation-cap", Icon: GraduationCap },
+  { name: "trending-up", Icon: TrendingUp },
+  { name: "award", Icon: Award },
+  { name: "users", Icon: Users },
+  { name: "wallet", Icon: Wallet },
+  { name: "piggy-bank", Icon: PiggyBank },
+  { name: "zap", Icon: Zap },
+  { name: "star", Icon: Star },
+  { name: "globe", Icon: Globe },
+  { name: "camera", Icon: Camera },
+  { name: "headphones", Icon: Headphones },
+  { name: "monitor", Icon: Monitor },
+  { name: "tv", Icon: Tv },
+  { name: "bus", Icon: Bus },
 ];
 
 const COLOR_OPTIONS = [
@@ -27,9 +71,14 @@ const COLOR_OPTIONS = [
   "#cddc39",
 ];
 
+// Find the Icon component by name
+function getIconComponent(iconName: string) {
+  return ICON_OPTIONS.find((i) => i.name === iconName)?.Icon || FileText;
+}
+
 export default function CategoryCreateModal({
   open, onClose, onSave,
-  initialName = "", initialIcon = "📋", initialColor = "#8b5cf6",
+  initialName = "", initialIcon = "file-text", initialColor = "#8b5cf6",
   title = "Nova Categoria",
 }: Props) {
   const [name, setName] = useState(initialName);
@@ -43,6 +92,8 @@ export default function CategoryCreateModal({
   };
 
   if (!open) return null;
+
+  const PreviewIcon = getIconComponent(icon);
 
   return (
     <AnimatePresence>
@@ -59,7 +110,7 @@ export default function CategoryCreateModal({
           exit={{ opacity: 0, scale: 0.95, y: 20 }}
           transition={{ type: "spring", damping: 25, stiffness: 350 }}
           onClick={(e) => e.stopPropagation()}
-          className="w-[90%] max-w-sm rounded-2xl bg-card border border-border/30 shadow-2xl overflow-hidden"
+          className="w-[90%] max-w-sm max-h-[85vh] overflow-y-auto rounded-2xl bg-card border border-border/30 shadow-2xl"
         >
           {/* Header */}
           <div className="flex items-center justify-between px-5 pt-5 pb-3">
@@ -76,14 +127,14 @@ export default function CategoryCreateModal({
             {/* Preview */}
             <div className="flex items-center justify-center py-3">
               <div
-                className="w-14 h-14 rounded-2xl flex items-center justify-center text-2xl shadow-lg"
+                className="w-14 h-14 rounded-2xl flex items-center justify-center shadow-lg"
                 style={{
                   backgroundColor: `${color}20`,
                   border: `2px solid ${color}40`,
                   filter: `drop-shadow(0 0 10px ${color}80)`,
                 }}
               >
-                <span style={{ filter: "saturate(1.4) brightness(1.3)" }}>{icon}</span>
+                <PreviewIcon className="w-6 h-6" style={{ color }} />
               </div>
             </div>
 
@@ -104,22 +155,23 @@ export default function CategoryCreateModal({
             <div className="space-y-1.5">
               <label className="text-xs font-semibold text-muted-foreground uppercase tracking-wider">Ícone</label>
               <div className="grid grid-cols-8 gap-1.5">
-                {ICON_OPTIONS.map((ic) => (
+                {ICON_OPTIONS.map(({ name: iconName, Icon: IconComp }) => (
                   <button
-                    key={ic}
+                    key={iconName}
                     type="button"
-                    onClick={() => setIcon(ic)}
+                    onClick={() => setIcon(iconName)}
                     className={cn(
-                      "w-9 h-9 rounded-xl flex items-center justify-center text-lg transition-all",
-                      icon === ic
+                      "w-9 h-9 rounded-xl flex items-center justify-center transition-all",
+                      icon === iconName
                         ? "bg-primary/15 ring-2 ring-primary/40 scale-110"
                         : "bg-muted/20 hover:bg-muted/40"
                     )}
-                    style={{
-                      filter: icon === ic ? "drop-shadow(0 0 6px hsl(var(--primary)))" : "drop-shadow(0 0 3px rgba(255,255,255,0.15))",
-                    }}
+                    style={icon === iconName ? { filter: `drop-shadow(0 0 6px ${color}80)` } : undefined}
                   >
-                    <span style={{ filter: "saturate(1.3) brightness(1.2)" }}>{ic}</span>
+                    <IconComp
+                      className="w-4 h-4"
+                      style={{ color: icon === iconName ? color : "hsl(var(--muted-foreground))" }}
+                    />
                   </button>
                 ))}
               </div>
@@ -197,3 +249,5 @@ export default function CategoryCreateModal({
     </AnimatePresence>
   );
 }
+
+export { ICON_OPTIONS, getIconComponent };
