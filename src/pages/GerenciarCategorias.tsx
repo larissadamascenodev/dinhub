@@ -10,7 +10,7 @@ import { useNavigate } from "react-router-dom";
 import { toast } from "sonner";
 import { useAuth } from "@/contexts/AuthContext";
 import { cn } from "@/lib/utils";
-import CategoryCreateModal from "@/components/dashboard/CategoryCreateModal";
+import CategoryCreateModal, { getIconComponent } from "@/components/dashboard/CategoryCreateModal";
 import {
   getCustomCategories,
   createCustomCategory,
