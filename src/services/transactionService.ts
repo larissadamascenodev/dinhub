@@ -77,6 +77,20 @@ export async function updateTransaction(id: string, updates: {
     .single();
 
   if (error) throw error;
+
+  // Also update child installment transactions (same name, category, amount)
+  const childUpdates: Record<string, any> = {};
+  if (updates.name) childUpdates.name = updates.name;
+  if (updates.category) childUpdates.category = updates.category;
+  if (updates.amount !== undefined) childUpdates.amount = updates.amount;
+
+  if (Object.keys(childUpdates).length > 0) {
+    await supabase
+      .from("transactions")
+      .update(childUpdates)
+      .eq("parent_transaction_id", id);
+  }
+
   return data;
 }
 
