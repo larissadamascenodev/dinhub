@@ -105,14 +105,15 @@ const NovaTransacaoModal = ({ open, onClose, onSuccess, initialType = "despesa",
   const [submitting, setSubmitting] = useState(false);
   const [showCategoryModal, setShowCategoryModal] = useState(false);
   const [categorySearch, setCategorySearch] = useState("");
-  const [customCategories, setCustomCategories] = useState<string[]>([]);
+  const [customCategories, setCustomCategories] = useState<CustomCategory[]>([]);
   const [newCategoryName, setNewCategoryName] = useState("");
+  const [showCategoryCreate, setShowCategoryCreate] = useState(false);
   const amountInputRef = useRef<HTMLInputElement>(null);
   const suggestTimeoutRef = useRef<ReturnType<typeof setTimeout>>();
 
   const allCategories = [
     ...(type === "receita" ? CATEGORIES_INCOME : CATEGORIES_EXPENSE),
-    ...customCategories,
+    ...customCategories.filter((c) => c.type === type).map((c) => c.name),
   ];
 
   const filteredCategories = categorySearch
