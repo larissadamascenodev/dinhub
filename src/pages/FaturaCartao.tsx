@@ -216,6 +216,8 @@ const FaturaCartao = () => {
   };
 
   const total = currentInvoice ? Number(currentInvoice.total_amount) : 0;
+  const paidAmount = currentInvoice ? Number((currentInvoice as any).paid_amount ?? 0) : 0;
+  const outstanding = Math.max(0, total - paidAmount);
   const limitTotal = card ? Number(card.limit) : 0;
   const usedLimit = card ? Number(card.used_limit) : 0;
   const availableLimit = limitTotal - usedLimit;
