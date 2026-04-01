@@ -523,53 +523,55 @@ const GestaoFinanceira = () => {
               {creditCards.map((card, idx) => {
                 const usedPct = card.limit > 0 ? Math.min((Number(card.used_limit) / Number(card.limit)) * 100, 100) : 0;
                 const available = Math.max(Number(card.limit) - Number(card.used_limit), 0);
-                const gradient = getGradient(card.color);
+                const accent = getAccent(card.color);
 
                 return (
                   <motion.div
                     key={card.id}
-                    initial={{ opacity: 0, y: 16 }}
+                    initial={{ opacity: 0, y: 12 }}
                     animate={{ opacity: 1, y: 0 }}
-                    transition={{ delay: idx * 0.05 }}
+                    transition={{ delay: idx * 0.06 }}
                     onClick={() => navigate(`/fatura/${card.id}`)}
-                    className={cn(
-                      "relative rounded-2xl p-4 overflow-hidden bg-gradient-to-br cursor-pointer group",
-                      "border border-white/[0.06] hover:border-white/[0.12] transition-all duration-300 active:scale-[0.98]",
-                      gradient
-                    )}
+                    className="relative rounded-2xl overflow-hidden cursor-pointer group border border-primary/20 hover:border-primary/40 transition-all duration-300 active:scale-[0.98]"
+                    style={{ background: "linear-gradient(135deg, hsl(var(--card)) 0%, hsl(var(--background)) 100%)" }}
                   >
-                    <div className="absolute -right-6 -top-6 w-20 h-20 rounded-full bg-white/[0.04]" />
-                    <div className="relative z-10 flex flex-col h-full min-h-[148px]">
-                      <div className="flex items-start justify-between mb-1">
-                        <div className="flex items-center gap-2.5">
-                          <div className="w-9 h-9 rounded-xl bg-white/10 flex items-center justify-center backdrop-blur-sm">
-                            <CreditCard className="w-4 h-4 text-white/80" />
+                    <div className="p-4 space-y-4">
+                      <div className="flex items-center justify-between">
+                        <div className="flex items-center gap-3">
+                          <div className={cn("w-8 h-8 rounded-xl flex items-center justify-center", accent.iconBg)}>
+                            <CreditCard className={cn("w-4 h-4", accent.dot.replace("bg-", "text-"))} />
                           </div>
-                          <div className="min-w-0">
-                            <div className="flex items-center gap-1">
-                              <p className="text-sm font-bold text-white truncate">{card.name}</p>
-                              <ChevronRight className="w-3.5 h-3.5 text-white/30 group-hover:text-white/60 transition-colors shrink-0" />
-                            </div>
-                            {card.last_four_digits && (
-                              <p className="text-[10px] text-white/40">•••• {card.last_four_digits}</p>
+                          <div>
+                            <p className="text-sm font-bold text-foreground leading-tight">{card.name}</p>
+                            {card.last_four_digits ? (
+                              <p className="text-[10px] text-muted-foreground mt-0.5">•••• {card.last_four_digits}</p>
+                            ) : (
+                              <p className="text-[10px] text-muted-foreground mt-0.5">Cartão de crédito</p>
                             )}
                           </div>
                         </div>
+                        <ChevronRight className="w-4 h-4 text-muted-foreground/25 group-hover:text-primary transition-colors" />
                       </div>
-                      <div className="mt-auto pt-3">
-                        <p className="text-[10px] text-white/50 font-medium uppercase tracking-wide mb-0.5">Disponível</p>
-                        <p className="text-xl font-bold text-white">{formatCurrency(available)}</p>
-                        <div className="w-full h-1.5 rounded-full bg-white/10 overflow-hidden mt-2.5 mb-1.5">
+                      <div className="h-px bg-border/10" />
+                      <div>
+                        <div className="flex items-center gap-1.5 mb-1.5">
+                          <div className={cn("w-1.5 h-1.5 rounded-full", usedPct > 80 ? "bg-destructive" : "bg-primary")} />
+                          <p className="text-[9px] text-muted-foreground uppercase tracking-widest font-medium">Disponível</p>
+                        </div>
+                        <p className="text-2xl font-extrabold tabular-nums tracking-tight text-foreground">
+                          {formatCurrency(available)}
+                        </p>
+                        <div className="w-full h-1.5 rounded-full bg-muted/30 overflow-hidden mt-2.5 mb-1.5">
                           <motion.div
                             initial={{ width: 0 }}
                             animate={{ width: `${usedPct}%` }}
                             transition={{ duration: 0.8, ease: "easeOut" }}
-                            className="h-full rounded-full bg-white/60"
+                            className={cn("h-full rounded-full", usedPct > 80 ? "bg-destructive/60" : "bg-primary/40")}
                           />
                         </div>
                         <div className="flex items-center justify-between">
-                          <span className="text-[10px] font-medium text-white/60">{usedPct.toFixed(0)}% usado</span>
-                          <span className="text-[10px] text-white/40">Dia {card.due_day}</span>
+                          <span className="text-[10px] font-medium text-muted-foreground">{usedPct.toFixed(0)}% usado</span>
+                          <span className="text-[10px] text-muted-foreground/60">Vence dia {card.due_day}</span>
                         </div>
                       </div>
                     </div>
