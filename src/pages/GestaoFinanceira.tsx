@@ -1002,7 +1002,7 @@ const GestaoFinanceira = () => {
             disabled={aporteCents === 0 || !aporteFromId || aporteSubmitting}
             className="w-full h-11 rounded-xl text-sm font-semibold bg-primary/15 text-primary hover:bg-primary/25 border border-primary/30"
           >
-            {aporteSubmitting ? "Processando..." : `Investir R$ ${(aporteCents / 100).toLocaleString("pt-BR", { minimumFractionDigits: 2 })}`}
+            {aporteSubmitting ? "Processando..." : `Depositar R$ ${(aporteCents / 100).toLocaleString("pt-BR", { minimumFractionDigits: 2 })}`}
           </Button>
         </div>
       </ModalOverlay>
