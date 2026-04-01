@@ -100,15 +100,19 @@ function getAnnualRate(rateType: string | null, annualRate: number | null, inves
   }
 }
 
-function simulateInvestment(principal: number, annualRatePct: number, months: number) {
+function simulateInvestment(principal: number, annualRatePct: number, months: number, monthlyContribution: number = 0) {
   const monthlyRate = (1 + annualRatePct / 100) ** (1 / 12) - 1;
-  const data: { month: number; label: string; value: number }[] = [];
+  const data: { month: number; label: string; value: number; invested: number; profit: number }[] = [];
   let current = principal;
-  data.push({ month: 0, label: "Hoje", value: current });
+  let totalInvested = principal;
+  data.push({ month: 0, label: "Hoje", value: current, invested: totalInvested, profit: 0 });
   for (let i = 1; i <= months; i++) {
     current *= (1 + monthlyRate);
-    const label = i <= 12 ? `${i}m` : `${(i / 12).toFixed(0)}a${i % 12 > 0 ? `${i % 12}m` : ""}`;
-    data.push({ month: i, label, value: current });
+    current += monthlyContribution;
+    totalInvested += monthlyContribution;
+    const profit = current - totalInvested;
+    const label = i <= 12 ? `${i}m` : `${Math.floor(i / 12)}a${i % 12 > 0 ? `${i % 12}m` : ""}`;
+    data.push({ month: i, label, value: current, invested: totalInvested, profit });
   }
   return data;
 }
