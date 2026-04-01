@@ -95,12 +95,12 @@ export default function InvoiceItemEditModal({ item, open, onClose, onSave }: Pr
                   {isInstallment ? "Valor da parcela" : "Valor"}
                 </label>
                 <Input
-                  type="number"
+                  type="text"
+                  inputMode="decimal"
                   value={amount}
                   onChange={(e) => setAmount(e.target.value)}
-                  className="h-10 bg-muted/20 border-border/20 text-sm"
+                  className="h-10 bg-muted/20 border-border/20 text-sm [&::-webkit-inner-spin-button]:appearance-none [&::-webkit-outer-spin-button]:appearance-none [-moz-appearance:textfield]"
                   placeholder="0,00"
-                  step="0.01"
                 />
                 {isInstallment && (
                   <p className="text-[10px] text-muted-foreground">
