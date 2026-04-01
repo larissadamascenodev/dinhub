@@ -1,7 +1,7 @@
 import { useState, useEffect, useCallback } from "react";
 import useEmblaCarousel from "embla-carousel-react";
 import { motion, AnimatePresence } from "framer-motion";
-import { CreditCard, Plus, X, Landmark, Banknote, PiggyBank, TrendingUp, ChevronRight, Briefcase } from "lucide-react";
+import { CreditCard, Plus, X, Landmark, Banknote, PiggyBank, TrendingUp, ChevronRight, Briefcase, ArrowDownLeft } from "lucide-react";
 import { useNavigate } from "react-router-dom";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -10,6 +10,7 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@
 import { toast } from "sonner";
 import { useAuth } from "@/contexts/AuthContext";
 import { getAccounts, createAccount, getCreditCards, createCreditCard } from "@/services/transactionService";
+import { supabase } from "@/integrations/supabase/client";
 import { cn } from "@/lib/utils";
 
 interface Account {
@@ -136,6 +137,14 @@ const GestaoFinanceira = () => {
   const [newCardColor, setNewCardColor] = useState("emerald");
   const [newCardDigits, setNewCardDigits] = useState("");
 
+  // Aporte state
+  const [showAporteModal, setShowAporteModal] = useState(false);
+  const [aporteTargetId, setAporteTargetId] = useState("");
+  const [aporteTargetName, setAporteTargetName] = useState("");
+  const [aporteFromId, setAporteFromId] = useState("");
+  const [aporteCents, setAporteCents] = useState(0);
+  const [aporteSubmitting, setAporteSubmitting] = useState(false);
+
   const fetchData = async () => {
     if (!user) return;
     try {
@@ -207,6 +216,51 @@ const GestaoFinanceira = () => {
       fetchData();
     } catch {
       toast.error("Erro ao criar cartão");
+    }
+  };
+
+  const openAporte = (accId: string, accName: string) => {
+    setAporteTargetId(accId);
+    setAporteTargetName(accName);
+    setAporteCents(0);
+    const bankAccs = accounts.filter(a => a.type !== "investment");
+    const defaultAcc = bankAccs.find(a => a.is_default) || bankAccs[0];
+    setAporteFromId(defaultAcc?.id || "");
+    setShowAporteModal(true);
+  };
+
+  const handleAporte = async () => {
+    if (!user || !aporteFromId || !aporteTargetId || aporteCents === 0) return;
+    setAporteSubmitting(true);
+    try {
+      const fromAcc = accounts.find(a => a.id === aporteFromId);
+      const realAmount = aporteCents / 100;
+      if (fromAcc && realAmount > Number(fromAcc.current_balance)) {
+        toast.error("Saldo insuficiente na conta de origem");
+        setAporteSubmitting(false);
+        return;
+      }
+      const { error } = await supabase.from("transactions").insert({
+        user_id: user.id,
+        name: `Aporte: ${fromAcc?.name} → ${aporteTargetName}`,
+        type: "investimento",
+        amount: realAmount,
+        category: "Investimentos",
+        date: new Date().toISOString().split("T")[0],
+        status: "pago",
+        account_id: aporteFromId,
+        to_account_id: aporteTargetId,
+        payment_method: "conta",
+        recurrence_type: "unica",
+      } as any);
+      if (error) throw error;
+      toast.success("Aporte realizado! 💰");
+      setShowAporteModal(false);
+      fetchData();
+    } catch (err: any) {
+      toast.error(err.message || "Erro ao realizar aporte");
+    } finally {
+      setAporteSubmitting(false);
     }
   };
 
@@ -696,6 +750,14 @@ const GestaoFinanceira = () => {
                             {formatCurrency(balance)}
                           </p>
                         </div>
+                        {/* Aporte button */}
+                        <button
+                          onClick={(e) => { e.stopPropagation(); openAporte(acc.id, acc.name); }}
+                          className="flex items-center justify-center gap-1.5 w-full py-2 rounded-xl bg-primary/10 text-primary text-[11px] font-semibold hover:bg-primary/20 transition-colors border border-primary/20"
+                        >
+                          <ArrowDownLeft className="w-3.5 h-3.5" />
+                          Aporte
+                        </button>
                       </div>
                     </motion.div>
                   );
@@ -873,6 +935,62 @@ const GestaoFinanceira = () => {
             className="w-full h-11 rounded-xl text-sm font-semibold"
           >
             Cadastrar Cartão
+          </Button>
+        </div>
+      </ModalOverlay>
+
+      {/* ═══════ MODAL: Aporte ═══════ */}
+      <ModalOverlay open={showAporteModal} onClose={() => setShowAporteModal(false)}>
+        <div className="space-y-4">
+          <div className="flex items-center justify-between">
+            <p className="text-base font-bold text-foreground">Aporte em {aporteTargetName}</p>
+            <button onClick={() => setShowAporteModal(false)} className="w-8 h-8 rounded-lg bg-muted/50 flex items-center justify-center hover:bg-muted transition-colors">
+              <X className="w-4 h-4 text-muted-foreground" />
+            </button>
+          </div>
+
+          <Select value={aporteFromId} onValueChange={setAporteFromId}>
+            <SelectTrigger className="bg-muted/30 border-border/20 h-11 rounded-xl">
+              <SelectValue placeholder="Conta de origem" />
+            </SelectTrigger>
+            <SelectContent>
+              {accounts.filter(a => a.type !== "investment").map(a => (
+                <SelectItem key={a.id} value={a.id}>
+                  {a.name} · {formatCurrency(Number(a.current_balance))}
+                </SelectItem>
+              ))}
+            </SelectContent>
+          </Select>
+
+          <div>
+            <Label className="text-xs text-muted-foreground mb-1.5 block">Valor do aporte</Label>
+            <Input
+              placeholder="0,00"
+              inputMode="numeric"
+              value={aporteCents > 0 ? (aporteCents / 100).toLocaleString("pt-BR", { minimumFractionDigits: 2, maximumFractionDigits: 2 }) : ""}
+              onKeyDown={(e) => {
+                if (e.key === "Backspace") {
+                  e.preventDefault();
+                  setAporteCents(prev => Math.floor(prev / 10));
+                } else if (e.key >= "0" && e.key <= "9") {
+                  e.preventDefault();
+                  setAporteCents(prev => {
+                    const next = prev * 10 + parseInt(e.key);
+                    return next > 99999999 ? prev : next;
+                  });
+                }
+              }}
+              readOnly
+              className="bg-muted/30 border-border/20 h-11 rounded-xl text-lg font-bold text-center"
+            />
+          </div>
+
+          <Button
+            onClick={handleAporte}
+            disabled={aporteCents === 0 || !aporteFromId || aporteSubmitting}
+            className="w-full h-11 rounded-xl text-sm font-semibold bg-primary/15 text-primary hover:bg-primary/25 border border-primary/30"
+          >
+            {aporteSubmitting ? "Processando..." : `Investir R$ ${(aporteCents / 100).toLocaleString("pt-BR", { minimumFractionDigits: 2 })}`}
           </Button>
         </div>
       </ModalOverlay>
