@@ -219,6 +219,51 @@ const GestaoFinanceira = () => {
     }
   };
 
+  const openAporte = (accId: string, accName: string) => {
+    setAporteTargetId(accId);
+    setAporteTargetName(accName);
+    setAporteCents(0);
+    const bankAccs = accounts.filter(a => a.type !== "investment");
+    const defaultAcc = bankAccs.find(a => a.is_default) || bankAccs[0];
+    setAporteFromId(defaultAcc?.id || "");
+    setShowAporteModal(true);
+  };
+
+  const handleAporte = async () => {
+    if (!user || !aporteFromId || !aporteTargetId || aporteCents === 0) return;
+    setAporteSubmitting(true);
+    try {
+      const fromAcc = accounts.find(a => a.id === aporteFromId);
+      const realAmount = aporteCents / 100;
+      if (fromAcc && realAmount > Number(fromAcc.current_balance)) {
+        toast.error("Saldo insuficiente na conta de origem");
+        setAporteSubmitting(false);
+        return;
+      }
+      const { error } = await supabase.from("transactions").insert({
+        user_id: user.id,
+        name: `Aporte: ${fromAcc?.name} → ${aporteTargetName}`,
+        type: "investimento",
+        amount: realAmount,
+        category: "Investimentos",
+        date: new Date().toISOString().split("T")[0],
+        status: "pago",
+        account_id: aporteFromId,
+        to_account_id: aporteTargetId,
+        payment_method: "conta",
+        recurrence_type: "unica",
+      } as any);
+      if (error) throw error;
+      toast.success("Aporte realizado! 💰");
+      setShowAporteModal(false);
+      fetchData();
+    } catch (err: any) {
+      toast.error(err.message || "Erro ao realizar aporte");
+    } finally {
+      setAporteSubmitting(false);
+    }
+  };
+
   return (
     <div className="pt-2 pb-8 space-y-8">
       {/* Page Header */}
