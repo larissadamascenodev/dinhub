@@ -255,8 +255,8 @@ const GestaoFinanceira = () => {
         ) : (
           <>
             {/* Mobile carousel */}
-            <div className="overflow-hidden sm:hidden -mx-4 px-4" ref={accountsRef}>
-              <div className="flex gap-3">
+            <div className="overflow-hidden sm:hidden" ref={accountsRef}>
+              <div className="flex gap-3 pl-0 pr-4">
               {accounts.filter((a) => a.type !== "investment").map((acc, idx) => {
                 const typeInfo = ACCOUNT_TYPE_LABELS[acc.type] ?? ACCOUNT_TYPE_LABELS.checking;
                 const Icon = typeInfo.icon;
