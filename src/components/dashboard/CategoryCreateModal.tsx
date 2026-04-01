@@ -110,8 +110,11 @@ export default function CategoryCreateModal({
                         ? "bg-primary/15 ring-2 ring-primary/40 scale-110"
                         : "bg-muted/20 hover:bg-muted/40"
                     )}
+                    style={{
+                      filter: icon === ic ? "drop-shadow(0 0 6px hsl(var(--primary)))" : "drop-shadow(0 0 3px rgba(255,255,255,0.15))",
+                    }}
                   >
-                    {ic}
+                    <span style={{ filter: "saturate(1.3) brightness(1.2)" }}>{ic}</span>
                   </button>
                 ))}
               </div>
