@@ -132,12 +132,18 @@ const FaturaCartao = () => {
     getInvoiceItems(currentInvoice.id).then((data) => setItems(data as EnrichedItem[]));
   }, [currentInvoice]);
 
-  const handlePay = async () => {
+  const handlePay = async (details: import("@/components/fatura/InvoicePayModal").PaymentDetails) => {
     if (!currentInvoice || !payAccountId) return;
     setPaying(true);
     try {
-      await payInvoice(currentInvoice.id, payAccountId);
-      toast.success("Fatura paga! ✅");
+      await payInvoice(currentInvoice.id, payAccountId, {
+        mode: details.mode,
+        amount_paid: details.amountPaid,
+        installments: details.installments,
+        entry_amount: details.entryAmount,
+      });
+      const modeLabel = details.mode === "total" ? "integralmente" : details.mode === "minimo" ? "parcialmente" : "parcelada";
+      toast.success(`Fatura paga ${modeLabel}! ✅`);
       setShowPayModal(false);
       const updated = await getInvoices(cardId!);
       setInvoices(updated);
