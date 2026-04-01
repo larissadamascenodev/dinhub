@@ -24,6 +24,7 @@ import InvoiceAddChooserModal from "@/components/fatura/InvoiceAddChooserModal";
 import InvoiceUploadReviewModal, { type ExtractedItem } from "@/components/fatura/InvoiceUploadReviewModal";
 import NovaTransacaoModal, { type EditTransactionData } from "@/components/dashboard/NovaTransacaoModal";
 import MonthSelector from "@/components/dashboard/MonthSelector";
+import CreditCardEditModal from "@/components/fatura/CreditCardEditModal";
 
 export interface EnrichedItem {
   id: string;
