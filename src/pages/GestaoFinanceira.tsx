@@ -189,12 +189,18 @@ const GestaoFinanceira = () => {
   const handleAddAccount = async () => {
     if (!user || !newAccName.trim()) return;
     try {
-      await createAccount(user.id, {
+      const accPayload: any = {
         name: newAccName.trim(),
         type: newAccType,
         initial_balance: newAccBalance ? parseFloat(newAccBalance) : 0,
         color: newAccColor,
-      });
+      };
+      if (newAccType === "investment") {
+        accPayload.investment_type = newInvestmentType;
+        accPayload.rate_type = newInvestmentType === "poupanca" ? null : newRateType;
+        accPayload.annual_rate = newInvestmentType === "poupanca" ? null : (newAnnualRate ? parseFloat(newAnnualRate) : null);
+      }
+      await createAccount(user.id, accPayload);
       toast.success("Conta criada!");
       resetAddAccount();
       fetchData();
