@@ -130,10 +130,7 @@ export default function CategoryCreateModal({
                       "w-9 h-9 rounded-xl flex items-center justify-center transition-all",
                       color === c ? "ring-2 ring-offset-2 ring-offset-card scale-110" : "hover:scale-105"
                     )}
-                    style={{
-                      backgroundColor: c,
-                      ringColor: color === c ? c : undefined,
-                    }}
+                    style={{ backgroundColor: c }}
                   >
                     {color === c && <Check className="w-4 h-4 text-white drop-shadow-md" />}
                   </button>
