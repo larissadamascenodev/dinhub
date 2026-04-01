@@ -404,23 +404,15 @@ const FaturaCartao = () => {
         initial={{ opacity: 0, y: 12 }}
         animate={{ opacity: 1, y: 0 }}
         transition={{ delay: 0.05 }}
-        className="glass-card overflow-hidden relative"
+        className="relative rounded-2xl overflow-hidden border border-primary/20"
+        style={{ background: "linear-gradient(135deg, hsl(var(--card)) 0%, hsl(var(--background)) 100%)" }}
       >
-        {/* Glow */}
-        <div
-          className="absolute inset-0 opacity-[0.06] pointer-events-none"
-          style={{
-            background: `radial-gradient(ellipse at 30% -10%, ${cardColor} 0%, transparent 60%)`,
-          }}
-        />
-
         <div className="relative z-10 p-5 space-y-5">
           {/* Card identity row */}
           <div className="flex items-center justify-between">
             <div className="flex items-center gap-3">
-              <div className="relative">
-                <div className="w-10 h-7 rounded-md shadow-lg" style={{ backgroundColor: cardColor }} />
-                <div className="absolute inset-0 rounded-md bg-gradient-to-br from-white/20 to-transparent" />
+              <div className="w-8 h-8 rounded-xl bg-primary/15 flex items-center justify-center">
+                <CreditCard className="w-4 h-4 text-primary" />
               </div>
               <div>
                 <h1 className="text-sm font-bold text-foreground">{card?.name}</h1>
@@ -435,9 +427,9 @@ const FaturaCartao = () => {
                 <span className="text-[10px] font-bold text-primary">Paga</span>
               </div>
             ) : invoiceStatus === "closed" ? (
-              <div className="flex items-center gap-1.5 border border-[hsl(var(--warning))]/30 bg-[hsl(var(--warning))]/10 px-2.5 py-1 rounded-full">
-                <div className="w-1.5 h-1.5 rounded-full bg-[hsl(var(--warning))]" />
-                <span className="text-[10px] font-bold text-[hsl(var(--warning))]">Fechada</span>
+              <div className="flex items-center gap-1.5 border border-warning/30 bg-warning/10 px-2.5 py-1 rounded-full">
+                <div className="w-1.5 h-1.5 rounded-full bg-warning" />
+                <span className="text-[10px] font-bold text-warning">Fechada</span>
               </div>
             ) : invoiceStatus === "open" ? (
               <div className="flex items-center gap-1.5 border border-primary/20 bg-primary/5 px-2.5 py-1 rounded-full">
@@ -449,7 +441,7 @@ const FaturaCartao = () => {
 
           {/* Invoice value — centered */}
           <div className="text-center space-y-1">
-            <p className="text-xs text-muted-foreground font-medium uppercase tracking-wider">
+            <p className="text-[9px] text-muted-foreground font-medium uppercase tracking-widest">
               Fatura de {MONTH_NAMES[selectedMonth - 1]}
             </p>
             <p className="text-3xl font-extrabold text-foreground tracking-tight">
@@ -467,40 +459,40 @@ const FaturaCartao = () => {
 
           {/* Dates chips */}
           <div className="flex items-center gap-3">
-            <div className="flex items-center gap-1.5 text-[11px] text-muted-foreground bg-muted/20 px-3 py-1.5 rounded-lg flex-1 justify-center">
+            <div className="flex items-center gap-1.5 text-[11px] text-muted-foreground bg-muted/20 px-3 py-1.5 rounded-lg flex-1 justify-center border border-border/10">
               <CalendarClock className="w-3.5 h-3.5 text-primary/60" />
               <span>Fecha dia <span className="font-semibold text-foreground">{card?.closing_day}</span></span>
             </div>
-            <div className="flex items-center gap-1.5 text-[11px] text-muted-foreground bg-muted/20 px-3 py-1.5 rounded-lg flex-1 justify-center">
+            <div className="flex items-center gap-1.5 text-[11px] text-muted-foreground bg-muted/20 px-3 py-1.5 rounded-lg flex-1 justify-center border border-border/10">
               <CalendarCheck className="w-3.5 h-3.5 text-primary/60" />
               <span>Vence dia <span className="font-semibold text-foreground">{card?.due_day}</span></span>
             </div>
           </div>
 
           {/* Divider */}
-          <div className="h-px bg-border/20" />
+          <div className="h-px bg-border/10" />
 
           {/* Limit section */}
           <div className="space-y-3">
             <div className="flex items-center justify-between">
               <div className="flex items-center gap-2">
-                <Shield className="w-3.5 h-3.5 text-primary/60" />
-                <span className="text-xs font-bold text-foreground">Limite</span>
+                <div className={cn("w-1.5 h-1.5 rounded-full", usedPct > 80 ? "bg-destructive" : "bg-primary")} />
+                <span className="text-[9px] text-muted-foreground uppercase tracking-widest font-medium">Limite</span>
               </div>
-              <span className="text-xs font-bold text-primary">
+              <span className={cn("text-[10px] font-bold", usedPct > 80 ? "text-destructive" : "text-primary")}>
                 {usedPct.toFixed(0)}% utilizado
               </span>
             </div>
 
             {/* Progress bar */}
-            <div className="w-full h-2.5 rounded-full bg-muted/40 overflow-hidden">
+            <div className="w-full h-1.5 rounded-full bg-muted/30 overflow-hidden">
               <motion.div
                 initial={{ width: 0 }}
                 animate={{ width: `${usedPct}%` }}
                 transition={{ duration: 0.8, ease: "easeOut" }}
                 className={cn(
                   "h-full rounded-full",
-                  "bg-primary"
+                  usedPct > 80 ? "bg-destructive/60" : "bg-primary/40"
                 )}
               />
             </div>
@@ -525,7 +517,7 @@ const FaturaCartao = () => {
           {/* Pay button */}
           {currentInvoice && outstanding > 0 && (
             <>
-              <div className="h-px bg-border/20" />
+              <div className="h-px bg-border/10" />
               {paidAmount > 0 && (
                 <div className="flex items-center justify-between text-[11px] px-1">
                   <span className="text-muted-foreground">Já pago</span>
@@ -534,7 +526,7 @@ const FaturaCartao = () => {
               )}
               <Button
                 onClick={() => setShowPayModal(true)}
-                className="w-full h-11 rounded-xl text-xs font-bold bg-primary/15 text-primary border border-primary/30 hover:bg-primary/25 backdrop-blur-md"
+                className="w-full h-11 rounded-xl text-xs font-bold bg-primary/15 text-primary border border-primary/30 hover:bg-primary/25"
               >
                 <Wallet className="w-3.5 h-3.5 mr-1.5" />
                 Pagar Fatura · {formatCurrency(outstanding)}
