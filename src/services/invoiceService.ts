@@ -71,9 +71,20 @@ export async function getInvoiceItems(invoiceId: string) {
   }));
 }
 
-export async function payInvoice(invoiceId: string, accountId: string) {
+export async function payInvoice(
+  invoiceId: string,
+  accountId: string,
+  options?: { mode?: string; amount_paid?: number; installments?: number; entry_amount?: number }
+) {
   const { data, error } = await supabase.functions.invoke("pay-invoice", {
-    body: { invoice_id: invoiceId, account_id: accountId },
+    body: {
+      invoice_id: invoiceId,
+      account_id: accountId,
+      mode: options?.mode ?? "total",
+      amount_paid: options?.amount_paid,
+      installments: options?.installments,
+      entry_amount: options?.entry_amount,
+    },
   });
 
   if (error) throw error;

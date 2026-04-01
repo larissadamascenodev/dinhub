@@ -1,8 +1,18 @@
+import { useState, useEffect, useMemo } from "react";
 import { AnimatePresence, motion } from "framer-motion";
-import { X, CreditCard, CheckCircle2 } from "lucide-react";
+import { X, CreditCard, CheckCircle2, Banknote, CalendarClock, DollarSign, Percent } from "lucide-react";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { formatCurrency, type AccountInfo } from "@/pages/FaturaCartao";
 import { cn } from "@/lib/utils";
+
+export type PaymentMode = "total" | "minimo" | "parcelado";
+
+export interface PaymentDetails {
+  mode: PaymentMode;
+  amountPaid?: number;
+  installments?: number;
+  entryAmount?: number;
+}
 
 interface Props {
   open: boolean;
@@ -11,13 +21,74 @@ interface Props {
   accounts: AccountInfo[];
   payAccountId: string;
   setPayAccountId: (id: string) => void;
-  onConfirm: () => void;
+  onConfirm: (details: PaymentDetails) => void;
   paying: boolean;
 }
+
+const modeOptions: { value: PaymentMode; label: string; icon: React.ReactNode; desc: string }[] = [
+  { value: "total", label: "Valor Total", icon: <CheckCircle2 className="w-4 h-4" />, desc: "Pagar fatura inteira" },
+  { value: "minimo", label: "Valor Mínimo", icon: <Banknote className="w-4 h-4" />, desc: "Pagar parcialmente" },
+  { value: "parcelado", label: "Parcelado", icon: <CalendarClock className="w-4 h-4" />, desc: "Dividir em parcelas" },
+];
 
 export default function InvoicePayModal({
   open, onClose, total, accounts, payAccountId, setPayAccountId, onConfirm, paying,
 }: Props) {
+  const [mode, setMode] = useState<PaymentMode>("total");
+  const [minAmount, setMinAmount] = useState("");
+  const [entryAmount, setEntryAmount] = useState("");
+  const [installments, setInstallments] = useState("2");
+
+  // Reset state when modal opens
+  useEffect(() => {
+    if (open) {
+      setMode("total");
+      setMinAmount("");
+      setEntryAmount("");
+      setInstallments("2");
+    }
+  }, [open]);
+
+  const parsedMinAmount = parseFloat(minAmount.replace(",", ".")) || 0;
+  const parsedEntryAmount = parseFloat(entryAmount.replace(",", ".")) || 0;
+  const parsedInstallments = parseInt(installments) || 2;
+
+  const remainder = mode === "minimo" ? Math.max(0, total - parsedMinAmount) : 0;
+
+  const installmentCalc = useMemo(() => {
+    if (mode !== "parcelado") return null;
+    const remaining = total - parsedEntryAmount;
+    if (remaining <= 0 || parsedInstallments < 2) return null;
+    // Standard interest rate assumption: 1.99% per month (typical credit card)
+    const monthlyRate = 0.0199;
+    const installmentValue = remaining * (monthlyRate * Math.pow(1 + monthlyRate, parsedInstallments)) / (Math.pow(1 + monthlyRate, parsedInstallments) - 1);
+    const totalWithInterest = parsedEntryAmount + installmentValue * parsedInstallments;
+    const totalInterest = totalWithInterest - total;
+    return {
+      installmentValue,
+      totalWithInterest,
+      totalInterest,
+      effectiveRate: monthlyRate * 100,
+    };
+  }, [mode, total, parsedEntryAmount, parsedInstallments]);
+
+  const canConfirm = (() => {
+    if (!payAccountId) return false;
+    if (mode === "minimo") return parsedMinAmount > 0 && parsedMinAmount < total;
+    if (mode === "parcelado") return parsedInstallments >= 2 && parsedEntryAmount >= 0 && installmentCalc !== null;
+    return true;
+  })();
+
+  const handleConfirm = () => {
+    if (mode === "total") {
+      onConfirm({ mode: "total" });
+    } else if (mode === "minimo") {
+      onConfirm({ mode: "minimo", amountPaid: parsedMinAmount });
+    } else {
+      onConfirm({ mode: "parcelado", entryAmount: parsedEntryAmount, installments: parsedInstallments });
+    }
+  };
+
   return (
     <AnimatePresence>
       {open && (
@@ -34,7 +105,7 @@ export default function InvoicePayModal({
             exit={{ opacity: 0, scale: 0.95, y: 20 }}
             transition={{ type: "spring", damping: 25, stiffness: 350 }}
             onClick={(e) => e.stopPropagation()}
-            className="w-full max-w-sm rounded-2xl bg-card border border-border/30 shadow-2xl overflow-hidden"
+            className="w-full max-w-sm rounded-2xl bg-card border border-border/30 shadow-2xl overflow-hidden max-h-[90vh] overflow-y-auto"
           >
             <div className="p-5 space-y-4">
               {/* Header */}
@@ -57,9 +128,9 @@ export default function InvoicePayModal({
               </div>
 
               {/* Amount */}
-              <div className="text-center py-2">
+              <div className="text-center py-1">
                 <p className="text-[10px] text-muted-foreground uppercase tracking-wider font-bold mb-1">Valor da fatura</p>
-                <p className="text-3xl font-extrabold text-primary tracking-tight">{formatCurrency(total)}</p>
+                <p className="text-2xl font-extrabold text-primary tracking-tight">{formatCurrency(total)}</p>
               </div>
 
               {/* Account selector */}
@@ -81,6 +152,163 @@ export default function InvoicePayModal({
                 </Select>
               </div>
 
+              {/* Payment mode selector */}
+              <div className="space-y-1.5">
+                <label className="text-[10px] text-muted-foreground uppercase tracking-wider font-bold">
+                  Forma de pagamento
+                </label>
+                <div className="grid grid-cols-3 gap-1.5">
+                  {modeOptions.map((opt) => (
+                    <button
+                      key={opt.value}
+                      type="button"
+                      onClick={() => setMode(opt.value)}
+                      className={cn(
+                        "flex flex-col items-center gap-1 p-2.5 rounded-xl border transition-all text-center",
+                        mode === opt.value
+                          ? "bg-primary/15 border-primary/30 text-primary shadow-[0_0_10px_-3px_hsl(var(--primary)/0.3)]"
+                          : "bg-muted/10 border-border/20 text-muted-foreground hover:bg-muted/20"
+                      )}
+                    >
+                      {opt.icon}
+                      <span className="text-[10px] font-bold leading-tight">{opt.label}</span>
+                    </button>
+                  ))}
+                </div>
+              </div>
+
+              {/* Minimum payment fields */}
+              <AnimatePresence mode="wait">
+                {mode === "minimo" && (
+                  <motion.div
+                    key="minimo"
+                    initial={{ opacity: 0, height: 0 }}
+                    animate={{ opacity: 1, height: "auto" }}
+                    exit={{ opacity: 0, height: 0 }}
+                    transition={{ duration: 0.2 }}
+                    className="space-y-2 overflow-hidden"
+                  >
+                    <div className="space-y-1.5">
+                      <label className="text-[10px] text-muted-foreground uppercase tracking-wider font-bold flex items-center gap-1">
+                        <DollarSign className="w-3 h-3" /> Quanto deseja pagar?
+                      </label>
+                      <div className="relative">
+                        <span className="absolute left-3 top-1/2 -translate-y-1/2 text-xs text-muted-foreground">R$</span>
+                        <input
+                          type="text"
+                          inputMode="decimal"
+                          value={minAmount}
+                          onChange={(e) => setMinAmount(e.target.value.replace(/[^0-9.,]/g, ""))}
+                          placeholder="0,00"
+                          className="w-full h-11 rounded-xl bg-muted/20 border border-border/20 pl-9 pr-3 text-sm text-foreground placeholder:text-muted-foreground/50 focus:outline-none focus:ring-2 focus:ring-primary/30"
+                        />
+                      </div>
+                    </div>
+                    {parsedMinAmount > 0 && parsedMinAmount < total && (
+                      <motion.div
+                        initial={{ opacity: 0 }}
+                        animate={{ opacity: 1 }}
+                        className="bg-destructive/10 border border-destructive/20 rounded-xl p-3 space-y-1"
+                      >
+                        <p className="text-[10px] text-destructive font-bold uppercase tracking-wider">Restante para próxima fatura</p>
+                        <p className="text-sm font-bold text-destructive">{formatCurrency(remainder)}</p>
+                        <p className="text-[9px] text-muted-foreground">
+                          O valor restante será transferido para a fatura do mês seguinte
+                        </p>
+                      </motion.div>
+                    )}
+                    {parsedMinAmount >= total && parsedMinAmount > 0 && (
+                      <p className="text-[10px] text-destructive font-medium">
+                        Valor deve ser menor que o total da fatura
+                      </p>
+                    )}
+                  </motion.div>
+                )}
+
+                {mode === "parcelado" && (
+                  <motion.div
+                    key="parcelado"
+                    initial={{ opacity: 0, height: 0 }}
+                    animate={{ opacity: 1, height: "auto" }}
+                    exit={{ opacity: 0, height: 0 }}
+                    transition={{ duration: 0.2 }}
+                    className="space-y-3 overflow-hidden"
+                  >
+                    {/* Entry amount */}
+                    <div className="space-y-1.5">
+                      <label className="text-[10px] text-muted-foreground uppercase tracking-wider font-bold flex items-center gap-1">
+                        <DollarSign className="w-3 h-3" /> Valor de entrada
+                      </label>
+                      <div className="relative">
+                        <span className="absolute left-3 top-1/2 -translate-y-1/2 text-xs text-muted-foreground">R$</span>
+                        <input
+                          type="text"
+                          inputMode="decimal"
+                          value={entryAmount}
+                          onChange={(e) => setEntryAmount(e.target.value.replace(/[^0-9.,]/g, ""))}
+                          placeholder="0,00 (opcional)"
+                          className="w-full h-11 rounded-xl bg-muted/20 border border-border/20 pl-9 pr-3 text-sm text-foreground placeholder:text-muted-foreground/50 focus:outline-none focus:ring-2 focus:ring-primary/30"
+                        />
+                      </div>
+                    </div>
+
+                    {/* Number of installments */}
+                    <div className="space-y-1.5">
+                      <label className="text-[10px] text-muted-foreground uppercase tracking-wider font-bold flex items-center gap-1">
+                        <CalendarClock className="w-3 h-3" /> Quantidade de parcelas
+                      </label>
+                      <Select value={installments} onValueChange={setInstallments}>
+                        <SelectTrigger className="bg-muted/20 border-border/20 h-11 rounded-xl text-sm">
+                          <SelectValue />
+                        </SelectTrigger>
+                        <SelectContent className="z-[70]">
+                          {Array.from({ length: 11 }, (_, i) => i + 2).map((n) => (
+                            <SelectItem key={n} value={String(n)}>
+                              {n}x parcelas
+                            </SelectItem>
+                          ))}
+                        </SelectContent>
+                      </Select>
+                    </div>
+
+                    {/* Calculation summary */}
+                    {installmentCalc && (
+                      <motion.div
+                        initial={{ opacity: 0 }}
+                        animate={{ opacity: 1 }}
+                        className="bg-primary/5 border border-primary/15 rounded-xl p-3 space-y-2"
+                      >
+                        <div className="flex items-center justify-between">
+                          <span className="text-[10px] text-muted-foreground font-bold uppercase">Valor da parcela</span>
+                          <span className="text-sm font-bold text-foreground">
+                            {parsedInstallments}x de {formatCurrency(installmentCalc.installmentValue)}
+                          </span>
+                        </div>
+                        {parsedEntryAmount > 0 && (
+                          <div className="flex items-center justify-between">
+                            <span className="text-[10px] text-muted-foreground font-bold uppercase">Entrada</span>
+                            <span className="text-sm font-bold text-foreground">{formatCurrency(parsedEntryAmount)}</span>
+                          </div>
+                        )}
+                        <div className="h-px bg-border/20" />
+                        <div className="flex items-center justify-between">
+                          <span className="text-[10px] text-muted-foreground font-bold uppercase">Total com juros</span>
+                          <span className="text-sm font-bold text-foreground">{formatCurrency(installmentCalc.totalWithInterest)}</span>
+                        </div>
+                        <div className="flex items-center justify-between">
+                          <span className="text-[10px] text-destructive font-bold uppercase flex items-center gap-1">
+                            <Percent className="w-3 h-3" /> Juros ({installmentCalc.effectiveRate.toFixed(2)}% a.m.)
+                          </span>
+                          <span className="text-sm font-bold text-destructive">
+                            + {formatCurrency(installmentCalc.totalInterest)}
+                          </span>
+                        </div>
+                      </motion.div>
+                    )}
+                  </motion.div>
+                )}
+              </AnimatePresence>
+
               {/* Actions */}
               <div className="flex gap-2 pt-1">
                 <button
@@ -92,11 +320,11 @@ export default function InvoicePayModal({
                 </button>
                 <button
                   type="button"
-                  onClick={onConfirm}
-                  disabled={paying || !payAccountId}
+                  onClick={handleConfirm}
+                  disabled={paying || !canConfirm}
                   className={cn(
                     "flex-1 h-11 rounded-xl text-xs font-bold transition-all backdrop-blur-md flex items-center justify-center gap-1.5",
-                    payAccountId
+                    canConfirm
                       ? "bg-primary/20 text-primary border border-primary/30 hover:bg-primary/30 shadow-[0_0_12px_-3px_hsl(var(--primary)/0.4)]"
                       : "bg-muted/20 text-muted-foreground border border-border/10 cursor-not-allowed"
                   )}
