@@ -26,8 +26,8 @@ import {
   getCreditCards,
   createCreditCard,
 } from "@/services/transactionService";
-
-interface Props {
+import { getCustomCategories, createCustomCategory, type CustomCategory } from "@/services/categoryService";
+import CategoryCreateModal from "@/components/dashboard/CategoryCreateModal";
   open: boolean;
   onClose: () => void;
   onSuccess: () => void;
