@@ -117,6 +117,9 @@ const GestaoFinanceira = () => {
   const [creditCards, setCreditCards] = useState<CreditCardItem[]>([]);
   const [loading, setLoading] = useState(true);
 
+  const [accountsRef] = useEmblaCarousel({ loop: false, align: "start", dragFree: true, containScroll: "trimSnaps" });
+  const [cardsRef] = useEmblaCarousel({ loop: false, align: "start", dragFree: true, containScroll: "trimSnaps" });
+
   // Add account state
   const [showAddAccount, setShowAddAccount] = useState(false);
   const [newAccName, setNewAccName] = useState("");
