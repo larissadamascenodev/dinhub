@@ -74,7 +74,7 @@ export default function InvoiceAddChooserModal({ open, onClose, onManual, onImag
           onClick={(e) => e.stopPropagation()}
           className="w-full sm:max-w-md rounded-t-2xl sm:rounded-2xl bg-card border border-border/20 shadow-2xl"
         >
-          <div className="p-5 space-y-4">
+          <div className="p-5 pb-24 sm:pb-5 space-y-4">
             {/* Header */}
             <div className="flex items-center justify-between">
               <h2 className="text-sm font-bold text-foreground">Adicionar Lançamento</h2>
