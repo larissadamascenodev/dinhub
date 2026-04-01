@@ -656,6 +656,7 @@ const FaturaCartao = () => {
         />
       )}
     </div>
+  );
 };
 
 export default FaturaCartao;
