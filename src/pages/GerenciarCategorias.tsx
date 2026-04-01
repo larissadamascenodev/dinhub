@@ -325,7 +325,7 @@ export default function GerenciarCategorias() {
         onClose={() => setEditingDefault(null)}
         onSave={handleSaveEditedDefault}
         initialName={editingDefault ?? ""}
-        initialIcon="📋"
+        initialIcon="file-text"
         initialColor="#8b5cf6"
         title="Editar Categoria Padrão"
       />
