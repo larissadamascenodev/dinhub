@@ -15,6 +15,7 @@ import InvoiceCategoryBreakdown from "@/components/fatura/InvoiceCategoryBreakdo
 import InvoiceTransactionList from "@/components/fatura/InvoiceTransactionList";
 import InvoicePayModal from "@/components/fatura/InvoicePayModal";
 import InvoiceHistoryChart from "@/components/fatura/InvoiceHistoryChart";
+import InvoiceAddChooserModal from "@/components/fatura/InvoiceAddChooserModal";
 import MonthSelector from "@/components/dashboard/MonthSelector";
 
 export interface EnrichedItem {
@@ -83,6 +84,7 @@ const FaturaCartao = () => {
   const [loading, setLoading] = useState(true);
   const [paying, setPaying] = useState(false);
   const [showPayModal, setShowPayModal] = useState(false);
+  const [showAddChooser, setShowAddChooser] = useState(false);
   const [payAccountId, setPayAccountId] = useState("");
 
   const currentInvoice = useMemo(
@@ -250,7 +252,7 @@ const FaturaCartao = () => {
           variant="outline"
           size="sm"
           className="border-primary/30 bg-primary/10 text-primary hover:bg-primary/20 rounded-xl text-[10px] sm:text-xs font-semibold gap-1 sm:gap-1.5 shrink-0 ml-2 px-2.5 sm:px-3 h-7 sm:h-8"
-          onClick={() => navigate(`/transacoes`)}
+          onClick={() => setShowAddChooser(true)}
         >
           <Plus className="w-3 h-3 sm:w-3.5 sm:h-3.5" />
           Adicionar lançamento
@@ -432,6 +434,22 @@ const FaturaCartao = () => {
         setPayAccountId={setPayAccountId}
         onConfirm={handlePay}
         paying={paying}
+      />
+
+      {/* Add Chooser Modal */}
+      <InvoiceAddChooserModal
+        open={showAddChooser}
+        onClose={() => setShowAddChooser(false)}
+        onManual={() => navigate(`/transacoes`)}
+        onImage={(file) => {
+          toast.info("Processamento de imagem em breve!");
+        }}
+        onPdf={(file) => {
+          toast.info("Processamento de PDF em breve!");
+        }}
+        onCsv={(file) => {
+          toast.info("Processamento de CSV em breve!");
+        }}
       />
     </div>
   );
