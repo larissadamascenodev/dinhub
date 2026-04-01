@@ -1,4 +1,5 @@
-import { useState, useEffect } from "react";
+import { useState, useEffect, useCallback } from "react";
+import useEmblaCarousel from "embla-carousel-react";
 import { motion, AnimatePresence } from "framer-motion";
 import { CreditCard, Plus, X, Landmark, Banknote, PiggyBank, TrendingUp, ChevronRight, Briefcase } from "lucide-react";
 import { useNavigate } from "react-router-dom";
@@ -115,6 +116,9 @@ const GestaoFinanceira = () => {
   const [accounts, setAccounts] = useState<Account[]>([]);
   const [creditCards, setCreditCards] = useState<CreditCardItem[]>([]);
   const [loading, setLoading] = useState(true);
+
+  const [accountsRef] = useEmblaCarousel({ loop: false, align: "start", dragFree: true, containScroll: "trimSnaps" });
+  const [cardsRef] = useEmblaCarousel({ loop: false, align: "start", dragFree: true, containScroll: "trimSnaps" });
 
   // Add account state
   const [showAddAccount, setShowAddAccount] = useState(false);
@@ -251,7 +255,8 @@ const GestaoFinanceira = () => {
         ) : (
           <>
             {/* Mobile carousel */}
-            <div className="flex gap-3 overflow-x-auto pb-2 snap-x snap-mandatory scrollbar-hide sm:hidden -mx-4 px-4">
+            <div className="overflow-hidden sm:hidden -mx-4 px-4" ref={accountsRef}>
+              <div className="flex gap-3">
               {accounts.filter((a) => a.type !== "investment").map((acc, idx) => {
                 const typeInfo = ACCOUNT_TYPE_LABELS[acc.type] ?? ACCOUNT_TYPE_LABELS.checking;
                 const Icon = typeInfo.icon;
@@ -321,6 +326,7 @@ const GestaoFinanceira = () => {
                 </div>
                 <span className="text-xs text-primary/70 font-medium">Adicionar conta</span>
               </motion.button>
+              </div>
             </div>
 
             {/* Desktop grid */}
@@ -427,7 +433,8 @@ const GestaoFinanceira = () => {
         ) : (
           <>
             {/* Mobile carousel */}
-            <div className="flex gap-3 overflow-x-auto pb-2 snap-x snap-mandatory scrollbar-hide sm:hidden -mx-4 px-4">
+            <div className="overflow-hidden sm:hidden -mx-4 px-4" ref={cardsRef}>
+              <div className="flex gap-3">
               {creditCards.map((card, idx) => {
                 const usedPct = card.limit > 0 ? Math.min((Number(card.used_limit) / Number(card.limit)) * 100, 100) : 0;
                 const available = Math.max(Number(card.limit) - Number(card.used_limit), 0);
@@ -495,6 +502,7 @@ const GestaoFinanceira = () => {
                 </div>
                 <span className="text-xs text-primary/70 font-medium">Adicionar cartão</span>
               </motion.button>
+              </div>
             </div>
 
             {/* Desktop grid */}
