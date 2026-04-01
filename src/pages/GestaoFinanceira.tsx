@@ -938,6 +938,62 @@ const GestaoFinanceira = () => {
           </Button>
         </div>
       </ModalOverlay>
+
+      {/* ═══════ MODAL: Aporte ═══════ */}
+      <ModalOverlay open={showAporteModal} onClose={() => setShowAporteModal(false)}>
+        <div className="space-y-4">
+          <div className="flex items-center justify-between">
+            <p className="text-base font-bold text-foreground">Aporte em {aporteTargetName}</p>
+            <button onClick={() => setShowAporteModal(false)} className="w-8 h-8 rounded-lg bg-muted/50 flex items-center justify-center hover:bg-muted transition-colors">
+              <X className="w-4 h-4 text-muted-foreground" />
+            </button>
+          </div>
+
+          <Select value={aporteFromId} onValueChange={setAporteFromId}>
+            <SelectTrigger className="bg-muted/30 border-border/20 h-11 rounded-xl">
+              <SelectValue placeholder="Conta de origem" />
+            </SelectTrigger>
+            <SelectContent>
+              {accounts.filter(a => a.type !== "investment").map(a => (
+                <SelectItem key={a.id} value={a.id}>
+                  {a.name} · {formatCurrency(Number(a.current_balance))}
+                </SelectItem>
+              ))}
+            </SelectContent>
+          </Select>
+
+          <div>
+            <Label className="text-xs text-muted-foreground mb-1.5 block">Valor do aporte</Label>
+            <Input
+              placeholder="0,00"
+              inputMode="numeric"
+              value={aporteCents > 0 ? (aporteCents / 100).toLocaleString("pt-BR", { minimumFractionDigits: 2, maximumFractionDigits: 2 }) : ""}
+              onKeyDown={(e) => {
+                if (e.key === "Backspace") {
+                  e.preventDefault();
+                  setAporteCents(prev => Math.floor(prev / 10));
+                } else if (e.key >= "0" && e.key <= "9") {
+                  e.preventDefault();
+                  setAporteCents(prev => {
+                    const next = prev * 10 + parseInt(e.key);
+                    return next > 99999999 ? prev : next;
+                  });
+                }
+              }}
+              readOnly
+              className="bg-muted/30 border-border/20 h-11 rounded-xl text-lg font-bold text-center"
+            />
+          </div>
+
+          <Button
+            onClick={handleAporte}
+            disabled={aporteCents === 0 || !aporteFromId || aporteSubmitting}
+            className="w-full h-11 rounded-xl text-sm font-semibold bg-primary/15 text-primary hover:bg-primary/25 border border-primary/30"
+          >
+            {aporteSubmitting ? "Processando..." : `Investir R$ ${(aporteCents / 100).toLocaleString("pt-BR", { minimumFractionDigits: 2 })}`}
+          </Button>
+        </div>
+      </ModalOverlay>
     </div>
   );
 };
