@@ -356,6 +356,7 @@ const Transacoes = () => {
       setTransactions([...regularTxs, ...faturaEntries, ...regularRecurring]);
     }
     setAccounts(accRes as AccountRow[]);
+    setCreditCards(creditCards as any[]);
     setLoading(false);
   }, [user, selectedMonth, selectedYear]);
 
