@@ -123,7 +123,7 @@ const GestaoFinanceira = () => {
   // Add account state
   const [showAddAccount, setShowAddAccount] = useState(false);
   const [newAccName, setNewAccName] = useState("");
-  const [newAccType, setNewAccType] = useState<"checking" | "cash" | "savings">("checking");
+  const [newAccType, setNewAccType] = useState<"checking" | "cash" | "savings" | "investment">("checking");
   const [newAccBalance, setNewAccBalance] = useState("");
   const [newAccColor, setNewAccColor] = useState("violet");
 
