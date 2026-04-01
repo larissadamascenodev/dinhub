@@ -209,7 +209,7 @@ const ContaDetalhe = () => {
       <motion.div
         initial={{ opacity: 0, y: 12 }}
         animate={{ opacity: 1, y: 0 }}
-        className="relative rounded-2xl overflow-hidden border border-primary/20"
+        className="relative rounded-2xl overflow-hidden border border-border/10"
         style={{ background: "linear-gradient(135deg, hsl(var(--card)) 0%, hsl(var(--background)) 100%)" }}
       >
         <div className="p-5 space-y-4">
@@ -260,7 +260,7 @@ const ContaDetalhe = () => {
 
         <div className="grid grid-cols-2 gap-3">
           <div
-            className="rounded-2xl border border-primary/20 p-4"
+            className="rounded-2xl border border-border/10 p-4"
             style={{ background: "linear-gradient(135deg, hsl(var(--card)) 0%, hsl(var(--background)) 100%)" }}
           >
             <div className="flex items-center gap-2 mb-2">
@@ -272,7 +272,7 @@ const ContaDetalhe = () => {
             <p className="text-lg font-extrabold text-primary tabular-nums">{formatCurrency(totalReceitas)}</p>
           </div>
           <div
-            className="rounded-2xl border border-primary/20 p-4"
+            className="rounded-2xl border border-border/10 p-4"
             style={{ background: "linear-gradient(135deg, hsl(var(--card)) 0%, hsl(var(--background)) 100%)" }}
           >
             <div className="flex items-center gap-2 mb-2">
@@ -297,7 +297,7 @@ const ContaDetalhe = () => {
             Gastos por categoria
           </h2>
           <div
-            className="rounded-2xl border border-primary/20 overflow-hidden"
+            className="rounded-2xl border border-border/10 overflow-hidden"
             style={{ background: "linear-gradient(135deg, hsl(var(--card)) 0%, hsl(var(--background)) 100%)" }}
           >
             {categoryData.map((cat, idx) => {
@@ -338,14 +338,14 @@ const ContaDetalhe = () => {
         </h2>
         {transactions.length === 0 ? (
           <div
-            className="rounded-2xl border border-primary/20 p-8 text-center"
+            className="rounded-2xl border border-border/10 p-8 text-center"
             style={{ background: "linear-gradient(135deg, hsl(var(--card)) 0%, hsl(var(--background)) 100%)" }}
           >
             <p className="text-sm text-muted-foreground">Nenhuma transação neste mês</p>
           </div>
         ) : (
           <div
-            className="rounded-2xl border border-primary/20 overflow-hidden"
+            className="rounded-2xl border border-border/10 overflow-hidden"
             style={{ background: "linear-gradient(135deg, hsl(var(--card)) 0%, hsl(var(--background)) 100%)" }}
           >
             {transactions.map((tx, idx) => (
