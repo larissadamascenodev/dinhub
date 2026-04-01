@@ -268,8 +268,13 @@ export default function GerenciarCategorias() {
                 exit={{ opacity: 0, x: -40 }}
                 className="flex items-center gap-3 px-3 py-2.5 rounded-xl bg-muted/5"
               >
-                <div className="w-9 h-9 rounded-xl flex items-center justify-center text-lg shrink-0 bg-muted/10 border border-border/10">
-                  <span style={{ filter: "saturate(1.3) brightness(1.2)" }}>📋</span>
+                <div className="w-9 h-9 rounded-xl flex items-center justify-center shrink-0 bg-primary/10 border border-primary/20"
+                  style={{ filter: "drop-shadow(0 0 6px hsl(var(--primary) / 0.3))" }}
+                >
+                  {(() => {
+                    const IconComp = DEFAULT_CATEGORY_MAP[cat]?.icon || Tag;
+                    return <IconComp className="w-4 h-4 text-primary" />;
+                  })()}
                 </div>
                 <span className="flex-1 text-sm text-muted-foreground">{cat}</span>
                 <button
