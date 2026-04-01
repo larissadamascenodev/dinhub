@@ -123,7 +123,7 @@ const GestaoFinanceira = () => {
   // Add account state
   const [showAddAccount, setShowAddAccount] = useState(false);
   const [newAccName, setNewAccName] = useState("");
-  const [newAccType, setNewAccType] = useState<"checking" | "cash" | "savings">("checking");
+  const [newAccType, setNewAccType] = useState<"checking" | "cash" | "savings" | "investment">("checking");
   const [newAccBalance, setNewAccBalance] = useState("");
   const [newAccColor, setNewAccColor] = useState("violet");
 
@@ -700,29 +700,35 @@ const GestaoFinanceira = () => {
       <ModalOverlay open={showAddAccount} onClose={resetAddAccount}>
         <div className="space-y-4">
           <div className="flex items-center justify-between">
-            <p className="text-base font-bold text-foreground">Nova Conta</p>
+            <p className="text-base font-bold text-foreground">
+              {newAccType === "investment" ? "Nova Carteira de Investimento" : "Nova Conta"}
+            </p>
             <button onClick={resetAddAccount} className="w-8 h-8 rounded-lg bg-muted/50 flex items-center justify-center hover:bg-muted transition-colors">
               <X className="w-4 h-4 text-muted-foreground" />
             </button>
           </div>
           <Input
-            placeholder="Nome do banco (ex: Nubank)"
+            placeholder={newAccType === "investment" ? "Nome da carteira (ex: Renda Fixa)" : "Nome do banco (ex: Nubank)"}
             value={newAccName}
             onChange={(e) => setNewAccName(e.target.value)}
             className="bg-muted/30 border-border/20 h-11 rounded-xl"
           />
-          <Select value={newAccType} onValueChange={(v) => setNewAccType(v as any)}>
-            <SelectTrigger className="bg-muted/30 border-border/20 h-11 rounded-xl">
-              <SelectValue placeholder="Tipo de conta" />
-            </SelectTrigger>
-            <SelectContent>
-              <SelectItem value="checking">Conta Corrente</SelectItem>
-              <SelectItem value="savings">Poupança</SelectItem>
-              <SelectItem value="cash">Dinheiro</SelectItem>
-            </SelectContent>
-          </Select>
+          {newAccType !== "investment" && (
+            <Select value={newAccType} onValueChange={(v) => setNewAccType(v as any)}>
+              <SelectTrigger className="bg-muted/30 border-border/20 h-11 rounded-xl">
+                <SelectValue placeholder="Tipo de conta" />
+              </SelectTrigger>
+              <SelectContent>
+                <SelectItem value="checking">Conta Corrente</SelectItem>
+                <SelectItem value="savings">Poupança</SelectItem>
+                <SelectItem value="cash">Dinheiro</SelectItem>
+              </SelectContent>
+            </Select>
+          )}
           <div>
-            <Label className="text-xs text-muted-foreground mb-1.5 block">Saldo inicial (opcional)</Label>
+            <Label className="text-xs text-muted-foreground mb-1.5 block">
+              {newAccType === "investment" ? "Valor investido (opcional)" : "Saldo inicial (opcional)"}
+            </Label>
             <Input
               placeholder="0,00"
               type="number"
@@ -749,7 +755,6 @@ const GestaoFinanceira = () => {
                   title={c.label}
                 />
               ))}
-              {/* Custom color picker */}
               <label
                 className={cn(
                   "w-8 h-8 rounded-full border-2 border-dashed border-muted-foreground/30 flex items-center justify-center cursor-pointer hover:border-muted-foreground/60 transition-all overflow-hidden",
@@ -772,7 +777,7 @@ const GestaoFinanceira = () => {
             disabled={!newAccName.trim()}
             className="w-full h-11 rounded-xl text-sm font-semibold bg-primary/15 text-primary hover:bg-primary/25 border-0"
           >
-            Criar Conta
+            {newAccType === "investment" ? "Criar Carteira" : "Criar Conta"}
           </Button>
         </div>
       </ModalOverlay>
