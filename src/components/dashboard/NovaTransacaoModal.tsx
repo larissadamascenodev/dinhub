@@ -265,12 +265,23 @@ const NovaTransacaoModal = ({ open, onClose, onSuccess, initialType = "despesa",
   const handleCreateCategory = (nameOverride?: string) => {
     const name = (nameOverride || newCategoryName).trim();
     if (!name) return;
-    if (!allCategories.includes(name)) {
-      setCustomCategories((prev) => [...prev, name]);
-    }
     setCategory(name);
     setNewCategoryName("");
     setShowCategoryModal(false);
+  };
+
+  const handleCreateCategoryFromModal = async (data: { name: string; icon: string; color: string }) => {
+    if (!user) return;
+    try {
+      const cat = await createCustomCategory(user.id, { ...data, type });
+      setCustomCategories((prev) => [...prev, cat]);
+      setCategory(data.name);
+      setShowCategoryCreate(false);
+    } catch {
+      // fallback: just use the name
+      setCategory(data.name);
+      setShowCategoryCreate(false);
+    }
   };
 
   const handleSubmit = async (e: React.FormEvent) => {
