@@ -199,9 +199,11 @@ const InvestimentoDetalhe = () => {
   const [modalSubmitting, setModalSubmitting] = useState(false);
 
   // Simulation
-  const [simPeriodIdx, setSimPeriodIdx] = useState(3); // default 1 year
+  const [simPeriodIdx, setSimPeriodIdx] = useState(1); // default 1 year
   const [customMonths, setCustomMonths] = useState("");
   const [showCustom, setShowCustom] = useState(false);
+  const [monthlyContribution, setMonthlyContribution] = useState(0);
+  const [contributionCents, setContributionCents] = useState(0);
 
   // Micro-interaction
   const [microMsg] = useState(() => MICRO_MESSAGES[Math.floor(Math.random() * MICRO_MESSAGES.length)]);
