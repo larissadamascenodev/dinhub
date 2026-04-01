@@ -33,7 +33,9 @@ const modeOptions: { value: PaymentMode; label: string; icon: React.ReactNode }[
 ];
 
 function parseAmount(val: string): number {
-  return parseFloat(val.replace(/\s/g, "").replace(",", ".")) || 0;
+  // Handle Brazilian format: "1.234,56" → "1234.56"
+  const cleaned = val.replace(/\s/g, "").replace(/\./g, "").replace(",", ".");
+  return parseFloat(cleaned) || 0;
 }
 
 export default function InvoicePayModal({
