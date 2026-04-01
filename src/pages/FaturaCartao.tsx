@@ -414,6 +414,8 @@ const FaturaCartao = () => {
       <InvoiceTransactionList
         items={items}
         installmentCount={items.filter((i) => i.total_installments > 1).length}
+        onEditItem={handleEditItem}
+        onDeleteItem={handleDeleteItem}
       />
 
 
