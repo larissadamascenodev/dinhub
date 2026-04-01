@@ -55,11 +55,17 @@ const RATE_TYPE_LABELS: Record<string, string> = {
 };
 
 const SIMULATION_PERIODS = [
-  { label: "1m", months: 1 },
-  { label: "3m", months: 3 },
   { label: "6m", months: 6 },
   { label: "1a", months: 12 },
   { label: "3a", months: 36 },
+  { label: "5a", months: 60 },
+];
+
+const RECURRING_MESSAGES = [
+  "Se você fizer isso todo mês… olha onde você chega 👀",
+  "Isso aqui vira uma bola de neve… do bem 😏",
+  "Disciplina > sorte. Sempre. 💪",
+  "Pequenos aportes, grandes resultados 🚀",
 ];
 
 const MICRO_MESSAGES = [
