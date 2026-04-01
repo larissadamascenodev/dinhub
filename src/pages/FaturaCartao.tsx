@@ -509,15 +509,21 @@ const FaturaCartao = () => {
           </div>
 
           {/* Pay button */}
-          {currentInvoice && !currentInvoice.is_paid && total > 0 && (
+          {currentInvoice && outstanding > 0 && (
             <>
               <div className="h-px bg-border/20" />
+              {paidAmount > 0 && (
+                <div className="flex items-center justify-between text-[11px] px-1">
+                  <span className="text-muted-foreground">Já pago</span>
+                  <span className="font-bold text-primary">{formatCurrency(paidAmount)}</span>
+                </div>
+              )}
               <Button
                 onClick={() => setShowPayModal(true)}
                 className="w-full h-11 rounded-xl text-xs font-bold bg-primary/15 text-primary border border-primary/30 hover:bg-primary/25 backdrop-blur-md"
               >
                 <Wallet className="w-3.5 h-3.5 mr-1.5" />
-                Pagar Fatura · {formatCurrency(total)}
+                Pagar Fatura · {formatCurrency(outstanding)}
               </Button>
             </>
           )}
