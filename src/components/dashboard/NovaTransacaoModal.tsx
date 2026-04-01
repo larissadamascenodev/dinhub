@@ -1012,15 +1012,14 @@ const NovaTransacaoModal = ({ open, onClose, onSuccess, initialType = "despesa",
                                   </span>
                                 );
                               }
-                              {(() => {
-                                const DefaultIcon = getDefaultCategoryIcon(cat);
-                                return (
-                                  <span className="w-7 h-7 rounded-lg flex items-center justify-center shrink-0 bg-primary/10 border border-primary/20"
-                                    style={{ filter: "drop-shadow(0 0 4px hsl(var(--primary) / 0.3))" }}>
-                                    <DefaultIcon className="w-3.5 h-3.5 text-primary" />
-                                  </span>
-                                );
-                              })()}
+                              const DefaultIcon = getDefaultCategoryIcon(cat);
+                              return (
+                                <span className="w-7 h-7 rounded-lg flex items-center justify-center shrink-0 bg-primary/10 border border-primary/20"
+                                  style={{ filter: "drop-shadow(0 0 4px hsl(var(--primary) / 0.3))" }}>
+                                  <DefaultIcon className="w-3.5 h-3.5 text-primary" />
+                                </span>
+                              );
+                            })()}
                             {cat}
                           </button>
                         );
