@@ -120,7 +120,7 @@ const NovaTransacaoModal = ({ open, onClose, onSuccess, initialType = "despesa",
     ? allCategories.filter((c) => c.toLowerCase().includes(categorySearch.toLowerCase()))
     : allCategories;
 
-  // Fetch accounts and credit cards
+  // Fetch accounts, credit cards and custom categories
   useEffect(() => {
     if (open && user) {
       getAccounts().then((accs) => {
@@ -137,6 +137,7 @@ const NovaTransacaoModal = ({ open, onClose, onSuccess, initialType = "despesa",
           setCreditCardId(typedCards[0].id);
         }
       });
+      getCustomCategories().then((cats) => setCustomCategories(cats)).catch(() => {});
     }
   }, [open, user]);
 
