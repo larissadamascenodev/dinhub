@@ -266,7 +266,7 @@ const GestaoFinanceira = () => {
         recurrence_type: "unica",
       } as any);
       if (error) throw error;
-      toast.success("Aporte realizado! 💰");
+      toast.success("Depósito realizado! 💰");
       setShowAporteModal(false);
       fetchData();
     } catch (err: any) {
