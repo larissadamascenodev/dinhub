@@ -1,0 +1,1 @@
+ALTER TABLE public.custom_categories ADD COLUMN is_hidden_default boolean NOT NULL DEFAULT false;

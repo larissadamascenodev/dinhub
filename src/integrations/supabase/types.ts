@@ -104,6 +104,7 @@ export type Database = {
           created_at: string
           icon: string
           id: string
+          is_hidden_default: boolean
           name: string
           type: string
           updated_at: string
@@ -114,6 +115,7 @@ export type Database = {
           created_at?: string
           icon?: string
           id?: string
+          is_hidden_default?: boolean
           name: string
           type?: string
           updated_at?: string
@@ -124,6 +126,7 @@ export type Database = {
           created_at?: string
           icon?: string
           id?: string
+          is_hidden_default?: boolean
           name?: string
           type?: string
           updated_at?: string
