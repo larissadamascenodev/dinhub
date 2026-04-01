@@ -30,6 +30,8 @@ interface Props {
   onClose: () => void;
   onSuccess: () => void;
   initialType?: "receita" | "despesa";
+  initialPaymentMethod?: "conta" | "cartao";
+  initialCreditCardId?: string;
 }
 
 const CATEGORIES_EXPENSE = [
