@@ -165,9 +165,13 @@ export default function GerenciarCategorias() {
                 >
                   <div
                     className="w-9 h-9 rounded-xl flex items-center justify-center text-lg shrink-0"
-                    style={{ backgroundColor: `${cat.color}20`, border: `1px solid ${cat.color}30` }}
+                    style={{
+                      backgroundColor: `${cat.color}20`,
+                      border: `1px solid ${cat.color}30`,
+                      filter: `drop-shadow(0 0 6px ${cat.color}60)`,
+                    }}
                   >
-                    {cat.icon}
+                    <span style={{ filter: "saturate(1.3) brightness(1.2)" }}>{cat.icon}</span>
                   </div>
                   <span className="flex-1 text-sm font-semibold text-foreground truncate">{cat.name}</span>
                   <div

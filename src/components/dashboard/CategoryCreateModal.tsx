@@ -76,9 +76,13 @@ export default function CategoryCreateModal({
             <div className="flex items-center justify-center py-3">
               <div
                 className="w-14 h-14 rounded-2xl flex items-center justify-center text-2xl shadow-lg"
-                style={{ backgroundColor: `${color}20`, border: `2px solid ${color}40` }}
+                style={{
+                  backgroundColor: `${color}20`,
+                  border: `2px solid ${color}40`,
+                  filter: `drop-shadow(0 0 10px ${color}80)`,
+                }}
               >
-                {icon}
+                <span style={{ filter: "saturate(1.4) brightness(1.3)" }}>{icon}</span>
               </div>
             </div>
 
@@ -110,8 +114,11 @@ export default function CategoryCreateModal({
                         ? "bg-primary/15 ring-2 ring-primary/40 scale-110"
                         : "bg-muted/20 hover:bg-muted/40"
                     )}
+                    style={{
+                      filter: icon === ic ? "drop-shadow(0 0 6px hsl(var(--primary)))" : "drop-shadow(0 0 3px rgba(255,255,255,0.15))",
+                    }}
                   >
-                    {ic}
+                    <span style={{ filter: "saturate(1.3) brightness(1.2)" }}>{ic}</span>
                   </button>
                 ))}
               </div>
