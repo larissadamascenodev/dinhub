@@ -285,6 +285,17 @@ export default function GerenciarCategorias() {
         initialColor={editingCat?.color ?? "#8b5cf6"}
         title="Editar Categoria"
       />
+
+      {/* Edit Default Modal */}
+      <CategoryCreateModal
+        open={!!editingDefault}
+        onClose={() => setEditingDefault(null)}
+        onSave={handleSaveEditedDefault}
+        initialName={editingDefault ?? ""}
+        initialIcon="📋"
+        initialColor="#8b5cf6"
+        title="Editar Categoria Padrão"
+      />
     </div>
   );
 }
