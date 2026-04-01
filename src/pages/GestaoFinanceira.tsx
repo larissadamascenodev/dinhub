@@ -254,7 +254,7 @@ const GestaoFinanceira = () => {
       }
       const { error } = await supabase.from("transactions").insert({
         user_id: user.id,
-        name: `Aporte: ${fromAcc?.name} → ${aporteTargetName}`,
+        name: `Depósito: ${fromAcc?.name} → ${aporteTargetName}`,
         type: "investimento",
         amount: realAmount,
         category: "Investimentos",
