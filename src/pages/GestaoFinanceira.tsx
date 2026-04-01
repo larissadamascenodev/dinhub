@@ -255,7 +255,8 @@ const GestaoFinanceira = () => {
         ) : (
           <>
             {/* Mobile carousel */}
-            <div className="flex gap-3 overflow-x-auto pb-2 snap-x snap-mandatory scrollbar-hide sm:hidden -mx-4 px-4">
+            <div className="overflow-hidden sm:hidden -mx-4 px-4" ref={accountsRef}>
+              <div className="flex gap-3">
               {accounts.filter((a) => a.type !== "investment").map((acc, idx) => {
                 const typeInfo = ACCOUNT_TYPE_LABELS[acc.type] ?? ACCOUNT_TYPE_LABELS.checking;
                 const Icon = typeInfo.icon;
