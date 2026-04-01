@@ -487,7 +487,7 @@ const FaturaCartao = () => {
                 transition={{ duration: 0.8, ease: "easeOut" }}
                 className={cn(
                   "h-full rounded-full",
-                  usedPct > 80 ? "bg-destructive" : usedPct > 50 ? "bg-[hsl(var(--warning))]" : "bg-primary"
+                  "bg-primary"
                 )}
               />
             </div>
