@@ -122,7 +122,7 @@ export default function InvoiceItemEditModal({ item, open, onClose, onSave }: Pr
               <Button
                 onClick={handleSave}
                 disabled={saving || !name.trim()}
-                className="flex-1 h-10 rounded-xl text-xs font-bold bg-primary text-primary-foreground hover:bg-primary/90"
+                className="flex-1 h-10 rounded-xl text-xs font-bold bg-primary/15 text-primary border border-primary/30 hover:bg-primary/25 backdrop-blur-md"
               >
                 <Check className="w-3.5 h-3.5 mr-1.5" />
                 {saving ? "Salvando..." : "Salvar"}
