@@ -30,6 +30,23 @@ import { getCustomCategories, createCustomCategory, type CustomCategory } from "
 import CategoryCreateModal, { getIconComponent } from "@/components/dashboard/CategoryCreateModal";
 import { getDefaultCategoryIcon } from "@/lib/categoryIcons";
 
+export interface EditTransactionData {
+  id: string;
+  name: string;
+  type: "receita" | "despesa";
+  amount: number;
+  category: string;
+  date: string;
+  status: "pago" | "pendente";
+  payment_method: "conta" | "cartao";
+  account_id?: string | null;
+  credit_card_id?: string | null;
+  recurrence_type?: "unica" | "parcelado" | "fixa";
+  installments?: number | null;
+  installment_current?: number | null;
+  observation?: string | null;
+}
+
 interface Props {
   open: boolean;
   onClose: () => void;
@@ -37,6 +54,7 @@ interface Props {
   initialType?: "receita" | "despesa";
   initialPaymentMethod?: "conta" | "cartao";
   initialCreditCardId?: string;
+  editTransaction?: EditTransactionData | null;
 }
 
 const CATEGORIES_EXPENSE = [
