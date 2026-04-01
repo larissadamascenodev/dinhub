@@ -234,9 +234,9 @@ export default function CategoryCreateModal({
                 onClick={handleSave}
                 disabled={!name.trim()}
                 className={cn(
-                  "flex-1 h-11 rounded-xl text-xs font-bold transition-all",
+                  "flex-1 h-11 rounded-xl text-xs font-bold transition-all backdrop-blur-md",
                   name.trim()
-                    ? "bg-primary/15 text-primary border border-primary/20 hover:bg-primary/25"
+                    ? "bg-primary/20 text-primary border border-primary/30 hover:bg-primary/30 shadow-[0_0_12px_-3px_hsl(var(--primary)/0.4)]"
                     : "bg-muted/20 text-muted-foreground border border-border/10 cursor-not-allowed"
                 )}
               >
