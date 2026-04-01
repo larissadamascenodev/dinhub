@@ -215,7 +215,7 @@ const GestaoFinanceira = () => {
         </div>
 
         {loading ? (
-          <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-3">
+          <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-3">
             {[1, 2].map((i) => (
               <div key={i} className="h-44 rounded-2xl bg-card animate-pulse" />
             ))}
@@ -234,7 +234,7 @@ const GestaoFinanceira = () => {
             </Button>
           </div>
         ) : (
-          <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-3">
+          <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-3">
             {accounts.filter((a) => a.type !== "investment").map((acc, idx) => {
               const typeInfo = ACCOUNT_TYPE_LABELS[acc.type] ?? ACCOUNT_TYPE_LABELS.checking;
               const Icon = typeInfo.icon;
@@ -343,7 +343,7 @@ const GestaoFinanceira = () => {
         </div>
 
         {loading ? (
-          <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-3">
+          <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-3">
             {[1].map((i) => (
               <div key={i} className="h-44 rounded-2xl bg-card animate-pulse" />
             ))}
@@ -362,7 +362,7 @@ const GestaoFinanceira = () => {
             </Button>
           </div>
         ) : (
-          <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-3">
+          <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-3">
             {creditCards.map((card, idx) => {
               const usedPct = card.limit > 0 ? Math.min((Number(card.used_limit) / Number(card.limit)) * 100, 100) : 0;
               const available = Math.max(Number(card.limit) - Number(card.used_limit), 0);
@@ -472,7 +472,7 @@ const GestaoFinanceira = () => {
 
           if (loading) {
             return (
-              <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-3">
+              <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-3">
                 <div className="h-44 rounded-2xl bg-card animate-pulse" />
               </div>
             );
@@ -511,7 +511,7 @@ const GestaoFinanceira = () => {
                 </div>
               </div>
 
-              <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-3">
+              <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-3">
                 {investmentAccounts.map((acc, idx) => {
                   const gradient = getGradient(acc.color);
                   const balance = Number(acc.current_balance);
