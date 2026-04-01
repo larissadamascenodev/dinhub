@@ -20,7 +20,7 @@ interface Props {
   items: EnrichedItem[];
   installmentCount?: number;
   cardName?: string;
-  onEditItem?: (transactionId: string, updates: { name?: string; amount?: number; category?: string }) => Promise<void>;
+  onEditItem?: (transactionId: string, updates?: { name?: string; amount?: number; category?: string }) => Promise<void>;
   onDeleteItem?: (transactionId: string) => Promise<void>;
 }
 
