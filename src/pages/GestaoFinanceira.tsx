@@ -127,6 +127,9 @@ const GestaoFinanceira = () => {
   const [newAccType, setNewAccType] = useState<"checking" | "cash" | "savings" | "investment">("checking");
   const [newAccBalance, setNewAccBalance] = useState("");
   const [newAccColor, setNewAccColor] = useState("violet");
+  const [newInvestmentType, setNewInvestmentType] = useState("cdb");
+  const [newRateType, setNewRateType] = useState("percent_cdi");
+  const [newAnnualRate, setNewAnnualRate] = useState("");
 
   // Add card state
   const [showAddCard, setShowAddCard] = useState(false);
@@ -168,6 +171,9 @@ const GestaoFinanceira = () => {
     setNewAccType("checking");
     setNewAccBalance("");
     setNewAccColor("violet");
+    setNewInvestmentType("cdb");
+    setNewRateType("percent_cdi");
+    setNewAnnualRate("");
   };
 
   const resetAddCard = () => {
@@ -183,12 +189,18 @@ const GestaoFinanceira = () => {
   const handleAddAccount = async () => {
     if (!user || !newAccName.trim()) return;
     try {
-      await createAccount(user.id, {
+      const accPayload: any = {
         name: newAccName.trim(),
         type: newAccType,
         initial_balance: newAccBalance ? parseFloat(newAccBalance) : 0,
         color: newAccColor,
-      });
+      };
+      if (newAccType === "investment") {
+        accPayload.investment_type = newInvestmentType;
+        accPayload.rate_type = newInvestmentType === "poupanca" ? null : newRateType;
+        accPayload.annual_rate = newInvestmentType === "poupanca" ? null : (newAnnualRate ? parseFloat(newAnnualRate) : null);
+      }
+      await createAccount(user.id, accPayload);
       toast.success("Conta criada!");
       resetAddAccount();
       fetchData();
@@ -242,7 +254,7 @@ const GestaoFinanceira = () => {
       }
       const { error } = await supabase.from("transactions").insert({
         user_id: user.id,
-        name: `Aporte: ${fromAcc?.name} → ${aporteTargetName}`,
+        name: `Depósito: ${fromAcc?.name} → ${aporteTargetName}`,
         type: "investimento",
         amount: realAmount,
         category: "Investimentos",
@@ -254,7 +266,7 @@ const GestaoFinanceira = () => {
         recurrence_type: "unica",
       } as any);
       if (error) throw error;
-      toast.success("Aporte realizado! 💰");
+      toast.success("Depósito realizado! 💰");
       setShowAporteModal(false);
       fetchData();
     } catch (err: any) {
@@ -726,7 +738,7 @@ const GestaoFinanceira = () => {
                       initial={{ opacity: 0, y: 12 }}
                       animate={{ opacity: 1, y: 0 }}
                       transition={{ delay: idx * 0.06 }}
-                      onClick={() => navigate(`/conta/${acc.id}`)}
+                      onClick={() => navigate(`/investimento/${acc.id}`)}
                       className="relative rounded-2xl overflow-hidden cursor-pointer group border border-border/10 hover:border-primary/30 transition-all duration-300 active:scale-[0.98]"
                       style={{ background: "linear-gradient(135deg, hsl(var(--card)) 0%, hsl(var(--background)) 100%)" }}
                     >
@@ -750,13 +762,13 @@ const GestaoFinanceira = () => {
                             {formatCurrency(balance)}
                           </p>
                         </div>
-                        {/* Aporte button */}
+                        {/* Depósito button */}
                         <button
                           onClick={(e) => { e.stopPropagation(); openAporte(acc.id, acc.name); }}
                           className="flex items-center justify-center gap-1.5 w-full py-2 rounded-xl bg-primary/10 text-primary text-[11px] font-semibold hover:bg-primary/20 transition-colors border border-primary/20"
                         >
                           <ArrowDownLeft className="w-3.5 h-3.5" />
-                          Aporte
+                          Depósito
                         </button>
                       </div>
                     </motion.div>
@@ -794,6 +806,46 @@ const GestaoFinanceira = () => {
                 <SelectItem value="cash">Dinheiro</SelectItem>
               </SelectContent>
             </Select>
+          )}
+          {newAccType === "investment" && (
+            <>
+              <Select value={newInvestmentType} onValueChange={setNewInvestmentType}>
+                <SelectTrigger className="bg-muted/30 border-border/20 h-11 rounded-xl">
+                  <SelectValue placeholder="Tipo de investimento" />
+                </SelectTrigger>
+                <SelectContent>
+                  <SelectItem value="caixinha">Caixinha</SelectItem>
+                  <SelectItem value="cdb">CDB</SelectItem>
+                  <SelectItem value="lci">LCI</SelectItem>
+                  <SelectItem value="lca">LCA</SelectItem>
+                  <SelectItem value="tesouro_selic">Tesouro Selic</SelectItem>
+                  <SelectItem value="poupanca">Poupança</SelectItem>
+                  <SelectItem value="fundo">Fundo de Investimento</SelectItem>
+                  <SelectItem value="outro">Outro</SelectItem>
+                </SelectContent>
+              </Select>
+              {newInvestmentType !== "poupanca" && (
+                <div className="grid grid-cols-2 gap-3">
+                  <Select value={newRateType} onValueChange={setNewRateType}>
+                    <SelectTrigger className="bg-muted/30 border-border/20 h-11 rounded-xl">
+                      <SelectValue />
+                    </SelectTrigger>
+                    <SelectContent>
+                      <SelectItem value="percent_cdi">% do CDI</SelectItem>
+                      <SelectItem value="fixed_annual">% a.a.</SelectItem>
+                      <SelectItem value="cdi_plus">CDI +</SelectItem>
+                    </SelectContent>
+                  </Select>
+                  <Input
+                    placeholder={newRateType === "percent_cdi" ? "Ex: 115" : newRateType === "cdi_plus" ? "Ex: 2.5" : "Ex: 14.5"}
+                    type="number"
+                    value={newAnnualRate}
+                    onChange={(e) => setNewAnnualRate(e.target.value)}
+                    className="bg-muted/30 border-border/20 h-11 rounded-xl"
+                  />
+                </div>
+              )}
+            </>
           )}
           <div>
             <Label className="text-xs text-muted-foreground mb-1.5 block">
@@ -943,7 +995,7 @@ const GestaoFinanceira = () => {
       <ModalOverlay open={showAporteModal} onClose={() => setShowAporteModal(false)}>
         <div className="space-y-4">
           <div className="flex items-center justify-between">
-            <p className="text-base font-bold text-foreground">Aporte em {aporteTargetName}</p>
+            <p className="text-base font-bold text-foreground">Depósito em {aporteTargetName}</p>
             <button onClick={() => setShowAporteModal(false)} className="w-8 h-8 rounded-lg bg-muted/50 flex items-center justify-center hover:bg-muted transition-colors">
               <X className="w-4 h-4 text-muted-foreground" />
             </button>
@@ -963,7 +1015,7 @@ const GestaoFinanceira = () => {
           </Select>
 
           <div>
-            <Label className="text-xs text-muted-foreground mb-1.5 block">Valor do aporte</Label>
+            <Label className="text-xs text-muted-foreground mb-1.5 block">Valor do depósito</Label>
             <Input
               placeholder="0,00"
               inputMode="numeric"
@@ -990,7 +1042,7 @@ const GestaoFinanceira = () => {
             disabled={aporteCents === 0 || !aporteFromId || aporteSubmitting}
             className="w-full h-11 rounded-xl text-sm font-semibold bg-primary/15 text-primary hover:bg-primary/25 border border-primary/30"
           >
-            {aporteSubmitting ? "Processando..." : `Investir R$ ${(aporteCents / 100).toLocaleString("pt-BR", { minimumFractionDigits: 2 })}`}
+            {aporteSubmitting ? "Processando..." : `Depositar R$ ${(aporteCents / 100).toLocaleString("pt-BR", { minimumFractionDigits: 2 })}`}
           </Button>
         </div>
       </ModalOverlay>
