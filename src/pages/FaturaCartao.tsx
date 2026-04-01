@@ -582,6 +582,27 @@ const FaturaCartao = () => {
         initialPaymentMethod="cartao"
         initialCreditCardId={cardId}
       />
+
+      {/* Edit Transaction Modal */}
+      <NovaTransacaoModal
+        open={!!editingTransaction}
+        onClose={() => setEditingTransaction(null)}
+        onSuccess={async () => {
+          setEditingTransaction(null);
+          await refreshItems();
+          // Reload card to update used_limit
+          if (cardId) {
+            const cards = await getCreditCards();
+            const typedCards = cards as unknown as CreditCardInfo[];
+            const foundCard = typedCards.find((c) => c.id === cardId);
+            setCard(foundCard ?? null);
+          }
+        }}
+        initialType="despesa"
+        initialPaymentMethod="cartao"
+        initialCreditCardId={cardId}
+        editTransaction={editingTransaction}
+      />
     </div>
   );
 };
