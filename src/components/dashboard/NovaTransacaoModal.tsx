@@ -160,36 +160,70 @@ const NovaTransacaoModal = ({ open, onClose, onSuccess, initialType = "despesa",
     }
   }, [open, user]);
 
+  const isEditMode = !!editTransaction;
+
   // Reset form
   useEffect(() => {
     if (open) {
-      setType(initialType);
-      setStatus("pago");
-      setDescription("");
-      setAmountCents(0);
-      setCategory("");
-      setSuggestedCategory(null);
-      setDate(new Date());
-      setDateMode("hoje");
-      setShowCalendar(false);
-      setPaymentMethod(initialPaymentMethod ?? "conta");
-      setRecurrenceType("unica");
-      setInstallments(2);
-      setPaidInstallments(0);
-      setInstallmentFrequency("mensal");
-      setObservation("");
-      setShowNewAccount(false);
-      setNewAccountName("");
-      setShowCategoryModal(false);
-      setCategorySearch("");
-      setCreditCardId("");
-      setShowNewCard(false);
-      setNewCardName("");
-      setNewCardLimit("");
-      setNewCardClosingDay("10");
-      setNewCardDueDay("20");
+      if (editTransaction) {
+        // Edit mode: pre-fill with transaction data
+        setType(editTransaction.type);
+        setStatus(editTransaction.status);
+        setDescription(editTransaction.name);
+        setAmountCents(Math.round(editTransaction.amount * 100));
+        setCategory(editTransaction.category);
+        setSuggestedCategory(null);
+        const txDate = new Date(editTransaction.date + "T12:00:00");
+        setDate(txDate);
+        setDateMode("outros");
+        setShowCalendar(false);
+        setPaymentMethod(editTransaction.payment_method || "conta");
+        setRecurrenceType((editTransaction.recurrence_type as any) || "unica");
+        setInstallments(editTransaction.installments || 2);
+        setPaidInstallments(editTransaction.installment_current ? editTransaction.installment_current - 1 : 0);
+        setInstallmentFrequency("mensal");
+        setObservation(editTransaction.observation || "");
+        setShowNewAccount(false);
+        setNewAccountName("");
+        setShowCategoryModal(false);
+        setCategorySearch("");
+        if (editTransaction.credit_card_id) setCreditCardId(editTransaction.credit_card_id);
+        if (editTransaction.account_id) setAccountId(editTransaction.account_id);
+        setShowNewCard(false);
+        setNewCardName("");
+        setNewCardLimit("");
+        setNewCardClosingDay("10");
+        setNewCardDueDay("20");
+      } else {
+        // Create mode: reset form
+        setType(initialType);
+        setStatus("pago");
+        setDescription("");
+        setAmountCents(0);
+        setCategory("");
+        setSuggestedCategory(null);
+        setDate(new Date());
+        setDateMode("hoje");
+        setShowCalendar(false);
+        setPaymentMethod(initialPaymentMethod ?? "conta");
+        setRecurrenceType("unica");
+        setInstallments(2);
+        setPaidInstallments(0);
+        setInstallmentFrequency("mensal");
+        setObservation("");
+        setShowNewAccount(false);
+        setNewAccountName("");
+        setShowCategoryModal(false);
+        setCategorySearch("");
+        setCreditCardId("");
+        setShowNewCard(false);
+        setNewCardName("");
+        setNewCardLimit("");
+        setNewCardClosingDay("10");
+        setNewCardDueDay("20");
+      }
     }
-  }, [open, initialType]);
+  }, [open, initialType, editTransaction]);
 
   // AI category suggestion with debounce - faster
   const triggerSuggest = useCallback(
