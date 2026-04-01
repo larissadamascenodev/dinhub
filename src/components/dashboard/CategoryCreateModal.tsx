@@ -76,9 +76,13 @@ export default function CategoryCreateModal({
             <div className="flex items-center justify-center py-3">
               <div
                 className="w-14 h-14 rounded-2xl flex items-center justify-center text-2xl shadow-lg"
-                style={{ backgroundColor: `${color}20`, border: `2px solid ${color}40` }}
+                style={{
+                  backgroundColor: `${color}20`,
+                  border: `2px solid ${color}40`,
+                  filter: `drop-shadow(0 0 10px ${color}80)`,
+                }}
               >
-                {icon}
+                <span style={{ filter: "saturate(1.4) brightness(1.3)" }}>{icon}</span>
               </div>
             </div>
 
