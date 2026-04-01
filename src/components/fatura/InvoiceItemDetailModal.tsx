@@ -67,12 +67,12 @@ export default function InvoiceItemDetailModal({ item, cardName, onClose, onEdit
         onClick={onClose}
       >
         <motion.div
-          initial={{ y: "100%" }}
-          animate={{ y: 0 }}
-          exit={{ y: "100%" }}
-          transition={{ type: "spring", damping: 28, stiffness: 300 }}
+          initial={{ opacity: 0, scale: 0.95, y: 20 }}
+          animate={{ opacity: 1, scale: 1, y: 0 }}
+          exit={{ opacity: 0, scale: 0.95, y: 20 }}
+          transition={{ type: "spring", damping: 25, stiffness: 350 }}
           onClick={(e) => e.stopPropagation()}
-          className="w-full sm:max-w-md max-h-[90vh] overflow-y-auto rounded-t-2xl sm:rounded-2xl bg-card border border-border/20 shadow-2xl"
+          className="w-full max-w-md max-h-[85vh] overflow-y-auto rounded-2xl bg-card border border-border/20 shadow-2xl"
         >
           <div className="p-5 space-y-5">
             {/* Header */}
