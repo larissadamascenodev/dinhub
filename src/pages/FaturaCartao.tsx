@@ -3,7 +3,11 @@ import { motion } from "framer-motion";
 import {
   ArrowLeft, Plus, MoreVertical,
   CalendarClock, CalendarCheck, Wallet, Shield,
+  Pencil, Trash2,
 } from "lucide-react";
+import {
+  DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigger,
+} from "@/components/ui/dropdown-menu";
 import { useNavigate, useParams, useSearchParams } from "react-router-dom";
 import { Button } from "@/components/ui/button";
 import { toast } from "sonner";
