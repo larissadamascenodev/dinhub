@@ -273,43 +273,47 @@ const GestaoFinanceira = () => {
                     animate={{ opacity: 1, y: 0 }}
                     transition={{ delay: idx * 0.06 }}
                     onClick={() => navigate(`/conta/${acc.id}`)}
-                    className="relative rounded-2xl overflow-hidden cursor-pointer group min-w-0 shrink-0 basis-[80%] bg-background/60 backdrop-blur-xl border border-border/15 hover:border-primary/20 transition-all duration-300 active:scale-[0.98]"
+                    className="relative rounded-2xl overflow-hidden cursor-pointer group min-w-0 shrink-0 basis-[80%] border border-border/15 hover:border-primary/15 transition-all duration-300 active:scale-[0.98]"
+                    style={{ background: "linear-gradient(135deg, hsl(var(--card)) 0%, hsl(var(--background)) 100%)" }}
                   >
-                    {/* Top accent gradient */}
-                    <div className={cn("absolute top-0 left-0 right-0 h-[3px]", accent.dot)} />
-
-                    {/* Watermark icon */}
-                    <Icon className="absolute right-3 bottom-3 w-16 h-16 text-foreground/[0.03]" />
-
-                    <div className="relative z-10 p-4 flex flex-col min-h-[152px]">
-                      {/* Header */}
-                      <div className="flex items-center gap-3">
-                        <div className={cn("w-10 h-10 rounded-xl flex items-center justify-center ring-1 ring-border/10", accent.iconBg)}>
-                          <Icon className="w-[18px] h-[18px] text-foreground/70" />
-                        </div>
-                        <div className="flex-1 min-w-0">
-                          <p className="text-[13px] font-bold text-foreground truncate">{acc.name}</p>
-                          <div className="flex items-center gap-1.5 mt-0.5">
-                            <p className="text-[10px] text-muted-foreground">{typeInfo.label}</p>
-                            {acc.is_default && (
-                              <>
-                                <span className="w-[3px] h-[3px] rounded-full bg-primary/40" />
-                                <span className="text-[9px] text-primary font-semibold">Principal</span>
-                              </>
-                            )}
+                    <div className="p-4 space-y-4">
+                      {/* Row 1: Bank info */}
+                      <div className="flex items-center justify-between">
+                        <div className="flex items-center gap-3">
+                          <div className={cn(
+                            "w-11 h-11 rounded-2xl flex items-center justify-center",
+                            "ring-2 ring-offset-2 ring-offset-background",
+                            accent.dot.replace("bg-", "ring-"),
+                            accent.iconBg
+                          )}>
+                            <Icon className="w-5 h-5 text-foreground/80" />
+                          </div>
+                          <div>
+                            <p className="text-sm font-bold text-foreground leading-tight">{acc.name}</p>
+                            <p className="text-[10px] text-muted-foreground mt-0.5">{typeInfo.label}</p>
                           </div>
                         </div>
+                        {acc.is_default ? (
+                          <span className="text-[8px] bg-primary/10 text-primary px-2.5 py-1 rounded-lg font-bold uppercase tracking-wider">
+                            Principal
+                          </span>
+                        ) : (
+                          <ChevronRight className="w-4 h-4 text-muted-foreground/25 group-hover:text-primary transition-colors" />
+                        )}
                       </div>
 
-                      {/* Balance */}
-                      <div className="mt-auto">
-                        <p className="text-[9px] text-muted-foreground/70 uppercase tracking-widest font-medium mb-1">Saldo disponível</p>
-                        <div className="flex items-end justify-between">
-                          <p className={cn("text-[22px] font-extrabold tabular-nums tracking-tight leading-none", balance >= 0 ? "text-foreground" : "text-destructive")}>
-                            {formatCurrency(balance)}
-                          </p>
-                          <ChevronRight className="w-4 h-4 text-muted-foreground/30 group-hover:text-primary transition-colors mb-0.5" />
+                      {/* Divider */}
+                      <div className="h-px bg-border/10" />
+
+                      {/* Row 2: Balance */}
+                      <div>
+                        <div className="flex items-center gap-1.5 mb-1.5">
+                          <div className={cn("w-1.5 h-1.5 rounded-full", balance >= 0 ? "bg-primary" : "bg-destructive")} />
+                          <p className="text-[9px] text-muted-foreground uppercase tracking-widest font-medium">Saldo disponível</p>
                         </div>
+                        <p className={cn("text-2xl font-extrabold tabular-nums tracking-tight", balance >= 0 ? "text-foreground" : "text-destructive")}>
+                          {formatCurrency(balance)}
+                        </p>
                       </div>
                     </div>
                   </motion.div>
