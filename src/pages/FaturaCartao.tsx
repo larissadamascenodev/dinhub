@@ -639,8 +639,23 @@ const FaturaCartao = () => {
         initialCreditCardId={cardId}
         editTransaction={editingTransaction}
       />
+
+      {/* Edit Card Modal */}
+      {card && (
+        <CreditCardEditModal
+          open={showEditCard}
+          onClose={() => setShowEditCard(false)}
+          card={card}
+          onUpdated={async () => {
+            const cards = await getCreditCards();
+            const typedCards = cards as unknown as CreditCardInfo[];
+            const foundCard = typedCards.find((c) => c.id === cardId);
+            setCard(foundCard ?? null);
+          }}
+          onDeleted={() => navigate(-1)}
+        />
+      )}
     </div>
-  );
 };
 
 export default FaturaCartao;
