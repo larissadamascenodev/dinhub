@@ -146,6 +146,21 @@ Deno.serve(async (req) => {
       });
     }
 
+    // Release credit card limit proportionally to the amount paid
+    const { data: card, error: cardError } = await adminClient
+      .from("credit_cards")
+      .select("used_limit")
+      .eq("id", invoice.credit_card_id)
+      .single();
+
+    if (!cardError && card) {
+      const newUsedLimit = Math.max(0, Number(card.used_limit) - debitAmount);
+      await adminClient
+        .from("credit_cards")
+        .update({ used_limit: newUsedLimit })
+        .eq("id", invoice.credit_card_id);
+    }
+
     // Handle remainder for minimum payment - transfer to next invoice
     if (mode === "minimo" && remainderToNextInvoice > 0) {
       let nextMonth = invoice.month + 1;
