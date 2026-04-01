@@ -23,7 +23,6 @@ Deno.serve(async (req) => {
     const supabaseUrl = Deno.env.get("SUPABASE_URL")!;
     const supabaseServiceKey = Deno.env.get("SUPABASE_SERVICE_ROLE_KEY")!;
 
-    // Verify user
     const userClient = createClient(supabaseUrl, Deno.env.get("SUPABASE_ANON_KEY")!, {
       global: { headers: { Authorization: authHeader } },
     });
@@ -35,7 +34,9 @@ Deno.serve(async (req) => {
       });
     }
 
-    const { invoice_id, account_id } = await req.json();
+    const body = await req.json();
+    const { invoice_id, account_id, mode = "total", amount_paid, installments, entry_amount } = body;
+
     if (!invoice_id || !account_id) {
       return new Response(JSON.stringify({ error: "invoice_id and account_id are required" }), {
         status: 400,
@@ -82,8 +83,31 @@ Deno.serve(async (req) => {
       });
     }
 
+    const totalAmount = Number(invoice.total_amount);
+    let debitAmount = totalAmount;
+    let remainderToNextInvoice = 0;
+
+    if (mode === "minimo") {
+      const paid = Number(amount_paid) || 0;
+      if (paid <= 0 || paid >= totalAmount) {
+        return new Response(JSON.stringify({ error: "Valor mínimo deve ser maior que 0 e menor que o total" }), {
+          status: 400,
+          headers: { ...corsHeaders, "Content-Type": "application/json" },
+        });
+      }
+      debitAmount = paid;
+      remainderToNextInvoice = totalAmount - paid;
+    } else if (mode === "parcelado") {
+      const entry = Number(entry_amount) || 0;
+      const numInstallments = Number(installments) || 2;
+      // Debit only the entry amount now
+      debitAmount = entry;
+      // The remaining amount will generate installments on future invoices
+      // (handled below)
+    }
+
     // Subtract from account balance
-    const newBalance = Number(account.current_balance) - Number(invoice.total_amount);
+    const newBalance = Number(account.current_balance) - debitAmount;
     const { error: balError } = await adminClient
       .from("accounts")
       .update({ current_balance: newBalance })
@@ -119,12 +143,88 @@ Deno.serve(async (req) => {
       });
     }
 
+    // Handle remainder for minimum payment - transfer to next invoice
+    if (mode === "minimo" && remainderToNextInvoice > 0) {
+      let nextMonth = invoice.month + 1;
+      let nextYear = invoice.year;
+      if (nextMonth > 12) {
+        nextMonth = 1;
+        nextYear += 1;
+      }
+
+      // Get or create the next invoice
+      const { data: nextInvoiceId } = await adminClient.rpc("get_or_create_invoice", {
+        p_credit_card_id: invoice.credit_card_id,
+        p_month: nextMonth,
+        p_year: nextYear,
+        p_user_id: user.id,
+      });
+
+      if (nextInvoiceId) {
+        // Update next invoice total to include the remainder
+        const { data: nextInvoice } = await adminClient
+          .from("invoices")
+          .select("total_amount")
+          .eq("id", nextInvoiceId)
+          .single();
+
+        if (nextInvoice) {
+          await adminClient
+            .from("invoices")
+            .update({ total_amount: Number(nextInvoice.total_amount) + remainderToNextInvoice })
+            .eq("id", nextInvoiceId);
+        }
+      }
+    }
+
+    // Handle installment payment - create future invoice entries
+    if (mode === "parcelado") {
+      const entry = Number(entry_amount) || 0;
+      const numInstallments = Number(installments) || 2;
+      const remaining = totalAmount - entry;
+      const monthlyRate = 0.0199;
+      const installmentValue = remaining * (monthlyRate * Math.pow(1 + monthlyRate, numInstallments)) / (Math.pow(1 + monthlyRate, numInstallments) - 1);
+
+      for (let i = 1; i <= numInstallments; i++) {
+        let futureMonth = invoice.month + i;
+        let futureYear = invoice.year;
+        while (futureMonth > 12) {
+          futureMonth -= 12;
+          futureYear += 1;
+        }
+
+        const { data: futureInvoiceId } = await adminClient.rpc("get_or_create_invoice", {
+          p_credit_card_id: invoice.credit_card_id,
+          p_month: futureMonth,
+          p_year: futureYear,
+          p_user_id: user.id,
+        });
+
+        if (futureInvoiceId) {
+          const { data: futureInvoice } = await adminClient
+            .from("invoices")
+            .select("total_amount")
+            .eq("id", futureInvoiceId)
+            .single();
+
+          if (futureInvoice) {
+            await adminClient
+              .from("invoices")
+              .update({ total_amount: Number(futureInvoice.total_amount) + installmentValue })
+              .eq("id", futureInvoiceId);
+          }
+        }
+      }
+    }
+
     return new Response(
       JSON.stringify({
         success: true,
         invoice_id,
-        amount_paid: invoice.total_amount,
+        mode,
+        amount_debited: debitAmount,
         new_balance: newBalance,
+        remainder: remainderToNextInvoice,
       }),
       { status: 200, headers: { ...corsHeaders, "Content-Type": "application/json" } }
     );
