@@ -59,9 +59,13 @@ export default function InvoiceTimeline({ selectedMonth, selectedYear, invoices,
               className={cn(
                 "w-full h-5 rounded-md transition-all",
                 isSelected
-                  ? "bg-primary/40 border border-primary/50"
+                  ? isPaid
+                    ? "bg-primary border border-primary/60"
+                    : "bg-foreground border border-foreground/50"
+                  : isPaid
+                  ? "bg-primary/50 border border-primary/30"
                   : hasAmount
-                  ? "bg-muted/60 border border-border/30"
+                  ? "bg-foreground/40 border border-foreground/20"
                   : "bg-muted/30 border border-border/20"
               )}
             />
