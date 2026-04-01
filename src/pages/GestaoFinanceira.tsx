@@ -145,7 +145,7 @@ const GestaoFinanceira = () => {
   const [aporteCents, setAporteCents] = useState(0);
   const [aporteSubmitting, setAporteSubmitting] = useState(false);
 
-
+  const fetchData = async () => {
     if (!user) return;
     try {
       const [accs, cards] = await Promise.all([getAccounts(), getCreditCards()]);
