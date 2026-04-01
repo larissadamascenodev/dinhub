@@ -314,7 +314,7 @@ export default function GerenciarCategorias() {
         onClose={() => setEditingCat(null)}
         onSave={handleUpdate}
         initialName={editingCat?.name ?? ""}
-        initialIcon={editingCat?.icon ?? "📋"}
+        initialIcon={editingCat?.icon ?? "file-text"}
         initialColor={editingCat?.color ?? "#8b5cf6"}
         title="Editar Categoria"
       />
