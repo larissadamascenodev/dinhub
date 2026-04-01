@@ -1011,12 +1011,7 @@ const NovaTransacaoModal = ({ open, onClose, onSuccess, initialType = "despesa",
                   <div className="flex items-center justify-between pt-2 border-t border-border/20">
                     <button
                       type="button"
-                      onClick={() => {
-                        const name = categorySearch.trim() || prompt("Nome da nova categoria:");
-                        if (name) {
-                          handleCreateCategory(name);
-                        }
-                      }}
+                      onClick={() => setShowCategoryCreate(true)}
                       className="flex items-center gap-1 text-xs text-primary font-medium hover:opacity-80"
                     >
                       <Plus className="w-3.5 h-3.5" />
@@ -1024,6 +1019,11 @@ const NovaTransacaoModal = ({ open, onClose, onSuccess, initialType = "despesa",
                     </button>
                     <button
                       type="button"
+                      onClick={() => {
+                        setShowCategoryModal(false);
+                        onClose();
+                        navigate("/categorias");
+                      }}
                       className="flex items-center gap-1 text-xs text-muted-foreground font-medium hover:text-foreground"
                     >
                       <Settings className="w-3.5 h-3.5" />
@@ -1034,6 +1034,14 @@ const NovaTransacaoModal = ({ open, onClose, onSuccess, initialType = "despesa",
               </motion.div>
             )}
           </AnimatePresence>
+
+          {/* Category Create Modal */}
+          <CategoryCreateModal
+            open={showCategoryCreate}
+            onClose={() => setShowCategoryCreate(false)}
+            onSave={handleCreateCategoryFromModal}
+            title="Nova Categoria"
+          />
         </motion.div>
       )}
     </AnimatePresence>
