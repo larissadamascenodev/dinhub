@@ -369,32 +369,48 @@ const NovaTransacaoModal = ({ open, onClose, onSuccess, initialType = "despesa",
 
     setSubmitting(true);
     try {
-      await createTransaction(
-        {
+      if (isEditMode && editTransaction) {
+        // Edit mode: update existing transaction
+        await updateTransaction(editTransaction.id, {
           name: finalName,
           type,
-          amount: perInstallmentAmount,
+          amount: isParcelado ? perInstallmentAmount : realAmount,
           category,
           date: dateStr,
           status: paymentMethod === "cartao" ? "pendente" : status,
-          account_id: paymentMethod === "cartao" ? null : (accountId || null),
-          payment_method: type === "despesa" ? paymentMethod : "conta",
-          recurrence_type: recurrenceType,
-          installments: isParcelado ? installments : null,
-          installment_current: currentInstallment,
-          observation: isParcelado && paidInstallments > 0
-            ? `paid_installments:${paidInstallments}${observation.trim() ? ` | ${observation.trim()}` : ""}`
-            : (observation.trim() || null),
-          credit_card_id: paymentMethod === "cartao" ? (creditCardId || null) : null,
-        },
-        user.id
-      );
-      const statusLabel = status === "pago"
-        ? (type === "receita" ? "recebida" : "registrada")
-        : "agendada";
-      toast.success(`Transação ${statusLabel} 🎯`, {
-        description: `${type === "receita" ? "Receita" : "Despesa"} de R$ ${formatCurrency(amountCents)}`,
-      });
+        });
+        toast.success("Transação atualizada ✏️", {
+          description: `${type === "receita" ? "Receita" : "Despesa"} de R$ ${formatCurrency(amountCents)}`,
+        });
+      } else {
+        // Create mode
+        await createTransaction(
+          {
+            name: finalName,
+            type,
+            amount: perInstallmentAmount,
+            category,
+            date: dateStr,
+            status: paymentMethod === "cartao" ? "pendente" : status,
+            account_id: paymentMethod === "cartao" ? null : (accountId || null),
+            payment_method: type === "despesa" ? paymentMethod : "conta",
+            recurrence_type: recurrenceType,
+            installments: isParcelado ? installments : null,
+            installment_current: currentInstallment,
+            observation: isParcelado && paidInstallments > 0
+              ? `paid_installments:${paidInstallments}${observation.trim() ? ` | ${observation.trim()}` : ""}`
+              : (observation.trim() || null),
+            credit_card_id: paymentMethod === "cartao" ? (creditCardId || null) : null,
+          },
+          user.id
+        );
+        const statusLabel = status === "pago"
+          ? (type === "receita" ? "recebida" : "registrada")
+          : "agendada";
+        toast.success(`Transação ${statusLabel} 🎯`, {
+          description: `${type === "receita" ? "Receita" : "Despesa"} de R$ ${formatCurrency(amountCents)}`,
+        });
+      }
       onSuccess();
       onClose();
     } catch (err: any) {
