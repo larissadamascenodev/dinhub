@@ -13,6 +13,7 @@ import FaturaCartao from "./pages/FaturaCartao.tsx";
 import Configuracoes from "./pages/Configuracoes.tsx";
 import Transacoes from "./pages/Transacoes.tsx";
 import ContaDetalhe from "./pages/ContaDetalhe.tsx";
+import InvestimentoDetalhe from "./pages/InvestimentoDetalhe.tsx";
 import BotFinance from "./pages/BotFinance.tsx";
 import BotFinanceProjecoes from "./pages/BotFinanceProjecoes.tsx";
 import BotFinanceSaude from "./pages/BotFinanceSaude.tsx";
