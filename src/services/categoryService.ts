@@ -7,6 +7,7 @@ export interface CustomCategory {
   icon: string;
   color: string;
   type: string;
+  is_hidden_default: boolean;
   created_at: string;
   updated_at: string;
 }
