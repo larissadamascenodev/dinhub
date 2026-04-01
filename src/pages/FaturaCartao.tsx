@@ -557,7 +557,7 @@ const FaturaCartao = () => {
       <InvoicePayModal
         open={showPayModal}
         onClose={() => setShowPayModal(false)}
-        total={total}
+        total={outstanding}
         accounts={accounts}
         payAccountId={payAccountId}
         setPayAccountId={setPayAccountId}
