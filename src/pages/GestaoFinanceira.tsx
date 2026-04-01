@@ -171,6 +171,9 @@ const GestaoFinanceira = () => {
     setNewAccType("checking");
     setNewAccBalance("");
     setNewAccColor("violet");
+    setNewInvestmentType("cdb");
+    setNewRateType("percent_cdi");
+    setNewAnnualRate("");
   };
 
   const resetAddCard = () => {
