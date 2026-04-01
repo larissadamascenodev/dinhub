@@ -659,23 +659,33 @@ const NovaTransacaoModal = ({ open, onClose, onSuccess, initialType = "despesa",
                       </button>
                     ))}
                   </div>
-                  <AnimatePresence>
-                    {showCalendar && (
-                      <motion.div
-                        initial={{ height: 0, opacity: 0 }}
-                        animate={{ height: "auto", opacity: 1 }}
-                        exit={{ height: 0, opacity: 0 }}
-                        className="overflow-hidden"
-                      >
+                  {showCalendar && (
+                    <Popover open={showCalendar} onOpenChange={setShowCalendar}>
+                      <PopoverTrigger asChild>
+                        <button
+                          type="button"
+                          className="w-full flex items-center gap-2 px-4 py-2.5 rounded-xl bg-muted/30 border border-border/20 text-sm text-foreground hover:bg-muted/50 transition-colors"
+                        >
+                          <CalendarDays className="w-4 h-4 text-muted-foreground" />
+                          {format(date, "dd/MM/yyyy", { locale: ptBR })}
+                        </button>
+                      </PopoverTrigger>
+                      <PopoverContent className="w-auto p-0" align="center" side="bottom" sideOffset={4}>
                         <Calendar
                           mode="single"
                           selected={date}
-                          onSelect={(d) => d && setDate(d)}
-                          className="p-3 pointer-events-auto rounded-xl border border-border/20"
+                          onSelect={(d) => {
+                            if (d) {
+                              setDate(d);
+                              setShowCalendar(false);
+                            }
+                          }}
+                          className="p-3 pointer-events-auto"
+                          locale={ptBR}
                         />
-                      </motion.div>
-                    )}
-                  </AnimatePresence>
+                      </PopoverContent>
+                    </Popover>
+                  )}
                 </div>
 
                 {/* Description */}
