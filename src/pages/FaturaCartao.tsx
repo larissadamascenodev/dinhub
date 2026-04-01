@@ -366,9 +366,19 @@ const FaturaCartao = () => {
           <ArrowLeft className="w-4 h-4" />
           Voltar
         </button>
-        <button className="w-8 h-8 rounded-lg bg-muted/30 flex items-center justify-center text-muted-foreground hover:text-foreground transition-colors">
-          <MoreVertical className="w-4 h-4" />
-        </button>
+        <DropdownMenu>
+          <DropdownMenuTrigger asChild>
+            <button className="w-8 h-8 rounded-lg bg-muted/30 flex items-center justify-center text-muted-foreground hover:text-foreground transition-colors">
+              <MoreVertical className="w-4 h-4" />
+            </button>
+          </DropdownMenuTrigger>
+          <DropdownMenuContent align="end" className="min-w-[160px]">
+            <DropdownMenuItem onClick={() => setShowEditCard(true)} className="gap-2 text-xs">
+              <Pencil className="w-3.5 h-3.5" />
+              Editar cartão
+            </DropdownMenuItem>
+          </DropdownMenuContent>
+        </DropdownMenu>
       </div>
 
       {/* Month selector + Add button row */}
