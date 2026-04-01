@@ -273,7 +273,7 @@ const GestaoFinanceira = () => {
                     animate={{ opacity: 1, y: 0 }}
                     transition={{ delay: idx * 0.06 }}
                     onClick={() => navigate(`/conta/${acc.id}`)}
-                    className="relative rounded-2xl overflow-hidden cursor-pointer group min-w-0 shrink-0 basis-[80%] border border-border/15 hover:border-primary/15 transition-all duration-300 active:scale-[0.98]"
+                    className="relative rounded-2xl overflow-hidden cursor-pointer group min-w-0 shrink-0 basis-[80%] border border-primary/20 hover:border-primary/40 transition-all duration-300 active:scale-[0.98]"
                     style={{ background: "linear-gradient(135deg, hsl(var(--card)) 0%, hsl(var(--background)) 100%)" }}
                   >
                     <div className="p-4 space-y-4">
@@ -281,12 +281,10 @@ const GestaoFinanceira = () => {
                       <div className="flex items-center justify-between">
                         <div className="flex items-center gap-3">
                           <div className={cn(
-                            "w-11 h-11 rounded-2xl flex items-center justify-center",
-                            "ring-2 ring-offset-2 ring-offset-background",
-                            accent.dot.replace("bg-", "ring-"),
+                            "w-8 h-8 rounded-xl flex items-center justify-center",
                             accent.iconBg
                           )}>
-                            <Icon className="w-5 h-5 text-foreground/80" />
+                            <Icon className={cn("w-4 h-4", accent.dot.replace("bg-", "text-"))} />
                           </div>
                           <div>
                             <p className="text-sm font-bold text-foreground leading-tight">{acc.name}</p>
@@ -348,19 +346,17 @@ const GestaoFinanceira = () => {
                     animate={{ opacity: 1, y: 0 }}
                     transition={{ delay: idx * 0.06 }}
                     onClick={() => navigate(`/conta/${acc.id}`)}
-                    className="relative rounded-2xl overflow-hidden cursor-pointer group border border-border/15 hover:border-primary/15 transition-all duration-300 active:scale-[0.98]"
+                    className="relative rounded-2xl overflow-hidden cursor-pointer group border border-primary/20 hover:border-primary/40 transition-all duration-300 active:scale-[0.98]"
                     style={{ background: "linear-gradient(135deg, hsl(var(--card)) 0%, hsl(var(--background)) 100%)" }}
                   >
                     <div className="p-4 space-y-4">
                       <div className="flex items-center justify-between">
                         <div className="flex items-center gap-3">
                           <div className={cn(
-                            "w-11 h-11 rounded-2xl flex items-center justify-center",
-                            "ring-2 ring-offset-2 ring-offset-background",
-                            accent.dot.replace("bg-", "ring-"),
+                            "w-8 h-8 rounded-xl flex items-center justify-center",
                             accent.iconBg
                           )}>
-                            <Icon className="w-5 h-5 text-foreground/80" />
+                            <Icon className={cn("w-4 h-4", accent.dot.replace("bg-", "text-"))} />
                           </div>
                           <div>
                             <p className="text-sm font-bold text-foreground leading-tight">{acc.name}</p>
