@@ -20,15 +20,33 @@ import {
   type CustomCategory,
 } from "@/services/categoryService";
 
-const DEFAULT_EXPENSE = [
-  "Alimentação", "Transporte", "Saúde", "Assinaturas",
-  "Lazer", "Moradia", "Educação", "Vestuário", "Pets",
-  "Beleza", "Presentes", "Viagem", "Tecnologia", "Impostos",
-];
-const DEFAULT_INCOME = [
-  "Salário", "Freelance", "Investimentos", "Vendas",
-  "Aluguéis", "Bônus", "Comissão", "Mesada",
-];
+const DEFAULT_CATEGORY_MAP: Record<string, { icon: any; type: "despesa" | "receita" }> = {
+  "Alimentação": { icon: Utensils, type: "despesa" },
+  "Transporte": { icon: Car, type: "despesa" },
+  "Saúde": { icon: Heart, type: "despesa" },
+  "Assinaturas": { icon: Repeat, type: "despesa" },
+  "Lazer": { icon: Gamepad2, type: "despesa" },
+  "Moradia": { icon: Home, type: "despesa" },
+  "Educação": { icon: GraduationCap, type: "despesa" },
+  "Vestuário": { icon: Shirt, type: "despesa" },
+  "Pets": { icon: PawPrint, type: "despesa" },
+  "Beleza": { icon: Scissors, type: "despesa" },
+  "Presentes": { icon: Gift, type: "despesa" },
+  "Viagem": { icon: Plane, type: "despesa" },
+  "Tecnologia": { icon: Smartphone, type: "despesa" },
+  "Impostos": { icon: Receipt, type: "despesa" },
+  "Salário": { icon: DollarSign, type: "receita" },
+  "Freelance": { icon: Briefcase, type: "receita" },
+  "Investimentos": { icon: TrendingUp, type: "receita" },
+  "Vendas": { icon: ShoppingBag, type: "receita" },
+  "Aluguéis": { icon: Home, type: "receita" },
+  "Bônus": { icon: Award, type: "receita" },
+  "Comissão": { icon: Users, type: "receita" },
+  "Mesada": { icon: Wallet, type: "receita" },
+};
+
+const DEFAULT_EXPENSE = Object.entries(DEFAULT_CATEGORY_MAP).filter(([, v]) => v.type === "despesa").map(([k]) => k);
+const DEFAULT_INCOME = Object.entries(DEFAULT_CATEGORY_MAP).filter(([, v]) => v.type === "receita").map(([k]) => k);
 
 export default function GerenciarCategorias() {
   const { user } = useAuth();
