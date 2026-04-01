@@ -121,6 +121,17 @@ export async function deleteTransaction(id: string) {
   if (error) throw error;
 }
 
+export async function getTransactionById(id: string) {
+  const { data, error } = await supabase
+    .from("transactions")
+    .select("*")
+    .eq("id", id)
+    .single();
+
+  if (error) throw error;
+  return data;
+}
+
 // Account helpers
 export async function getAccounts(includeInactive = false) {
   let query = supabase
