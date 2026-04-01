@@ -179,12 +179,19 @@ const FaturaCartao = () => {
     } else {
       // Open NovaTransacaoModal in edit mode — fetch full transaction
       try {
-        const tx = await getTransactionById(transactionId);
+        let tx = await getTransactionById(transactionId);
+        // If this is a child installment, get the parent instead
+        if (tx.parent_transaction_id) {
+          tx = await getTransactionById(tx.parent_transaction_id);
+        }
+        // For parcelado, show the total amount (per-installment × total installments)
+        const isParcelado = tx.recurrence_type === "parcelado" && tx.installments && tx.installments > 1;
+        const displayAmount = isParcelado ? Number(tx.amount) * tx.installments : Number(tx.amount);
         setEditingTransaction({
           id: tx.id,
           name: tx.name,
           type: tx.type as "receita" | "despesa",
-          amount: Number(tx.amount),
+          amount: displayAmount,
           category: tx.category,
           date: tx.date,
           status: tx.status as "pago" | "pendente",
