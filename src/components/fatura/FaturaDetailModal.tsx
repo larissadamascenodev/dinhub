@@ -223,13 +223,13 @@ export default function FaturaDetailModal({ open, onClose, card, month, year, to
 
           {/* CTA */}
           <div className="px-5 pb-5 pt-2">
-            <Button
+            <button
               onClick={handleViewFull}
-              className="w-full h-11 rounded-xl text-xs font-bold gap-1.5"
+              className="w-full h-11 rounded-xl text-xs font-bold gap-1.5 inline-flex items-center justify-center bg-primary/15 text-primary border border-primary/20 hover:bg-primary/25 transition-colors backdrop-blur-sm"
             >
               Ver fatura completa
               <ChevronRight className="w-3.5 h-3.5" />
-            </Button>
+            </button>
           </div>
         </motion.div>
       </motion.div>
