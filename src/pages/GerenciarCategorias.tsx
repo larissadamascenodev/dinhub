@@ -11,6 +11,7 @@ import {
   createCustomCategory,
   updateCustomCategory,
   deleteCustomCategory,
+  hideDefaultCategory,
   type CustomCategory,
 } from "@/services/categoryService";
 
@@ -48,8 +49,10 @@ export default function GerenciarCategorias() {
 
   useEffect(() => { fetchCategories(); }, [fetchCategories]);
 
-  const filteredCustom = customCats.filter((c) => c.type === tab);
-  const defaults = tab === "despesa" ? DEFAULT_EXPENSE : DEFAULT_INCOME;
+  const filteredCustom = customCats.filter((c) => c.type === tab && !c.is_hidden_default);
+  const hiddenDefaults = customCats.filter((c) => c.type === tab && c.is_hidden_default).map((c) => c.name);
+  const defaults = (tab === "despesa" ? DEFAULT_EXPENSE : DEFAULT_INCOME).filter((d) => !hiddenDefaults.includes(d));
+  const [editingDefault, setEditingDefault] = useState<string | null>(null);
 
   const handleCreate = async (data: { name: string; icon: string; color: string }) => {
     if (!user) return;
@@ -82,6 +85,35 @@ export default function GerenciarCategorias() {
       fetchCategories();
     } catch {
       toast.error("Erro ao remover");
+    }
+  };
+
+  const handleDeleteDefault = async (name: string) => {
+    if (!user) return;
+    try {
+      await hideDefaultCategory(user.id, name, tab);
+      toast.success("Categoria removida");
+      fetchCategories();
+    } catch {
+      toast.error("Erro ao remover");
+    }
+  };
+
+  const handleEditDefault = (name: string) => {
+    setEditingDefault(name);
+  };
+
+  const handleSaveEditedDefault = async (data: { name: string; icon: string; color: string }) => {
+    if (!user || !editingDefault) return;
+    try {
+      // Hide the default and create a custom one
+      await hideDefaultCategory(user.id, editingDefault, tab);
+      await createCustomCategory(user.id, { ...data, type: tab });
+      toast.success("Categoria atualizada!");
+      setEditingDefault(null);
+      fetchCategories();
+    } catch {
+      toast.error("Erro ao editar categoria");
     }
   };
 
@@ -203,18 +235,35 @@ export default function GerenciarCategorias() {
           Categorias padrão
         </p>
         <div className="space-y-1">
-          {defaults.map((cat) => (
-            <div
-              key={cat}
-              className="flex items-center gap-3 px-3 py-2.5 rounded-xl bg-muted/5"
-            >
-              <div className="w-9 h-9 rounded-xl flex items-center justify-center text-lg shrink-0 bg-muted/10 border border-border/10">
-                📋
-              </div>
-              <span className="flex-1 text-sm text-muted-foreground">{cat}</span>
-              <span className="text-[9px] text-muted-foreground/40 uppercase">padrão</span>
-            </div>
-          ))}
+          <AnimatePresence>
+            {defaults.map((cat) => (
+              <motion.div
+                key={cat}
+                layout
+                initial={{ opacity: 0, y: 8 }}
+                animate={{ opacity: 1, y: 0 }}
+                exit={{ opacity: 0, x: -40 }}
+                className="flex items-center gap-3 px-3 py-2.5 rounded-xl bg-muted/5"
+              >
+                <div className="w-9 h-9 rounded-xl flex items-center justify-center text-lg shrink-0 bg-muted/10 border border-border/10">
+                  <span style={{ filter: "saturate(1.3) brightness(1.2)" }}>📋</span>
+                </div>
+                <span className="flex-1 text-sm text-muted-foreground">{cat}</span>
+                <button
+                  onClick={() => handleEditDefault(cat)}
+                  className="w-7 h-7 rounded-full bg-muted/20 flex items-center justify-center text-muted-foreground hover:text-foreground transition-colors"
+                >
+                  <Pencil className="w-3 h-3" />
+                </button>
+                <button
+                  onClick={() => handleDeleteDefault(cat)}
+                  className="w-7 h-7 rounded-full bg-destructive/10 flex items-center justify-center text-destructive/60 hover:text-destructive transition-colors"
+                >
+                  <Trash2 className="w-3 h-3" />
+                </button>
+              </motion.div>
+            ))}
+          </AnimatePresence>
         </div>
       </div>
 
@@ -235,6 +284,17 @@ export default function GerenciarCategorias() {
         initialIcon={editingCat?.icon ?? "📋"}
         initialColor={editingCat?.color ?? "#8b5cf6"}
         title="Editar Categoria"
+      />
+
+      {/* Edit Default Modal */}
+      <CategoryCreateModal
+        open={!!editingDefault}
+        onClose={() => setEditingDefault(null)}
+        onSave={handleSaveEditedDefault}
+        initialName={editingDefault ?? ""}
+        initialIcon="📋"
+        initialColor="#8b5cf6"
+        title="Editar Categoria Padrão"
       />
     </div>
   );
