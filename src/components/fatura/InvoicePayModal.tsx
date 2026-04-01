@@ -80,14 +80,13 @@ export default function InvoicePayModal({
   }, [mode, total, parsedEntryAmount, parsedInstallments, parsedInstallmentAmount]);
 
   const canConfirm = (() => {
-    if (!payAccountId) { console.log("canConfirm: no payAccountId"); return false; }
-    if (mode === "minimo") { const r = parsedMinAmount > 0 && parsedMinAmount < total; console.log("canConfirm minimo:", r, {parsedMinAmount, total}); return r; }
-    if (mode === "parcelado") { const r = parsedInstallments >= 2 && parsedInstallmentAmount > 0; console.log("canConfirm parcelado:", r, {parsedInstallments, parsedInstallmentAmount, installmentAmount}); return r; }
+    if (!payAccountId) return false;
+    if (mode === "minimo") return parsedMinAmount > 0 && parsedMinAmount < total;
+    if (mode === "parcelado") return parsedInstallments >= 2 && parsedInstallmentAmount > 0;
     return true;
   })();
 
   const handleConfirm = () => {
-    console.log("handleConfirm called", { mode, canConfirm, payAccountId, parsedMinAmount, parsedInstallmentAmount, parsedEntryAmount, parsedInstallments, paying, total });
     if (mode === "total") {
       onConfirm({ mode: "total" });
     } else if (mode === "minimo") {
@@ -142,7 +141,7 @@ export default function InvoicePayModal({
 
               {/* Amount */}
               <div className="text-center py-1">
-                <p className="text-[10px] text-muted-foreground uppercase tracking-wider font-bold mb-1">Valor da fatura</p>
+                <p className="text-[10px] text-muted-foreground uppercase tracking-wider font-bold mb-1">Saldo em aberto</p>
                 <p className="text-2xl font-extrabold text-primary tracking-tight">{formatCurrency(total)}</p>
               </div>
 

@@ -216,6 +216,8 @@ const FaturaCartao = () => {
   };
 
   const total = currentInvoice ? Number(currentInvoice.total_amount) : 0;
+  const paidAmount = currentInvoice ? Number((currentInvoice as any).paid_amount ?? 0) : 0;
+  const outstanding = Math.max(0, total - paidAmount);
   const limitTotal = card ? Number(card.limit) : 0;
   const usedLimit = card ? Number(card.used_limit) : 0;
   const availableLimit = limitTotal - usedLimit;
@@ -307,14 +309,15 @@ const FaturaCartao = () => {
 
   const invoiceStatus = useMemo(() => {
     if (!currentInvoice) return null;
-    if (currentInvoice.is_paid) return "paid";
+    // Only show "paid" if truly no outstanding balance
+    if (currentInvoice.is_paid && outstanding <= 0) return "paid";
     if (card) {
       const closingDate = new Date(selectedYear, selectedMonth - 1, card.closing_day);
       const today = new Date();
       if (today > closingDate) return "closed";
     }
     return "open";
-  }, [currentInvoice, card, selectedMonth, selectedYear]);
+  }, [currentInvoice, card, selectedMonth, selectedYear, outstanding]);
 
   const categoryBreakdown = useMemo(() => {
     if (items.length === 0) return [];
@@ -507,15 +510,21 @@ const FaturaCartao = () => {
           </div>
 
           {/* Pay button */}
-          {currentInvoice && !currentInvoice.is_paid && total > 0 && (
+          {currentInvoice && outstanding > 0 && (
             <>
               <div className="h-px bg-border/20" />
+              {paidAmount > 0 && (
+                <div className="flex items-center justify-between text-[11px] px-1">
+                  <span className="text-muted-foreground">Já pago</span>
+                  <span className="font-bold text-primary">{formatCurrency(paidAmount)}</span>
+                </div>
+              )}
               <Button
                 onClick={() => setShowPayModal(true)}
                 className="w-full h-11 rounded-xl text-xs font-bold bg-primary/15 text-primary border border-primary/30 hover:bg-primary/25 backdrop-blur-md"
               >
                 <Wallet className="w-3.5 h-3.5 mr-1.5" />
-                Pagar Fatura · {formatCurrency(total)}
+                Pagar Fatura · {formatCurrency(outstanding)}
               </Button>
             </>
           )}
@@ -549,7 +558,7 @@ const FaturaCartao = () => {
       <InvoicePayModal
         open={showPayModal}
         onClose={() => setShowPayModal(false)}
-        total={total}
+        total={outstanding}
         accounts={accounts}
         payAccountId={payAccountId}
         setPayAccountId={setPayAccountId}

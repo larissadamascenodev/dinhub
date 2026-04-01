@@ -61,8 +61,12 @@ Deno.serve(async (req) => {
       });
     }
 
-    if (invoice.is_paid) {
-      return new Response(JSON.stringify({ error: "Invoice already paid" }), {
+    const totalAmount = Number(invoice.total_amount);
+    const alreadyPaid = Number(invoice.paid_amount ?? 0);
+    const outstanding = Math.max(0, totalAmount - alreadyPaid);
+
+    if (outstanding <= 0) {
+      return new Response(JSON.stringify({ error: "Fatura já está totalmente paga" }), {
         status: 400,
         headers: { ...corsHeaders, "Content-Type": "application/json" },
       });
@@ -83,27 +87,22 @@ Deno.serve(async (req) => {
       });
     }
 
-    const totalAmount = Number(invoice.total_amount);
-    let debitAmount = totalAmount;
+    let debitAmount = outstanding;
     let remainderToNextInvoice = 0;
 
     if (mode === "minimo") {
       const paid = Number(amount_paid) || 0;
-      if (paid <= 0 || paid >= totalAmount) {
-        return new Response(JSON.stringify({ error: "Valor mínimo deve ser maior que 0 e menor que o total" }), {
+      if (paid <= 0 || paid >= outstanding) {
+        return new Response(JSON.stringify({ error: "Valor mínimo deve ser maior que 0 e menor que o saldo devedor" }), {
           status: 400,
           headers: { ...corsHeaders, "Content-Type": "application/json" },
         });
       }
       debitAmount = paid;
-      remainderToNextInvoice = totalAmount - paid;
+      remainderToNextInvoice = outstanding - paid;
     } else if (mode === "parcelado") {
       const entry = Number(entry_amount) || 0;
-      const numInstallments = Number(installments) || 2;
-      // Debit only the entry amount now
       debitAmount = entry;
-      // The remaining amount will generate installments on future invoices
-      // (handled below)
     }
 
     // Subtract from account balance
@@ -120,11 +119,15 @@ Deno.serve(async (req) => {
       });
     }
 
-    // Mark invoice as paid
+    // Update invoice: accumulate paid_amount, set is_paid if fully paid
+    const newPaidAmount = alreadyPaid + debitAmount;
+    const isFullyPaid = mode === "total" || (mode === "minimo" && remainderToNextInvoice <= 0);
+    
     const { error: payError } = await adminClient
       .from("invoices")
       .update({
-        is_paid: true,
+        paid_amount: newPaidAmount,
+        is_paid: isFullyPaid && newPaidAmount >= totalAmount,
         paid_at: new Date().toISOString(),
         paid_from_account_id: account_id,
       })
@@ -152,7 +155,6 @@ Deno.serve(async (req) => {
         nextYear += 1;
       }
 
-      // Get or create the next invoice
       const { data: nextInvoiceId } = await adminClient.rpc("get_or_create_invoice", {
         p_credit_card_id: invoice.credit_card_id,
         p_month: nextMonth,
@@ -161,7 +163,6 @@ Deno.serve(async (req) => {
       });
 
       if (nextInvoiceId) {
-        // Update next invoice total to include the remainder
         const { data: nextInvoice } = await adminClient
           .from("invoices")
           .select("total_amount")
@@ -181,7 +182,7 @@ Deno.serve(async (req) => {
     if (mode === "parcelado") {
       const entry = Number(entry_amount) || 0;
       const numInstallments = Number(installments) || 2;
-      const remaining = totalAmount - entry;
+      const remaining = outstanding - entry;
       const monthlyRate = 0.0199;
       const installmentValue = remaining * (monthlyRate * Math.pow(1 + monthlyRate, numInstallments)) / (Math.pow(1 + monthlyRate, numInstallments) - 1);
 
@@ -225,6 +226,7 @@ Deno.serve(async (req) => {
         amount_debited: debitAmount,
         new_balance: newBalance,
         remainder: remainderToNextInvoice,
+        outstanding_after: outstanding - debitAmount,
       }),
       { status: 200, headers: { ...corsHeaders, "Content-Type": "application/json" } }
     );

@@ -222,6 +222,7 @@ export type Database = {
           id: string
           is_paid: boolean
           month: number
+          paid_amount: number
           paid_at: string | null
           paid_from_account_id: string | null
           total_amount: number
@@ -235,6 +236,7 @@ export type Database = {
           id?: string
           is_paid?: boolean
           month: number
+          paid_amount?: number
           paid_at?: string | null
           paid_from_account_id?: string | null
           total_amount?: number
@@ -248,6 +250,7 @@ export type Database = {
           id?: string
           is_paid?: boolean
           month?: number
+          paid_amount?: number
           paid_at?: string | null
           paid_from_account_id?: string | null
           total_amount?: number
