@@ -309,14 +309,15 @@ const FaturaCartao = () => {
 
   const invoiceStatus = useMemo(() => {
     if (!currentInvoice) return null;
-    if (currentInvoice.is_paid) return "paid";
+    // Only show "paid" if truly no outstanding balance
+    if (currentInvoice.is_paid && outstanding <= 0) return "paid";
     if (card) {
       const closingDate = new Date(selectedYear, selectedMonth - 1, card.closing_day);
       const today = new Date();
       if (today > closingDate) return "closed";
     }
     return "open";
-  }, [currentInvoice, card, selectedMonth, selectedYear]);
+  }, [currentInvoice, card, selectedMonth, selectedYear, outstanding]);
 
   const categoryBreakdown = useMemo(() => {
     if (items.length === 0) return [];
