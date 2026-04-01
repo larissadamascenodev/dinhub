@@ -28,6 +28,7 @@ import {
 } from "@/services/transactionService";
 import { getCustomCategories, createCustomCategory, type CustomCategory } from "@/services/categoryService";
 import CategoryCreateModal, { getIconComponent } from "@/components/dashboard/CategoryCreateModal";
+import { getDefaultCategoryIcon } from "@/lib/categoryIcons";
 
 interface Props {
   open: boolean;
