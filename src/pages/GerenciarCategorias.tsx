@@ -10,7 +10,7 @@ import { useNavigate } from "react-router-dom";
 import { toast } from "sonner";
 import { useAuth } from "@/contexts/AuthContext";
 import { cn } from "@/lib/utils";
-import CategoryCreateModal from "@/components/dashboard/CategoryCreateModal";
+import CategoryCreateModal, { getIconComponent } from "@/components/dashboard/CategoryCreateModal";
 import {
   getCustomCategories,
   createCustomCategory,
@@ -218,16 +218,21 @@ export default function GerenciarCategorias() {
                   exit={{ opacity: 0, x: -40 }}
                   className="flex items-center gap-3 px-3 py-2.5 rounded-xl bg-card/60 border border-border/10"
                 >
-                  <div
-                    className="w-9 h-9 rounded-xl flex items-center justify-center text-lg shrink-0"
-                    style={{
-                      backgroundColor: `${cat.color}20`,
-                      border: `1px solid ${cat.color}30`,
-                      filter: `drop-shadow(0 0 6px ${cat.color}60)`,
-                    }}
-                  >
-                    <span style={{ filter: "saturate(1.3) brightness(1.2)" }}>{cat.icon}</span>
-                  </div>
+                  {(() => {
+                    const CatIcon = getIconComponent(cat.icon);
+                    return (
+                      <div
+                        className="w-9 h-9 rounded-xl flex items-center justify-center shrink-0"
+                        style={{
+                          backgroundColor: `${cat.color}20`,
+                          border: `1px solid ${cat.color}30`,
+                          filter: `drop-shadow(0 0 6px ${cat.color}60)`,
+                        }}
+                      >
+                        <CatIcon className="w-4 h-4" style={{ color: cat.color }} />
+                      </div>
+                    );
+                  })()}
                   <span className="flex-1 text-sm font-semibold text-foreground truncate">{cat.name}</span>
                   <div
                     className="w-3 h-3 rounded-full shrink-0"
@@ -309,7 +314,7 @@ export default function GerenciarCategorias() {
         onClose={() => setEditingCat(null)}
         onSave={handleUpdate}
         initialName={editingCat?.name ?? ""}
-        initialIcon={editingCat?.icon ?? "📋"}
+        initialIcon={editingCat?.icon ?? "file-text"}
         initialColor={editingCat?.color ?? "#8b5cf6"}
         title="Editar Categoria"
       />
@@ -320,7 +325,7 @@ export default function GerenciarCategorias() {
         onClose={() => setEditingDefault(null)}
         onSave={handleSaveEditedDefault}
         initialName={editingDefault ?? ""}
-        initialIcon="📋"
+        initialIcon="file-text"
         initialColor="#8b5cf6"
         title="Editar Categoria Padrão"
       />
