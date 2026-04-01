@@ -137,7 +137,15 @@ const GestaoFinanceira = () => {
   const [newCardColor, setNewCardColor] = useState("emerald");
   const [newCardDigits, setNewCardDigits] = useState("");
 
-  const fetchData = async () => {
+  // Aporte state
+  const [showAporteModal, setShowAporteModal] = useState(false);
+  const [aporteTargetId, setAporteTargetId] = useState("");
+  const [aporteTargetName, setAporteTargetName] = useState("");
+  const [aporteFromId, setAporteFromId] = useState("");
+  const [aporteCents, setAporteCents] = useState(0);
+  const [aporteSubmitting, setAporteSubmitting] = useState(false);
+
+
     if (!user) return;
     try {
       const [accs, cards] = await Promise.all([getAccounts(), getCreditCards()]);
