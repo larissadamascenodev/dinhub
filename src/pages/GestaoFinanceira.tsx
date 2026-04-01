@@ -127,6 +127,9 @@ const GestaoFinanceira = () => {
   const [newAccType, setNewAccType] = useState<"checking" | "cash" | "savings" | "investment">("checking");
   const [newAccBalance, setNewAccBalance] = useState("");
   const [newAccColor, setNewAccColor] = useState("violet");
+  const [newInvestmentType, setNewInvestmentType] = useState("cdb");
+  const [newRateType, setNewRateType] = useState("percent_cdi");
+  const [newAnnualRate, setNewAnnualRate] = useState("");
 
   // Add card state
   const [showAddCard, setShowAddCard] = useState(false);
