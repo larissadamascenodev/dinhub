@@ -30,6 +30,8 @@ interface Props {
   onClose: () => void;
   onSuccess: () => void;
   initialType?: "receita" | "despesa";
+  initialPaymentMethod?: "conta" | "cartao";
+  initialCreditCardId?: string;
 }
 
 const CATEGORIES_EXPENSE = [
@@ -66,7 +68,7 @@ interface CreditCardItem {
   color: string | null;
 }
 
-const NovaTransacaoModal = ({ open, onClose, onSuccess, initialType = "despesa" }: Props) => {
+const NovaTransacaoModal = ({ open, onClose, onSuccess, initialType = "despesa", initialPaymentMethod, initialCreditCardId }: Props) => {
   const { user } = useAuth();
   const [type, setType] = useState<"receita" | "despesa">(initialType);
   const [status, setStatus] = useState<"pago" | "pendente">("pago");
@@ -123,7 +125,11 @@ const NovaTransacaoModal = ({ open, onClose, onSuccess, initialType = "despesa" 
       getCreditCards().then((cards) => {
         const typedCards = cards as unknown as CreditCardItem[];
         setCreditCards(typedCards);
-        if (typedCards.length > 0) setCreditCardId(typedCards[0].id);
+        if (initialCreditCardId && typedCards.some(c => c.id === initialCreditCardId)) {
+          setCreditCardId(initialCreditCardId);
+        } else if (typedCards.length > 0) {
+          setCreditCardId(typedCards[0].id);
+        }
       });
     }
   }, [open, user]);
@@ -140,7 +146,7 @@ const NovaTransacaoModal = ({ open, onClose, onSuccess, initialType = "despesa" 
       setDate(new Date());
       setDateMode("hoje");
       setShowCalendar(false);
-      setPaymentMethod("conta");
+      setPaymentMethod(initialPaymentMethod ?? "conta");
       setRecurrenceType("unica");
       setInstallments(2);
       setPaidInstallments(0);

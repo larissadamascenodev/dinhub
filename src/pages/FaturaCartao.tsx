@@ -16,6 +16,7 @@ import InvoiceTransactionList from "@/components/fatura/InvoiceTransactionList";
 import InvoicePayModal from "@/components/fatura/InvoicePayModal";
 import InvoiceHistoryChart from "@/components/fatura/InvoiceHistoryChart";
 import InvoiceAddChooserModal from "@/components/fatura/InvoiceAddChooserModal";
+import NovaTransacaoModal from "@/components/dashboard/NovaTransacaoModal";
 import MonthSelector from "@/components/dashboard/MonthSelector";
 
 export interface EnrichedItem {
@@ -85,6 +86,7 @@ const FaturaCartao = () => {
   const [paying, setPaying] = useState(false);
   const [showPayModal, setShowPayModal] = useState(false);
   const [showAddChooser, setShowAddChooser] = useState(false);
+  const [showManualAdd, setShowManualAdd] = useState(false);
   const [payAccountId, setPayAccountId] = useState("");
 
   const currentInvoice = useMemo(
@@ -440,7 +442,7 @@ const FaturaCartao = () => {
       <InvoiceAddChooserModal
         open={showAddChooser}
         onClose={() => setShowAddChooser(false)}
-        onManual={() => navigate(`/transacoes`)}
+        onManual={() => setShowManualAdd(true)}
         onImage={(file) => {
           toast.info("Processamento de imagem em breve!");
         }}
@@ -450,6 +452,19 @@ const FaturaCartao = () => {
         onCsv={(file) => {
           toast.info("Processamento de CSV em breve!");
         }}
+      />
+
+      {/* Manual Add Modal — pre-set to credit card */}
+      <NovaTransacaoModal
+        open={showManualAdd}
+        onClose={() => setShowManualAdd(false)}
+        onSuccess={async () => {
+          setShowManualAdd(false);
+          await refreshItems();
+        }}
+        initialType="despesa"
+        initialPaymentMethod="cartao"
+        initialCreditCardId={cardId}
       />
     </div>
   );
