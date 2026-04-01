@@ -142,6 +142,28 @@ export default function CategoryCreateModal({
                     {color === c && <Check className="w-4 h-4 text-white drop-shadow-md" />}
                   </button>
                 ))}
+                {/* Custom color picker */}
+                <label
+                  className={cn(
+                    "w-9 h-9 rounded-xl flex items-center justify-center transition-all cursor-pointer border-2 border-dashed",
+                    !COLOR_OPTIONS.includes(color)
+                      ? "ring-2 ring-offset-2 ring-offset-card scale-110 border-primary/40"
+                      : "border-border/30 hover:scale-105 hover:border-border/50"
+                  )}
+                  style={!COLOR_OPTIONS.includes(color) ? { backgroundColor: color } : undefined}
+                >
+                  {!COLOR_OPTIONS.includes(color)
+                    ? <Check className="w-4 h-4 text-white drop-shadow-md" />
+                    : <Plus className="w-3.5 h-3.5 text-muted-foreground" />
+                  }
+                  <input
+                    ref={colorInputRef}
+                    type="color"
+                    value={color}
+                    onChange={(e) => setColor(e.target.value)}
+                    className="sr-only"
+                  />
+                </label>
               </div>
             </div>
 
