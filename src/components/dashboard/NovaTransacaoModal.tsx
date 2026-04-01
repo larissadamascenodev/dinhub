@@ -999,18 +999,24 @@ const NovaTransacaoModal = ({ open, onClose, onSuccess, initialType = "despesa",
                                 : "text-foreground hover:bg-muted/50"
                             )}
                           >
-                            {customCat ? (
-                              <span
-                                className="w-7 h-7 rounded-lg flex items-center justify-center text-sm shrink-0"
-                                style={{ backgroundColor: `${customCat.color}20`, border: `1px solid ${customCat.color}30` }}
-                              >
-                                {customCat.icon}
-                              </span>
-                            ) : (
-                              <span className="w-7 h-7 rounded-lg flex items-center justify-center text-sm shrink-0 bg-muted/20">
-                                📋
-                              </span>
-                            )}
+                            {(() => {
+                              if (customCat) {
+                                const CatIcon = getIconComponent(customCat.icon);
+                                return (
+                                  <span
+                                    className="w-7 h-7 rounded-lg flex items-center justify-center shrink-0"
+                                    style={{ backgroundColor: `${customCat.color}20`, border: `1px solid ${customCat.color}30` }}
+                                  >
+                                    <CatIcon className="w-3.5 h-3.5" style={{ color: customCat.color }} />
+                                  </span>
+                                );
+                              }
+                              return (
+                                <span className="w-7 h-7 rounded-lg flex items-center justify-center shrink-0 bg-muted/20">
+                                  <FileText className="w-3.5 h-3.5 text-muted-foreground" />
+                                </span>
+                              );
+                            })()}
                             {cat}
                           </button>
                         );
