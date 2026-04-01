@@ -360,7 +360,7 @@ const FaturaCartao = () => {
       {/* Header — Back + 3-dot menu */}
       <div className="flex items-center justify-between">
         <button
-          onClick={() => navigate(-1)}
+          onClick={() => navigate("/gestao")}
           className="flex items-center gap-1.5 text-sm text-muted-foreground hover:text-foreground transition-colors"
         >
           <ArrowLeft className="w-4 h-4" />
