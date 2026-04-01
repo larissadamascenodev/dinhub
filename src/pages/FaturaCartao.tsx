@@ -90,6 +90,11 @@ const FaturaCartao = () => {
   const [showAddChooser, setShowAddChooser] = useState(false);
   const [showManualAdd, setShowManualAdd] = useState(false);
   const [payAccountId, setPayAccountId] = useState("");
+  const [uploadProcessing, setUploadProcessing] = useState(false);
+  const [extractedItems, setExtractedItems] = useState<ExtractedItem[]>([]);
+  const [extractedMessage, setExtractedMessage] = useState("");
+  const [showReviewModal, setShowReviewModal] = useState(false);
+  const [confirmingImport, setConfirmingImport] = useState(false);
 
   const currentInvoice = useMemo(
     () => invoices.find((i) => i.month === selectedMonth && i.year === selectedYear),
