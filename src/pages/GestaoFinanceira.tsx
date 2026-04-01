@@ -807,6 +807,46 @@ const GestaoFinanceira = () => {
               </SelectContent>
             </Select>
           )}
+          {newAccType === "investment" && (
+            <>
+              <Select value={newInvestmentType} onValueChange={setNewInvestmentType}>
+                <SelectTrigger className="bg-muted/30 border-border/20 h-11 rounded-xl">
+                  <SelectValue placeholder="Tipo de investimento" />
+                </SelectTrigger>
+                <SelectContent>
+                  <SelectItem value="caixinha">Caixinha</SelectItem>
+                  <SelectItem value="cdb">CDB</SelectItem>
+                  <SelectItem value="lci">LCI</SelectItem>
+                  <SelectItem value="lca">LCA</SelectItem>
+                  <SelectItem value="tesouro_selic">Tesouro Selic</SelectItem>
+                  <SelectItem value="poupanca">Poupança</SelectItem>
+                  <SelectItem value="fundo">Fundo de Investimento</SelectItem>
+                  <SelectItem value="outro">Outro</SelectItem>
+                </SelectContent>
+              </Select>
+              {newInvestmentType !== "poupanca" && (
+                <div className="grid grid-cols-2 gap-3">
+                  <Select value={newRateType} onValueChange={setNewRateType}>
+                    <SelectTrigger className="bg-muted/30 border-border/20 h-11 rounded-xl">
+                      <SelectValue />
+                    </SelectTrigger>
+                    <SelectContent>
+                      <SelectItem value="percent_cdi">% do CDI</SelectItem>
+                      <SelectItem value="fixed_annual">% a.a.</SelectItem>
+                      <SelectItem value="cdi_plus">CDI +</SelectItem>
+                    </SelectContent>
+                  </Select>
+                  <Input
+                    placeholder={newRateType === "percent_cdi" ? "Ex: 115" : newRateType === "cdi_plus" ? "Ex: 2.5" : "Ex: 14.5"}
+                    type="number"
+                    value={newAnnualRate}
+                    onChange={(e) => setNewAnnualRate(e.target.value)}
+                    className="bg-muted/30 border-border/20 h-11 rounded-xl"
+                  />
+                </div>
+              )}
+            </>
+          )}
           <div>
             <Label className="text-xs text-muted-foreground mb-1.5 block">
               {newAccType === "investment" ? "Valor investido (opcional)" : "Saldo inicial (opcional)"}
