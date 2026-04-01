@@ -1,6 +1,6 @@
-import { useState, useEffect, useMemo } from "react";
-import { motion, AnimatePresence } from "framer-motion";
-import { ArrowLeft, Briefcase, ArrowDownLeft, ArrowUpRight, TrendingUp, Calendar, X, Pencil, Trash2 } from "lucide-react";
+import { useState, useEffect, useMemo, useRef } from "react";
+import { motion, AnimatePresence, useSpring, useTransform } from "framer-motion";
+import { ArrowLeft, Briefcase, ArrowDownLeft, ArrowUpRight, TrendingUp, X, Trash2, Info, Sparkles } from "lucide-react";
 import { useNavigate, useParams } from "react-router-dom";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -10,7 +10,9 @@ import { toast } from "sonner";
 import { useAuth } from "@/contexts/AuthContext";
 import { supabase } from "@/integrations/supabase/client";
 import { cn } from "@/lib/utils";
+import { LineChart, Line, XAxis, YAxis, Tooltip, ResponsiveContainer, Area, AreaChart } from "recharts";
 
+/* ═══════ Types ═══════ */
 interface Account {
   id: string;
   name: string;
@@ -37,41 +39,72 @@ interface Transaction {
   to_account_id: string | null;
 }
 
+/* ═══════ Constants ═══════ */
+const CDI_ANNUAL_DEFAULT = 13.65; // % a.a. — editável
+const IPCA_ANNUAL_DEFAULT = 4.5; // % a.a. — referência
+const POUPANCA_MONTHLY = 0.5;
+
 const INVESTMENT_TYPE_LABELS: Record<string, string> = {
-  cdb: "CDB",
-  lci: "LCI",
-  lca: "LCA",
-  tesouro_selic: "Tesouro Selic",
-  poupanca: "Poupança",
-  fundo: "Fundo de Investimento",
-  caixinha: "Caixinha",
-  outro: "Outro",
+  cdb: "CDB", lci: "LCI", lca: "LCA", tesouro_selic: "Tesouro Selic",
+  poupanca: "Poupança", fundo: "Fundo de Investimento", caixinha: "Caixinha", outro: "Outro",
 };
 
 const RATE_TYPE_LABELS: Record<string, string> = {
-  percent_cdi: "% do CDI",
-  fixed_annual: "% a.a.",
-  cdi_plus: "CDI +",
+  percent_cdi: "% do CDI", fixed_annual: "% a.a.", fixed_monthly: "% a.m.",
+  ipca_plus: "IPCA +", cdi_plus: "CDI +", custom: "Personalizado",
 };
 
-// CDI anual aproximado (atualizado para referência — abril 2026)
-const CDI_ANNUAL = 14.15; // % a.a.
-const POUPANCA_MONTHLY = 0.5; // Poupança rende ~0.5% a.m. quando Selic > 8.5%
+const SIMULATION_PERIODS = [
+  { label: "1m", months: 1 },
+  { label: "3m", months: 3 },
+  { label: "6m", months: 6 },
+  { label: "1a", months: 12 },
+  { label: "3a", months: 36 },
+];
 
+const MICRO_MESSAGES = [
+  "Dinheiro trabalhando por você… finalmente 😎",
+  "Isso aqui no longo prazo vira jogo 👀",
+  "Parece pouco agora… mas espera 👀",
+  "Juros compostos: a 8ª maravilha do mundo 🌍",
+  "Seu futuro eu agradece 🙌",
+  "Cada dia conta quando é composto 📈",
+];
+
+/* ═══════ Helpers ═══════ */
 function getAnnualRate(rateType: string | null, annualRate: number | null, investmentType: string | null): number {
-  if (investmentType === "poupanca") return (1 + POUPANCA_MONTHLY / 100) ** 12 * 100 - 100; // ~6.17% a.a.
-  if (!rateType || annualRate == null) return CDI_ANNUAL;
+  if (investmentType === "poupanca") return (1 + POUPANCA_MONTHLY / 100) ** 12 * 100 - 100;
+  if (!rateType || annualRate == null) return CDI_ANNUAL_DEFAULT;
 
   switch (rateType) {
     case "percent_cdi":
-      return (annualRate / 100) * CDI_ANNUAL;
+      return (annualRate / 100) * CDI_ANNUAL_DEFAULT;
     case "fixed_annual":
       return annualRate;
+    case "fixed_monthly":
+      return ((1 + annualRate / 100) ** 12 - 1) * 100;
+    case "ipca_plus":
+      return IPCA_ANNUAL_DEFAULT + annualRate;
     case "cdi_plus":
-      return CDI_ANNUAL + annualRate;
+      return CDI_ANNUAL_DEFAULT + annualRate;
+    case "custom":
+      return annualRate; // user provides annual directly
     default:
-      return CDI_ANNUAL;
+      return CDI_ANNUAL_DEFAULT;
   }
+}
+
+function simulateInvestment(principal: number, annualRatePct: number, months: number) {
+  const monthlyRate = (1 + annualRatePct / 100) ** (1 / 12) - 1;
+  const data: { month: number; label: string; value: number }[] = [];
+  let current = principal;
+  data.push({ month: 0, label: "Hoje", value: current });
+  for (let i = 1; i <= months; i++) {
+    current *= (1 + monthlyRate);
+    const label = i <= 12 ? `${i}m` : `${(i / 12).toFixed(0)}a${i % 12 > 0 ? `${i % 12}m` : ""}`;
+    data.push({ month: i, label, value: current });
+  }
+  return data;
 }
 
 function formatCurrency(value: number) {
@@ -82,6 +115,22 @@ function formatPct(value: number) {
   return value.toLocaleString("pt-BR", { minimumFractionDigits: 2, maximumFractionDigits: 2 }) + "%";
 }
 
+/* ═══════ Animated Counter ═══════ */
+const AnimatedCurrency = ({ value, className }: { value: number; className?: string }) => {
+  const spring = useSpring(0, { stiffness: 60, damping: 20 });
+  const display = useTransform(spring, (v) => formatCurrency(v));
+  const [text, setText] = useState(formatCurrency(0));
+
+  useEffect(() => {
+    spring.set(value);
+    const unsub = display.on("change", (v) => setText(v));
+    return unsub;
+  }, [value]);
+
+  return <span className={className}>{text}</span>;
+};
+
+/* ═══════ Accents ═══════ */
 const ACCENT_MAP: Record<string, { iconBg: string; dot: string }> = {
   violet: { iconBg: "bg-violet-500/15", dot: "bg-violet-400" },
   emerald: { iconBg: "bg-emerald-500/15", dot: "bg-emerald-400" },
@@ -97,12 +146,13 @@ function getAccent(color: string | null) {
   return ACCENT_MAP[color ?? "violet"] ?? ACCENT_MAP.violet;
 }
 
+/* ═══════ Modal Overlay ═══════ */
 const ModalOverlay = ({ open, onClose, children }: { open: boolean; onClose: () => void; children: React.ReactNode }) => (
   <AnimatePresence>
     {open && (
       <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }} className="fixed inset-0 z-50 flex items-center justify-center px-4">
         <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }} className="absolute inset-0 bg-black/60 backdrop-blur-sm" onClick={onClose} />
-        <motion.div initial={{ opacity: 0, scale: 0.95, y: 16 }} animate={{ opacity: 1, scale: 1, y: 0 }} exit={{ opacity: 0, scale: 0.95, y: 16 }} transition={{ type: "spring", duration: 0.4 }} className="relative z-10 w-full max-w-md rounded-2xl bg-card border border-border/40 p-6 shadow-2xl">
+        <motion.div initial={{ opacity: 0, scale: 0.95, y: 16 }} animate={{ opacity: 1, scale: 1, y: 0 }} exit={{ opacity: 0, scale: 0.95, y: 16 }} transition={{ type: "spring", duration: 0.4 }} className="relative z-10 w-full max-w-md rounded-2xl bg-card border border-border/40 p-6 shadow-2xl max-h-[85vh] overflow-y-auto">
           {children}
         </motion.div>
       </motion.div>
@@ -110,6 +160,18 @@ const ModalOverlay = ({ open, onClose, children }: { open: boolean; onClose: () 
   </AnimatePresence>
 );
 
+/* ═══════ Custom Tooltip ═══════ */
+const ChartTooltip = ({ active, payload, label }: any) => {
+  if (!active || !payload?.length) return null;
+  return (
+    <div className="rounded-xl bg-card/95 border border-border/30 px-3 py-2 shadow-lg backdrop-blur-sm">
+      <p className="text-[10px] text-muted-foreground">{label}</p>
+      <p className="text-sm font-bold text-primary">{formatCurrency(payload[0].value)}</p>
+    </div>
+  );
+};
+
+/* ═══════ Main Component ═══════ */
 const InvestimentoDetalhe = () => {
   const navigate = useNavigate();
   const { accountId } = useParams<{ accountId: string }>();
@@ -120,11 +182,19 @@ const InvestimentoDetalhe = () => {
   const [transactions, setTransactions] = useState<Transaction[]>([]);
   const [loading, setLoading] = useState(true);
 
-  // Deposit/Withdraw modal
+  // Modal
   const [modalMode, setModalMode] = useState<"deposit" | "withdraw" | null>(null);
   const [modalFromId, setModalFromId] = useState("");
   const [modalCents, setModalCents] = useState(0);
   const [modalSubmitting, setModalSubmitting] = useState(false);
+
+  // Simulation
+  const [simPeriodIdx, setSimPeriodIdx] = useState(3); // default 1 year
+  const [customMonths, setCustomMonths] = useState("");
+  const [showCustom, setShowCustom] = useState(false);
+
+  // Micro-interaction
+  const [microMsg] = useState(() => MICRO_MESSAGES[Math.floor(Math.random() * MICRO_MESSAGES.length)]);
 
   const fetchData = async () => {
     if (!user || !accountId) return;
@@ -143,8 +213,6 @@ const InvestimentoDetalhe = () => {
       }
       setAccount(acc);
       setAllAccounts((accs as any[]) ?? []);
-
-      // Filter only investment-related transactions (deposits/withdrawals)
       const investTxs = (txs as any[] ?? []).filter(
         (t: any) => t.type === "investimento" && (t.account_id === accountId || t.to_account_id === accountId)
       );
@@ -158,7 +226,7 @@ const InvestimentoDetalhe = () => {
 
   useEffect(() => { fetchData(); }, [user, accountId]);
 
-  // Compute yields
+  // Yields computation
   const yieldData = useMemo(() => {
     if (!account) return { annualRate: 0, dailyRate: 0, monthlyRate: 0, dailyYield: 0, monthlyYield: 0, yearlyYield: 0, totalDeposits: 0, totalWithdrawals: 0, estimatedProfit: 0 };
 
@@ -171,40 +239,41 @@ const InvestimentoDetalhe = () => {
     const monthlyYield = balance * monthlyRate;
     const yearlyYield = balance * (annualRate / 100);
 
-    // Calculate total deposits and withdrawals
-    const totalDeposits = transactions
-      .filter(t => t.to_account_id === accountId)
-      .reduce((s, t) => s + Number(t.amount), 0);
-    const totalWithdrawals = transactions
-      .filter(t => t.account_id === accountId)
-      .reduce((s, t) => s + Number(t.amount), 0);
-
-    // Estimated profit = current balance - (initial balance + total deposits - total withdrawals)
+    const totalDeposits = transactions.filter(t => t.to_account_id === accountId).reduce((s, t) => s + Number(t.amount), 0);
+    const totalWithdrawals = transactions.filter(t => t.account_id === accountId).reduce((s, t) => s + Number(t.amount), 0);
     const totalInvested = Number(account.initial_balance) + totalDeposits - totalWithdrawals;
     const estimatedProfit = balance - totalInvested;
 
     return { annualRate, dailyRate: dailyRate * 100, monthlyRate: monthlyRate * 100, dailyYield, monthlyYield, yearlyYield, totalDeposits, totalWithdrawals, estimatedProfit };
   }, [account, transactions, accountId]);
 
+  // Simulation data
+  const simData = useMemo(() => {
+    if (!account) return { chartData: [], finalValue: 0, totalYield: 0, avgMonthly: 0, months: 0 };
+    const balance = Number(account.current_balance);
+    const annualRate = yieldData.annualRate;
+    const months = showCustom ? Math.min(Math.max(parseInt(customMonths) || 1, 1), 360) : SIMULATION_PERIODS[simPeriodIdx].months;
+    const chartData = simulateInvestment(balance, annualRate, months);
+    const finalValue = chartData[chartData.length - 1]?.value ?? balance;
+    const totalYield = finalValue - balance;
+    const avgMonthly = months > 0 ? totalYield / months : 0;
+    return { chartData, finalValue, totalYield, avgMonthly, months };
+  }, [account, yieldData.annualRate, simPeriodIdx, showCustom, customMonths]);
+
   const openModal = (mode: "deposit" | "withdraw") => {
     setModalMode(mode);
     setModalCents(0);
-    if (mode === "deposit") {
-      const bankAccs = allAccounts.filter(a => a.type !== "investment");
-      const def = bankAccs.find(a => a.is_default) || bankAccs[0];
-      setModalFromId(def?.id || "");
-    } else {
-      const bankAccs = allAccounts.filter(a => a.type !== "investment");
-      const def = bankAccs.find(a => a.is_default) || bankAccs[0];
-      setModalFromId(def?.id || "");
-    }
+    const bankAccs = allAccounts.filter(a => a.type !== "investment");
+    const def = bankAccs.find(a => a.is_default) || bankAccs[0];
+    setModalFromId(def?.id || "");
   };
 
   const handleModalSubmit = async () => {
     if (!user || !account || !modalFromId || modalCents === 0) return;
-    setModalSubmitting(true);
     const realAmount = modalCents / 100;
+    if (realAmount <= 0) { toast.error("Valor inválido"); return; }
 
+    setModalSubmitting(true);
     try {
       if (modalMode === "deposit") {
         const fromAcc = allAccounts.find(a => a.id === modalFromId);
@@ -214,17 +283,11 @@ const InvestimentoDetalhe = () => {
           return;
         }
         const { error } = await supabase.from("transactions").insert({
-          user_id: user.id,
-          name: `Depósito: ${fromAcc?.name} → ${account.name}`,
-          type: "investimento",
-          amount: realAmount,
-          category: "Investimentos",
-          date: new Date().toISOString().split("T")[0],
-          status: "pago",
-          account_id: modalFromId,
-          to_account_id: account.id,
-          payment_method: "conta",
-          recurrence_type: "unica",
+          user_id: user.id, name: `Depósito: ${fromAcc?.name} → ${account.name}`,
+          type: "investimento", amount: realAmount, category: "Investimentos",
+          date: new Date().toISOString().split("T")[0], status: "pago",
+          account_id: modalFromId, to_account_id: account.id,
+          payment_method: "conta", recurrence_type: "unica",
         } as any);
         if (error) throw error;
         toast.success("Depósito realizado! 💰");
@@ -236,17 +299,11 @@ const InvestimentoDetalhe = () => {
         }
         const toAcc = allAccounts.find(a => a.id === modalFromId);
         const { error } = await supabase.from("transactions").insert({
-          user_id: user.id,
-          name: `Resgate: ${account.name} → ${toAcc?.name}`,
-          type: "investimento",
-          amount: realAmount,
-          category: "Investimentos",
-          date: new Date().toISOString().split("T")[0],
-          status: "pago",
-          account_id: account.id,
-          to_account_id: modalFromId,
-          payment_method: "conta",
-          recurrence_type: "unica",
+          user_id: user.id, name: `Resgate: ${account.name} → ${toAcc?.name}`,
+          type: "investimento", amount: realAmount, category: "Investimentos",
+          date: new Date().toISOString().split("T")[0], status: "pago",
+          account_id: account.id, to_account_id: modalFromId,
+          payment_method: "conta", recurrence_type: "unica",
         } as any);
         if (error) throw error;
         toast.success("Resgate realizado! 💸");
@@ -325,10 +382,8 @@ const InvestimentoDetalhe = () => {
               <div className="w-1.5 h-1.5 rounded-full bg-primary" />
               <p className="text-[9px] text-muted-foreground uppercase tracking-widest font-medium">Saldo atual</p>
             </div>
-            <p className="text-3xl font-extrabold tabular-nums tracking-tight text-foreground">{formatCurrency(balance)}</p>
+            <AnimatedCurrency value={balance} className="text-3xl font-extrabold tabular-nums tracking-tight text-foreground block" />
           </div>
-
-          {/* Action buttons */}
           <div className="grid grid-cols-2 gap-2">
             <button onClick={() => openModal("deposit")} className="flex items-center justify-center gap-1.5 py-2.5 rounded-xl bg-primary/10 text-primary text-[11px] font-semibold hover:bg-primary/20 transition-colors border border-primary/20">
               <ArrowDownLeft className="w-3.5 h-3.5" /> Depósito
@@ -337,6 +392,14 @@ const InvestimentoDetalhe = () => {
               <ArrowUpRight className="w-3.5 h-3.5" /> Resgate
             </button>
           </div>
+        </div>
+      </motion.div>
+
+      {/* Micro-interaction */}
+      <motion.div initial={{ opacity: 0, y: 8 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.15 }}>
+        <div className="flex items-start gap-2.5 rounded-2xl border border-primary/10 bg-primary/[0.04] p-3.5">
+          <Sparkles className="w-4 h-4 text-primary shrink-0 mt-0.5" />
+          <p className="text-xs text-muted-foreground leading-relaxed">{microMsg}</p>
         </div>
       </motion.div>
 
@@ -349,9 +412,10 @@ const InvestimentoDetalhe = () => {
             </div>
             <span className="text-[9px] text-muted-foreground uppercase tracking-widest font-medium">Rendimento estimado</span>
           </div>
-          <p className={cn("text-2xl font-extrabold tabular-nums mb-3", yieldData.estimatedProfit >= 0 ? "text-primary" : "text-destructive")}>
-            {yieldData.estimatedProfit >= 0 ? "+" : ""}{formatCurrency(yieldData.estimatedProfit)}
-          </p>
+          <AnimatedCurrency
+            value={yieldData.estimatedProfit}
+            className={cn("text-2xl font-extrabold tabular-nums mb-3 block", yieldData.estimatedProfit >= 0 ? "text-primary" : "text-destructive")}
+          />
           <div className="h-px bg-border/10 mb-3" />
           <div className="grid grid-cols-3 gap-3">
             <div>
@@ -389,8 +453,134 @@ const InvestimentoDetalhe = () => {
         </div>
       </motion.div>
 
-      {/* Rate info */}
+      {/* ═══════ Simulação de Investimento ═══════ */}
       <motion.div initial={{ opacity: 0, y: 12 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.15 }}>
+        <div className="rounded-2xl border border-border/10 p-4 space-y-4" style={{ background: "linear-gradient(135deg, hsl(var(--card)) 0%, hsl(var(--background)) 100%)" }}>
+          <div className="flex items-center justify-between">
+            <div className="flex items-center gap-2">
+              <div className="w-6 h-6 rounded-lg bg-primary/15 flex items-center justify-center">
+                <TrendingUp className="w-3 h-3 text-primary" />
+              </div>
+              <span className="text-[9px] text-muted-foreground uppercase tracking-widest font-medium">Simulação</span>
+            </div>
+          </div>
+
+          {/* Period selector */}
+          <div className="flex items-center gap-1.5 flex-wrap">
+            {SIMULATION_PERIODS.map((p, idx) => (
+              <button
+                key={p.label}
+                onClick={() => { setSimPeriodIdx(idx); setShowCustom(false); }}
+                className={cn(
+                  "px-3 py-1.5 rounded-lg text-[11px] font-semibold transition-all",
+                  !showCustom && simPeriodIdx === idx
+                    ? "bg-primary text-primary-foreground"
+                    : "bg-muted/30 text-muted-foreground hover:bg-muted/50"
+                )}
+              >
+                {p.label}
+              </button>
+            ))}
+            <button
+              onClick={() => setShowCustom(true)}
+              className={cn(
+                "px-3 py-1.5 rounded-lg text-[11px] font-semibold transition-all",
+                showCustom ? "bg-primary text-primary-foreground" : "bg-muted/30 text-muted-foreground hover:bg-muted/50"
+              )}
+            >
+              Outro
+            </button>
+          </div>
+
+          {showCustom && (
+            <div className="flex items-center gap-2">
+              <Input
+                type="number"
+                min={1}
+                max={360}
+                placeholder="Meses"
+                value={customMonths}
+                onChange={(e) => setCustomMonths(e.target.value)}
+                className="bg-muted/30 border-border/20 h-9 rounded-xl text-sm w-24"
+              />
+              <span className="text-xs text-muted-foreground">meses (máx 360)</span>
+            </div>
+          )}
+
+          {/* Chart */}
+          <div className="h-48 w-full">
+            <ResponsiveContainer width="100%" height="100%">
+              <AreaChart data={simData.chartData} margin={{ top: 5, right: 5, left: 0, bottom: 0 }}>
+                <defs>
+                  <linearGradient id="colorValue" x1="0" y1="0" x2="0" y2="1">
+                    <stop offset="5%" stopColor="hsl(var(--primary))" stopOpacity={0.3} />
+                    <stop offset="95%" stopColor="hsl(var(--primary))" stopOpacity={0} />
+                  </linearGradient>
+                </defs>
+                <XAxis
+                  dataKey="label"
+                  tick={{ fontSize: 9, fill: "hsl(var(--muted-foreground))" }}
+                  axisLine={false}
+                  tickLine={false}
+                  interval="preserveStartEnd"
+                />
+                <YAxis
+                  tick={{ fontSize: 9, fill: "hsl(var(--muted-foreground))" }}
+                  axisLine={false}
+                  tickLine={false}
+                  tickFormatter={(v) => `${(v / 1000).toFixed(0)}k`}
+                  width={40}
+                />
+                <Tooltip content={<ChartTooltip />} />
+                <Area
+                  type="monotone"
+                  dataKey="value"
+                  stroke="hsl(var(--primary))"
+                  strokeWidth={2}
+                  fill="url(#colorValue)"
+                  dot={false}
+                  animationDuration={1200}
+                />
+              </AreaChart>
+            </ResponsiveContainer>
+          </div>
+
+          {/* Simulation results */}
+          <div className="grid grid-cols-2 gap-3">
+            <div className="rounded-xl border border-border/10 p-3 bg-muted/[0.03]">
+              <p className="text-[9px] text-muted-foreground uppercase tracking-wider mb-1">Valor final</p>
+              <AnimatedCurrency value={simData.finalValue} className="text-base font-bold text-foreground tabular-nums block" />
+            </div>
+            <div className="rounded-xl border border-border/10 p-3 bg-muted/[0.03]">
+              <p className="text-[9px] text-muted-foreground uppercase tracking-wider mb-1">Rendimento total</p>
+              <AnimatedCurrency value={simData.totalYield} className="text-base font-bold text-primary tabular-nums block" />
+            </div>
+            <div className="rounded-xl border border-border/10 p-3 bg-muted/[0.03]">
+              <p className="text-[9px] text-muted-foreground uppercase tracking-wider mb-1">Média mensal</p>
+              <p className="text-base font-bold text-primary tabular-nums">{formatCurrency(simData.avgMonthly)}</p>
+            </div>
+            <div className="rounded-xl border border-border/10 p-3 bg-muted/[0.03]">
+              <p className="text-[9px] text-muted-foreground uppercase tracking-wider mb-1">Período</p>
+              <p className="text-base font-bold text-foreground tabular-nums">{simData.months} {simData.months === 1 ? "mês" : "meses"}</p>
+            </div>
+          </div>
+
+          {/* Projection callout */}
+          {balance > 0 && (
+            <div className="flex items-start gap-2.5 rounded-xl border border-primary/10 bg-primary/[0.04] p-3">
+              <Info className="w-4 h-4 text-primary shrink-0 mt-0.5" />
+              <p className="text-xs text-muted-foreground leading-relaxed">
+                Se continuar assim, seu investimento vira{" "}
+                <span className="font-bold text-primary">{formatCurrency(simData.finalValue)}</span>{" "}
+                em {simData.months} {simData.months === 1 ? "mês" : "meses"} 🚀
+              </p>
+            </div>
+          )}
+        </div>
+      </motion.div>
+
+      {/* Rate info */}
+      <motion.div initial={{ opacity: 0, y: 12 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.2 }}>
         <div className="rounded-2xl border border-border/10 p-4" style={{ background: "linear-gradient(135deg, hsl(var(--card)) 0%, hsl(var(--background)) 100%)" }}>
           <p className="text-[9px] text-muted-foreground uppercase tracking-widest font-medium mb-3">Informações da taxa</p>
           <div className="space-y-2">
@@ -406,8 +596,14 @@ const InvestimentoDetalhe = () => {
             )}
             <div className="flex items-center justify-between">
               <span className="text-xs text-muted-foreground">CDI referência</span>
-              <span className="text-xs font-semibold text-foreground">{formatPct(CDI_ANNUAL)} a.a.</span>
+              <span className="text-xs font-semibold text-foreground">{formatPct(CDI_ANNUAL_DEFAULT)} a.a.</span>
             </div>
+            {account.rate_type === "ipca_plus" && (
+              <div className="flex items-center justify-between">
+                <span className="text-xs text-muted-foreground">IPCA referência</span>
+                <span className="text-xs font-semibold text-foreground">{formatPct(IPCA_ANNUAL_DEFAULT)} a.a.</span>
+              </div>
+            )}
             <div className="flex items-center justify-between">
               <span className="text-xs text-muted-foreground">Taxa efetiva anual</span>
               <span className="text-xs font-semibold text-primary">{formatPct(yieldData.annualRate)} a.a.</span>
@@ -417,7 +613,7 @@ const InvestimentoDetalhe = () => {
       </motion.div>
 
       {/* Transaction History */}
-      <motion.section initial={{ opacity: 0, y: 12 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.2 }}>
+      <motion.section initial={{ opacity: 0, y: 12 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.25 }}>
         <h2 className="text-[9px] text-muted-foreground uppercase tracking-widest font-medium px-1 mb-3">Histórico de movimentações</h2>
         {transactions.length === 0 ? (
           <div className="rounded-2xl border border-border/10 p-8 text-center" style={{ background: "linear-gradient(135deg, hsl(var(--card)) 0%, hsl(var(--background)) 100%)" }}>
