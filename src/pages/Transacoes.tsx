@@ -1,4 +1,5 @@
 import { useState, useEffect, useMemo, useCallback, useRef } from "react";
+import { useNavigate } from "react-router-dom";
 import { motion, AnimatePresence, useMotionValue, useTransform, PanInfo } from "framer-motion";
 import {
   SlidersHorizontal, ShoppingCart, Heart, Car, Utensils, Home as HomeIcon,
@@ -10,8 +11,9 @@ import { toast } from "sonner";
 import { supabase } from "@/integrations/supabase/client";
 import { useAuth } from "@/contexts/AuthContext";
 import { useMonth } from "@/contexts/MonthContext";
-import { deleteTransaction, getAccounts, updateTransaction } from "@/services/transactionService";
+import { deleteTransaction, getAccounts, updateTransaction, getCreditCards } from "@/services/transactionService";
 import { getRecurringForMonth, excludeRecurringForMonth, excludeRecurringFromMonthOnward } from "@/services/recurringService";
+import { getInvoices } from "@/services/invoiceService";
 import MonthSelector from "@/components/dashboard/MonthSelector";
 import SaldoCard from "@/components/dashboard/SaldoCard";
 import ReceitasDespesasCards from "@/components/dashboard/ReceitasDespesasCards";
@@ -55,7 +57,7 @@ const CATEGORY_ICONS: Record<string, typeof ShoppingCart> = {
   "Pets": Heart, "Beleza": Sparkles, "Presentes": Sparkles,
   "Viagem": Car, "Tecnologia": Sparkles, "Impostos": Wallet,
   "Vendas": DollarSign, "Aluguéis": HomeIcon, "Bônus": DollarSign,
-  "Comissão": DollarSign, "Mesada": Wallet,
+  "Comissão": DollarSign, "Mesada": Wallet, "Cartão de Crédito": CreditCard,
 };
 
 const CATEGORY_COLORS: Record<string, string> = {
@@ -66,7 +68,7 @@ const CATEGORY_COLORS: Record<string, string> = {
   "Pets": "30 80% 55%", "Beleza": "320 60% 55%", "Presentes": "340 60% 55%",
   "Viagem": "199 70% 48%", "Tecnologia": "220 70% 55%", "Impostos": "0 60% 50%",
   "Vendas": "150 100% 45%", "Aluguéis": "40 80% 50%", "Bônus": "150 100% 45%",
-  "Comissão": "199 70% 48%", "Mesada": "150 100% 45%",
+  "Comissão": "199 70% 48%", "Mesada": "150 100% 45%", "Cartão de Crédito": "260 60% 55%",
 };
 
 const getCategoryIcon = (category: string) => CATEGORY_ICONS[category] || MoreHorizontal;
@@ -196,6 +198,7 @@ const SwipeableItem = ({
 // ── Main Page ──────────────────────────────────────────
 const Transacoes = () => {
   const { user } = useAuth();
+  const navigate = useNavigate();
   const { selectedMonth, selectedYear, setMonth } = useMonth();
   const [transactions, setTransactions] = useState<TransactionRow[]>([]);
   const [accounts, setAccounts] = useState<AccountRow[]>([]);
@@ -229,10 +232,11 @@ const Transacoes = () => {
     const start = new Date(selectedYear, selectedMonth, 1).toISOString().split("T")[0];
     const end = new Date(selectedYear, selectedMonth + 1, 0).toISOString().split("T")[0];
 
-    const [txRes, accRes, recurringTxs] = await Promise.all([
+    const [txRes, accRes, recurringTxs, creditCards] = await Promise.all([
       supabase.from("transactions").select("*").eq("user_id", user.id).gte("date", start).lte("date", end).order("date", { ascending: false }),
       getAccounts(),
       getRecurringForMonth(selectedMonth, selectedYear),
+      getCreditCards(),
     ]);
 
     if (txRes.error) toast.error("Erro ao carregar transações");
@@ -254,8 +258,86 @@ const Transacoes = () => {
         }
       }
 
+      // Separate credit card vs regular transactions
+      const regularTxs = baseTxs.filter((t) => t.payment_method !== "cartao");
+      const ccTxs = baseTxs.filter((t) => t.payment_method === "cartao" && t.credit_card_id);
+
+      // Build card name map
+      const cardMap = new Map((creditCards as any[]).map((c: any) => [c.id, c]));
+
+      // Group CC transactions into consolidated fatura entries
+      const faturaGroups = new Map<string, { total: number; count: number; card: any }>();
+      for (const t of ccTxs) {
+        const cardId = t.credit_card_id!;
+        const existing = faturaGroups.get(cardId) || { total: 0, count: 0, card: cardMap.get(cardId) };
+        existing.total += Number(t.amount);
+        existing.count += 1;
+        faturaGroups.set(cardId, existing);
+      }
+
+      // Fetch invoices to get actual total and payment status
+      const faturaEntries: TransactionRow[] = [];
+      for (const [cardId, info] of faturaGroups.entries()) {
+        const cardName = info.card?.name || "Cartão";
+        const dueDay = info.card?.due_day || 1;
+
+        // Try to get the invoice for this month to get accurate total
+        let invoiceTotal = info.total;
+        let isPaid = false;
+        try {
+          const invoices = await getInvoices(cardId, selectedMonth + 1, selectedYear);
+          if (invoices.length > 0) {
+            invoiceTotal = Number(invoices[0].total_amount);
+            isPaid = invoices[0].is_paid;
+          }
+        } catch { /* use grouped total as fallback */ }
+
+        faturaEntries.push({
+          id: `fatura-${cardId}-${selectedMonth}-${selectedYear}`,
+          name: `Fatura ${cardName}`,
+          category: "Cartão de Crédito",
+          date: `${selectedYear}-${String(selectedMonth + 1).padStart(2, "0")}-${String(dueDay).padStart(2, "0")}`,
+          amount: invoiceTotal,
+          type: "despesa",
+          status: isPaid ? "pago" : "pendente",
+          payment_method: "cartao",
+          recurrence_type: "unica",
+          installment_current: null,
+          installments: null,
+          observation: null,
+          account_id: null,
+          credit_card_id: cardId,
+        });
+      }
+
+      // Also check for invoices that exist but have no transactions in this month range
+      for (const card of (creditCards as any[])) {
+        if (!faturaGroups.has(card.id)) {
+          try {
+            const invoices = await getInvoices(card.id, selectedMonth + 1, selectedYear);
+            if (invoices.length > 0 && Number(invoices[0].total_amount) > 0) {
+              faturaEntries.push({
+                id: `fatura-${card.id}-${selectedMonth}-${selectedYear}`,
+                name: `Fatura ${card.name}`,
+                category: "Cartão de Crédito",
+                date: `${selectedYear}-${String(selectedMonth + 1).padStart(2, "0")}-${String(card.due_day || 1).padStart(2, "0")}`,
+                amount: Number(invoices[0].total_amount),
+                type: "despesa",
+                status: invoices[0].is_paid ? "pago" : "pendente",
+                payment_method: "cartao",
+                recurrence_type: "unica",
+                installment_current: null,
+                installments: null,
+                observation: null,
+                account_id: null,
+                credit_card_id: card.id,
+              });
+            }
+          } catch { /* skip */ }
+        }
+      }
+
       // Materialize recurring with adjusted date
-      // Force status to "pendente" for future months
       const now = new Date();
       const isFutureMonth = selectedYear > now.getFullYear() || (selectedYear === now.getFullYear() && selectedMonth > now.getMonth());
       const materializedRecurring = recurringTxs.map((t: any) => ({
@@ -264,7 +346,11 @@ const Transacoes = () => {
         status: isFutureMonth ? "pendente" : t.status,
         _isRecurringMaterialized: true,
       })) as TransactionRow[];
-      setTransactions([...baseTxs, ...materializedRecurring]);
+
+      // Filter out recurring CC transactions too
+      const regularRecurring = materializedRecurring.filter((t) => t.payment_method !== "cartao");
+
+      setTransactions([...regularTxs, ...faturaEntries, ...regularRecurring]);
     }
     setAccounts(accRes as AccountRow[]);
     setLoading(false);
@@ -621,7 +707,13 @@ const Transacoes = () => {
                         tx={tx}
                         accountName={tx.account_id ? (accountMap[tx.account_id] || "Conta") : tx.payment_method === "cartao" ? "Cartão" : "Sem conta"}
                         onDelete={handleDelete}
-                        onEdit={(t) => { setDetailTx(t); setShowDetailModal(true); }}
+                        onEdit={(t) => {
+                          if (t.id.startsWith("fatura-") && t.credit_card_id) {
+                            navigate(`/fatura/${t.credit_card_id}?month=${selectedMonth + 1}&year=${selectedYear}`);
+                          } else {
+                            setDetailTx(t); setShowDetailModal(true);
+                          }
+                        }}
                       />
                     </motion.div>
                   ))}
