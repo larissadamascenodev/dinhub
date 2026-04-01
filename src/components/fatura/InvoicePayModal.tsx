@@ -87,7 +87,6 @@ export default function InvoicePayModal({
   })();
 
   const handleConfirm = () => {
-    console.log("handleConfirm called", { mode, canConfirm, payAccountId, parsedMinAmount, parsedInstallmentAmount, parsedEntryAmount, parsedInstallments, paying, total });
     if (mode === "total") {
       onConfirm({ mode: "total" });
     } else if (mode === "minimo") {
