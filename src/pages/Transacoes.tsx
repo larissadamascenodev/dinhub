@@ -707,7 +707,13 @@ const Transacoes = () => {
                         tx={tx}
                         accountName={tx.account_id ? (accountMap[tx.account_id] || "Conta") : tx.payment_method === "cartao" ? "Cartão" : "Sem conta"}
                         onDelete={handleDelete}
-                        onEdit={(t) => { setDetailTx(t); setShowDetailModal(true); }}
+                        onEdit={(t) => {
+                          if (t.id.startsWith("fatura-") && t.credit_card_id) {
+                            navigate(`/fatura/${t.credit_card_id}?month=${selectedMonth + 1}&year=${selectedYear}`);
+                          } else {
+                            setDetailTx(t); setShowDetailModal(true);
+                          }
+                        }}
                       />
                     </motion.div>
                   ))}
