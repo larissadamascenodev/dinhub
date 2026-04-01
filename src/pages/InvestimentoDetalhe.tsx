@@ -477,7 +477,7 @@ const InvestimentoDetalhe = () => {
         </div>
       </motion.div>
 
-      {/* ═══════ Simulação de Investimento ═══════ */}
+      {/* ═══════ Simular Crescimento ═══════ */}
       <motion.div initial={{ opacity: 0, y: 12 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.15 }}>
         <div className="rounded-2xl border border-border/10 p-4 space-y-4" style={{ background: "linear-gradient(135deg, hsl(var(--card)) 0%, hsl(var(--background)) 100%)" }}>
           <div className="flex items-center justify-between">
@@ -485,8 +485,32 @@ const InvestimentoDetalhe = () => {
               <div className="w-6 h-6 rounded-lg bg-primary/15 flex items-center justify-center">
                 <TrendingUp className="w-3 h-3 text-primary" />
               </div>
-              <span className="text-[9px] text-muted-foreground uppercase tracking-widest font-medium">Simulação</span>
+              <span className="text-[9px] text-muted-foreground uppercase tracking-widest font-medium">Simular crescimento</span>
             </div>
+          </div>
+
+          {/* Aporte mensal */}
+          <div>
+            <Label className="text-[10px] text-muted-foreground uppercase tracking-wider mb-1.5 block">Aporte mensal</Label>
+            <Input
+              placeholder="0,00"
+              inputMode="numeric"
+              value={contributionCents > 0 ? (contributionCents / 100).toLocaleString("pt-BR", { minimumFractionDigits: 2, maximumFractionDigits: 2 }) : ""}
+              onKeyDown={(e) => {
+                if (e.key === "Backspace") {
+                  e.preventDefault();
+                  setContributionCents(prev => Math.floor(prev / 10));
+                } else if (e.key >= "0" && e.key <= "9") {
+                  e.preventDefault();
+                  setContributionCents(prev => {
+                    const next = prev * 10 + parseInt(e.key);
+                    return next > 99999999 ? prev : next;
+                  });
+                }
+              }}
+              readOnly
+              className="bg-muted/30 border-border/20 h-10 rounded-xl text-base font-bold text-center"
+            />
           </div>
 
           {/* Period selector */}
@@ -531,14 +555,18 @@ const InvestimentoDetalhe = () => {
             </div>
           )}
 
-          {/* Chart */}
-          <div className="h-48 w-full">
+          {/* Stacked area chart: invested + profit */}
+          <div className="h-52 w-full">
             <ResponsiveContainer width="100%" height="100%">
               <AreaChart data={simData.chartData} margin={{ top: 5, right: 5, left: 0, bottom: 0 }}>
                 <defs>
-                  <linearGradient id="colorValue" x1="0" y1="0" x2="0" y2="1">
-                    <stop offset="5%" stopColor="hsl(var(--primary))" stopOpacity={0.3} />
-                    <stop offset="95%" stopColor="hsl(var(--primary))" stopOpacity={0} />
+                  <linearGradient id="colorInvested" x1="0" y1="0" x2="0" y2="1">
+                    <stop offset="5%" stopColor="hsl(var(--muted-foreground))" stopOpacity={0.15} />
+                    <stop offset="95%" stopColor="hsl(var(--muted-foreground))" stopOpacity={0} />
+                  </linearGradient>
+                  <linearGradient id="colorProfit" x1="0" y1="0" x2="0" y2="1">
+                    <stop offset="5%" stopColor="hsl(var(--primary))" stopOpacity={0.35} />
+                    <stop offset="95%" stopColor="hsl(var(--primary))" stopOpacity={0.05} />
                   </linearGradient>
                 </defs>
                 <XAxis
@@ -552,16 +580,27 @@ const InvestimentoDetalhe = () => {
                   tick={{ fontSize: 9, fill: "hsl(var(--muted-foreground))" }}
                   axisLine={false}
                   tickLine={false}
-                  tickFormatter={(v) => `${(v / 1000).toFixed(0)}k`}
-                  width={40}
+                  tickFormatter={(v) => v >= 1000 ? `${(v / 1000).toFixed(0)}k` : `${v}`}
+                  width={45}
                 />
                 <Tooltip content={<ChartTooltip />} />
+                <Area
+                  type="monotone"
+                  dataKey="invested"
+                  stackId="1"
+                  stroke="hsl(var(--muted-foreground))"
+                  strokeWidth={1.5}
+                  strokeOpacity={0.4}
+                  fill="url(#colorInvested)"
+                  dot={false}
+                  animationDuration={1200}
+                />
                 <Area
                   type="monotone"
                   dataKey="value"
                   stroke="hsl(var(--primary))"
                   strokeWidth={2}
-                  fill="url(#colorValue)"
+                  fill="url(#colorProfit)"
                   dot={false}
                   animationDuration={1200}
                 />
@@ -569,35 +608,67 @@ const InvestimentoDetalhe = () => {
             </ResponsiveContainer>
           </div>
 
-          {/* Simulation results */}
-          <div className="grid grid-cols-2 gap-3">
-            <div className="rounded-xl border border-border/10 p-3 bg-muted/[0.03]">
-              <p className="text-[9px] text-muted-foreground uppercase tracking-wider mb-1">Valor final</p>
-              <AnimatedCurrency value={simData.finalValue} className="text-base font-bold text-foreground tabular-nums block" />
+          {/* Legend */}
+          <div className="flex items-center gap-4 justify-center">
+            <div className="flex items-center gap-1.5">
+              <div className="w-2.5 h-2.5 rounded-sm bg-muted-foreground/30" />
+              <span className="text-[10px] text-muted-foreground">Investido</span>
             </div>
-            <div className="rounded-xl border border-border/10 p-3 bg-muted/[0.03]">
-              <p className="text-[9px] text-muted-foreground uppercase tracking-wider mb-1">Rendimento total</p>
-              <AnimatedCurrency value={simData.totalYield} className="text-base font-bold text-primary tabular-nums block" />
-            </div>
-            <div className="rounded-xl border border-border/10 p-3 bg-muted/[0.03]">
-              <p className="text-[9px] text-muted-foreground uppercase tracking-wider mb-1">Média mensal</p>
-              <p className="text-base font-bold text-primary tabular-nums">{formatCurrency(simData.avgMonthly)}</p>
-            </div>
-            <div className="rounded-xl border border-border/10 p-3 bg-muted/[0.03]">
-              <p className="text-[9px] text-muted-foreground uppercase tracking-wider mb-1">Período</p>
-              <p className="text-base font-bold text-foreground tabular-nums">{simData.months} {simData.months === 1 ? "mês" : "meses"}</p>
+            <div className="flex items-center gap-1.5">
+              <div className="w-2.5 h-2.5 rounded-sm bg-primary" />
+              <span className="text-[10px] text-muted-foreground">Valor total</span>
             </div>
           </div>
 
-          {/* Projection callout */}
+          {/* Simulation results */}
+          <div className="grid grid-cols-2 gap-3">
+            <div className="rounded-xl border border-border/10 p-3 bg-muted/[0.03]">
+              <p className="text-[9px] text-muted-foreground uppercase tracking-wider mb-1">Valor investido</p>
+              <AnimatedCurrency value={simData.totalInvested} className="text-base font-bold text-foreground tabular-nums block" />
+            </div>
+            <div className="rounded-xl border border-border/10 p-3 bg-muted/[0.03]">
+              <p className="text-[9px] text-muted-foreground uppercase tracking-wider mb-1">Valor final projetado</p>
+              <AnimatedCurrency value={simData.finalValue} className="text-base font-bold text-primary tabular-nums block" />
+            </div>
+            <div className="rounded-xl border border-border/10 p-3 bg-muted/[0.03]">
+              <p className="text-[9px] text-muted-foreground uppercase tracking-wider mb-1">Total de rendimentos</p>
+              <AnimatedCurrency value={simData.totalYield} className="text-base font-bold text-primary tabular-nums block" />
+            </div>
+            <div className="rounded-xl border border-border/10 p-3 bg-muted/[0.03]">
+              <p className="text-[9px] text-muted-foreground uppercase tracking-wider mb-1">Crescimento</p>
+              <p className="text-base font-bold text-primary tabular-nums">{formatPct(simData.growthPct)}</p>
+            </div>
+          </div>
+
+          {/* Highlight callout */}
           {balance > 0 && (
             <div className="flex items-start gap-2.5 rounded-xl border border-primary/10 bg-primary/[0.04] p-3">
-              <Info className="w-4 h-4 text-primary shrink-0 mt-0.5" />
+              <Sparkles className="w-4 h-4 text-primary shrink-0 mt-0.5" />
               <p className="text-xs text-muted-foreground leading-relaxed">
-                Se continuar assim, seu investimento vira{" "}
-                <span className="font-bold text-primary">{formatCurrency(simData.finalValue)}</span>{" "}
-                em {simData.months} {simData.months === 1 ? "mês" : "meses"} 🚀
+                {contribution > 0 ? (
+                  <>
+                    Você investiu <span className="font-bold text-foreground">{formatCurrency(simData.totalInvested)}</span> →
+                    virou <span className="font-bold text-primary">{formatCurrency(simData.finalValue)}</span> em{" "}
+                    {simData.months} {simData.months === 1 ? "mês" : "meses"} 🚀
+                  </>
+                ) : (
+                  <>
+                    Se continuar assim, seu investimento vira{" "}
+                    <span className="font-bold text-primary">{formatCurrency(simData.finalValue)}</span>{" "}
+                    em {simData.months} {simData.months === 1 ? "mês" : "meses"} 🚀
+                  </>
+                )}
               </p>
+            </div>
+          )}
+
+          {/* Micro-interaction for recurring contributions */}
+          {contribution > 0 && (
+            <div className="flex items-start gap-2.5 rounded-xl border border-primary/10 bg-primary/[0.04] p-3">
+              <Info className="w-4 h-4 text-primary shrink-0 mt-0.5" />
+              <p className="text-xs text-muted-foreground leading-relaxed italic">{recurringMsg}</p>
+            </div>
+          )}
             </div>
           )}
         </div>
