@@ -1,6 +1,11 @@
 import { useState, useEffect, useCallback } from "react";
 import { motion, AnimatePresence } from "framer-motion";
-import { Tag, Plus, Pencil, Trash2, ArrowLeft } from "lucide-react";
+import {
+  Tag, Plus, Pencil, Trash2, ArrowLeft,
+  Utensils, Car, Heart, Repeat, Gamepad2, Home, GraduationCap, Shirt,
+  PawPrint, Scissors, Gift, Plane, Smartphone, Receipt,
+  Briefcase, TrendingUp, ShoppingBag, DollarSign, Award, Users, Wallet, PiggyBank,
+} from "lucide-react";
 import { useNavigate } from "react-router-dom";
 import { toast } from "sonner";
 import { useAuth } from "@/contexts/AuthContext";
@@ -15,15 +20,33 @@ import {
   type CustomCategory,
 } from "@/services/categoryService";
 
-const DEFAULT_EXPENSE = [
-  "Alimentação", "Transporte", "Saúde", "Assinaturas",
-  "Lazer", "Moradia", "Educação", "Vestuário", "Pets",
-  "Beleza", "Presentes", "Viagem", "Tecnologia", "Impostos",
-];
-const DEFAULT_INCOME = [
-  "Salário", "Freelance", "Investimentos", "Vendas",
-  "Aluguéis", "Bônus", "Comissão", "Mesada",
-];
+const DEFAULT_CATEGORY_MAP: Record<string, { icon: any; type: "despesa" | "receita" }> = {
+  "Alimentação": { icon: Utensils, type: "despesa" },
+  "Transporte": { icon: Car, type: "despesa" },
+  "Saúde": { icon: Heart, type: "despesa" },
+  "Assinaturas": { icon: Repeat, type: "despesa" },
+  "Lazer": { icon: Gamepad2, type: "despesa" },
+  "Moradia": { icon: Home, type: "despesa" },
+  "Educação": { icon: GraduationCap, type: "despesa" },
+  "Vestuário": { icon: Shirt, type: "despesa" },
+  "Pets": { icon: PawPrint, type: "despesa" },
+  "Beleza": { icon: Scissors, type: "despesa" },
+  "Presentes": { icon: Gift, type: "despesa" },
+  "Viagem": { icon: Plane, type: "despesa" },
+  "Tecnologia": { icon: Smartphone, type: "despesa" },
+  "Impostos": { icon: Receipt, type: "despesa" },
+  "Salário": { icon: DollarSign, type: "receita" },
+  "Freelance": { icon: Briefcase, type: "receita" },
+  "Investimentos": { icon: TrendingUp, type: "receita" },
+  "Vendas": { icon: ShoppingBag, type: "receita" },
+  "Aluguéis": { icon: Home, type: "receita" },
+  "Bônus": { icon: Award, type: "receita" },
+  "Comissão": { icon: Users, type: "receita" },
+  "Mesada": { icon: Wallet, type: "receita" },
+};
+
+const DEFAULT_EXPENSE = Object.entries(DEFAULT_CATEGORY_MAP).filter(([, v]) => v.type === "despesa").map(([k]) => k);
+const DEFAULT_INCOME = Object.entries(DEFAULT_CATEGORY_MAP).filter(([, v]) => v.type === "receita").map(([k]) => k);
 
 export default function GerenciarCategorias() {
   const { user } = useAuth();
@@ -245,8 +268,13 @@ export default function GerenciarCategorias() {
                 exit={{ opacity: 0, x: -40 }}
                 className="flex items-center gap-3 px-3 py-2.5 rounded-xl bg-muted/5"
               >
-                <div className="w-9 h-9 rounded-xl flex items-center justify-center text-lg shrink-0 bg-muted/10 border border-border/10">
-                  <span style={{ filter: "saturate(1.3) brightness(1.2)" }}>📋</span>
+                <div className="w-9 h-9 rounded-xl flex items-center justify-center shrink-0 bg-primary/10 border border-primary/20"
+                  style={{ filter: "drop-shadow(0 0 6px hsl(var(--primary) / 0.3))" }}
+                >
+                  {(() => {
+                    const IconComp = DEFAULT_CATEGORY_MAP[cat]?.icon || Tag;
+                    return <IconComp className="w-4 h-4 text-primary" />;
+                  })()}
                 </div>
                 <span className="flex-1 text-sm text-muted-foreground">{cat}</span>
                 <button
