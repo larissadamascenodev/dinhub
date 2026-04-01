@@ -198,6 +198,7 @@ const SwipeableItem = ({
 // ── Main Page ──────────────────────────────────────────
 const Transacoes = () => {
   const { user } = useAuth();
+  const navigate = useNavigate();
   const { selectedMonth, selectedYear, setMonth } = useMonth();
   const [transactions, setTransactions] = useState<TransactionRow[]>([]);
   const [accounts, setAccounts] = useState<AccountRow[]>([]);
