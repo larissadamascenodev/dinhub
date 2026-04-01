@@ -8,14 +8,16 @@ import { useNavigate, useParams, useSearchParams } from "react-router-dom";
 import { Button } from "@/components/ui/button";
 import { toast } from "sonner";
 import { useAuth } from "@/contexts/AuthContext";
+import { supabase } from "@/integrations/supabase/client";
 import { getInvoices, getInvoiceItems, payInvoice, type Invoice } from "@/services/invoiceService";
-import { getAccounts, getCreditCards, updateTransaction, deleteTransaction } from "@/services/transactionService";
+import { getAccounts, getCreditCards, createTransaction, updateTransaction, deleteTransaction } from "@/services/transactionService";
 import { cn } from "@/lib/utils";
 import InvoiceCategoryBreakdown from "@/components/fatura/InvoiceCategoryBreakdown";
 import InvoiceTransactionList from "@/components/fatura/InvoiceTransactionList";
 import InvoicePayModal from "@/components/fatura/InvoicePayModal";
 import InvoiceHistoryChart from "@/components/fatura/InvoiceHistoryChart";
 import InvoiceAddChooserModal from "@/components/fatura/InvoiceAddChooserModal";
+import InvoiceUploadReviewModal, { type ExtractedItem } from "@/components/fatura/InvoiceUploadReviewModal";
 import NovaTransacaoModal from "@/components/dashboard/NovaTransacaoModal";
 import MonthSelector from "@/components/dashboard/MonthSelector";
 
@@ -88,6 +90,11 @@ const FaturaCartao = () => {
   const [showAddChooser, setShowAddChooser] = useState(false);
   const [showManualAdd, setShowManualAdd] = useState(false);
   const [payAccountId, setPayAccountId] = useState("");
+  const [uploadProcessing, setUploadProcessing] = useState(false);
+  const [extractedItems, setExtractedItems] = useState<ExtractedItem[]>([]);
+  const [extractedMessage, setExtractedMessage] = useState("");
+  const [showReviewModal, setShowReviewModal] = useState(false);
+  const [confirmingImport, setConfirmingImport] = useState(false);
 
   const currentInvoice = useMemo(
     () => invoices.find((i) => i.month === selectedMonth && i.year === selectedYear),
@@ -173,6 +180,78 @@ const FaturaCartao = () => {
   const usedLimit = card ? Number(card.used_limit) : 0;
   const availableLimit = limitTotal - usedLimit;
   const usedPct = limitTotal > 0 ? Math.min((usedLimit / limitTotal) * 100, 100) : 0;
+
+  // Handle file upload (image, PDF, CSV)
+  const handleFileUpload = async (file: File) => {
+    setUploadProcessing(true);
+    toast.loading("Processando fatura com IA...", { id: "upload-processing" });
+    try {
+      const formData = new FormData();
+      formData.append("file", file);
+
+      const { data, error } = await supabase.functions.invoke("process-invoice", {
+        body: formData,
+      });
+
+      if (error) throw new Error(error.message || "Erro ao processar fatura");
+      if (data?.error) throw new Error(data.error);
+
+      const items: ExtractedItem[] = (data.items || []).map((item: any) => ({
+        ...item,
+        selected: true,
+      }));
+
+      setExtractedItems(items);
+      setExtractedMessage(data.message || "Lançamentos encontrados!");
+      setShowReviewModal(true);
+      toast.dismiss("upload-processing");
+    } catch (err: any) {
+      toast.dismiss("upload-processing");
+      toast.error(err?.message || "Erro ao processar fatura");
+    } finally {
+      setUploadProcessing(false);
+    }
+  };
+
+  // Confirm import of extracted items
+  const handleConfirmImport = async (selectedItems: ExtractedItem[]) => {
+    if (!user || !cardId || !card) return;
+    setConfirmingImport(true);
+    try {
+      for (const item of selectedItems) {
+        const paidInstallments = item.installment_current && item.installment_total
+          ? item.installment_current
+          : 0;
+
+        await createTransaction(
+          {
+            name: item.description,
+            type: "despesa",
+            amount: item.amount,
+            category: item.category || "outros",
+            date: item.date || new Date().toISOString().split("T")[0],
+            status: "pago",
+            payment_method: "cartao",
+            credit_card_id: cardId,
+            recurrence_type: item.installment_total && item.installment_total > 1 ? "parcelado" : "unica",
+            installments: item.installment_total || null,
+            installment_current: item.installment_current || null,
+            observation: paidInstallments > 0 ? `paid_installments:${paidInstallments}` : null,
+          },
+          user.id
+        );
+      }
+
+      toast.success(`${selectedItems.length} lançamento${selectedItems.length > 1 ? "s" : ""} importado${selectedItems.length > 1 ? "s" : ""} com sucesso! 🎉`);
+      setShowReviewModal(false);
+      setExtractedItems([]);
+      await refreshItems();
+    } catch (err: any) {
+      toast.error(err?.message || "Erro ao importar lançamentos");
+    } finally {
+      setConfirmingImport(false);
+    }
+  };
 
   const dueInfo = useMemo(() => {
     if (!card) return null;
@@ -443,15 +522,19 @@ const FaturaCartao = () => {
         open={showAddChooser}
         onClose={() => setShowAddChooser(false)}
         onManual={() => setShowManualAdd(true)}
-        onImage={(file) => {
-          toast.info("Processamento de imagem em breve!");
-        }}
-        onPdf={(file) => {
-          toast.info("Processamento de PDF em breve!");
-        }}
-        onCsv={(file) => {
-          toast.info("Processamento de CSV em breve!");
-        }}
+        onImage={(file) => handleFileUpload(file)}
+        onPdf={(file) => handleFileUpload(file)}
+        onCsv={(file) => handleFileUpload(file)}
+      />
+
+      {/* Upload Review Modal */}
+      <InvoiceUploadReviewModal
+        open={showReviewModal}
+        onClose={() => setShowReviewModal(false)}
+        items={extractedItems}
+        message={extractedMessage}
+        onConfirm={handleConfirmImport}
+        confirming={confirmingImport}
       />
 
       {/* Manual Add Modal — pre-set to credit card */}
