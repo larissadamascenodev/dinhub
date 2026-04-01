@@ -261,16 +261,30 @@ const Transacoes = () => {
         }
       }
 
+      // Materialize recurring with adjusted date
+      const now = new Date();
+      const isFutureMonth = selectedYear > now.getFullYear() || (selectedYear === now.getFullYear() && selectedMonth > now.getMonth());
+      const materializedRecurring = recurringTxs.map((t: any) => ({
+        ...t,
+        date: `${selectedYear}-${String(selectedMonth + 1).padStart(2, "0")}-${String(new Date(t.date).getDate()).padStart(2, "0")}`,
+        status: isFutureMonth ? "pendente" : t.status,
+        _isRecurringMaterialized: true,
+      })) as TransactionRow[];
+
       // Separate credit card vs regular transactions
       const regularTxs = baseTxs.filter((t) => t.payment_method !== "cartao");
       const ccTxs = baseTxs.filter((t) => t.payment_method === "cartao" && t.credit_card_id);
+
+      // Also include recurring CC subscriptions (fixa+cartao) in CC grouping
+      const recurringCcTxs = materializedRecurring.filter((t) => t.payment_method === "cartao" && t.credit_card_id);
+      const allCcTxs = [...ccTxs, ...recurringCcTxs];
 
       // Build card name map
       const cardMap = new Map((creditCards as any[]).map((c: any) => [c.id, c]));
 
       // Group CC transactions into consolidated fatura entries
       const faturaGroups = new Map<string, { total: number; count: number; card: any }>();
-      for (const t of ccTxs) {
+      for (const t of allCcTxs) {
         const cardId = t.credit_card_id!;
         const existing = faturaGroups.get(cardId) || { total: 0, count: 0, card: cardMap.get(cardId) };
         existing.total += Number(t.amount);
@@ -284,7 +298,6 @@ const Transacoes = () => {
         const cardName = info.card?.name || "Cartão";
         const dueDay = info.card?.due_day || 1;
 
-        // Try to get the invoice for this month to get accurate total
         let invoiceTotal = info.total;
         let isPaid = false;
         try {
@@ -292,6 +305,11 @@ const Transacoes = () => {
           if (invoices.length > 0) {
             invoiceTotal = Number(invoices[0].total_amount);
             isPaid = invoices[0].is_paid;
+            // Add recurring CC amounts on top of invoice total
+            // (since recurring txs aren't in the DB invoice_items yet)
+            const recurringCcForCard = recurringCcTxs.filter((t) => t.credit_card_id === cardId);
+            const recurringTotal = recurringCcForCard.reduce((s, t) => s + Number(t.amount), 0);
+            invoiceTotal += recurringTotal;
           }
         } catch { /* use grouped total as fallback */ }
 
@@ -313,20 +331,39 @@ const Transacoes = () => {
         });
       }
 
-      // Also check for invoices that exist but have no transactions in this month range
+      // Also check for invoices/recurring that exist but have no direct CC txs this month
       for (const card of (creditCards as any[])) {
         if (!faturaGroups.has(card.id)) {
+          const recurringCcForCard = recurringCcTxs.filter((t) => t.credit_card_id === card.id);
+          const recurringTotal = recurringCcForCard.reduce((s, t) => s + Number(t.amount), 0);
           try {
             const invoices = await getInvoices(card.id, selectedMonth + 1, selectedYear);
-            if (invoices.length > 0 && Number(invoices[0].total_amount) > 0) {
+            if (invoices.length > 0 && (Number(invoices[0].total_amount) > 0 || recurringTotal > 0)) {
               faturaEntries.push({
                 id: `fatura-${card.id}-${selectedMonth}-${selectedYear}`,
                 name: `Fatura ${card.name}`,
                 category: "Cartão de Crédito",
                 date: `${selectedYear}-${String(selectedMonth + 1).padStart(2, "0")}-${String(card.due_day || 1).padStart(2, "0")}`,
-                amount: Number(invoices[0].total_amount),
+                amount: Number(invoices[0].total_amount) + recurringTotal,
                 type: "despesa",
                 status: invoices[0].is_paid ? "pago" : "pendente",
+                payment_method: "cartao",
+                recurrence_type: "unica",
+                installment_current: null,
+                installments: null,
+                observation: null,
+                account_id: null,
+                credit_card_id: card.id,
+              });
+            } else if (recurringTotal > 0) {
+              faturaEntries.push({
+                id: `fatura-${card.id}-${selectedMonth}-${selectedYear}`,
+                name: `Fatura ${card.name}`,
+                category: "Cartão de Crédito",
+                date: `${selectedYear}-${String(selectedMonth + 1).padStart(2, "0")}-${String(card.due_day || 1).padStart(2, "0")}`,
+                amount: recurringTotal,
+                type: "despesa",
+                status: "pendente",
                 payment_method: "cartao",
                 recurrence_type: "unica",
                 installment_current: null,
@@ -340,17 +377,7 @@ const Transacoes = () => {
         }
       }
 
-      // Materialize recurring with adjusted date
-      const now = new Date();
-      const isFutureMonth = selectedYear > now.getFullYear() || (selectedYear === now.getFullYear() && selectedMonth > now.getMonth());
-      const materializedRecurring = recurringTxs.map((t: any) => ({
-        ...t,
-        date: `${selectedYear}-${String(selectedMonth + 1).padStart(2, "0")}-${String(new Date(t.date).getDate()).padStart(2, "0")}`,
-        status: isFutureMonth ? "pendente" : t.status,
-        _isRecurringMaterialized: true,
-      })) as TransactionRow[];
-
-      // Filter out recurring CC transactions too
+      // Filter out recurring CC transactions (already included in faturas)
       const regularRecurring = materializedRecurring.filter((t) => t.payment_method !== "cartao");
 
       setTransactions([...regularTxs, ...faturaEntries, ...regularRecurring]);
