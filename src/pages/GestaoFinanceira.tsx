@@ -789,12 +789,15 @@ const GestaoFinanceira = () => {
               <X className="w-4 h-4 text-muted-foreground" />
             </button>
           </div>
-          <Input
-            placeholder={newAccType === "investment" ? "Nome da carteira (ex: Renda Fixa)" : "Nome do banco (ex: Nubank)"}
-            value={newAccName}
-            onChange={(e) => setNewAccName(e.target.value)}
-            className="bg-muted/30 border-border/20 h-11 rounded-xl"
-          />
+          <div className="space-y-1.5">
+            <label className="text-sm font-medium text-foreground">Nome da conta</label>
+            <Input
+              placeholder={newAccType === "investment" ? "Ex: Tesouro Selic, CDB Banco X..." : "Ex: Nubank, Itaú, Bradesco..."}
+              value={newAccName}
+              onChange={(e) => setNewAccName(e.target.value)}
+              className="bg-muted/30 border-border/20 h-11 rounded-xl"
+            />
+          </div>
           {newAccType !== "investment" && (
             <Select value={newAccType} onValueChange={(v) => setNewAccType(v as any)}>
               <SelectTrigger className="bg-muted/30 border-border/20 h-11 rounded-xl">
