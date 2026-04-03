@@ -130,6 +130,8 @@ const GestaoFinanceira = () => {
   const [newInvestmentType, setNewInvestmentType] = useState("cdb");
   const [newRateType, setNewRateType] = useState("percent_cdi");
   const [newAnnualRate, setNewAnnualRate] = useState("");
+  const [newStartDate, setNewStartDate] = useState(() => new Date().toISOString().split("T")[0]);
+  const [newMaturityDate, setNewMaturityDate] = useState("");
 
   // Add card state
   const [showAddCard, setShowAddCard] = useState(false);
@@ -174,6 +176,8 @@ const GestaoFinanceira = () => {
     setNewInvestmentType("cdb");
     setNewRateType("percent_cdi");
     setNewAnnualRate("");
+    setNewStartDate(new Date().toISOString().split("T")[0]);
+    setNewMaturityDate("");
   };
 
   const resetAddCard = () => {
@@ -844,6 +848,28 @@ const GestaoFinanceira = () => {
                 <p className="text-[11px] text-muted-foreground/70">
                   {newRateType === "percent_cdi" ? "Ex: 115 para 115% do CDI (juros compostos)" : newRateType === "fixed_monthly" ? "Ex: 0,5 para 0,5% ao mês (juros compostos)" : newRateType === "fixed_annual" ? "Ex: 14,5 para 14,5% ao ano (juros compostos)" : newRateType === "ipca_plus" ? "Ex: 5,5 para IPCA + 5,5% ao ano" : newRateType === "cdi_plus" ? "Ex: 2,5 para CDI + 2,5% ao ano" : "Ex: 1,0 para 1% ao mês (juros compostos)"}
                 </p>
+              </div>
+            </div>
+          )}
+          {newAccType === "investment" && (
+            <div className="grid grid-cols-2 gap-3">
+              <div className="space-y-1.5">
+                <label className="text-sm font-medium text-foreground">Data de início</label>
+                <Input
+                  type="date"
+                  value={newStartDate}
+                  onChange={(e) => setNewStartDate(e.target.value)}
+                  className="bg-muted/30 border-border/20 h-11 rounded-xl"
+                />
+              </div>
+              <div className="space-y-1.5">
+                <label className="text-sm font-medium text-foreground">Vencimento <span className="text-muted-foreground font-normal">(opcional)</span></label>
+                <Input
+                  type="date"
+                  value={newMaturityDate}
+                  onChange={(e) => setNewMaturityDate(e.target.value)}
+                  className="bg-muted/30 border-border/20 h-11 rounded-xl"
+                />
               </div>
             </div>
           )}
