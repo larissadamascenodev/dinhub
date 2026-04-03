@@ -892,7 +892,7 @@ const GestaoFinanceira = () => {
                       />
                     </PopoverContent>
                   </Popover>
-                  <p className="text-[11px] text-muted-foreground/70">Se informada, será calculado o valor estimado no vencimento</p>
+                  <p className="text-[10px] leading-tight text-muted-foreground/60">Calcula valor estimado no vencimento</p>
                 </div>
               </div>
             </>
