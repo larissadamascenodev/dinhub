@@ -851,6 +851,27 @@ const GestaoFinanceira = () => {
               </div>
             </div>
           )}
+          {newAccType === "investment" && (
+            <div className="grid grid-cols-2 gap-3">
+              <div className="space-y-1.5">
+                <label className="text-sm font-medium text-foreground">Data de início</label>
+                <Input
+                  type="date"
+                  value={newStartDate}
+                  onChange={(e) => setNewStartDate(e.target.value)}
+                  className="bg-muted/30 border-border/20 h-11 rounded-xl"
+                />
+              </div>
+              <div className="space-y-1.5">
+                <label className="text-sm font-medium text-foreground">Vencimento <span className="text-muted-foreground font-normal">(opcional)</span></label>
+                <Input
+                  type="date"
+                  value={newMaturityDate}
+                  onChange={(e) => setNewMaturityDate(e.target.value)}
+                  className="bg-muted/30 border-border/20 h-11 rounded-xl"
+                />
+              </div>
+            </div>
           <div>
             <Label className="text-xs text-muted-foreground mb-1.5 block">
               {newAccType === "investment" ? "Valor investido (opcional)" : "Saldo inicial (opcional)"}
