@@ -176,6 +176,8 @@ const GestaoFinanceira = () => {
     setNewInvestmentType("cdb");
     setNewRateType("percent_cdi");
     setNewAnnualRate("");
+    setNewStartDate(new Date().toISOString().split("T")[0]);
+    setNewMaturityDate("");
   };
 
   const resetAddCard = () => {
