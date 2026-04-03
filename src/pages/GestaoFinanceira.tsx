@@ -130,6 +130,8 @@ const GestaoFinanceira = () => {
   const [newInvestmentType, setNewInvestmentType] = useState("cdb");
   const [newRateType, setNewRateType] = useState("percent_cdi");
   const [newAnnualRate, setNewAnnualRate] = useState("");
+  const [newStartDate, setNewStartDate] = useState(() => new Date().toISOString().split("T")[0]);
+  const [newMaturityDate, setNewMaturityDate] = useState("");
 
   // Add card state
   const [showAddCard, setShowAddCard] = useState(false);
