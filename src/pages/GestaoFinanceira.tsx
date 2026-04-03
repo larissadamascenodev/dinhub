@@ -811,47 +811,28 @@ const GestaoFinanceira = () => {
             </Select>
           )}
           {newAccType === "investment" && (
-            <>
-              <Select value={newInvestmentType} onValueChange={setNewInvestmentType}>
+            <div className="grid grid-cols-2 gap-3">
+              <Select value={newRateType} onValueChange={setNewRateType}>
                 <SelectTrigger className="bg-muted/30 border-border/20 h-11 rounded-xl">
-                  <SelectValue placeholder="Tipo de investimento" />
+                  <SelectValue />
                 </SelectTrigger>
                 <SelectContent>
-                  <SelectItem value="caixinha">Caixinha</SelectItem>
-                  <SelectItem value="cdb">CDB</SelectItem>
-                  <SelectItem value="lci">LCI</SelectItem>
-                  <SelectItem value="lca">LCA</SelectItem>
-                  <SelectItem value="tesouro_selic">Tesouro Selic</SelectItem>
-                  <SelectItem value="poupanca">Poupança</SelectItem>
-                  <SelectItem value="fundo">Fundo de Investimento</SelectItem>
-                  <SelectItem value="outro">Outro</SelectItem>
+                  <SelectItem value="percent_cdi">% do CDI</SelectItem>
+                  <SelectItem value="fixed_annual">Taxa fixa anual</SelectItem>
+                  <SelectItem value="fixed_monthly">Taxa fixa mensal</SelectItem>
+                  <SelectItem value="ipca_plus">IPCA + %</SelectItem>
+                  <SelectItem value="cdi_plus">CDI + %</SelectItem>
+                  <SelectItem value="custom">Personalizado</SelectItem>
                 </SelectContent>
               </Select>
-              {newInvestmentType !== "poupanca" && (
-                <div className="grid grid-cols-2 gap-3">
-                  <Select value={newRateType} onValueChange={setNewRateType}>
-                    <SelectTrigger className="bg-muted/30 border-border/20 h-11 rounded-xl">
-                      <SelectValue />
-                    </SelectTrigger>
-                    <SelectContent>
-                      <SelectItem value="percent_cdi">% do CDI</SelectItem>
-                      <SelectItem value="fixed_annual">Taxa fixa anual</SelectItem>
-                      <SelectItem value="fixed_monthly">Taxa fixa mensal</SelectItem>
-                      <SelectItem value="ipca_plus">IPCA + %</SelectItem>
-                      <SelectItem value="cdi_plus">CDI + %</SelectItem>
-                      <SelectItem value="custom">Personalizado</SelectItem>
-                    </SelectContent>
-                  </Select>
-                  <Input
-                    placeholder={newRateType === "percent_cdi" ? "Ex: 115" : newRateType === "cdi_plus" ? "Ex: 2.5" : newRateType === "ipca_plus" ? "Ex: 5.5" : newRateType === "fixed_monthly" ? "Ex: 1.2" : newRateType === "custom" ? "% a.a." : "Ex: 14.5"}
-                    type="number"
-                    value={newAnnualRate}
-                    onChange={(e) => setNewAnnualRate(e.target.value)}
-                    className="bg-muted/30 border-border/20 h-11 rounded-xl"
-                  />
-                </div>
-              )}
-            </>
+              <Input
+                placeholder={newRateType === "percent_cdi" ? "Ex: 115" : newRateType === "cdi_plus" ? "Ex: 2.5" : newRateType === "ipca_plus" ? "Ex: 5.5" : newRateType === "fixed_monthly" ? "Ex: 1.2" : newRateType === "custom" ? "% a.a." : "Ex: 14.5"}
+                type="number"
+                value={newAnnualRate}
+                onChange={(e) => setNewAnnualRate(e.target.value)}
+                className="bg-muted/30 border-border/20 h-11 rounded-xl"
+              />
+            </div>
           )}
           <div>
             <Label className="text-xs text-muted-foreground mb-1.5 block">
