@@ -844,9 +844,9 @@ const GestaoFinanceira = () => {
                     <PopoverTrigger asChild>
                       <Button
                         variant="outline"
-                        className="w-full justify-start text-left font-normal bg-muted/30 border-border/20 h-11 rounded-xl"
+                        className="w-full justify-start text-left font-normal bg-muted/30 border-border/20 h-11 rounded-xl text-xs"
                       >
-                        <CalendarIcon className="mr-2 h-4 w-4 text-muted-foreground" />
+                        <CalendarIcon className="mr-1.5 h-3.5 w-3.5 text-muted-foreground" />
                         {format(newStartDate, "d 'de' MMM. yyyy", { locale: ptBR })}
                       </Button>
                     </PopoverTrigger>
@@ -854,9 +854,12 @@ const GestaoFinanceira = () => {
                       <Calendar
                         mode="single"
                         selected={newStartDate}
-                        onSelect={(d) => { if (d) setNewStartDate(d); }}
+                        onSelect={(d) => {
+                          if (d) setNewStartDate(d);
+                          document.dispatchEvent(new KeyboardEvent("keydown", { key: "Escape" }));
+                        }}
                         initialFocus
-                        className="p-3 pointer-events-auto"
+                        className="p-2 pointer-events-auto text-xs [&_table]:text-xs [&_button]:h-7 [&_button]:w-7 [&_th]:w-7 [&_.rdp-caption]:text-sm"
                       />
                     </PopoverContent>
                   </Popover>
@@ -868,11 +871,11 @@ const GestaoFinanceira = () => {
                       <Button
                         variant="outline"
                         className={cn(
-                          "w-full justify-start text-left font-normal bg-muted/30 border-border/20 h-11 rounded-xl",
+                          "w-full justify-start text-left font-normal bg-muted/30 border-border/20 h-11 rounded-xl text-xs",
                           !newMaturityDate && "text-muted-foreground"
                         )}
                       >
-                        <CalendarIcon className="mr-2 h-4 w-4 text-muted-foreground" />
+                        <CalendarIcon className="mr-1.5 h-3.5 w-3.5 text-muted-foreground" />
                         {newMaturityDate ? format(newMaturityDate, "d 'de' MMM. yyyy", { locale: ptBR }) : "dd/mm/aaaa"}
                       </Button>
                     </PopoverTrigger>
@@ -880,9 +883,12 @@ const GestaoFinanceira = () => {
                       <Calendar
                         mode="single"
                         selected={newMaturityDate}
-                        onSelect={setNewMaturityDate}
+                        onSelect={(d) => {
+                          setNewMaturityDate(d);
+                          document.dispatchEvent(new KeyboardEvent("keydown", { key: "Escape" }));
+                        }}
                         initialFocus
-                        className="p-3 pointer-events-auto"
+                        className="p-2 pointer-events-auto text-xs [&_table]:text-xs [&_button]:h-7 [&_button]:w-7 [&_th]:w-7 [&_.rdp-caption]:text-sm"
                       />
                     </PopoverContent>
                   </Popover>
