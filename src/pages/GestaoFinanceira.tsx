@@ -1,12 +1,16 @@
 import { useState, useEffect, useCallback } from "react";
 import useEmblaCarousel from "embla-carousel-react";
 import { motion, AnimatePresence } from "framer-motion";
-import { CreditCard, Plus, X, Landmark, Banknote, PiggyBank, TrendingUp, ChevronRight, Briefcase, ArrowDownLeft } from "lucide-react";
+import { CreditCard, Plus, X, Landmark, Banknote, PiggyBank, TrendingUp, ChevronRight, Briefcase, ArrowDownLeft, CalendarIcon } from "lucide-react";
 import { useNavigate } from "react-router-dom";
+import { format } from "date-fns";
+import { ptBR } from "date-fns/locale";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
+import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover";
+import { Calendar } from "@/components/ui/calendar";
 import { toast } from "sonner";
 import { useAuth } from "@/contexts/AuthContext";
 import { getAccounts, createAccount, getCreditCards, createCreditCard } from "@/services/transactionService";
@@ -130,8 +134,8 @@ const GestaoFinanceira = () => {
   const [newInvestmentType, setNewInvestmentType] = useState("cdb");
   const [newRateType, setNewRateType] = useState("percent_cdi");
   const [newAnnualRate, setNewAnnualRate] = useState("");
-  const [newStartDate, setNewStartDate] = useState(() => new Date().toISOString().split("T")[0]);
-  const [newMaturityDate, setNewMaturityDate] = useState("");
+  const [newStartDate, setNewStartDate] = useState<Date>(new Date());
+  const [newMaturityDate, setNewMaturityDate] = useState<Date | undefined>(undefined);
 
   // Add card state
   const [showAddCard, setShowAddCard] = useState(false);
@@ -176,8 +180,8 @@ const GestaoFinanceira = () => {
     setNewInvestmentType("cdb");
     setNewRateType("percent_cdi");
     setNewAnnualRate("");
-    setNewStartDate(new Date().toISOString().split("T")[0]);
-    setNewMaturityDate("");
+    setNewStartDate(new Date());
+    setNewMaturityDate(undefined);
   };
 
   const resetAddCard = () => {
@@ -836,21 +840,52 @@ const GestaoFinanceira = () => {
               <div className="grid grid-cols-2 gap-3">
                 <div className="space-y-1.5">
                   <label className="text-sm font-medium text-foreground">Data de início</label>
-                  <Input
-                    type="date"
-                    value={newStartDate}
-                    onChange={(e) => setNewStartDate(e.target.value)}
-                    className="bg-muted/30 border-border/20 h-11 rounded-xl"
-                  />
+                  <Popover>
+                    <PopoverTrigger asChild>
+                      <Button
+                        variant="outline"
+                        className="w-full justify-start text-left font-normal bg-muted/30 border-border/20 h-11 rounded-xl"
+                      >
+                        <CalendarIcon className="mr-2 h-4 w-4 text-muted-foreground" />
+                        {format(newStartDate, "d 'de' MMM. yyyy", { locale: ptBR })}
+                      </Button>
+                    </PopoverTrigger>
+                    <PopoverContent className="w-auto p-0" align="start">
+                      <Calendar
+                        mode="single"
+                        selected={newStartDate}
+                        onSelect={(d) => { if (d) setNewStartDate(d); }}
+                        initialFocus
+                        className="p-3 pointer-events-auto"
+                      />
+                    </PopoverContent>
+                  </Popover>
                 </div>
                 <div className="space-y-1.5">
                   <label className="text-sm font-medium text-foreground">Vencimento <span className="text-muted-foreground font-normal">(opcional)</span></label>
-                  <Input
-                    type="date"
-                    value={newMaturityDate}
-                    onChange={(e) => setNewMaturityDate(e.target.value)}
-                    className="bg-muted/30 border-border/20 h-11 rounded-xl"
-                  />
+                  <Popover>
+                    <PopoverTrigger asChild>
+                      <Button
+                        variant="outline"
+                        className={cn(
+                          "w-full justify-start text-left font-normal bg-muted/30 border-border/20 h-11 rounded-xl",
+                          !newMaturityDate && "text-muted-foreground"
+                        )}
+                      >
+                        <CalendarIcon className="mr-2 h-4 w-4 text-muted-foreground" />
+                        {newMaturityDate ? format(newMaturityDate, "d 'de' MMM. yyyy", { locale: ptBR }) : "dd/mm/aaaa"}
+                      </Button>
+                    </PopoverTrigger>
+                    <PopoverContent className="w-auto p-0" align="start">
+                      <Calendar
+                        mode="single"
+                        selected={newMaturityDate}
+                        onSelect={setNewMaturityDate}
+                        initialFocus
+                        className="p-3 pointer-events-auto"
+                      />
+                    </PopoverContent>
+                  </Popover>
                 </div>
               </div>
             </>
