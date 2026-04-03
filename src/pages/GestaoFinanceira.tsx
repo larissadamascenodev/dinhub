@@ -840,25 +840,54 @@ const GestaoFinanceira = () => {
               <div className="grid grid-cols-2 gap-3">
                 <div className="space-y-1.5">
                   <label className="text-sm font-medium text-foreground">Data de início</label>
-                  <Input
-                    type="date"
-                    value={newStartDate}
-                    onChange={(e) => setNewStartDate(e.target.value)}
-                    className="bg-muted/30 border-border/20 h-11 rounded-xl"
-                  />
+                  <Popover>
+                    <PopoverTrigger asChild>
+                      <Button
+                        variant="outline"
+                        className="w-full justify-start text-left font-normal bg-muted/30 border-border/20 h-11 rounded-xl"
+                      >
+                        <CalendarIcon className="mr-2 h-4 w-4 text-muted-foreground" />
+                        {format(newStartDate, "d 'de' MMM. yyyy", { locale: ptBR })}
+                      </Button>
+                    </PopoverTrigger>
+                    <PopoverContent className="w-auto p-0" align="start">
+                      <Calendar
+                        mode="single"
+                        selected={newStartDate}
+                        onSelect={(d) => { if (d) setNewStartDate(d); }}
+                        initialFocus
+                        className="p-3 pointer-events-auto"
+                      />
+                    </PopoverContent>
+                  </Popover>
                 </div>
                 <div className="space-y-1.5">
                   <label className="text-sm font-medium text-foreground">Vencimento <span className="text-muted-foreground font-normal">(opcional)</span></label>
-                  <Input
-                    type="date"
-                    value={newMaturityDate}
-                    onChange={(e) => setNewMaturityDate(e.target.value)}
-                    className="bg-muted/30 border-border/20 h-11 rounded-xl"
-                  />
+                  <Popover>
+                    <PopoverTrigger asChild>
+                      <Button
+                        variant="outline"
+                        className={cn(
+                          "w-full justify-start text-left font-normal bg-muted/30 border-border/20 h-11 rounded-xl",
+                          !newMaturityDate && "text-muted-foreground"
+                        )}
+                      >
+                        <CalendarIcon className="mr-2 h-4 w-4 text-muted-foreground" />
+                        {newMaturityDate ? format(newMaturityDate, "d 'de' MMM. yyyy", { locale: ptBR }) : "dd/mm/aaaa"}
+                      </Button>
+                    </PopoverTrigger>
+                    <PopoverContent className="w-auto p-0" align="start">
+                      <Calendar
+                        mode="single"
+                        selected={newMaturityDate}
+                        onSelect={setNewMaturityDate}
+                        initialFocus
+                        className="p-3 pointer-events-auto"
+                      />
+                    </PopoverContent>
+                  </Popover>
                 </div>
               </div>
-            </>
-          )}
           <div>
             <Label className="text-xs text-muted-foreground mb-1.5 block">
               {newAccType === "investment" ? "Valor investido (opcional)" : "Saldo inicial (opcional)"}
