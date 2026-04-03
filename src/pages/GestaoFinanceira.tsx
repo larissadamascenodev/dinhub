@@ -200,9 +200,8 @@ const GestaoFinanceira = () => {
         color: newAccColor,
       };
       if (newAccType === "investment") {
-        accPayload.investment_type = newInvestmentType;
-        accPayload.rate_type = newInvestmentType === "poupanca" ? null : newRateType;
-        accPayload.annual_rate = newInvestmentType === "poupanca" ? null : (newAnnualRate ? parseFloat(newAnnualRate) : null);
+        accPayload.rate_type = "fixed_monthly";
+        accPayload.annual_rate = newAnnualRate ? parseFloat(newAnnualRate) : null;
       }
       await createAccount(user.id, accPayload);
       toast.success("Conta criada!");
@@ -815,63 +814,46 @@ const GestaoFinanceira = () => {
             </Select>
           )}
           {newAccType === "investment" && (
-            <div className="space-y-3">
-              <Select value={newRateType} onValueChange={setNewRateType}>
-                <SelectTrigger className="bg-muted/30 border-border/20 h-11 rounded-xl">
-                  <SelectValue />
-                </SelectTrigger>
-                <SelectContent>
-                  <SelectItem value="percent_cdi">% do CDI</SelectItem>
-                  <SelectItem value="fixed_annual">Taxa fixa anual</SelectItem>
-                  <SelectItem value="fixed_monthly">Taxa fixa mensal</SelectItem>
-                  <SelectItem value="ipca_plus">IPCA + %</SelectItem>
-                  <SelectItem value="cdi_plus">CDI + %</SelectItem>
-                  <SelectItem value="custom">Personalizado</SelectItem>
-                </SelectContent>
-              </Select>
+            <>
               <div className="space-y-1.5">
-                <label className="text-sm font-medium text-foreground">
-                  {newRateType === "percent_cdi" ? "Percentual do CDI" : newRateType === "fixed_annual" ? "Taxa de rendimento anual" : newRateType === "fixed_monthly" ? "Taxa de rendimento mensal" : newRateType === "ipca_plus" ? "Taxa acima do IPCA" : newRateType === "cdi_plus" ? "Taxa acima do CDI" : "Taxa de rendimento"}
-                </label>
+                <label className="text-sm font-medium text-foreground">Taxa de rendimento mensal</label>
                 <div className="relative">
                   <Input
-                    placeholder={newRateType === "percent_cdi" ? "115" : newRateType === "cdi_plus" ? "2,50" : newRateType === "ipca_plus" ? "5,50" : newRateType === "fixed_monthly" ? "0,50" : newRateType === "custom" ? "1,00" : "14,50"}
+                    placeholder="0,50"
                     type="number"
                     value={newAnnualRate}
                     onChange={(e) => setNewAnnualRate(e.target.value)}
                     className="bg-muted/30 border-border/20 h-11 rounded-xl pr-20"
                   />
                   <span className="absolute right-3 top-1/2 -translate-y-1/2 text-sm text-muted-foreground pointer-events-none">
-                    {newRateType === "percent_cdi" ? "% CDI" : newRateType === "fixed_annual" ? "% a.a." : newRateType === "fixed_monthly" ? "% a.m." : newRateType === "ipca_plus" ? "% a.a." : newRateType === "cdi_plus" ? "% a.a." : "% a.m."}
+                    % a.m.
                   </span>
                 </div>
                 <p className="text-[11px] text-muted-foreground/70">
-                  {newRateType === "percent_cdi" ? "Ex: 115 para 115% do CDI (juros compostos)" : newRateType === "fixed_monthly" ? "Ex: 0,5 para 0,5% ao mês (juros compostos)" : newRateType === "fixed_annual" ? "Ex: 14,5 para 14,5% ao ano (juros compostos)" : newRateType === "ipca_plus" ? "Ex: 5,5 para IPCA + 5,5% ao ano" : newRateType === "cdi_plus" ? "Ex: 2,5 para CDI + 2,5% ao ano" : "Ex: 1,0 para 1% ao mês (juros compostos)"}
+                  Ex: 0,5 para 0,5% ao mês (juros compostos)
                 </p>
               </div>
-            </div>
-          )}
-          {newAccType === "investment" && (
-            <div className="grid grid-cols-2 gap-3">
-              <div className="space-y-1.5">
-                <label className="text-sm font-medium text-foreground">Data de início</label>
-                <Input
-                  type="date"
-                  value={newStartDate}
-                  onChange={(e) => setNewStartDate(e.target.value)}
-                  className="bg-muted/30 border-border/20 h-11 rounded-xl"
-                />
+              <div className="grid grid-cols-2 gap-3">
+                <div className="space-y-1.5">
+                  <label className="text-sm font-medium text-foreground">Data de início</label>
+                  <Input
+                    type="date"
+                    value={newStartDate}
+                    onChange={(e) => setNewStartDate(e.target.value)}
+                    className="bg-muted/30 border-border/20 h-11 rounded-xl"
+                  />
+                </div>
+                <div className="space-y-1.5">
+                  <label className="text-sm font-medium text-foreground">Vencimento <span className="text-muted-foreground font-normal">(opcional)</span></label>
+                  <Input
+                    type="date"
+                    value={newMaturityDate}
+                    onChange={(e) => setNewMaturityDate(e.target.value)}
+                    className="bg-muted/30 border-border/20 h-11 rounded-xl"
+                  />
+                </div>
               </div>
-              <div className="space-y-1.5">
-                <label className="text-sm font-medium text-foreground">Vencimento <span className="text-muted-foreground font-normal">(opcional)</span></label>
-                <Input
-                  type="date"
-                  value={newMaturityDate}
-                  onChange={(e) => setNewMaturityDate(e.target.value)}
-                  className="bg-muted/30 border-border/20 h-11 rounded-xl"
-                />
-              </div>
-            </div>
+            </>
           )}
           <div>
             <Label className="text-xs text-muted-foreground mb-1.5 block">
