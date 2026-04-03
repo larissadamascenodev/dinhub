@@ -180,8 +180,8 @@ const GestaoFinanceira = () => {
     setNewInvestmentType("cdb");
     setNewRateType("percent_cdi");
     setNewAnnualRate("");
-    setNewStartDate(new Date().toISOString().split("T")[0]);
-    setNewMaturityDate("");
+    setNewStartDate(new Date());
+    setNewMaturityDate(undefined);
   };
 
   const resetAddCard = () => {
