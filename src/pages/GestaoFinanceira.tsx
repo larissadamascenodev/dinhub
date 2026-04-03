@@ -200,9 +200,8 @@ const GestaoFinanceira = () => {
         color: newAccColor,
       };
       if (newAccType === "investment") {
-        accPayload.investment_type = newInvestmentType;
-        accPayload.rate_type = newInvestmentType === "poupanca" ? null : newRateType;
-        accPayload.annual_rate = newInvestmentType === "poupanca" ? null : (newAnnualRate ? parseFloat(newAnnualRate) : null);
+        accPayload.rate_type = "fixed_monthly";
+        accPayload.annual_rate = newAnnualRate ? parseFloat(newAnnualRate) : null;
       }
       await createAccount(user.id, accPayload);
       toast.success("Conta criada!");
