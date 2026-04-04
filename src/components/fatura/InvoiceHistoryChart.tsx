@@ -10,6 +10,7 @@ interface Props {
   selectedMonth: number;
   selectedYear: number;
   onSelect: (month: number, year: number) => void;
+  userStartDate?: Date | null;
 }
 
 export default function InvoiceHistoryChart({ invoices, selectedMonth, selectedYear, onSelect }: Props) {
