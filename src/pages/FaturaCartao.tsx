@@ -114,16 +114,26 @@ const FaturaCartao = () => {
     const load = async () => {
       setLoading(true);
       try {
-        const [cards, accs, allInvoices] = await Promise.all([
+        const [cards, accs, allInvoices, profileRes] = await Promise.all([
           getCreditCards(),
           getAccounts(),
           getInvoices(cardId),
+          supabase.from("profiles").select("created_at").eq("id", user.id).single(),
         ]);
         const typedCards = cards as unknown as CreditCardInfo[];
         const foundCard = typedCards.find((c) => c.id === cardId);
         setCard(foundCard ?? null);
         setAccounts(accs as unknown as AccountInfo[]);
-        setInvoices(allInvoices);
+
+        // Filter invoices to only show from user creation month onwards
+        const startDate = profileRes.data?.created_at ? new Date(profileRes.data.created_at) : null;
+        setUserStartDate(startDate);
+        const startMonth = startDate ? startDate.getMonth() + 1 : null;
+        const startYear = startDate ? startDate.getFullYear() : null;
+        const filtered = (startMonth && startYear)
+          ? allInvoices.filter((inv) => inv.year > startYear! || (inv.year === startYear! && inv.month >= startMonth!))
+          : allInvoices;
+        setInvoices(filtered);
         const defaultAcc = (accs as unknown as AccountInfo[]).find((a) => a.is_default);
         if (defaultAcc) setPayAccountId(defaultAcc.id);
       } catch {
