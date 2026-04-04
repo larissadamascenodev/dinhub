@@ -1,4 +1,4 @@
-import { useState, useCallback, useEffect } from "react";
+import { useState, useCallback, useEffect, useRef } from "react";
 import { Outlet } from "react-router-dom";
 import DashboardHeader from "@/components/dashboard/DashboardHeader";
 import MobileBottomNav from "@/components/dashboard/MobileBottomNav";
@@ -28,6 +28,14 @@ const DashboardLayout = () => {
   const [showReviewModal, setShowReviewModal] = useState(false);
   const [confirmingImport, setConfirmingImport] = useState(false);
 
+  const scanFileInputRef = useRef<HTMLInputElement>(null);
+
+  const handleScanFileInput = useCallback((e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0];
+    if (file) handleScanFile(file);
+    e.target.value = "";
+  }, []);
+
   // Global listener for the mobile + button and desktop "Nova transação"
   useEffect(() => {
     const handleDirect = (e: Event) => {
@@ -40,7 +48,7 @@ const DashboardLayout = () => {
       }
     };
     const handleScanner = () => {
-      setShowTypeChooser(true);
+      scanFileInputRef.current?.click();
     };
     window.addEventListener("open-nova-transacao-direct", handleDirect);
     window.addEventListener("open-scanner", handleScanner);
@@ -143,7 +151,14 @@ const DashboardLayout = () => {
           open={showTypeChooser}
           onClose={() => setShowTypeChooser(false)}
           onSelect={handleTypeSelected}
-          onScan={handleScanFile}
+        />
+        <input
+          ref={scanFileInputRef}
+          type="file"
+          accept="image/*,.pdf,.csv"
+          capture="environment"
+          className="hidden"
+          onChange={handleScanFileInput}
         />
         <NovaTransacaoModal open={showModal} onClose={() => setShowModal(false)} onSuccess={handleSuccess} initialType={modalType} />
         <TransferModal open={showTransferModal} onClose={() => setShowTransferModal(false)} onSuccess={handleSuccess} />
