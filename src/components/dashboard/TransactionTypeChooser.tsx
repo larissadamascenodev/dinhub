@@ -1,25 +1,13 @@
-import { useRef } from "react";
 import { motion, AnimatePresence } from "framer-motion";
-import { TrendingUp, TrendingDown, ArrowRightLeft, ScanLine } from "lucide-react";
+import { TrendingUp, TrendingDown, ArrowRightLeft } from "lucide-react";
 
 interface Props {
   open: boolean;
   onClose: () => void;
   onSelect: (type: "receita" | "despesa" | "transferencia") => void;
-  onScan?: (file: File) => void;
 }
 
-const TransactionTypeChooser = ({ open, onClose, onSelect, onScan }: Props) => {
-  const fileInputRef = useRef<HTMLInputElement>(null);
-
-  const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    const file = e.target.files?.[0];
-    if (!file || !onScan) return;
-    onScan(file);
-    onClose();
-    e.target.value = "";
-  };
-
+const TransactionTypeChooser = ({ open, onClose, onSelect }: Props) => {
   return (
     <AnimatePresence>
       {open && (
@@ -37,7 +25,7 @@ const TransactionTypeChooser = ({ open, onClose, onSelect, onScan }: Props) => {
             exit={{ opacity: 0, scale: 0.9, y: 20 }}
             transition={{ type: "spring", damping: 25, stiffness: 350 }}
             onClick={(e) => e.stopPropagation()}
-            className="flex flex-wrap justify-center gap-3 p-2 max-w-[320px]"
+            className="flex gap-3 p-2"
           >
             {/* Despesa */}
             <motion.button
@@ -77,33 +65,7 @@ const TransactionTypeChooser = ({ open, onClose, onSelect, onScan }: Props) => {
               </div>
               <span className="text-xs font-bold text-foreground">Transferir</span>
             </motion.button>
-
-            {/* Escanear */}
-            {onScan && (
-              <motion.button
-                whileHover={{ scale: 1.05 }}
-                whileTap={{ scale: 0.95 }}
-                onClick={() => fileInputRef.current?.click()}
-                className="flex flex-col items-center gap-3 w-28 py-6 rounded-2xl bg-card border border-border/30 shadow-2xl hover:border-amber-500/40 transition-colors"
-              >
-                <div className="w-12 h-12 rounded-xl bg-amber-500/15 flex items-center justify-center">
-                  <ScanLine className="w-6 h-6 text-amber-400" />
-                </div>
-                <span className="text-xs font-bold text-foreground">Escanear</span>
-              </motion.button>
-            )}
           </motion.div>
-
-          {onScan && (
-            <input
-              ref={fileInputRef}
-              type="file"
-              accept="image/*,.pdf,.csv"
-              capture="environment"
-              className="hidden"
-              onChange={handleFileChange}
-            />
-          )}
         </motion.div>
       )}
     </AnimatePresence>
