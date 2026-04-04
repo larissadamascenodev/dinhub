@@ -182,7 +182,7 @@ const NovaTransacaoModal = ({ open, onClose, onSuccess, initialType = "despesa",
         setInstallments(editTransaction.installments || 2);
         setPaidInstallments(editTransaction.installment_current ? editTransaction.installment_current - 1 : 0);
         setInstallmentFrequency("mensal");
-        setObservation(editTransaction.observation || "");
+        setObservation(editTransaction.observation?.replace(/^paid_installments:\d+\s*(\|\s*)?/, "") || "");
         setShowNewAccount(false);
         setNewAccountName("");
         setShowCategoryModal(false);
@@ -368,6 +368,10 @@ const NovaTransacaoModal = ({ open, onClose, onSuccess, initialType = "despesa",
 
     setSubmitting(true);
     try {
+      const observationValue = isParcelado && paidInstallments > 0
+        ? `paid_installments:${paidInstallments}${observation.trim() ? ` | ${observation.trim()}` : ""}`
+        : (observation.trim() || null);
+
       if (isEditMode && editTransaction) {
         // Edit mode: update existing transaction
         await updateTransaction(editTransaction.id, {
@@ -377,6 +381,13 @@ const NovaTransacaoModal = ({ open, onClose, onSuccess, initialType = "despesa",
           category,
           date: dateStr,
           status: paymentMethod === "cartao" ? "pendente" : status,
+          payment_method: type === "despesa" ? paymentMethod : "conta",
+          recurrence_type: recurrenceType,
+          installments: isParcelado ? installments : null,
+          installment_current: currentInstallment,
+          observation: observationValue,
+          account_id: paymentMethod === "cartao" ? null : (accountId || null),
+          credit_card_id: paymentMethod === "cartao" ? (creditCardId || null) : null,
         });
         toast.success("Transação atualizada ✏️", {
           description: `${type === "receita" ? "Receita" : "Despesa"} de R$ ${formatCurrency(amountCents)}`,
@@ -396,9 +407,7 @@ const NovaTransacaoModal = ({ open, onClose, onSuccess, initialType = "despesa",
             recurrence_type: recurrenceType,
             installments: isParcelado ? installments : null,
             installment_current: currentInstallment,
-            observation: isParcelado && paidInstallments > 0
-              ? `paid_installments:${paidInstallments}${observation.trim() ? ` | ${observation.trim()}` : ""}`
-              : (observation.trim() || null),
+            observation: observationValue,
             credit_card_id: paymentMethod === "cartao" ? (creditCardId || null) : null,
           },
           user.id

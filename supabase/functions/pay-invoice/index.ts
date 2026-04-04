@@ -46,7 +46,6 @@ Deno.serve(async (req) => {
 
     const adminClient = createClient(supabaseUrl, supabaseServiceKey);
 
-    // Get invoice
     const { data: invoice, error: invError } = await adminClient
       .from("invoices")
       .select("*")
@@ -72,7 +71,6 @@ Deno.serve(async (req) => {
       });
     }
 
-    // Verify account belongs to user
     const { data: account, error: accError } = await adminClient
       .from("accounts")
       .select("*")
@@ -105,7 +103,6 @@ Deno.serve(async (req) => {
       debitAmount = entry;
     }
 
-    // Subtract from account balance
     const newBalance = Number(account.current_balance) - debitAmount;
     const { error: balError } = await adminClient
       .from("accounts")
@@ -119,10 +116,9 @@ Deno.serve(async (req) => {
       });
     }
 
-    // Update invoice: accumulate paid_amount, set is_paid if fully paid
     const newPaidAmount = alreadyPaid + debitAmount;
     const isFullyPaid = mode === "total" || (mode === "minimo" && remainderToNextInvoice <= 0);
-    
+
     const { error: payError } = await adminClient
       .from("invoices")
       .update({
@@ -134,7 +130,6 @@ Deno.serve(async (req) => {
       .eq("id", invoice_id);
 
     if (payError) {
-      // Rollback balance
       await adminClient
         .from("accounts")
         .update({ current_balance: account.current_balance })
@@ -146,22 +141,6 @@ Deno.serve(async (req) => {
       });
     }
 
-    // Release credit card limit proportionally to the amount paid
-    const { data: card, error: cardError } = await adminClient
-      .from("credit_cards")
-      .select("used_limit")
-      .eq("id", invoice.credit_card_id)
-      .single();
-
-    if (!cardError && card) {
-      const newUsedLimit = Math.max(0, Number(card.used_limit) - debitAmount);
-      await adminClient
-        .from("credit_cards")
-        .update({ used_limit: newUsedLimit })
-        .eq("id", invoice.credit_card_id);
-    }
-
-    // Handle remainder for minimum payment - transfer to next invoice
     if (mode === "minimo" && remainderToNextInvoice > 0) {
       let nextMonth = invoice.month + 1;
       let nextYear = invoice.year;
@@ -193,7 +172,6 @@ Deno.serve(async (req) => {
       }
     }
 
-    // Handle installment payment - create future invoice entries
     if (mode === "parcelado") {
       const entry = Number(entry_amount) || 0;
       const numInstallments = Number(installments) || 2;
@@ -232,6 +210,10 @@ Deno.serve(async (req) => {
         }
       }
     }
+
+    await adminClient.rpc("recalc_credit_card_used_limit", {
+      p_credit_card_id: invoice.credit_card_id,
+    });
 
     return new Response(
       JSON.stringify({
