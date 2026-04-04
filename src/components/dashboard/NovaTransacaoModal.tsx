@@ -182,7 +182,7 @@ const NovaTransacaoModal = ({ open, onClose, onSuccess, initialType = "despesa",
         setInstallments(editTransaction.installments || 2);
         setPaidInstallments(editTransaction.installment_current ? editTransaction.installment_current - 1 : 0);
         setInstallmentFrequency("mensal");
-        setObservation(editTransaction.observation || "");
+        setObservation(editTransaction.observation?.replace(/^paid_installments:\d+\s*(\|\s*)?/, "") || "");
         setShowNewAccount(false);
         setNewAccountName("");
         setShowCategoryModal(false);
