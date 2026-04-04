@@ -28,15 +28,24 @@ function InstallmentBar({ current, total }: { current: number; total: number }) 
   if (total <= 1) return null;
   return (
     <div className="flex gap-[4px] w-full">
-      {Array.from({ length: total }, (_, i) => (
-        <div
-          key={i}
-          className={cn(
-            "h-[4px] rounded-[1.5px] flex-1",
-            i < current ? "bg-white/70" : "bg-white/15"
-          )}
-        />
-      ))}
+      {Array.from({ length: total }, (_, i) => {
+        const installmentNum = i + 1;
+        const isPaid = installmentNum < current;
+        const isCurrent = installmentNum === current;
+        return (
+          <div
+            key={i}
+            className={cn(
+              "h-[4px] rounded-[1.5px] flex-1",
+              isPaid
+                ? "bg-primary"
+                : isCurrent
+                  ? "bg-white/80"
+                  : "bg-white/15"
+            )}
+          />
+        );
+      })}
     </div>
   );
 }
