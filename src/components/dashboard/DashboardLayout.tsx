@@ -7,13 +7,26 @@ import { MonthProvider } from "@/contexts/MonthContext";
 import NovaTransacaoModal from "@/components/dashboard/NovaTransacaoModal";
 import TransactionTypeChooser from "@/components/dashboard/TransactionTypeChooser";
 import TransferModal from "@/components/dashboard/TransferModal";
+import InvoiceUploadReviewModal, { type ExtractedItem } from "@/components/fatura/InvoiceUploadReviewModal";
+import { supabase } from "@/integrations/supabase/client";
+import { createTransaction } from "@/services/transactionService";
+import { useAuth } from "@/contexts/AuthContext";
+import { toast } from "sonner";
 
 const DashboardLayout = () => {
   const { profile } = useProfile();
+  const { user } = useAuth();
   const [showTypeChooser, setShowTypeChooser] = useState(false);
   const [showModal, setShowModal] = useState(false);
   const [showTransferModal, setShowTransferModal] = useState(false);
   const [modalType, setModalType] = useState<"receita" | "despesa">("despesa");
+
+  // OCR state
+  const [scanProcessing, setScanProcessing] = useState(false);
+  const [extractedItems, setExtractedItems] = useState<ExtractedItem[]>([]);
+  const [extractedMessage, setExtractedMessage] = useState("");
+  const [showReviewModal, setShowReviewModal] = useState(false);
+  const [confirmingImport, setConfirmingImport] = useState(false);
 
   // Global listener for the mobile + button and desktop "Nova transação"
   useEffect(() => {
@@ -27,7 +40,7 @@ const DashboardLayout = () => {
       }
     };
     const handleScanner = () => {
-      console.log("Scanner opened");
+      setShowTypeChooser(true);
     };
     window.addEventListener("open-nova-transacao-direct", handleDirect);
     window.addEventListener("open-scanner", handleScanner);
@@ -51,6 +64,73 @@ const DashboardLayout = () => {
     window.dispatchEvent(new CustomEvent("transaction-created"));
   }, []);
 
+  // OCR scan handler
+  const handleScanFile = useCallback(async (file: File) => {
+    setScanProcessing(true);
+    toast.loading("Processando com IA...", { id: "scan-processing" });
+    try {
+      const formData = new FormData();
+      formData.append("file", file);
+      formData.append("context", "transaction");
+
+      const { data, error } = await supabase.functions.invoke("process-invoice", {
+        body: formData,
+      });
+
+      if (error) throw new Error(error.message || "Erro ao processar");
+      if (data?.error) throw new Error(data.error);
+
+      const items: ExtractedItem[] = (data.items || []).map((item: any) => ({
+        ...item,
+        selected: true,
+      }));
+
+      setExtractedItems(items);
+      setExtractedMessage(data.message || "Lançamentos encontrados!");
+      setShowReviewModal(true);
+      toast.dismiss("scan-processing");
+    } catch (err: any) {
+      toast.dismiss("scan-processing");
+      toast.error(err?.message || "Erro ao processar documento");
+    } finally {
+      setScanProcessing(false);
+    }
+  }, []);
+
+  // Confirm import of scanned transactions
+  const handleConfirmScanImport = useCallback(async (selectedItems: ExtractedItem[]) => {
+    if (!user) return;
+    setConfirmingImport(true);
+    try {
+      for (const item of selectedItems) {
+        await createTransaction(
+          {
+            name: item.description,
+            type: (item.type as "receita" | "despesa") || "despesa",
+            amount: item.amount,
+            category: item.category || "outros",
+            date: item.date || new Date().toISOString().split("T")[0],
+            status: "pendente",
+            payment_method: "conta",
+            recurrence_type: item.installment_total && item.installment_total > 1 ? "parcelado" : "unica",
+            installments: item.installment_total || null,
+            installment_current: item.installment_current || null,
+          },
+          user.id
+        );
+      }
+
+      toast.success(`${selectedItems.length} transação${selectedItems.length > 1 ? "ões" : ""} importada${selectedItems.length > 1 ? "s" : ""} com sucesso! 🎉`);
+      setShowReviewModal(false);
+      setExtractedItems([]);
+      handleSuccess();
+    } catch (err: any) {
+      toast.error(err?.message || "Erro ao importar transações");
+    } finally {
+      setConfirmingImport(false);
+    }
+  }, [user, handleSuccess]);
+
   return (
     <MonthProvider>
       <div className="dark min-h-screen bg-background text-foreground">
@@ -59,9 +139,22 @@ const DashboardLayout = () => {
           <Outlet context={{ profile }} />
         </div>
         <MobileBottomNav />
-        <TransactionTypeChooser open={showTypeChooser} onClose={() => setShowTypeChooser(false)} onSelect={handleTypeSelected} />
+        <TransactionTypeChooser
+          open={showTypeChooser}
+          onClose={() => setShowTypeChooser(false)}
+          onSelect={handleTypeSelected}
+          onScan={handleScanFile}
+        />
         <NovaTransacaoModal open={showModal} onClose={() => setShowModal(false)} onSuccess={handleSuccess} initialType={modalType} />
         <TransferModal open={showTransferModal} onClose={() => setShowTransferModal(false)} onSuccess={handleSuccess} />
+        <InvoiceUploadReviewModal
+          open={showReviewModal}
+          onClose={() => setShowReviewModal(false)}
+          items={extractedItems}
+          message={extractedMessage}
+          onConfirm={handleConfirmScanImport}
+          confirming={confirmingImport}
+        />
       </div>
     </MonthProvider>
   );
