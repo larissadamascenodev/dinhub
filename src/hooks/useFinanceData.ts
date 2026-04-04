@@ -112,7 +112,7 @@ async function buildDashboardData(month: number, year: number): Promise<Dashboar
     id: t.id,
     name: t.name,
     category: t.category,
-    date: new Date(t.date).toLocaleDateString("pt-BR", { day: "numeric", month: "short" }),
+    date: new Date(t.date + "T12:00:00").toLocaleDateString("pt-BR", { day: "numeric", month: "short" }),
     rawDate: t.date,
     amount: Number(t.amount),
     status: "pendente" as const,
