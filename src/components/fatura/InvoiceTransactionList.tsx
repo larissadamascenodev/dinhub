@@ -97,7 +97,7 @@ export default function InvoiceTransactionList({ items, installmentCount = 0, ca
         {items.length === 0 ? (
           <div className="rounded-2xl border border-border/15 bg-card/60 backdrop-blur-xl p-8 text-center">
             <Receipt className="w-8 h-8 text-muted-foreground mx-auto mb-2" />
-            <p className="text-sm text-muted-foreground">Nenhuma compra nessa fatura</p>
+            <p className="text-sm text-muted-foreground">Não houve lançamentos</p>
           </div>
         ) : (
           <div className="space-y-1.5">
