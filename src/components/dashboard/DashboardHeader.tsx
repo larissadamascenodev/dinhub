@@ -75,8 +75,8 @@ const DashboardHeader = memo(({ profile }: { profile?: { display_name: string | 
       <div className="hidden md:flex items-center justify-between sticky top-0 z-50 bg-background/70 backdrop-blur-2xl px-6 py-3 border-b border-border/10 -mx-4 md:-mx-6 mb-4">
         {/* Logo */}
         <div className="flex items-center gap-2 flex-shrink-0">
-          <PiggyBank className="w-6 h-6 text-primary" />
-          <span className="font-display font-bold text-lg">
+          <PiggyBank className="w-8 h-8 text-primary" />
+          <span className="font-display font-bold text-2xl">
             <span className="text-foreground">Din</span>
             <span className="text-primary">Hub</span>
           </span>
