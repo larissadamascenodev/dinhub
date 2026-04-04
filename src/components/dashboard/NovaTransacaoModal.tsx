@@ -624,7 +624,7 @@ const NovaTransacaoModal = ({ open, onClose, onSuccess, initialType = "despesa",
                         <SelectTrigger className="bg-muted/30 border-border/20 h-11 rounded-xl">
                           <SelectValue placeholder="Selecionar cartão" />
                         </SelectTrigger>
-                        <SelectContent>
+                        <SelectContent className="z-[70]">
                           {creditCards.map((card) => (
                             <SelectItem key={card.id} value={card.id}>
                               <div className="flex items-center gap-2">
