@@ -133,6 +133,22 @@ export async function getRecentTransactions(limit = 10) {
 }
 
 export async function deleteTransaction(id: string) {
+  // First delete child installment transactions (they have parent_transaction_id = id)
+  // FK is CASCADE but BEFORE DELETE trigger needs to process each child individually
+  const { data: children } = await supabase
+    .from("transactions")
+    .select("id")
+    .eq("parent_transaction_id", id);
+
+  if (children && children.length > 0) {
+    const childIds = children.map(c => c.id);
+    await supabase
+      .from("transactions")
+      .delete()
+      .in("id", childIds);
+  }
+
+  // Now delete the parent transaction
   const { error } = await supabase
     .from("transactions")
     .delete()
