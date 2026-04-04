@@ -68,6 +68,13 @@ export async function updateTransaction(id: string, updates: {
   date?: string;
   type?: "receita" | "despesa";
   status?: "pago" | "pendente";
+  payment_method?: "conta" | "cartao";
+  recurrence_type?: "unica" | "parcelado" | "fixa";
+  installments?: number | null;
+  installment_current?: number | null;
+  observation?: string | null;
+  account_id?: string | null;
+  credit_card_id?: string | null;
 }) {
   const { data, error } = await supabase
     .from("transactions")
@@ -78,7 +85,6 @@ export async function updateTransaction(id: string, updates: {
 
   if (error) throw error;
 
-  // Also update child installment transactions (same name, category, amount)
   const childUpdates: Record<string, any> = {};
   if (updates.name) childUpdates.name = updates.name;
   if (updates.category) childUpdates.category = updates.category;
