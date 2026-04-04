@@ -154,14 +154,60 @@ const DashboardLayout = () => {
           onClose={() => setShowTypeChooser(false)}
           onSelect={handleTypeSelected}
         />
-        <input
-          ref={scanFileInputRef}
-          type="file"
-          accept="image/*,.pdf,.csv"
-          capture="environment"
-          className="hidden"
-          onChange={handleScanFileInput}
-        />
+        {/* Scan chooser modal */}
+        <AnimatePresence>
+          {showScanChooser && (
+            <motion.div
+              initial={{ opacity: 0 }}
+              animate={{ opacity: 1 }}
+              exit={{ opacity: 0 }}
+              className="fixed inset-0 z-[60] bg-black/60 backdrop-blur-sm flex items-end sm:items-center justify-center"
+              onClick={() => setShowScanChooser(false)}
+            >
+              <motion.div
+                initial={{ y: "100%" }}
+                animate={{ y: 0 }}
+                exit={{ y: "100%" }}
+                transition={{ type: "spring", damping: 28, stiffness: 300 }}
+                onClick={(e) => e.stopPropagation()}
+                className="w-full sm:max-w-sm rounded-t-2xl sm:rounded-2xl bg-card border border-border/20 shadow-2xl p-5 pb-24 sm:pb-5 space-y-3"
+              >
+                <h3 className="text-sm font-bold text-foreground">Escanear documento</h3>
+                <p className="text-xs text-muted-foreground">Escolha como deseja capturar o comprovante</p>
+                <div className="space-y-2">
+                  <motion.button
+                    whileTap={{ scale: 0.98 }}
+                    onClick={() => { setShowScanChooser(false); scanCameraRef.current?.click(); }}
+                    className="w-full flex items-center gap-3 rounded-xl border border-border/15 bg-muted/10 hover:bg-muted/20 px-4 py-3.5 text-left transition-colors"
+                  >
+                    <div className="w-10 h-10 rounded-lg bg-primary/10 border border-primary/20 flex items-center justify-center shrink-0">
+                      <Camera className="w-5 h-5 text-primary" />
+                    </div>
+                    <div>
+                      <p className="text-[13px] font-bold text-foreground">Tirar foto</p>
+                      <p className="text-[11px] text-muted-foreground">Usar a câmera do celular</p>
+                    </div>
+                  </motion.button>
+                  <motion.button
+                    whileTap={{ scale: 0.98 }}
+                    onClick={() => { setShowScanChooser(false); scanGalleryRef.current?.click(); }}
+                    className="w-full flex items-center gap-3 rounded-xl border border-border/15 bg-muted/10 hover:bg-muted/20 px-4 py-3.5 text-left transition-colors"
+                  >
+                    <div className="w-10 h-10 rounded-lg bg-accent/30 border border-accent/20 flex items-center justify-center shrink-0">
+                      <ImageIcon className="w-5 h-5 text-muted-foreground" />
+                    </div>
+                    <div>
+                      <p className="text-[13px] font-bold text-foreground">Galeria</p>
+                      <p className="text-[11px] text-muted-foreground">Selecionar foto ou arquivo</p>
+                    </div>
+                  </motion.button>
+                </div>
+              </motion.div>
+            </motion.div>
+          )}
+        </AnimatePresence>
+        <input ref={scanCameraRef} type="file" accept="image/*" capture="environment" className="hidden" onChange={handleScanFileInput} />
+        <input ref={scanGalleryRef} type="file" accept="image/*,.pdf,.csv" className="hidden" onChange={handleScanFileInput} />
         <NovaTransacaoModal open={showModal} onClose={() => setShowModal(false)} onSuccess={handleSuccess} initialType={modalType} />
         <TransferModal open={showTransferModal} onClose={() => setShowTransferModal(false)} onSuccess={handleSuccess} />
         <InvoiceUploadReviewModal
