@@ -91,6 +91,7 @@ const FaturaCartao = () => {
   const [accounts, setAccounts] = useState<AccountInfo[]>([]);
   const [loading, setLoading] = useState(true);
   const [paying, setPaying] = useState(false);
+  const [userStartDate, setUserStartDate] = useState<Date | null>(null);
   const [showPayModal, setShowPayModal] = useState(false);
   const [showAddChooser, setShowAddChooser] = useState(false);
   const [showManualAdd, setShowManualAdd] = useState(false);
@@ -113,16 +114,26 @@ const FaturaCartao = () => {
     const load = async () => {
       setLoading(true);
       try {
-        const [cards, accs, allInvoices] = await Promise.all([
+        const [cards, accs, allInvoices, profileRes] = await Promise.all([
           getCreditCards(),
           getAccounts(),
           getInvoices(cardId),
+          supabase.from("profiles").select("created_at").eq("id", user.id).single(),
         ]);
         const typedCards = cards as unknown as CreditCardInfo[];
         const foundCard = typedCards.find((c) => c.id === cardId);
         setCard(foundCard ?? null);
         setAccounts(accs as unknown as AccountInfo[]);
-        setInvoices(allInvoices);
+
+        // Filter invoices to only show from user creation month onwards
+        const startDate = profileRes.data?.created_at ? new Date(profileRes.data.created_at) : null;
+        setUserStartDate(startDate);
+        const startMonth = startDate ? startDate.getMonth() + 1 : null;
+        const startYear = startDate ? startDate.getFullYear() : null;
+        const filtered = (startMonth && startYear)
+          ? allInvoices.filter((inv) => inv.year > startYear! || (inv.year === startYear! && inv.month >= startMonth!))
+          : allInvoices;
+        setInvoices(filtered);
         const defaultAcc = (accs as unknown as AccountInfo[]).find((a) => a.is_default);
         if (defaultAcc) setPayAccountId(defaultAcc.id);
       } catch {
@@ -318,10 +329,19 @@ const FaturaCartao = () => {
     today.setHours(0, 0, 0, 0);
     dueDate.setHours(0, 0, 0, 0);
     const diffDays = Math.round((dueDate.getTime() - today.getTime()) / (1000 * 60 * 60 * 24));
+
+    // Don't show "overdue" for invoices from before user started using the app
+    if (diffDays < 0 && userStartDate) {
+      const invoiceDate = new Date(selectedYear, selectedMonth - 1, 1);
+      if (invoiceDate < userStartDate) {
+        return null; // Hide due info for pre-creation invoices
+      }
+    }
+
     if (diffDays < 0) return { text: `Venceu há ${Math.abs(diffDays)} dias`, overdue: true };
     if (diffDays === 0) return { text: "Vence hoje", overdue: true };
     return { text: `Vence em ${diffDays} dias`, overdue: false };
-  }, [card, selectedMonth, selectedYear]);
+  }, [card, selectedMonth, selectedYear, userStartDate]);
 
   const invoiceStatus = useMemo(() => {
     if (!currentInvoice) return null;
@@ -552,6 +572,7 @@ const FaturaCartao = () => {
         selectedMonth={selectedMonth}
         selectedYear={selectedYear}
         onSelect={(m, y) => { setSelectedMonth(m); setSelectedYear(y); }}
+        userStartDate={userStartDate}
       />
 
       {/* ===== CATEGORIES — right after chart ===== */}
