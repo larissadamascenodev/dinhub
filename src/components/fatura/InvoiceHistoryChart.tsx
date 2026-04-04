@@ -26,26 +26,37 @@ export default function InvoiceHistoryChart({ invoices, selectedMonth, selectedY
     const currentMonth = now.getMonth() + 1;
     const currentYear = now.getFullYear();
 
-    return Array.from({ length: 14 }, (_, i) => {
-      const offset = i - 6;
-      let m = currentMonth + offset;
-      let y = currentYear;
-      while (m > 12) { m -= 12; y++; }
-      while (m < 1) { m += 12; y--; }
+    // Determine start: user creation month or 6 months before current
+    let rangeStartM: number, rangeStartY: number;
+    if (startMonth && startYear) {
+      rangeStartM = startMonth;
+      rangeStartY = startYear;
+    } else {
+      rangeStartM = currentMonth - 6;
+      rangeStartY = currentYear;
+      while (rangeStartM < 1) { rangeStartM += 12; rangeStartY--; }
+    }
 
-      // Hide months before user start date
-      const isBeforeStart = startMonth && startYear
-        ? (y < startYear || (y === startYear && m < startMonth))
-        : false;
+    // End: 7 months after current month
+    let rangeEndM = currentMonth + 7;
+    let rangeEndY = currentYear;
+    while (rangeEndM > 12) { rangeEndM -= 12; rangeEndY++; }
 
+    // Build entries from start to end
+    const entries: { month: number; year: number; amount: number; isPaid: boolean; isSelected: boolean; isFuture: boolean }[] = [];
+    let m = rangeStartM;
+    let y = rangeStartY;
+    while (y < rangeEndY || (y === rangeEndY && m <= rangeEndM)) {
       const invoice = invoices.find((inv) => inv.month === m && inv.year === y);
       const amount = invoice ? Number(invoice.total_amount) : 0;
       const isPaid = invoice?.is_paid ?? false;
       const isSelected = m === selectedMonth && y === selectedYear;
       const isFuture = y > currentYear || (y === currentYear && m > currentMonth);
-
-      return { month: m, year: y, amount, isPaid, isSelected, isFuture, isBeforeStart };
-    }).filter((entry) => !entry.isBeforeStart);
+      entries.push({ month: m, year: y, amount, isPaid, isSelected, isFuture });
+      m++;
+      if (m > 12) { m = 1; y++; }
+    }
+    return entries;
   }, [invoices, selectedMonth, selectedYear, startMonth, startYear]);
 
   const maxAmount = useMemo(() => Math.max(...chartData.map((d) => d.amount), 1), [chartData]);
