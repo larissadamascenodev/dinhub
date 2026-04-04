@@ -151,7 +151,14 @@ const DashboardLayout = () => {
           open={showTypeChooser}
           onClose={() => setShowTypeChooser(false)}
           onSelect={handleTypeSelected}
-          onScan={handleScanFile}
+        />
+        <input
+          ref={scanFileInputRef}
+          type="file"
+          accept="image/*,.pdf,.csv"
+          capture="environment"
+          className="hidden"
+          onChange={handleScanFileInput}
         />
         <NovaTransacaoModal open={showModal} onClose={() => setShowModal(false)} onSuccess={handleSuccess} initialType={modalType} />
         <TransferModal open={showTransferModal} onClose={() => setShowTransferModal(false)} onSuccess={handleSuccess} />
