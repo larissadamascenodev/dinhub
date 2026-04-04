@@ -137,7 +137,7 @@ async function buildDashboardData(month: number, year: number): Promise<Dashboar
     id: e.id,
     name: e.name,
     category: e.category,
-    date: new Date(e.date).toLocaleDateString("pt-BR", { day: "numeric", month: "short" }),
+    date: new Date(e.date + "T12:00:00").toLocaleDateString("pt-BR", { day: "numeric", month: "short" }),
     rawDate: e.date,
     amount: Number(e.amount),
     status: e.status as FinanceEvent["status"],
