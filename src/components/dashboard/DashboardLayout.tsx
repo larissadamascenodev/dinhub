@@ -50,7 +50,7 @@ const DashboardLayout = () => {
       }
     };
     const handleScanner = () => {
-      scanFileInputRef.current?.click();
+      setShowScanChooser(true);
     };
     window.addEventListener("open-nova-transacao-direct", handleDirect);
     window.addEventListener("open-scanner", handleScanner);
