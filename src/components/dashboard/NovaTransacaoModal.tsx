@@ -12,7 +12,6 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { Calendar } from "@/components/ui/calendar";
-import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover";
 import { cn } from "@/lib/utils";
 import { format, subDays } from "date-fns";
 import { ptBR } from "date-fns/locale";
@@ -748,32 +747,34 @@ const NovaTransacaoModal = ({ open, onClose, onSuccess, initialType = "despesa",
                       </button>
                     ))}
                   </div>
-                  {showCalendar && (
-                    <Popover open={showCalendar} onOpenChange={setShowCalendar}>
-                      <PopoverTrigger asChild>
-                        <button
-                          type="button"
-                          className="w-full flex items-center gap-2 px-4 py-2.5 rounded-xl bg-muted/30 border border-border/20 text-sm text-foreground hover:bg-muted/50 transition-colors"
-                        >
-                          <CalendarDays className="w-4 h-4 text-muted-foreground" />
-                          {format(date, "dd/MM/yyyy", { locale: ptBR })}
-                        </button>
-                      </PopoverTrigger>
-                      <PopoverContent className="w-auto p-0" align="center" side="bottom" sideOffset={4}>
-                        <Calendar
-                          mode="single"
-                          selected={date}
-                          onSelect={(d) => {
-                            if (d) {
-                              setDate(d);
-                              setShowCalendar(false);
-                            }
-                          }}
-                          className="p-3 pointer-events-auto"
-                          locale={ptBR}
-                        />
-                      </PopoverContent>
-                    </Popover>
+                  {dateMode === "outros" && (
+                    <div className="space-y-2">
+                      <button
+                        type="button"
+                        onClick={() => setShowCalendar((prev) => !prev)}
+                        className="w-full flex items-center gap-2 px-4 py-2.5 rounded-xl bg-muted/30 border border-border/20 text-sm text-foreground hover:bg-muted/50 transition-colors"
+                      >
+                        <CalendarDays className="w-4 h-4 text-muted-foreground" />
+                        {format(date, "dd/MM/yyyy", { locale: ptBR })}
+                      </button>
+
+                      {showCalendar && (
+                        <div className="rounded-xl border border-border/20 bg-muted/20 p-2">
+                          <Calendar
+                            mode="single"
+                            selected={date}
+                            onSelect={(d) => {
+                              if (d) {
+                                setDate(d);
+                                setShowCalendar(false);
+                              }
+                            }}
+                            className="p-1 pointer-events-auto"
+                            locale={ptBR}
+                          />
+                        </div>
+                      )}
+                    </div>
                   )}
                 </div>
 
@@ -884,9 +885,27 @@ const NovaTransacaoModal = ({ open, onClose, onSuccess, initialType = "despesa",
                             {/* Quantidade de parcelas */}
                             <Input
                               type="number"
+                              inputMode="numeric"
                               placeholder="Quantidade de parcelas"
-                              value={installments || ""}
-                              onChange={(e) => setInstallments(Number(e.target.value) || 2)}
+                              value={installments === 0 ? "" : installments}
+                              onChange={(e) => {
+                                const value = e.target.value;
+                                if (value === "") {
+                                  setInstallments(0);
+                                  return;
+                                }
+
+                                const parsed = Number(value);
+                                if (!Number.isNaN(parsed)) {
+                                  setInstallments(parsed);
+                                }
+                              }}
+                              onBlur={() => {
+                                setInstallments((prev) => {
+                                  if (!prev || prev < 2) return 2;
+                                  return Math.min(prev, 48);
+                                });
+                              }}
                               min={2}
                               max={48}
                               className="bg-muted/30 border-border/20 h-11 rounded-xl"
@@ -923,11 +942,29 @@ const NovaTransacaoModal = ({ open, onClose, onSuccess, initialType = "despesa",
                             {/* Parcelas já pagas */}
                             <Input
                               type="number"
+                              inputMode="numeric"
                               placeholder="Parcelas já pagas (opcional)"
-                              value={paidInstallments || ""}
-                              onChange={(e) => setPaidInstallments(Number(e.target.value) || 0)}
+                              value={paidInstallments === 0 ? "" : paidInstallments}
+                              onChange={(e) => {
+                                const value = e.target.value;
+                                if (value === "") {
+                                  setPaidInstallments(0);
+                                  return;
+                                }
+
+                                const parsed = Number(value);
+                                if (!Number.isNaN(parsed)) {
+                                  setPaidInstallments(parsed);
+                                }
+                              }}
+                              onBlur={() => {
+                                setPaidInstallments((prev) => {
+                                  if (prev < 0) return 0;
+                                  return Math.min(prev, Math.max(installments - 1, 0));
+                                });
+                              }}
                               min={0}
-                              max={installments - 1}
+                              max={Math.max(installments - 1, 0)}
                               className="bg-muted/30 border-border/20 h-11 rounded-xl"
                             />
 
