@@ -329,10 +329,19 @@ const FaturaCartao = () => {
     today.setHours(0, 0, 0, 0);
     dueDate.setHours(0, 0, 0, 0);
     const diffDays = Math.round((dueDate.getTime() - today.getTime()) / (1000 * 60 * 60 * 24));
+
+    // Don't show "overdue" for invoices from before user started using the app
+    if (diffDays < 0 && userStartDate) {
+      const invoiceDate = new Date(selectedYear, selectedMonth - 1, 1);
+      if (invoiceDate < userStartDate) {
+        return null; // Hide due info for pre-creation invoices
+      }
+    }
+
     if (diffDays < 0) return { text: `Venceu há ${Math.abs(diffDays)} dias`, overdue: true };
     if (diffDays === 0) return { text: "Vence hoje", overdue: true };
     return { text: `Vence em ${diffDays} dias`, overdue: false };
-  }, [card, selectedMonth, selectedYear]);
+  }, [card, selectedMonth, selectedYear, userStartDate]);
 
   const invoiceStatus = useMemo(() => {
     if (!currentInvoice) return null;
