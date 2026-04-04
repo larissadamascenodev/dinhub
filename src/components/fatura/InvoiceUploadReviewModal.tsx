@@ -165,6 +165,16 @@ export default function InvoiceUploadReviewModal({
                         </div>
                       )}
 
+                      {item.type && item.type === "receita" ? (
+                        <span className="text-[10px] font-bold text-primary bg-primary/10 px-2 py-0.5 rounded-full">
+                          Receita
+                        </span>
+                      ) : item.type === "despesa" ? (
+                        <span className="text-[10px] font-bold text-destructive bg-destructive/10 px-2 py-0.5 rounded-full">
+                          Despesa
+                        </span>
+                      ) : null}
+
                       <span className="text-[10px] text-muted-foreground bg-muted/30 px-2 py-0.5 rounded-full">
                         {item.category}
                       </span>
