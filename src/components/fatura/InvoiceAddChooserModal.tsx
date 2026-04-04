@@ -1,6 +1,6 @@
 import { useRef } from "react";
 import { motion, AnimatePresence } from "framer-motion";
-import { X, PenLine, Camera, FileText, FileSpreadsheet } from "lucide-react";
+import { X, PenLine, ScanLine } from "lucide-react";
 
 interface Props {
   open: boolean;
@@ -12,48 +12,38 @@ interface Props {
 }
 
 export default function InvoiceAddChooserModal({ open, onClose, onManual, onImage, onPdf, onCsv }: Props) {
-  const imageInputRef = useRef<HTMLInputElement>(null);
-  const pdfInputRef = useRef<HTMLInputElement>(null);
-  const csvInputRef = useRef<HTMLInputElement>(null);
+  const fileInputRef = useRef<HTMLInputElement>(null);
 
   if (!open) return null;
 
-  const handleFileChange = (
-    e: React.ChangeEvent<HTMLInputElement>,
-    handler: (file: File) => void
-  ) => {
+  const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0];
-    if (file) {
-      handler(file);
-      onClose();
+    if (!file) return;
+
+    const ext = file.name.split(".").pop()?.toLowerCase();
+    if (ext === "pdf") {
+      onPdf(file);
+    } else if (ext === "csv" || ext === "xls" || ext === "xlsx") {
+      onCsv(file);
+    } else {
+      onImage(file);
     }
+    onClose();
     e.target.value = "";
   };
 
   const options = [
     {
       icon: PenLine,
-      label: "Adicionar manual",
-      description: "Digitar nome, valor e parcelas",
+      label: "Adicionar manualmente",
+      description: "Preencha nome, valor, parcelas e categoria",
       onClick: () => { onManual(); onClose(); },
     },
     {
-      icon: Camera,
-      label: "Enviar print da fatura",
-      description: "Foto ou captura de tela",
-      onClick: () => imageInputRef.current?.click(),
-    },
-    {
-      icon: FileText,
-      label: "Subir PDF",
-      description: "Arquivo PDF da fatura",
-      onClick: () => pdfInputRef.current?.click(),
-    },
-    {
-      icon: FileSpreadsheet,
-      label: "Subir CSV",
-      description: "Planilha com lançamentos",
-      onClick: () => csvInputRef.current?.click(),
+      icon: ScanLine,
+      label: "Escanear fatura",
+      description: "Importe via foto, PDF ou planilha CSV",
+      onClick: () => fileInputRef.current?.click(),
     },
   ];
 
@@ -75,7 +65,6 @@ export default function InvoiceAddChooserModal({ open, onClose, onManual, onImag
           className="w-full sm:max-w-md rounded-t-2xl sm:rounded-2xl bg-card border border-border/20 shadow-2xl"
         >
           <div className="p-5 pb-24 sm:pb-5 space-y-4">
-            {/* Header */}
             <div className="flex items-center justify-between">
               <h2 className="text-sm font-bold text-foreground">Adicionar Lançamento</h2>
               <button
@@ -86,7 +75,6 @@ export default function InvoiceAddChooserModal({ open, onClose, onManual, onImag
               </button>
             </div>
 
-            {/* Options */}
             <div className="space-y-2">
               {options.map((opt, idx) => (
                 <motion.button
@@ -110,28 +98,14 @@ export default function InvoiceAddChooserModal({ open, onClose, onManual, onImag
           </div>
         </motion.div>
 
-        {/* Hidden file inputs */}
+        {/* Single file input that accepts all types */}
         <input
-          ref={imageInputRef}
+          ref={fileInputRef}
           type="file"
-          accept="image/*"
+          accept="image/*,.pdf,.csv,.xls,.xlsx"
           capture="environment"
           className="hidden"
-          onChange={(e) => handleFileChange(e, onImage)}
-        />
-        <input
-          ref={pdfInputRef}
-          type="file"
-          accept=".pdf"
-          className="hidden"
-          onChange={(e) => handleFileChange(e, onPdf)}
-        />
-        <input
-          ref={csvInputRef}
-          type="file"
-          accept=".csv,.xls,.xlsx"
-          className="hidden"
-          onChange={(e) => handleFileChange(e, onCsv)}
+          onChange={handleFileChange}
         />
       </motion.div>
     </AnimatePresence>
