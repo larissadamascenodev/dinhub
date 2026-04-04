@@ -1,5 +1,7 @@
 import { useState, useCallback, useEffect, useRef } from "react";
 import { Outlet } from "react-router-dom";
+import { motion, AnimatePresence } from "framer-motion";
+import { Camera, ImageIcon } from "lucide-react";
 import DashboardHeader from "@/components/dashboard/DashboardHeader";
 import MobileBottomNav from "@/components/dashboard/MobileBottomNav";
 import { useProfile } from "@/hooks/useProfile";
