@@ -37,10 +37,9 @@ export default function InvoiceHistoryChart({ invoices, selectedMonth, selectedY
       while (rangeStartM < 1) { rangeStartM += 12; rangeStartY--; }
     }
 
-    // End: 7 months after current month
-    let rangeEndM = currentMonth + 7;
-    let rangeEndY = currentYear;
-    while (rangeEndM > 12) { rangeEndM -= 12; rangeEndY++; }
+    // End: December of the year after the current year
+    const rangeEndM = 12;
+    const rangeEndY = currentYear + 1;
 
     // Build entries from start to end
     const entries: { month: number; year: number; amount: number; isPaid: boolean; isSelected: boolean; isFuture: boolean }[] = [];
