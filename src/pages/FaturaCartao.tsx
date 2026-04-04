@@ -585,6 +585,8 @@ const FaturaCartao = () => {
         items={items}
         installmentCount={items.filter((i) => i.total_installments > 1).length}
         cardName={card?.name}
+        invoiceMonth={selectedMonth}
+        invoiceYear={selectedYear}
         onEditItem={handleEditItem}
         onDeleteItem={handleDeleteItem}
       />
