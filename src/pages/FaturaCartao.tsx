@@ -91,6 +91,7 @@ const FaturaCartao = () => {
   const [accounts, setAccounts] = useState<AccountInfo[]>([]);
   const [loading, setLoading] = useState(true);
   const [paying, setPaying] = useState(false);
+  const [userStartDate, setUserStartDate] = useState<Date | null>(null);
   const [showPayModal, setShowPayModal] = useState(false);
   const [showAddChooser, setShowAddChooser] = useState(false);
   const [showManualAdd, setShowManualAdd] = useState(false);
