@@ -77,8 +77,8 @@ const DashboardHeader = memo(({ profile }: { profile?: { display_name: string | 
         <div className="flex items-center gap-2 flex-shrink-0">
           <PiggyBank className="w-6 h-6 text-primary" />
           <span className="font-display font-bold text-lg">
-            <span className="text-foreground">Finan</span>
-            <span className="text-primary">Pro</span>
+            <span className="text-foreground">Din</span>
+            <span className="text-primary">Hub</span>
           </span>
         </div>
 
@@ -248,8 +248,8 @@ const DashboardHeader = memo(({ profile }: { profile?: { display_name: string | 
           <div className="flex items-center gap-1.5">
             <PiggyBank className="w-5 h-5 text-primary" />
             <span className="font-display font-bold text-lg">
-              <span className="text-foreground">Finan</span>
-              <span className="text-primary">Pro</span>
+              <span className="text-foreground">Din</span>
+              <span className="text-primary">Hub</span>
             </span>
           </div>
           <div className="flex items-center gap-1.5">
