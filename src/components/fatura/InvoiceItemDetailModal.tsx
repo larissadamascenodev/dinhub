@@ -16,12 +16,14 @@ import {
 interface Props {
   item: EnrichedItem | null;
   cardName?: string;
+  invoiceMonth: number;
+  invoiceYear: number;
   onClose: () => void;
   onEdit?: (transactionId: string) => void;
   onDelete?: (transactionId: string) => void;
 }
 
-export default function InvoiceItemDetailModal({ item, cardName, onClose, onEdit, onDelete }: Props) {
+export default function InvoiceItemDetailModal({ item, cardName, invoiceMonth, invoiceYear, onClose, onEdit, onDelete }: Props) {
   const isInstallment = item ? item.total_installments > 1 : false;
   const installmentAmount = item ? Number(item.amount) : 0;
   const totalValue = isInstallment ? installmentAmount * (item?.total_installments ?? 1) : installmentAmount;
@@ -42,10 +44,14 @@ export default function InvoiceItemDetailModal({ item, cardName, onClose, onEdit
 
   // Generate installment timeline
   const installments = useMemo(() => {
-    if (!isInstallment || !purchaseDate || !item) return [];
+    if (!isInstallment || !item) return [];
+
+    const firstInvoiceDate = new Date(invoiceYear, invoiceMonth - 1, 1);
+    firstInvoiceDate.setMonth(firstInvoiceDate.getMonth() - (item.installment_number - 1));
+
     return Array.from({ length: item.total_installments }, (_, i) => {
       const num = i + 1;
-      const date = new Date(purchaseDate);
+      const date = new Date(firstInvoiceDate);
       date.setMonth(date.getMonth() + i);
       const monthName = MONTH_NAMES[date.getMonth()]?.substring(0, 3) ?? "";
       const year = date.getFullYear();
@@ -53,7 +59,7 @@ export default function InvoiceItemDetailModal({ item, cardName, onClose, onEdit
       const isCurrent = num === item.installment_number;
       return { num, monthName, year, isPast, isCurrent };
     });
-  }, [item, purchaseDate, isInstallment]);
+  }, [item, isInstallment, invoiceMonth, invoiceYear]);
 
   if (!item) return null;
 
