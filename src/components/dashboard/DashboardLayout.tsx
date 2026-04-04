@@ -27,8 +27,10 @@ const DashboardLayout = () => {
   const [extractedMessage, setExtractedMessage] = useState("");
   const [showReviewModal, setShowReviewModal] = useState(false);
   const [confirmingImport, setConfirmingImport] = useState(false);
+  const [showScanChooser, setShowScanChooser] = useState(false);
 
-  const scanFileInputRef = useRef<HTMLInputElement>(null);
+  const scanCameraRef = useRef<HTMLInputElement>(null);
+  const scanGalleryRef = useRef<HTMLInputElement>(null);
 
   const handleScanFileInput = useCallback((e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0];
