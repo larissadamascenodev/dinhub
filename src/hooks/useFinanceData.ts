@@ -81,7 +81,7 @@ async function buildDashboardData(month: number, year: number): Promise<Dashboar
       id: `fatura-${cardId}-${month}-${year}`,
       name: `Fatura ${info.name}`,
       category: "Cartão de Crédito",
-      date: new Date(t.date + "T12:00:00").toLocaleDateString("pt-BR", { day: "numeric", month: "short" }),
+      date: new Date(year, month, 1).toLocaleDateString("pt-BR", { day: "numeric", month: "short" }),
       amount: info.total,
       type: "despesa" as const,
       status,
