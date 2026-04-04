@@ -572,6 +572,7 @@ const FaturaCartao = () => {
         selectedMonth={selectedMonth}
         selectedYear={selectedYear}
         onSelect={(m, y) => { setSelectedMonth(m); setSelectedYear(y); }}
+        userStartDate={userStartDate}
       />
 
       {/* ===== CATEGORIES — right after chart ===== */}
