@@ -12,6 +12,7 @@ export interface ExtractedItem {
   installment_current: number | null;
   installment_total: number | null;
   category: string;
+  type?: string;
   selected: boolean;
 }
 
