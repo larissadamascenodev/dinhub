@@ -20,6 +20,8 @@ interface Props {
   items: EnrichedItem[];
   installmentCount?: number;
   cardName?: string;
+  invoiceMonth: number;
+  invoiceYear: number;
   onEditItem?: (transactionId: string, updates?: { name?: string; amount?: number; category?: string }) => Promise<void>;
   onDeleteItem?: (transactionId: string) => Promise<void>;
 }
@@ -50,7 +52,7 @@ function InstallmentBar({ current, total }: { current: number; total: number }) 
   );
 }
 
-export default function InvoiceTransactionList({ items, installmentCount = 0, cardName, onEditItem, onDeleteItem }: Props) {
+export default function InvoiceTransactionList({ items, installmentCount = 0, cardName, invoiceMonth, invoiceYear, onEditItem, onDeleteItem }: Props) {
   const [selectedItem, setSelectedItem] = useState<EnrichedItem | null>(null);
   const [editItem, setEditItem] = useState<EnrichedItem | null>(null);
   const [deleteTarget, setDeleteTarget] = useState<EnrichedItem | null>(null);
@@ -172,6 +174,8 @@ export default function InvoiceTransactionList({ items, installmentCount = 0, ca
         <InvoiceItemDetailModal
           item={selectedItem}
           cardName={cardName}
+          invoiceMonth={invoiceMonth}
+          invoiceYear={invoiceYear}
           onClose={() => setSelectedItem(null)}
           onEdit={onEditItem ? handleEditFromDetail : undefined}
           onDelete={onDeleteItem ? handleDeleteFromDetail : undefined}
