@@ -90,8 +90,12 @@ serve(async (req) => {
       if (fileName.endsWith(".csv") || fileName.endsWith(".xls") || fileName.endsWith(".xlsx")) {
         csvText = await file.text();
       } else {
-        const buffer = await file.arrayBuffer();
-        imageBase64 = btoa(String.fromCharCode(...new Uint8Array(buffer)));
+        const buffer = new Uint8Array(await file.arrayBuffer());
+        let binary = "";
+        for (let i = 0; i < buffer.length; i++) {
+          binary += String.fromCharCode(buffer[i]);
+        }
+        imageBase64 = btoa(binary);
         mimeType = fileType || (fileName.endsWith(".pdf") ? "application/pdf" : "image/png");
       }
     } else {
