@@ -1038,7 +1038,7 @@ const NovaTransacaoModal = ({ open, onClose, onSuccess, initialType = "despesa",
                                 <p className="text-[11px] text-muted-foreground font-medium">
                                   Parcelas já pagas (selecione os meses)
                                 </p>
-                                <div className="flex flex-wrap gap-1.5">
+                                <div className="flex gap-1.5 overflow-x-auto scrollbar-none pb-1">
                                   {installmentMonths.map((im, idx) => {
                                     const isSelected = paidMonthFlags[idx] ?? false;
                                     const isLast = idx === installmentMonths.length - 1;
@@ -1047,7 +1047,7 @@ const NovaTransacaoModal = ({ open, onClose, onSuccess, initialType = "despesa",
                                       ? (idx === 0 || (paidMonthFlags[idx - 1] ?? false))
                                       : !paidMonthFlags[idx + 1];
                                     return (
-                                      <button
+                                      <button 
                                         key={`${im.year}-${im.month}`}
                                         type="button"
                                         disabled={!canToggle || isLast}
@@ -1059,7 +1059,7 @@ const NovaTransacaoModal = ({ open, onClose, onSuccess, initialType = "despesa",
                                           });
                                         }}
                                         className={cn(
-                                          "px-3 py-1.5 rounded-lg text-[11px] font-semibold transition-all border",
+                                          "px-3 py-1.5 rounded-lg text-[11px] font-semibold transition-all border shrink-0 whitespace-nowrap",
                                           isLast
                                             ? "bg-muted/20 text-muted-foreground/40 border-border/10 cursor-not-allowed"
                                             : isSelected
