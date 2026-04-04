@@ -28,6 +28,14 @@ const DashboardLayout = () => {
   const [showReviewModal, setShowReviewModal] = useState(false);
   const [confirmingImport, setConfirmingImport] = useState(false);
 
+  const scanFileInputRef = useRef<HTMLInputElement>(null);
+
+  const handleScanFileInput = useCallback((e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0];
+    if (file) handleScanFile(file);
+    e.target.value = "";
+  }, []);
+
   // Global listener for the mobile + button and desktop "Nova transação"
   useEffect(() => {
     const handleDirect = (e: Event) => {
