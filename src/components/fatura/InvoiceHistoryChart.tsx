@@ -13,10 +13,13 @@ interface Props {
   userStartDate?: Date | null;
 }
 
-export default function InvoiceHistoryChart({ invoices, selectedMonth, selectedYear, onSelect }: Props) {
+export default function InvoiceHistoryChart({ invoices, selectedMonth, selectedYear, onSelect, userStartDate }: Props) {
   const scrollRef = useRef<HTMLDivElement>(null);
   const [isDragging, setIsDragging] = useState(false);
   const dragState = useRef({ startX: 0, scrollLeft: 0 });
+
+  const startMonth = userStartDate ? userStartDate.getMonth() + 1 : null;
+  const startYear = userStartDate ? userStartDate.getFullYear() : null;
 
   const chartData = useMemo(() => {
     const now = new Date();
@@ -30,15 +33,20 @@ export default function InvoiceHistoryChart({ invoices, selectedMonth, selectedY
       while (m > 12) { m -= 12; y++; }
       while (m < 1) { m += 12; y--; }
 
+      // Hide months before user start date
+      const isBeforeStart = startMonth && startYear
+        ? (y < startYear || (y === startYear && m < startMonth))
+        : false;
+
       const invoice = invoices.find((inv) => inv.month === m && inv.year === y);
       const amount = invoice ? Number(invoice.total_amount) : 0;
       const isPaid = invoice?.is_paid ?? false;
       const isSelected = m === selectedMonth && y === selectedYear;
       const isFuture = y > currentYear || (y === currentYear && m > currentMonth);
 
-      return { month: m, year: y, amount, isPaid, isSelected, isFuture };
-    });
-  }, [invoices, selectedMonth, selectedYear]);
+      return { month: m, year: y, amount, isPaid, isSelected, isFuture, isBeforeStart };
+    }).filter((entry) => !entry.isBeforeStart);
+  }, [invoices, selectedMonth, selectedYear, startMonth, startYear]);
 
   const maxAmount = useMemo(() => Math.max(...chartData.map((d) => d.amount), 1), [chartData]);
 
