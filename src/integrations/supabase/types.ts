@@ -468,6 +468,10 @@ export type Database = {
         }
         Returns: string
       }
+      recalc_credit_card_used_limit: {
+        Args: { p_credit_card_id: string }
+        Returns: undefined
+      }
       recalc_invoice_total: {
         Args: { p_invoice_id: string }
         Returns: undefined
