@@ -13,7 +13,7 @@ import { Label } from "@/components/ui/label";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { Calendar } from "@/components/ui/calendar";
 import { cn } from "@/lib/utils";
-import { format, subDays } from "date-fns";
+import { format, subDays, addMonths } from "date-fns";
 import { ptBR } from "date-fns/locale";
 import { toast } from "sonner";
 import { useAuth } from "@/contexts/AuthContext";
@@ -91,6 +91,16 @@ interface CreditCardItem {
   color: string | null;
 }
 
+const MONTH_NAMES_SHORT = [
+  "Jan", "Fev", "Mar", "Abr", "Mai", "Jun",
+  "Jul", "Ago", "Set", "Out", "Nov", "Dez",
+];
+
+const MONTH_NAMES_FULL = [
+  "Janeiro", "Fevereiro", "Março", "Abril", "Maio", "Junho",
+  "Julho", "Agosto", "Setembro", "Outubro", "Novembro", "Dezembro",
+];
+
 const NovaTransacaoModal = ({ open, onClose, onSuccess, initialType = "despesa", initialPaymentMethod, initialCreditCardId, editTransaction }: Props) => {
   const { user } = useAuth();
   const navigate = useNavigate();
@@ -108,6 +118,7 @@ const NovaTransacaoModal = ({ open, onClose, onSuccess, initialType = "despesa",
   const [recurrenceType, setRecurrenceType] = useState<"unica" | "parcelado" | "fixa">("unica");
   const [installments, setInstallments] = useState<number>(2);
   const [paidInstallments, setPaidInstallments] = useState<number>(0);
+  const [paidMonthFlags, setPaidMonthFlags] = useState<boolean[]>([]);
   const [installmentFrequency, setInstallmentFrequency] = useState<"mensal" | "anual">("mensal");
   const [observation, setObservation] = useState("");
   const [accountId, setAccountId] = useState<string>("");
@@ -129,6 +140,71 @@ const NovaTransacaoModal = ({ open, onClose, onSuccess, initialType = "despesa",
   const [showCategoryCreate, setShowCategoryCreate] = useState(false);
   const amountInputRef = useRef<HTMLInputElement>(null);
   const suggestTimeoutRef = useRef<ReturnType<typeof setTimeout>>();
+
+  // Calculate installment months based on purchase date and card closing day
+  const installmentMonths = useMemo(() => {
+    if (recurrenceType !== "parcelado" || paymentMethod !== "cartao" || installments < 2) return [];
+    const selectedCard = creditCards.find(c => c.id === creditCardId);
+    if (!selectedCard) return [];
+    const closingDay = selectedCard.closing_day;
+    const purchaseDate = date;
+    const dayOfMonth = purchaseDate.getDate();
+    // If purchase day > closing day, first installment is next month
+    let firstMonth: number, firstYear: number;
+    const pMonth = purchaseDate.getMonth(); // 0-indexed
+    const pYear = purchaseDate.getFullYear();
+    if (dayOfMonth > closingDay) {
+      // Goes to next month
+      if (pMonth === 11) {
+        firstMonth = 0;
+        firstYear = pYear + 1;
+      } else {
+        firstMonth = pMonth + 1;
+        firstYear = pYear;
+      }
+    } else {
+      firstMonth = pMonth;
+      firstYear = pYear;
+    }
+    const months: { month: number; year: number; label: string }[] = [];
+    for (let i = 0; i < installments; i++) {
+      let m = firstMonth + i;
+      let y = firstYear;
+      while (m > 11) { m -= 12; y++; }
+      months.push({
+        month: m,
+        year: y,
+        label: `${MONTH_NAMES_FULL[m]}${y !== new Date().getFullYear() ? ` ${y}` : ""}`,
+      });
+    }
+    return months;
+  }, [recurrenceType, paymentMethod, installments, creditCardId, creditCards, date]);
+
+  // Sync paidMonthFlags length with installmentMonths
+  useEffect(() => {
+    if (installmentMonths.length > 0) {
+      setPaidMonthFlags(prev => {
+        const next = new Array(installmentMonths.length).fill(false);
+        // Preserve existing selections
+        for (let i = 0; i < Math.min(prev.length, next.length); i++) {
+          next[i] = prev[i];
+        }
+        return next;
+      });
+    }
+  }, [installmentMonths.length]);
+
+  // Sync paidInstallments from flags (count consecutive from start)
+  useEffect(() => {
+    if (paymentMethod === "cartao" && recurrenceType === "parcelado" && installmentMonths.length > 0) {
+      let count = 0;
+      for (let i = 0; i < paidMonthFlags.length; i++) {
+        if (paidMonthFlags[i]) count++;
+        else break;
+      }
+      setPaidInstallments(count);
+    }
+  }, [paidMonthFlags, paymentMethod, recurrenceType, installmentMonths.length]);
 
   const allCategories = [
     ...(type === "receita" ? CATEGORIES_INCOME : CATEGORIES_EXPENSE),
@@ -181,6 +257,13 @@ const NovaTransacaoModal = ({ open, onClose, onSuccess, initialType = "despesa",
         setRecurrenceType((editTransaction.recurrence_type as any) || "unica");
         setInstallments(editTransaction.installments || 2);
         setPaidInstallments(editTransaction.installment_current ? editTransaction.installment_current - 1 : 0);
+        // Pre-fill month flags for edit mode
+        const editPaid = editTransaction.installment_current ? editTransaction.installment_current - 1 : 0;
+        setPaidMonthFlags(prev => {
+          const flags = new Array(editTransaction.installments || 2).fill(false);
+          for (let i = 0; i < editPaid; i++) flags[i] = true;
+          return flags;
+        });
         setInstallmentFrequency("mensal");
         setObservation(editTransaction.observation?.replace(/^paid_installments:\d+\s*(\|\s*)?/, "") || "");
         setShowNewAccount(false);
@@ -209,6 +292,7 @@ const NovaTransacaoModal = ({ open, onClose, onSuccess, initialType = "despesa",
         setRecurrenceType("unica");
         setInstallments(2);
         setPaidInstallments(0);
+        setPaidMonthFlags([]);
         setInstallmentFrequency("mensal");
         setObservation("");
         setShowNewAccount(false);
@@ -948,34 +1032,84 @@ const NovaTransacaoModal = ({ open, onClose, onSuccess, initialType = "despesa",
                               </button>
                             </div>
 
-                            {/* Parcelas já pagas */}
-                            <Input
-                              type="number"
-                              inputMode="numeric"
-                              placeholder="Parcelas já pagas (opcional)"
-                              value={paidInstallments === 0 ? "" : paidInstallments}
-                              onChange={(e) => {
-                                const value = e.target.value;
-                                if (value === "") {
-                                  setPaidInstallments(0);
-                                  return;
-                                }
-
-                                const parsed = Number(value);
-                                if (!Number.isNaN(parsed)) {
-                                  setPaidInstallments(parsed);
-                                }
-                              }}
-                              onBlur={() => {
-                                setPaidInstallments((prev) => {
-                                  if (prev < 0) return 0;
-                                  return Math.min(prev, Math.max(installments - 1, 0));
-                                });
-                              }}
-                              min={0}
-                              max={Math.max(installments - 1, 0)}
-                              className="bg-muted/30 border-border/20 h-11 rounded-xl"
-                            />
+                            {/* Parcelas já pagas — month chips for cartão, numeric for conta */}
+                            {paymentMethod === "cartao" && installmentMonths.length > 0 ? (
+                              <div className="space-y-2">
+                                <p className="text-[11px] text-muted-foreground font-medium">
+                                  Parcelas já pagas (selecione os meses)
+                                </p>
+                                <div className="flex flex-wrap gap-1.5">
+                                  {installmentMonths.map((im, idx) => {
+                                    const isSelected = paidMonthFlags[idx] ?? false;
+                                    const isLast = idx === installmentMonths.length - 1;
+                                    // Only allow toggling consecutive from start, or un-toggling from end
+                                    const canToggle = !isSelected
+                                      ? (idx === 0 || (paidMonthFlags[idx - 1] ?? false))
+                                      : !paidMonthFlags[idx + 1];
+                                    return (
+                                      <button
+                                        key={`${im.year}-${im.month}`}
+                                        type="button"
+                                        disabled={!canToggle || isLast}
+                                        onClick={() => {
+                                          setPaidMonthFlags(prev => {
+                                            const next = [...prev];
+                                            next[idx] = !next[idx];
+                                            return next;
+                                          });
+                                        }}
+                                        className={cn(
+                                          "px-3 py-1.5 rounded-lg text-[11px] font-semibold transition-all border",
+                                          isLast
+                                            ? "bg-muted/20 text-muted-foreground/40 border-border/10 cursor-not-allowed"
+                                            : isSelected
+                                              ? "bg-primary/20 text-primary border-primary/30"
+                                              : canToggle
+                                                ? "bg-muted/30 text-muted-foreground border-border/15 hover:bg-muted/50"
+                                                : "bg-muted/15 text-muted-foreground/30 border-border/10 cursor-not-allowed"
+                                        )}
+                                      >
+                                        {isSelected && <Check className="w-3 h-3 inline mr-1" />}
+                                        {MONTH_NAMES_SHORT[im.month]}
+                                        {im.year !== new Date().getFullYear() && (
+                                          <span className="text-[9px] ml-0.5 opacity-60">{im.year}</span>
+                                        )}
+                                        <span className="text-[9px] ml-1 opacity-50">
+                                          {idx + 1}/{installments}
+                                        </span>
+                                      </button>
+                                    );
+                                  })}
+                                </div>
+                              </div>
+                            ) : (
+                              <Input
+                                type="number"
+                                inputMode="numeric"
+                                placeholder="Parcelas já pagas (opcional)"
+                                value={paidInstallments === 0 ? "" : paidInstallments}
+                                onChange={(e) => {
+                                  const value = e.target.value;
+                                  if (value === "") {
+                                    setPaidInstallments(0);
+                                    return;
+                                  }
+                                  const parsed = Number(value);
+                                  if (!Number.isNaN(parsed)) {
+                                    setPaidInstallments(parsed);
+                                  }
+                                }}
+                                onBlur={() => {
+                                  setPaidInstallments((prev) => {
+                                    if (prev < 0) return 0;
+                                    return Math.min(prev, Math.max(installments - 1, 0));
+                                  });
+                                }}
+                                min={0}
+                                max={Math.max(installments - 1, 0)}
+                                className="bg-muted/30 border-border/20 h-11 rounded-xl"
+                              />
+                            )}
 
                             {amountCents > 0 && installments > 0 && (
                               <p className="text-[11px] text-muted-foreground px-1">
