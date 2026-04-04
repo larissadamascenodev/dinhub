@@ -216,9 +216,19 @@ const FaturaCartao = () => {
   };
 
   const handleDeleteItem = async (transactionId: string) => {
-    await deleteTransaction(transactionId);
+    // Check if this is a child — if so, delete the parent to remove all installments
+    const tx = await getTransactionById(transactionId);
+    const idToDelete = tx.parent_transaction_id || transactionId;
+    await deleteTransaction(idToDelete);
     toast.success("Lançamento excluído ✅");
     await refreshItems();
+    // Reload card to update used_limit
+    if (cardId) {
+      const cards = await getCreditCards();
+      const typedCards = cards as unknown as CreditCardInfo[];
+      const foundCard = typedCards.find((c) => c.id === cardId);
+      setCard(foundCard ?? null);
+    }
   };
 
   const total = currentInvoice ? Number(currentInvoice.total_amount) : 0;
