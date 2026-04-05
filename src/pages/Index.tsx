@@ -116,7 +116,7 @@ const Index = () => {
           </div>
           <div className="space-y-4">
             <WalletSummaryCard />
-            <ProjectionCard saldoAtual={saldoMes} saldoPrevisto={saldoPrevisto} balanco={balanco} />
+            <ProjectionCard />
 
             <ProximosEventos events={data.events} selectedMonth={selectedMonth} selectedYear={selectedYear} onEventClick={handleEventClick} />
           </div>
@@ -145,7 +145,7 @@ const Index = () => {
           <ReceitasDespesasCards receitas={receitas} receitasRecebidas={data.receitasRecebidas} receitasPendentes={data.receitasPendentes} despesas={despesas} despesasPagas={data.despesasPagas} despesasPendentes={data.despesasPendentes} compact />
           <BalancoCard balanco={balanco} />
           {/* MicroInteracoesCard temporarily disabled */}
-          <ProjectionCard saldoAtual={saldoMes} saldoPrevisto={saldoPrevisto} balanco={balanco} />
+          <ProjectionCard />
           {data.categories.length > 0 && (
             <GastosPorCategoria categories={data.categories} onVerAnalise={() => navigate("/transacoes")} />
           )}
@@ -178,7 +178,7 @@ const Index = () => {
           </motion.div>
           <BalancoCard balanco={balanco} />
           {/* MicroInteracoesCard temporarily disabled */}
-          <ProjectionCard saldoAtual={saldoMes} saldoPrevisto={saldoPrevisto} balanco={balanco} />
+          <ProjectionCard />
           {data.categories.length > 0 && (
             <GastosPorCategoria categories={data.categories} onVerAnalise={() => navigate("/transacoes")} />
           )}
