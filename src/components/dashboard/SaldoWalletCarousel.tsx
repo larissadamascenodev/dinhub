@@ -42,10 +42,18 @@ const slideVariants = {
 };
 
 const SaldoWalletCarousel = memo(({ saldoAtual, saldoPrevisto, isFutureMonth, isPastMonth }: Props) => {
+  const isCurrentMonth = !isFutureMonth && !isPastMonth;
   const [page, setPage] = useState(0);
   const [direction, setDirection] = useState(0);
   const navigate = useNavigate();
   const { user } = useAuth();
+
+  // Reset to page 0 when not current month
+  useEffect(() => {
+    if (!isCurrentMonth && page !== 0) {
+      setPage(0);
+    }
+  }, [isCurrentMonth, page]);
 
   // Wallet data
   const [accounts, setAccounts] = useState<Account[]>([]);
@@ -71,36 +79,55 @@ const SaldoWalletCarousel = memo(({ saldoAtual, saldoPrevisto, isFutureMonth, is
   const animatedSaldo = useFormattedCounter(saldoAtual);
   const animatedPrevisto = useFormattedCounter(saldoPrevisto);
 
-  // Auto-rotate every 5 seconds
+  // Auto-rotate every 5 seconds (only on current month)
   const timerRef = useRef<ReturnType<typeof setInterval> | null>(null);
 
+  const clearTimer = useCallback(() => {
+    if (timerRef.current) { clearInterval(timerRef.current); timerRef.current = null; }
+  }, []);
+
   const resetTimer = useCallback(() => {
-    if (timerRef.current) clearInterval(timerRef.current);
+    clearTimer();
+    if (!isCurrentMonth) return;
     timerRef.current = setInterval(() => {
       setDirection(1);
       setPage(prev => (prev === 0 ? 1 : 0));
     }, 5000);
-  }, []);
+  }, [isCurrentMonth, clearTimer]);
 
   useEffect(() => {
     resetTimer();
-    return () => { if (timerRef.current) clearInterval(timerRef.current); };
-  }, [resetTimer]);
+    return clearTimer;
+  }, [resetTimer, clearTimer]);
 
-  // Swipe handling
-  const touchStartX = useRef(0);
-  const handleTouchStart = useCallback((e: React.TouchEvent) => {
-    touchStartX.current = e.touches[0].clientX;
-  }, []);
-  const handleTouchEnd = useCallback((e: React.TouchEvent) => {
-    const diff = touchStartX.current - e.changedTouches[0].clientX;
+  // Unified drag handling (touch + mouse)
+  const dragStartX = useRef(0);
+  const isDragging = useRef(false);
+
+  const handleDragStart = useCallback((clientX: number) => {
+    if (!isCurrentMonth) return;
+    dragStartX.current = clientX;
+    isDragging.current = true;
+  }, [isCurrentMonth]);
+
+  const handleDragEnd = useCallback((clientX: number) => {
+    if (!isDragging.current || !isCurrentMonth) return;
+    isDragging.current = false;
+    const diff = dragStartX.current - clientX;
     if (Math.abs(diff) > 50) {
       if (diff > 0 && page === 0) { setDirection(1); setPage(1); resetTimer(); }
       if (diff < 0 && page === 1) { setDirection(-1); setPage(0); resetTimer(); }
     }
-  }, [page, resetTimer]);
+  }, [page, resetTimer, isCurrentMonth]);
+
+  const onTouchStart = useCallback((e: React.TouchEvent) => handleDragStart(e.touches[0].clientX), [handleDragStart]);
+  const onTouchEnd = useCallback((e: React.TouchEvent) => handleDragEnd(e.changedTouches[0].clientX), [handleDragEnd]);
+  const onMouseDown = useCallback((e: React.MouseEvent) => { e.preventDefault(); handleDragStart(e.clientX); }, [handleDragStart]);
+  const onMouseUp = useCallback((e: React.MouseEvent) => handleDragEnd(e.clientX), [handleDragEnd]);
+  const onMouseLeave = useCallback((e: React.MouseEvent) => { if (isDragging.current) handleDragEnd(e.clientX); }, [handleDragEnd]);
 
   const goTo = (p: number) => {
+    if (!isCurrentMonth) return;
     setDirection(p > page ? 1 : -1);
     setPage(p);
     resetTimer();
@@ -113,12 +140,15 @@ const SaldoWalletCarousel = memo(({ saldoAtual, saldoPrevisto, isFutureMonth, is
     <div className="space-y-2">
       <div
         className={cn(
-          "relative rounded-2xl shadow-[0_4px_16px_-4px_rgba(0,0,0,0.4)] backdrop-blur-xl overflow-hidden transition-all duration-700",
+          "relative rounded-2xl shadow-[0_4px_16px_-4px_rgba(0,0,0,0.4)] backdrop-blur-xl overflow-hidden transition-all duration-700 select-none",
           page === 0 ? "border border-border/10" : "border border-primary/15"
         )}
         style={{ background: page === 0 ? darkGradient : greenGradient }}
-        onTouchStart={handleTouchStart}
-        onTouchEnd={handleTouchEnd}
+        onTouchStart={onTouchStart}
+        onTouchEnd={onTouchEnd}
+        onMouseDown={onMouseDown}
+        onMouseUp={onMouseUp}
+        onMouseLeave={onMouseLeave}
       >
         {/* Decorative glow - only on wallet page */}
         {page === 1 && (
@@ -160,20 +190,20 @@ const SaldoWalletCarousel = memo(({ saldoAtual, saldoPrevisto, isFutureMonth, is
               ) : isPastMonth ? (
                 <>
                   <div className="flex items-center gap-1.5 mb-2">
-                    <CalendarCheck className="w-3.5 h-3.5 text-primary/70" />
-                    <span className="text-[10px] text-primary/70 uppercase tracking-[0.15em] font-semibold">Saldo ao final do mês</span>
+                    <CalendarCheck className="w-3.5 h-3.5 text-muted-foreground" />
+                    <span className="text-[10px] text-muted-foreground uppercase tracking-[0.15em] font-semibold">Saldo ao final do mês</span>
                   </div>
-                  <p className={`font-display text-3xl font-bold tracking-tight tabular-nums leading-none ${saldoAtual >= 0 ? "text-primary" : "text-destructive"} my-[7px]`}>
+                  <p className={`font-display text-3xl font-bold tracking-tight tabular-nums leading-none ${saldoAtual >= 0 ? "text-foreground" : "text-destructive"} my-[7px]`}>
                     {animatedSaldo}
                   </p>
                 </>
               ) : (
                 <>
                   <div className="flex items-center gap-1.5 mb-2">
-                    <Scale className="w-3.5 h-3.5 text-primary/70" />
-                    <span className="text-[10px] text-primary/70 uppercase tracking-[0.15em] font-semibold">Saldo disponível</span>
+                    <Scale className="w-3.5 h-3.5 text-muted-foreground" />
+                    <span className="text-[10px] text-muted-foreground uppercase tracking-[0.15em] font-semibold">Saldo disponível</span>
                   </div>
-                  <p className={`font-display text-3xl font-bold tracking-tight tabular-nums leading-none ${saldoAtual >= 0 ? "text-primary" : "text-destructive"} my-[7px]`}>
+                  <p className={`font-display text-3xl font-bold tracking-tight tabular-nums leading-none ${saldoAtual >= 0 ? "text-foreground" : "text-destructive"} my-[7px]`}>
                     {animatedSaldo}
                   </p>
                   <div className="mt-4 flex items-center gap-2">
@@ -259,19 +289,21 @@ const SaldoWalletCarousel = memo(({ saldoAtual, saldoPrevisto, isFutureMonth, is
         </AnimatePresence>
       </div>
 
-      {/* Dot indicators */}
-      <div className="flex items-center justify-center gap-1.5">
-        {[0, 1].map(i => (
-          <button
-            key={i}
-            onClick={() => goTo(i)}
-            className={cn(
-              "rounded-full transition-all duration-300",
-              page === i ? "w-4 h-1.5 bg-primary" : "w-1.5 h-1.5 bg-primary/30"
-            )}
-          />
-        ))}
-      </div>
+      {/* Dot indicators - only on current month */}
+      {isCurrentMonth && (
+        <div className="flex items-center justify-center gap-1.5">
+          {[0, 1].map(i => (
+            <button
+              key={i}
+              onClick={() => goTo(i)}
+              className={cn(
+                "rounded-full transition-all duration-300",
+                page === i ? "w-4 h-1.5 bg-primary" : "w-1.5 h-1.5 bg-primary/30"
+              )}
+            />
+          ))}
+        </div>
+      )}
     </div>
   );
 });
