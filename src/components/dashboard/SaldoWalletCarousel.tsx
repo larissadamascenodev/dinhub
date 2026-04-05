@@ -176,6 +176,7 @@ const SaldoWalletCarousel = memo(({ saldoAtual, saldoPrevisto, isFutureMonth, is
         )}
         style={{ background: page === 0 ? darkGradient : greenGradient }}
         onTouchStart={onTouchStart}
+        onTouchMove={onTouchMove}
         onTouchEnd={onTouchEnd}
         onMouseDown={onMouseDown}
         onMouseUp={onMouseUp}
