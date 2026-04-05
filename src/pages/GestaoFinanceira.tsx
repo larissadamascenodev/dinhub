@@ -175,13 +175,14 @@ const GestaoFinanceira = () => {
       const { data: invoices } = await supabase
         .from("invoices")
         .select("credit_card_id, total_amount, is_paid, month, year")
-        .eq("is_paid", false);
+        .eq("is_paid", false)
+        .eq("month", now.getMonth() + 1)
+        .eq("year", now.getFullYear());
 
       const invoiceMap: Record<string, number> = {};
       if (invoices) {
         for (const inv of invoices as unknown as InvoiceData[]) {
-          // Sum all unpaid invoices per card (current + past due)
-          invoiceMap[inv.credit_card_id] = (invoiceMap[inv.credit_card_id] || 0) + Number(inv.total_amount);
+          invoiceMap[inv.credit_card_id] = Number(inv.total_amount);
         }
       }
       setOpenInvoices(invoiceMap);
