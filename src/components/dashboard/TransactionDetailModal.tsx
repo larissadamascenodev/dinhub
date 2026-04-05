@@ -418,9 +418,9 @@ const TransactionDetailModal = ({ open, tx, accountName, onClose, onRefresh, use
               <Wallet className="w-6 h-6 text-primary" />
             </div>
             <div>
-              <h3 className="text-lg font-bold text-foreground">Confirmar pagamento</h3>
+              <h3 className="text-lg font-bold text-foreground">{isReceita ? "Confirmar recebimento" : "Confirmar pagamento"}</h3>
               <p className="text-sm text-muted-foreground mt-1">
-                Deseja marcar <span className="font-semibold text-foreground">"{tx.name}"</span> como pago?
+                Deseja marcar <span className="font-semibold text-foreground">"{tx.name}"</span> como {isReceita ? "recebido" : "pago"}?
               </p>
               <p className={`text-xl font-bold mt-2 ${isReceita ? "text-primary" : "text-destructive"}`}>
                 {fmt(tx.amount)}
