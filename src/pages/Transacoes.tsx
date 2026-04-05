@@ -785,6 +785,7 @@ const Transacoes = () => {
             year={selectedYear}
             totalAmount={faturaDetailTx?.amount || 0}
             isPaid={faturaDetailTx?.status === "pago"}
+            onPaid={fetchData}
           />
         );
       })()}
