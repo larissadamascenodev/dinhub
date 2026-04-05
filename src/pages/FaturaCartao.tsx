@@ -185,12 +185,14 @@ const FaturaCartao = () => {
 
   const refreshItems = async () => {
     if (!currentInvoice) return;
-    const [updatedItems, updatedInvoices] = await Promise.all([
+    const [updatedItems, updatedInvoices, updatedPayments] = await Promise.all([
       getInvoiceItems(currentInvoice.id),
       getInvoices(cardId!),
+      getInvoicePayments(currentInvoice.id),
     ]);
     setItems(updatedItems as EnrichedItem[]);
     setInvoices(updatedInvoices);
+    setPayments(updatedPayments);
   };
 
   const handleEditItem = async (transactionId: string, updates?: { name?: string; amount?: number; category?: string }) => {
