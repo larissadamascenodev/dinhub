@@ -84,6 +84,7 @@ interface Props {
 const TransactionDetailModal = ({ open, tx, accountName, onClose, onRefresh, userId, selectedMonth, selectedYear }: Props) => {
   const [step, setStep] = useState<ModalStep>("detail");
   const [loading, setLoading] = useState(false);
+  const [editScope, setEditScope] = useState<"this" | "all">("all");
 
   // Edit form state
   const [editName, setEditName] = useState("");
