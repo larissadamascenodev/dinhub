@@ -402,11 +402,34 @@ const FaturaCartao = () => {
               <MoreVertical className="w-4 h-4" />
             </button>
           </DropdownMenuTrigger>
-          <DropdownMenuContent align="end" className="min-w-[160px]">
+          <DropdownMenuContent align="end" className="min-w-[180px]">
             <DropdownMenuItem onClick={() => setShowEditCard(true)} className="gap-2 text-xs">
               <Pencil className="w-3.5 h-3.5" />
               Editar cartão
             </DropdownMenuItem>
+            {currentInvoice && currentInvoice.is_paid && Number(currentInvoice.paid_amount ?? 0) > 0 && (
+              <DropdownMenuItem
+                onClick={async () => {
+                  try {
+                    await undoInvoicePayment(currentInvoice.id);
+                    toast.success("Pagamento desfeito com sucesso! ✅");
+                    const updated = await getInvoices(cardId!);
+                    setInvoices(updated);
+                    // Reload card to update used_limit
+                    const cards = await getCreditCards();
+                    const typedCards = cards as unknown as CreditCardInfo[];
+                    const foundCard = typedCards.find((c) => c.id === cardId);
+                    setCard(foundCard ?? null);
+                  } catch (err: any) {
+                    toast.error(err?.message ?? "Erro ao desfazer pagamento");
+                  }
+                }}
+                className="gap-2 text-xs text-destructive focus:text-destructive"
+              >
+                <Undo2 className="w-3.5 h-3.5" />
+                Desfazer pagamento
+              </DropdownMenuItem>
+            )}
           </DropdownMenuContent>
         </DropdownMenu>
       </div>
