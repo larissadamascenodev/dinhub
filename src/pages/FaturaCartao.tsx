@@ -411,7 +411,7 @@ const FaturaCartao = () => {
               <Pencil className="w-3.5 h-3.5" />
               Editar cartão
             </DropdownMenuItem>
-            {currentInvoice && currentInvoice.is_paid && Number(currentInvoice.paid_amount ?? 0) > 0 && (
+            {currentInvoice && Number(currentInvoice.paid_amount ?? 0) > 0 && (
               <DropdownMenuItem
                 onClick={async () => {
                   try {
@@ -504,11 +504,6 @@ const FaturaCartao = () => {
             <p className="text-3xl font-extrabold text-foreground tracking-tight">
               {formatCurrency(outstanding)}
             </p>
-            {paidAmount > 0 && !currentInvoice?.is_paid && (
-              <p className="text-[10px] text-emerald-500 font-medium">
-                {formatCurrency(paidAmount)} pago de {formatCurrency(total)}
-              </p>
-            )}
             {dueInfo && invoiceStatus !== "paid" && (
               <span className={cn(
                 "text-[10px] font-semibold",
@@ -580,12 +575,6 @@ const FaturaCartao = () => {
           {currentInvoice && outstanding > 0 && (
             <>
               <div className="h-px bg-border/10" />
-              {paidAmount > 0 && (
-                <div className="flex items-center justify-between text-[11px] px-1">
-                  <span className="text-muted-foreground">Já pago</span>
-                  <span className="font-bold text-primary">{formatCurrency(paidAmount)}</span>
-                </div>
-              )}
               <Button
                 onClick={() => setShowPayModal(true)}
                 className="w-full h-11 rounded-xl text-xs font-bold bg-primary/15 text-primary border border-primary/30 hover:bg-primary/25"

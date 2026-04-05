@@ -47,8 +47,11 @@ export default function InvoiceHistoryChart({ invoices, selectedMonth, selectedY
     let y = rangeStartY;
     while (y < rangeEndY || (y === rangeEndY && m <= rangeEndM)) {
       const invoice = invoices.find((inv) => inv.month === m && inv.year === y);
-      const amount = invoice ? Number(invoice.total_amount) : 0;
+      const rawAmount = invoice ? Number(invoice.total_amount) : 0;
+      const paidAmt = invoice ? Number((invoice as any).paid_amount ?? 0) : 0;
       const isPaid = invoice?.is_paid ?? false;
+      // For open invoices with partial payment, show outstanding amount
+      const amount = (!isPaid && paidAmt > 0) ? Math.max(0, rawAmount - paidAmt) : rawAmount;
       const isSelected = m === selectedMonth && y === selectedYear;
       const isFuture = y > currentYear || (y === currentYear && m > currentMonth);
       entries.push({ month: m, year: y, amount, isPaid, isSelected, isFuture });
