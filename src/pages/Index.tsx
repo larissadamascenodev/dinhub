@@ -7,6 +7,7 @@ import { useGreeting } from "@/components/dashboard/DashboardHeader";
 import SaldoCard from "@/components/dashboard/SaldoCard";
 import ReceitasDespesasCards from "@/components/dashboard/ReceitasDespesasCards";
 import BalancoCard from "@/components/dashboard/BalancoCard";
+import SaldoWalletCarousel from "@/components/dashboard/SaldoWalletCarousel";
 import MicroInteracoesCard from "@/components/dashboard/MicroInteracoesCard";
 import TransacoesRecentes from "@/components/dashboard/TransacoesRecentes";
 import ProximosEventos from "@/components/dashboard/ProximosEventos";
@@ -227,10 +228,9 @@ const Index = () => {
             />
           )}
           <motion.div initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }} className="space-y-3">
-            <SaldoCard saldoAtual={saldoMes} saldoPrevisto={saldoPrevisto} isFutureMonth={isFutureMonth} mobile />
+            <SaldoWalletCarousel saldoAtual={saldoMes} saldoPrevisto={saldoPrevisto} isFutureMonth={isFutureMonth} />
             <ReceitasDespesasCards receitas={receitas} receitasRecebidas={data.receitasRecebidas} receitasPendentes={data.receitasPendentes} despesas={despesas} despesasPagas={data.despesasPagas} despesasPendentes={data.despesasPendentes} mobile compact />
           </motion.div>
-          <WalletSummaryCard />
           <BalancoCard balanco={balanco} />
           {isCurrentMonth && <MicroInteracoesCard gastosHoje={data.gastosHoje} mediaGastosDiarios={data.mediaGastosDiarios} />}
           <button onClick={() => navigate("/bot-finance/projecoes")} className="glass-card w-full p-3 flex items-center justify-between group hover:border-primary/20 transition-all">
