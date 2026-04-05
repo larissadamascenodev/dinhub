@@ -597,8 +597,9 @@ const GestaoFinanceira = () => {
                             </p>
                           </div>
                         </div>
-                        <div className="flex items-center justify-end mt-2.5 mb-1">
-                          <span className="text-[10px] font-medium text-muted-foreground">{usedPct.toFixed(0)}% usado</span>
+                        <div className="flex items-center justify-between mt-2.5 mb-1">
+                          <span className="text-[10px] font-medium text-muted-foreground">{formatCurrency(Number(card.used_limit))} utilizado</span>
+                          <span className="text-[10px] text-muted-foreground">de {formatCurrency(Number(card.limit))}</span>
                         </div>
                         <div className="w-full h-1.5 rounded-full bg-muted/30 overflow-hidden mb-1.5">
                           <motion.div
@@ -608,9 +609,8 @@ const GestaoFinanceira = () => {
                             className={cn("h-full rounded-full", usedPct > 80 ? "bg-destructive/60" : "bg-primary/40")}
                           />
                         </div>
-                        <div className="flex items-center justify-between">
-                          <span className="text-[10px] font-medium text-muted-foreground">{formatCurrency(Number(card.used_limit))} utilizado</span>
-                          <span className="text-[10px] text-muted-foreground">de {formatCurrency(Number(card.limit))}</span>
+                        <div className="flex items-center justify-end">
+                          <span className="text-[10px] font-medium text-muted-foreground">{usedPct.toFixed(0)}% usado</span>
                         </div>
                       </div>
                     </div>
@@ -685,8 +685,9 @@ const GestaoFinanceira = () => {
                             </p>
                           </div>
                         </div>
-                        <div className="flex items-center justify-end mt-2.5 mb-1">
-                          <span className="text-[10px] font-medium text-muted-foreground">{usedPct.toFixed(0)}% usado</span>
+                        <div className="flex items-center justify-between mt-2.5 mb-1">
+                          <span className="text-[10px] font-medium text-muted-foreground">{formatCurrency(Number(card.used_limit))} utilizado</span>
+                          <span className="text-[10px] text-muted-foreground">de {formatCurrency(Number(card.limit))}</span>
                         </div>
                         <div className="w-full h-1.5 rounded-full bg-muted/30 overflow-hidden mb-1.5">
                           <motion.div
@@ -696,9 +697,8 @@ const GestaoFinanceira = () => {
                             className={cn("h-full rounded-full", usedPct > 80 ? "bg-destructive/60" : "bg-primary/40")}
                           />
                         </div>
-                        <div className="flex items-center justify-between">
-                          <span className="text-[10px] font-medium text-muted-foreground">{formatCurrency(Number(card.used_limit))} utilizado</span>
-                          <span className="text-[10px] text-muted-foreground">de {formatCurrency(Number(card.limit))}</span>
+                        <div className="flex items-center justify-end">
+                          <span className="text-[10px] font-medium text-muted-foreground">{usedPct.toFixed(0)}% usado</span>
                         </div>
                       </div>
                     </div>
