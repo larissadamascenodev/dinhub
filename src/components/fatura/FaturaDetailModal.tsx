@@ -278,6 +278,21 @@ export default function FaturaDetailModal({ open, onClose, card, month, year, to
                       </span>
                     </div>
                   ))}
+                  {/* Partial payment entry */}
+                  {paidAmount > 0 && !isPaid && (
+                    <div className="flex items-center gap-2.5 py-2 border-t border-border/10 mt-1 pt-3">
+                      <div className="w-7 h-7 rounded-full bg-primary/15 flex items-center justify-center">
+                        <Wallet className="w-3.5 h-3.5 text-primary" />
+                      </div>
+                      <div className="flex-1 min-w-0">
+                        <p className="text-[12px] font-semibold text-foreground">Pagamento parcial</p>
+                        <p className="text-[10px] text-muted-foreground">Débito em conta</p>
+                      </div>
+                      <span className="text-[12px] font-bold text-primary shrink-0">
+                        +{fmt(paidAmount)}
+                      </span>
+                    </div>
+                  )}
                 </div>
               )}
             </div>
