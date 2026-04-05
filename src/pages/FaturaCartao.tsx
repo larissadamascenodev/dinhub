@@ -147,8 +147,14 @@ const FaturaCartao = () => {
   }, [user, cardId]);
 
   useEffect(() => {
-    if (!currentInvoice) { setItems([]); return; }
-    getInvoiceItems(currentInvoice.id).then((data) => setItems(data as EnrichedItem[]));
+    if (!currentInvoice) { setItems([]); setPayments([]); return; }
+    Promise.all([
+      getInvoiceItems(currentInvoice.id),
+      getInvoicePayments(currentInvoice.id),
+    ]).then(([itemsData, paymentsData]) => {
+      setItems(itemsData as EnrichedItem[]);
+      setPayments(paymentsData);
+    });
   }, [currentInvoice]);
 
   const handlePay = async (details: import("@/components/fatura/InvoicePayModal").PaymentDetails) => {
