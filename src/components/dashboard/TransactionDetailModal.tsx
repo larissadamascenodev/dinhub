@@ -331,7 +331,7 @@ const TransactionDetailModal = ({ open, tx, accountName, onClose, onRefresh, use
                   <h2 className="text-sm font-extrabold text-foreground uppercase tracking-wide truncate">{tx.name}</h2>
                 </div>
                 <p className="text-xs text-muted-foreground mt-0.5">
-                  {tx.category} · {isPaid ? "já pago" : "agendada"}
+                  {tx.category} · {isPaid ? (isReceita ? "recebido" : "já pago") : "agendada"}
                   {isRecurring && " · fixa"}
                 </p>
               </div>
