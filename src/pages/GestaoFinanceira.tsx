@@ -169,6 +169,22 @@ const GestaoFinanceira = () => {
       const [accs, cards] = await Promise.all([getAccounts(), getCreditCards()]);
       setAccounts(accs as unknown as Account[]);
       setCreditCards(cards as unknown as CreditCardItem[]);
+
+      // Fetch open invoices for current month
+      const now = new Date();
+      const { data: invoices } = await supabase
+        .from("invoices")
+        .select("credit_card_id, total_amount, is_paid, month, year")
+        .eq("is_paid", false);
+
+      const invoiceMap: Record<string, number> = {};
+      if (invoices) {
+        for (const inv of invoices as unknown as InvoiceData[]) {
+          // Sum all unpaid invoices per card (current + past due)
+          invoiceMap[inv.credit_card_id] = (invoiceMap[inv.credit_card_id] || 0) + Number(inv.total_amount);
+        }
+      }
+      setOpenInvoices(invoiceMap);
     } catch {
       toast.error("Erro ao carregar dados");
     } finally {
