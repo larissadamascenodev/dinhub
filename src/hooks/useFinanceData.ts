@@ -67,7 +67,7 @@ async function buildDashboardData(month: number, year: number): Promise<Dashboar
   const invoiceByCard = new Map(
     (invoicesForMonth as any[]).map((inv: any) => [
       inv.credit_card_id,
-      { total: Number(inv.total_amount), isPaid: inv.is_paid },
+      { total: Number(inv.total_amount), isPaid: inv.is_paid, paidAmount: Number(inv.paid_amount ?? 0) },
     ])
   );
 
