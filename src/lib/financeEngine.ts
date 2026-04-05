@@ -313,8 +313,22 @@ export async function getFinancialSummary(
     
     previousMonthEndingBalance = accumulated;
   } else {
-    // Past month: approximate using accountBalance minus all paid transactions from months after this one
-    previousMonthEndingBalance = accountBalance - balance; // simplified approximation
+    // Past month: subtract all paid transactions from months after this one up to current month
+    // accountBalance includes ALL paid transactions ever. We need to remove months after target.
+    let paidAfter = 0;
+    let chainMonth = month + 1;
+    let chainYear = year;
+    if (chainMonth > 11) { chainMonth = 0; chainYear++; }
+
+    while (chainYear < currentCalendarYear || (chainYear === currentCalendarYear && chainMonth <= currentCalendarMonth)) {
+      const futureTxs = await fetchMonthTransactions(chainMonth, chainYear);
+      const futAgg = aggregate(futureTxs);
+      paidAfter += futAgg.paidIncome - futAgg.paidExpense;
+      chainMonth++;
+      if (chainMonth > 11) { chainMonth = 0; chainYear++; }
+    }
+
+    previousMonthEndingBalance = (accountBalance - paidAfter) - balance;
   }
 
   // ── Predicted balance = previousMonthEnding + month's total balance (all statuses) ──
