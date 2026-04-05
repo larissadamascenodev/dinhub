@@ -597,9 +597,8 @@ const GestaoFinanceira = () => {
                         <p className="text-2xl font-extrabold tabular-nums tracking-tight text-foreground">
                           {formatCurrency(available)}
                         </p>
-                        <div className="flex items-center justify-between mt-2.5 mb-1">
+                        <div className="flex items-center justify-end mt-2.5 mb-1">
                           <span className="text-[10px] font-medium text-muted-foreground">{usedPct.toFixed(0)}% usado</span>
-                          <span className="text-[10px] text-muted-foreground/60">Vence dia {card.due_day}</span>
                         </div>
                         <div className="w-full h-1.5 rounded-full bg-muted/30 overflow-hidden mb-1.5">
                           <motion.div
@@ -686,9 +685,8 @@ const GestaoFinanceira = () => {
                         <p className="text-2xl font-extrabold tabular-nums tracking-tight text-foreground">
                           {formatCurrency(available)}
                         </p>
-                        <div className="flex items-center justify-between mt-2.5 mb-1">
+                        <div className="flex items-center justify-end mt-2.5 mb-1">
                           <span className="text-[10px] font-medium text-muted-foreground">{usedPct.toFixed(0)}% usado</span>
-                          <span className="text-[10px] text-muted-foreground/60">Vence dia {card.due_day}</span>
                         </div>
                         <div className="w-full h-1.5 rounded-full bg-muted/30 overflow-hidden mb-1.5">
                           <motion.div
