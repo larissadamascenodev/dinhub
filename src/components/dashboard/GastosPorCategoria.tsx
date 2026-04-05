@@ -1,5 +1,6 @@
-import { memo } from "react";
+import { memo, useState } from "react";
 import { motion } from "framer-motion";
+import { ChevronDown, ChevronUp } from "lucide-react";
 import type { CategoryExpense } from "@/types/finance";
 
 interface Props {
@@ -8,10 +9,14 @@ interface Props {
 }
 
 const fmt = (v: number) => v.toLocaleString("pt-BR", { style: "currency", currency: "BRL" });
+const INITIAL_COUNT = 5;
 
 const GastosPorCategoria = memo(({ categories, onVerAnalise }: Props) => {
-  const top = [...categories].sort((a, b) => b.amount - a.amount).slice(0, 6);
-  const totalExpenses = top.reduce((sum, c) => sum + c.amount, 0);
+  const sorted = [...categories].sort((a, b) => b.amount - a.amount);
+  const totalExpenses = sorted.reduce((sum, c) => sum + c.amount, 0);
+  const hasMore = sorted.length > INITIAL_COUNT;
+  const [expanded, setExpanded] = useState(false);
+  const visible = expanded ? sorted : sorted.slice(0, INITIAL_COUNT);
 
   return (
     <div
@@ -29,7 +34,7 @@ const GastosPorCategoria = memo(({ categories, onVerAnalise }: Props) => {
       </div>
 
       <div className="space-y-2.5">
-        {top.map((cat, index) => {
+        {visible.map((cat, index) => {
           const pct = totalExpenses > 0 ? Math.round((cat.amount / totalExpenses) * 100) : 0;
 
           return (
@@ -61,6 +66,19 @@ const GastosPorCategoria = memo(({ categories, onVerAnalise }: Props) => {
           );
         })}
       </div>
+
+      {hasMore && (
+        <button
+          onClick={() => setExpanded(!expanded)}
+          className="w-full flex items-center justify-center gap-1 mt-3 pt-2 border-t border-border/10 text-[10px] text-primary/70 hover:text-primary transition-colors font-medium"
+        >
+          {expanded ? (
+            <>Mostrar menos <ChevronUp className="w-3 h-3" /></>
+          ) : (
+            <>Mais {sorted.length - INITIAL_COUNT} categorias <ChevronDown className="w-3 h-3" /></>
+          )}
+        </button>
+      )}
     </div>
   );
 });
