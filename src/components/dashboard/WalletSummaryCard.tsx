@@ -4,6 +4,7 @@ import { Wallet, ChevronRight, Landmark, CreditCard, ArrowRightLeft, TrendingUp,
 import { useNavigate } from "react-router-dom";
 import { useAuth } from "@/contexts/AuthContext";
 import { getAccounts, getCreditCards } from "@/services/transactionService";
+import { supabase } from "@/integrations/supabase/client";
 import { cn } from "@/lib/utils";
 
 interface Account {
