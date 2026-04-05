@@ -47,7 +47,7 @@ export async function getInvoiceItems(invoiceId: string) {
     .from("invoice_items" as any)
     .select("*")
     .eq("invoice_id", invoiceId)
-    .order("installment_number", { ascending: true });
+    .order("created_at", { ascending: true });
 
   if (error) throw error;
   const typedItems = (items ?? []) as unknown as InvoiceItem[];
