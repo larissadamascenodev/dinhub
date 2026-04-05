@@ -1,4 +1,4 @@
-import { useState, useRef, useCallback, useEffect, memo } from "react";
+import { useState, useRef, useCallback, useEffect, memo, RefCallback } from "react";
 import { Scale, TrendingUp, CalendarCheck, Wallet, Landmark, CreditCard, Briefcase, ArrowRightLeft, ChevronRight } from "lucide-react";
 import { motion, AnimatePresence } from "framer-motion";
 import { useNavigate } from "react-router-dom";
@@ -109,16 +109,76 @@ const SaldoWalletCarousel = memo(({ saldoAtual, saldoPrevisto, isFutureMonth, is
   const dragStartY = useRef(0);
   const isDragging = useRef(false);
   const isHorizontalSwipe = useRef<boolean | null>(null);
+  const containerRef = useRef<HTMLDivElement | null>(null);
 
-  const handleDragStart = useCallback((clientX: number, clientY: number) => {
+  // Store latest callbacks in refs so native listeners always see fresh values
+  const pageRef = useRef(page);
+  pageRef.current = page;
+  const resetTimerRef = useRef(resetTimer);
+  resetTimerRef.current = resetTimer;
+  const isCurrentMonthRef = useRef(isCurrentMonth);
+  isCurrentMonthRef.current = isCurrentMonth;
+
+  // Native touch listeners with { passive: false } so preventDefault works
+  useEffect(() => {
+    const el = containerRef.current;
+    if (!el) return;
+
+    const onTouchStart = (e: TouchEvent) => {
+      if (!isCurrentMonthRef.current) return;
+      dragStartX.current = e.touches[0].clientX;
+      dragStartY.current = e.touches[0].clientY;
+      isDragging.current = true;
+      isHorizontalSwipe.current = null;
+    };
+
+    const onTouchMove = (e: TouchEvent) => {
+      if (!isDragging.current) return;
+      const dx = Math.abs(e.touches[0].clientX - dragStartX.current);
+      const dy = Math.abs(e.touches[0].clientY - dragStartY.current);
+      if (isHorizontalSwipe.current === null && (dx > 8 || dy > 8)) {
+        isHorizontalSwipe.current = dx > dy;
+      }
+      if (isHorizontalSwipe.current) {
+        e.preventDefault();
+      }
+    };
+
+    const onTouchEnd = (e: TouchEvent) => {
+      if (!isDragging.current || !isCurrentMonthRef.current) return;
+      isDragging.current = false;
+      const wasHorizontal = isHorizontalSwipe.current;
+      isHorizontalSwipe.current = null;
+      if (!wasHorizontal) return;
+      const clientX = e.changedTouches[0].clientX;
+      const diff = dragStartX.current - clientX;
+      if (Math.abs(diff) > 40) {
+        if (diff > 0 && pageRef.current === 0) { setDirection(1); setPage(1); resetTimerRef.current(); }
+        if (diff < 0 && pageRef.current === 1) { setDirection(-1); setPage(0); resetTimerRef.current(); }
+      }
+    };
+
+    el.addEventListener("touchstart", onTouchStart, { passive: true });
+    el.addEventListener("touchmove", onTouchMove, { passive: false });
+    el.addEventListener("touchend", onTouchEnd, { passive: true });
+
+    return () => {
+      el.removeEventListener("touchstart", onTouchStart);
+      el.removeEventListener("touchmove", onTouchMove);
+      el.removeEventListener("touchend", onTouchEnd);
+    };
+  }, []);
+
+  const onMouseDown = useCallback((e: React.MouseEvent) => {
     if (!isCurrentMonth) return;
-    dragStartX.current = clientX;
-    dragStartY.current = clientY;
+    e.preventDefault();
+    dragStartX.current = e.clientX;
+    dragStartY.current = e.clientY;
     isDragging.current = true;
     isHorizontalSwipe.current = null;
   }, [isCurrentMonth]);
 
-  const handleDragEnd = useCallback((clientX: number) => {
+  const handleMouseEnd = useCallback((clientX: number) => {
     if (!isDragging.current || !isCurrentMonth) return;
     isDragging.current = false;
     const wasHorizontal = isHorizontalSwipe.current;
@@ -131,31 +191,8 @@ const SaldoWalletCarousel = memo(({ saldoAtual, saldoPrevisto, isFutureMonth, is
     }
   }, [page, resetTimer, isCurrentMonth]);
 
-  const onTouchStart = useCallback((e: React.TouchEvent) => {
-    handleDragStart(e.touches[0].clientX, e.touches[0].clientY);
-  }, [handleDragStart]);
-
-  const onTouchMove = useCallback((e: React.TouchEvent) => {
-    if (!isDragging.current) return;
-    const dx = Math.abs(e.touches[0].clientX - dragStartX.current);
-    const dy = Math.abs(e.touches[0].clientY - dragStartY.current);
-    // Determine swipe direction on first significant movement
-    if (isHorizontalSwipe.current === null && (dx > 8 || dy > 8)) {
-      isHorizontalSwipe.current = dx > dy;
-    }
-    // Prevent vertical scroll when swiping horizontally
-    if (isHorizontalSwipe.current) {
-      e.preventDefault();
-    }
-  }, []);
-
-  const onTouchEnd = useCallback((e: React.TouchEvent) => {
-    handleDragEnd(e.changedTouches[0].clientX);
-  }, [handleDragEnd]);
-
-  const onMouseDown = useCallback((e: React.MouseEvent) => { e.preventDefault(); handleDragStart(e.clientX, e.clientY); }, [handleDragStart]);
-  const onMouseUp = useCallback((e: React.MouseEvent) => handleDragEnd(e.clientX), [handleDragEnd]);
-  const onMouseLeave = useCallback((e: React.MouseEvent) => { if (isDragging.current) handleDragEnd(e.clientX); }, [handleDragEnd]);
+  const onMouseUp = useCallback((e: React.MouseEvent) => handleMouseEnd(e.clientX), [handleMouseEnd]);
+  const onMouseLeave = useCallback((e: React.MouseEvent) => { if (isDragging.current) handleMouseEnd(e.clientX); }, [handleMouseEnd]);
 
   const goTo = (p: number) => {
     if (!isCurrentMonth) return;
@@ -170,14 +207,12 @@ const SaldoWalletCarousel = memo(({ saldoAtual, saldoPrevisto, isFutureMonth, is
   return (
     <div className="space-y-2">
       <div
+        ref={containerRef}
         className={cn(
-          "relative rounded-2xl shadow-[0_4px_16px_-4px_rgba(0,0,0,0.4)] backdrop-blur-xl overflow-hidden transition-all duration-700 select-none",
+          "relative rounded-2xl shadow-[0_4px_16px_-4px_rgba(0,0,0,0.4)] backdrop-blur-xl overflow-hidden transition-all duration-700 select-none touch-pan-y",
           page === 0 ? "border border-border/10" : "border border-primary/15"
         )}
         style={{ background: page === 0 ? darkGradient : greenGradient }}
-        onTouchStart={onTouchStart}
-        onTouchMove={onTouchMove}
-        onTouchEnd={onTouchEnd}
         onMouseDown={onMouseDown}
         onMouseUp={onMouseUp}
         onMouseLeave={onMouseLeave}
