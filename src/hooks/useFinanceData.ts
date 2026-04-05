@@ -146,8 +146,6 @@ async function buildDashboardData(month: number, year: number): Promise<Dashboar
     status: "pago" as const,
   }));
 
-  const faturasPaid = groupByCard(ccPaid, "pago");
-  const faturasPending = groupByCard(ccPending, "pendente");
 
   const transactions: Transaction[] = [...regularTransactions, ...faturasPaid];
 
