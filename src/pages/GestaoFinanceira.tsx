@@ -38,6 +38,14 @@ interface CreditCardItem {
   last_four_digits: string | null;
 }
 
+interface InvoiceData {
+  credit_card_id: string;
+  total_amount: number;
+  is_paid: boolean;
+  month: number;
+  year: number;
+}
+
 const ACCOUNT_TYPE_LABELS: Record<string, { label: string; icon: typeof Landmark }> = {
   cash: { label: "Dinheiro", icon: Banknote },
   checking: { label: "Conta corrente", icon: Landmark },
