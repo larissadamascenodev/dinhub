@@ -242,7 +242,7 @@ const Transacoes = () => {
       getCreditCards(),
         supabase
           .from("invoices")
-          .select("credit_card_id, total_amount, is_paid")
+          .select("credit_card_id, total_amount, is_paid, paid_amount")
           .eq("user_id", user.id)
           .eq("month", selectedMonth + 1)
           .eq("year", selectedYear),
@@ -320,15 +320,17 @@ const Transacoes = () => {
         const cardName = info.card?.name || "Cartão";
         const dueDay = info.card?.due_day || 1;
 
-          const invoiceTotal = Number(invoice.total_amount);
-          const isPaid = invoice.is_paid;
+           const invoiceTotal = Number(invoice.total_amount);
+           const invoicePaid = Number((invoice as any).paid_amount ?? 0);
+           const outstanding = Math.max(0, invoiceTotal - invoicePaid);
+           const isPaid = invoice.is_paid;
 
         faturaEntries.push({
           id: `fatura-${cardId}-${selectedMonth}-${selectedYear}`,
           name: `Fatura ${cardName}`,
           category: "Cartão de Crédito",
           date: `${selectedYear}-${String(selectedMonth + 1).padStart(2, "0")}-${String(dueDay).padStart(2, "0")}`,
-          amount: invoiceTotal,
+          amount: outstanding > 0 ? outstanding : invoiceTotal,
           type: "despesa",
           status: isPaid ? "pago" : "pendente",
           payment_method: "cartao",
@@ -351,7 +353,7 @@ const Transacoes = () => {
                 name: `Fatura ${card.name}`,
                 category: "Cartão de Crédito",
                 date: `${selectedYear}-${String(selectedMonth + 1).padStart(2, "0")}-${String(card.due_day || 1).padStart(2, "0")}`,
-                  amount: Number(invoice.total_amount),
+                  amount: Math.max(0, Number(invoice.total_amount) - Number((invoice as any).paid_amount ?? 0)) || Number(invoice.total_amount),
                 type: "despesa",
                   status: invoice.is_paid ? "pago" : "pendente",
                 payment_method: "cartao",
