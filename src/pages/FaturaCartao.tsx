@@ -13,7 +13,7 @@ import { Button } from "@/components/ui/button";
 import { toast } from "sonner";
 import { useAuth } from "@/contexts/AuthContext";
 import { supabase } from "@/integrations/supabase/client";
-import { getInvoices, getInvoiceItems, payInvoice, type Invoice } from "@/services/invoiceService";
+import { getInvoices, getInvoiceItems, payInvoice, undoInvoicePayment, type Invoice } from "@/services/invoiceService";
 import { getAccounts, getCreditCards, createTransaction, updateTransaction, deleteTransaction, getTransactionById } from "@/services/transactionService";
 import { cn } from "@/lib/utils";
 import InvoiceCategoryBreakdown from "@/components/fatura/InvoiceCategoryBreakdown";
