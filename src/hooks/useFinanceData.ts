@@ -54,7 +54,7 @@ async function buildDashboardData(month: number, year: number): Promise<Dashboar
     await Promise.all([
       getFinancialSummary(month, year),
       getCreditCards(),
-      // Fetch invoices for this month to know which cards actually have invoice items
+      // Fetch invoices for this month with total_amount and item count
       supabase
         .from("invoices")
         .select("credit_card_id, total_amount, is_paid")
@@ -62,6 +62,14 @@ async function buildDashboardData(month: number, year: number): Promise<Dashboar
         .eq("year", year)
         .then(({ data }) => data ?? []),
     ]);
+
+  // Build invoice lookup by card ID for accurate fatura totals
+  const invoiceByCard = new Map(
+    (invoicesForMonth as any[]).map((inv: any) => [
+      inv.credit_card_id,
+      { total: Number(inv.total_amount), isPaid: inv.is_paid },
+    ])
+  );
 
   const cardMap = new Map((creditCards as any[]).map((c: any) => [c.id, c.name]));
 
