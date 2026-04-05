@@ -117,13 +117,13 @@ Deno.serve(async (req) => {
     }
 
     const newPaidAmount = alreadyPaid + debitAmount;
-    const isFullyPaid = mode === "total" || (mode === "minimo" && remainderToNextInvoice <= 0);
+    const isFullyPaid = mode === "total" || newPaidAmount >= totalAmount;
 
     const { error: payError } = await adminClient
       .from("invoices")
       .update({
         paid_amount: newPaidAmount,
-        is_paid: isFullyPaid && newPaidAmount >= totalAmount,
+        is_paid: isFullyPaid,
         paid_at: new Date().toISOString(),
         paid_from_account_id: account_id,
       })
@@ -141,36 +141,7 @@ Deno.serve(async (req) => {
       });
     }
 
-    if (mode === "minimo" && remainderToNextInvoice > 0) {
-      let nextMonth = invoice.month + 1;
-      let nextYear = invoice.year;
-      if (nextMonth > 12) {
-        nextMonth = 1;
-        nextYear += 1;
-      }
-
-      const { data: nextInvoiceId } = await adminClient.rpc("get_or_create_invoice", {
-        p_credit_card_id: invoice.credit_card_id,
-        p_month: nextMonth,
-        p_year: nextYear,
-        p_user_id: user.id,
-      });
-
-      if (nextInvoiceId) {
-        const { data: nextInvoice } = await adminClient
-          .from("invoices")
-          .select("total_amount")
-          .eq("id", nextInvoiceId)
-          .single();
-
-        if (nextInvoice) {
-          await adminClient
-            .from("invoices")
-            .update({ total_amount: Number(nextInvoice.total_amount) + remainderToNextInvoice })
-            .eq("id", nextInvoiceId);
-        }
-      }
-    }
+    // For "minimo" mode, the remainder stays on the current invoice (no transfer to next month)
 
     if (mode === "parcelado") {
       const entry = Number(entry_amount) || 0;
