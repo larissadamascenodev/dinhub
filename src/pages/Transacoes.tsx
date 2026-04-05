@@ -330,7 +330,7 @@ const Transacoes = () => {
           name: `Fatura ${cardName}`,
           category: "Cartão de Crédito",
           date: `${selectedYear}-${String(selectedMonth + 1).padStart(2, "0")}-${String(dueDay).padStart(2, "0")}`,
-          amount: invoiceTotal,
+          amount: outstanding > 0 ? outstanding : invoiceTotal,
           type: "despesa",
           status: isPaid ? "pago" : "pendente",
           payment_method: "cartao",
