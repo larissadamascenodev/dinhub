@@ -28,7 +28,7 @@ interface Props {
 
 const modeOptions: { value: PaymentMode; label: string; icon: React.ReactNode }[] = [
   { value: "total", label: "Valor Total", icon: <CheckCircle2 className="w-4 h-4" /> },
-  { value: "minimo", label: "Valor Mínimo", icon: <Banknote className="w-4 h-4" /> },
+  { value: "minimo", label: "Pagar Parcial", icon: <Banknote className="w-4 h-4" /> },
   { value: "parcelado", label: "Parcelado", icon: <CalendarClock className="w-4 h-4" /> },
 ];
 
