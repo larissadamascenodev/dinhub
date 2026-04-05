@@ -60,7 +60,8 @@ function getMonthRange(month: number, year: number) {
 
 async function fetchMonthTransactions(month: number, year: number) {
   const { start, end } = getMonthRange(month, year);
-  const [{ data, error }, recurringTxs] = await Promise.all([
+  const dbMonth = month + 1; // DB stores 1-based months
+  const [{ data, error }, recurringTxs, { data: invoicesData }] = await Promise.all([
     supabase
       .from("transactions")
       .select("*")
@@ -68,11 +69,31 @@ async function fetchMonthTransactions(month: number, year: number) {
       .lte("date", end)
       .order("date", { ascending: false }),
     getRecurringForMonth(month, year),
+    // Fetch invoices for this month to filter out CC transactions with no invoice items
+    supabase
+      .from("invoices")
+      .select("credit_card_id, total_amount")
+      .eq("month", dbMonth)
+      .eq("year", year),
   ]);
 
   if (error) throw error;
 
   let baseTxs = (data ?? []) as RawTransaction[];
+
+  // Filter out credit card transactions for months where no invoice items exist
+  // (pre-start-date transactions that serve only as installment base)
+  const cardsWithInvoice = new Set(
+    (invoicesData ?? [])
+      .filter((inv: any) => Number(inv.total_amount) > 0)
+      .map((inv: any) => inv.credit_card_id)
+  );
+  baseTxs = baseTxs.filter((t) => {
+    if (t.payment_method === "cartao" && t.credit_card_id) {
+      return cardsWithInvoice.has(t.credit_card_id);
+    }
+    return true;
+  });
 
   // Filter out fixa transactions that have been excluded for this month
   const fixaIds = baseTxs.filter((t) => t.recurrence_type === "fixa").map((t) => t.id);

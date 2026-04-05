@@ -50,16 +50,39 @@ function offsetMonth(month: number, year: number, offset: number) {
 
 /** Build DashboardData from the finance engine (pure async, no React state) */
 async function buildDashboardData(month: number, year: number): Promise<DashboardData> {
-  const [{ summary, transactions: rawTxs, events: rawEvents }, creditCards] =
+  const [{ summary, transactions: rawTxs, events: rawEvents }, creditCards, invoicesForMonth] =
     await Promise.all([
       getFinancialSummary(month, year),
       getCreditCards(),
+      // Fetch invoices for this month to know which cards actually have invoice items
+      supabase
+        .from("invoices")
+        .select("credit_card_id, total_amount, is_paid")
+        .eq("month", month + 1) // DB stores 1-based months
+        .eq("year", year)
+        .then(({ data }) => data ?? []),
     ]);
 
   const cardMap = new Map((creditCards as any[]).map((c: any) => [c.id, c.name]));
 
-  const paidTxs = rawTxs.filter((t) => t.status === "pago");
-  const pendingTxs = rawTxs.filter((t) => t.status === "pendente");
+  // Build a set of card IDs that have actual invoice items for this month (total > 0)
+  const cardsWithInvoice = new Set(
+    (invoicesForMonth as any[])
+      .filter((inv: any) => Number(inv.total_amount) > 0)
+      .map((inv: any) => inv.credit_card_id)
+  );
+
+  // Filter out CC transactions for cards with no invoice items this month
+  // (these are pre-start-date transactions that should be ignored)
+  const filteredTxs = rawTxs.filter((t) => {
+    if (t.payment_method === "cartao" && t.credit_card_id) {
+      return cardsWithInvoice.has(t.credit_card_id);
+    }
+    return true;
+  });
+
+  const paidTxs = filteredTxs.filter((t) => t.status === "pago");
+  const pendingTxs = filteredTxs.filter((t) => t.status === "pendente");
 
   // Separate credit card vs regular transactions
   const regularPaid = paidTxs.filter((t) => t.payment_method !== "cartao");
