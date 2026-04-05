@@ -1,6 +1,6 @@
 import { useState, useEffect } from "react";
 import { motion, AnimatePresence } from "framer-motion";
-import { X, CalendarClock, CalendarCheck, CreditCard, ChevronRight, Wallet } from "lucide-react";
+import { X, CalendarClock, CalendarCheck, CreditCard, ChevronRight, Wallet, CheckCircle2 } from "lucide-react";
 import { useNavigate } from "react-router-dom";
 import { toast } from "sonner";
 import { getInvoices, getInvoiceItems, payInvoice } from "@/services/invoiceService";
