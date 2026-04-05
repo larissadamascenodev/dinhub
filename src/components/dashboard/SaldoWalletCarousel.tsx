@@ -194,6 +194,16 @@ const SaldoWalletCarousel = memo(({ saldoAtual, saldoPrevisto, isFutureMonth, is
   const onMouseUp = useCallback((e: React.MouseEvent) => handleMouseEnd(e.clientX), [handleMouseEnd]);
   const onMouseLeave = useCallback((e: React.MouseEvent) => { if (isDragging.current) handleMouseEnd(e.clientX); }, [handleMouseEnd]);
 
+  const goTo = (p: number) => {
+    if (!isCurrentMonth) return;
+    setDirection(p > page ? 1 : -1);
+    setPage(p);
+    resetTimer();
+  };
+
+  const darkGradient = "linear-gradient(160deg, hsl(220 15% 14% / 0.6) 0%, hsl(220 18% 8% / 0.75) 50%, hsl(220 20% 4% / 0.9) 100%)";
+  const greenGradient = "linear-gradient(160deg, hsl(150 30% 12% / 0.7) 0%, hsl(150 25% 8% / 0.8) 50%, hsl(150 20% 5% / 0.95) 100%)";
+
   return (
     <div className="space-y-2">
       <div
