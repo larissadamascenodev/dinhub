@@ -619,7 +619,7 @@ const FaturaCartao = () => {
         cardName={card?.name}
         invoiceMonth={selectedMonth}
         invoiceYear={selectedYear}
-        paidAmount={paidAmount}
+        payments={payments}
         isPaid={currentInvoice?.is_paid}
         onEditItem={handleEditItem}
         onDeleteItem={handleDeleteItem}
