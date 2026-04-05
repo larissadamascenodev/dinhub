@@ -5,6 +5,7 @@ import { Camera, ImageIcon, FileUp } from "lucide-react";
 import DashboardHeader from "@/components/dashboard/DashboardHeader";
 import MobileBottomNav from "@/components/dashboard/MobileBottomNav";
 import { useProfile } from "@/hooks/useProfile";
+import { useLoginStreak } from "@/hooks/useLoginStreak";
 import { MonthProvider } from "@/contexts/MonthContext";
 import NovaTransacaoModal from "@/components/dashboard/NovaTransacaoModal";
 import TransactionTypeChooser from "@/components/dashboard/TransactionTypeChooser";
@@ -18,6 +19,7 @@ import { toast } from "sonner";
 const DashboardLayout = () => {
   const { profile } = useProfile();
   const { user } = useAuth();
+  const { streak } = useLoginStreak();
   const [showTypeChooser, setShowTypeChooser] = useState(false);
   const [showModal, setShowModal] = useState(false);
   const [showTransferModal, setShowTransferModal] = useState(false);
@@ -148,7 +150,7 @@ const DashboardLayout = () => {
     <MonthProvider>
       <div className="dark min-h-screen bg-background text-foreground">
         <div className="w-full mx-auto px-4 md:px-6 lg:px-8 xl:px-12 pt-0 pb-24 md:pb-8">
-          <DashboardHeader profile={profile} />
+          <DashboardHeader profile={profile} streak={streak} />
           <Outlet context={{ profile }} />
         </div>
         <MobileBottomNav />
