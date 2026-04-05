@@ -591,8 +591,8 @@ const GestaoFinanceira = () => {
                             </p>
                           </div>
                           <div>
-                            <p className="text-[9px] text-muted-foreground uppercase tracking-widest font-medium mb-1.5">Fatura aberta</p>
-                            <p className={cn("text-sm font-bold tabular-nums", (openInvoices[card.id] || 0) > 0 ? "text-amber-400" : "text-muted-foreground")}>
+                            <p className="text-[7px] text-muted-foreground uppercase tracking-widest font-medium mb-1">Fatura aberta</p>
+                            <p className={cn("text-xs font-bold tabular-nums", (openInvoices[card.id] || 0) > 0 ? "text-amber-400" : "text-muted-foreground")}>
                               {formatCurrency(openInvoices[card.id] || 0)}
                             </p>
                           </div>
@@ -680,8 +680,8 @@ const GestaoFinanceira = () => {
                             </p>
                           </div>
                           <div>
-                            <p className="text-[9px] text-muted-foreground uppercase tracking-widest font-medium mb-1.5">Fatura aberta</p>
-                            <p className={cn("text-sm font-bold tabular-nums", (openInvoices[card.id] || 0) > 0 ? "text-amber-400" : "text-muted-foreground")}>
+                            <p className="text-[7px] text-muted-foreground uppercase tracking-widest font-medium mb-1">Fatura aberta</p>
+                            <p className={cn("text-xs font-bold tabular-nums", (openInvoices[card.id] || 0) > 0 ? "text-amber-400" : "text-muted-foreground")}>
                               {formatCurrency(openInvoices[card.id] || 0)}
                             </p>
                           </div>
