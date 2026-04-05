@@ -504,11 +504,6 @@ const FaturaCartao = () => {
             <p className="text-3xl font-extrabold text-foreground tracking-tight">
               {formatCurrency(outstanding)}
             </p>
-            {paidAmount > 0 && !currentInvoice?.is_paid && (
-              <p className="text-[10px] text-emerald-500 font-medium">
-                {formatCurrency(paidAmount)} pago de {formatCurrency(total)}
-              </p>
-            )}
             {dueInfo && invoiceStatus !== "paid" && (
               <span className={cn(
                 "text-[10px] font-semibold",
