@@ -264,7 +264,7 @@ const DashboardHeader = memo(({ profile, streak = 0 }: { profile?: { display_nam
             </button>
             <button className="flex items-center gap-1 px-2 py-1 rounded-full bg-warning/10 border border-warning/20">
               <Flame className="w-3 h-3 text-warning" />
-              <span className="text-[11px] font-bold text-warning">0</span>
+              <span className="text-[11px] font-bold text-warning">{streak}</span>
             </button>
           </div>
         </div>
