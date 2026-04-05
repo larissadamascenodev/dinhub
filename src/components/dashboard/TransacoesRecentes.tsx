@@ -218,9 +218,9 @@ const TransacoesRecentes = memo(({ transactions, onDelete }: Props) => {
                   height: "48px",
                   transformOrigin: "top center",
                   zIndex: STACK_COUNT - i,
-                  background: `hsl(220 15% ${16 + i * 3}% / 0.95)`,
-                  border: `1px solid hsl(220 15% ${24 + i * 4}% / 0.5)`,
-                  boxShadow: "0 2px 8px rgba(0,0,0,0.3)",
+                  background: `hsl(220 12% ${11 + i * 1.5}% / 0.95)`,
+                  border: `1px solid hsl(220 10% ${18 + i * 2}% / 0.4)`,
+                  boxShadow: `0 ${2 + i * 2}px ${8 + i * 4}px rgba(0,0,0,0.4)`,
                   borderRadius: "12px",
                 }}
               />
