@@ -1,6 +1,6 @@
-import { useRef } from "react";
+import { useRef, useState } from "react";
 import { motion, AnimatePresence } from "framer-motion";
-import { X, PenLine, ScanLine } from "lucide-react";
+import { X, PenLine, ScanLine, Camera, ImageIcon, FileUp, ChevronLeft } from "lucide-react";
 
 interface Props {
   open: boolean;
@@ -12,14 +12,19 @@ interface Props {
 }
 
 export default function InvoiceAddChooserModal({ open, onClose, onManual, onImage, onPdf, onCsv }: Props) {
-  const fileInputRef = useRef<HTMLInputElement>(null);
+  const cameraRef = useRef<HTMLInputElement>(null);
+  const galleryRef = useRef<HTMLInputElement>(null);
+  const fileRef = useRef<HTMLInputElement>(null);
+  const [showScanSub, setShowScanSub] = useState(false);
 
   if (!open) return null;
 
-  const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    const file = e.target.files?.[0];
-    if (!file) return;
+  const handleClose = () => {
+    setShowScanSub(false);
+    onClose();
+  };
 
+  const handleFileSelected = (file: File) => {
     const ext = file.name.split(".").pop()?.toLowerCase();
     if (ext === "pdf") {
       onPdf(file);
@@ -28,24 +33,52 @@ export default function InvoiceAddChooserModal({ open, onClose, onManual, onImag
     } else {
       onImage(file);
     }
-    onClose();
+    handleClose();
+  };
+
+  const handleInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0];
+    if (file) handleFileSelected(file);
     e.target.value = "";
   };
 
-  const options = [
+  const mainOptions = [
     {
       icon: PenLine,
       label: "Adicionar manualmente",
       description: "Preencha nome, valor, parcelas e categoria",
-      onClick: () => { onManual(); onClose(); },
+      onClick: () => { onManual(); handleClose(); },
     },
     {
       icon: ScanLine,
       label: "Escanear fatura",
-      description: "Importe via foto, PDF ou planilha CSV",
-      onClick: () => fileInputRef.current?.click(),
+      description: "Foto, galeria ou importar arquivo",
+      onClick: () => setShowScanSub(true),
     },
   ];
+
+  const scanOptions = [
+    {
+      icon: Camera,
+      label: "Tirar foto",
+      description: "Usar a câmera do celular",
+      onClick: () => cameraRef.current?.click(),
+    },
+    {
+      icon: ImageIcon,
+      label: "Galeria",
+      description: "Selecionar foto da galeria",
+      onClick: () => galleryRef.current?.click(),
+    },
+    {
+      icon: FileUp,
+      label: "Importar arquivo",
+      description: "PDF, planilha CSV ou Excel",
+      onClick: () => fileRef.current?.click(),
+    },
+  ];
+
+  const options = showScanSub ? scanOptions : mainOptions;
 
   return (
     <AnimatePresence>
@@ -54,7 +87,7 @@ export default function InvoiceAddChooserModal({ open, onClose, onManual, onImag
         animate={{ opacity: 1 }}
         exit={{ opacity: 0 }}
         className="fixed inset-0 z-[60] bg-black/60 backdrop-blur-sm flex items-end sm:items-center justify-center"
-        onClick={onClose}
+        onClick={handleClose}
       >
         <motion.div
           initial={{ y: "100%" }}
@@ -66,9 +99,21 @@ export default function InvoiceAddChooserModal({ open, onClose, onManual, onImag
         >
           <div className="p-5 pb-24 sm:pb-5 space-y-4">
             <div className="flex items-center justify-between">
-              <h2 className="text-sm font-bold text-foreground">Adicionar Lançamento</h2>
+              <div className="flex items-center gap-2">
+                {showScanSub && (
+                  <button
+                    onClick={() => setShowScanSub(false)}
+                    className="w-8 h-8 rounded-lg bg-muted/30 flex items-center justify-center text-muted-foreground hover:text-foreground transition-colors"
+                  >
+                    <ChevronLeft className="w-4 h-4" />
+                  </button>
+                )}
+                <h2 className="text-sm font-bold text-foreground">
+                  {showScanSub ? "Escanear fatura" : "Adicionar Lançamento"}
+                </h2>
+              </div>
               <button
-                onClick={onClose}
+                onClick={handleClose}
                 className="w-8 h-8 rounded-lg bg-muted/30 flex items-center justify-center text-muted-foreground hover:text-foreground transition-colors"
               >
                 <X className="w-4 h-4" />
@@ -98,15 +143,9 @@ export default function InvoiceAddChooserModal({ open, onClose, onManual, onImag
           </div>
         </motion.div>
 
-        {/* Single file input that accepts all types */}
-        <input
-          ref={fileInputRef}
-          type="file"
-          accept="image/*,.pdf,.csv,.xls,.xlsx"
-          capture="environment"
-          className="hidden"
-          onChange={handleFileChange}
-        />
+        <input ref={cameraRef} type="file" accept="image/*" capture="environment" className="hidden" onChange={handleInputChange} />
+        <input ref={galleryRef} type="file" accept="image/*" className="hidden" onChange={handleInputChange} />
+        <input ref={fileRef} type="file" accept=".pdf,.csv,.xls,.xlsx" className="hidden" onChange={handleInputChange} />
       </motion.div>
     </AnimatePresence>
   );
