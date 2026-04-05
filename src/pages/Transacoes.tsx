@@ -344,16 +344,14 @@ const Transacoes = () => {
       // Also check for invoices/recurring that exist but have no direct CC txs this month
       for (const card of (creditCards as any[])) {
         if (!faturaGroups.has(card.id)) {
-            const recurringCcForCard = recurringCcTxs.filter((t) => t.credit_card_id === card.id);
-            const recurringTotal = recurringCcForCard.reduce((s, t) => s + Number(t.amount), 0);
             const invoice = validInvoiceMap.get(card.id);
-            if (invoice && (Number(invoice.total_amount) > 0 || recurringTotal > 0)) {
+            if (invoice && Number(invoice.total_amount) > 0) {
               faturaEntries.push({
                 id: `fatura-${card.id}-${selectedMonth}-${selectedYear}`,
                 name: `Fatura ${card.name}`,
                 category: "Cartão de Crédito",
                 date: `${selectedYear}-${String(selectedMonth + 1).padStart(2, "0")}-${String(card.due_day || 1).padStart(2, "0")}`,
-                  amount: Number(invoice.total_amount) + recurringTotal,
+                  amount: Number(invoice.total_amount),
                 type: "despesa",
                   status: invoice.is_paid ? "pago" : "pendente",
                 payment_method: "cartao",
@@ -364,24 +362,7 @@ const Transacoes = () => {
                 account_id: null,
                 credit_card_id: card.id,
               });
-              } else if (recurringTotal > 0) {
-              faturaEntries.push({
-                id: `fatura-${card.id}-${selectedMonth}-${selectedYear}`,
-                name: `Fatura ${card.name}`,
-                category: "Cartão de Crédito",
-                date: `${selectedYear}-${String(selectedMonth + 1).padStart(2, "0")}-${String(card.due_day || 1).padStart(2, "0")}`,
-                amount: recurringTotal,
-                type: "despesa",
-                status: "pendente",
-                payment_method: "cartao",
-                recurrence_type: "unica",
-                installment_current: null,
-                installments: null,
-                observation: null,
-                account_id: null,
-                credit_card_id: card.id,
-              });
-              }
+            }
         }
       }
 
