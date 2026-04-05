@@ -384,7 +384,11 @@ const Transacoes = () => {
   useEffect(() => {
     const handler = () => fetchData();
     window.addEventListener("transaction-created", handler);
-    return () => window.removeEventListener("transaction-created", handler);
+    window.addEventListener("finance-data-changed", handler);
+    return () => {
+      window.removeEventListener("transaction-created", handler);
+      window.removeEventListener("finance-data-changed", handler);
+    };
   }, [fetchData]);
 
   const filtered = useMemo(() => {
