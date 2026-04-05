@@ -133,7 +133,7 @@ const TransactionDetailModal = ({ open, tx, accountName, onClose, onRefresh, use
     setLoading(true);
     try {
       await updateTransactionStatus(tx.id, "pago");
-      toast.success("Transação marcada como paga");
+      toast.success(isReceita ? "Receita marcada como recebida" : "Transação marcada como paga");
       onRefresh();
       handleClose();
     } catch {
