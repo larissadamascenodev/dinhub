@@ -1,6 +1,6 @@
 import { useState, useEffect } from "react";
 import { motion, AnimatePresence } from "framer-motion";
-import { X, CalendarClock, CalendarCheck, CreditCard, ChevronRight, Wallet } from "lucide-react";
+import { X, CalendarClock, CalendarCheck, CreditCard, ChevronRight, Wallet, CheckCircle2 } from "lucide-react";
 import { useNavigate } from "react-router-dom";
 import { toast } from "sonner";
 import { getInvoices, getInvoiceItems, payInvoice } from "@/services/invoiceService";
@@ -117,7 +117,7 @@ export default function FaturaDetailModal({ open, onClose, card, month, year, to
   let dueText = "";
   let dueUrgent = false;
   if (isPaid) {
-    dueText = "Fatura paga ✅";
+    dueText = "Fatura paga";
   } else if (diffDays < 0) {
     dueText = `Venceu há ${Math.abs(diffDays)} dias`;
     dueUrgent = true;
@@ -210,12 +210,19 @@ export default function FaturaDetailModal({ open, onClose, card, month, year, to
                   <p className="text-2xl font-extrabold text-foreground tracking-tight">
                     {fmt(totalAmount)}
                   </p>
-                  <span className={cn(
-                    "text-[10px] font-semibold",
-                    dueUrgent ? "text-destructive" : isPaid ? "text-primary" : "text-muted-foreground"
-                  )}>
-                    {dueText}
-                  </span>
+                  {isPaid ? (
+                    <span className="inline-flex items-center gap-1 text-[10px] font-semibold text-primary">
+                      <CheckCircle2 className="w-3.5 h-3.5" />
+                      {dueText}
+                    </span>
+                  ) : (
+                    <span className={cn(
+                      "text-[10px] font-semibold",
+                      dueUrgent ? "text-destructive" : "text-muted-foreground"
+                    )}>
+                      {dueText}
+                    </span>
+                  )}
                 </div>
               </div>
             </div>
