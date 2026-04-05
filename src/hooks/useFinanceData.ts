@@ -113,12 +113,13 @@ async function buildDashboardData(month: number, year: number): Promise<Dashboar
         (t) => t.payment_method === "cartao" && t.credit_card_id === cardId
       ).length;
 
+      const outstanding = Math.max(0, inv.total - inv.paidAmount);
       const entry: Transaction = {
         id: `fatura-${cardId}-${month}-${year}`,
         name: `Fatura ${cardName}`,
         category: "Cartão de Crédito",
         date: new Date(year, month, dueDay).toLocaleDateString("pt-BR", { day: "numeric", month: "short" }),
-        amount: inv.total,
+        amount: outstanding > 0 ? outstanding : inv.total,
         type: "despesa" as const,
         status: inv.isPaid ? "pago" : "pendente",
         isFatura: true,
