@@ -489,6 +489,10 @@ export type Database = {
         }
         Returns: string
       }
+      materialize_recurring_invoice_items: {
+        Args: { p_month: number; p_user_id: string; p_year: number }
+        Returns: undefined
+      }
       recalc_credit_card_used_limit: {
         Args: { p_credit_card_id: string }
         Returns: undefined
