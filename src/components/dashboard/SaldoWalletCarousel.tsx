@@ -1,5 +1,5 @@
 import { useState, useRef, useCallback, useEffect, memo } from "react";
-import { Scale, TrendingUp, Wallet, Landmark, CreditCard, Briefcase, ArrowRightLeft, ChevronRight } from "lucide-react";
+import { Scale, TrendingUp, CalendarCheck, Wallet, Landmark, CreditCard, Briefcase, ArrowRightLeft, ChevronRight } from "lucide-react";
 import { motion, AnimatePresence } from "framer-motion";
 import { useNavigate } from "react-router-dom";
 import { useFormattedCounter } from "@/hooks/useAnimatedCounter";
@@ -32,6 +32,7 @@ interface Props {
   saldoAtual: number;
   saldoPrevisto: number;
   isFutureMonth?: boolean;
+  isPastMonth?: boolean;
 }
 
 const slideVariants = {
@@ -40,7 +41,7 @@ const slideVariants = {
   exit: (dir: number) => ({ x: dir > 0 ? "-100%" : "100%", opacity: 0 }),
 };
 
-const SaldoWalletCarousel = memo(({ saldoAtual, saldoPrevisto, isFutureMonth }: Props) => {
+const SaldoWalletCarousel = memo(({ saldoAtual, saldoPrevisto, isFutureMonth, isPastMonth }: Props) => {
   const [page, setPage] = useState(0);
   const [direction, setDirection] = useState(0);
   const navigate = useNavigate();
@@ -129,6 +130,18 @@ const SaldoWalletCarousel = memo(({ saldoAtual, saldoPrevisto, isFutureMonth }: 
                       {animatedPrevisto}
                     </span>
                   </div>
+                </>
+              ) : isPastMonth ? (
+                <>
+                  <div className="flex items-center justify-between mb-2">
+                    <div className="flex items-center gap-1.5">
+                      <CalendarCheck className="w-3.5 h-3.5 text-muted-foreground" />
+                      <span className="text-[10px] text-muted-foreground uppercase tracking-[0.15em] font-semibold">Saldo ao final do mês</span>
+                    </div>
+                  </div>
+                  <p className={`font-display text-3xl font-bold tracking-tight tabular-nums leading-none ${saldoAtual >= 0 ? "text-foreground" : "text-destructive"} my-[7px]`}>
+                    {animatedSaldo}
+                  </p>
                 </>
               ) : (
                 <>

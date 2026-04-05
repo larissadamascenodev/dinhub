@@ -507,12 +507,12 @@ const Transacoes = () => {
 
       {/* Summary - desktop */}
       <motion.div initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }} className="hidden md:grid grid-cols-[1.4fr_1fr] gap-3">
-        <SaldoCard saldoAtual={financeData.saldoAtual} saldoPrevisto={financeData.saldoPrevisto} isFutureMonth={financeData.isFutureMonth} />
+        <SaldoCard saldoAtual={financeData.saldoAtual} saldoPrevisto={financeData.saldoPrevisto} isFutureMonth={financeData.isFutureMonth} isPastMonth={financeData.isPastMonth} />
         <ReceitasDespesasCards receitas={totals.receitas} receitasRecebidas={totals.receitasRecebidas} receitasPendentes={totals.receitasPendentes} despesas={totals.despesas} despesasPagas={totals.despesasPagas} despesasPendentes={totals.despesasPendentes} />
       </motion.div>
       {/* Summary - mobile */}
       <motion.div initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }} className="md:hidden space-y-2">
-        <SaldoCard saldoAtual={financeData.saldoAtual} saldoPrevisto={financeData.saldoPrevisto} isFutureMonth={financeData.isFutureMonth} mobile />
+        <SaldoCard saldoAtual={financeData.saldoAtual} saldoPrevisto={financeData.saldoPrevisto} isFutureMonth={financeData.isFutureMonth} isPastMonth={financeData.isPastMonth} mobile />
         <ReceitasDespesasCards receitas={totals.receitas} receitasRecebidas={totals.receitasRecebidas} receitasPendentes={totals.receitasPendentes} despesas={totals.despesas} despesasPagas={totals.despesasPagas} despesasPendentes={totals.despesasPendentes} mobile />
       </motion.div>
 

@@ -206,7 +206,11 @@ async function buildDashboardData(month: number, year: number): Promise<Dashboar
     icon: CAT_ICONS[name] ?? "📋",
   }));
 
-  const saldoAtual = summary.isFutureMonth ? summary.previousMonthEndingBalance : summary.accountBalance;
+  const saldoAtual = summary.isFutureMonth
+    ? summary.previousMonthEndingBalance
+    : summary.isPastMonth
+      ? summary.predictedBalance
+      : summary.accountBalance;
 
   return {
     saldoAtual,

@@ -1,15 +1,16 @@
 import { memo } from "react";
-import { Scale, TrendingUp } from "lucide-react";
+import { Scale, TrendingUp, CalendarCheck } from "lucide-react";
 import { useFormattedCounter } from "@/hooks/useAnimatedCounter";
 
 interface SaldoCardProps {
   saldoAtual: number;
   saldoPrevisto: number;
   isFutureMonth?: boolean;
+  isPastMonth?: boolean;
   mobile?: boolean;
 }
 
-const SaldoCard = memo(({ saldoAtual, saldoPrevisto, isFutureMonth, mobile }: SaldoCardProps) => {
+const SaldoCard = memo(({ saldoAtual, saldoPrevisto, isFutureMonth, isPastMonth, mobile }: SaldoCardProps) => {
   const animatedSaldo = useFormattedCounter(saldoAtual);
   const animatedPrevisto = useFormattedCounter(saldoPrevisto);
 
@@ -21,7 +22,6 @@ const SaldoCard = memo(({ saldoAtual, saldoPrevisto, isFutureMonth, mobile }: Sa
       <div>
         {isFutureMonth ? (
           <>
-            {/* Future month: show starting balance + end projection */}
             <div className="flex items-center justify-between mb-2">
               <div className="flex items-center gap-1.5">
                 <TrendingUp className="w-3.5 h-3.5 text-primary" />
@@ -39,9 +39,20 @@ const SaldoCard = memo(({ saldoAtual, saldoPrevisto, isFutureMonth, mobile }: Sa
               </span>
             </div>
           </>
+        ) : isPastMonth ? (
+          <>
+            <div className="flex items-center justify-between mb-2">
+              <div className="flex items-center gap-1.5">
+                <CalendarCheck className="w-3.5 h-3.5 text-muted-foreground" />
+                <span className="text-[10px] text-muted-foreground uppercase tracking-[0.15em] font-semibold">Saldo ao final do mês</span>
+              </div>
+            </div>
+            <p className={`font-display ${mobile ? "text-3xl" : "text-4xl"} font-bold tracking-tight tabular-nums leading-none ${saldoAtual >= 0 ? "text-foreground" : "text-destructive"} my-[7px]`}>
+              {animatedSaldo}
+            </p>
+          </>
         ) : (
           <>
-            {/* Current/past month: show available balance + end prediction */}
             <div className="flex items-center justify-between mb-2">
               <div className="flex items-center gap-1.5">
                 <Scale className="w-3.5 h-3.5 text-muted-foreground" />
