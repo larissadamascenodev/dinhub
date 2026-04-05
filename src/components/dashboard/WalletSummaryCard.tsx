@@ -82,9 +82,9 @@ const WalletSummaryCard = () => {
       </div>
 
       {/* Patrimônio total - desktop only */}
-      <div className="relative text-center py-2 hidden md:block">
-        <p className="text-[9px] text-muted-foreground uppercase tracking-widest mb-1">Patrimônio Total</p>
-        <p className={cn("text-xl font-bold tabular-nums", patrimonio >= 0 ? "text-primary" : "text-destructive")}>
+      <div className="relative text-center py-1 hidden md:block">
+        <p className="text-[9px] text-muted-foreground uppercase tracking-widest mb-0.5">Patrimônio Total</p>
+        <p className={cn("text-lg font-bold tabular-nums", patrimonio >= 0 ? "text-primary" : "text-destructive")}>
           {formatCurrency(patrimonio)}
         </p>
       </div>
