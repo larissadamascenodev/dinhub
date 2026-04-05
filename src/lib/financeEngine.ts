@@ -81,6 +81,20 @@ async function fetchMonthTransactions(month: number, year: number) {
 
   let baseTxs = (data ?? []) as RawTransaction[];
 
+  // Filter out credit card transactions for months where no invoice items exist
+  // (pre-start-date transactions that serve only as installment base)
+  const cardsWithInvoice = new Set(
+    (invoicesData ?? [])
+      .filter((inv: any) => Number(inv.total_amount) > 0)
+      .map((inv: any) => inv.credit_card_id)
+  );
+  baseTxs = baseTxs.filter((t) => {
+    if (t.payment_method === "cartao" && t.credit_card_id) {
+      return cardsWithInvoice.has(t.credit_card_id);
+    }
+    return true;
+  });
+
   // Filter out fixa transactions that have been excluded for this month
   const fixaIds = baseTxs.filter((t) => t.recurrence_type === "fixa").map((t) => t.id);
   if (fixaIds.length > 0) {
