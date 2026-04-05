@@ -400,9 +400,6 @@ export async function getFinancialSummary(
         paidAfter += futAgg.paidIncome - (futAgg.paidExpense + futInv.invoicePaidExpense);
       }
     }
-      chainMonth++;
-      if (chainMonth > 11) { chainMonth = 0; chainYear++; }
-    }
 
     previousMonthEndingBalance = (accountBalance - paidAfter) - balance;
   }
