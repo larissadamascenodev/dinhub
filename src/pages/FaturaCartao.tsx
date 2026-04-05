@@ -163,8 +163,12 @@ const FaturaCartao = () => {
       const modeLabel = details.mode === "total" ? "integralmente" : details.mode === "minimo" ? "parcialmente" : "parcelada";
       toast.success(`Fatura paga ${modeLabel}! ✅`);
       setShowPayModal(false);
-      const updated = await getInvoices(cardId!);
+      const [updated, cards] = await Promise.all([getInvoices(cardId!), getCreditCards()]);
       setInvoices(updated);
+      const typedCards = cards as unknown as CreditCardInfo[];
+      const foundCard = typedCards.find((c) => c.id === cardId);
+      setCard(foundCard ?? null);
+      window.dispatchEvent(new CustomEvent("finance-data-changed"));
     } catch (err: any) {
       toast.error(err?.message ?? "Erro ao pagar fatura");
     } finally {

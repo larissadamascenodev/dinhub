@@ -35,10 +35,14 @@ const WalletSummaryCard = () => {
 
   useEffect(() => {
     if (!user) return;
-    Promise.all([getAccounts(), getCreditCards()]).then(([accs, cds]) => {
+    const load = () => Promise.all([getAccounts(), getCreditCards()]).then(([accs, cds]) => {
       setAccounts(accs as unknown as Account[]);
       setCards(cds as unknown as CreditCardItem[]);
     });
+    load();
+    const onChange = () => load();
+    window.addEventListener("finance-data-changed", onChange);
+    return () => window.removeEventListener("finance-data-changed", onChange);
   }, [user]);
 
   const bankAccounts = accounts.filter(a => a.type !== "investment");

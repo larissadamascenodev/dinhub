@@ -195,6 +195,9 @@ const GestaoFinanceira = () => {
 
   useEffect(() => {
     fetchData();
+    const onChange = () => fetchData();
+    window.addEventListener("finance-data-changed", onChange);
+    return () => window.removeEventListener("finance-data-changed", onChange);
   }, [user]);
 
   const resetAddAccount = () => {
