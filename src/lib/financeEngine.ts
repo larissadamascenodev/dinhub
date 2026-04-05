@@ -67,7 +67,8 @@ async function fetchMonthTransactions(month: number, year: number) {
       .select("*")
       .gte("date", start)
       .lte("date", end)
-      .order("date", { ascending: false }),
+      .order("date", { ascending: false })
+      .order("created_at", { ascending: false }),
     getRecurringForMonth(month, year),
     // Fetch invoices for this month to filter out CC transactions with no invoice items
     supabase
