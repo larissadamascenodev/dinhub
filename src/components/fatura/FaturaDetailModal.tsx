@@ -117,7 +117,7 @@ export default function FaturaDetailModal({ open, onClose, card, month, year, to
   let dueText = "";
   let dueUrgent = false;
   if (isPaid) {
-    dueText = "Fatura paga ✅";
+    dueText = "Fatura paga";
   } else if (diffDays < 0) {
     dueText = `Venceu há ${Math.abs(diffDays)} dias`;
     dueUrgent = true;
