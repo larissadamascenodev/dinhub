@@ -71,7 +71,7 @@ async function buildDashboardData(month: number, year: number): Promise<Dashboar
     ])
   );
 
-  const cardMap = new Map((creditCards as any[]).map((c: any) => [c.id, c.name]));
+  const cardMap = new Map((creditCards as any[]).map((c: any) => [c.id, { name: c.name, due_day: c.due_day }]));
 
   // Build a set of card IDs that have actual invoice items for this month (total > 0)
   const cardsWithInvoice = new Set(
