@@ -411,7 +411,7 @@ const FaturaCartao = () => {
               <Pencil className="w-3.5 h-3.5" />
               Editar cartão
             </DropdownMenuItem>
-            {currentInvoice && currentInvoice.is_paid && Number(currentInvoice.paid_amount ?? 0) > 0 && (
+            {currentInvoice && Number(currentInvoice.paid_amount ?? 0) > 0 && (
               <DropdownMenuItem
                 onClick={async () => {
                   try {
