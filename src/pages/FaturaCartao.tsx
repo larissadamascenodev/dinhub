@@ -498,8 +498,13 @@ const FaturaCartao = () => {
               Fatura de {MONTH_NAMES[selectedMonth - 1]}
             </p>
             <p className="text-3xl font-extrabold text-foreground tracking-tight">
-              {formatCurrency(total)}
+              {formatCurrency(outstanding)}
             </p>
+            {paidAmount > 0 && !currentInvoice?.is_paid && (
+              <p className="text-[10px] text-emerald-500 font-medium">
+                {formatCurrency(paidAmount)} pago de {formatCurrency(total)}
+              </p>
+            )}
             {dueInfo && invoiceStatus !== "paid" && (
               <span className={cn(
                 "text-[10px] font-semibold",
