@@ -57,7 +57,7 @@ async function buildDashboardData(month: number, year: number): Promise<Dashboar
       // Fetch invoices for this month with total_amount and item count
       supabase
         .from("invoices")
-        .select("credit_card_id, total_amount, is_paid")
+        .select("credit_card_id, total_amount, is_paid, paid_amount")
         .eq("month", month + 1) // DB stores 1-based months
         .eq("year", year)
         .then(({ data }) => data ?? []),
@@ -67,7 +67,7 @@ async function buildDashboardData(month: number, year: number): Promise<Dashboar
   const invoiceByCard = new Map(
     (invoicesForMonth as any[]).map((inv: any) => [
       inv.credit_card_id,
-      { total: Number(inv.total_amount), isPaid: inv.is_paid },
+      { total: Number(inv.total_amount), isPaid: inv.is_paid, paidAmount: Number(inv.paid_amount ?? 0) },
     ])
   );
 
@@ -113,12 +113,13 @@ async function buildDashboardData(month: number, year: number): Promise<Dashboar
         (t) => t.payment_method === "cartao" && t.credit_card_id === cardId
       ).length;
 
+      const outstanding = Math.max(0, inv.total - inv.paidAmount);
       const entry: Transaction = {
         id: `fatura-${cardId}-${month}-${year}`,
         name: `Fatura ${cardName}`,
         category: "Cartão de Crédito",
         date: new Date(year, month, dueDay).toLocaleDateString("pt-BR", { day: "numeric", month: "short" }),
-        amount: inv.total,
+        amount: outstanding > 0 ? outstanding : inv.total,
         type: "despesa" as const,
         status: inv.isPaid ? "pago" : "pendente",
         isFatura: true,
