@@ -61,8 +61,8 @@ export default function FaturaDetailModal({ open, onClose, card, month, year, to
   const [paying, setPaying] = useState(false);
   const [invoiceId, setInvoiceId] = useState<string | null>(null);
 
-  // Track paid_amount for partial payment display
   const [paidAmount, setPaidAmount] = useState(0);
+  const [invoicePayments, setInvoicePayments] = useState<InvoicePayment[]>([]);
 
   useEffect(() => {
     if (!open || !card) return;
