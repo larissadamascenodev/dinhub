@@ -7,6 +7,7 @@ import { useGreeting } from "@/components/dashboard/DashboardHeader";
 import SaldoCard from "@/components/dashboard/SaldoCard";
 import ReceitasDespesasCards from "@/components/dashboard/ReceitasDespesasCards";
 import BalancoCard from "@/components/dashboard/BalancoCard";
+import SaldoWalletCarousel from "@/components/dashboard/SaldoWalletCarousel";
 import MicroInteracoesCard from "@/components/dashboard/MicroInteracoesCard";
 import TransacoesRecentes from "@/components/dashboard/TransacoesRecentes";
 import ProximosEventos from "@/components/dashboard/ProximosEventos";
