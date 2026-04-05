@@ -1,24 +1,14 @@
 import { memo, useMemo } from "react";
 import { useNavigate } from "react-router-dom";
-import { TrendingUp, TrendingDown, ChevronRight, ArrowUpRight, ArrowDownRight } from "lucide-react";
+import { TrendingUp, TrendingDown, ChevronRight } from "lucide-react";
 import { motion } from "framer-motion";
 import { cn } from "@/lib/utils";
 import { useFinancialProjection } from "@/hooks/useFinancialProjection";
 
-interface Props {
-  saldoAtual: number;
-  saldoPrevisto: number;
-  balanco: number;
-}
-
-const fmt = (v: number) =>
-  v.toLocaleString("pt-BR", { style: "currency", currency: "BRL" });
-
-const ProjectionCard = memo(({ saldoAtual, saldoPrevisto, balanco }: Props) => {
+const ProjectionCard = memo(() => {
   const navigate = useNavigate();
   const { projections } = useFinancialProjection();
 
-  // Take first 6 months for mini sparkline
   const points = useMemo(() => {
     const slice = projections.slice(0, 6);
     if (!slice.length) return [];
@@ -28,23 +18,26 @@ const ProjectionCard = memo(({ saldoAtual, saldoPrevisto, balanco }: Props) => {
     const range = max - min || 1;
     return values.map((v, i) => ({
       x: (i / Math.max(slice.length - 1, 1)) * 100,
-      y: 100 - ((v - min) / range) * 100,
+      y: 100 - ((v - min) / range) * 80 - 10, // 10-90 range
     }));
   }, [projections]);
 
   const trend = projections.length >= 2
     ? projections[projections.length - 1].balance - projections[0].balance
-    : balanco;
+    : 0;
   const isPositive = trend >= 0;
 
-  // Build SVG path
   const pathD = points.length > 1
     ? points.map((p, i) => `${i === 0 ? "M" : "L"} ${p.x} ${p.y}`).join(" ")
     : "";
+  const areaD = pathD ? `${pathD} L 100 100 L 0 100 Z` : "";
 
-  const areaD = pathD
-    ? `${pathD} L 100 100 L 0 100 Z`
-    : "";
+  const months = useMemo(() => {
+    return projections.slice(0, 6).map((p) => {
+      const d = new Date(p.year, p.month);
+      return d.toLocaleDateString("pt-BR", { month: "short" }).replace(".", "");
+    });
+  }, [projections]);
 
   return (
     <motion.div
@@ -58,30 +51,9 @@ const ProjectionCard = memo(({ saldoAtual, saldoPrevisto, balanco }: Props) => {
       }}
       onClick={() => navigate("/bot-finance/projecoes")}
     >
-      {/* Mini sparkline background */}
-      <div className="absolute inset-0 opacity-20 pointer-events-none">
-        <svg viewBox="0 0 100 100" preserveAspectRatio="none" className="w-full h-full">
-          {areaD && (
-            <path
-              d={areaD}
-              fill={isPositive ? "hsl(150 100% 45% / 0.3)" : "hsl(0 60% 50% / 0.3)"}
-            />
-          )}
-          {pathD && (
-            <path
-              d={pathD}
-              fill="none"
-              stroke={isPositive ? "hsl(150 100% 45%)" : "hsl(0 60% 50%)"}
-              strokeWidth="2"
-              vectorEffect="non-scaling-stroke"
-            />
-          )}
-        </svg>
-      </div>
-
-      <div className="relative p-3 md:p-4 space-y-2.5">
+      <div className="relative p-3 md:p-4">
         {/* Header */}
-        <div className="flex items-center justify-between">
+        <div className="flex items-center justify-between mb-3">
           <div className="flex items-center gap-2">
             <div className={cn(
               "w-8 h-8 rounded-xl flex items-center justify-center",
@@ -94,45 +66,67 @@ const ProjectionCard = memo(({ saldoAtual, saldoPrevisto, balanco }: Props) => {
             </div>
             <div>
               <h3 className="text-[11px] font-semibold font-display leading-tight">Projeções</h3>
-              <p className="text-[9px] text-muted-foreground leading-tight">Próximos 6 meses</p>
+              <p className="text-[9px] text-muted-foreground leading-tight">
+                {isPositive ? "Tendência positiva" : "Tendência de queda"}
+              </p>
             </div>
           </div>
-          <ChevronRight className="w-4 h-4 text-muted-foreground/30 group-hover:text-primary transition-colors" />
         </div>
 
-        {/* Values row */}
-        <div className="grid grid-cols-2 gap-2">
-          <div className="bg-secondary/30 rounded-lg px-2.5 py-2">
-            <p className="text-[8px] uppercase tracking-wider text-muted-foreground font-medium mb-0.5">Atual</p>
-            <p className="text-xs font-bold tabular-nums text-foreground leading-tight">{fmt(saldoAtual)}</p>
-          </div>
-          <div className="bg-secondary/30 rounded-lg px-2.5 py-2">
-            <p className="text-[8px] uppercase tracking-wider text-muted-foreground font-medium mb-0.5">Previsto</p>
-            <p className={cn(
-              "text-xs font-bold tabular-nums leading-tight",
-              saldoPrevisto >= 0 ? "text-primary" : "text-destructive"
-            )}>
-              {fmt(saldoPrevisto)}
-            </p>
-          </div>
+        {/* Mini chart */}
+        <div className="h-14 md:h-16 w-full relative">
+          <svg viewBox="0 0 100 100" preserveAspectRatio="none" className="w-full h-full">
+            <defs>
+              <linearGradient id="projGrad" x1="0" y1="0" x2="0" y2="1">
+                <stop offset="0%" stopColor={isPositive ? "hsl(150 100% 45%)" : "hsl(0 60% 50%)"} stopOpacity="0.25" />
+                <stop offset="100%" stopColor={isPositive ? "hsl(150 100% 45%)" : "hsl(0 60% 50%)"} stopOpacity="0" />
+              </linearGradient>
+            </defs>
+            {areaD && <path d={areaD} fill="url(#projGrad)" />}
+            {pathD && (
+              <path
+                d={pathD}
+                fill="none"
+                stroke={isPositive ? "hsl(150 100% 45%)" : "hsl(0 60% 50%)"}
+                strokeWidth="2.5"
+                strokeLinecap="round"
+                strokeLinejoin="round"
+                vectorEffect="non-scaling-stroke"
+              />
+            )}
+            {/* Dots */}
+            {points.map((p, i) => (
+              <circle
+                key={i}
+                cx={p.x}
+                cy={p.y}
+                r="3"
+                fill={i === 0 ? "hsl(220 15% 92%)" : isPositive ? "hsl(150 100% 45%)" : "hsl(0 60% 50%)"}
+                stroke="hsl(220 20% 8%)"
+                strokeWidth="1.5"
+                vectorEffect="non-scaling-stroke"
+              />
+            ))}
+          </svg>
+          {/* Month labels */}
+          {months.length > 0 && (
+            <div className="absolute bottom-0 left-0 right-0 flex justify-between translate-y-4">
+              {months.map((m, i) => (
+                <span key={i} className={cn(
+                  "text-[7px] md:text-[8px] uppercase tracking-wider",
+                  i === 0 ? "text-foreground/60 font-medium" : "text-muted-foreground/40"
+                )}>{m}</span>
+              ))}
+            </div>
+          )}
         </div>
 
-        {/* Trend badge */}
-        <div className={cn(
-          "flex items-center justify-center gap-1.5 rounded-lg px-3 py-1.5",
-          isPositive ? "bg-primary/8" : "bg-destructive/8"
-        )}>
-          {isPositive
-            ? <ArrowUpRight className="w-3.5 h-3.5 text-primary" />
-            : <ArrowDownRight className="w-3.5 h-3.5 text-destructive" />
-          }
-          <span className={cn(
-            "text-[10px] font-semibold",
-            isPositive ? "text-primary" : "text-destructive"
-          )}>
-            {isPositive ? "Tendência positiva" : "Tendência negativa"}
-            <span className="ml-1 opacity-70">({fmt(Math.abs(trend))})</span>
+        {/* CTA */}
+        <div className="flex items-center justify-center gap-1.5 mt-6 pt-2 border-t border-border/10">
+          <span className="text-[10px] md:text-[11px] text-muted-foreground group-hover:text-primary transition-colors font-medium">
+            Ver projeção completa
           </span>
+          <ChevronRight className="w-3.5 h-3.5 text-muted-foreground/40 group-hover:text-primary transition-colors" />
         </div>
       </div>
     </motion.div>
