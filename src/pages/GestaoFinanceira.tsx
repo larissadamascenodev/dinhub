@@ -194,10 +194,22 @@ const GestaoFinanceira = () => {
   };
 
   useEffect(() => {
+    if (!user) return;
     fetchData();
     const onChange = () => fetchData();
     window.addEventListener("finance-data-changed", onChange);
-    return () => window.removeEventListener("finance-data-changed", onChange);
+
+    const channel = supabase
+      .channel("gestao-realtime")
+      .on("postgres_changes", { event: "*", schema: "public", table: "credit_cards", filter: `user_id=eq.${user.id}` }, () => fetchData())
+      .on("postgres_changes", { event: "*", schema: "public", table: "invoices", filter: `user_id=eq.${user.id}` }, () => fetchData())
+      .on("postgres_changes", { event: "*", schema: "public", table: "accounts", filter: `user_id=eq.${user.id}` }, () => fetchData())
+      .subscribe();
+
+    return () => {
+      window.removeEventListener("finance-data-changed", onChange);
+      supabase.removeChannel(channel);
+    };
   }, [user]);
 
   const resetAddAccount = () => {
