@@ -222,22 +222,30 @@ async function fetchHistoricalAverages(
   currentYear: number,
   months: number = 3
 ): Promise<{ avgIncome: number; avgExpense: number }> {
+  // Build month/year pairs
+  const periods: { m: number; y: number }[] = [];
+  for (let i = 1; i <= months; i++) {
+    let m = currentMonth - i;
+    let y = currentYear;
+    while (m < 0) { m += 12; y -= 1; }
+    periods.push({ m, y });
+  }
+
+  // Fetch ALL historical months in parallel (skip materialize for historical)
+  const results = await Promise.all(
+    periods.map(({ m, y }) =>
+      Promise.all([
+        fetchMonthTransactions(m, y, { skipMaterialize: true }),
+        fetchInvoiceTotalsForMonth(m, y),
+      ])
+    )
+  );
+
   let totalIncome = 0;
   let totalExpense = 0;
   let validMonths = 0;
 
-  for (let i = 1; i <= months; i++) {
-    let m = currentMonth - i;
-    let y = currentYear;
-    while (m < 0) {
-      m += 12;
-      y -= 1;
-    }
-
-    const [txs, inv] = await Promise.all([
-      fetchMonthTransactions(m, y),
-      fetchInvoiceTotalsForMonth(m, y),
-    ]);
+  for (const [txs, inv] of results) {
     if (txs.length > 0 || inv.invoiceExpense > 0) {
       const agg = aggregate(txs);
       totalIncome += agg.paidIncome;
