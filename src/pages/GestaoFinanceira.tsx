@@ -174,15 +174,15 @@ const GestaoFinanceira = () => {
       const now = new Date();
       const { data: invoices } = await supabase
         .from("invoices")
-        .select("credit_card_id, total_amount, is_paid, month, year")
+        .select("credit_card_id, total_amount, paid_amount, is_paid, month, year")
         .eq("is_paid", false)
         .eq("month", now.getMonth() + 1)
         .eq("year", now.getFullYear());
 
       const invoiceMap: Record<string, number> = {};
       if (invoices) {
-        for (const inv of invoices as unknown as InvoiceData[]) {
-          invoiceMap[inv.credit_card_id] = Number(inv.total_amount);
+        for (const inv of invoices as unknown as (InvoiceData & { paid_amount?: number })[]) {
+          invoiceMap[inv.credit_card_id] = Math.max(0, Number(inv.total_amount) - Number(inv.paid_amount ?? 0));
         }
       }
       setOpenInvoices(invoiceMap);
@@ -195,6 +195,9 @@ const GestaoFinanceira = () => {
 
   useEffect(() => {
     fetchData();
+    const onChange = () => fetchData();
+    window.addEventListener("finance-data-changed", onChange);
+    return () => window.removeEventListener("finance-data-changed", onChange);
   }, [user]);
 
   const resetAddAccount = () => {
