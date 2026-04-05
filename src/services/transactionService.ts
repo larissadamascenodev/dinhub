@@ -104,7 +104,8 @@ export async function getTransactions(filters: TransactionFilters = {}) {
   let query = supabase
     .from("transactions")
     .select("*")
-    .order("date", { ascending: false });
+    .order("date", { ascending: false })
+    .order("created_at", { ascending: false });
 
   if (filters.month !== undefined && filters.year !== undefined) {
     const start = new Date(filters.year, filters.month, 1).toISOString().split("T")[0];
