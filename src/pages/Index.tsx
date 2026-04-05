@@ -1,7 +1,7 @@
 import { useState, useCallback, useEffect } from "react";
 import { useNavigate, useOutletContext } from "react-router-dom";
 import { motion } from "framer-motion";
-import { TrendingUp, ChevronRight } from "lucide-react";
+import ProjectionCard from "@/components/dashboard/ProjectionCard";
 import WalletSummaryCard from "@/components/dashboard/WalletSummaryCard";
 import { useGreeting } from "@/components/dashboard/DashboardHeader";
 import SaldoCard from "@/components/dashboard/SaldoCard";
