@@ -55,26 +55,34 @@ const WalletSummaryCard = () => {
       initial={{ opacity: 0, y: 10 }}
       animate={{ opacity: 1, y: 0 }}
       transition={{ delay: 0.1 }}
-      className="relative overflow-hidden rounded-2xl border border-primary/10 bg-primary/[0.04] backdrop-blur-xl p-4 space-y-3 group cursor-pointer"
+      className="relative overflow-hidden rounded-2xl border border-primary/10 bg-primary/[0.04] backdrop-blur-xl p-3 md:p-4 space-y-2 md:space-y-3 group cursor-pointer"
       onClick={() => navigate("/gestao")}
     >
       {/* Glassmorphism decorative elements */}
       <div className="absolute -right-8 -top-8 w-24 h-24 rounded-full bg-primary/[0.06] blur-xl" />
       <div className="absolute -left-4 -bottom-4 w-16 h-16 rounded-full bg-primary/[0.04] blur-lg" />
 
-      {/* Header */}
+      {/* Header + Patrimônio inline on mobile */}
       <div className="relative flex items-center justify-between">
         <div className="flex items-center gap-2">
-          <div className="w-8 h-8 rounded-xl bg-primary/15 flex items-center justify-center backdrop-blur-sm">
-            <Wallet className="w-4 h-4 text-primary" />
+          <div className="w-7 h-7 md:w-8 md:h-8 rounded-xl bg-primary/15 flex items-center justify-center backdrop-blur-sm">
+            <Wallet className="w-3.5 h-3.5 md:w-4 md:h-4 text-primary" />
           </div>
-          <h3 className="text-xs font-semibold font-display text-primary">Minha Carteira</h3>
+          <div>
+            <h3 className="text-xs font-semibold font-display text-primary leading-none">Minha Carteira</h3>
+            <p className="text-[9px] text-muted-foreground uppercase tracking-wider mt-0.5 md:hidden">Patrimônio Total</p>
+          </div>
         </div>
-        <ChevronRight className="w-4 h-4 text-primary/30 group-hover:text-primary transition-colors" />
+        <div className="flex items-center gap-2">
+          <p className={cn("text-base font-bold tabular-nums md:hidden", patrimonio >= 0 ? "text-primary" : "text-destructive")}>
+            {formatCurrency(patrimonio)}
+          </p>
+          <ChevronRight className="w-4 h-4 text-primary/30 group-hover:text-primary transition-colors" />
+        </div>
       </div>
 
-      {/* Patrimônio total */}
-      <div className="relative text-center py-2">
+      {/* Patrimônio total - desktop only */}
+      <div className="relative text-center py-2 hidden md:block">
         <p className="text-[9px] text-muted-foreground uppercase tracking-widest mb-1">Patrimônio Total</p>
         <p className={cn("text-xl font-bold tabular-nums", patrimonio >= 0 ? "text-primary" : "text-destructive")}>
           {formatCurrency(patrimonio)}
@@ -82,32 +90,32 @@ const WalletSummaryCard = () => {
       </div>
 
       {/* Stats row */}
-      <div className="relative grid grid-cols-3 gap-1.5">
-        <div className="bg-background/40 backdrop-blur-sm rounded-xl p-2 text-center border border-border/10">
+      <div className="relative grid grid-cols-3 gap-1">
+        <div className="bg-background/40 backdrop-blur-sm rounded-lg md:rounded-xl p-1.5 md:p-2 text-center border border-border/10">
           <Landmark className="w-3 h-3 text-primary/60 mx-auto mb-0.5" />
           <p className="text-[8px] text-muted-foreground leading-tight">Contas</p>
-          <p className={cn("text-[11px] font-bold tabular-nums mt-0.5", totalBalance >= 0 ? "text-primary" : "text-destructive")}>
+          <p className={cn("text-[10px] md:text-[11px] font-bold tabular-nums mt-0.5", totalBalance >= 0 ? "text-primary" : "text-destructive")}>
             {formatCurrency(totalBalance)}
           </p>
         </div>
-        <div className="bg-background/40 backdrop-blur-sm rounded-xl p-2 text-center border border-border/10">
+        <div className="bg-background/40 backdrop-blur-sm rounded-lg md:rounded-xl p-1.5 md:p-2 text-center border border-border/10">
           <CreditCard className="w-3 h-3 text-primary/60 mx-auto mb-0.5" />
           <p className="text-[8px] text-muted-foreground leading-tight">Crédito</p>
-          <p className="text-[11px] font-bold tabular-nums text-foreground mt-0.5">
+          <p className="text-[10px] md:text-[11px] font-bold tabular-nums text-foreground mt-0.5">
             {formatCurrency(totalAvailable)}
           </p>
         </div>
-        <div className="bg-background/40 backdrop-blur-sm rounded-xl p-2 text-center border border-border/10">
+        <div className="bg-background/40 backdrop-blur-sm rounded-lg md:rounded-xl p-1.5 md:p-2 text-center border border-border/10">
           <Briefcase className="w-3 h-3 text-primary/60 mx-auto mb-0.5" />
           <p className="text-[8px] text-muted-foreground leading-tight">Investimentos</p>
-          <p className={cn("text-[11px] font-bold tabular-nums mt-0.5", totalInvested > 0 ? "text-foreground" : "text-muted-foreground")}>
+          <p className={cn("text-[10px] md:text-[11px] font-bold tabular-nums mt-0.5", totalInvested > 0 ? "text-foreground" : "text-muted-foreground")}>
             {totalInvested > 0 ? formatCurrency(totalInvested) : "R$ 0,00"}
           </p>
         </div>
       </div>
 
       {/* Quick actions */}
-      <div className="relative flex items-center justify-center gap-3 pt-1">
+      <div className="relative flex items-center justify-center gap-3 pt-0.5 md:pt-1">
         <button
           onClick={(e) => {
             e.stopPropagation();
@@ -122,7 +130,6 @@ const WalletSummaryCard = () => {
         <span className="text-[10px] text-muted-foreground group-hover:text-primary transition-colors">
           Gerenciar carteira
         </span>
-        <ChevronRight className="w-3 h-3 text-muted-foreground/40 group-hover:text-primary transition-colors" />
       </div>
     </motion.div>
   );
