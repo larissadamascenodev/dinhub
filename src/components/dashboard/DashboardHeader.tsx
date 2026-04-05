@@ -252,19 +252,19 @@ const DashboardHeader = memo(({ profile }: { profile?: { display_name: string | 
               <span className="text-primary">Hub</span>
             </span>
           </div>
-          <div className="flex items-center gap-1.5">
+          <div className="flex items-center gap-1 bg-card/60 backdrop-blur-xl border border-border/20 rounded-full px-1.5 py-1">
             <button
               onClick={() => navigate("/gestao")}
-              className="w-8 h-8 rounded-full border border-border/30 flex items-center justify-center text-muted-foreground hover:text-foreground transition-colors"
+              className="w-7 h-7 rounded-full flex items-center justify-center text-muted-foreground hover:text-foreground transition-colors"
             >
-              <Wallet className="h-4 w-4" />
+              <Wallet className="h-3.5 w-3.5" />
             </button>
-            <button className="w-8 h-8 rounded-full border border-border/30 flex items-center justify-center text-muted-foreground">
-              <Bell className="h-4 w-4" />
+            <button className="w-7 h-7 rounded-full flex items-center justify-center text-muted-foreground">
+              <Bell className="h-3.5 w-3.5" />
             </button>
-            <button className="flex items-center gap-1 px-2.5 py-1.5 rounded-full bg-warning/10 border border-warning/20">
-              <Flame className="w-3.5 h-3.5 text-warning" />
-              <span className="text-xs font-bold text-warning">0</span>
+            <button className="flex items-center gap-1 px-2 py-1 rounded-full bg-warning/10 border border-warning/20">
+              <Flame className="w-3 h-3 text-warning" />
+              <span className="text-[11px] font-bold text-warning">0</span>
             </button>
           </div>
         </div>
