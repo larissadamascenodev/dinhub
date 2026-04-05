@@ -245,10 +245,16 @@ const DashboardHeader = memo(({ profile, streak = 0, streakDates = [] }: { profi
 
         {/* Right: Streak → Bell → Profile */}
         <div className="flex items-center gap-2.5 flex-shrink-0">
-          <button className="flex items-center gap-1.5 px-3 py-1.5 rounded-full bg-warning/10 border border-warning/20 hover:border-warning/40 transition-all">
-            <Flame className="w-4 h-4 text-warning" />
-            <span className="text-sm font-bold text-warning">{streak}</span>
-          </button>
+          <div className="relative" ref={streakRef}>
+            <button
+              onClick={() => setStreakOpen((v) => !v)}
+              className="flex items-center gap-1.5 px-3 py-1.5 rounded-full bg-warning/10 border border-warning/20 hover:border-warning/40 transition-all"
+            >
+              <Flame className="w-4 h-4 text-warning" />
+              <span className="text-sm font-bold text-warning">{streak}</span>
+            </button>
+            {renderStreakPopover()}
+          </div>
           <button className="text-muted-foreground hover:text-foreground transition-colors">
             <Bell className="h-4 w-4" />
           </button>
