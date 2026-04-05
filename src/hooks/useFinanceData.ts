@@ -39,7 +39,10 @@ const CAT_ICONS: Record<string, string> = {
   Assinaturas: "📦", Lazer: "🎮", Moradia: "🏠",
 };
 
-// Module-level cache to persist data across component remounts
+type FinanceDataOptions = {
+  includeHistorical?: boolean;
+};
+
 const dataCache: Record<string, DashboardData> = {};
 const prefetchingSet = new Set<string>();
 
@@ -48,22 +51,24 @@ function offsetMonth(month: number, year: number, offset: number) {
   return { month: d.getMonth(), year: d.getFullYear() };
 }
 
-/** Build DashboardData from the finance engine (pure async, no React state) */
-async function buildDashboardData(month: number, year: number): Promise<DashboardData> {
-  const [{ summary, transactions: rawTxs, events: rawEvents }, creditCards, invoicesForMonth] =
-    await Promise.all([
-      getFinancialSummary(month, year),
-      getCreditCards(),
-      // Fetch invoices for this month with total_amount and item count
-      supabase
-        .from("invoices")
-        .select("credit_card_id, total_amount, is_paid, paid_amount")
-        .eq("month", month + 1) // DB stores 1-based months
-        .eq("year", year)
-        .then(({ data }) => data ?? []),
-    ]);
+function buildCacheKey(userId: string | undefined, month: number, year: number, includeHistorical: boolean) {
+  return `${userId ?? ""}-${month}-${year}-${includeHistorical ? "hist" : "fast"}`;
+}
 
-  // Build invoice lookup by card ID for accurate fatura totals
+async function buildDashboardData(month: number, year: number, options?: FinanceDataOptions): Promise<DashboardData> {
+  const includeHistorical = options?.includeHistorical ?? false;
+
+  const [{ summary, transactions: rawTxs, events: rawEvents }, creditCards, invoicesForMonth] = await Promise.all([
+    getFinancialSummary(month, year, { includeHistorical }),
+    getCreditCards(),
+    supabase
+      .from("invoices")
+      .select("credit_card_id, total_amount, is_paid, paid_amount")
+      .eq("month", month + 1)
+      .eq("year", year)
+      .then(({ data }) => data ?? []),
+  ]);
+
   const invoiceByCard = new Map(
     (invoicesForMonth as any[]).map((inv: any) => [
       inv.credit_card_id,
@@ -73,15 +78,12 @@ async function buildDashboardData(month: number, year: number): Promise<Dashboar
 
   const cardMap = new Map((creditCards as any[]).map((c: any) => [c.id, { name: c.name, due_day: c.due_day }]));
 
-  // Build a set of card IDs that have actual invoice items for this month (total > 0)
   const cardsWithInvoice = new Set(
     (invoicesForMonth as any[])
       .filter((inv: any) => Number(inv.total_amount) > 0)
       .map((inv: any) => inv.credit_card_id)
   );
 
-  // Filter out CC transactions for cards with no invoice items this month
-  // (these are pre-start-date transactions that should be ignored)
   const filteredTxs = rawTxs.filter((t) => {
     if (t.payment_method === "cartao" && t.credit_card_id) {
       return cardsWithInvoice.has(t.credit_card_id);
@@ -91,14 +93,9 @@ async function buildDashboardData(month: number, year: number): Promise<Dashboar
 
   const paidTxs = filteredTxs.filter((t) => t.status === "pago");
   const pendingTxs = filteredTxs.filter((t) => t.status === "pendente");
-
-  // Separate credit card vs regular transactions
   const regularPaid = paidTxs.filter((t) => t.payment_method !== "cartao");
-  const ccPaid = paidTxs.filter((t) => t.payment_method === "cartao" && t.credit_card_id);
   const regularPending = pendingTxs.filter((t) => t.payment_method !== "cartao");
-  const ccPending = pendingTxs.filter((t) => t.payment_method === "cartao" && t.credit_card_id);
 
-  // Build fatura entries using invoice total_amount (respects closing day cycle)
   function buildFaturaEntries(): { paid: Transaction[]; pending: Transaction[] } {
     const paid: Transaction[] = [];
     const pending: Transaction[] = [];
@@ -108,7 +105,6 @@ async function buildDashboardData(month: number, year: number): Promise<Dashboar
       const cardInfo = cardMap.get(cardId);
       const cardName = cardInfo?.name || "Cartão";
       const dueDay = cardInfo?.due_day || 1;
-      // Count CC transactions for this card to show item count
       const itemCount = filteredTxs.filter(
         (t) => t.payment_method === "cartao" && t.credit_card_id === cardId
       ).length;
@@ -128,12 +124,10 @@ async function buildDashboardData(month: number, year: number): Promise<Dashboar
         faturaItemCount: itemCount,
       };
 
-      if (inv.isPaid) {
-        paid.push(entry);
-      } else {
-        pending.push(entry);
-      }
+      if (inv.isPaid) paid.push(entry);
+      else pending.push(entry);
     }
+
     return { paid, pending };
   }
 
@@ -149,10 +143,8 @@ async function buildDashboardData(month: number, year: number): Promise<Dashboar
     status: "pago" as const,
   }));
 
-
   const transactions: Transaction[] = [...regularTransactions, ...faturasPaid];
 
-  // For pending events, only show regular pending (cc pending are shown as fatura cards)
   const pendingAsEvents: FinanceEvent[] = regularPending.map((t) => ({
     id: t.id,
     name: t.name,
@@ -165,7 +157,6 @@ async function buildDashboardData(month: number, year: number): Promise<Dashboar
     isTransaction: true,
   }));
 
-  // Add fatura pending as events too
   const faturaPendingEvents: FinanceEvent[] = faturasPending.map((f) => {
     const cardInfo = cardMap.get(f.creditCardId!);
     const dueDay = cardInfo?.due_day || 1;
@@ -249,30 +240,29 @@ async function buildDashboardData(month: number, year: number): Promise<Dashboar
   };
 }
 
-/** Prefetch a month into cache silently */
-function prefetchMonth(userId: string, month: number, year: number) {
-  const key = `${userId}-${month}-${year}`;
+function prefetchMonth(userId: string, month: number, year: number, options?: FinanceDataOptions) {
+  const includeHistorical = options?.includeHistorical ?? false;
+  const key = buildCacheKey(userId, month, year, includeHistorical);
   if (dataCache[key] || prefetchingSet.has(key)) return;
   prefetchingSet.add(key);
-  buildDashboardData(month, year)
+  buildDashboardData(month, year, options)
     .then((result) => { dataCache[key] = result; })
-    .catch(() => { /* silent */ })
+    .catch(() => {})
     .finally(() => { prefetchingSet.delete(key); });
 }
 
-export function useFinanceData(selectedMonth: number, selectedYear: number) {
+export function useFinanceData(selectedMonth: number, selectedYear: number, options?: FinanceDataOptions) {
   const { user } = useAuth();
-  const cacheKey = `${user?.id ?? ""}-${selectedMonth}-${selectedYear}`;
+  const includeHistorical = options?.includeHistorical ?? false;
+  const cacheKey = buildCacheKey(user?.id, selectedMonth, selectedYear, includeHistorical);
   const activeKeyRef = useRef(cacheKey);
   const [data, setData] = useState<DashboardData>(EMPTY_DATA);
   const [loading, setLoading] = useState(true);
 
-  // Keep activeKeyRef in sync and handle cache/fetch on key change
   useEffect(() => {
     activeKeyRef.current = cacheKey;
     let cancelled = false;
 
-    // Show cached data immediately if available
     const cached = dataCache[cacheKey];
     if (cached) {
       setData(cached);
@@ -281,9 +271,8 @@ export function useFinanceData(selectedMonth: number, selectedYear: number) {
       setLoading(true);
     }
 
-    // Always fetch fresh data
     if (user) {
-      buildDashboardData(selectedMonth, selectedYear)
+      buildDashboardData(selectedMonth, selectedYear, { includeHistorical })
         .then((newData) => {
           dataCache[cacheKey] = newData;
           if (!cancelled && activeKeyRef.current === cacheKey) {
@@ -298,25 +287,28 @@ export function useFinanceData(selectedMonth: number, selectedYear: number) {
           }
         });
 
-      // Prefetch nearby months after a short delay
       const timer = setTimeout(() => {
         for (const offset of [-2, -1, 1, 2, 3]) {
           const m = offsetMonth(selectedMonth, selectedYear, offset);
-          prefetchMonth(user.id, m.month, m.year);
+          prefetchMonth(user.id, m.month, m.year, { includeHistorical });
         }
       }, 300);
-      return () => { cancelled = true; clearTimeout(timer); };
+      return () => {
+        cancelled = true;
+        clearTimeout(timer);
+      };
     }
 
-    return () => { cancelled = true; };
-  }, [cacheKey, user, selectedMonth, selectedYear]);
+    return () => {
+      cancelled = true;
+    };
+  }, [cacheKey, user, selectedMonth, selectedYear, includeHistorical]);
 
-  // Refetch function for manual refresh
   const refetch = useCallback(async () => {
     if (!user) return;
     try {
-      const newData = await buildDashboardData(selectedMonth, selectedYear);
-      const key = `${user.id}-${selectedMonth}-${selectedYear}`;
+      const newData = await buildDashboardData(selectedMonth, selectedYear, { includeHistorical });
+      const key = buildCacheKey(user.id, selectedMonth, selectedYear, includeHistorical);
       dataCache[key] = newData;
       if (activeKeyRef.current === key) {
         setData(newData);
@@ -324,22 +316,23 @@ export function useFinanceData(selectedMonth: number, selectedYear: number) {
     } catch (err) {
       console.error("Finance engine error:", err);
     }
-  }, [user, selectedMonth, selectedYear]);
+  }, [user, selectedMonth, selectedYear, includeHistorical]);
 
-  // Realtime subscription
   useEffect(() => {
     if (!user) return;
 
     const channel = supabase
-      .channel("finance-realtime")
+      .channel(`finance-realtime-${includeHistorical ? "hist" : "fast"}`)
       .on("postgres_changes", { event: "*", schema: "public", table: "transactions", filter: `user_id=eq.${user.id}` }, () => refetch())
       .on("postgres_changes", { event: "*", schema: "public", table: "finance_events", filter: `user_id=eq.${user.id}` }, () => refetch())
       .on("postgres_changes", { event: "*", schema: "public", table: "accounts", filter: `user_id=eq.${user.id}` }, () => refetch())
       .on("postgres_changes", { event: "*", schema: "public", table: "invoices", filter: `user_id=eq.${user.id}` }, () => refetch())
       .subscribe();
 
-    return () => { supabase.removeChannel(channel); };
-  }, [user, refetch]);
+    return () => {
+      supabase.removeChannel(channel);
+    };
+  }, [user, refetch, includeHistorical]);
 
   return { data, loading, refetch };
 }

@@ -8,7 +8,6 @@ import SaldoCard from "@/components/dashboard/SaldoCard";
 import ReceitasDespesasCards from "@/components/dashboard/ReceitasDespesasCards";
 import BalancoCard from "@/components/dashboard/BalancoCard";
 import SaldoWalletCarousel from "@/components/dashboard/SaldoWalletCarousel";
-// MicroInteracoesCard temporarily disabled
 import TransacoesRecentes from "@/components/dashboard/TransacoesRecentes";
 import ProximosEventos from "@/components/dashboard/ProximosEventos";
 import GastosPorCategoria from "@/components/dashboard/GastosPorCategoria";
@@ -18,8 +17,15 @@ import OnboardingCard from "@/components/dashboard/OnboardingCard";
 import { useAuth } from "@/contexts/AuthContext";
 import { useMonth } from "@/contexts/MonthContext";
 import { useFinanceData } from "@/hooks/useFinanceData";
-import { useProfile } from "@/hooks/useProfile";
+import type { Profile } from "@/hooks/useProfile";
 import type { FinanceEvent } from "@/types/finance";
+
+interface IndexOutletContext {
+  profile: Profile | null;
+  refetch: () => Promise<void>;
+  updateDisplayName: (name: string) => Promise<void>;
+  isOnboardingComplete: boolean;
+}
 
 const Index = () => {
   const { selectedMonth, selectedYear, setMonth } = useMonth();
@@ -27,8 +33,8 @@ const Index = () => {
   const [showPayModal, setShowPayModal] = useState(false);
   const navigate = useNavigate();
   const { user } = useAuth();
-  const { data, loading, refetch } = useFinanceData(selectedMonth, selectedYear);
-  const { profile, refetch: refetchProfile, updateDisplayName, isOnboardingComplete } = useProfile();
+  const { data, loading, refetch } = useFinanceData(selectedMonth, selectedYear, { includeHistorical: false });
+  const { profile, refetch: refetchProfile, updateDisplayName, isOnboardingComplete } = useOutletContext<IndexOutletContext>();
   const handleNovaTransacao = useCallback(() => {
     // Dispatch event to open the global type chooser
     window.dispatchEvent(new CustomEvent("open-nova-transacao-direct", { detail: { type: "despesa" } }));
