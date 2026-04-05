@@ -3,6 +3,7 @@ import { LayoutDashboard, ArrowLeftRight, Plus, Bot, User, Bell, Flame, PiggyBan
 import { useAuth } from "@/contexts/AuthContext";
 import { useNavigate, useLocation } from "react-router-dom";
 import { motion, AnimatePresence } from "framer-motion";
+import { cn } from "@/lib/utils";
 
 export const useGreeting = () => {
   return useMemo(() => {
