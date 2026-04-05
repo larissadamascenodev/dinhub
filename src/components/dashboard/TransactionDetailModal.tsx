@@ -403,7 +403,7 @@ const TransactionDetailModal = ({ open, tx, accountName, onClose, onRefresh, use
                 onClick={() => setStep("pay-confirm")}
                 className="w-full py-3.5 rounded-xl text-sm font-bold bg-primary/20 text-primary hover:bg-primary/30 transition-all mt-2"
               >
-                Marcar como pago
+                {isReceita ? "Marcar como recebido" : "Marcar como pago"}
               </button>
             )}
           </div>
