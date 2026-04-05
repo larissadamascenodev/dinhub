@@ -142,14 +142,11 @@ const SwipeableItem = ({
         dragElastic={0.3}
         onDragEnd={handleDragEnd}
         style={{ x }}
-        className={`relative flex items-center gap-2.5 px-3 py-2.5 md:gap-3 md:px-4 md:py-3.5 backdrop-blur-xl cursor-grab active:cursor-grabbing rounded-xl ${
-          isPending ? "border border-[hsl(40_80%_50%_/_0.15)]" : "bg-card/95"
-        }`}
+        className="relative flex items-center gap-2.5 px-3 py-2.5 md:gap-3 md:px-4 md:py-3.5 backdrop-blur-xl cursor-grab active:cursor-grabbing rounded-xl bg-card/95"
         onClick={() => onEdit(tx)}
         whileTap={{ scale: 0.99 }}
-        {...(isPending ? { style: { x, background: "hsl(40 80% 50% / 0.06)" } } : { style: { x } })}
       >
-        {/* Category icon or clock for pending */}
+        {/* Category icon — hourglass for pending, normal icon otherwise */}
         <div
           className="w-8 h-8 md:w-10 md:h-10 rounded-full flex items-center justify-center flex-shrink-0"
           style={{ background: isPending ? "hsl(40 80% 50% / 0.12)" : `hsl(${catColor} / 0.12)` }}
@@ -183,9 +180,10 @@ const SwipeableItem = ({
           >
             {isReceita ? "+" : "−"}{fmt(tx.amount)}
           </p>
-          <span className={`block mt-0.5 text-[8px] md:text-[9px] font-bold uppercase tracking-wide ${
-            isPending ? "text-[hsl(40_80%_50%)]" : "text-muted-foreground/40"
-          }`} style={isPending ? { color: "hsl(40 80% 50% / 0.7)" } : undefined}>
+          <span className="block mt-0.5 text-[8px] md:text-[9px] font-bold uppercase tracking-wide"
+            style={{ color: isPending ? "hsl(40 80% 50% / 0.7)" : undefined }}
+            {...(!isPending ? { className: "block mt-0.5 text-[8px] md:text-[9px] font-bold uppercase tracking-wide text-muted-foreground/40" } : {})}
+          >
             {isPending ? (isReceita ? "A Receber" : "Pendente") : (isReceita ? "Recebido" : "Pago")}
           </span>
         </div>
