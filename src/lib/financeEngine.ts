@@ -224,11 +224,14 @@ async function fetchHistoricalAverages(
       y -= 1;
     }
 
-    const txs = await fetchMonthTransactions(m, y);
-    if (txs.length > 0) {
+    const [txs, inv] = await Promise.all([
+      fetchMonthTransactions(m, y),
+      fetchInvoiceTotalsForMonth(m, y),
+    ]);
+    if (txs.length > 0 || inv.invoiceExpense > 0) {
       const agg = aggregate(txs);
       totalIncome += agg.paidIncome;
-      totalExpense += agg.paidExpense;
+      totalExpense += agg.paidExpense + inv.invoicePaidExpense;
       validMonths++;
     }
   }
