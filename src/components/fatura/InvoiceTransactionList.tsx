@@ -167,6 +167,35 @@ export default function InvoiceTransactionList({ items, installmentCount = 0, ca
                 </motion.div>
               );
             })}
+            {/* Partial payment entry */}
+            {paidAmount > 0 && !isPaid && (
+              <motion.div
+                initial={{ opacity: 0, x: -6 }}
+                animate={{ opacity: 1, x: 0 }}
+                transition={{ delay: items.length * 0.03 }}
+                className="rounded-xl border border-primary/20 bg-primary/[0.06] backdrop-blur-xl border-l-[3px] border-l-primary px-3 py-2.5"
+                style={{ boxShadow: "0 2px 12px -4px rgba(0,0,0,0.25)" }}
+              >
+                <div className="flex gap-3">
+                  <div className="w-9 h-9 rounded-lg bg-primary/15 border border-primary/20 flex items-center justify-center shrink-0 self-start mt-0.5">
+                    <Wallet className="w-4 h-4 text-primary" />
+                  </div>
+                  <div className="flex-1 min-w-0 space-y-1">
+                    <div className="flex items-start justify-between gap-2">
+                      <div>
+                        <p className="text-[13px] font-bold text-primary leading-tight">
+                          Pagamento parcial
+                        </p>
+                        <p className="text-[11px] text-muted-foreground/50">Débito em conta</p>
+                      </div>
+                      <p className="text-[13px] font-bold text-primary tabular-nums leading-tight shrink-0">
+                        +{formatCurrency(paidAmount)}
+                      </p>
+                    </div>
+                  </div>
+                </div>
+              </motion.div>
+            )}
           </div>
         )}
       </motion.div>
