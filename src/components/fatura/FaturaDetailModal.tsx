@@ -93,6 +93,7 @@ export default function FaturaDetailModal({ open, onClose, card, month, year, to
           setRecentItems([]);
           setInvoiceId(null);
           setPaidAmount(0);
+          setInvoicePayments([]);
         }
       } catch {
         setRecentItems([]);
