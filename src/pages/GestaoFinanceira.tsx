@@ -569,7 +569,6 @@ const GestaoFinanceira = () => {
                             ) : (
                               <p className="text-[10px] text-muted-foreground mt-0.5">Cartão de crédito</p>
                             )}
-                            <p className="text-[10px] text-muted-foreground/60 mt-0.5">Vence dia {card.due_day}</p>
                           </div>
                         </div>
                         <ChevronRight className="w-4 h-4 text-muted-foreground/25 group-hover:text-primary transition-colors" />
@@ -614,7 +613,6 @@ const GestaoFinanceira = () => {
                         </div>
                         <div className="flex items-center justify-between">
                           <span className="text-[10px] font-medium text-muted-foreground">{usedPct.toFixed(0)}% usado</span>
-                          <span className="text-[10px] text-muted-foreground/60">Vence dia {card.due_day}</span>
                         </div>
                       </div>
                     </div>
@@ -665,7 +663,7 @@ const GestaoFinanceira = () => {
                             ) : (
                               <p className="text-[10px] text-muted-foreground mt-0.5">Cartão de crédito</p>
                             )}
-                            <p className="text-[10px] text-muted-foreground/60 mt-0.5">Vence dia {card.due_day}</p>
+                            
                           </div>
                         </div>
                         <ChevronRight className="w-4 h-4 text-muted-foreground/25 group-hover:text-primary transition-colors" />
@@ -706,7 +704,7 @@ const GestaoFinanceira = () => {
                         </div>
                         <div className="flex items-center justify-between">
                           <span className="text-[10px] font-medium text-muted-foreground">{usedPct.toFixed(0)}% usado</span>
-                          <span className="text-[10px] text-muted-foreground/60">Vence dia {card.due_day}</span>
+                          
                         </div>
                       </div>
                     </div>
