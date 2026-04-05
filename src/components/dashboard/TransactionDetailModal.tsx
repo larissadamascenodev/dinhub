@@ -6,8 +6,9 @@ import {
 } from "lucide-react";
 import { toast } from "sonner";
 import { cn } from "@/lib/utils";
-import { updateTransactionStatus, updateTransaction, deleteTransaction, getAccounts } from "@/services/transactionService";
+import { updateTransactionStatus, updateTransaction, deleteTransaction, getAccounts, createTransaction } from "@/services/transactionService";
 import { excludeRecurringForMonth, excludeRecurringFromMonthOnward } from "@/services/recurringService";
+import { useAuth } from "@/contexts/AuthContext";
 import { format, subDays } from "date-fns";
 import { Calendar } from "@/components/ui/calendar";
 
@@ -84,6 +85,7 @@ interface Props {
 const TransactionDetailModal = ({ open, tx, accountName, onClose, onRefresh, userId, selectedMonth, selectedYear }: Props) => {
   const [step, setStep] = useState<ModalStep>("detail");
   const [loading, setLoading] = useState(false);
+  const [editScope, setEditScope] = useState<"this" | "all">("all");
 
   // Edit form state
   const [editName, setEditName] = useState("");
@@ -99,6 +101,7 @@ const TransactionDetailModal = ({ open, tx, accountName, onClose, onRefresh, use
   const [showCategoryPicker, setShowCategoryPicker] = useState(false);
   const [showDropdown, setShowDropdown] = useState(false);
   const amountInputRef = useRef<HTMLInputElement>(null);
+  const { user } = useAuth();
   const dropdownRef = useRef<HTMLDivElement>(null);
 
   // Close dropdown on outside click
@@ -222,18 +225,43 @@ const TransactionDetailModal = ({ open, tx, accountName, onClose, onRefresh, use
     }
   };
 
+
   const handleSaveEdit = async () => {
     setLoading(true);
     try {
       const dateStr = `${editDate.getFullYear()}-${String(editDate.getMonth() + 1).padStart(2, "0")}-${String(editDate.getDate()).padStart(2, "0")}`;
-      await updateTransaction(tx.id, {
-        name: editName,
-        amount: editAmountCents / 100,
-        category: editCategory,
-        status: editStatus,
-        date: dateStr,
-      });
-      toast.success("Transação atualizada");
+
+      if (isRecurring && editScope === "this" && user) {
+        // "Apenas esta": exclude original from this month, create a one-time copy
+        await excludeRecurringForMonth(tx.id, selectedMonth, selectedYear, user.id);
+        await createTransaction(
+          {
+            name: editName,
+            type: tx.type as "receita" | "despesa",
+            amount: editAmountCents / 100,
+            category: editCategory,
+            date: dateStr,
+            status: editStatus,
+            payment_method: tx.payment_method as "conta" | "cartao",
+            recurrence_type: "unica",
+            account_id: editAccountId || tx.account_id || null,
+            credit_card_id: tx.credit_card_id || null,
+            observation: editObservation || null,
+          },
+          user.id
+        );
+        toast.success("Transação deste mês atualizada");
+      } else {
+        // "Todas": update the base transaction
+        await updateTransaction(tx.id, {
+          name: editName,
+          amount: editAmountCents / 100,
+          category: editCategory,
+          status: editStatus,
+          date: dateStr,
+        });
+        toast.success("Transação atualizada");
+      }
       onRefresh();
       handleClose();
     } catch {
@@ -486,13 +514,13 @@ const TransactionDetailModal = ({ open, tx, accountName, onClose, onRefresh, use
             </div>
             <div className="space-y-2">
               <button
-                onClick={() => setStep("edit-form")}
+                onClick={() => { setEditScope("this"); setStep("edit-form"); }}
                 className="w-full py-3.5 rounded-xl text-sm font-bold bg-primary text-primary-foreground hover:bg-primary/90 transition-all"
               >
                 Apenas esta
               </button>
               <button
-                onClick={() => setStep("edit-form")}
+                onClick={() => { setEditScope("all"); setStep("edit-form"); }}
                 className="w-full py-3 rounded-xl text-sm font-bold text-foreground bg-muted/30 border border-border/20 hover:bg-muted/50 transition-all"
               >
                 Todas as pendentes
