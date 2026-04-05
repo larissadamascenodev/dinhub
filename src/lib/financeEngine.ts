@@ -120,7 +120,7 @@ async function fetchMonthTransactions(month: number, year: number) {
   const materializedRecurring = recurringTxs.map((t: any) => ({
     ...t,
     date: `${year}-${String(month + 1).padStart(2, "0")}-${String(new Date(t.date).getDate()).padStart(2, "0")}`,
-    status: isFutureMonth ? "pendente" : t.status,
+    status: "pendente",
     _isRecurringMaterialized: true,
   })) as RawTransaction[];
 
