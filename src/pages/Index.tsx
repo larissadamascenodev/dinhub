@@ -115,55 +115,8 @@ const Index = () => {
             <TransacoesRecentes transactions={data.transactions} onDelete={refetch} />
           </div>
           <div className="space-y-4">
-            {/* Wallet summary */}
             <WalletSummaryCard />
-            {/* Projection summary card */}
-            <motion.div
-              initial={{ opacity: 0, y: 10 }}
-              animate={{ opacity: 1, y: 0 }}
-              transition={{ delay: 0.15 }}
-              className="glass-card p-4 space-y-3 group hover:border-primary/20 transition-all cursor-pointer"
-              onClick={() => navigate("/bot-finance/projecoes")}
-            >
-              <div className="flex items-center justify-between">
-                <div className="flex items-center gap-2">
-                  <div className="w-8 h-8 rounded-xl bg-primary/10 flex items-center justify-center">
-                    <TrendingUp className="w-4 h-4 text-primary" />
-                  </div>
-                  <h3 className="text-xs font-semibold font-display">Projeções</h3>
-                </div>
-                <ChevronRight className="w-4 h-4 text-muted-foreground/30 group-hover:text-primary transition-colors" />
-              </div>
-
-              <div className="grid grid-cols-2 gap-2">
-                <div className="bg-secondary/40 rounded-xl p-2.5 text-center">
-                  <p className="text-[9px] text-muted-foreground mb-0.5">Saldo Atual</p>
-                  <p className="text-sm font-bold tabular-nums text-foreground">
-                    {saldoMes.toLocaleString("pt-BR", { style: "currency", currency: "BRL" })}
-                  </p>
-                </div>
-                <div className="bg-secondary/40 rounded-xl p-2.5 text-center">
-                  <p className="text-[9px] text-muted-foreground mb-0.5">Previsto</p>
-                  <p className={`text-sm font-bold tabular-nums ${saldoPrevisto >= 0 ? "text-primary" : "text-destructive"}`}>
-                    {saldoPrevisto.toLocaleString("pt-BR", { style: "currency", currency: "BRL" })}
-                  </p>
-                </div>
-              </div>
-
-              <div className={`rounded-lg px-3 py-2 text-center text-[11px] font-medium ${
-                balanco >= 0 ? "bg-primary/8 text-primary" : "bg-destructive/8 text-destructive"
-              }`}>
-                {balanco >= 0
-                  ? `Balanço positivo de ${balanco.toLocaleString("pt-BR", { style: "currency", currency: "BRL" })} 👏`
-                  : `Balanço negativo de ${Math.abs(balanco).toLocaleString("pt-BR", { style: "currency", currency: "BRL" })} 😬`
-                }
-              </div>
-
-              <div className="flex items-center justify-center gap-1.5 pt-1">
-                <span className="text-[10px] text-muted-foreground group-hover:text-primary transition-colors">Ver projeção completa</span>
-                <ChevronRight className="w-3 h-3 text-muted-foreground/40 group-hover:text-primary transition-colors" />
-              </div>
-            </motion.div>
+            <ProjectionCard saldoAtual={saldoMes} saldoPrevisto={saldoPrevisto} balanco={balanco} />
 
             <ProximosEventos events={data.events} selectedMonth={selectedMonth} selectedYear={selectedYear} onEventClick={handleEventClick} />
           </div>
