@@ -74,7 +74,11 @@ export default function FaturaDetailModal({ open, onClose, card, month, year, to
           const inv = invoices[0];
           setInvoiceId(inv.id);
           setPaidAmount(Number(inv.paid_amount ?? 0));
-          const items = await getInvoiceItems(inv.id);
+          const [items, pmts] = await Promise.all([
+            getInvoiceItems(inv.id),
+            getInvoicePayments(inv.id),
+          ]);
+          setInvoicePayments(pmts);
           const mapped = items.slice(0, 5).map((item: any) => ({
             id: item.id,
             name: item.transaction_name || "Transação",
