@@ -209,11 +209,10 @@ async function fetchInvoiceTotalsForMonth(month: number, year: number) {
     const total = Number(inv.total_amount);
     if (total <= 0) continue;
     invoiceExpense += total;
+    // Partial payments are cash advances only — invoice expense is only
+    // considered "paid" when the invoice is fully settled (is_paid = true).
     if (inv.is_paid) {
       invoicePaidExpense += total;
-    } else {
-      // Partially paid
-      invoicePaidExpense += Number(inv.paid_amount ?? 0);
     }
   }
   return { invoiceExpense, invoicePaidExpense };
