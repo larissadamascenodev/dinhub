@@ -58,19 +58,21 @@ function getMonthRange(month: number, year: number) {
   return { start, end };
 }
 
-async function fetchMonthTransactions(month: number, year: number) {
+async function fetchMonthTransactions(month: number, year: number, opts?: { skipMaterialize?: boolean }) {
   const { start, end } = getMonthRange(month, year);
   const dbMonth = month + 1; // DB stores 1-based months
 
   // Materialize recurring CC subscription items into invoices for this month
-  // This ensures fixa CC transactions appear in future month invoices
-  const { data: userData } = await supabase.auth.getUser();
-  if (userData?.user?.id) {
-    await supabase.rpc("materialize_recurring_invoice_items", {
-      p_user_id: userData.user.id,
-      p_month: dbMonth,
-      p_year: year,
-    });
+  // Skip for historical months to avoid unnecessary work
+  if (!opts?.skipMaterialize) {
+    const { data: userData } = await supabase.auth.getUser();
+    if (userData?.user?.id) {
+      await supabase.rpc("materialize_recurring_invoice_items", {
+        p_user_id: userData.user.id,
+        p_month: dbMonth,
+        p_year: year,
+      });
+    }
   }
 
   const [{ data, error }, recurringTxs, { data: invoicesData }] = await Promise.all([
@@ -95,7 +97,6 @@ async function fetchMonthTransactions(month: number, year: number) {
   let baseTxs = (data ?? []) as RawTransaction[];
 
   // Filter out credit card transactions for months where no invoice items exist
-  // (pre-start-date transactions that serve only as installment base)
   const cardsWithInvoice = new Set(
     (invoicesData ?? [])
       .filter((inv: any) => Number(inv.total_amount) > 0)
@@ -124,11 +125,9 @@ async function fetchMonthTransactions(month: number, year: number) {
   }
 
   // Materialize recurring transactions with adjusted date for this month
-  // Force status to "pendente" for future months (transactions can't be paid in advance)
   const today = new Date();
   const currentMonth = today.getMonth();
   const currentYear = today.getFullYear();
-  const isFutureMonth = year > currentYear || (year === currentYear && month > currentMonth);
 
   const materializedRecurring = recurringTxs.map((t: any) => ({
     ...t,
