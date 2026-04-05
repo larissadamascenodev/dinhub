@@ -595,7 +595,7 @@ const GestaoFinanceira = () => {
                               <div className={cn("w-1.5 h-1.5 rounded-full", (openInvoices[card.id] || 0) > 0 ? "bg-amber-400" : "bg-muted-foreground/40")} />
                               <p className="text-[9px] text-muted-foreground uppercase tracking-widest font-medium">Fatura aberta</p>
                             </div>
-                            <p className={cn("text-lg font-extrabold tabular-nums tracking-tight", (openInvoices[card.id] || 0) > 0 ? "text-amber-400" : "text-muted-foreground")}>
+                            <p className={cn("text-sm font-bold tabular-nums leading-[1.75rem]", (openInvoices[card.id] || 0) > 0 ? "text-amber-400" : "text-muted-foreground")}>
                               {formatCurrency(openInvoices[card.id] || 0)}
                             </p>
                           </div>
@@ -687,7 +687,7 @@ const GestaoFinanceira = () => {
                               <div className={cn("w-1.5 h-1.5 rounded-full", (openInvoices[card.id] || 0) > 0 ? "bg-amber-400" : "bg-muted-foreground/40")} />
                               <p className="text-[9px] text-muted-foreground uppercase tracking-widest font-medium">Fatura aberta</p>
                             </div>
-                            <p className={cn("text-lg font-extrabold tabular-nums tracking-tight", (openInvoices[card.id] || 0) > 0 ? "text-amber-400" : "text-muted-foreground")}>
+                            <p className={cn("text-sm font-bold tabular-nums leading-[1.75rem]", (openInvoices[card.id] || 0) > 0 ? "text-amber-400" : "text-muted-foreground")}>
                               {formatCurrency(openInvoices[card.id] || 0)}
                             </p>
                           </div>
