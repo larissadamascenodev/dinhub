@@ -165,17 +165,21 @@ async function buildDashboardData(month: number, year: number): Promise<Dashboar
   }));
 
   // Add fatura pending as events too
-  const faturaPendingEvents: FinanceEvent[] = faturasPending.map((f) => ({
-    id: f.id,
-    name: f.name,
-    category: f.category,
-    date: f.date,
-    rawDate: `${year}-${String(month + 1).padStart(2, "0")}-01`,
-    amount: f.amount,
-    status: "pendente" as const,
-    type: "despesa" as const,
-    isTransaction: true,
-  }));
+  const faturaPendingEvents: FinanceEvent[] = faturasPending.map((f) => {
+    const cardInfo = cardMap.get(f.creditCardId!);
+    const dueDay = cardInfo?.due_day || 1;
+    return {
+      id: f.id,
+      name: f.name,
+      category: f.category,
+      date: f.date,
+      rawDate: `${year}-${String(month + 1).padStart(2, "0")}-${String(dueDay).padStart(2, "0")}`,
+      amount: f.amount,
+      status: "pendente" as const,
+      type: "despesa" as const,
+      isTransaction: true,
+    };
+  });
 
   const events: FinanceEvent[] = rawEvents.map((e) => ({
     id: e.id,
