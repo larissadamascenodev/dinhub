@@ -57,7 +57,7 @@ async function buildDashboardData(month: number, year: number): Promise<Dashboar
       // Fetch invoices for this month with total_amount and item count
       supabase
         .from("invoices")
-        .select("credit_card_id, total_amount, is_paid")
+        .select("credit_card_id, total_amount, is_paid, paid_amount")
         .eq("month", month + 1) // DB stores 1-based months
         .eq("year", year)
         .then(({ data }) => data ?? []),
