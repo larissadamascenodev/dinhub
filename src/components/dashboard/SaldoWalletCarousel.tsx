@@ -32,6 +32,7 @@ interface Props {
   saldoAtual: number;
   saldoPrevisto: number;
   isFutureMonth?: boolean;
+  isPastMonth?: boolean;
 }
 
 const slideVariants = {
