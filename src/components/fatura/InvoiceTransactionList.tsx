@@ -54,7 +54,7 @@ function InstallmentBar({ current, total }: { current: number; total: number }) 
   );
 }
 
-export default function InvoiceTransactionList({ items, installmentCount = 0, cardName, invoiceMonth, invoiceYear, onEditItem, onDeleteItem }: Props) {
+export default function InvoiceTransactionList({ items, installmentCount = 0, cardName, invoiceMonth, invoiceYear, paidAmount = 0, isPaid = false, onEditItem, onDeleteItem }: Props) {
   const [selectedItem, setSelectedItem] = useState<EnrichedItem | null>(null);
   const [editItem, setEditItem] = useState<EnrichedItem | null>(null);
   const [deleteTarget, setDeleteTarget] = useState<EnrichedItem | null>(null);
