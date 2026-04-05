@@ -415,7 +415,16 @@ export function computeDailyBehavior(
 }
 
 export async function getMonthHistory(month: number, year: number) {
-  const transactions = await fetchMonthTransactions(month, year);
+  const [transactions, inv] = await Promise.all([
+    fetchMonthTransactions(month, year),
+    fetchInvoiceTotalsForMonth(month, year),
+  ]);
   const agg = aggregate(transactions);
-  return { income: agg.income, expense: agg.expense, balance: agg.balance, month, year };
+  return {
+    income: agg.income,
+    expense: agg.expense + inv.invoiceExpense,
+    balance: agg.balance - inv.invoicePaidExpense,
+    month,
+    year,
+  };
 }
