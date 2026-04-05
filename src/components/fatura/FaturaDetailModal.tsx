@@ -3,7 +3,7 @@ import { motion, AnimatePresence } from "framer-motion";
 import { X, CalendarClock, CalendarCheck, CreditCard, ChevronRight, Wallet, CheckCircle2 } from "lucide-react";
 import { useNavigate } from "react-router-dom";
 import { toast } from "sonner";
-import { getInvoices, getInvoiceItems, payInvoice } from "@/services/invoiceService";
+import { getInvoices, getInvoiceItems, getInvoicePayments, payInvoice, type InvoicePayment } from "@/services/invoiceService";
 import { getAccounts } from "@/services/transactionService";
 import { cn } from "@/lib/utils";
 import InvoicePayModal, { type PaymentDetails } from "@/components/fatura/InvoicePayModal";
