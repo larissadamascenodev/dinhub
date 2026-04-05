@@ -55,7 +55,7 @@ const WalletSummaryCard = () => {
       initial={{ opacity: 0, y: 10 }}
       animate={{ opacity: 1, y: 0 }}
       transition={{ delay: 0.1 }}
-      className="relative overflow-hidden rounded-2xl border border-primary/10 bg-primary/[0.04] backdrop-blur-xl p-3 md:p-3.5 space-y-1.5 md:space-y-2 group cursor-pointer"
+      className="relative overflow-hidden rounded-2xl border border-primary/10 bg-primary/[0.04] backdrop-blur-xl p-2.5 md:p-3 space-y-1 md:space-y-1.5 group cursor-pointer"
       onClick={() => navigate("/gestao")}
     >
       {/* Glassmorphism decorative elements */}
