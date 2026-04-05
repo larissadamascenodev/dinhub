@@ -1,15 +1,17 @@
 import { memo, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import {
-  Layers, ChevronUp, Trash2, Clock, RefreshCw,
+  Layers, ChevronUp, Clock, RefreshCw,
   ShoppingCart, Heart, Car, Utensils, Home as HomeIcon,
   Briefcase, GraduationCap, Shirt, TrendingUp, DollarSign, MoreHorizontal,
   CreditCard, Wallet, Sparkles,
 } from "lucide-react";
 import { motion, AnimatePresence } from "framer-motion";
-import { toast } from "sonner";
 import type { Transaction } from "@/types/finance";
-import { deleteTransaction } from "@/services/transactionService";
+import { getTransactionById, getAccounts } from "@/services/transactionService";
+import { useAuth } from "@/contexts/AuthContext";
+import { useMonth } from "@/contexts/MonthContext";
+import TransactionDetailModal from "@/components/dashboard/TransactionDetailModal";
 
 interface Props {
   transactions: Transaction[];
@@ -19,13 +21,6 @@ interface Props {
 
 const fmt = (v: number) =>
   v.toLocaleString("pt-BR", { style: "currency", currency: "BRL" });
-
-const formatDate = () => {
-  const now = new Date();
-  const day = now.getDate();
-  const months = ["jan.", "fev.", "mar.", "abr.", "mai.", "jun.", "jul.", "ago.", "set.", "out.", "nov.", "dez."];
-  return `${day} de ${months[now.getMonth()]}`;
-};
 
 const CATEGORY_ICONS: Record<string, typeof ShoppingCart> = {
   "Alimentação": Utensils, "Transporte": Car, "Moradia": HomeIcon,
@@ -52,12 +47,12 @@ const CATEGORY_COLORS: Record<string, string> = {
 const getCategoryIcon = (category: string) => CATEGORY_ICONS[category] || MoreHorizontal;
 const getCategoryColor = (category: string) => CATEGORY_COLORS[category] || "220 10% 55%";
 
-const FaturaCard = ({ tx }: { tx: Transaction }) => {
+const FaturaCard = ({ tx, onClick }: { tx: Transaction; onClick: () => void }) => {
   const navigate = useNavigate();
   return (
     <div
       className="group relative flex items-center gap-2.5 px-3 py-2.5 md:gap-3 md:px-4 md:py-3.5 rounded-xl bg-card/95 border border-primary/10 cursor-pointer hover:border-primary/25 transition-colors"
-      onClick={() => navigate("/fatura-cartao")}
+      onClick={() => navigate(`/fatura/${tx.creditCardId}`)}
     >
       <div
         className="w-8 h-8 md:w-10 md:h-10 rounded-full flex items-center justify-center flex-shrink-0"
@@ -83,8 +78,8 @@ const FaturaCard = ({ tx }: { tx: Transaction }) => {
   );
 };
 
-const TxCard = ({ tx, onDelete }: { tx: Transaction; onDelete?: (id: string) => void }) => {
-  if (tx.isFatura) return <FaturaCard tx={tx} />;
+const TxCard = ({ tx, onClick }: { tx: Transaction; onClick: () => void }) => {
+  if (tx.isFatura) return <FaturaCard tx={tx} onClick={onClick} />;
 
   const isReceita = tx.type === "receita";
   const isPaid = tx.status === "pago";
@@ -92,22 +87,13 @@ const TxCard = ({ tx, onDelete }: { tx: Transaction; onDelete?: (id: string) => 
   const catColor = getCategoryColor(tx.category);
   const CatIcon = getCategoryIcon(tx.category);
 
-  const handleDelete = async (e: React.MouseEvent) => {
-    e.stopPropagation();
-    try {
-      await deleteTransaction(tx.id);
-      toast.success("Transação removida");
-      onDelete?.(tx.id);
-    } catch {
-      toast.error("Erro ao remover");
-    }
-  };
-
   return (
-    <div className={`group relative flex items-center gap-2.5 px-3 py-2.5 md:gap-3 md:px-4 md:py-3.5 rounded-xl backdrop-blur-xl ${
-      isPending ? "border border-[hsl(40_80%_50%_/_0.15)]" : "bg-card/95"
-    }`}
-    style={isPending ? { background: "hsl(40 80% 50% / 0.06)" } : undefined}
+    <div
+      className={`group relative flex items-center gap-2.5 px-3 py-2.5 md:gap-3 md:px-4 md:py-3.5 rounded-xl backdrop-blur-xl cursor-pointer ${
+        isPending ? "border border-[hsl(40_80%_50%_/_0.15)]" : "bg-card/95"
+      }`}
+      style={isPending ? { background: "hsl(40 80% 50% / 0.06)" } : undefined}
+      onClick={onClick}
     >
       {/* Category icon */}
       <div
@@ -130,24 +116,16 @@ const TxCard = ({ tx, onDelete }: { tx: Transaction; onDelete?: (id: string) => 
       </div>
 
       {/* Amount + status */}
-      <div className="text-right shrink-0 flex items-center gap-2">
-        <div className="text-right">
-          <p
-            className="text-xs md:text-sm font-bold tabular-nums"
-            style={{ color: isPending ? "hsl(40 80% 50%)" : isReceita ? "hsl(var(--primary))" : "hsl(var(--destructive))" }}
-          >
-            {isReceita ? "+" : "−"}{fmt(tx.amount)}
-          </p>
-          <span className="block mt-0.5 text-[8px] md:text-[9px] font-bold uppercase tracking-wide text-muted-foreground/40">
-            {isPaid ? (isReceita ? "Recebido" : "Pago") : (isReceita ? "A Receber" : "Pendente")}
-          </span>
-        </div>
-        <button
-          onClick={handleDelete}
-          className="opacity-0 group-hover:opacity-100 transition-opacity text-muted-foreground/40 hover:text-destructive"
+      <div className="text-right shrink-0">
+        <p
+          className="text-xs md:text-sm font-bold tabular-nums"
+          style={{ color: isPending ? "hsl(40 80% 50%)" : isReceita ? "hsl(var(--primary))" : "hsl(var(--destructive))" }}
         >
-          <Trash2 className="w-3.5 h-3.5" />
-        </button>
+          {isReceita ? "+" : "−"}{fmt(tx.amount)}
+        </p>
+        <span className="block mt-0.5 text-[8px] md:text-[9px] font-bold uppercase tracking-wide text-muted-foreground/40">
+          {isPaid ? (isReceita ? "Recebido" : "Pago") : (isReceita ? "A Receber" : "Pendente")}
+        </span>
       </div>
     </div>
   );
@@ -160,9 +138,33 @@ const STACK_COUNT = 3;
 
 const TransacoesRecentes = memo(({ transactions, onDelete }: Props) => {
   const [expanded, setExpanded] = useState(false);
+  const { user } = useAuth();
+  const { selectedMonth, selectedYear } = useMonth();
+  const [detailTx, setDetailTx] = useState<any>(null);
+  const [detailAccountName, setDetailAccountName] = useState("");
+  const [showDetail, setShowDetail] = useState(false);
+
   const visible = transactions.slice(0, 7);
   const topTx = visible[0];
   const restTx = visible.slice(1);
+
+  const handleTxClick = async (tx: Transaction) => {
+    if (tx.isFatura) return;
+    try {
+      const [fullTx, accounts] = await Promise.all([
+        getTransactionById(tx.id),
+        getAccounts(),
+      ]);
+      if (fullTx) {
+        const acct = (accounts as any[]).find((a: any) => a.id === fullTx.account_id);
+        setDetailAccountName(acct?.name || "");
+        setDetailTx(fullTx);
+        setShowDetail(true);
+      }
+    } catch {
+      // silently fail
+    }
+  };
 
   if (!transactions.length) {
     return (
@@ -234,7 +236,7 @@ const TransacoesRecentes = memo(({ transactions, onDelete }: Props) => {
           transition={{ type: "spring", stiffness: 500, damping: 35 }}
           className="relative z-10"
         >
-          <TxCard tx={topTx} onDelete={onDelete} />
+          <TxCard tx={topTx} onClick={() => handleTxClick(topTx)} />
         </motion.div>
 
       </motion.div>
@@ -263,7 +265,7 @@ const TransacoesRecentes = memo(({ transactions, onDelete }: Props) => {
                     delay: i * 0.05,
                   }}
                 >
-                  <TxCard tx={tx} onDelete={onDelete} />
+                  <TxCard tx={tx} onClick={() => handleTxClick(tx)} />
                 </motion.div>
               ))}
             </div>
@@ -283,6 +285,18 @@ const TransacoesRecentes = memo(({ transactions, onDelete }: Props) => {
           </motion.div>
         )}
       </AnimatePresence>
+
+      {/* Transaction detail modal */}
+      <TransactionDetailModal
+        open={showDetail}
+        tx={detailTx}
+        accountName={detailAccountName}
+        onClose={() => { setShowDetail(false); setDetailTx(null); }}
+        onRefresh={() => { setShowDetail(false); setDetailTx(null); onDelete?.(); }}
+        userId={user?.id}
+        selectedMonth={selectedMonth}
+        selectedYear={selectedYear}
+      />
     </div>
   );
 });
