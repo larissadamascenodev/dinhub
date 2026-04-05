@@ -432,7 +432,7 @@ const TransactionDetailModal = ({ open, tx, accountName, onClose, onRefresh, use
                 disabled={loading}
                 className="w-full py-3 rounded-xl text-sm font-bold bg-primary text-primary-foreground hover:bg-primary/90 transition-all disabled:opacity-50"
               >
-                {loading ? "Pagando..." : "Confirmar"}
+                {loading ? (isReceita ? "Confirmando..." : "Pagando...") : "Confirmar"}
               </button>
               <button
                 onClick={() => setStep("detail")}
