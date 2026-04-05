@@ -264,21 +264,23 @@ export default function FaturaDetailModal({ open, onClose, card, month, year, to
                 </div>
               ) : (
                 <div className="space-y-1">
-                  {/* Partial payment entry — at top */}
-                  {paidAmount > 0 && !isPaid && (
-                    <div className="flex items-center gap-2.5 py-2 border-b border-border/10 mb-1 pb-3">
+                   {/* Individual payment entries — at top */}
+                  {!isPaid && invoicePayments.map((payment) => (
+                    <div key={payment.id} className="flex items-center gap-2.5 py-2 border-b border-border/10 mb-1 pb-3">
                       <div className="w-7 h-7 rounded-full bg-primary/15 flex items-center justify-center">
                         <Wallet className="w-3.5 h-3.5 text-primary" />
                       </div>
                       <div className="flex-1 min-w-0">
                         <p className="text-[12px] font-semibold text-foreground">Pagamento parcial</p>
-                        <p className="text-[10px] text-muted-foreground">Débito em conta</p>
+                        <p className="text-[10px] text-muted-foreground">
+                          {new Date(payment.paid_at).toLocaleDateString("pt-BR", { day: "2-digit", month: "short" })}
+                        </p>
                       </div>
                       <span className="text-[12px] font-bold text-primary shrink-0">
-                        +{fmt(paidAmount)}
+                        +{fmt(Number(payment.amount))}
                       </span>
                     </div>
-                  )}
+                  ))}
                   {recentItems.map((item) => (
                     <div key={item.id} className="flex items-center gap-2.5 py-2">
                       <div className="w-7 h-7 rounded-full bg-muted/20 flex items-center justify-center">
