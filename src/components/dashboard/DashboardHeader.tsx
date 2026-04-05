@@ -35,13 +35,16 @@ const DashboardHeader = memo(({ profile, streak = 0, streakDates = [] }: { profi
   const plan = "Free";
   const [menuOpen, setMenuOpen] = useState(false);
   const [transacaoMenuOpen, setTransacaoMenuOpen] = useState(false);
+  const [streakOpen, setStreakOpen] = useState(false);
   const menuRef = useRef<HTMLDivElement>(null);
   const transacaoRef = useRef<HTMLDivElement>(null);
+  const streakRef = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
     const handler = (e: MouseEvent) => {
       if (menuRef.current && !menuRef.current.contains(e.target as Node)) setMenuOpen(false);
       if (transacaoRef.current && !transacaoRef.current.contains(e.target as Node)) setTransacaoMenuOpen(false);
+      if (streakRef.current && !streakRef.current.contains(e.target as Node)) setStreakOpen(false);
     };
     document.addEventListener("mousedown", handler);
     return () => document.removeEventListener("mousedown", handler);
