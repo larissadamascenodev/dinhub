@@ -63,17 +63,26 @@ export default function FaturaDetailModal({ open, onClose, card, month, year, to
 
   const [paidAmount, setPaidAmount] = useState(0);
   const [invoicePayments, setInvoicePayments] = useState<InvoicePayment[]>([]);
+  const [resolvedTotalAmount, setResolvedTotalAmount] = useState(totalAmount);
+  const [resolvedIsPaid, setResolvedIsPaid] = useState(isPaid);
 
   useEffect(() => {
     if (!open || !card) return;
     setLoadingItems(true);
+    setResolvedTotalAmount(totalAmount);
+    setResolvedIsPaid(isPaid);
     (async () => {
       try {
         const invoices = await getInvoices(card.cardId, month + 1, year);
         if (invoices.length > 0) {
           const inv = invoices[0];
+          const invoiceTotal = Number(inv.total_amount ?? 0);
+          const invoicePaid = Number(inv.paid_amount ?? 0);
+          const outstanding = Math.max(0, invoiceTotal - invoicePaid);
           setInvoiceId(inv.id);
-          setPaidAmount(Number(inv.paid_amount ?? 0));
+          setPaidAmount(invoicePaid);
+          setResolvedTotalAmount(outstanding > 0 ? outstanding : invoiceTotal);
+          setResolvedIsPaid(Boolean(inv.is_paid) && outstanding <= 0);
           const [items, pmts] = await Promise.all([
             getInvoiceItems(inv.id),
             getInvoicePayments(inv.id),
@@ -94,6 +103,8 @@ export default function FaturaDetailModal({ open, onClose, card, month, year, to
           setInvoiceId(null);
           setPaidAmount(0);
           setInvoicePayments([]);
+          setResolvedTotalAmount(totalAmount);
+          setResolvedIsPaid(isPaid);
         }
       } catch {
         setRecentItems([]);
@@ -101,7 +112,7 @@ export default function FaturaDetailModal({ open, onClose, card, month, year, to
         setLoadingItems(false);
       }
     })();
-  }, [open, card, month, year]);
+  }, [open, card, month, year, totalAmount, isPaid]);
 
   // Load accounts when pay modal opens
   useEffect(() => {
@@ -126,7 +137,7 @@ export default function FaturaDetailModal({ open, onClose, card, month, year, to
 
   let dueText = "";
   let dueUrgent = false;
-  if (isPaid) {
+  if (resolvedIsPaid) {
     dueText = "Fatura paga";
   } else if (diffDays < 0) {
     dueText = `Venceu há ${Math.abs(diffDays)} dias`;
@@ -218,9 +229,9 @@ export default function FaturaDetailModal({ open, onClose, card, month, year, to
                     Fatura de {MONTH_NAMES[month]}
                   </p>
                   <p className="text-2xl font-extrabold text-foreground tracking-tight">
-                    {fmt(totalAmount)}
+                    {fmt(resolvedTotalAmount)}
                   </p>
-                  {isPaid ? (
+                  {resolvedIsPaid ? (
                     <span className="inline-flex items-center gap-1 text-[10px] font-semibold text-primary">
                       <CheckCircle2 className="w-3.5 h-3.5" />
                       {dueText}
@@ -265,7 +276,7 @@ export default function FaturaDetailModal({ open, onClose, card, month, year, to
               ) : (
                 <div className="space-y-1">
                    {/* Individual payment entries — at top */}
-                  {!isPaid && invoicePayments.map((payment) => (
+                  {!resolvedIsPaid && invoicePayments.map((payment) => (
                     <div key={payment.id} className="flex items-center gap-2.5 py-2 border-b border-border/10 mb-1 pb-3">
                       <div className="w-7 h-7 rounded-full bg-primary/15 flex items-center justify-center">
                         <Wallet className="w-3.5 h-3.5 text-primary" />
@@ -306,7 +317,7 @@ export default function FaturaDetailModal({ open, onClose, card, month, year, to
 
             {/* CTAs */}
             <div className="px-5 pb-5 pt-2 space-y-2">
-              {!isPaid && totalAmount > 0 && (
+              {!resolvedIsPaid && resolvedTotalAmount > 0 && (
                 <button
                   onClick={() => setShowPayModal(true)}
                   className="w-full h-11 rounded-xl text-xs font-bold gap-1.5 inline-flex items-center justify-center bg-primary/20 text-primary border border-primary/30 hover:bg-primary/30 transition-colors backdrop-blur-sm"
@@ -319,7 +330,7 @@ export default function FaturaDetailModal({ open, onClose, card, month, year, to
                 onClick={handleViewFull}
                 className={cn(
                   "w-full h-11 rounded-xl text-xs font-bold gap-1.5 inline-flex items-center justify-center transition-colors backdrop-blur-sm",
-                  isPaid || totalAmount <= 0
+                  resolvedIsPaid || resolvedTotalAmount <= 0
                     ? "bg-primary/15 text-primary border border-primary/20 hover:bg-primary/25"
                     : "bg-muted/20 text-muted-foreground border border-border/20 hover:bg-muted/30"
                 )}
@@ -336,7 +347,7 @@ export default function FaturaDetailModal({ open, onClose, card, month, year, to
       <InvoicePayModal
         open={showPayModal}
         onClose={() => setShowPayModal(false)}
-        total={totalAmount}
+        total={resolvedTotalAmount}
         accounts={accounts}
         payAccountId={payAccountId}
         setPayAccountId={setPayAccountId}
