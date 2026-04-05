@@ -19,6 +19,7 @@ import { toast } from "sonner";
 const DashboardLayout = () => {
   const { profile } = useProfile();
   const { user } = useAuth();
+  const { streak } = useLoginStreak();
   const [showTypeChooser, setShowTypeChooser] = useState(false);
   const [showModal, setShowModal] = useState(false);
   const [showTransferModal, setShowTransferModal] = useState(false);
