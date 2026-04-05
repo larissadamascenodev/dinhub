@@ -353,7 +353,7 @@ const Transacoes = () => {
                 name: `Fatura ${card.name}`,
                 category: "Cartão de Crédito",
                 date: `${selectedYear}-${String(selectedMonth + 1).padStart(2, "0")}-${String(card.due_day || 1).padStart(2, "0")}`,
-                  amount: Number(invoice.total_amount),
+                  amount: Math.max(0, Number(invoice.total_amount) - Number((invoice as any).paid_amount ?? 0)) || Number(invoice.total_amount),
                 type: "despesa",
                   status: invoice.is_paid ? "pago" : "pendente",
                 payment_method: "cartao",
