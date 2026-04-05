@@ -145,15 +145,7 @@ const Index = () => {
           <ReceitasDespesasCards receitas={receitas} receitasRecebidas={data.receitasRecebidas} receitasPendentes={data.receitasPendentes} despesas={despesas} despesasPagas={data.despesasPagas} despesasPendentes={data.despesasPendentes} compact />
           <BalancoCard balanco={balanco} />
           {/* MicroInteracoesCard temporarily disabled */}
-          <button onClick={() => navigate("/bot-finance/projecoes")} className="glass-card w-full p-3 flex items-center justify-between group hover:border-primary/20 transition-all">
-            <div className="flex items-center gap-2.5">
-              <div className="w-8 h-8 rounded-lg bg-primary/10 flex items-center justify-center">
-                <TrendingUp className="w-4 h-4 text-primary" />
-              </div>
-              <span className="text-xs font-medium text-foreground">Veja suas projeções</span>
-            </div>
-            <ChevronRight className="w-4 h-4 text-muted-foreground/40 group-hover:text-primary transition-colors" />
-          </button>
+          <ProjectionCard saldoAtual={saldoMes} saldoPrevisto={saldoPrevisto} balanco={balanco} />
           {data.categories.length > 0 && (
             <GastosPorCategoria categories={data.categories} onVerAnalise={() => navigate("/transacoes")} />
           )}
