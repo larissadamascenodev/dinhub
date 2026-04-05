@@ -158,6 +158,7 @@ async function fetchTotalAccountBalance(): Promise<number> {
 /**
  * Aggregate ALL transactions for income/expense totals,
  * but only PAID transactions for balance.
+ * Credit card transactions are EXCLUDED — their impact is handled via invoices.
  */
 function aggregate(transactions: RawTransaction[]) {
   let income = 0;
@@ -168,6 +169,8 @@ function aggregate(transactions: RawTransaction[]) {
     const amt = Number(t.amount);
     // Skip transfers and investments — they don't affect income/expense
     if (t.type === "transferencia" || t.type === "investimento") continue;
+    // Skip credit card transactions — their cost is represented by invoice totals
+    if (t.payment_method === "cartao") continue;
     if (t.type === "receita") {
       income += amt;
       if (t.status === "pago") paidIncome += amt;
@@ -177,6 +180,31 @@ function aggregate(transactions: RawTransaction[]) {
     }
   }
   return { income, expense, paidIncome, paidExpense, balance: paidIncome - paidExpense };
+}
+
+/** Fetch invoice totals for a given month and return expense/paidExpense from invoices */
+async function fetchInvoiceTotalsForMonth(month: number, year: number) {
+  const dbMonth = month + 1;
+  const { data } = await supabase
+    .from("invoices")
+    .select("total_amount, is_paid, paid_amount")
+    .eq("month", dbMonth)
+    .eq("year", year);
+
+  let invoiceExpense = 0;
+  let invoicePaidExpense = 0;
+  for (const inv of data ?? []) {
+    const total = Number(inv.total_amount);
+    if (total <= 0) continue;
+    invoiceExpense += total;
+    if (inv.is_paid) {
+      invoicePaidExpense += total;
+    } else {
+      // Partially paid
+      invoicePaidExpense += Number(inv.paid_amount ?? 0);
+    }
+  }
+  return { invoiceExpense, invoicePaidExpense };
 }
 
 async function fetchHistoricalAverages(
