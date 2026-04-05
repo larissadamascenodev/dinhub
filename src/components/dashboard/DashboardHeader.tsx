@@ -3,6 +3,7 @@ import { LayoutDashboard, ArrowLeftRight, Plus, Bot, User, Bell, Flame, PiggyBan
 import { useAuth } from "@/contexts/AuthContext";
 import { useNavigate, useLocation } from "react-router-dom";
 import { motion, AnimatePresence } from "framer-motion";
+import { cn } from "@/lib/utils";
 
 export const useGreeting = () => {
   return useMemo(() => {
@@ -25,7 +26,7 @@ const NAV_ITEMS = [
   { label: "Perfil", icon: User, path: "/configuracoes" },
 ];
 
-const DashboardHeader = memo(({ profile, streak = 0 }: { profile?: { display_name: string | null } | null; streak?: number }) => {
+const DashboardHeader = memo(({ profile, streak = 0, streakDates = [] }: { profile?: { display_name: string | null } | null; streak?: number; streakDates?: string[] }) => {
   const { signOut, user } = useAuth();
   const navigate = useNavigate();
   const location = useLocation();
@@ -35,13 +36,16 @@ const DashboardHeader = memo(({ profile, streak = 0 }: { profile?: { display_nam
   const plan = "Free";
   const [menuOpen, setMenuOpen] = useState(false);
   const [transacaoMenuOpen, setTransacaoMenuOpen] = useState(false);
+  const [streakOpen, setStreakOpen] = useState(false);
   const menuRef = useRef<HTMLDivElement>(null);
   const transacaoRef = useRef<HTMLDivElement>(null);
+  const streakRef = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
     const handler = (e: MouseEvent) => {
       if (menuRef.current && !menuRef.current.contains(e.target as Node)) setMenuOpen(false);
       if (transacaoRef.current && !transacaoRef.current.contains(e.target as Node)) setTransacaoMenuOpen(false);
+      if (streakRef.current && !streakRef.current.contains(e.target as Node)) setStreakOpen(false);
     };
     document.addEventListener("mousedown", handler);
     return () => document.removeEventListener("mousedown", handler);
@@ -55,6 +59,61 @@ const DashboardHeader = memo(({ profile, streak = 0 }: { profile?: { display_nam
       window.dispatchEvent(new CustomEvent("open-nova-transacao-direct", { detail: { type } }));
     }
   };
+
+  const streakMessage = streak >= 7
+    ? "🏆 Incrível! Você está arrasando!"
+    : streak >= 3
+      ? "🔥 Mandando bem! Continue assim!"
+      : streak >= 1
+        ? "👋 Bom te ver de volta!"
+        : "Acesse todo dia para manter sua sequência!";
+
+  const formatStreakDate = (dateStr: string) => {
+    const [y, m, d] = dateStr.split("-");
+    const date = new Date(Number(y), Number(m) - 1, Number(d));
+    return date.toLocaleDateString("pt-BR", { weekday: "short", day: "numeric", month: "short" });
+  };
+
+  const renderStreakPopover = () => (
+    <AnimatePresence>
+      {streakOpen && (
+        <motion.div
+          initial={{ opacity: 0, scale: 0.9, y: -8 }}
+          animate={{ opacity: 1, scale: 1, y: 0 }}
+          exit={{ opacity: 0, scale: 0.9, y: -8 }}
+          transition={{ type: "spring", stiffness: 400, damping: 25 }}
+          className="absolute z-50 w-64 bg-card border border-border/30 rounded-2xl shadow-xl p-4 space-y-3 right-0 top-full mt-2"
+        >
+          <div className="text-center space-y-1">
+            <div className="text-3xl">{streak >= 7 ? "🏆" : "🔥"}</div>
+            <p className="text-lg font-bold text-foreground">{streak} {streak === 1 ? "dia" : "dias"}</p>
+            <p className="text-xs text-muted-foreground">{streakMessage}</p>
+          </div>
+          {streakDates.length > 0 && (
+            <div className="space-y-1.5">
+              <p className="text-[10px] font-semibold text-muted-foreground uppercase tracking-wider">Sequência</p>
+              <div className="space-y-1 max-h-32 overflow-y-auto">
+                {streakDates.slice(0, 7).map((date, i) => (
+                  <div key={date} className="flex items-center gap-2 text-xs px-2 py-1.5 rounded-lg bg-warning/5 border border-warning/10">
+                    <Flame className="w-3 h-3 text-warning flex-shrink-0" />
+                    <span className="text-foreground capitalize">{formatStreakDate(date)}</span>
+                    {i === 0 && (
+                      <span className="ml-auto text-[9px] font-medium text-primary bg-primary/10 px-1.5 py-0.5 rounded-full">Hoje</span>
+                    )}
+                  </div>
+                ))}
+              </div>
+            </div>
+          )}
+          {streak > 0 && streak < 7 && (
+            <p className="text-[10px] text-center text-muted-foreground">
+              Faltam <span className="font-bold text-warning">{7 - streak}</span> dias para o troféu 🏆
+            </p>
+          )}
+        </motion.div>
+      )}
+    </AnimatePresence>
+  );
 
   return (
     <>
@@ -186,10 +245,16 @@ const DashboardHeader = memo(({ profile, streak = 0 }: { profile?: { display_nam
 
         {/* Right: Streak → Bell → Profile */}
         <div className="flex items-center gap-2.5 flex-shrink-0">
-          <button className="flex items-center gap-1.5 px-3 py-1.5 rounded-full bg-warning/10 border border-warning/20 hover:border-warning/40 transition-all">
-            <Flame className="w-4 h-4 text-warning" />
-            <span className="text-sm font-bold text-warning">{streak}</span>
-          </button>
+          <div className="relative" ref={streakRef}>
+            <button
+              onClick={() => setStreakOpen((v) => !v)}
+              className="flex items-center gap-1.5 px-3 py-1.5 rounded-full bg-warning/10 border border-warning/20 hover:border-warning/40 transition-all"
+            >
+              <Flame className="w-4 h-4 text-warning" />
+              <span className="text-sm font-bold text-warning">{streak}</span>
+            </button>
+            {renderStreakPopover()}
+          </div>
           <button className="text-muted-foreground hover:text-foreground transition-colors">
             <Bell className="h-4 w-4" />
           </button>
@@ -262,10 +327,16 @@ const DashboardHeader = memo(({ profile, streak = 0 }: { profile?: { display_nam
             <button className="w-7 h-7 rounded-full flex items-center justify-center text-muted-foreground">
               <Bell className="h-3.5 w-3.5" />
             </button>
-            <button className="flex items-center gap-1 px-2 py-1 rounded-full bg-warning/10 border border-warning/20">
-              <Flame className="w-3 h-3 text-warning" />
-              <span className="text-[11px] font-bold text-warning">{streak}</span>
-            </button>
+            <div className="relative" ref={streakRef}>
+              <button
+                onClick={() => setStreakOpen((v) => !v)}
+                className="flex items-center gap-1 px-2 py-1 rounded-full bg-warning/10 border border-warning/20"
+              >
+                <Flame className="w-3 h-3 text-warning" />
+                <span className="text-[11px] font-bold text-warning">{streak}</span>
+              </button>
+              {renderStreakPopover()}
+            </div>
           </div>
         </div>
       </header>

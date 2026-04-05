@@ -19,7 +19,7 @@ import { toast } from "sonner";
 const DashboardLayout = () => {
   const { profile } = useProfile();
   const { user } = useAuth();
-  const { streak } = useLoginStreak();
+  const { streak, streakDates } = useLoginStreak();
   const [showTypeChooser, setShowTypeChooser] = useState(false);
   const [showModal, setShowModal] = useState(false);
   const [showTransferModal, setShowTransferModal] = useState(false);
@@ -150,7 +150,7 @@ const DashboardLayout = () => {
     <MonthProvider>
       <div className="dark min-h-screen bg-background text-foreground">
         <div className="w-full mx-auto px-4 md:px-6 lg:px-8 xl:px-12 pt-0 pb-24 md:pb-8">
-          <DashboardHeader profile={profile} streak={streak} />
+          <DashboardHeader profile={profile} streak={streak} streakDates={streakDates} />
           <Outlet context={{ profile }} />
         </div>
         <MobileBottomNav />
