@@ -487,13 +487,13 @@ const TransactionDetailModal = ({ open, tx, accountName, onClose, onRefresh, use
             </div>
             <div className="space-y-2">
               <button
-                onClick={() => setStep("edit-form")}
+                onClick={() => { setEditScope("this"); setStep("edit-form"); }}
                 className="w-full py-3.5 rounded-xl text-sm font-bold bg-primary text-primary-foreground hover:bg-primary/90 transition-all"
               >
                 Apenas esta
               </button>
               <button
-                onClick={() => setStep("edit-form")}
+                onClick={() => { setEditScope("all"); setStep("edit-form"); }}
                 className="w-full py-3 rounded-xl text-sm font-bold text-foreground bg-muted/30 border border-border/20 hover:bg-muted/50 transition-all"
               >
                 Todas as pendentes
