@@ -22,6 +22,8 @@ interface Props {
   cardName?: string;
   invoiceMonth: number;
   invoiceYear: number;
+  paidAmount?: number;
+  isPaid?: boolean;
   onEditItem?: (transactionId: string, updates?: { name?: string; amount?: number; category?: string }) => Promise<void>;
   onDeleteItem?: (transactionId: string) => Promise<void>;
 }
