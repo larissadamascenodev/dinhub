@@ -223,7 +223,6 @@ export default function FaturaDetailModal({ open, onClose, card, month, year, to
                       {dueText}
                     </span>
                   )}
-                  </span>
                 </div>
               </div>
             </div>
