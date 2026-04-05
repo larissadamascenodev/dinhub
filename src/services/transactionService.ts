@@ -127,6 +127,7 @@ export async function getRecentTransactions(limit = 10) {
     .select("*")
     .eq("status", "pago")
     .order("date", { ascending: false })
+    .order("created_at", { ascending: false })
     .limit(limit);
 
   if (error) throw error;
