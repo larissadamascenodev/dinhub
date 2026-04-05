@@ -1,6 +1,6 @@
 import { useMemo, useRef, useEffect, useState, useCallback } from "react";
 import { motion } from "framer-motion";
-import { TrendingUp } from "lucide-react";
+import { TrendingUp, Check } from "lucide-react";
 import { MONTH_SHORT, formatCurrency } from "@/pages/FaturaCartao";
 import type { Invoice } from "@/services/invoiceService";
 import { cn } from "@/lib/utils";
