@@ -106,27 +106,54 @@ const SaldoWalletCarousel = memo(({ saldoAtual, saldoPrevisto, isFutureMonth, is
 
   // Unified drag handling (touch + mouse)
   const dragStartX = useRef(0);
+  const dragStartY = useRef(0);
   const isDragging = useRef(false);
+  const isHorizontalSwipe = useRef<boolean | null>(null);
 
-  const handleDragStart = useCallback((clientX: number) => {
+  const handleDragStart = useCallback((clientX: number, clientY: number) => {
     if (!isCurrentMonth) return;
     dragStartX.current = clientX;
+    dragStartY.current = clientY;
     isDragging.current = true;
+    isHorizontalSwipe.current = null;
   }, [isCurrentMonth]);
 
   const handleDragEnd = useCallback((clientX: number) => {
     if (!isDragging.current || !isCurrentMonth) return;
     isDragging.current = false;
+    const wasHorizontal = isHorizontalSwipe.current;
+    isHorizontalSwipe.current = null;
+    if (!wasHorizontal) return;
     const diff = dragStartX.current - clientX;
-    if (Math.abs(diff) > 50) {
+    if (Math.abs(diff) > 40) {
       if (diff > 0 && page === 0) { setDirection(1); setPage(1); resetTimer(); }
       if (diff < 0 && page === 1) { setDirection(-1); setPage(0); resetTimer(); }
     }
   }, [page, resetTimer, isCurrentMonth]);
 
-  const onTouchStart = useCallback((e: React.TouchEvent) => handleDragStart(e.touches[0].clientX), [handleDragStart]);
-  const onTouchEnd = useCallback((e: React.TouchEvent) => handleDragEnd(e.changedTouches[0].clientX), [handleDragEnd]);
-  const onMouseDown = useCallback((e: React.MouseEvent) => { e.preventDefault(); handleDragStart(e.clientX); }, [handleDragStart]);
+  const onTouchStart = useCallback((e: React.TouchEvent) => {
+    handleDragStart(e.touches[0].clientX, e.touches[0].clientY);
+  }, [handleDragStart]);
+
+  const onTouchMove = useCallback((e: React.TouchEvent) => {
+    if (!isDragging.current) return;
+    const dx = Math.abs(e.touches[0].clientX - dragStartX.current);
+    const dy = Math.abs(e.touches[0].clientY - dragStartY.current);
+    // Determine swipe direction on first significant movement
+    if (isHorizontalSwipe.current === null && (dx > 8 || dy > 8)) {
+      isHorizontalSwipe.current = dx > dy;
+    }
+    // Prevent vertical scroll when swiping horizontally
+    if (isHorizontalSwipe.current) {
+      e.preventDefault();
+    }
+  }, []);
+
+  const onTouchEnd = useCallback((e: React.TouchEvent) => {
+    handleDragEnd(e.changedTouches[0].clientX);
+  }, [handleDragEnd]);
+
+  const onMouseDown = useCallback((e: React.MouseEvent) => { e.preventDefault(); handleDragStart(e.clientX, e.clientY); }, [handleDragStart]);
   const onMouseUp = useCallback((e: React.MouseEvent) => handleDragEnd(e.clientX), [handleDragEnd]);
   const onMouseLeave = useCallback((e: React.MouseEvent) => { if (isDragging.current) handleDragEnd(e.clientX); }, [handleDragEnd]);
 
@@ -149,6 +176,7 @@ const SaldoWalletCarousel = memo(({ saldoAtual, saldoPrevisto, isFutureMonth, is
         )}
         style={{ background: page === 0 ? darkGradient : greenGradient }}
         onTouchStart={onTouchStart}
+        onTouchMove={onTouchMove}
         onTouchEnd={onTouchEnd}
         onMouseDown={onMouseDown}
         onMouseUp={onMouseUp}
