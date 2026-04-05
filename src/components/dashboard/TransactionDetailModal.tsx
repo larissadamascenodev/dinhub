@@ -347,7 +347,7 @@ const TransactionDetailModal = ({ open, tx, accountName, onClose, onRefresh, use
                       : "bg-amber-500/15 text-amber-400"
                   )}
                 >
-                  {isPaid ? "Pago" : "Pendente"}
+                  {isPaid ? (isReceita ? "Recebido" : "Pago") : "Pendente"}
                 </span>
               </div>
             </div>
