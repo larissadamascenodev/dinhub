@@ -326,43 +326,80 @@ export async function getFinancialSummary(
   } else if (isFutureMonth) {
     let accumulated = accountBalance;
     
-    // Add current calendar month's pending (regular + unpaid invoices)
+    // Build list of months to chain through
+    const chainPeriods: { m: number; y: number }[] = [];
+    
+    // Current calendar month (for pending amounts)
     if (!(currentCalendarMonth === month && currentCalendarYear === year)) {
-      const currentMonthTxs = await fetchMonthTransactions(currentCalendarMonth, currentCalendarYear);
-      const currentAgg = aggregate(currentMonthTxs);
-      const currentInv = await fetchInvoiceTotalsForMonth(currentCalendarMonth, currentCalendarYear);
-      const pendingIncome = currentAgg.income - currentAgg.paidIncome;
-      const pendingExpense = (currentAgg.expense + currentInv.invoiceExpense) - (currentAgg.paidExpense + currentInv.invoicePaidExpense);
-      accumulated += pendingIncome - pendingExpense;
+      chainPeriods.push({ m: currentCalendarMonth, y: currentCalendarYear });
     }
     
-    // Chain through intermediate months
-    let chainMonth = currentCalendarMonth + 1;
-    let chainYear = currentCalendarYear;
-    while (chainMonth > 11) { chainMonth -= 12; chainYear++; }
+    // Intermediate months
+    let cm = currentCalendarMonth + 1;
+    let cy = currentCalendarYear;
+    while (cm > 11) { cm -= 12; cy++; }
+    while (cy < year || (cy === year && cm < month)) {
+      chainPeriods.push({ m: cm, y: cy });
+      cm++;
+      if (cm > 11) { cm = 0; cy++; }
+    }
     
-    while (chainYear < year || (chainYear === year && chainMonth < month)) {
-      const intermediateTxs = await fetchMonthTransactions(chainMonth, chainYear);
-      const intAgg = aggregate(intermediateTxs);
-      const intInv = await fetchInvoiceTotalsForMonth(chainMonth, chainYear);
-      accumulated += intAgg.income - (intAgg.expense + intInv.invoiceExpense);
-      chainMonth++;
-      if (chainMonth > 11) { chainMonth = 0; chainYear++; }
+    // Fetch all chain months in parallel
+    if (chainPeriods.length > 0) {
+      const chainResults = await Promise.all(
+        chainPeriods.map(({ m, y }) =>
+          Promise.all([
+            fetchMonthTransactions(m, y, { skipMaterialize: true }),
+            fetchInvoiceTotalsForMonth(m, y),
+          ])
+        )
+      );
+      
+      // First period is current month - use pending logic
+      const [currentTxs, currentInv] = chainResults[0];
+      if (!(currentCalendarMonth === month && currentCalendarYear === year)) {
+        const currentAgg = aggregate(currentTxs);
+        const pendingIncome = currentAgg.income - currentAgg.paidIncome;
+        const pendingExpense = (currentAgg.expense + currentInv.invoiceExpense) - (currentAgg.paidExpense + currentInv.invoicePaidExpense);
+        accumulated += pendingIncome - pendingExpense;
+      }
+      
+      // Remaining periods are intermediate months
+      for (let i = (!(currentCalendarMonth === month && currentCalendarYear === year) ? 1 : 0); i < chainResults.length; i++) {
+        const [intTxs, intInv] = chainResults[i];
+        const intAgg = aggregate(intTxs);
+        accumulated += intAgg.income - (intAgg.expense + intInv.invoiceExpense);
+      }
     }
     
     previousMonthEndingBalance = accumulated;
   } else {
-    // Past month
-    let paidAfter = 0;
-    let chainMonth = month + 1;
-    let chainYear = year;
-    if (chainMonth > 11) { chainMonth = 0; chainYear++; }
+    // Past month — fetch all months from selected+1 to current in parallel
+    const pastPeriods: { m: number; y: number }[] = [];
+    let cm = month + 1;
+    let cy = year;
+    if (cm > 11) { cm = 0; cy++; }
+    while (cy < currentCalendarYear || (cy === currentCalendarYear && cm <= currentCalendarMonth)) {
+      pastPeriods.push({ m: cm, y: cy });
+      cm++;
+      if (cm > 11) { cm = 0; cy++; }
+    }
 
-    while (chainYear < currentCalendarYear || (chainYear === currentCalendarYear && chainMonth <= currentCalendarMonth)) {
-      const futureTxs = await fetchMonthTransactions(chainMonth, chainYear);
-      const futAgg = aggregate(futureTxs);
-      const futInv = await fetchInvoiceTotalsForMonth(chainMonth, chainYear);
-      paidAfter += futAgg.paidIncome - (futAgg.paidExpense + futInv.invoicePaidExpense);
+    let paidAfter = 0;
+    if (pastPeriods.length > 0) {
+      const pastResults = await Promise.all(
+        pastPeriods.map(({ m, y }) =>
+          Promise.all([
+            fetchMonthTransactions(m, y, { skipMaterialize: true }),
+            fetchInvoiceTotalsForMonth(m, y),
+          ])
+        )
+      );
+      for (const [futureTxs, futInv] of pastResults) {
+        const futAgg = aggregate(futureTxs);
+        paidAfter += futAgg.paidIncome - (futAgg.paidExpense + futInv.invoicePaidExpense);
+      }
+    }
       chainMonth++;
       if (chainMonth > 11) { chainMonth = 0; chainYear++; }
     }
