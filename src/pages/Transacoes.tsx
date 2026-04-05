@@ -320,8 +320,10 @@ const Transacoes = () => {
         const cardName = info.card?.name || "Cartão";
         const dueDay = info.card?.due_day || 1;
 
-          const invoiceTotal = Number(invoice.total_amount);
-          const isPaid = invoice.is_paid;
+           const invoiceTotal = Number(invoice.total_amount);
+           const invoicePaid = Number((invoice as any).paid_amount ?? 0);
+           const outstanding = Math.max(0, invoiceTotal - invoicePaid);
+           const isPaid = invoice.is_paid;
 
         faturaEntries.push({
           id: `fatura-${cardId}-${selectedMonth}-${selectedYear}`,
