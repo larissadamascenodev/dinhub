@@ -3,6 +3,7 @@ import { motion } from "framer-motion";
 import { Receipt, Layers, Trash2, Wallet } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { formatCurrency, type EnrichedItem } from "@/pages/FaturaCartao";
+import type { InvoicePayment } from "@/services/invoiceService";
 import {
   AlertDialog,
   AlertDialogAction,
@@ -22,7 +23,7 @@ interface Props {
   cardName?: string;
   invoiceMonth: number;
   invoiceYear: number;
-  paidAmount?: number;
+  payments?: InvoicePayment[];
   isPaid?: boolean;
   onEditItem?: (transactionId: string, updates?: { name?: string; amount?: number; category?: string }) => Promise<void>;
   onDeleteItem?: (transactionId: string) => Promise<void>;
