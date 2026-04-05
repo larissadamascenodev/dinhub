@@ -609,8 +609,9 @@ const GestaoFinanceira = () => {
                             className={cn("h-full rounded-full", usedPct > 80 ? "bg-destructive/60" : "bg-primary/40")}
                           />
                         </div>
-                        <div className="flex items-center justify-start">
+                        <div className="flex items-center justify-between">
                           <span className="text-[10px] font-medium text-muted-foreground">{usedPct.toFixed(0)}% usado</span>
+                          <span className="text-[10px] text-muted-foreground/60">Vence dia {card.due_day}</span>
                         </div>
                       </div>
                     </div>
@@ -697,8 +698,9 @@ const GestaoFinanceira = () => {
                             className={cn("h-full rounded-full", usedPct > 80 ? "bg-destructive/60" : "bg-primary/40")}
                           />
                         </div>
-                        <div className="flex items-center justify-start">
+                        <div className="flex items-center justify-between">
                           <span className="text-[10px] font-medium text-muted-foreground">{usedPct.toFixed(0)}% usado</span>
+                          <span className="text-[10px] text-muted-foreground/60">Vence dia {card.due_day}</span>
                         </div>
                       </div>
                     </div>
