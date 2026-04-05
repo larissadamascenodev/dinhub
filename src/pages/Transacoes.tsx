@@ -12,6 +12,7 @@ import { supabase } from "@/integrations/supabase/client";
 import { useAuth } from "@/contexts/AuthContext";
 import { useMonth } from "@/contexts/MonthContext";
 import { deleteTransaction, getAccounts, updateTransaction, getCreditCards } from "@/services/transactionService";
+import { useFinanceData } from "@/hooks/useFinanceData";
 import { getRecurringForMonth, excludeRecurringForMonth, excludeRecurringFromMonthOnward } from "@/services/recurringService";
 import { getInvoices } from "@/services/invoiceService";
 import MonthSelector from "@/components/dashboard/MonthSelector";
@@ -200,6 +201,7 @@ const Transacoes = () => {
   const { user } = useAuth();
   const navigate = useNavigate();
   const { selectedMonth, selectedYear, setMonth } = useMonth();
+  const { data: financeData } = useFinanceData(selectedMonth, selectedYear);
   const [transactions, setTransactions] = useState<TransactionRow[]>([]);
   const [accounts, setAccounts] = useState<AccountRow[]>([]);
   const [creditCards, setCreditCards] = useState<any[]>([]);
@@ -507,12 +509,12 @@ const Transacoes = () => {
 
       {/* Summary - desktop */}
       <motion.div initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }} className="hidden md:grid grid-cols-[1.4fr_1fr] gap-3">
-        <SaldoCard saldoAtual={totals.saldo} saldoPrevisto={totals.saldo} />
+        <SaldoCard saldoAtual={financeData.saldoAtual} saldoPrevisto={financeData.saldoPrevisto} isFutureMonth={financeData.isFutureMonth} />
         <ReceitasDespesasCards receitas={totals.receitas} receitasRecebidas={totals.receitasRecebidas} receitasPendentes={totals.receitasPendentes} despesas={totals.despesas} despesasPagas={totals.despesasPagas} despesasPendentes={totals.despesasPendentes} />
       </motion.div>
       {/* Summary - mobile */}
       <motion.div initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }} className="md:hidden space-y-2">
-        <SaldoCard saldoAtual={totals.saldo} saldoPrevisto={totals.saldo} mobile />
+        <SaldoCard saldoAtual={financeData.saldoAtual} saldoPrevisto={financeData.saldoPrevisto} isFutureMonth={financeData.isFutureMonth} mobile />
         <ReceitasDespesasCards receitas={totals.receitas} receitasRecebidas={totals.receitasRecebidas} receitasPendentes={totals.receitasPendentes} despesas={totals.despesas} despesasPagas={totals.despesasPagas} despesasPendentes={totals.despesasPendentes} mobile />
       </motion.div>
 
