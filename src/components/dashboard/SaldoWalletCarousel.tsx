@@ -131,6 +131,18 @@ const SaldoWalletCarousel = memo(({ saldoAtual, saldoPrevisto, isFutureMonth, is
                     </span>
                   </div>
                 </>
+              ) : isPastMonth ? (
+                <>
+                  <div className="flex items-center justify-between mb-2">
+                    <div className="flex items-center gap-1.5">
+                      <CalendarCheck className="w-3.5 h-3.5 text-muted-foreground" />
+                      <span className="text-[10px] text-muted-foreground uppercase tracking-[0.15em] font-semibold">Saldo ao final do mês</span>
+                    </div>
+                  </div>
+                  <p className={`font-display text-3xl font-bold tracking-tight tabular-nums leading-none ${saldoAtual >= 0 ? "text-foreground" : "text-destructive"} my-[7px]`}>
+                    {animatedSaldo}
+                  </p>
+                </>
               ) : (
                 <>
                   <div className="flex items-center justify-between mb-2">
