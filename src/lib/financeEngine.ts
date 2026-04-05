@@ -61,6 +61,18 @@ function getMonthRange(month: number, year: number) {
 async function fetchMonthTransactions(month: number, year: number) {
   const { start, end } = getMonthRange(month, year);
   const dbMonth = month + 1; // DB stores 1-based months
+
+  // Materialize recurring CC subscription items into invoices for this month
+  // This ensures fixa CC transactions appear in future month invoices
+  const { data: userData } = await supabase.auth.getUser();
+  if (userData?.user?.id) {
+    await supabase.rpc("materialize_recurring_invoice_items", {
+      p_user_id: userData.user.id,
+      p_month: dbMonth,
+      p_year: year,
+    });
+  }
+
   const [{ data, error }, recurringTxs, { data: invoicesData }] = await Promise.all([
     supabase
       .from("transactions")
