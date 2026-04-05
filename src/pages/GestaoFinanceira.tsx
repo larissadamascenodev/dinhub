@@ -576,7 +576,7 @@ const GestaoFinanceira = () => {
                       {/* Divider */}
                       <div className="h-px bg-border/10" />
 
-                      {/* Row 2: Available + limit bar */}
+                      {/* Row 2: Available + Used + Invoice */}
                       <div>
                         <div className="flex items-center gap-1.5 mb-1.5">
                           <div className={cn("w-1.5 h-1.5 rounded-full", usedPct > 80 ? "bg-destructive" : "bg-primary")} />
@@ -596,6 +596,23 @@ const GestaoFinanceira = () => {
                         <div className="flex items-center justify-between">
                           <span className="text-[10px] font-medium text-muted-foreground">{usedPct.toFixed(0)}% usado</span>
                           <span className="text-[10px] text-muted-foreground/60">Vence dia {card.due_day}</span>
+                        </div>
+
+                        {/* Divider */}
+                        <div className="h-px bg-border/10 my-3" />
+
+                        {/* Used + Invoice row */}
+                        <div className="grid grid-cols-2 gap-3">
+                          <div>
+                            <p className="text-[9px] text-muted-foreground uppercase tracking-widest font-medium mb-0.5">Utilizado</p>
+                            <p className="text-sm font-bold tabular-nums text-foreground">{formatCurrency(Number(card.used_limit))}</p>
+                          </div>
+                          <div>
+                            <p className="text-[9px] text-muted-foreground uppercase tracking-widest font-medium mb-0.5">Fatura aberta</p>
+                            <p className={cn("text-sm font-bold tabular-nums", (openInvoices[card.id] || 0) > 0 ? "text-amber-400" : "text-muted-foreground")}>
+                              {formatCurrency(openInvoices[card.id] || 0)}
+                            </p>
+                          </div>
                         </div>
                       </div>
                     </div>
