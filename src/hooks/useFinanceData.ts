@@ -54,7 +54,7 @@ async function buildDashboardData(month: number, year: number): Promise<Dashboar
     await Promise.all([
       getFinancialSummary(month, year),
       getCreditCards(),
-      // Fetch invoices for this month to know which cards actually have invoice items
+      // Fetch invoices for this month with total_amount and item count
       supabase
         .from("invoices")
         .select("credit_card_id, total_amount, is_paid")
@@ -62,6 +62,14 @@ async function buildDashboardData(month: number, year: number): Promise<Dashboar
         .eq("year", year)
         .then(({ data }) => data ?? []),
     ]);
+
+  // Build invoice lookup by card ID for accurate fatura totals
+  const invoiceByCard = new Map(
+    (invoicesForMonth as any[]).map((inv: any) => [
+      inv.credit_card_id,
+      { total: Number(inv.total_amount), isPaid: inv.is_paid },
+    ])
+  );
 
   const cardMap = new Map((creditCards as any[]).map((c: any) => [c.id, c.name]));
 
@@ -90,30 +98,43 @@ async function buildDashboardData(month: number, year: number): Promise<Dashboar
   const regularPending = pendingTxs.filter((t) => t.payment_method !== "cartao");
   const ccPending = pendingTxs.filter((t) => t.payment_method === "cartao" && t.credit_card_id);
 
-  // Group credit card transactions by card into single "Fatura" entries
-  function groupByCard(txs: typeof paidTxs, status: "pago" | "pendente"): Transaction[] {
-    const grouped = new Map<string, { total: number; count: number; name: string }>();
-    for (const t of txs) {
-      const cardId = t.credit_card_id!;
-      const existing = grouped.get(cardId) || { total: 0, count: 0, name: cardMap.get(cardId) || "Cartão" };
-      existing.total += Number(t.amount);
-      existing.count += 1;
-      grouped.set(cardId, existing);
+  // Build fatura entries using invoice total_amount (respects closing day cycle)
+  function buildFaturaEntries(): { paid: Transaction[]; pending: Transaction[] } {
+    const paid: Transaction[] = [];
+    const pending: Transaction[] = [];
+
+    for (const [cardId, inv] of invoiceByCard.entries()) {
+      if (inv.total <= 0) continue;
+      const cardName = cardMap.get(cardId) || "Cartão";
+      // Count CC transactions for this card to show item count
+      const itemCount = filteredTxs.filter(
+        (t) => t.payment_method === "cartao" && t.credit_card_id === cardId
+      ).length;
+
+      const entry: Transaction = {
+        id: `fatura-${cardId}-${month}-${year}`,
+        name: `Fatura ${cardName}`,
+        category: "Cartão de Crédito",
+        date: new Date(year, month, 1).toLocaleDateString("pt-BR", { day: "numeric", month: "short" }),
+        amount: inv.total,
+        type: "despesa" as const,
+        status: inv.isPaid ? "pago" : "pendente",
+        isFatura: true,
+        creditCardId: cardId,
+        creditCardName: cardName,
+        faturaItemCount: itemCount,
+      };
+
+      if (inv.isPaid) {
+        paid.push(entry);
+      } else {
+        pending.push(entry);
+      }
     }
-    return Array.from(grouped.entries()).map(([cardId, info]) => ({
-      id: `fatura-${cardId}-${month}-${year}`,
-      name: `Fatura ${info.name}`,
-      category: "Cartão de Crédito",
-      date: new Date(year, month, 1).toLocaleDateString("pt-BR", { day: "numeric", month: "short" }),
-      amount: info.total,
-      type: "despesa" as const,
-      status,
-      isFatura: true,
-      creditCardId: cardId,
-      creditCardName: info.name,
-      faturaItemCount: info.count,
-    }));
+    return { paid, pending };
   }
+
+  const { paid: faturasPaid, pending: faturasPending } = buildFaturaEntries();
 
   const regularTransactions: Transaction[] = regularPaid.map((t) => ({
     id: t.id,
@@ -125,8 +146,6 @@ async function buildDashboardData(month: number, year: number): Promise<Dashboar
     status: "pago" as const,
   }));
 
-  const faturasPaid = groupByCard(ccPaid, "pago");
-  const faturasPending = groupByCard(ccPending, "pendente");
 
   const transactions: Transaction[] = [...regularTransactions, ...faturasPaid];
 
