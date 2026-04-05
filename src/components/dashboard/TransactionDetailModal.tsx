@@ -6,8 +6,9 @@ import {
 } from "lucide-react";
 import { toast } from "sonner";
 import { cn } from "@/lib/utils";
-import { updateTransactionStatus, updateTransaction, deleteTransaction, getAccounts } from "@/services/transactionService";
+import { updateTransactionStatus, updateTransaction, deleteTransaction, getAccounts, createTransaction } from "@/services/transactionService";
 import { excludeRecurringForMonth, excludeRecurringFromMonthOnward } from "@/services/recurringService";
+import { useAuth } from "@/contexts/AuthContext";
 import { format, subDays } from "date-fns";
 import { Calendar } from "@/components/ui/calendar";
 
