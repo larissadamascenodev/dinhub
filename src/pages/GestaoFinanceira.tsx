@@ -544,8 +544,9 @@ const GestaoFinanceira = () => {
             <div className="overflow-hidden sm:hidden" ref={cardsRef}>
               <div className="flex gap-3 px-4">
               {creditCards.map((card, idx) => {
-                const usedPct = card.limit > 0 ? Math.min((Number(card.used_limit) / Number(card.limit)) * 100, 100) : 0;
-                const available = Math.max(Number(card.limit) - Number(card.used_limit), 0);
+                const usedValue = Number(card.used_limit);
+                const usedPct = card.limit > 0 ? Math.min((usedValue / Number(card.limit)) * 100, 100) : 0;
+                const available = Math.max(Number(card.limit) - usedValue, 0);
                 const accent = getAccent(card.color);
 
                 return (
@@ -585,7 +586,7 @@ const GestaoFinanceira = () => {
                         <div className="grid grid-cols-2 gap-3 items-end mb-3">
                           <div>
                             <div className="flex items-center gap-1.5 mb-1.5">
-                              <div className={cn("w-1.5 h-1.5 rounded-full", usedPct > 80 ? "bg-destructive" : "bg-primary")} />
+                              <div className={cn("w-1.5 h-1.5 rounded-full", usedValue > Number(card.limit) ? "bg-destructive" : "bg-primary")} />
                               <p className="text-[9px] text-muted-foreground uppercase tracking-widest font-medium">Disponível</p>
                             </div>
                             <p className="text-xl font-extrabold tabular-nums tracking-tight text-foreground">
@@ -603,7 +604,7 @@ const GestaoFinanceira = () => {
                           </div>
                         </div>
                         <div className="flex items-center justify-between mt-2.5 mb-1">
-                          <span className="text-[10px] font-medium text-muted-foreground">{formatCurrency(Number(card.used_limit))} utilizado</span>
+                          <span className="text-[10px] font-medium text-muted-foreground">{formatCurrency(usedValue)} utilizado</span>
                           <span className="text-[10px] text-muted-foreground">de {formatCurrency(Number(card.limit))}</span>
                         </div>
                         <div className="w-full h-1.5 rounded-full bg-muted/30 overflow-hidden mb-1.5">
@@ -611,7 +612,7 @@ const GestaoFinanceira = () => {
                             initial={{ width: 0 }}
                             animate={{ width: `${usedPct}%` }}
                             transition={{ duration: 0.8, ease: "easeOut" }}
-                            className={cn("h-full rounded-full", usedPct > 80 ? "bg-destructive/60" : "bg-primary/40")}
+                            className={cn("h-full rounded-full", usedValue > Number(card.limit) ? "bg-destructive/60" : "bg-primary/40")}
                           />
                         </div>
                         <div className="flex items-center justify-between">
@@ -639,8 +640,9 @@ const GestaoFinanceira = () => {
             {/* Desktop grid */}
             <div className="hidden sm:grid sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-3">
               {creditCards.map((card, idx) => {
-                const usedPct = card.limit > 0 ? Math.min((Number(card.used_limit) / Number(card.limit)) * 100, 100) : 0;
-                const available = Math.max(Number(card.limit) - Number(card.used_limit), 0);
+                const usedValue = Number(card.used_limit);
+                const usedPct = card.limit > 0 ? Math.min((usedValue / Number(card.limit)) * 100, 100) : 0;
+                const available = Math.max(Number(card.limit) - usedValue, 0);
                 const accent = getAccent(card.color);
 
                 return (
@@ -676,7 +678,7 @@ const GestaoFinanceira = () => {
                         <div className="grid grid-cols-2 gap-3 items-end mb-3">
                           <div>
                             <div className="flex items-center gap-1.5 mb-1.5">
-                              <div className={cn("w-1.5 h-1.5 rounded-full", usedPct > 80 ? "bg-destructive" : "bg-primary")} />
+                              <div className={cn("w-1.5 h-1.5 rounded-full", usedValue > Number(card.limit) ? "bg-destructive" : "bg-primary")} />
                               <p className="text-[9px] text-muted-foreground uppercase tracking-widest font-medium">Disponível</p>
                             </div>
                             <p className="text-xl font-extrabold tabular-nums tracking-tight text-foreground">
@@ -694,7 +696,7 @@ const GestaoFinanceira = () => {
                           </div>
                         </div>
                         <div className="flex items-center justify-between mt-2.5 mb-1">
-                          <span className="text-[10px] font-medium text-muted-foreground">{formatCurrency(Number(card.used_limit))} utilizado</span>
+                          <span className="text-[10px] font-medium text-muted-foreground">{formatCurrency(usedValue)} utilizado</span>
                           <span className="text-[10px] text-muted-foreground">de {formatCurrency(Number(card.limit))}</span>
                         </div>
                         <div className="w-full h-1.5 rounded-full bg-muted/30 overflow-hidden mb-1.5">
@@ -702,7 +704,7 @@ const GestaoFinanceira = () => {
                             initial={{ width: 0 }}
                             animate={{ width: `${usedPct}%` }}
                             transition={{ duration: 0.8, ease: "easeOut" }}
-                            className={cn("h-full rounded-full", usedPct > 80 ? "bg-destructive/60" : "bg-primary/40")}
+                            className={cn("h-full rounded-full", usedValue > Number(card.limit) ? "bg-destructive/60" : "bg-primary/40")}
                           />
                         </div>
                         <div className="flex items-center justify-between">

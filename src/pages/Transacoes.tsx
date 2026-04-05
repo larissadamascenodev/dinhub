@@ -399,20 +399,16 @@ const Transacoes = () => {
   }, [transactions, activeTab, filterCategory, filterStatus, filterAccount, search]);
 
   const totals = useMemo(() => {
-    const receitas = transactions.filter((t) => t.type === "receita").reduce((s, t) => s + t.amount, 0);
-    const despesas = transactions.filter((t) => t.type === "despesa").reduce((s, t) => s + t.amount, 0);
-    const receitasRecebidas = transactions.filter((t) => t.type === "receita" && t.status === "pago").reduce((s, t) => s + t.amount, 0);
-    const despesasPagas = transactions.filter((t) => t.type === "despesa" && t.status === "pago").reduce((s, t) => s + t.amount, 0);
     return {
-      receitas,
-      despesas,
-      receitasRecebidas,
-      receitasPendentes: receitas - receitasRecebidas,
-      despesasPagas,
-      despesasPendentes: despesas - despesasPagas,
-      saldo: receitasRecebidas - despesasPagas,
+      receitas: financeData.receitas,
+      despesas: financeData.despesas,
+      receitasRecebidas: financeData.receitasRecebidas,
+      receitasPendentes: financeData.receitasPendentes,
+      despesasPagas: financeData.despesasPagas,
+      despesasPendentes: financeData.despesasPendentes,
+      saldo: financeData.balanco,
     };
-  }, [transactions]);
+  }, [financeData]);
 
   const grouped = useMemo(() => {
     const groups: Record<string, TransactionRow[]> = {};
