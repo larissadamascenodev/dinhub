@@ -42,7 +42,19 @@ const WalletSummaryCard = () => {
     load();
     const onChange = () => load();
     window.addEventListener("finance-data-changed", onChange);
-    return () => window.removeEventListener("finance-data-changed", onChange);
+
+    // Realtime subscription to catch DB-level updates (e.g. recalc_credit_card_used_limit)
+    const channel = supabase
+      .channel("wallet-cc-realtime")
+      .on("postgres_changes", { event: "*", schema: "public", table: "credit_cards", filter: `user_id=eq.${user.id}` }, () => load())
+      .on("postgres_changes", { event: "*", schema: "public", table: "invoices", filter: `user_id=eq.${user.id}` }, () => load())
+      .on("postgres_changes", { event: "*", schema: "public", table: "accounts", filter: `user_id=eq.${user.id}` }, () => load())
+      .subscribe();
+
+    return () => {
+      window.removeEventListener("finance-data-changed", onChange);
+      supabase.removeChannel(channel);
+    };
   }, [user]);
 
   const bankAccounts = accounts.filter(a => a.type !== "investment");
