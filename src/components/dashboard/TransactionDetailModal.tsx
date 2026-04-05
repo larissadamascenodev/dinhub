@@ -101,6 +101,7 @@ const TransactionDetailModal = ({ open, tx, accountName, onClose, onRefresh, use
   const [showCategoryPicker, setShowCategoryPicker] = useState(false);
   const [showDropdown, setShowDropdown] = useState(false);
   const amountInputRef = useRef<HTMLInputElement>(null);
+  const { user } = useAuth();
   const dropdownRef = useRef<HTMLDivElement>(null);
 
   // Close dropdown on outside click
