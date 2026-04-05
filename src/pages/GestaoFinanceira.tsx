@@ -613,7 +613,6 @@ const GestaoFinanceira = () => {
                         </div>
                         <div className="flex items-center justify-between">
                           <span className="text-[10px] font-medium text-muted-foreground">{usedPct.toFixed(0)}% usado</span>
-                          <span className="text-[10px] text-muted-foreground/60">Vence dia {card.due_day}</span>
                         </div>
                       </div>
                     </div>
