@@ -586,7 +586,11 @@ const GestaoFinanceira = () => {
                         <p className="text-2xl font-extrabold tabular-nums tracking-tight text-foreground">
                           {formatCurrency(available)}
                         </p>
-                        <div className="w-full h-1.5 rounded-full bg-muted/30 overflow-hidden mt-2.5 mb-1.5">
+                        <div className="flex items-center justify-between mt-2.5 mb-1">
+                          <span className="text-[10px] font-medium text-muted-foreground">{usedPct.toFixed(0)}% usado</span>
+                          <span className="text-[10px] text-muted-foreground/60">Vence dia {card.due_day}</span>
+                        </div>
+                        <div className="w-full h-1.5 rounded-full bg-muted/30 overflow-hidden mb-1.5">
                           <motion.div
                             initial={{ width: 0 }}
                             animate={{ width: `${usedPct}%` }}
@@ -595,8 +599,8 @@ const GestaoFinanceira = () => {
                           />
                         </div>
                         <div className="flex items-center justify-between">
-                          <span className="text-[10px] font-medium text-muted-foreground">{formatCurrency(Number(card.used_limit))} usado</span>
-                          <span className="text-[10px] text-muted-foreground/60">Vence dia {card.due_day}</span>
+                          <span className="text-[10px] font-medium text-muted-foreground">{formatCurrency(Number(card.used_limit))} utilizado</span>
+                          <span className="text-[10px] text-muted-foreground">de {formatCurrency(Number(card.limit))}</span>
                         </div>
 
                         {/* Divider */}
@@ -605,14 +609,14 @@ const GestaoFinanceira = () => {
                         {/* Used + Invoice row */}
                         <div className="grid grid-cols-2 gap-3">
                           <div>
-                            <p className="text-[9px] text-muted-foreground uppercase tracking-widest font-medium mb-0.5">Utilizado</p>
-                            <p className="text-sm font-bold tabular-nums text-foreground">{usedPct.toFixed(0)}%</p>
-                          </div>
-                          <div>
                             <p className="text-[9px] text-muted-foreground uppercase tracking-widest font-medium mb-0.5">Fatura aberta</p>
                             <p className={cn("text-sm font-bold tabular-nums", (openInvoices[card.id] || 0) > 0 ? "text-amber-400" : "text-muted-foreground")}>
                               {formatCurrency(openInvoices[card.id] || 0)}
                             </p>
+                          </div>
+                          <div>
+                            <p className="text-[9px] text-muted-foreground uppercase tracking-widest font-medium mb-0.5">Limite total</p>
+                            <p className="text-sm font-bold tabular-nums text-foreground">{formatCurrency(Number(card.limit))}</p>
                           </div>
                         </div>
                       </div>
