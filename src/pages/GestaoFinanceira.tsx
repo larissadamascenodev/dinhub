@@ -685,7 +685,7 @@ const GestaoFinanceira = () => {
                           />
                         </div>
                         <div className="flex items-center justify-between">
-                          <span className="text-[10px] font-medium text-muted-foreground">{usedPct.toFixed(0)}% usado</span>
+                          <span className="text-[10px] font-medium text-muted-foreground">{formatCurrency(Number(card.used_limit))} usado</span>
                           <span className="text-[10px] text-muted-foreground/60">Vence dia {card.due_day}</span>
                         </div>
 
@@ -696,7 +696,7 @@ const GestaoFinanceira = () => {
                         <div className="grid grid-cols-2 gap-3">
                           <div>
                             <p className="text-[9px] text-muted-foreground uppercase tracking-widest font-medium mb-0.5">Utilizado</p>
-                            <p className="text-sm font-bold tabular-nums text-foreground">{formatCurrency(Number(card.used_limit))}</p>
+                            <p className="text-sm font-bold tabular-nums text-foreground">{usedPct.toFixed(0)}%</p>
                           </div>
                           <div>
                             <p className="text-[9px] text-muted-foreground uppercase tracking-widest font-medium mb-0.5">Fatura aberta</p>
