@@ -60,7 +60,8 @@ function getMonthRange(month: number, year: number) {
 
 async function fetchMonthTransactions(month: number, year: number) {
   const { start, end } = getMonthRange(month, year);
-  const [{ data, error }, recurringTxs] = await Promise.all([
+  const dbMonth = month + 1; // DB stores 1-based months
+  const [{ data, error }, recurringTxs, { data: invoicesData }] = await Promise.all([
     supabase
       .from("transactions")
       .select("*")
@@ -68,6 +69,12 @@ async function fetchMonthTransactions(month: number, year: number) {
       .lte("date", end)
       .order("date", { ascending: false }),
     getRecurringForMonth(month, year),
+    // Fetch invoices for this month to filter out CC transactions with no invoice items
+    supabase
+      .from("invoices")
+      .select("credit_card_id, total_amount")
+      .eq("month", dbMonth)
+      .eq("year", year),
   ]);
 
   if (error) throw error;
