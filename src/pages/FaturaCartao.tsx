@@ -250,8 +250,10 @@ const FaturaCartao = () => {
   const paidAmount = currentInvoice ? Number((currentInvoice as any).paid_amount ?? 0) : 0;
   const outstanding = Math.max(0, total - paidAmount);
   const limitTotal = card ? Number(card.limit) : 0;
-  const usedLimit = card ? Number(card.used_limit) : 0;
-  const availableLimit = limitTotal - usedLimit;
+  const rawUsedLimit = card ? Number(card.used_limit) : 0;
+  const visibleUsedBeforeCurrentPayments = Math.min(rawUsedLimit + paidAmount, limitTotal);
+  const usedLimit = Math.max(visibleUsedBeforeCurrentPayments - paidAmount, 0);
+  const availableLimit = Math.max(limitTotal - usedLimit, 0);
   const usedPct = limitTotal > 0 ? Math.min((usedLimit / limitTotal) * 100, 100) : 0;
 
   // Handle file upload (image, PDF, CSV)
