@@ -320,11 +320,8 @@ const Transacoes = () => {
         const cardName = info.card?.name || "Cartão";
         const dueDay = info.card?.due_day || 1;
 
-          let invoiceTotal = Number(invoice.total_amount);
+          const invoiceTotal = Number(invoice.total_amount);
           const isPaid = invoice.is_paid;
-          const recurringCcForCard = recurringCcTxs.filter((t) => t.credit_card_id === cardId);
-          const recurringTotal = recurringCcForCard.reduce((s, t) => s + Number(t.amount), 0);
-          invoiceTotal += recurringTotal;
 
         faturaEntries.push({
           id: `fatura-${cardId}-${selectedMonth}-${selectedYear}`,
