@@ -28,7 +28,7 @@ interface Props {
 
 const modeOptions: { value: PaymentMode; label: string; icon: React.ReactNode }[] = [
   { value: "total", label: "Valor Total", icon: <CheckCircle2 className="w-4 h-4" /> },
-  { value: "minimo", label: "Valor Mínimo", icon: <Banknote className="w-4 h-4" /> },
+  { value: "minimo", label: "Pagar Parcial", icon: <Banknote className="w-4 h-4" /> },
   { value: "parcelado", label: "Parcelado", icon: <CalendarClock className="w-4 h-4" /> },
 ];
 
@@ -220,12 +220,12 @@ export default function InvoicePayModal({
                       <motion.div
                         initial={{ opacity: 0 }}
                         animate={{ opacity: 1 }}
-                        className="bg-destructive/10 border border-destructive/20 rounded-xl p-3 space-y-1"
+                        className="bg-amber-500/10 border border-amber-500/20 rounded-xl p-3 space-y-1"
                       >
-                        <p className="text-[10px] text-destructive font-bold uppercase tracking-wider">Restante para próxima fatura</p>
-                        <p className="text-sm font-bold text-destructive">{formatCurrency(remainder)}</p>
+                        <p className="text-[10px] text-amber-400 font-bold uppercase tracking-wider">Restante em aberto</p>
+                        <p className="text-sm font-bold text-amber-400">{formatCurrency(remainder)}</p>
                         <p className="text-[9px] text-muted-foreground">
-                          O valor restante será transferido para a fatura do mês seguinte
+                          O valor restante continuará em aberto na fatura atual até o vencimento
                         </p>
                       </motion.div>
                     )}
