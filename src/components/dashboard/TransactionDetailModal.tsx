@@ -133,7 +133,7 @@ const TransactionDetailModal = ({ open, tx, accountName, onClose, onRefresh, use
     setLoading(true);
     try {
       await updateTransactionStatus(tx.id, "pago");
-      toast.success("Transação marcada como paga");
+      toast.success(isReceita ? "Receita marcada como recebida" : "Transação marcada como paga");
       onRefresh();
       handleClose();
     } catch {
@@ -331,7 +331,7 @@ const TransactionDetailModal = ({ open, tx, accountName, onClose, onRefresh, use
                   <h2 className="text-sm font-extrabold text-foreground uppercase tracking-wide truncate">{tx.name}</h2>
                 </div>
                 <p className="text-xs text-muted-foreground mt-0.5">
-                  {tx.category} · {isPaid ? "já pago" : "agendada"}
+                  {tx.category} · {isPaid ? (isReceita ? "recebido" : "já pago") : "agendada"}
                   {isRecurring && " · fixa"}
                 </p>
               </div>
@@ -347,7 +347,7 @@ const TransactionDetailModal = ({ open, tx, accountName, onClose, onRefresh, use
                       : "bg-amber-500/15 text-amber-400"
                   )}
                 >
-                  {isPaid ? "Pago" : "Pendente"}
+                  {isPaid ? (isReceita ? "Recebido" : "Pago") : "Pendente"}
                 </span>
               </div>
             </div>
@@ -403,7 +403,7 @@ const TransactionDetailModal = ({ open, tx, accountName, onClose, onRefresh, use
                 onClick={() => setStep("pay-confirm")}
                 className="w-full py-3.5 rounded-xl text-sm font-bold bg-primary/20 text-primary hover:bg-primary/30 transition-all mt-2"
               >
-                Marcar como pago
+                {isReceita ? "Marcar como recebido" : "Marcar como pago"}
               </button>
             )}
           </div>
@@ -418,9 +418,9 @@ const TransactionDetailModal = ({ open, tx, accountName, onClose, onRefresh, use
               <Wallet className="w-6 h-6 text-primary" />
             </div>
             <div>
-              <h3 className="text-lg font-bold text-foreground">Confirmar pagamento</h3>
+              <h3 className="text-lg font-bold text-foreground">{isReceita ? "Confirmar recebimento" : "Confirmar pagamento"}</h3>
               <p className="text-sm text-muted-foreground mt-1">
-                Deseja marcar <span className="font-semibold text-foreground">"{tx.name}"</span> como pago?
+                Deseja marcar <span className="font-semibold text-foreground">"{tx.name}"</span> como {isReceita ? "recebido" : "pago"}?
               </p>
               <p className={`text-xl font-bold mt-2 ${isReceita ? "text-primary" : "text-destructive"}`}>
                 {fmt(tx.amount)}
@@ -432,7 +432,7 @@ const TransactionDetailModal = ({ open, tx, accountName, onClose, onRefresh, use
                 disabled={loading}
                 className="w-full py-3 rounded-xl text-sm font-bold bg-primary text-primary-foreground hover:bg-primary/90 transition-all disabled:opacity-50"
               >
-                {loading ? "Pagando..." : "Confirmar"}
+                {loading ? (isReceita ? "Confirmando..." : "Pagando...") : "Confirmar"}
               </button>
               <button
                 onClick={() => setStep("detail")}
