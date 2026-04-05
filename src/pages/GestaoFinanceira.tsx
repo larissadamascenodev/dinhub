@@ -544,8 +544,9 @@ const GestaoFinanceira = () => {
             <div className="overflow-hidden sm:hidden" ref={cardsRef}>
               <div className="flex gap-3 px-4">
               {creditCards.map((card, idx) => {
-                const usedPct = card.limit > 0 ? Math.min((Number(card.used_limit) / Number(card.limit)) * 100, 100) : 0;
-                const available = Math.max(Number(card.limit) - Number(card.used_limit), 0);
+                const usedValue = Number(card.used_limit);
+                const usedPct = card.limit > 0 ? Math.min((usedValue / Number(card.limit)) * 100, 100) : 0;
+                const available = Math.max(Number(card.limit) - usedValue, 0);
                 const accent = getAccent(card.color);
 
                 return (
