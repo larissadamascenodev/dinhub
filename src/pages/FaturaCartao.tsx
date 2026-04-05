@@ -13,7 +13,7 @@ import { Button } from "@/components/ui/button";
 import { toast } from "sonner";
 import { useAuth } from "@/contexts/AuthContext";
 import { supabase } from "@/integrations/supabase/client";
-import { getInvoices, getInvoiceItems, payInvoice, undoInvoicePayment, type Invoice } from "@/services/invoiceService";
+import { getInvoices, getInvoiceItems, getInvoicePayments, payInvoice, undoInvoicePayment, type Invoice, type InvoicePayment } from "@/services/invoiceService";
 import { getAccounts, getCreditCards, createTransaction, updateTransaction, deleteTransaction, getTransactionById } from "@/services/transactionService";
 import { cn } from "@/lib/utils";
 import InvoiceCategoryBreakdown from "@/components/fatura/InvoiceCategoryBreakdown";
@@ -88,6 +88,7 @@ const FaturaCartao = () => {
   const [card, setCard] = useState<CreditCardInfo | null>(null);
   const [invoices, setInvoices] = useState<Invoice[]>([]);
   const [items, setItems] = useState<EnrichedItem[]>([]);
+  const [payments, setPayments] = useState<InvoicePayment[]>([]);
   const [accounts, setAccounts] = useState<AccountInfo[]>([]);
   const [loading, setLoading] = useState(true);
   const [paying, setPaying] = useState(false);
@@ -146,8 +147,14 @@ const FaturaCartao = () => {
   }, [user, cardId]);
 
   useEffect(() => {
-    if (!currentInvoice) { setItems([]); return; }
-    getInvoiceItems(currentInvoice.id).then((data) => setItems(data as EnrichedItem[]));
+    if (!currentInvoice) { setItems([]); setPayments([]); return; }
+    Promise.all([
+      getInvoiceItems(currentInvoice.id),
+      getInvoicePayments(currentInvoice.id),
+    ]).then(([itemsData, paymentsData]) => {
+      setItems(itemsData as EnrichedItem[]);
+      setPayments(paymentsData);
+    });
   }, [currentInvoice]);
 
   const handlePay = async (details: import("@/components/fatura/InvoicePayModal").PaymentDetails) => {
@@ -178,12 +185,14 @@ const FaturaCartao = () => {
 
   const refreshItems = async () => {
     if (!currentInvoice) return;
-    const [updatedItems, updatedInvoices] = await Promise.all([
+    const [updatedItems, updatedInvoices, updatedPayments] = await Promise.all([
       getInvoiceItems(currentInvoice.id),
       getInvoices(cardId!),
+      getInvoicePayments(currentInvoice.id),
     ]);
     setItems(updatedItems as EnrichedItem[]);
     setInvoices(updatedInvoices);
+    setPayments(updatedPayments);
   };
 
   const handleEditItem = async (transactionId: string, updates?: { name?: string; amount?: number; category?: string }) => {
@@ -610,7 +619,7 @@ const FaturaCartao = () => {
         cardName={card?.name}
         invoiceMonth={selectedMonth}
         invoiceYear={selectedYear}
-        paidAmount={paidAmount}
+        payments={payments}
         isPaid={currentInvoice?.is_paid}
         onEditItem={handleEditItem}
         onDeleteItem={handleDeleteItem}

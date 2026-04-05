@@ -3,7 +3,7 @@ import { motion, AnimatePresence } from "framer-motion";
 import { X, CalendarClock, CalendarCheck, CreditCard, ChevronRight, Wallet, CheckCircle2 } from "lucide-react";
 import { useNavigate } from "react-router-dom";
 import { toast } from "sonner";
-import { getInvoices, getInvoiceItems, payInvoice } from "@/services/invoiceService";
+import { getInvoices, getInvoiceItems, getInvoicePayments, payInvoice, type InvoicePayment } from "@/services/invoiceService";
 import { getAccounts } from "@/services/transactionService";
 import { cn } from "@/lib/utils";
 import InvoicePayModal, { type PaymentDetails } from "@/components/fatura/InvoicePayModal";
@@ -61,8 +61,8 @@ export default function FaturaDetailModal({ open, onClose, card, month, year, to
   const [paying, setPaying] = useState(false);
   const [invoiceId, setInvoiceId] = useState<string | null>(null);
 
-  // Track paid_amount for partial payment display
   const [paidAmount, setPaidAmount] = useState(0);
+  const [invoicePayments, setInvoicePayments] = useState<InvoicePayment[]>([]);
 
   useEffect(() => {
     if (!open || !card) return;
@@ -74,7 +74,11 @@ export default function FaturaDetailModal({ open, onClose, card, month, year, to
           const inv = invoices[0];
           setInvoiceId(inv.id);
           setPaidAmount(Number(inv.paid_amount ?? 0));
-          const items = await getInvoiceItems(inv.id);
+          const [items, pmts] = await Promise.all([
+            getInvoiceItems(inv.id),
+            getInvoicePayments(inv.id),
+          ]);
+          setInvoicePayments(pmts);
           const mapped = items.slice(0, 5).map((item: any) => ({
             id: item.id,
             name: item.transaction_name || "Transação",
@@ -89,6 +93,7 @@ export default function FaturaDetailModal({ open, onClose, card, month, year, to
           setRecentItems([]);
           setInvoiceId(null);
           setPaidAmount(0);
+          setInvoicePayments([]);
         }
       } catch {
         setRecentItems([]);
@@ -259,21 +264,23 @@ export default function FaturaDetailModal({ open, onClose, card, month, year, to
                 </div>
               ) : (
                 <div className="space-y-1">
-                  {/* Partial payment entry — at top */}
-                  {paidAmount > 0 && !isPaid && (
-                    <div className="flex items-center gap-2.5 py-2 border-b border-border/10 mb-1 pb-3">
+                   {/* Individual payment entries — at top */}
+                  {!isPaid && invoicePayments.map((payment) => (
+                    <div key={payment.id} className="flex items-center gap-2.5 py-2 border-b border-border/10 mb-1 pb-3">
                       <div className="w-7 h-7 rounded-full bg-primary/15 flex items-center justify-center">
                         <Wallet className="w-3.5 h-3.5 text-primary" />
                       </div>
                       <div className="flex-1 min-w-0">
                         <p className="text-[12px] font-semibold text-foreground">Pagamento parcial</p>
-                        <p className="text-[10px] text-muted-foreground">Débito em conta</p>
+                        <p className="text-[10px] text-muted-foreground">
+                          {new Date(payment.paid_at).toLocaleDateString("pt-BR", { day: "2-digit", month: "short" })}
+                        </p>
                       </div>
                       <span className="text-[12px] font-bold text-primary shrink-0">
-                        +{fmt(paidAmount)}
+                        +{fmt(Number(payment.amount))}
                       </span>
                     </div>
-                  )}
+                  ))}
                   {recentItems.map((item) => (
                     <div key={item.id} className="flex items-center gap-2.5 py-2">
                       <div className="w-7 h-7 rounded-full bg-muted/20 flex items-center justify-center">
