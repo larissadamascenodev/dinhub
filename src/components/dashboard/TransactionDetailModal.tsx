@@ -401,7 +401,7 @@ const TransactionDetailModal = ({ open, tx, accountName, onClose, onRefresh, use
             {!isPaid && (
               <button
                 onClick={() => setStep("pay-confirm")}
-                className="w-full py-3.5 rounded-xl text-sm font-bold bg-primary text-primary-foreground hover:bg-primary/90 transition-all mt-2"
+                className="w-full py-3.5 rounded-xl text-sm font-bold bg-primary/20 text-primary hover:bg-primary/30 transition-all mt-2"
               >
                 Marcar como pago
               </button>
