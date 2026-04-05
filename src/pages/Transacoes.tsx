@@ -201,6 +201,7 @@ const Transacoes = () => {
   const { user } = useAuth();
   const navigate = useNavigate();
   const { selectedMonth, selectedYear, setMonth } = useMonth();
+  const { data: financeData } = useFinanceData(selectedMonth, selectedYear);
   const [transactions, setTransactions] = useState<TransactionRow[]>([]);
   const [accounts, setAccounts] = useState<AccountRow[]>([]);
   const [creditCards, setCreditCards] = useState<any[]>([]);
