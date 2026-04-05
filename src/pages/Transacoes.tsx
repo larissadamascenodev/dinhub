@@ -242,7 +242,7 @@ const Transacoes = () => {
       getCreditCards(),
         supabase
           .from("invoices")
-          .select("credit_card_id, total_amount, is_paid")
+          .select("credit_card_id, total_amount, is_paid, paid_amount")
           .eq("user_id", user.id)
           .eq("month", selectedMonth + 1)
           .eq("year", selectedYear),
