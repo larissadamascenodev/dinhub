@@ -91,3 +91,12 @@ export async function payInvoice(
   if (error) throw error;
   return data;
 }
+
+export async function undoInvoicePayment(invoiceId: string) {
+  const { data, error } = await supabase.functions.invoke("undo-invoice-payment", {
+    body: { invoice_id: invoiceId },
+  });
+
+  if (error) throw error;
+  return data;
+}
