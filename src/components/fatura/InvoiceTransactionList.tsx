@@ -115,12 +115,13 @@ export default function InvoiceTransactionList({ items, installmentCount = 0, ca
           </div>
         ) : (
           <div className="space-y-1.5">
-            {/* Partial payment entry — newest, appears on top */}
-            {paidAmount > 0 && !isPaid && (
+            {/* Individual payment entries — newest first (on top) */}
+            {!isPaid && payments.map((payment, pIdx) => (
               <motion.div
+                key={payment.id}
                 initial={{ opacity: 0, x: -6 }}
                 animate={{ opacity: 1, x: 0 }}
-                transition={{ delay: 0 }}
+                transition={{ delay: pIdx * 0.03 }}
                 className="rounded-xl border border-primary/20 bg-primary/[0.06] backdrop-blur-xl border-l-[3px] border-l-primary px-3 py-2.5"
                 style={{ boxShadow: "0 2px 12px -4px rgba(0,0,0,0.25)" }}
               >
@@ -134,20 +135,22 @@ export default function InvoiceTransactionList({ items, installmentCount = 0, ca
                         <p className="text-[13px] font-bold text-primary leading-tight">
                           Pagamento parcial
                         </p>
-                        <p className="text-[11px] text-muted-foreground/50">Débito em conta</p>
+                        <p className="text-[11px] text-muted-foreground/50">
+                          {new Date(payment.paid_at).toLocaleDateString("pt-BR", { day: "2-digit", month: "short" })}
+                        </p>
                       </div>
                       <p className="text-[13px] font-bold text-primary tabular-nums leading-tight shrink-0">
-                        +{formatCurrency(paidAmount)}
+                        +{formatCurrency(Number(payment.amount))}
                       </p>
                     </div>
                   </div>
                 </div>
               </motion.div>
-            )}
+            ))}
             {items.map((item, idx) => {
               const isInstallment = item.total_installments > 1;
               const totalValue = isInstallment ? Number(item.amount) * item.total_installments : null;
-              const offset = (paidAmount > 0 && !isPaid) ? 1 : 0;
+              const offset = payments.length;
 
               return (
                 <motion.div
