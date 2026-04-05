@@ -225,7 +225,6 @@ const TransactionDetailModal = ({ open, tx, accountName, onClose, onRefresh, use
     }
   };
 
-  const { user } = useAuth();
 
   const handleSaveEdit = async () => {
     setLoading(true);
