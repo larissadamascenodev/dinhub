@@ -142,33 +142,17 @@ async function fetchMonthEvents(month: number, year: number) {
 }
 
 async function fetchTotalAccountBalance(): Promise<number> {
-  // Sum initial balances from non-investment accounts only (investments are patrimônio, not saldo disponível)
+  // Use current_balance directly — it's the source of truth, maintained by
+  // the update_account_balance trigger (for transactions) and the pay-invoice
+  // edge function (for credit card invoice payments).
   const { data: accounts } = await supabase
     .from("accounts")
-    .select("initial_balance, type")
+    .select("current_balance, type")
     .neq("type", "investment");
 
-  const initialBalance = (accounts ?? []).reduce(
-    (sum, acc) => sum + Number(acc.initial_balance), 0
+  return (accounts ?? []).reduce(
+    (sum, acc) => sum + Number(acc.current_balance), 0
   );
-
-  // Sum all paid transactions ever (not month-specific) to get cumulative balance
-  const { data: paidReceitas } = await supabase
-    .from("transactions")
-    .select("amount")
-    .eq("type", "receita")
-    .eq("status", "pago");
-
-  const { data: paidDespesas } = await supabase
-    .from("transactions")
-    .select("amount")
-    .eq("type", "despesa")
-    .eq("status", "pago");
-
-  const totalReceitas = (paidReceitas ?? []).reduce((s, t) => s + Number(t.amount), 0);
-  const totalDespesas = (paidDespesas ?? []).reduce((s, t) => s + Number(t.amount), 0);
-
-  return initialBalance + totalReceitas - totalDespesas;
 }
 
 /**
