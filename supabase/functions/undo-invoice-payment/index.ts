@@ -95,6 +95,12 @@ Deno.serve(async (req) => {
       })
       .eq("id", invoice_id);
 
+    // Delete all individual payment records
+    await adminClient
+      .from("invoice_payments")
+      .delete()
+      .eq("invoice_id", invoice_id);
+
     // Recalculate credit card used limit
     await adminClient.rpc("recalc_credit_card_used_limit", {
       p_credit_card_id: invoice.credit_card_id,

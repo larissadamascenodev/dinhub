@@ -141,6 +141,15 @@ Deno.serve(async (req) => {
       });
     }
 
+    // Record individual payment entry
+    await adminClient.from("invoice_payments").insert({
+      invoice_id,
+      user_id: user.id,
+      account_id,
+      amount: debitAmount,
+      paid_at: new Date().toISOString(),
+    });
+
     // For "minimo" mode, the remainder stays on the current invoice (no transfer to next month)
 
     if (mode === "parcelado") {
