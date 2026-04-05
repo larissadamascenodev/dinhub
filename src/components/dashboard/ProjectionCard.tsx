@@ -1,6 +1,6 @@
 import { memo } from "react";
 import { useNavigate } from "react-router-dom";
-import { ChevronRight } from "lucide-react";
+import { ArrowUpRight } from "lucide-react";
 import { motion } from "framer-motion";
 
 const ProjectionCard = memo(() => {
@@ -12,37 +12,46 @@ const ProjectionCard = memo(() => {
       animate={{ opacity: 1, y: 0 }}
       transition={{ delay: 0.12 }}
       onClick={() => navigate("/bot-finance/projecoes")}
-      className="cursor-pointer rounded-xl border border-border/10 px-4 py-3 flex items-center gap-3 group hover:border-primary/20 transition-all relative overflow-hidden"
-      style={{
-        background: "linear-gradient(135deg, hsl(220 15% 10% / 0.7) 0%, hsl(220 18% 7% / 0.9) 100%)",
-      }}
+      className="cursor-pointer rounded-xl overflow-hidden relative group"
     >
-      {/* Animated wave SVG */}
-      <div className="absolute inset-0 opacity-[0.12] pointer-events-none">
-        <svg viewBox="0 0 200 60" preserveAspectRatio="none" className="w-full h-full">
-          <path
-            d="M0 40 Q25 20, 50 30 T100 25 T150 32 T200 20 V60 H0Z"
-            fill="hsl(150 100% 45%)"
-          />
-          <path
-            d="M0 48 Q30 35, 60 40 T120 35 T180 42 T200 32 V60 H0Z"
-            fill="hsl(150 100% 45% / 0.5)"
-          />
-        </svg>
-      </div>
+      {/* Gradient background with glass effect */}
+      <div
+        className="absolute inset-0"
+        style={{
+          background: "linear-gradient(145deg, hsl(150 50% 18% / 0.35) 0%, hsl(150 40% 10% / 0.2) 50%, hsl(220 20% 6% / 0.9) 100%)",
+        }}
+      />
+      <div className="absolute inset-0 border border-primary/10 rounded-xl group-hover:border-primary/25 transition-colors" />
 
-      {/* Pulse dot */}
-      <div className="relative flex-shrink-0">
-        <div className="w-2.5 h-2.5 rounded-full bg-primary" />
-        <div className="absolute inset-0 w-2.5 h-2.5 rounded-full bg-primary animate-ping opacity-40" />
-      </div>
+      <div className="relative flex items-center justify-between px-4 py-3.5">
+        <div className="flex items-center gap-3">
+          {/* Mini line chart icon */}
+          <svg width="28" height="20" viewBox="0 0 28 20" fill="none" className="flex-shrink-0">
+            <polyline
+              points="0,16 5,12 10,14 15,8 20,10 25,4 28,2"
+              stroke="hsl(150 100% 45%)"
+              strokeWidth="2"
+              strokeLinecap="round"
+              strokeLinejoin="round"
+              fill="none"
+            />
+            <circle cx="28" cy="2" r="2.5" fill="hsl(150 100% 45%)" className="animate-pulse" />
+          </svg>
 
-      <div className="flex-1 min-w-0 relative">
-        <p className="text-[11px] font-semibold font-display text-foreground">Projeções inteligentes</p>
-        <p className="text-[9px] text-muted-foreground">Confira a tendência dos próximos meses</p>
-      </div>
+          <div>
+            <p className="text-[11px] font-semibold font-display text-foreground leading-tight">
+              Projeções
+            </p>
+            <p className="text-[9px] text-muted-foreground leading-tight mt-px">
+              Tendência dos próximos 6 meses
+            </p>
+          </div>
+        </div>
 
-      <ChevronRight className="w-4 h-4 text-muted-foreground/30 group-hover:text-primary transition-colors flex-shrink-0 relative" />
+        <div className="w-7 h-7 rounded-lg bg-primary/10 flex items-center justify-center flex-shrink-0 group-hover:bg-primary/20 transition-colors">
+          <ArrowUpRight className="w-3.5 h-3.5 text-primary" />
+        </div>
+      </div>
     </motion.div>
   );
 });
