@@ -41,7 +41,7 @@ const slideVariants = {
   exit: (dir: number) => ({ x: dir > 0 ? "-100%" : "100%", opacity: 0 }),
 };
 
-const SaldoWalletCarousel = memo(({ saldoAtual, saldoPrevisto, isFutureMonth }: Props) => {
+const SaldoWalletCarousel = memo(({ saldoAtual, saldoPrevisto, isFutureMonth, isPastMonth }: Props) => {
   const [page, setPage] = useState(0);
   const [direction, setDirection] = useState(0);
   const navigate = useNavigate();
