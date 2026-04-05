@@ -20,8 +20,31 @@ export async function getRecurringForMonth(month: number, year: number) {
   if (txError) throw txError;
   if (!fixaTxs || fixaTxs.length === 0) return [];
 
+  const buildSignature = (t: any) => [
+    t.name,
+    t.type,
+    t.category,
+    Number(t.amount).toFixed(2),
+    t.payment_method ?? "",
+    t.account_id ?? "",
+    t.credit_card_id ?? "",
+  ].join("::");
+
+  // Keep only the latest fixed transaction per signature.
+  // This prevents duplicated carry-over when the same fixed item exists in multiple months.
+  const latestBySignature = new Map<string, any>();
+  for (const tx of fixaTxs) {
+    const key = buildSignature(tx);
+    if (!latestBySignature.has(key)) {
+      latestBySignature.set(key, tx);
+    }
+  }
+
+  const uniqueFixaTxs = Array.from(latestBySignature.values());
+  const txIds = uniqueFixaTxs.map((t) => t.id);
+  if (txIds.length === 0) return [];
+
   // Fetch exclusions for this month
-  const txIds = fixaTxs.map((t) => t.id);
   const { data: exclusions, error: exError } = await supabase
     .from("recurring_exclusions" as any)
     .select("transaction_id")
@@ -35,9 +58,8 @@ export async function getRecurringForMonth(month: number, year: number) {
 
   // Filter out excluded and transactions whose original month IS this month
   // (those are already fetched by the normal query)
-  return fixaTxs.filter((t) => {
+  return uniqueFixaTxs.filter((t) => {
     if (excludedIds.has(t.id)) return false;
-    // If the original transaction is in this same month, skip (already included)
     const origDate = new Date(t.date);
     if (origDate.getMonth() === month && origDate.getFullYear() === year) return false;
     return true;
