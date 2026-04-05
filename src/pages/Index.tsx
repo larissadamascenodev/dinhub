@@ -8,7 +8,7 @@ import SaldoCard from "@/components/dashboard/SaldoCard";
 import ReceitasDespesasCards from "@/components/dashboard/ReceitasDespesasCards";
 import BalancoCard from "@/components/dashboard/BalancoCard";
 import SaldoWalletCarousel from "@/components/dashboard/SaldoWalletCarousel";
-import MicroInteracoesCard from "@/components/dashboard/MicroInteracoesCard";
+// MicroInteracoesCard temporarily disabled
 import TransacoesRecentes from "@/components/dashboard/TransacoesRecentes";
 import ProximosEventos from "@/components/dashboard/ProximosEventos";
 import GastosPorCategoria from "@/components/dashboard/GastosPorCategoria";
@@ -105,7 +105,7 @@ const Index = () => {
               </motion.div>
             </div>
             <BalancoCard balanco={balanco} />
-            {isCurrentMonth && <MicroInteracoesCard gastosHoje={data.gastosHoje} mediaGastosDiarios={data.mediaGastosDiarios} />}
+            {/* MicroInteracoesCard temporarily disabled */}
             {data.categories.length > 0 && (
               <GastosPorCategoria
                 categories={data.categories}
@@ -191,7 +191,7 @@ const Index = () => {
           <SaldoCard saldoAtual={saldoMes} saldoPrevisto={saldoPrevisto} isFutureMonth={isFutureMonth} isPastMonth={data.isPastMonth} />
           <ReceitasDespesasCards receitas={receitas} receitasRecebidas={data.receitasRecebidas} receitasPendentes={data.receitasPendentes} despesas={despesas} despesasPagas={data.despesasPagas} despesasPendentes={data.despesasPendentes} compact />
           <BalancoCard balanco={balanco} />
-          {isCurrentMonth && <MicroInteracoesCard gastosHoje={data.gastosHoje} mediaGastosDiarios={data.mediaGastosDiarios} />}
+          {/* MicroInteracoesCard temporarily disabled */}
           <button onClick={() => navigate("/bot-finance/projecoes")} className="glass-card w-full p-3 flex items-center justify-between group hover:border-primary/20 transition-all">
             <div className="flex items-center gap-2.5">
               <div className="w-8 h-8 rounded-lg bg-primary/10 flex items-center justify-center">
@@ -232,7 +232,7 @@ const Index = () => {
             <ReceitasDespesasCards receitas={receitas} receitasRecebidas={data.receitasRecebidas} receitasPendentes={data.receitasPendentes} despesas={despesas} despesasPagas={data.despesasPagas} despesasPendentes={data.despesasPendentes} mobile compact />
           </motion.div>
           <BalancoCard balanco={balanco} />
-          {isCurrentMonth && <MicroInteracoesCard gastosHoje={data.gastosHoje} mediaGastosDiarios={data.mediaGastosDiarios} />}
+          {/* MicroInteracoesCard temporarily disabled */}
           <button onClick={() => navigate("/bot-finance/projecoes")} className="glass-card w-full p-3 flex items-center justify-between group hover:border-primary/20 transition-all">
             <div className="flex items-center gap-2.5">
               <div className="w-8 h-8 rounded-lg bg-primary/10 flex items-center justify-center">
