@@ -158,6 +158,7 @@ async function fetchTotalAccountBalance(): Promise<number> {
 /**
  * Aggregate ALL transactions for income/expense totals,
  * but only PAID transactions for balance.
+ * Credit card transactions are EXCLUDED — their impact is handled via invoices.
  */
 function aggregate(transactions: RawTransaction[]) {
   let income = 0;
@@ -168,6 +169,8 @@ function aggregate(transactions: RawTransaction[]) {
     const amt = Number(t.amount);
     // Skip transfers and investments — they don't affect income/expense
     if (t.type === "transferencia" || t.type === "investimento") continue;
+    // Skip credit card transactions — their cost is represented by invoice totals
+    if (t.payment_method === "cartao") continue;
     if (t.type === "receita") {
       income += amt;
       if (t.status === "pago") paidIncome += amt;
@@ -177,6 +180,31 @@ function aggregate(transactions: RawTransaction[]) {
     }
   }
   return { income, expense, paidIncome, paidExpense, balance: paidIncome - paidExpense };
+}
+
+/** Fetch invoice totals for a given month and return expense/paidExpense from invoices */
+async function fetchInvoiceTotalsForMonth(month: number, year: number) {
+  const dbMonth = month + 1;
+  const { data } = await supabase
+    .from("invoices")
+    .select("total_amount, is_paid, paid_amount")
+    .eq("month", dbMonth)
+    .eq("year", year);
+
+  let invoiceExpense = 0;
+  let invoicePaidExpense = 0;
+  for (const inv of data ?? []) {
+    const total = Number(inv.total_amount);
+    if (total <= 0) continue;
+    invoiceExpense += total;
+    if (inv.is_paid) {
+      invoicePaidExpense += total;
+    } else {
+      // Partially paid
+      invoicePaidExpense += Number(inv.paid_amount ?? 0);
+    }
+  }
+  return { invoiceExpense, invoicePaidExpense };
 }
 
 async function fetchHistoricalAverages(
@@ -196,11 +224,14 @@ async function fetchHistoricalAverages(
       y -= 1;
     }
 
-    const txs = await fetchMonthTransactions(m, y);
-    if (txs.length > 0) {
+    const [txs, inv] = await Promise.all([
+      fetchMonthTransactions(m, y),
+      fetchInvoiceTotalsForMonth(m, y),
+    ]);
+    if (txs.length > 0 || inv.invoiceExpense > 0) {
       const agg = aggregate(txs);
       totalIncome += agg.paidIncome;
-      totalExpense += agg.paidExpense;
+      totalExpense += agg.paidExpense + inv.invoicePaidExpense;
       validMonths++;
     }
   }
@@ -230,15 +261,22 @@ export async function getFinancialSummary(
   transactions: RawTransaction[];
   events: RawEvent[];
 }> {
-  const [transactions, events, accountBalance, historical] = await Promise.all([
+  const [transactions, events, accountBalance, historical, invoiceTotals] = await Promise.all([
     fetchMonthTransactions(month, year),
     fetchMonthEvents(month, year),
     fetchTotalAccountBalance(),
     fetchHistoricalAverages(month, year, 3),
+    fetchInvoiceTotalsForMonth(month, year),
   ]);
 
-  // income/expense = ALL transactions, balance = only paid
-  const { income, expense, paidIncome, paidExpense, balance } = aggregate(transactions);
+  // income/expense from regular (non-CC) transactions
+  const agg = aggregate(transactions);
+  // Merge invoice totals into the expense figures
+  const income = agg.income;
+  const expense = agg.expense + invoiceTotals.invoiceExpense;
+  const paidIncome = agg.paidIncome;
+  const paidExpense = agg.paidExpense + invoiceTotals.invoicePaidExpense;
+  const balance = paidIncome - paidExpense;
 
   const today = new Date();
   const todayStr = today.toISOString().split("T")[0];
@@ -248,9 +286,9 @@ export async function getFinancialSummary(
   const isFutureMonth = year > currentCalendarYear || (year === currentCalendarYear && month > currentCalendarMonth);
   const isPastMonth = year < currentCalendarYear || (year === currentCalendarYear && month < currentCalendarMonth);
 
-  // Today's paid expenses only
+  // Today's paid expenses only (regular transactions, CC not included)
   const todayExpenses = transactions
-    .filter((t) => t.type === "despesa" && t.status === "pago" && t.date === todayStr)
+    .filter((t) => t.type === "despesa" && t.status === "pago" && t.date === todayStr && t.payment_method !== "cartao")
     .reduce((s, t) => s + Number(t.amount), 0);
 
   const daysInMonth = new Date(year, month + 1, 0).getDate();
@@ -261,29 +299,26 @@ export async function getFinancialSummary(
   const dailyAverageIncome = elapsedDays > 0 ? paidIncome / elapsedDays : 0;
 
   // ── Compute previousMonthEndingBalance ──
-  // accountBalance = cumulative balance of ALL paid transactions ever (from default account)
+  // accountBalance = sum of current_balance from all non-investment accounts
   // For current month: previousMonthEnding = accountBalance - currentMonthPaidBalance
-  // For future months: chain from accountBalance through intermediate months
-  // For past months: we'd need to subtract future paid transactions (approximate with accountBalance)
   let previousMonthEndingBalance = 0;
 
   if (isCurrentMonth) {
-    previousMonthEndingBalance = accountBalance - balance; // balance = paidIncome - paidExpense of this month
+    previousMonthEndingBalance = accountBalance - balance;
   } else if (isFutureMonth) {
-    // Start from account balance, add current month's pending, then chain through intermediate months
     let accumulated = accountBalance;
     
-    // Add current calendar month's pending transactions
+    // Add current calendar month's pending (regular + unpaid invoices)
     if (!(currentCalendarMonth === month && currentCalendarYear === year)) {
       const currentMonthTxs = await fetchMonthTransactions(currentCalendarMonth, currentCalendarYear);
       const currentAgg = aggregate(currentMonthTxs);
-      // accountBalance already has current month's paid. Add pending to project end of current month.
+      const currentInv = await fetchInvoiceTotalsForMonth(currentCalendarMonth, currentCalendarYear);
       const pendingIncome = currentAgg.income - currentAgg.paidIncome;
-      const pendingExpense = currentAgg.expense - currentAgg.paidExpense;
+      const pendingExpense = (currentAgg.expense + currentInv.invoiceExpense) - (currentAgg.paidExpense + currentInv.invoicePaidExpense);
       accumulated += pendingIncome - pendingExpense;
     }
     
-    // Chain through intermediate months (between current+1 and target-1)
+    // Chain through intermediate months
     let chainMonth = currentCalendarMonth + 1;
     let chainYear = currentCalendarYear;
     while (chainMonth > 11) { chainMonth -= 12; chainYear++; }
@@ -291,15 +326,15 @@ export async function getFinancialSummary(
     while (chainYear < year || (chainYear === year && chainMonth < month)) {
       const intermediateTxs = await fetchMonthTransactions(chainMonth, chainYear);
       const intAgg = aggregate(intermediateTxs);
-      accumulated += intAgg.income - intAgg.expense; // all income - all expense for projected months
+      const intInv = await fetchInvoiceTotalsForMonth(chainMonth, chainYear);
+      accumulated += intAgg.income - (intAgg.expense + intInv.invoiceExpense);
       chainMonth++;
       if (chainMonth > 11) { chainMonth = 0; chainYear++; }
     }
     
     previousMonthEndingBalance = accumulated;
   } else {
-    // Past month: subtract all paid transactions from months after this one up to current month
-    // accountBalance includes ALL paid transactions ever. We need to remove months after target.
+    // Past month
     let paidAfter = 0;
     let chainMonth = month + 1;
     let chainYear = year;
@@ -308,7 +343,8 @@ export async function getFinancialSummary(
     while (chainYear < currentCalendarYear || (chainYear === currentCalendarYear && chainMonth <= currentCalendarMonth)) {
       const futureTxs = await fetchMonthTransactions(chainMonth, chainYear);
       const futAgg = aggregate(futureTxs);
-      paidAfter += futAgg.paidIncome - futAgg.paidExpense;
+      const futInv = await fetchInvoiceTotalsForMonth(chainMonth, chainYear);
+      paidAfter += futAgg.paidIncome - (futAgg.paidExpense + futInv.invoicePaidExpense);
       chainMonth++;
       if (chainMonth > 11) { chainMonth = 0; chainYear++; }
     }
@@ -317,7 +353,7 @@ export async function getFinancialSummary(
   }
 
   // ── Predicted balance = previousMonthEnding + month's total balance (all statuses) ──
-  const monthFullBalance = income - expense; // all statuses
+  const monthFullBalance = income - expense;
   const predictedBalance = previousMonthEndingBalance + monthFullBalance;
 
   const nextMonthBalance = historical.avgIncome - historical.avgExpense;
@@ -379,7 +415,16 @@ export function computeDailyBehavior(
 }
 
 export async function getMonthHistory(month: number, year: number) {
-  const transactions = await fetchMonthTransactions(month, year);
+  const [transactions, inv] = await Promise.all([
+    fetchMonthTransactions(month, year),
+    fetchInvoiceTotalsForMonth(month, year),
+  ]);
   const agg = aggregate(transactions);
-  return { income: agg.income, expense: agg.expense, balance: agg.balance, month, year };
+  return {
+    income: agg.income,
+    expense: agg.expense + inv.invoiceExpense,
+    balance: agg.balance - inv.invoicePaidExpense,
+    month,
+    year,
+  };
 }
