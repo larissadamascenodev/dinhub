@@ -38,6 +38,14 @@ interface CreditCardItem {
   last_four_digits: string | null;
 }
 
+interface InvoiceData {
+  credit_card_id: string;
+  total_amount: number;
+  is_paid: boolean;
+  month: number;
+  year: number;
+}
+
 const ACCOUNT_TYPE_LABELS: Record<string, { label: string; icon: typeof Landmark }> = {
   cash: { label: "Dinheiro", icon: Banknote },
   checking: { label: "Conta corrente", icon: Landmark },
@@ -120,6 +128,7 @@ const GestaoFinanceira = () => {
   const { user } = useAuth();
   const [accounts, setAccounts] = useState<Account[]>([]);
   const [creditCards, setCreditCards] = useState<CreditCardItem[]>([]);
+  const [openInvoices, setOpenInvoices] = useState<Record<string, number>>({});
   const [loading, setLoading] = useState(true);
 
   const [accountsRef] = useEmblaCarousel({ loop: false, align: "start", dragFree: true, containScroll: "trimSnaps" });
@@ -160,6 +169,22 @@ const GestaoFinanceira = () => {
       const [accs, cards] = await Promise.all([getAccounts(), getCreditCards()]);
       setAccounts(accs as unknown as Account[]);
       setCreditCards(cards as unknown as CreditCardItem[]);
+
+      // Fetch open invoices for current month
+      const now = new Date();
+      const { data: invoices } = await supabase
+        .from("invoices")
+        .select("credit_card_id, total_amount, is_paid, month, year")
+        .eq("is_paid", false);
+
+      const invoiceMap: Record<string, number> = {};
+      if (invoices) {
+        for (const inv of invoices as unknown as InvoiceData[]) {
+          // Sum all unpaid invoices per card (current + past due)
+          invoiceMap[inv.credit_card_id] = (invoiceMap[inv.credit_card_id] || 0) + Number(inv.total_amount);
+        }
+      }
+      setOpenInvoices(invoiceMap);
     } catch {
       toast.error("Erro ao carregar dados");
     } finally {
@@ -551,7 +576,7 @@ const GestaoFinanceira = () => {
                       {/* Divider */}
                       <div className="h-px bg-border/10" />
 
-                      {/* Row 2: Available + limit bar */}
+                      {/* Row 2: Available + Used + Invoice */}
                       <div>
                         <div className="flex items-center gap-1.5 mb-1.5">
                           <div className={cn("w-1.5 h-1.5 rounded-full", usedPct > 80 ? "bg-destructive" : "bg-primary")} />
@@ -571,6 +596,23 @@ const GestaoFinanceira = () => {
                         <div className="flex items-center justify-between">
                           <span className="text-[10px] font-medium text-muted-foreground">{usedPct.toFixed(0)}% usado</span>
                           <span className="text-[10px] text-muted-foreground/60">Vence dia {card.due_day}</span>
+                        </div>
+
+                        {/* Divider */}
+                        <div className="h-px bg-border/10 my-3" />
+
+                        {/* Used + Invoice row */}
+                        <div className="grid grid-cols-2 gap-3">
+                          <div>
+                            <p className="text-[9px] text-muted-foreground uppercase tracking-widest font-medium mb-0.5">Utilizado</p>
+                            <p className="text-sm font-bold tabular-nums text-foreground">{formatCurrency(Number(card.used_limit))}</p>
+                          </div>
+                          <div>
+                            <p className="text-[9px] text-muted-foreground uppercase tracking-widest font-medium mb-0.5">Fatura aberta</p>
+                            <p className={cn("text-sm font-bold tabular-nums", (openInvoices[card.id] || 0) > 0 ? "text-amber-400" : "text-muted-foreground")}>
+                              {formatCurrency(openInvoices[card.id] || 0)}
+                            </p>
+                          </div>
                         </div>
                       </div>
                     </div>
@@ -645,6 +687,23 @@ const GestaoFinanceira = () => {
                         <div className="flex items-center justify-between">
                           <span className="text-[10px] font-medium text-muted-foreground">{usedPct.toFixed(0)}% usado</span>
                           <span className="text-[10px] text-muted-foreground/60">Vence dia {card.due_day}</span>
+                        </div>
+
+                        {/* Divider */}
+                        <div className="h-px bg-border/10 my-3" />
+
+                        {/* Used + Invoice row */}
+                        <div className="grid grid-cols-2 gap-3">
+                          <div>
+                            <p className="text-[9px] text-muted-foreground uppercase tracking-widest font-medium mb-0.5">Utilizado</p>
+                            <p className="text-sm font-bold tabular-nums text-foreground">{formatCurrency(Number(card.used_limit))}</p>
+                          </div>
+                          <div>
+                            <p className="text-[9px] text-muted-foreground uppercase tracking-widest font-medium mb-0.5">Fatura aberta</p>
+                            <p className={cn("text-sm font-bold tabular-nums", (openInvoices[card.id] || 0) > 0 ? "text-amber-400" : "text-muted-foreground")}>
+                              {formatCurrency(openInvoices[card.id] || 0)}
+                            </p>
+                          </div>
                         </div>
                       </div>
                     </div>
