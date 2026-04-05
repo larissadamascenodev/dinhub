@@ -115,7 +115,7 @@ const WalletSummaryCard = () => {
       </div>
 
       {/* Quick actions */}
-      <div className="relative flex items-center justify-center gap-3 pt-0.5 md:pt-1">
+      <div className="relative flex items-center justify-center gap-3 pt-0 md:pt-0.5">
         <button
           onClick={(e) => {
             e.stopPropagation();
