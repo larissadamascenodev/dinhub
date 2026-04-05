@@ -151,7 +151,7 @@ const DashboardLayout = () => {
       <div className="dark min-h-screen bg-background text-foreground">
         <div className="w-full mx-auto px-4 md:px-6 lg:px-8 xl:px-12 pt-0 pb-24 md:pb-8">
           <DashboardHeader profile={profile} streak={streak} streakDates={streakDates} />
-          <Outlet context={{ profile }} />
+          <Outlet context={{ profile, updateDisplayName: profile ? undefined : undefined }} />
         </div>
         <MobileBottomNav />
         <TransactionTypeChooser
