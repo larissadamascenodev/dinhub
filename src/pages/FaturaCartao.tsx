@@ -264,6 +264,7 @@ const FaturaCartao = () => {
   const usedLimit = Math.max(visibleUsedBeforeCurrentPayments - paidAmount, 0);
   const availableLimit = Math.max(limitTotal - usedLimit, 0);
   const usedPct = limitTotal > 0 ? Math.min((usedLimit / limitTotal) * 100, 100) : 0;
+  const isOverLimit = usedLimit > limitTotal;
 
   // Handle file upload (image, PDF, CSV)
   const handleFileUpload = async (file: File) => {
