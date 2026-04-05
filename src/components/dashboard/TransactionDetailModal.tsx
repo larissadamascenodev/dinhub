@@ -224,18 +224,44 @@ const TransactionDetailModal = ({ open, tx, accountName, onClose, onRefresh, use
     }
   };
 
+  const { user } = useAuth();
+
   const handleSaveEdit = async () => {
     setLoading(true);
     try {
       const dateStr = `${editDate.getFullYear()}-${String(editDate.getMonth() + 1).padStart(2, "0")}-${String(editDate.getDate()).padStart(2, "0")}`;
-      await updateTransaction(tx.id, {
-        name: editName,
-        amount: editAmountCents / 100,
-        category: editCategory,
-        status: editStatus,
-        date: dateStr,
-      });
-      toast.success("Transação atualizada");
+
+      if (isRecurring && editScope === "this" && user) {
+        // "Apenas esta": exclude original from this month, create a one-time copy
+        await excludeRecurringForMonth(tx.id, selectedMonth, selectedYear, user.id);
+        await createTransaction(
+          {
+            name: editName,
+            type: tx.type as "receita" | "despesa",
+            amount: editAmountCents / 100,
+            category: editCategory,
+            date: dateStr,
+            status: editStatus,
+            payment_method: tx.payment_method as "conta" | "cartao",
+            recurrence_type: "unica",
+            account_id: editAccountId || tx.account_id || null,
+            credit_card_id: tx.credit_card_id || null,
+            observation: editObservation || null,
+          },
+          user.id
+        );
+        toast.success("Transação deste mês atualizada");
+      } else {
+        // "Todas": update the base transaction
+        await updateTransaction(tx.id, {
+          name: editName,
+          amount: editAmountCents / 100,
+          category: editCategory,
+          status: editStatus,
+          date: dateStr,
+        });
+        toast.success("Transação atualizada");
+      }
       onRefresh();
       handleClose();
     } catch {
