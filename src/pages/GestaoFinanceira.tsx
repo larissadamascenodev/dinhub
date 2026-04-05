@@ -579,6 +579,17 @@ const GestaoFinanceira = () => {
 
                       {/* Row 2: Available + Used + Invoice */}
                       <div>
+                        {/* Fatura aberta */}
+                        <div className="mb-3">
+                          <p className="text-[9px] text-muted-foreground uppercase tracking-widest font-medium mb-0.5">Fatura aberta</p>
+                          <p className={cn("text-sm font-bold tabular-nums", (openInvoices[card.id] || 0) > 0 ? "text-amber-400" : "text-muted-foreground")}>
+                            {formatCurrency(openInvoices[card.id] || 0)}
+                          </p>
+                        </div>
+
+                        {/* Divider */}
+                        <div className="h-px bg-border/10 mb-3" />
+
                         <div className="flex items-center gap-1.5 mb-1.5">
                           <div className={cn("w-1.5 h-1.5 rounded-full", usedPct > 80 ? "bg-destructive" : "bg-primary")} />
                           <p className="text-[9px] text-muted-foreground uppercase tracking-widest font-medium">Disponível</p>
@@ -601,19 +612,6 @@ const GestaoFinanceira = () => {
                         <div className="flex items-center justify-between">
                           <span className="text-[10px] font-medium text-muted-foreground">{formatCurrency(Number(card.used_limit))} utilizado</span>
                           <span className="text-[10px] text-muted-foreground">de {formatCurrency(Number(card.limit))}</span>
-                        </div>
-
-                        {/* Divider */}
-                        <div className="h-px bg-border/10 my-3" />
-
-                        {/* Used + Invoice row */}
-                        <div className="grid grid-cols-1 gap-3">
-                          <div>
-                            <p className="text-[9px] text-muted-foreground uppercase tracking-widest font-medium mb-0.5">Fatura aberta</p>
-                            <p className={cn("text-sm font-bold tabular-nums", (openInvoices[card.id] || 0) > 0 ? "text-amber-400" : "text-muted-foreground")}>
-                              {formatCurrency(openInvoices[card.id] || 0)}
-                            </p>
-                          </div>
                         </div>
                       </div>
                     </div>
@@ -670,6 +668,17 @@ const GestaoFinanceira = () => {
                       </div>
                       <div className="h-px bg-border/10" />
                       <div>
+                        {/* Fatura aberta */}
+                        <div className="mb-3">
+                          <p className="text-[9px] text-muted-foreground uppercase tracking-widest font-medium mb-0.5">Fatura aberta</p>
+                          <p className={cn("text-sm font-bold tabular-nums", (openInvoices[card.id] || 0) > 0 ? "text-amber-400" : "text-muted-foreground")}>
+                            {formatCurrency(openInvoices[card.id] || 0)}
+                          </p>
+                        </div>
+
+                        {/* Divider */}
+                        <div className="h-px bg-border/10 mb-3" />
+
                         <div className="flex items-center gap-1.5 mb-1.5">
                           <div className={cn("w-1.5 h-1.5 rounded-full", usedPct > 80 ? "bg-destructive" : "bg-primary")} />
                           <p className="text-[9px] text-muted-foreground uppercase tracking-widest font-medium">Disponível</p>
@@ -692,19 +701,6 @@ const GestaoFinanceira = () => {
                         <div className="flex items-center justify-between">
                           <span className="text-[10px] font-medium text-muted-foreground">{formatCurrency(Number(card.used_limit))} utilizado</span>
                           <span className="text-[10px] text-muted-foreground">de {formatCurrency(Number(card.limit))}</span>
-                        </div>
-
-                        {/* Divider */}
-                        <div className="h-px bg-border/10 my-3" />
-
-                        {/* Used + Invoice row */}
-                        <div className="grid grid-cols-1 gap-3">
-                          <div>
-                            <p className="text-[9px] text-muted-foreground uppercase tracking-widest font-medium mb-0.5">Fatura aberta</p>
-                            <p className={cn("text-sm font-bold tabular-nums", (openInvoices[card.id] || 0) > 0 ? "text-amber-400" : "text-muted-foreground")}>
-                              {formatCurrency(openInvoices[card.id] || 0)}
-                            </p>
-                          </div>
                         </div>
                       </div>
                     </div>
