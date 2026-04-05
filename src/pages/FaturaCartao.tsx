@@ -3,7 +3,7 @@ import { motion } from "framer-motion";
 import {
   ArrowLeft, Plus, MoreVertical, CreditCard,
   CalendarClock, CalendarCheck, Wallet, Shield,
-  Pencil, Trash2,
+  Pencil, Trash2, Undo2,
 } from "lucide-react";
 import {
   DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigger,
