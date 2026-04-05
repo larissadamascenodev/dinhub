@@ -55,7 +55,7 @@ const WalletSummaryCard = () => {
       initial={{ opacity: 0, y: 10 }}
       animate={{ opacity: 1, y: 0 }}
       transition={{ delay: 0.1 }}
-      className="relative overflow-hidden rounded-2xl border border-primary/10 bg-primary/[0.04] backdrop-blur-xl p-3 md:p-4 space-y-2 md:space-y-3 group cursor-pointer"
+      className="relative overflow-hidden rounded-2xl border border-primary/10 bg-primary/[0.04] backdrop-blur-xl p-3 md:p-3.5 space-y-1.5 md:space-y-2 group cursor-pointer"
       onClick={() => navigate("/gestao")}
     >
       {/* Glassmorphism decorative elements */}
@@ -82,9 +82,9 @@ const WalletSummaryCard = () => {
       </div>
 
       {/* Patrimônio total - desktop only */}
-      <div className="relative text-center py-2 hidden md:block">
-        <p className="text-[9px] text-muted-foreground uppercase tracking-widest mb-1">Patrimônio Total</p>
-        <p className={cn("text-xl font-bold tabular-nums", patrimonio >= 0 ? "text-primary" : "text-destructive")}>
+      <div className="relative text-center py-1 hidden md:block">
+        <p className="text-[9px] text-muted-foreground uppercase tracking-widest mb-0.5">Patrimônio Total</p>
+        <p className={cn("text-lg font-bold tabular-nums", patrimonio >= 0 ? "text-primary" : "text-destructive")}>
           {formatCurrency(patrimonio)}
         </p>
       </div>
@@ -115,7 +115,7 @@ const WalletSummaryCard = () => {
       </div>
 
       {/* Quick actions */}
-      <div className="relative flex items-center justify-center gap-3 pt-0.5 md:pt-1">
+      <div className="relative flex items-center justify-center gap-3 pt-0 md:pt-0.5">
         <button
           onClick={(e) => {
             e.stopPropagation();
