@@ -607,16 +607,12 @@ const GestaoFinanceira = () => {
                         <div className="h-px bg-border/10 my-3" />
 
                         {/* Used + Invoice row */}
-                        <div className="grid grid-cols-2 gap-3">
+                        <div className="grid grid-cols-1 gap-3">
                           <div>
                             <p className="text-[9px] text-muted-foreground uppercase tracking-widest font-medium mb-0.5">Fatura aberta</p>
                             <p className={cn("text-sm font-bold tabular-nums", (openInvoices[card.id] || 0) > 0 ? "text-amber-400" : "text-muted-foreground")}>
                               {formatCurrency(openInvoices[card.id] || 0)}
                             </p>
-                          </div>
-                          <div>
-                            <p className="text-[9px] text-muted-foreground uppercase tracking-widest font-medium mb-0.5">Limite total</p>
-                            <p className="text-sm font-bold tabular-nums text-foreground">{formatCurrency(Number(card.limit))}</p>
                           </div>
                         </div>
                       </div>
@@ -702,16 +698,12 @@ const GestaoFinanceira = () => {
                         <div className="h-px bg-border/10 my-3" />
 
                         {/* Used + Invoice row */}
-                        <div className="grid grid-cols-2 gap-3">
+                        <div className="grid grid-cols-1 gap-3">
                           <div>
                             <p className="text-[9px] text-muted-foreground uppercase tracking-widest font-medium mb-0.5">Fatura aberta</p>
                             <p className={cn("text-sm font-bold tabular-nums", (openInvoices[card.id] || 0) > 0 ? "text-amber-400" : "text-muted-foreground")}>
                               {formatCurrency(openInvoices[card.id] || 0)}
                             </p>
-                          </div>
-                          <div>
-                            <p className="text-[9px] text-muted-foreground uppercase tracking-widest font-medium mb-0.5">Limite total</p>
-                            <p className="text-sm font-bold tabular-nums text-foreground">{formatCurrency(Number(card.limit))}</p>
                           </div>
                         </div>
                       </div>
