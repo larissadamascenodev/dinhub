@@ -1,6 +1,6 @@
 import { useState } from "react";
 import { motion } from "framer-motion";
-import { Receipt, Layers, Trash2 } from "lucide-react";
+import { Receipt, Layers, Trash2, Wallet } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { formatCurrency, type EnrichedItem } from "@/pages/FaturaCartao";
 import {
