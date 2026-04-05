@@ -60,6 +60,61 @@ const DashboardHeader = memo(({ profile, streak = 0, streakDates = [] }: { profi
     }
   };
 
+  const streakMessage = streak >= 7
+    ? "🏆 Incrível! Você está arrasando!"
+    : streak >= 3
+      ? "🔥 Mandando bem! Continue assim!"
+      : streak >= 1
+        ? "👋 Bom te ver de volta!"
+        : "Acesse todo dia para manter sua sequência!";
+
+  const formatStreakDate = (dateStr: string) => {
+    const [y, m, d] = dateStr.split("-");
+    const date = new Date(Number(y), Number(m) - 1, Number(d));
+    return date.toLocaleDateString("pt-BR", { weekday: "short", day: "numeric", month: "short" });
+  };
+
+  const renderStreakPopover = () => (
+    <AnimatePresence>
+      {streakOpen && (
+        <motion.div
+          initial={{ opacity: 0, scale: 0.9, y: -8 }}
+          animate={{ opacity: 1, scale: 1, y: 0 }}
+          exit={{ opacity: 0, scale: 0.9, y: -8 }}
+          transition={{ type: "spring", stiffness: 400, damping: 25 }}
+          className="absolute z-50 w-64 bg-card border border-border/30 rounded-2xl shadow-xl p-4 space-y-3 right-0 top-full mt-2"
+        >
+          <div className="text-center space-y-1">
+            <div className="text-3xl">{streak >= 7 ? "🏆" : "🔥"}</div>
+            <p className="text-lg font-bold text-foreground">{streak} {streak === 1 ? "dia" : "dias"}</p>
+            <p className="text-xs text-muted-foreground">{streakMessage}</p>
+          </div>
+          {streakDates.length > 0 && (
+            <div className="space-y-1.5">
+              <p className="text-[10px] font-semibold text-muted-foreground uppercase tracking-wider">Sequência</p>
+              <div className="space-y-1 max-h-32 overflow-y-auto">
+                {streakDates.slice(0, 7).map((date, i) => (
+                  <div key={date} className="flex items-center gap-2 text-xs px-2 py-1.5 rounded-lg bg-warning/5 border border-warning/10">
+                    <Flame className="w-3 h-3 text-warning flex-shrink-0" />
+                    <span className="text-foreground capitalize">{formatStreakDate(date)}</span>
+                    {i === 0 && (
+                      <span className="ml-auto text-[9px] font-medium text-primary bg-primary/10 px-1.5 py-0.5 rounded-full">Hoje</span>
+                    )}
+                  </div>
+                ))}
+              </div>
+            </div>
+          )}
+          {streak > 0 && streak < 7 && (
+            <p className="text-[10px] text-center text-muted-foreground">
+              Faltam <span className="font-bold text-warning">{7 - streak}</span> dias para o troféu 🏆
+            </p>
+          )}
+        </motion.div>
+      )}
+    </AnimatePresence>
+  );
+
   return (
     <>
       {/* Desktop backdrop for transaction menu */}
