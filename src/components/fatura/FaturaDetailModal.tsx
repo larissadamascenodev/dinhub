@@ -61,6 +61,9 @@ export default function FaturaDetailModal({ open, onClose, card, month, year, to
   const [paying, setPaying] = useState(false);
   const [invoiceId, setInvoiceId] = useState<string | null>(null);
 
+  // Track paid_amount for partial payment display
+  const [paidAmount, setPaidAmount] = useState(0);
+
   useEffect(() => {
     if (!open || !card) return;
     setLoadingItems(true);
@@ -68,22 +71,24 @@ export default function FaturaDetailModal({ open, onClose, card, month, year, to
       try {
         const invoices = await getInvoices(card.cardId, month + 1, year);
         if (invoices.length > 0) {
-          setInvoiceId(invoices[0].id);
-          const items = await getInvoiceItems(invoices[0].id);
-          setRecentItems(
-            items.slice(0, 5).map((item: any) => ({
-              id: item.id,
-              name: item.transaction_name || "Transação",
-              amount: Number(item.amount),
-              category: item.transaction_category || "Outros",
-              installment: item.total_installments > 1
-                ? `${item.installment_number}/${item.total_installments}`
-                : undefined,
-            }))
-          );
+          const inv = invoices[0];
+          setInvoiceId(inv.id);
+          setPaidAmount(Number(inv.paid_amount ?? 0));
+          const items = await getInvoiceItems(inv.id);
+          const mapped = items.slice(0, 5).map((item: any) => ({
+            id: item.id,
+            name: item.transaction_name || "Transação",
+            amount: Number(item.amount),
+            category: item.transaction_category || "Outros",
+            installment: item.total_installments > 1
+              ? `${item.installment_number}/${item.total_installments}`
+              : undefined,
+          }));
+          setRecentItems(mapped);
         } else {
           setRecentItems([]);
           setInvoiceId(null);
+          setPaidAmount(0);
         }
       } catch {
         setRecentItems([]);
@@ -273,6 +278,21 @@ export default function FaturaDetailModal({ open, onClose, card, month, year, to
                       </span>
                     </div>
                   ))}
+                  {/* Partial payment entry */}
+                  {paidAmount > 0 && !isPaid && (
+                    <div className="flex items-center gap-2.5 py-2 border-t border-border/10 mt-1 pt-3">
+                      <div className="w-7 h-7 rounded-full bg-primary/15 flex items-center justify-center">
+                        <Wallet className="w-3.5 h-3.5 text-primary" />
+                      </div>
+                      <div className="flex-1 min-w-0">
+                        <p className="text-[12px] font-semibold text-foreground">Pagamento parcial</p>
+                        <p className="text-[10px] text-muted-foreground">Débito em conta</p>
+                      </div>
+                      <span className="text-[12px] font-bold text-primary shrink-0">
+                        +{fmt(paidAmount)}
+                      </span>
+                    </div>
+                  )}
                 </div>
               )}
             </div>
