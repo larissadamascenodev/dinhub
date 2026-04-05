@@ -106,19 +106,27 @@ const SaldoWalletCarousel = memo(({ saldoAtual, saldoPrevisto, isFutureMonth, is
     resetTimer();
   };
 
+  const darkGradient = "linear-gradient(160deg, hsl(220 15% 14% / 0.6) 0%, hsl(220 18% 8% / 0.75) 50%, hsl(220 20% 4% / 0.9) 100%)";
   const greenGradient = "linear-gradient(160deg, hsl(150 30% 12% / 0.7) 0%, hsl(150 25% 8% / 0.8) 50%, hsl(150 20% 5% / 0.95) 100%)";
 
   return (
     <div className="space-y-2">
       <div
-        className="relative rounded-2xl border border-primary/15 shadow-[0_4px_16px_-4px_rgba(0,200,100,0.15)] backdrop-blur-xl overflow-hidden"
-        style={{ background: greenGradient }}
+        className={cn(
+          "relative rounded-2xl shadow-[0_4px_16px_-4px_rgba(0,0,0,0.4)] backdrop-blur-xl overflow-hidden transition-all duration-700",
+          page === 0 ? "border border-border/10" : "border border-primary/15"
+        )}
+        style={{ background: page === 0 ? darkGradient : greenGradient }}
         onTouchStart={handleTouchStart}
         onTouchEnd={handleTouchEnd}
       >
-        {/* Decorative glow */}
-        <div className="absolute -right-8 -top-8 w-28 h-28 rounded-full bg-primary/[0.06] blur-2xl pointer-events-none" />
-        <div className="absolute -left-6 -bottom-6 w-20 h-20 rounded-full bg-primary/[0.04] blur-xl pointer-events-none" />
+        {/* Decorative glow - only on wallet page */}
+        {page === 1 && (
+          <>
+            <div className="absolute -right-8 -top-8 w-28 h-28 rounded-full bg-primary/[0.06] blur-2xl pointer-events-none" />
+            <div className="absolute -left-6 -bottom-6 w-20 h-20 rounded-full bg-primary/[0.04] blur-xl pointer-events-none" />
+          </>
+        )}
 
         <AnimatePresence mode="wait" custom={direction}>
           {page === 0 ? (
