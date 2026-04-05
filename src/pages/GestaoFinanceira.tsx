@@ -128,6 +128,7 @@ const GestaoFinanceira = () => {
   const { user } = useAuth();
   const [accounts, setAccounts] = useState<Account[]>([]);
   const [creditCards, setCreditCards] = useState<CreditCardItem[]>([]);
+  const [openInvoices, setOpenInvoices] = useState<Record<string, number>>({});
   const [loading, setLoading] = useState(true);
 
   const [accountsRef] = useEmblaCarousel({ loop: false, align: "start", dragFree: true, containScroll: "trimSnaps" });
