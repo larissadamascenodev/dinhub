@@ -25,7 +25,7 @@ const NAV_ITEMS = [
   { label: "Perfil", icon: User, path: "/configuracoes" },
 ];
 
-const DashboardHeader = memo(({ profile }: { profile?: { display_name: string | null } | null }) => {
+const DashboardHeader = memo(({ profile, streak = 0 }: { profile?: { display_name: string | null } | null; streak?: number }) => {
   const { signOut, user } = useAuth();
   const navigate = useNavigate();
   const location = useLocation();
