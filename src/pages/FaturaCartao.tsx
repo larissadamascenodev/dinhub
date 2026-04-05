@@ -88,6 +88,7 @@ const FaturaCartao = () => {
   const [card, setCard] = useState<CreditCardInfo | null>(null);
   const [invoices, setInvoices] = useState<Invoice[]>([]);
   const [items, setItems] = useState<EnrichedItem[]>([]);
+  const [payments, setPayments] = useState<InvoicePayment[]>([]);
   const [accounts, setAccounts] = useState<AccountInfo[]>([]);
   const [loading, setLoading] = useState(true);
   const [paying, setPaying] = useState(false);
