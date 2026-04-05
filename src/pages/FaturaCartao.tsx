@@ -264,6 +264,7 @@ const FaturaCartao = () => {
   const usedLimit = Math.max(visibleUsedBeforeCurrentPayments - paidAmount, 0);
   const availableLimit = Math.max(limitTotal - usedLimit, 0);
   const usedPct = limitTotal > 0 ? Math.min((usedLimit / limitTotal) * 100, 100) : 0;
+  const isOverLimit = usedLimit > limitTotal;
 
   // Handle file upload (image, PDF, CSV)
   const handleFileUpload = async (file: File) => {
@@ -544,15 +545,14 @@ const FaturaCartao = () => {
           <div className="space-y-3">
             <div className="flex items-center justify-between">
               <div className="flex items-center gap-2">
-                <div className={cn("w-1.5 h-1.5 rounded-full", usedPct > 80 ? "bg-destructive" : "bg-primary")} />
+                <div className={cn("w-1.5 h-1.5 rounded-full", isOverLimit ? "bg-destructive" : "bg-primary")} />
                 <span className="text-[9px] text-muted-foreground uppercase tracking-widest font-medium">Limite</span>
               </div>
-              <span className={cn("text-[10px] font-bold", usedPct > 80 ? "text-destructive" : "text-primary")}>
+              <span className={cn("text-[10px] font-bold", isOverLimit ? "text-destructive" : "text-primary")}>
                 {usedPct.toFixed(0)}% utilizado
               </span>
             </div>
 
-            {/* Progress bar */}
             <div className="w-full h-1.5 rounded-full bg-muted/30 overflow-hidden">
               <motion.div
                 initial={{ width: 0 }}
@@ -560,7 +560,7 @@ const FaturaCartao = () => {
                 transition={{ duration: 0.8, ease: "easeOut" }}
                 className={cn(
                   "h-full rounded-full",
-                  usedPct > 80 ? "bg-destructive/60" : "bg-primary/40"
+                  isOverLimit ? "bg-destructive/60" : "bg-primary/40"
                 )}
               />
             </div>
