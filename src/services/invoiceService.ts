@@ -110,3 +110,14 @@ export async function undoInvoicePayment(invoiceId: string) {
   if (error) throw error;
   return data;
 }
+
+export async function getInvoicePayments(invoiceId: string): Promise<InvoicePayment[]> {
+  const { data, error } = await supabase
+    .from("invoice_payments" as any)
+    .select("*")
+    .eq("invoice_id", invoiceId)
+    .order("paid_at", { ascending: false });
+
+  if (error) throw error;
+  return (data ?? []) as unknown as InvoicePayment[];
+}
