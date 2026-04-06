@@ -345,7 +345,11 @@ export function useFinanceData(selectedMonth: number, selectedYear: number, opti
       .on("postgres_changes", { event: "*", schema: "public", table: "invoices", filter: `user_id=eq.${user.id}` }, () => refetch())
       .subscribe();
 
+    const handleFinanceChange = () => refetch();
+    window.addEventListener("finance-data-changed", handleFinanceChange);
+
     return () => {
+      window.removeEventListener("finance-data-changed", handleFinanceChange);
       supabase.removeChannel(channel);
     };
   }, [user, refetch, includeHistorical]);
