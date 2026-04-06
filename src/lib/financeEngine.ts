@@ -58,22 +58,20 @@ function getMonthRange(month: number, year: number) {
   return { start, end };
 }
 
-async function fetchMonthTransactions(month: number, year: number, opts?: { skipMaterialize?: boolean }) {
+async function fetchMonthTransactions(month: number, year: number, opts?: { skipMaterialize?: boolean; userId?: string }) {
   const { start, end } = getMonthRange(month, year);
   const dbMonth = month + 1; // DB stores 1-based months
 
   // Materialize recurring CC subscription items into invoices for this month
-  // Skip for historical months to avoid unnecessary work
-  if (!opts?.skipMaterialize) {
-    const { data: userData } = await supabase.auth.getUser();
-    if (userData?.user?.id) {
-      await supabase.rpc("materialize_recurring_invoice_items", {
-        p_user_id: userData.user.id,
+  // We run materialize in parallel with the main queries since the main query
+  // fetches non-CC transactions too and materialize only affects invoice_items.
+  const materializePromise = (!opts?.skipMaterialize && opts?.userId)
+    ? supabase.rpc("materialize_recurring_invoice_items", {
+        p_user_id: opts.userId,
         p_month: dbMonth,
         p_year: year,
-      });
-    }
-  }
+      }).then(() => {})
+    : Promise.resolve();
 
   const [{ data, error }, recurringTxs, { data: invoicesData }] = await Promise.all([
     supabase
@@ -84,13 +82,15 @@ async function fetchMonthTransactions(month: number, year: number, opts?: { skip
       .order("date", { ascending: false })
       .order("created_at", { ascending: false }),
     getRecurringForMonth(month, year),
-    // Fetch invoices for this month to filter out CC transactions with no invoice items
     supabase
       .from("invoices")
       .select("credit_card_id, total_amount")
       .eq("month", dbMonth)
       .eq("year", year),
   ]);
+
+  // Wait for materialize to finish (it may have already)
+  await materializePromise;
 
   if (error) throw error;
 
