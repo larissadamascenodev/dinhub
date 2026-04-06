@@ -1,6 +1,6 @@
 import { useNavigate } from "react-router-dom";
 import { motion } from "framer-motion";
-import { Brain, TrendingUp, Radar, HeartPulse, PieChart, Lightbulb, ChevronRight, Lock } from "lucide-react";
+import { Brain, TrendingUp, Radar, HeartPulse, PieChart, Lightbulb, ChevronRight, Lock, Target } from "lucide-react";
 
 interface ToolCard {
   icon: React.ReactNode;
@@ -34,6 +34,12 @@ const tools: ToolCard[] = [
     title: "Análise por Categorias",
     description: "Entenda como seus gastos se distribuem e onde otimizar",
     disabled: true,
+  },
+  {
+    icon: <Target className="w-5 h-5" />,
+    title: "Metas Financeiras",
+    description: "Defina objetivos, acompanhe progresso e receba dicas inteligentes",
+    path: "/metas",
   },
 ];
 

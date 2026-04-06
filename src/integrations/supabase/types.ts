@@ -179,6 +179,80 @@ export type Database = {
         }
         Relationships: []
       }
+      goal_transactions: {
+        Row: {
+          amount: number
+          created_at: string
+          date: string
+          goal_id: string
+          id: string
+          source: string | null
+          user_id: string
+        }
+        Insert: {
+          amount: number
+          created_at?: string
+          date?: string
+          goal_id: string
+          id?: string
+          source?: string | null
+          user_id: string
+        }
+        Update: {
+          amount?: number
+          created_at?: string
+          date?: string
+          goal_id?: string
+          id?: string
+          source?: string | null
+          user_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "goal_transactions_goal_id_fkey"
+            columns: ["goal_id"]
+            isOneToOne: false
+            referencedRelation: "goals"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      goals: {
+        Row: {
+          created_at: string
+          current_amount: number
+          deadline: string | null
+          id: string
+          monthly_contribution: number | null
+          name: string
+          target_amount: number
+          updated_at: string
+          user_id: string
+        }
+        Insert: {
+          created_at?: string
+          current_amount?: number
+          deadline?: string | null
+          id?: string
+          monthly_contribution?: number | null
+          name: string
+          target_amount: number
+          updated_at?: string
+          user_id: string
+        }
+        Update: {
+          created_at?: string
+          current_amount?: number
+          deadline?: string | null
+          id?: string
+          monthly_contribution?: number | null
+          name?: string
+          target_amount?: number
+          updated_at?: string
+          user_id?: string
+        }
+        Relationships: []
+      }
       invoice_items: {
         Row: {
           amount: number
