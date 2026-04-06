@@ -245,7 +245,7 @@ function prefetchMonth(userId: string, month: number, year: number, options?: Fi
   const key = buildCacheKey(userId, month, year, includeHistorical);
   if (dataCache[key] || prefetchingSet.has(key)) return;
   prefetchingSet.add(key);
-  buildDashboardData(month, year, options)
+  buildDashboardData(month, year, { ...options, userId })
     .then((result) => { dataCache[key] = result; })
     .catch(() => {})
     .finally(() => { prefetchingSet.delete(key); });
