@@ -58,6 +58,8 @@ const App = () => (
               <Route path="/bot-finance/saude" element={<BotFinanceSaude />} />
               <Route path="/configuracoes" element={<Configuracoes />} />
               <Route path="/categorias" element={<GerenciarCategorias />} />
+              <Route path="/metas" element={<Metas />} />
+              <Route path="/metas/:goalId" element={<MetaDetalhe />} />
             </Route>
             <Route path="*" element={<NotFound />} />
           </Routes>
