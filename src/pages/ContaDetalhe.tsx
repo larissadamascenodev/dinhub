@@ -89,6 +89,7 @@ const ContaDetalhe = () => {
   const [editName, setEditName] = useState("");
   const [editType, setEditType] = useState<string>("checking");
   const [editColor, setEditColor] = useState("violet");
+  const [showDeleteConfirm, setShowDeleteConfirm] = useState(false);
 
   useEffect(() => {
     if (!user || !accountId) return;
@@ -134,9 +135,8 @@ const ContaDetalhe = () => {
     }
   };
 
-  const handleDelete = async () => {
+  const handleDeleteConfirm = async () => {
     if (!accountId) return;
-    if (!confirm("Tem certeza que deseja excluir esta conta? As transações associadas não serão excluídas.")) return;
     try {
       await deleteAccount(accountId);
       toast.success("Conta excluída!");
