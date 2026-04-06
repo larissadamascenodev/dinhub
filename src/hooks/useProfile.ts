@@ -12,11 +12,15 @@ export interface Profile {
 }
 
 export function useProfile() {
-  const { user } = useAuth();
+  const { user, loading: authLoading } = useAuth();
   const [profile, setProfile] = useState<Profile | null>(null);
-  const [loading, setLoading] = useState(true);
+  const [loading, setLoading] = useState(() => authLoading);
 
   const fetchProfile = useCallback(async () => {
+    if (authLoading) {
+      setLoading(true);
+      return;
+    }
     if (!user) { setProfile(null); setLoading(false); return; }
     try {
       const { data, error } = await supabase
@@ -40,7 +44,7 @@ export function useProfile() {
     } finally {
       setLoading(false);
     }
-  }, [user]);
+  }, [authLoading, user]);
 
   useEffect(() => {
     fetchProfile();

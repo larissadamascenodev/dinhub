@@ -252,16 +252,31 @@ function prefetchMonth(userId: string, month: number, year: number, options?: Fi
 }
 
 export function useFinanceData(selectedMonth: number, selectedYear: number, options?: FinanceDataOptions) {
-  const { user } = useAuth();
+  const { user, loading: authLoading } = useAuth();
   const includeHistorical = options?.includeHistorical ?? false;
   const cacheKey = buildCacheKey(user?.id, selectedMonth, selectedYear, includeHistorical);
   const activeKeyRef = useRef(cacheKey);
   const [data, setData] = useState<DashboardData>(EMPTY_DATA);
-  const [loading, setLoading] = useState(true);
+  const [loading, setLoading] = useState(() => authLoading);
 
   useEffect(() => {
     activeKeyRef.current = cacheKey;
     let cancelled = false;
+
+    if (authLoading) {
+      setLoading(true);
+      return () => {
+        cancelled = true;
+      };
+    }
+
+    if (!user) {
+      setData(EMPTY_DATA);
+      setLoading(false);
+      return () => {
+        cancelled = true;
+      };
+    }
 
     const cached = dataCache[cacheKey];
     if (cached) {
@@ -271,38 +286,34 @@ export function useFinanceData(selectedMonth: number, selectedYear: number, opti
       setLoading(true);
     }
 
-    if (user) {
-      buildDashboardData(selectedMonth, selectedYear, { includeHistorical })
-        .then((newData) => {
-          dataCache[cacheKey] = newData;
-          if (!cancelled && activeKeyRef.current === cacheKey) {
-            setData(newData);
-            setLoading(false);
-          }
-        })
-        .catch((err) => {
-          console.error("Finance engine error:", err);
-          if (!cancelled && activeKeyRef.current === cacheKey) {
-            setLoading(false);
-          }
-        });
-
-      const timer = setTimeout(() => {
-        for (const offset of [-2, -1, 1, 2, 3]) {
-          const m = offsetMonth(selectedMonth, selectedYear, offset);
-          prefetchMonth(user.id, m.month, m.year, { includeHistorical });
+    buildDashboardData(selectedMonth, selectedYear, { includeHistorical })
+      .then((newData) => {
+        dataCache[cacheKey] = newData;
+        if (!cancelled && activeKeyRef.current === cacheKey) {
+          setData(newData);
+          setLoading(false);
         }
-      }, 300);
-      return () => {
-        cancelled = true;
-        clearTimeout(timer);
-      };
-    }
+      })
+      .catch((err) => {
+        console.error("Finance engine error:", err);
+        if (!cancelled && activeKeyRef.current === cacheKey) {
+          setLoading(false);
+        }
+      });
+
+    const timer = setTimeout(() => {
+      for (const offset of [-1, 1]) {
+        const m = offsetMonth(selectedMonth, selectedYear, offset);
+        prefetchMonth(user.id, m.month, m.year, { includeHistorical });
+      }
+    }, 1200);
 
     return () => {
       cancelled = true;
+      clearTimeout(timer);
     };
-  }, [cacheKey, user, selectedMonth, selectedYear, includeHistorical]);
+
+  }, [authLoading, cacheKey, user, selectedMonth, selectedYear, includeHistorical]);
 
   const refetch = useCallback(async () => {
     if (!user) return;

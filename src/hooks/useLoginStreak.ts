@@ -3,12 +3,17 @@ import { supabase } from "@/integrations/supabase/client";
 import { useAuth } from "@/contexts/AuthContext";
 
 export function useLoginStreak() {
-  const { user } = useAuth();
+  const { user, loading: authLoading } = useAuth();
   const [streak, setStreak] = useState(0);
   const [streakDates, setStreakDates] = useState<string[]>([]);
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
+    if (authLoading) {
+      setLoading(true);
+      return;
+    }
+
     if (!user) {
       setStreak(0);
       setStreakDates([]);
@@ -62,7 +67,7 @@ export function useLoginStreak() {
     };
 
     run();
-  }, [user]);
+  }, [authLoading, user]);
 
   return { streak, streakDates, loading };
 }
