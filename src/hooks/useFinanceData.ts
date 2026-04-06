@@ -202,7 +202,7 @@ async function buildDashboardData(month: number, year: number, options?: Finance
     ? summary.previousMonthEndingBalance
     : summary.isPastMonth
       ? summary.predictedBalance
-      : summary.accountBalance;
+      : summary.balance;
 
   return {
     saldoAtual,
