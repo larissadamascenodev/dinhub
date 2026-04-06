@@ -454,7 +454,18 @@ const Transacoes = () => {
   const handleDeleteFixaThisMonth = async () => {
     if (!deleteTarget || !user) return;
     try {
-      await excludeRecurringForMonth(deleteTarget.id, selectedMonth, selectedYear, user.id);
+      const [origY, origM] = deleteTarget.date.split("-").map(Number);
+      const isOriginalMonth = (origM - 1 === selectedMonth && origY === selectedYear);
+
+      if (isOriginalMonth) {
+        // Move the base transaction to next month so the balance trigger reverses impact
+        const origDate = new Date(deleteTarget.date + "T12:00:00");
+        const nextMonth = new Date(origDate.getFullYear(), origDate.getMonth() + 1, Math.min(origDate.getDate(), 28));
+        const newDateStr = `${nextMonth.getFullYear()}-${String(nextMonth.getMonth() + 1).padStart(2, "0")}-${String(nextMonth.getDate()).padStart(2, "0")}`;
+        await updateTransaction(deleteTarget.id, { date: newDateStr, status: "pendente" });
+      } else {
+        await excludeRecurringForMonth(deleteTarget.id, selectedMonth, selectedYear, user.id);
+      }
       toast.success("Receita fixa removida deste mês");
       setShowDeleteDialog(false);
       setDeleteTarget(null);
@@ -467,7 +478,16 @@ const Transacoes = () => {
   const handleDeleteFixaAllFuture = async () => {
     if (!deleteTarget || !user) return;
     try {
-      await excludeRecurringFromMonthOnward(deleteTarget.id, selectedMonth, selectedYear, user.id);
+      const [origY, origM] = deleteTarget.date.split("-").map(Number);
+      const origMonthIndex = origY * 12 + (origM - 1);
+      const selectedMonthIndex = selectedYear * 12 + selectedMonth;
+
+      if (origMonthIndex >= selectedMonthIndex) {
+        // Original transaction is in or after selected month - delete it entirely
+        await deleteTransaction(deleteTarget.id);
+      } else {
+        await excludeRecurringFromMonthOnward(deleteTarget.id, selectedMonth, selectedYear, user.id);
+      }
       toast.success("Receita fixa removida deste mês e de todos os futuros");
       setShowDeleteDialog(false);
       setDeleteTarget(null);
