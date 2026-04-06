@@ -274,16 +274,17 @@ function computeStatus(
 export async function getFinancialSummary(
   month: number,
   year: number,
-  options?: { includeHistorical?: boolean }
+  options?: { includeHistorical?: boolean; userId?: string }
 ): Promise<{
   summary: FinancialSummary;
   transactions: RawTransaction[];
   events: RawEvent[];
 }> {
   const includeHistorical = options?.includeHistorical ?? true;
+  const userId = options?.userId;
 
   const [transactions, events, accountBalance, invoiceTotals, historical] = await Promise.all([
-    fetchMonthTransactions(month, year),
+    fetchMonthTransactions(month, year, { userId }),
     fetchMonthEvents(month, year),
     fetchTotalAccountBalance(),
     fetchInvoiceTotalsForMonth(month, year),
