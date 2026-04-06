@@ -319,6 +319,10 @@ export function useFinanceData(selectedMonth: number, selectedYear: number, opti
   const refetch = useCallback(async () => {
     if (!user) return;
     try {
+      // Clear ALL cached months + projection cache so everything recalculates
+      for (const k of Object.keys(dataCache)) delete dataCache[k];
+      invalidateProjectionCache();
+
       const newData = await buildDashboardData(selectedMonth, selectedYear, { includeHistorical, userId: user.id });
       const key = buildCacheKey(user.id, selectedMonth, selectedYear, includeHistorical);
       dataCache[key] = newData;
