@@ -372,7 +372,10 @@ const Transacoes = () => {
       const regularRecurring = materializedRecurring.filter((t) => t.payment_method !== "cartao");
 
       const initialBalanceEntries: TransactionRow[] = (accRes as any[])
-        .filter((account: any) => Number(account.initial_balance ?? 0) > 0)
+        .filter((account: any) => {
+          const initialBalance = Number(account.initial_balance ?? 0);
+          return Number.isFinite(initialBalance) && initialBalance !== 0;
+        })
         .filter((account: any) => {
           const createdAt = new Date(account.created_at);
           return createdAt.getFullYear() === selectedYear && createdAt.getMonth() === selectedMonth;
