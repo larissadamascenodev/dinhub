@@ -1,5 +1,6 @@
 import { useEffect, useState, useCallback, useRef } from "react";
 import { supabase } from "@/integrations/supabase/client";
+import { invalidateProjectionCache } from "@/services/projection";
 import { useAuth } from "@/contexts/AuthContext";
 import { getFinancialSummary, computeDailyBehavior } from "@/lib/financeEngine";
 import { getCreditCards } from "@/services/transactionService";
