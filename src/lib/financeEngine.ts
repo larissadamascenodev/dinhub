@@ -298,7 +298,7 @@ export async function getFinancialSummary(
   const [transactions, events, accountBalance, invoiceTotals, historical] = await Promise.all([
     fetchMonthTransactions(month, year, { userId }),
     fetchMonthEvents(month, year),
-    fetchTotalAccountBalance(),
+    fetchTotalAccountBalance(month, year),
     fetchInvoiceTotalsForMonth(month, year),
     includeHistorical
       ? fetchHistoricalAverages(month, year, 3)
