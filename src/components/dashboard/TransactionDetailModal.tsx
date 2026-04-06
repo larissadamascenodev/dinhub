@@ -157,11 +157,29 @@ const TransactionDetailModal = ({ open, tx, accountName, onClose, onRefresh, use
     }
   };
 
+  const isOriginalMonth = (() => {
+    if (!tx) return false;
+    const [y, m] = tx.date.split("-").map(Number);
+    return m - 1 === selectedMonth && y === selectedYear;
+  })();
+
   const handleDeleteFixaThisMonth = async () => {
     if (!userId) return;
     setLoading(true);
     try {
-      await excludeRecurringForMonth(tx.id, selectedMonth, selectedYear, userId);
+      if (isOriginalMonth) {
+        // Deleting from the original month: we need to change the base transaction's
+        // date to the next month so the balance trigger reverses the impact,
+        // and then create an exclusion for this month.
+        // Actually the simplest approach: update status to 'pendente' so the trigger
+        // reverses the balance, then move the date forward by 1 month.
+        const origDate = new Date(tx.date + "T12:00:00");
+        const nextMonth = new Date(origDate.getFullYear(), origDate.getMonth() + 1, Math.min(origDate.getDate(), 28));
+        const newDateStr = `${nextMonth.getFullYear()}-${String(nextMonth.getMonth() + 1).padStart(2, "0")}-${String(nextMonth.getDate()).padStart(2, "0")}`;
+        await updateTransaction(tx.id, { date: newDateStr, status: "pendente" });
+      } else {
+        await excludeRecurringForMonth(tx.id, selectedMonth, selectedYear, userId);
+      }
       toast.success("Removida deste mês");
       onRefresh();
       handleClose();
@@ -176,7 +194,19 @@ const TransactionDetailModal = ({ open, tx, accountName, onClose, onRefresh, use
     if (!userId) return;
     setLoading(true);
     try {
-      await excludeRecurringFromMonthOnward(tx.id, selectedMonth, selectedYear, userId);
+      // Check if the original transaction month is >= selected month
+      const [origY, origM] = tx.date.split("-").map(Number);
+      const origMonthIndex = origY * 12 + (origM - 1);
+      const selectedMonthIndex = selectedYear * 12 + selectedMonth;
+
+      if (origMonthIndex >= selectedMonthIndex) {
+        // The original transaction is in or after the selected month,
+        // so we should delete it entirely (triggers balance reversal)
+        await deleteTransaction(tx.id);
+      } else {
+        // Original is before selected month - just create exclusions from here onward
+        await excludeRecurringFromMonthOnward(tx.id, selectedMonth, selectedYear, userId);
+      }
       toast.success("Removida deste e dos próximos meses");
       onRefresh();
       handleClose();
