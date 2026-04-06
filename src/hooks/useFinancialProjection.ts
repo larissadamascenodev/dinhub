@@ -17,7 +17,7 @@ import {
  */
 export function useFinancialProjection() {
   const { selectedMonth, selectedYear } = useMonth();
-  const { data, loading, refetch } = useFinanceData(selectedMonth, selectedYear);
+  const { data, loading, refetch } = useFinanceData(selectedMonth, selectedYear, { includeHistorical: true });
 
   const [savingsBoost, setSavingsBoost] = useState(0);
   const [incomeBoost, setIncomeBoost] = useState(0);
