@@ -6,6 +6,7 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
+import { AlertDialog, AlertDialogAction, AlertDialogCancel, AlertDialogContent, AlertDialogDescription, AlertDialogFooter, AlertDialogHeader, AlertDialogTitle } from "@/components/ui/alert-dialog";
 import { toast } from "sonner";
 import { useAuth } from "@/contexts/AuthContext";
 import { useMonth } from "@/contexts/MonthContext";
@@ -88,6 +89,7 @@ const ContaDetalhe = () => {
   const [editName, setEditName] = useState("");
   const [editType, setEditType] = useState<string>("checking");
   const [editColor, setEditColor] = useState("violet");
+  const [showDeleteConfirm, setShowDeleteConfirm] = useState(false);
 
   useEffect(() => {
     if (!user || !accountId) return;
@@ -133,9 +135,8 @@ const ContaDetalhe = () => {
     }
   };
 
-  const handleDelete = async () => {
+  const handleDeleteConfirm = async () => {
     if (!accountId) return;
-    if (!confirm("Tem certeza que deseja excluir esta conta? As transações associadas não serão excluídas.")) return;
     try {
       await deleteAccount(accountId);
       toast.success("Conta excluída!");
@@ -197,7 +198,7 @@ const ContaDetalhe = () => {
             <Pencil className="w-3.5 h-3.5 text-primary" />
           </button>
           <button
-            onClick={handleDelete}
+            onClick={() => setShowDeleteConfirm(true)}
             className="w-8 h-8 rounded-xl bg-destructive/10 flex items-center justify-center hover:bg-destructive/20 transition-colors"
           >
             <Trash2 className="w-3.5 h-3.5 text-destructive" />
@@ -443,6 +444,25 @@ const ContaDetalhe = () => {
           </motion.div>
         </motion.div>
       )}
+      <AlertDialog open={showDeleteConfirm} onOpenChange={setShowDeleteConfirm}>
+        <AlertDialogContent className="bg-card border-border">
+          <AlertDialogHeader>
+            <AlertDialogTitle>Excluir conta</AlertDialogTitle>
+            <AlertDialogDescription>
+              Tem certeza que deseja excluir esta conta? As transações associadas não serão excluídas.
+            </AlertDialogDescription>
+          </AlertDialogHeader>
+          <AlertDialogFooter>
+            <AlertDialogCancel>Cancelar</AlertDialogCancel>
+            <AlertDialogAction
+              onClick={handleDeleteConfirm}
+              className="bg-destructive text-destructive-foreground hover:bg-destructive/90"
+            >
+              Excluir
+            </AlertDialogAction>
+          </AlertDialogFooter>
+        </AlertDialogContent>
+      </AlertDialog>
     </div>
   );
 };
