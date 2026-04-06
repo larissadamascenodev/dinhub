@@ -286,7 +286,7 @@ export function useFinanceData(selectedMonth: number, selectedYear: number, opti
       setLoading(true);
     }
 
-    buildDashboardData(selectedMonth, selectedYear, { includeHistorical })
+    buildDashboardData(selectedMonth, selectedYear, { includeHistorical, userId: user.id })
       .then((newData) => {
         dataCache[cacheKey] = newData;
         if (!cancelled && activeKeyRef.current === cacheKey) {
@@ -318,7 +318,7 @@ export function useFinanceData(selectedMonth: number, selectedYear: number, opti
   const refetch = useCallback(async () => {
     if (!user) return;
     try {
-      const newData = await buildDashboardData(selectedMonth, selectedYear, { includeHistorical });
+      const newData = await buildDashboardData(selectedMonth, selectedYear, { includeHistorical, userId: user.id });
       const key = buildCacheKey(user.id, selectedMonth, selectedYear, includeHistorical);
       dataCache[key] = newData;
       if (activeKeyRef.current === key) {
