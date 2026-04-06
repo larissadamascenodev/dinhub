@@ -152,18 +152,30 @@ async function fetchMonthEvents(month: number, year: number) {
   return (data ?? []) as RawEvent[];
 }
 
-async function fetchTotalAccountBalance(): Promise<number> {
-  // Use current_balance directly — it's the source of truth, maintained by
-  // the update_account_balance trigger (for transactions) and the pay-invoice
-  // edge function (for credit card invoice payments).
+async function fetchTotalAccountBalance(month?: number, year?: number): Promise<number> {
   const { data: accounts } = await supabase
     .from("accounts")
-    .select("current_balance, type")
+    .select("current_balance, initial_balance, type, created_at")
     .neq("type", "investment");
 
-  return (accounts ?? []).reduce(
-    (sum, acc) => sum + Number(acc.current_balance), 0
-  );
+  return (accounts ?? []).reduce((sum, acc) => {
+    const currentBalance = Number(acc.current_balance ?? 0);
+
+    if (month === undefined || year === undefined) {
+      return sum + currentBalance;
+    }
+
+    const createdAt = new Date(acc.created_at);
+    const createdMonth = createdAt.getMonth();
+    const createdYear = createdAt.getFullYear();
+    const isBeforeCreation = year < createdYear || (year === createdYear && month < createdMonth);
+
+    if (isBeforeCreation) {
+      return sum + (currentBalance - Number(acc.initial_balance ?? 0));
+    }
+
+    return sum + currentBalance;
+  }, 0);
 }
 
 /**
@@ -286,7 +298,7 @@ export async function getFinancialSummary(
   const [transactions, events, accountBalance, invoiceTotals, historical] = await Promise.all([
     fetchMonthTransactions(month, year, { userId }),
     fetchMonthEvents(month, year),
-    fetchTotalAccountBalance(),
+    fetchTotalAccountBalance(month, year),
     fetchInvoiceTotalsForMonth(month, year),
     includeHistorical
       ? fetchHistoricalAverages(month, year, 3)
