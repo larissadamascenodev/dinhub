@@ -41,7 +41,7 @@ type TransactionRow = {
   credit_card_id: string | null;
 };
 
-type AccountRow = { id: string; name: string; type: string; is_default: boolean; color: string | null };
+type AccountRow = { id: string; name: string; type: string; is_default: boolean; color: string | null; created_at?: string; initial_balance?: number; };
 
 // ── Helpers ────────────────────────────────────────────
 const fmt = (v: number) =>
@@ -371,7 +371,30 @@ const Transacoes = () => {
       // Filter out recurring CC transactions (already included in faturas)
       const regularRecurring = materializedRecurring.filter((t) => t.payment_method !== "cartao");
 
-      setTransactions([...regularTxs, ...faturaEntries, ...regularRecurring]);
+      const initialBalanceEntries: TransactionRow[] = (accRes as any[])
+        .filter((account: any) => Number(account.initial_balance ?? 0) > 0)
+        .filter((account: any) => {
+          const createdAt = new Date(account.created_at);
+          return createdAt.getFullYear() === selectedYear && createdAt.getMonth() === selectedMonth;
+        })
+        .map((account: any) => ({
+          id: `initial-balance-${account.id}`,
+          name: `Conta adicionada · ${account.name}`,
+          category: "Saldo inicial",
+          date: new Date(account.created_at).toISOString().split("T")[0],
+          amount: Number(account.initial_balance),
+          type: "receita",
+          status: "pago",
+          payment_method: "conta",
+          recurrence_type: "unica",
+          installment_current: null,
+          installments: null,
+          observation: `Saldo inicial da conta ${account.name}`,
+          account_id: account.id,
+          credit_card_id: null,
+        }));
+
+      setTransactions([...initialBalanceEntries, ...regularTxs, ...faturaEntries, ...regularRecurring]);
     }
     setAccounts(accRes as AccountRow[]);
     setCreditCards(creditCards as any[]);
@@ -436,6 +459,11 @@ const Transacoes = () => {
   }, [transactions]);
 
   const handleDelete = async (id: string) => {
+    if (id.startsWith("initial-balance-")) {
+      toast.info("O saldo inicial é apenas um registro visual da criação da conta.");
+      return;
+    }
+
     const tx = transactions.find((t) => t.id === id);
     if (tx && tx.recurrence_type === "fixa") {
       setDeleteTarget(tx);
@@ -750,6 +778,10 @@ const Transacoes = () => {
                         accountName={tx.account_id ? (accountMap[tx.account_id] || "Conta") : tx.payment_method === "cartao" ? "Cartão" : "Sem conta"}
                         onDelete={handleDelete}
                         onEdit={(t) => {
+                          if (t.id.startsWith("initial-balance-")) {
+                            toast.info("Esse item mostra quando a conta foi criada com saldo inicial.");
+                            return;
+                          }
                           if (t.id.startsWith("fatura-") && t.credit_card_id) {
                             setFaturaDetailTx(t);
                             setShowFaturaDetail(true);

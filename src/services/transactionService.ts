@@ -23,6 +23,11 @@ export interface TransactionFilters {
   category?: string;
 }
 
+function notifyFinanceDataChanged() {
+  if (typeof window === "undefined") return;
+  window.dispatchEvent(new CustomEvent("finance-data-changed"));
+}
+
 export async function createTransaction(input: CreateTransactionInput, userId: string) {
   const { data, error } = await supabase
     .from("transactions")
@@ -46,6 +51,7 @@ export async function createTransaction(input: CreateTransactionInput, userId: s
     .single();
 
   if (error) throw error;
+  notifyFinanceDataChanged();
   return data;
 }
 
@@ -58,6 +64,7 @@ export async function updateTransactionStatus(id: string, status: "pago" | "pend
     .single();
 
   if (error) throw error;
+  notifyFinanceDataChanged();
   return data;
 }
 
@@ -97,6 +104,7 @@ export async function updateTransaction(id: string, updates: {
       .eq("parent_transaction_id", id);
   }
 
+  notifyFinanceDataChanged();
   return data;
 }
 
@@ -135,8 +143,6 @@ export async function getRecentTransactions(limit = 10) {
 }
 
 export async function deleteTransaction(id: string) {
-  // First delete child installment transactions (they have parent_transaction_id = id)
-  // FK is CASCADE but BEFORE DELETE trigger needs to process each child individually
   const { data: children } = await supabase
     .from("transactions")
     .select("id")
@@ -150,13 +156,13 @@ export async function deleteTransaction(id: string) {
       .in("id", childIds);
   }
 
-  // Now delete the parent transaction
   const { error } = await supabase
     .from("transactions")
     .delete()
     .eq("id", id);
 
   if (error) throw error;
+  notifyFinanceDataChanged();
 }
 
 export async function getTransactionById(id: string) {
@@ -170,7 +176,6 @@ export async function getTransactionById(id: string) {
   return data;
 }
 
-// Account helpers
 export async function getAccounts(includeInactive = false) {
   let query = supabase
     .from("accounts")
@@ -211,10 +216,10 @@ export async function createAccount(
     .single();
 
   if (error) throw error;
+  notifyFinanceDataChanged();
   return data;
 }
 
-// Credit card helpers
 export interface CreditCardInput {
   name: string;
   limit: number;
@@ -250,10 +255,10 @@ export async function createCreditCard(input: CreditCardInput, userId: string) {
     .single();
 
   if (error) throw error;
+  notifyFinanceDataChanged();
   return data;
 }
 
-// Account update/delete
 export async function updateAccount(id: string, updates: {
   name?: string;
   type?: string;
@@ -267,6 +272,7 @@ export async function updateAccount(id: string, updates: {
     .select()
     .single();
   if (error) throw error;
+  notifyFinanceDataChanged();
   return data;
 }
 
@@ -276,6 +282,7 @@ export async function deleteAccount(id: string) {
     .delete()
     .eq("id", id);
   if (error) throw error;
+  notifyFinanceDataChanged();
 }
 
 export async function deactivateAccount(id: string) {
@@ -286,10 +293,10 @@ export async function deactivateAccount(id: string) {
     .select()
     .single();
   if (error) throw error;
+  notifyFinanceDataChanged();
   return data;
 }
 
-// Credit card update/delete
 export async function updateCreditCard(id: string, updates: {
   name?: string;
   limit?: number;
@@ -305,6 +312,7 @@ export async function updateCreditCard(id: string, updates: {
     .select()
     .single();
   if (error) throw error;
+  notifyFinanceDataChanged();
   return data;
 }
 
@@ -314,9 +322,9 @@ export async function deleteCreditCard(id: string) {
     .delete()
     .eq("id", id);
   if (error) throw error;
+  notifyFinanceDataChanged();
 }
 
-// AI category suggestion
 export async function suggestCategory(description: string, type: "receita" | "despesa"): Promise<string | null> {
   try {
     const { data, error } = await supabase.functions.invoke("suggest-category", {
