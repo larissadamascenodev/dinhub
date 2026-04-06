@@ -1,6 +1,6 @@
 import { useNavigate } from "react-router-dom";
 import { motion } from "framer-motion";
-import { Brain, TrendingUp, Radar, HeartPulse, PieChart, Lightbulb, ChevronRight, Lock } from "lucide-react";
+import { Brain, TrendingUp, Radar, HeartPulse, PieChart, Lightbulb, ChevronRight, Lock, Target } from "lucide-react";
 
 interface ToolCard {
   icon: React.ReactNode;
