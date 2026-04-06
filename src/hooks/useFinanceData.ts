@@ -55,11 +55,11 @@ function buildCacheKey(userId: string | undefined, month: number, year: number, 
   return `${userId ?? ""}-${month}-${year}-${includeHistorical ? "hist" : "fast"}`;
 }
 
-async function buildDashboardData(month: number, year: number, options?: FinanceDataOptions): Promise<DashboardData> {
+async function buildDashboardData(month: number, year: number, options?: FinanceDataOptions & { userId?: string }): Promise<DashboardData> {
   const includeHistorical = options?.includeHistorical ?? false;
 
   const [{ summary, transactions: rawTxs, events: rawEvents }, creditCards, invoicesForMonth] = await Promise.all([
-    getFinancialSummary(month, year, { includeHistorical }),
+    getFinancialSummary(month, year, { includeHistorical, userId: options?.userId }),
     getCreditCards(),
     supabase
       .from("invoices")
@@ -245,7 +245,7 @@ function prefetchMonth(userId: string, month: number, year: number, options?: Fi
   const key = buildCacheKey(userId, month, year, includeHistorical);
   if (dataCache[key] || prefetchingSet.has(key)) return;
   prefetchingSet.add(key);
-  buildDashboardData(month, year, options)
+  buildDashboardData(month, year, { ...options, userId })
     .then((result) => { dataCache[key] = result; })
     .catch(() => {})
     .finally(() => { prefetchingSet.delete(key); });
@@ -286,7 +286,7 @@ export function useFinanceData(selectedMonth: number, selectedYear: number, opti
       setLoading(true);
     }
 
-    buildDashboardData(selectedMonth, selectedYear, { includeHistorical })
+    buildDashboardData(selectedMonth, selectedYear, { includeHistorical, userId: user.id })
       .then((newData) => {
         dataCache[cacheKey] = newData;
         if (!cancelled && activeKeyRef.current === cacheKey) {
@@ -318,7 +318,7 @@ export function useFinanceData(selectedMonth: number, selectedYear: number, opti
   const refetch = useCallback(async () => {
     if (!user) return;
     try {
-      const newData = await buildDashboardData(selectedMonth, selectedYear, { includeHistorical });
+      const newData = await buildDashboardData(selectedMonth, selectedYear, { includeHistorical, userId: user.id });
       const key = buildCacheKey(user.id, selectedMonth, selectedYear, includeHistorical);
       dataCache[key] = newData;
       if (activeKeyRef.current === key) {
