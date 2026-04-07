@@ -3,7 +3,6 @@ import { supabase } from "@/integrations/supabase/client";
 import { invalidateProjectionCache } from "@/services/projection";
 import { useAuth } from "@/contexts/AuthContext";
 import { getFinancialSummary, computeDailyBehavior } from "@/lib/financeEngine";
-import { getCreditCards } from "@/services/transactionService";
 import type { DashboardData, Transaction, FinanceEvent } from "@/types/finance";
 
 const EMPTY_DATA: DashboardData = {
@@ -59,16 +58,7 @@ function buildCacheKey(userId: string | undefined, month: number, year: number, 
 async function buildDashboardData(month: number, year: number, options?: FinanceDataOptions & { userId?: string }): Promise<DashboardData> {
   const includeHistorical = options?.includeHistorical ?? false;
 
-  const [{ summary, transactions: rawTxs, events: rawEvents }, creditCards, invoicesForMonth] = await Promise.all([
-    getFinancialSummary(month, year, { includeHistorical, userId: options?.userId }),
-    getCreditCards(),
-    supabase
-      .from("invoices")
-      .select("credit_card_id, total_amount, is_paid, paid_amount")
-      .eq("month", month + 1)
-      .eq("year", year)
-      .then(({ data }) => data ?? []),
-  ]);
+  const { summary, transactions: rawTxs, events: rawEvents, creditCards, invoicesDetail: invoicesForMonth } = await getFinancialSummary(month, year, { includeHistorical, userId: options?.userId });
 
   const invoiceByCard = new Map(
     (invoicesForMonth as any[]).map((inv: any) => [

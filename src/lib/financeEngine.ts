@@ -63,8 +63,6 @@ async function fetchMonthTransactions(month: number, year: number, opts?: { skip
   const dbMonth = month + 1; // DB stores 1-based months
 
   // Materialize recurring CC subscription items into invoices for this month
-  // We run materialize in parallel with the main queries since the main query
-  // fetches non-CC transactions too and materialize only affects invoice_items.
   const materializePromise = (!opts?.skipMaterialize && opts?.userId)
     ? supabase.rpc("materialize_recurring_invoice_items", {
         p_user_id: opts.userId,
@@ -73,7 +71,8 @@ async function fetchMonthTransactions(month: number, year: number, opts?: { skip
       }).then(() => {})
     : Promise.resolve();
 
-  const [{ data, error }, recurringTxs, { data: invoicesData }] = await Promise.all([
+  // Fetch ALL exclusions for this month upfront (in parallel with everything else)
+  const [{ data, error }, recurringTxs, { data: invoicesData }, { data: allExclusions }] = await Promise.all([
     supabase
       .from("transactions")
       .select("*")
@@ -86,6 +85,11 @@ async function fetchMonthTransactions(month: number, year: number, opts?: { skip
       .from("invoices")
       .select("credit_card_id, total_amount")
       .eq("month", dbMonth)
+      .eq("year", year),
+    supabase
+      .from("recurring_exclusions")
+      .select("transaction_id")
+      .eq("month", month)
       .eq("year", year),
   ]);
 
@@ -110,25 +114,12 @@ async function fetchMonthTransactions(month: number, year: number, opts?: { skip
   });
 
   // Filter out fixa transactions that have been excluded for this month
-  const fixaIds = baseTxs.filter((t) => t.recurrence_type === "fixa").map((t) => t.id);
-  if (fixaIds.length > 0) {
-    const { data: exclusions } = await supabase
-      .from("recurring_exclusions")
-      .select("transaction_id")
-      .eq("month", month)
-      .eq("year", year)
-      .in("transaction_id", fixaIds);
-    if (exclusions && exclusions.length > 0) {
-      const excludedIds = new Set(exclusions.map((e: any) => e.transaction_id));
-      baseTxs = baseTxs.filter((t) => !excludedIds.has(t.id));
-    }
+  if (allExclusions && allExclusions.length > 0) {
+    const excludedIds = new Set(allExclusions.map((e: any) => e.transaction_id));
+    baseTxs = baseTxs.filter((t) => !(t.recurrence_type === "fixa" && excludedIds.has(t.id)));
   }
 
   // Materialize recurring transactions with adjusted date for this month
-  const today = new Date();
-  const currentMonth = today.getMonth();
-  const currentYear = today.getFullYear();
-
   const materializedRecurring = recurringTxs.map((t: any) => ({
     ...t,
     date: `${year}-${String(month + 1).padStart(2, "0")}-${String(new Date(t.date).getDate()).padStart(2, "0")}`,
@@ -291,11 +282,14 @@ export async function getFinancialSummary(
   summary: FinancialSummary;
   transactions: RawTransaction[];
   events: RawEvent[];
+  creditCards: any[];
+  invoicesDetail: any[];
 }> {
   const includeHistorical = options?.includeHistorical ?? true;
   const userId = options?.userId;
+  const dbMonth = month + 1;
 
-  const [transactions, events, accountBalance, invoiceTotals, historical] = await Promise.all([
+  const [transactions, events, accountBalance, invoiceTotals, historical, { data: creditCardsData }, { data: invoicesDetailData }] = await Promise.all([
     fetchMonthTransactions(month, year, { userId }),
     fetchMonthEvents(month, year),
     fetchTotalAccountBalance(month, year),
@@ -303,6 +297,12 @@ export async function getFinancialSummary(
     includeHistorical
       ? fetchHistoricalAverages(month, year, 3)
       : Promise.resolve({ avgIncome: 0, avgExpense: 0 }),
+    supabase.from("credit_cards").select("*").order("name"),
+    supabase
+      .from("invoices")
+      .select("credit_card_id, total_amount, is_paid, paid_amount")
+      .eq("month", dbMonth)
+      .eq("year", year),
   ]);
 
   const agg = aggregate(transactions);
@@ -447,6 +447,8 @@ export async function getFinancialSummary(
     },
     transactions,
     events,
+    creditCards: creditCardsData ?? [],
+    invoicesDetail: invoicesDetailData ?? [],
   };
 }
 
