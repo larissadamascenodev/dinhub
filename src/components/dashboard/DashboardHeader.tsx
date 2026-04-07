@@ -170,7 +170,7 @@ const DashboardHeader = memo(({ profile, streak = 0, streakDates = [] }: { profi
                         animate={{ opacity: 1, y: 0, scale: 1 }}
                         exit={{ opacity: 0, y: 8, scale: 0.9 }}
                         transition={{ type: "spring", stiffness: 400, damping: 25 }}
-                        className="absolute left-1/2 -translate-x-1/2 top-full mt-3 z-50 gap-1.5 p-1.5 rounded-xl bg-card/95 backdrop-blur-2xl border border-border/15 shadow-2xl shadow-black/40 flex flex-row my-[13px]"
+                        className="absolute left-1/2 -translate-x-1/2 top-full mt-3 z-50 gap-1.5 p-1.5 rounded-xl bg-card/95 backdrop-blur-2xl border border-border/15 shadow-2xl shadow-black/40 my-[13px] flex flex-row"
                       >
                         {/* Arrow indicator */}
                         <div className="absolute -top-1.5 left-1/2 -translate-x-1/2 w-3 h-3 rotate-45 bg-card/95 border-l border-t border-border/15" />
