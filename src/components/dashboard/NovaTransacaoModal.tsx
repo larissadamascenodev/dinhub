@@ -1178,7 +1178,7 @@ const NovaTransacaoModal = ({ open, onClose, onSuccess, initialType = "despesa",
                     disabled={submitting || amountCents === 0}
                     className={cn(
                       "flex-1 h-12 font-semibold text-sm rounded-xl text-white",
-                      isReceita ? "bg-primary hover:bg-primary/90" : "bg-destructive hover:bg-destructive/90"
+                      isReceita ? "bg-primary/80 hover:bg-primary/70" : "bg-destructive/80 hover:bg-destructive/70"
                     )}
                   >
                     {submitting ? (
