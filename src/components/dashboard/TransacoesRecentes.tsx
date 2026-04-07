@@ -175,6 +175,11 @@ const TransacoesRecentes = memo(({ transactions, onDelete }: Props) => {
   const [detailTx, setDetailTx] = useState<any>(null);
   const [detailAccountName, setDetailAccountName] = useState("");
   const [showDetail, setShowDetail] = useState(false);
+  const [customCats, setCustomCats] = useState<CustomCategory[]>([]);
+
+  useEffect(() => {
+    getCustomCategories().then(setCustomCats).catch(() => {});
+  }, []);
 
   const visible = transactions.slice(0, 7);
   const topTx = visible[0];
