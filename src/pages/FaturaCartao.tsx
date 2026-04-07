@@ -15,6 +15,7 @@ import { useAuth } from "@/contexts/AuthContext";
 import { supabase } from "@/integrations/supabase/client";
 import { getInvoices, getInvoiceItems, getInvoicePayments, payInvoice, undoInvoicePayment, type Invoice, type InvoicePayment } from "@/services/invoiceService";
 import { getAccounts, getCreditCards, createTransaction, updateTransaction, deleteTransaction, getTransactionById } from "@/services/transactionService";
+import type { RecurrenceScope } from "@/components/fatura/RecurrenceActionModal";
 import { cn } from "@/lib/utils";
 import InvoiceCategoryBreakdown from "@/components/fatura/InvoiceCategoryBreakdown";
 import InvoiceTransactionList from "@/components/fatura/InvoiceTransactionList";
@@ -37,6 +38,8 @@ export interface EnrichedItem {
   transaction_category: string;
   transaction_date: string;
   transaction_status: string;
+  transaction_recurrence_type: string;
+  transaction_parent_id: string | null;
 }
 
 export interface CreditCardInfo {
@@ -195,7 +198,7 @@ const FaturaCartao = () => {
     setPayments(updatedPayments);
   };
 
-  const handleEditItem = async (transactionId: string, updates?: { name?: string; amount?: number; category?: string }) => {
+  const handleEditItem = async (transactionId: string, updates?: { name?: string; amount?: number; category?: string }, scope?: RecurrenceScope) => {
     if (updates && Object.keys(updates).length > 0) {
       // Direct update from inline edit
       const cleanUpdates: any = {};
@@ -206,6 +209,37 @@ const FaturaCartao = () => {
       await updateTransaction(transactionId, cleanUpdates);
       toast.success("Lançamento atualizado ✅");
       await refreshItems();
+    } else if (scope === "current") {
+      // For fixa "current only" edit — exclude this month and create a one-off copy
+      // Just open the edit modal — on save, user will see the edited version as one-off
+      // For now, open the normal edit modal
+      try {
+        let tx = await getTransactionById(transactionId);
+        if (tx.parent_transaction_id) {
+          tx = await getTransactionById(tx.parent_transaction_id);
+        }
+        setEditingTransaction({
+          id: tx.id,
+          name: tx.name,
+          type: tx.type as "receita" | "despesa",
+          amount: Number(tx.amount),
+          category: tx.category,
+          date: tx.date,
+          status: tx.status as "pago" | "pendente",
+          payment_method: tx.payment_method as "conta" | "cartao",
+          account_id: tx.account_id,
+          credit_card_id: tx.credit_card_id,
+          recurrence_type: "unica" as any,
+          installments: null,
+          installment_current: null,
+          observation: tx.observation,
+          _editScope: "current",
+          _originalMonth: selectedMonth,
+          _originalYear: selectedYear,
+        } as any);
+      } catch {
+        toast.error("Erro ao carregar transação");
+      }
     } else {
       // Open NovaTransacaoModal in edit mode — fetch full transaction
       try {
@@ -239,19 +273,53 @@ const FaturaCartao = () => {
     }
   };
 
-  const handleDeleteItem = async (transactionId: string) => {
-    // Check if this is a child — if so, delete the parent to remove all installments
-    const tx = await getTransactionById(transactionId);
-    const idToDelete = tx.parent_transaction_id || transactionId;
-    await deleteTransaction(idToDelete);
-    toast.success("Lançamento excluído ✅");
-    await refreshItems();
-    // Reload card to update used_limit
-    if (cardId) {
-      const cards = await getCreditCards();
-      const typedCards = cards as unknown as CreditCardInfo[];
-      const foundCard = typedCards.find((c) => c.id === cardId);
-      setCard(foundCard ?? null);
+  const handleDeleteItem = async (transactionId: string, scope?: RecurrenceScope) => {
+    if (scope === "current") {
+      // Exclude only this month using recurring_exclusions (0-based month)
+      try {
+        const tx = await getTransactionById(transactionId);
+        const parentId = tx.parent_transaction_id || transactionId;
+        await supabase.from("recurring_exclusions").insert({
+          transaction_id: parentId,
+          user_id: user!.id,
+          month: selectedMonth - 1,
+          year: selectedYear,
+        } as any);
+        // Remove the invoice_item for this month
+        const itemToRemove = items.find(i => i.transaction_id === transactionId);
+        if (itemToRemove) {
+          await supabase.from("invoice_items").delete().eq("id", itemToRemove.id);
+          // Recalc invoice total
+          if (currentInvoice) {
+            await supabase.rpc("recalc_invoice_total", { p_invoice_id: currentInvoice.id });
+          }
+        }
+        toast.success("Assinatura removida deste mês ✅");
+        await refreshItems();
+        // Reload card
+        if (cardId) {
+          const cards = await getCreditCards();
+          const typedCards = cards as unknown as CreditCardInfo[];
+          const foundCard = typedCards.find((c) => c.id === cardId);
+          setCard(foundCard ?? null);
+        }
+      } catch {
+        toast.error("Erro ao excluir lançamento");
+      }
+    } else {
+      // Delete all — check if this is a child, delete parent
+      const tx = await getTransactionById(transactionId);
+      const idToDelete = tx.parent_transaction_id || transactionId;
+      await deleteTransaction(idToDelete);
+      toast.success("Lançamento excluído ✅");
+      await refreshItems();
+      // Reload card to update used_limit
+      if (cardId) {
+        const cards = await getCreditCards();
+        const typedCards = cards as unknown as CreditCardInfo[];
+        const foundCard = typedCards.find((c) => c.id === cardId);
+        setCard(foundCard ?? null);
+      }
     }
   };
 

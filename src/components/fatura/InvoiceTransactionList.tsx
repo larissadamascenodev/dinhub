@@ -16,6 +16,7 @@ import {
 } from "@/components/ui/alert-dialog";
 import InvoiceItemDetailModal from "./InvoiceItemDetailModal";
 import InvoiceItemEditModal from "./InvoiceItemEditModal";
+import RecurrenceActionModal, { type RecurrenceScope } from "./RecurrenceActionModal";
 
 interface Props {
   items: EnrichedItem[];
@@ -25,8 +26,8 @@ interface Props {
   invoiceYear: number;
   payments?: InvoicePayment[];
   isPaid?: boolean;
-  onEditItem?: (transactionId: string, updates?: { name?: string; amount?: number; category?: string }) => Promise<void>;
-  onDeleteItem?: (transactionId: string) => Promise<void>;
+  onEditItem?: (transactionId: string, updates?: { name?: string; amount?: number; category?: string }, scope?: RecurrenceScope) => Promise<void>;
+  onDeleteItem?: (transactionId: string, scope?: RecurrenceScope) => Promise<void>;
 }
 
 function InstallmentBar({ current, total }: { current: number; total: number }) {
@@ -61,11 +62,58 @@ export default function InvoiceTransactionList({ items, installmentCount = 0, ca
   const [deleteTarget, setDeleteTarget] = useState<EnrichedItem | null>(null);
   const [deleting, setDeleting] = useState(false);
 
+  // Recurrence scope state
+  const [recurrenceAction, setRecurrenceAction] = useState<"edit" | "delete" | null>(null);
+  const [recurrenceTarget, setRecurrenceTarget] = useState<EnrichedItem | null>(null);
+
+  const isFixa = (item: EnrichedItem) => item.transaction_recurrence_type === "fixa";
+
+  const handleDeleteRequest = (item: EnrichedItem) => {
+    if (isFixa(item)) {
+      setRecurrenceTarget(item);
+      setRecurrenceAction("delete");
+    } else {
+      // Parcelado or unica — direct delete (all installments)
+      setDeleteTarget(item);
+    }
+  };
+
+  const handleRecurrenceSelect = async (scope: RecurrenceScope) => {
+    if (!recurrenceTarget) return;
+    const action = recurrenceAction;
+    const target = recurrenceTarget;
+    setRecurrenceAction(null);
+    setRecurrenceTarget(null);
+
+    if (action === "delete") {
+      if (scope === "current") {
+        // Just exclude this month
+        if (onDeleteItem) {
+          setDeleting(true);
+          try {
+            await onDeleteItem(target.transaction_id, "current");
+            setSelectedItem(null);
+          } finally {
+            setDeleting(false);
+          }
+        }
+      } else {
+        // Delete all — show final confirm
+        setDeleteTarget(target);
+      }
+    } else if (action === "edit") {
+      // For edit, we pass scope to parent
+      if (onEditItem) {
+        await onEditItem(target.transaction_id, undefined, scope);
+      }
+    }
+  };
+
   const handleDelete = async () => {
     if (!onDeleteItem || !deleteTarget) return;
     setDeleting(true);
     try {
-      await onDeleteItem(deleteTarget.transaction_id);
+      await onDeleteItem(deleteTarget.transaction_id, "current_and_future");
       setSelectedItem(null);
     } finally {
       setDeleting(false);
@@ -74,15 +122,22 @@ export default function InvoiceTransactionList({ items, installmentCount = 0, ca
   };
 
   const handleEditFromDetail = (txId: string) => {
-    setSelectedItem(null);
-    if (onEditItem) onEditItem(txId);
+    const item = items.find(i => i.transaction_id === txId);
+    if (item && isFixa(item)) {
+      setSelectedItem(null);
+      setRecurrenceTarget(item);
+      setRecurrenceAction("edit");
+    } else {
+      setSelectedItem(null);
+      if (onEditItem) onEditItem(txId);
+    }
   };
 
   const handleDeleteFromDetail = (txId: string) => {
     const target = items.find(i => i.transaction_id === txId);
     if (target) {
       setSelectedItem(null);
-      setDeleteTarget(target);
+      handleDeleteRequest(target);
     }
   };
 
@@ -151,6 +206,7 @@ export default function InvoiceTransactionList({ items, installmentCount = 0, ca
               const isInstallment = item.total_installments > 1;
               const totalValue = isInstallment ? Number(item.amount) * item.total_installments : null;
               const offset = payments.length;
+              const isSubscription = item.transaction_recurrence_type === "fixa";
 
               return (
                 <motion.div
@@ -192,6 +248,8 @@ export default function InvoiceTransactionList({ items, installmentCount = 0, ca
                             <span className="font-bold text-primary">{item.installment_number}</span>
                             <span className="text-muted-foreground/50"> de {item.total_installments} parcelas</span>
                           </span>
+                        ) : isSubscription ? (
+                          <span className="text-[10px] text-primary/70 font-semibold">Assinatura</span>
                         ) : (
                           <span className="text-[10px] text-muted-foreground/40">Pagamento único</span>
                         )}
@@ -229,6 +287,15 @@ export default function InvoiceTransactionList({ items, installmentCount = 0, ca
         }}
       />
 
+      {/* Recurrence scope modal */}
+      <RecurrenceActionModal
+        open={!!recurrenceAction && !!recurrenceTarget}
+        action={recurrenceAction || "delete"}
+        itemName={recurrenceTarget?.transaction_name || ""}
+        onSelect={handleRecurrenceSelect}
+        onClose={() => { setRecurrenceAction(null); setRecurrenceTarget(null); }}
+      />
+
       {/* Delete confirmation */}
       <AlertDialog open={!!deleteTarget} onOpenChange={(open) => !open && setDeleteTarget(null)}>
         <AlertDialogContent className="max-w-sm rounded-2xl bg-card border border-border/30 shadow-2xl p-5 gap-4">
@@ -244,6 +311,11 @@ export default function InvoiceTransactionList({ items, installmentCount = 0, ca
               {deleteTarget && deleteTarget.total_installments > 1 && (
                 <span className="block mt-1 text-destructive font-medium">
                   Isso removerá todas as {deleteTarget.total_installments} parcelas desta compra.
+                </span>
+              )}
+              {deleteTarget && isFixa(deleteTarget) && (
+                <span className="block mt-1 text-destructive font-medium">
+                  Isso removerá esta assinatura deste mês e de todos os futuros.
                 </span>
               )}
             </AlertDialogDescription>
