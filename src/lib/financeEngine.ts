@@ -282,11 +282,14 @@ export async function getFinancialSummary(
   summary: FinancialSummary;
   transactions: RawTransaction[];
   events: RawEvent[];
+  creditCards: any[];
+  invoicesDetail: any[];
 }> {
   const includeHistorical = options?.includeHistorical ?? true;
   const userId = options?.userId;
+  const dbMonth = month + 1;
 
-  const [transactions, events, accountBalance, invoiceTotals, historical] = await Promise.all([
+  const [transactions, events, accountBalance, invoiceTotals, historical, { data: creditCardsData }, { data: invoicesDetailData }] = await Promise.all([
     fetchMonthTransactions(month, year, { userId }),
     fetchMonthEvents(month, year),
     fetchTotalAccountBalance(month, year),
@@ -294,6 +297,12 @@ export async function getFinancialSummary(
     includeHistorical
       ? fetchHistoricalAverages(month, year, 3)
       : Promise.resolve({ avgIncome: 0, avgExpense: 0 }),
+    supabase.from("credit_cards").select("*").order("name"),
+    supabase
+      .from("invoices")
+      .select("credit_card_id, total_amount, is_paid, paid_amount")
+      .eq("month", dbMonth)
+      .eq("year", year),
   ]);
 
   const agg = aggregate(transactions);
