@@ -110,14 +110,14 @@ const FaturaCard = ({ tx, onClick }: { tx: Transaction; onClick: () => void }) =
   );
 };
 
-const TxCard = ({ tx, onClick }: { tx: Transaction; onClick: () => void }) => {
+const TxCard = ({ tx, onClick, customCategories }: { tx: Transaction; onClick: () => void; customCategories?: CustomCategory[] }) => {
   if (tx.isFatura) return <FaturaCard tx={tx} onClick={onClick} />;
 
   const isReceita = tx.type === "receita";
   const isPaid = tx.status === "pago";
   const isPending = tx.status !== "pago";
-  const catColor = getCategoryColor(tx.category);
-  const CatIcon = getCategoryIcon(tx.category);
+  const catColor = getCategoryColor(tx.category, customCategories);
+  const CatIcon = getCategoryIcon(tx.category, customCategories);
 
   return (
     <div
