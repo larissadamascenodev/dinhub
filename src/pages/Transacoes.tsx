@@ -39,6 +39,7 @@ type TransactionRow = {
   observation: string | null;
   account_id: string | null;
   credit_card_id: string | null;
+  created_at?: string;
 };
 
 type AccountRow = { id: string; name: string; type: string; is_default: boolean; color: string | null; created_at?: string; initial_balance?: number; };
@@ -540,12 +541,13 @@ const Transacoes = () => {
       if (!groups[tx.date]) groups[tx.date] = [];
       groups[tx.date].push(tx);
     });
-    // Sort pendentes first within each day
+    // Sort pendentes first, then by created_at ascending (oldest first)
     for (const date in groups) {
       groups[date].sort((a, b) => {
         if (a.status === "pendente" && b.status !== "pendente") return -1;
         if (a.status !== "pendente" && b.status === "pendente") return 1;
-        return 0;
+        // Within same status, oldest added first
+        return (a.created_at ?? "").localeCompare(b.created_at ?? "");
       });
     }
     return Object.entries(groups).sort(([a], [b]) => b.localeCompare(a));
