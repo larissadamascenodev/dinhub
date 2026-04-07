@@ -273,7 +273,7 @@ const TransacoesRecentes = memo(({ transactions, onDelete }: Props) => {
           transition={{ type: "spring", stiffness: 500, damping: 35 }}
           className="relative z-10"
         >
-          <TxCard tx={topTx} onClick={() => handleTxClick(topTx)} />
+          <TxCard tx={topTx} onClick={() => handleTxClick(topTx)} customCategories={customCats} />
         </motion.div>
 
       </motion.div>
@@ -302,7 +302,7 @@ const TransacoesRecentes = memo(({ transactions, onDelete }: Props) => {
                     delay: i * 0.05,
                   }}
                 >
-                  <TxCard tx={tx} onClick={() => handleTxClick(tx)} />
+                  <TxCard tx={tx} onClick={() => handleTxClick(tx)} customCategories={customCats} />
                 </motion.div>
               ))}
             </div>
