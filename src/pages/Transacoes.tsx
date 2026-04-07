@@ -129,8 +129,38 @@ const CATEGORY_COLORS: Record<string, string> = {
   "Comissão": "199 70% 48%", "Mesada": "150 100% 45%", "Cartão de Crédito": "260 60% 55%",
 };
 
-const getCategoryIcon = (category: string) => CATEGORY_ICONS[category] || MoreHorizontal;
-const getCategoryColor = (category: string) => CATEGORY_COLORS[category] || "220 10% 55%";
+const getCategoryIcon = (category: string, customCategories?: CustomCategory[]) => {
+  if (CATEGORY_ICONS[category]) return CATEGORY_ICONS[category];
+  const custom = customCategories?.find((c) => c.name === category && !c.is_hidden_default);
+  if (custom) return getIconComponent(custom.icon);
+  return MoreHorizontal;
+};
+
+const hexToHsl = (hex: string): string => {
+  const r = parseInt(hex.slice(1, 3), 16) / 255;
+  const g = parseInt(hex.slice(3, 5), 16) / 255;
+  const b = parseInt(hex.slice(5, 7), 16) / 255;
+  const max = Math.max(r, g, b), min = Math.min(r, g, b);
+  let h = 0, s = 0;
+  const l = (max + min) / 2;
+  if (max !== min) {
+    const d = max - min;
+    s = l > 0.5 ? d / (2 - max - min) : d / (max + min);
+    if (max === r) h = ((g - b) / d + (g < b ? 6 : 0)) / 6;
+    else if (max === g) h = ((b - r) / d + 2) / 6;
+    else h = ((r - g) / d + 4) / 6;
+  }
+  return `${Math.round(h * 360)} ${Math.round(s * 100)}% ${Math.round(l * 100)}%`;
+};
+
+const getCategoryColor = (category: string, customCategories?: CustomCategory[]) => {
+  if (CATEGORY_COLORS[category]) return CATEGORY_COLORS[category];
+  const custom = customCategories?.find((c) => c.name === category && !c.is_hidden_default);
+  if (custom && custom.color) {
+    try { return hexToHsl(custom.color); } catch { /* fallback */ }
+  }
+  return "220 10% 55%";
+};
 
 const formatDateHeader = (dateStr: string) => {
   const [y, m, d] = dateStr.split("-").map(Number);
