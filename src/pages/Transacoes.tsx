@@ -181,18 +181,20 @@ const SwipeableItem = ({
   accountName,
   onDelete,
   onEdit,
+  customCategories,
 }: {
   tx: TransactionRow;
   accountName: string;
   onDelete: (id: string) => void;
   onEdit: (tx: TransactionRow) => void;
+  customCategories?: CustomCategory[];
 }) => {
   const x = useMotionValue(0);
   const editOpacity = useTransform(x, [0, 60, 120], [0, 0.5, 1]);
   const deleteOpacity = useTransform(x, [-120, -60, 0], [1, 0.5, 0]);
   const isReceita = tx.type === "receita";
-  const catColor = getCategoryColor(tx.category);
-  const CatIcon = getCategoryIcon(tx.category);
+  const catColor = getCategoryColor(tx.category, customCategories);
+  const CatIcon = getCategoryIcon(tx.category, customCategories);
   const isRecurring = tx.recurrence_type === "fixa" || (tx.installments && tx.installments > 1);
   const isPending = tx.status !== "pago";
 
