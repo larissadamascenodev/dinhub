@@ -37,6 +37,8 @@ export interface EnrichedItem {
   transaction_category: string;
   transaction_date: string;
   transaction_status: string;
+  transaction_recurrence_type: string;
+  transaction_parent_id: string | null;
 }
 
 export interface CreditCardInfo {

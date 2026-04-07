@@ -68,7 +68,7 @@ export async function getInvoiceItems(invoiceId: string) {
 
   const { data: txs } = await supabase
     .from("transactions")
-    .select("id, name, category, date, status")
+    .select("id, name, category, date, status, recurrence_type, parent_transaction_id")
     .in("id", txIds);
 
   const txMap = new Map((txs ?? []).map((t: any) => [t.id, t]));
@@ -79,6 +79,8 @@ export async function getInvoiceItems(invoiceId: string) {
     transaction_category: (txMap.get(item.transaction_id) as any)?.category ?? "",
     transaction_date: (txMap.get(item.transaction_id) as any)?.date ?? "",
     transaction_status: (txMap.get(item.transaction_id) as any)?.status ?? "pendente",
+    transaction_recurrence_type: (txMap.get(item.transaction_id) as any)?.recurrence_type ?? "unica",
+    transaction_parent_id: (txMap.get(item.transaction_id) as any)?.parent_transaction_id ?? null,
   }));
 }
 
