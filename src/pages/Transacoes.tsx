@@ -533,6 +533,7 @@ const Transacoes = () => {
     setTransactions(nextTransactions);
     setAccounts(nextAccounts);
     setCreditCards(nextCreditCards);
+    setCustomCategories(customCats);
     setLoading(false);
   }, [user, selectedMonth, selectedYear, cacheKey, seedTransactions.length]);
 
