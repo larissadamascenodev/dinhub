@@ -155,8 +155,11 @@ const FaturaCartao = () => {
       getInvoiceItems(currentInvoice.id),
       getInvoicePayments(currentInvoice.id),
     ]).then(([itemsData, paymentsData]) => {
+      console.log("[FaturaCartao] items loaded:", itemsData.length, "payments:", paymentsData.length);
       setItems(itemsData as EnrichedItem[]);
       setPayments(paymentsData);
+    }).catch((err) => {
+      console.error("[FaturaCartao] Error loading items:", err);
     });
   }, [currentInvoice]);
 
