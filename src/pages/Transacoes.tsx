@@ -14,7 +14,6 @@ import { useMonth } from "@/contexts/MonthContext";
 import { deleteTransaction, getAccounts, updateTransaction, getCreditCards } from "@/services/transactionService";
 import { useFinanceData } from "@/hooks/useFinanceData";
 import { getRecurringForMonth, excludeRecurringForMonth, excludeRecurringFromMonthOnward } from "@/services/recurringService";
-import { getInvoices } from "@/services/invoiceService";
 import MonthSelector from "@/components/dashboard/MonthSelector";
 import SaldoCard from "@/components/dashboard/SaldoCard";
 import ReceitasDespesasCards from "@/components/dashboard/ReceitasDespesasCards";
@@ -22,6 +21,7 @@ import NovaTransacaoModal from "@/components/dashboard/NovaTransacaoModal";
 import TransactionTypeChooser from "@/components/dashboard/TransactionTypeChooser";
 import TransactionDetailModal from "@/components/dashboard/TransactionDetailModal";
 import FaturaDetailModal from "@/components/fatura/FaturaDetailModal";
+import type { DashboardData } from "@/types/finance";
 
 // ── Types ──────────────────────────────────────────────
 type TransactionRow = {
@@ -42,6 +42,60 @@ type TransactionRow = {
 };
 
 type AccountRow = { id: string; name: string; type: string; is_default: boolean; color: string | null; created_at?: string; initial_balance?: number; };
+
+type TransactionsPageSnapshot = {
+  transactions: TransactionRow[];
+  accounts: AccountRow[];
+  creditCards: any[];
+};
+
+const transactionsPageCache = new Map<string, TransactionsPageSnapshot>();
+
+const buildTransactionsCacheKey = (userId: string | undefined, month: number, year: number) =>
+  `${userId ?? "anon"}-${month}-${year}`;
+
+const buildSeedDate = (label: string, month: number, year: number) => {
+  const day = Math.min(Math.max(Number(label.match(/\d+/)?.[0] ?? 1), 1), 31);
+  return `${year}-${String(month + 1).padStart(2, "0")}-${String(day).padStart(2, "0")}`;
+};
+
+const buildSeedTransactions = (data: DashboardData, month: number, year: number): TransactionRow[] => {
+  const paid = data.transactions.map((tx) => ({
+    id: tx.id,
+    name: tx.name,
+    category: tx.category,
+    date: buildSeedDate(tx.date, month, year),
+    amount: Number(tx.amount),
+    type: tx.type,
+    status: tx.status ?? "pago",
+    payment_method: tx.isFatura ? "cartao" : "conta",
+    recurrence_type: "unica",
+    installment_current: null,
+    installments: null,
+    observation: null,
+    account_id: null,
+    credit_card_id: tx.creditCardId ?? null,
+  }));
+
+  const pending = data.pendingTransactions.map((tx) => ({
+    id: tx.id,
+    name: tx.name,
+    category: tx.category,
+    date: buildSeedDate(tx.date, month, year),
+    amount: Number(tx.amount),
+    type: tx.type,
+    status: tx.status ?? "pendente",
+    payment_method: tx.isFatura ? "cartao" : "conta",
+    recurrence_type: "unica",
+    installment_current: null,
+    installments: null,
+    observation: null,
+    account_id: null,
+    credit_card_id: tx.creditCardId ?? null,
+  }));
+
+  return [...paid, ...pending].sort((a, b) => b.date.localeCompare(a.date));
+};
 
 // ── Helpers ────────────────────────────────────────────
 const fmt = (v: number) =>
@@ -200,6 +254,11 @@ const Transacoes = () => {
   const navigate = useNavigate();
   const { selectedMonth, selectedYear, setMonth } = useMonth();
   const { data: financeData } = useFinanceData(selectedMonth, selectedYear);
+  const cacheKey = buildTransactionsCacheKey(user?.id, selectedMonth, selectedYear);
+  const seedTransactions = useMemo(
+    () => buildSeedTransactions(financeData, selectedMonth, selectedYear),
+    [financeData, selectedMonth, selectedYear]
+  );
   const [transactions, setTransactions] = useState<TransactionRow[]>([]);
   const [accounts, setAccounts] = useState<AccountRow[]>([]);
   const [creditCards, setCreditCards] = useState<any[]>([]);
@@ -223,19 +282,29 @@ const Transacoes = () => {
   const [faturaDetailTx, setFaturaDetailTx] = useState<TransactionRow | null>(null);
   const [showFaturaDetail, setShowFaturaDetail] = useState(false);
 
-  const accountMap = useMemo(() => {
-    const map: Record<string, string> = {};
-    accounts.forEach((a) => (map[a.id] = a.name));
-    return map;
-  }, [accounts]);
+  useEffect(() => {
+    const cached = transactionsPageCache.get(cacheKey);
 
-  const fetchData = useCallback(async () => {
-    if (!user) return;
+    if (cached) {
+      setTransactions(cached.transactions);
+      setAccounts(cached.accounts);
+      setCreditCards(cached.creditCards);
+      setLoading(false);
+      return;
+    }
+
+    if (seedTransactions.length > 0) {
+      setTransactions(seedTransactions);
+      setLoading(false);
+      return;
+    }
+
+    setTransactions([]);
+    setAccounts([]);
+    setCreditCards([]);
     setLoading(true);
-    const start = new Date(selectedYear, selectedMonth, 1).toISOString().split("T")[0];
-    const end = new Date(selectedYear, selectedMonth + 1, 0).toISOString().split("T")[0];
+  }, [cacheKey, seedTransactions]);
 
-      const [txRes, accRes, recurringTxs, creditCards, invoicesRes] = await Promise.all([
       supabase.from("transactions").select("*").eq("user_id", user.id).gte("date", start).lte("date", end).order("date", { ascending: false }),
       getAccounts(),
       getRecurringForMonth(selectedMonth, selectedYear),
@@ -710,7 +779,7 @@ const Transacoes = () => {
       </AnimatePresence>
 
       {/* Timeline list */}
-      {loading ? (
+      {loading && filtered.length === 0 ? (
         <div className="flex items-center justify-center py-16">
           <div className="animate-pulse text-primary text-sm">Carregando...</div>
         </div>
