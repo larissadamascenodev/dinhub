@@ -79,7 +79,7 @@ async function fetchMonthTransactions(month: number, year: number, opts?: { skip
       .gte("date", start)
       .lte("date", end)
       .order("date", { ascending: false })
-      .order("created_at", { ascending: false }),
+      .order("created_at", { ascending: true }),
     getRecurringForMonth(month, year),
     supabase
       .from("invoices")

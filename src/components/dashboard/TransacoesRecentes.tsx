@@ -1,4 +1,4 @@
-import { memo, useState } from "react";
+import { memo, useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import {
   Layers, ChevronUp, Clock, RefreshCw,
@@ -6,6 +6,8 @@ import {
   Briefcase, GraduationCap, Shirt, TrendingUp, DollarSign, MoreHorizontal,
   CreditCard, Wallet, Sparkles,
 } from "lucide-react";
+import { getCustomCategories, type CustomCategory } from "@/services/categoryService";
+import { getIconComponent } from "@/components/dashboard/CategoryCreateModal";
 import { motion, AnimatePresence } from "framer-motion";
 import type { Transaction } from "@/types/finance";
 import { getTransactionById, getAccounts } from "@/services/transactionService";
@@ -44,8 +46,38 @@ const CATEGORY_COLORS: Record<string, string> = {
   "Comissão": "199 70% 48%", "Mesada": "150 100% 45%",
 };
 
-const getCategoryIcon = (category: string) => CATEGORY_ICONS[category] || MoreHorizontal;
-const getCategoryColor = (category: string) => CATEGORY_COLORS[category] || "220 10% 55%";
+const getCategoryIcon = (category: string, customCats?: CustomCategory[]) => {
+  if (CATEGORY_ICONS[category]) return CATEGORY_ICONS[category];
+  const custom = customCats?.find((c) => c.name === category && !c.is_hidden_default);
+  if (custom) return getIconComponent(custom.icon);
+  return MoreHorizontal;
+};
+
+const hexToHsl = (hex: string): string => {
+  const r = parseInt(hex.slice(1, 3), 16) / 255;
+  const g = parseInt(hex.slice(3, 5), 16) / 255;
+  const b = parseInt(hex.slice(5, 7), 16) / 255;
+  const max = Math.max(r, g, b), min = Math.min(r, g, b);
+  let h = 0, s = 0;
+  const l = (max + min) / 2;
+  if (max !== min) {
+    const d = max - min;
+    s = l > 0.5 ? d / (2 - max - min) : d / (max + min);
+    if (max === r) h = ((g - b) / d + (g < b ? 6 : 0)) / 6;
+    else if (max === g) h = ((b - r) / d + 2) / 6;
+    else h = ((r - g) / d + 4) / 6;
+  }
+  return `${Math.round(h * 360)} ${Math.round(s * 100)}% ${Math.round(l * 100)}%`;
+};
+
+const getCategoryColor = (category: string, customCats?: CustomCategory[]) => {
+  if (CATEGORY_COLORS[category]) return CATEGORY_COLORS[category];
+  const custom = customCats?.find((c) => c.name === category && !c.is_hidden_default);
+  if (custom && custom.color) {
+    try { return hexToHsl(custom.color); } catch { /* fallback */ }
+  }
+  return "220 10% 55%";
+};
 
 const FaturaCard = ({ tx, onClick }: { tx: Transaction; onClick: () => void }) => {
   const navigate = useNavigate();
@@ -78,14 +110,14 @@ const FaturaCard = ({ tx, onClick }: { tx: Transaction; onClick: () => void }) =
   );
 };
 
-const TxCard = ({ tx, onClick }: { tx: Transaction; onClick: () => void }) => {
+const TxCard = ({ tx, onClick, customCategories }: { tx: Transaction; onClick: () => void; customCategories?: CustomCategory[] }) => {
   if (tx.isFatura) return <FaturaCard tx={tx} onClick={onClick} />;
 
   const isReceita = tx.type === "receita";
   const isPaid = tx.status === "pago";
   const isPending = tx.status !== "pago";
-  const catColor = getCategoryColor(tx.category);
-  const CatIcon = getCategoryIcon(tx.category);
+  const catColor = getCategoryColor(tx.category, customCategories);
+  const CatIcon = getCategoryIcon(tx.category, customCategories);
 
   return (
     <div
@@ -143,6 +175,11 @@ const TransacoesRecentes = memo(({ transactions, onDelete }: Props) => {
   const [detailTx, setDetailTx] = useState<any>(null);
   const [detailAccountName, setDetailAccountName] = useState("");
   const [showDetail, setShowDetail] = useState(false);
+  const [customCats, setCustomCats] = useState<CustomCategory[]>([]);
+
+  useEffect(() => {
+    getCustomCategories().then(setCustomCats).catch(() => {});
+  }, []);
 
   const visible = transactions.slice(0, 7);
   const topTx = visible[0];
@@ -236,7 +273,7 @@ const TransacoesRecentes = memo(({ transactions, onDelete }: Props) => {
           transition={{ type: "spring", stiffness: 500, damping: 35 }}
           className="relative z-10"
         >
-          <TxCard tx={topTx} onClick={() => handleTxClick(topTx)} />
+          <TxCard tx={topTx} onClick={() => handleTxClick(topTx)} customCategories={customCats} />
         </motion.div>
 
       </motion.div>
@@ -265,7 +302,7 @@ const TransacoesRecentes = memo(({ transactions, onDelete }: Props) => {
                     delay: i * 0.05,
                   }}
                 >
-                  <TxCard tx={tx} onClick={() => handleTxClick(tx)} />
+                  <TxCard tx={tx} onClick={() => handleTxClick(tx)} customCategories={customCats} />
                 </motion.div>
               ))}
             </div>

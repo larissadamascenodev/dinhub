@@ -113,7 +113,7 @@ export async function getTransactions(filters: TransactionFilters = {}) {
     .from("transactions")
     .select("*")
     .order("date", { ascending: false })
-    .order("created_at", { ascending: false });
+    .order("created_at", { ascending: true });
 
   if (filters.month !== undefined && filters.year !== undefined) {
     const start = new Date(filters.year, filters.month, 1).toISOString().split("T")[0];
@@ -135,7 +135,7 @@ export async function getRecentTransactions(limit = 10) {
     .select("*")
     .eq("status", "pago")
     .order("date", { ascending: false })
-    .order("created_at", { ascending: false })
+    .order("created_at", { ascending: true })
     .limit(limit);
 
   if (error) throw error;

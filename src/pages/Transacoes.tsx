@@ -12,6 +12,8 @@ import { supabase } from "@/integrations/supabase/client";
 import { useAuth } from "@/contexts/AuthContext";
 import { useMonth } from "@/contexts/MonthContext";
 import { deleteTransaction, getAccounts, updateTransaction, getCreditCards } from "@/services/transactionService";
+import { getCustomCategories, type CustomCategory } from "@/services/categoryService";
+import { getIconComponent } from "@/components/dashboard/CategoryCreateModal";
 import { useFinanceData } from "@/hooks/useFinanceData";
 import { getRecurringForMonth, excludeRecurringForMonth, excludeRecurringFromMonthOnward } from "@/services/recurringService";
 import MonthSelector from "@/components/dashboard/MonthSelector";
@@ -39,6 +41,7 @@ type TransactionRow = {
   observation: string | null;
   account_id: string | null;
   credit_card_id: string | null;
+  created_at?: string;
 };
 
 type AccountRow = { id: string; name: string; type: string; is_default: boolean; color: string | null; created_at?: string; initial_balance?: number; };
@@ -126,8 +129,38 @@ const CATEGORY_COLORS: Record<string, string> = {
   "Comissão": "199 70% 48%", "Mesada": "150 100% 45%", "Cartão de Crédito": "260 60% 55%",
 };
 
-const getCategoryIcon = (category: string) => CATEGORY_ICONS[category] || MoreHorizontal;
-const getCategoryColor = (category: string) => CATEGORY_COLORS[category] || "220 10% 55%";
+const getCategoryIcon = (category: string, customCategories?: CustomCategory[]) => {
+  if (CATEGORY_ICONS[category]) return CATEGORY_ICONS[category];
+  const custom = customCategories?.find((c) => c.name === category && !c.is_hidden_default);
+  if (custom) return getIconComponent(custom.icon);
+  return MoreHorizontal;
+};
+
+const hexToHsl = (hex: string): string => {
+  const r = parseInt(hex.slice(1, 3), 16) / 255;
+  const g = parseInt(hex.slice(3, 5), 16) / 255;
+  const b = parseInt(hex.slice(5, 7), 16) / 255;
+  const max = Math.max(r, g, b), min = Math.min(r, g, b);
+  let h = 0, s = 0;
+  const l = (max + min) / 2;
+  if (max !== min) {
+    const d = max - min;
+    s = l > 0.5 ? d / (2 - max - min) : d / (max + min);
+    if (max === r) h = ((g - b) / d + (g < b ? 6 : 0)) / 6;
+    else if (max === g) h = ((b - r) / d + 2) / 6;
+    else h = ((r - g) / d + 4) / 6;
+  }
+  return `${Math.round(h * 360)} ${Math.round(s * 100)}% ${Math.round(l * 100)}%`;
+};
+
+const getCategoryColor = (category: string, customCategories?: CustomCategory[]) => {
+  if (CATEGORY_COLORS[category]) return CATEGORY_COLORS[category];
+  const custom = customCategories?.find((c) => c.name === category && !c.is_hidden_default);
+  if (custom && custom.color) {
+    try { return hexToHsl(custom.color); } catch { /* fallback */ }
+  }
+  return "220 10% 55%";
+};
 
 const formatDateHeader = (dateStr: string) => {
   const [y, m, d] = dateStr.split("-").map(Number);
@@ -148,18 +181,20 @@ const SwipeableItem = ({
   accountName,
   onDelete,
   onEdit,
+  customCategories,
 }: {
   tx: TransactionRow;
   accountName: string;
   onDelete: (id: string) => void;
   onEdit: (tx: TransactionRow) => void;
+  customCategories?: CustomCategory[];
 }) => {
   const x = useMotionValue(0);
   const editOpacity = useTransform(x, [0, 60, 120], [0, 0.5, 1]);
   const deleteOpacity = useTransform(x, [-120, -60, 0], [1, 0.5, 0]);
   const isReceita = tx.type === "receita";
-  const catColor = getCategoryColor(tx.category);
-  const CatIcon = getCategoryIcon(tx.category);
+  const catColor = getCategoryColor(tx.category, customCategories);
+  const CatIcon = getCategoryIcon(tx.category, customCategories);
   const isRecurring = tx.recurrence_type === "fixa" || (tx.installments && tx.installments > 1);
   const isPending = tx.status !== "pago";
 
@@ -262,6 +297,7 @@ const Transacoes = () => {
   const [transactions, setTransactions] = useState<TransactionRow[]>([]);
   const [accounts, setAccounts] = useState<AccountRow[]>([]);
   const [creditCards, setCreditCards] = useState<any[]>([]);
+  const [customCategories, setCustomCategories] = useState<CustomCategory[]>([]);
   const [loading, setLoading] = useState(true);
   const [search, setSearch] = useState("");
   const [activeTab, setActiveTab] = useState<TabFilter>("todos");
@@ -322,14 +358,15 @@ const Transacoes = () => {
     const start = new Date(selectedYear, selectedMonth, 1).toISOString().split("T")[0];
     const end = new Date(selectedYear, selectedMonth + 1, 0).toISOString().split("T")[0];
 
-    const [txRes, accRes, recurringTxs, creditCardsRes, invoicesRes] = await Promise.all([
+    const [txRes, accRes, recurringTxs, creditCardsRes, invoicesRes, customCats] = await Promise.all([
       supabase
         .from("transactions")
         .select("*")
         .eq("user_id", user.id)
         .gte("date", start)
         .lte("date", end)
-        .order("date", { ascending: false }),
+        .order("date", { ascending: false })
+        .order("created_at", { ascending: true }),
       getAccounts(),
       getRecurringForMonth(selectedMonth, selectedYear),
       getCreditCards(),
@@ -339,6 +376,7 @@ const Transacoes = () => {
         .eq("user_id", user.id)
         .eq("month", selectedMonth + 1)
         .eq("year", selectedYear),
+      getCustomCategories(),
     ]);
 
     if (txRes.error || invoicesRes.error) {
@@ -495,6 +533,7 @@ const Transacoes = () => {
     setTransactions(nextTransactions);
     setAccounts(nextAccounts);
     setCreditCards(nextCreditCards);
+    setCustomCategories(customCats);
     setLoading(false);
   }, [user, selectedMonth, selectedYear, cacheKey, seedTransactions.length]);
 
@@ -540,12 +579,13 @@ const Transacoes = () => {
       if (!groups[tx.date]) groups[tx.date] = [];
       groups[tx.date].push(tx);
     });
-    // Sort pendentes first within each day
+    // Sort pendentes first, then by created_at ascending (oldest first)
     for (const date in groups) {
       groups[date].sort((a, b) => {
         if (a.status === "pendente" && b.status !== "pendente") return -1;
         if (a.status !== "pendente" && b.status === "pendente") return 1;
-        return 0;
+        // Within same status, oldest added first
+        return (a.created_at ?? "").localeCompare(b.created_at ?? "");
       });
     }
     return Object.entries(groups).sort(([a], [b]) => b.localeCompare(a));
@@ -874,6 +914,7 @@ const Transacoes = () => {
                         tx={tx}
                         accountName={tx.account_id ? (accountMap[tx.account_id] || "Conta") : tx.payment_method === "cartao" ? "Cartão" : "Sem conta"}
                         onDelete={handleDelete}
+                        customCategories={customCategories}
                         onEdit={(t) => {
                           if (t.id.startsWith("initial-balance-")) {
                             toast.info("Esse item mostra quando a conta foi criada com saldo inicial.");

@@ -81,7 +81,12 @@ export async function getInvoiceItems(invoiceId: string) {
     transaction_status: (txMap.get(item.transaction_id) as any)?.status ?? "pendente",
     transaction_recurrence_type: (txMap.get(item.transaction_id) as any)?.recurrence_type ?? "unica",
     transaction_parent_id: (txMap.get(item.transaction_id) as any)?.parent_transaction_id ?? null,
-  }));
+  })).sort((a, b) => {
+    // Sort by transaction date ascending (oldest first), then by created_at ascending
+    const dateCmp = (a.transaction_date || "").localeCompare(b.transaction_date || "");
+    if (dateCmp !== 0) return dateCmp;
+    return (a.created_at || "").localeCompare(b.created_at || "");
+  });
 }
 
 export async function payInvoice(
