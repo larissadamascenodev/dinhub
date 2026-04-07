@@ -447,6 +447,8 @@ export async function getFinancialSummary(
     },
     transactions,
     events,
+    creditCards: creditCardsData ?? [],
+    invoicesDetail: invoicesDetailData ?? [],
   };
 }
 
