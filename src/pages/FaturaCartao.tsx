@@ -15,7 +15,6 @@ import { useAuth } from "@/contexts/AuthContext";
 import { supabase } from "@/integrations/supabase/client";
 import { getInvoices, getInvoiceItems, getInvoicePayments, payInvoice, undoInvoicePayment, type Invoice, type InvoicePayment } from "@/services/invoiceService";
 import { getAccounts, getCreditCards, createTransaction, updateTransaction, deleteTransaction, getTransactionById } from "@/services/transactionService";
-import { supabase } from "@/integrations/supabase/client";
 import type { RecurrenceScope } from "@/components/fatura/RecurrenceActionModal";
 import { cn } from "@/lib/utils";
 import InvoiceCategoryBreakdown from "@/components/fatura/InvoiceCategoryBreakdown";
