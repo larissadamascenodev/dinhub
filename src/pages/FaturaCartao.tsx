@@ -157,6 +157,8 @@ const FaturaCartao = () => {
     ]).then(([itemsData, paymentsData]) => {
       setItems(itemsData as EnrichedItem[]);
       setPayments(paymentsData);
+    }).catch(() => {
+      // silently handle
     });
   }, [currentInvoice]);
 
