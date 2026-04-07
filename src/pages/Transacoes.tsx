@@ -358,14 +358,15 @@ const Transacoes = () => {
     const start = new Date(selectedYear, selectedMonth, 1).toISOString().split("T")[0];
     const end = new Date(selectedYear, selectedMonth + 1, 0).toISOString().split("T")[0];
 
-    const [txRes, accRes, recurringTxs, creditCardsRes, invoicesRes] = await Promise.all([
+    const [txRes, accRes, recurringTxs, creditCardsRes, invoicesRes, customCats] = await Promise.all([
       supabase
         .from("transactions")
         .select("*")
         .eq("user_id", user.id)
         .gte("date", start)
         .lte("date", end)
-        .order("date", { ascending: false }),
+        .order("date", { ascending: false })
+        .order("created_at", { ascending: true }),
       getAccounts(),
       getRecurringForMonth(selectedMonth, selectedYear),
       getCreditCards(),
@@ -375,6 +376,7 @@ const Transacoes = () => {
         .eq("user_id", user.id)
         .eq("month", selectedMonth + 1)
         .eq("year", selectedYear),
+      getCustomCategories(),
     ]);
 
     if (txRes.error || invoicesRes.error) {
