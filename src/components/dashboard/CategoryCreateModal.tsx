@@ -120,7 +120,7 @@ function getIconComponent(iconName: string) {
 
 export default function CategoryCreateModal({
   open, onClose, onSave,
-  initialName = "", initialIcon = "file-text", initialColor = "#8b5cf6",
+  initialName = "", initialIcon = "file-text", initialColor = "#00e676",
   title = "Nova Categoria",
   existingNames = [],
 }: Props) {
