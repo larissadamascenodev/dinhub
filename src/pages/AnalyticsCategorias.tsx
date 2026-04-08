@@ -80,6 +80,14 @@ interface InstallmentImpact {
 
 type InstallmentImpactMap = Record<string, InstallmentImpact>;
 
+interface HabitData {
+  category: string;
+  txCount: number;
+  dailyCost: number;
+  isHabit: boolean;
+  topMerchant: { name: string; count: number } | null;
+  amount: number;
+}
 
 // ── Reusable Glass Card ──────────────────────────────────
 const GlassCard = ({ children, className = "" }: { children: React.ReactNode; className?: string }) => (
