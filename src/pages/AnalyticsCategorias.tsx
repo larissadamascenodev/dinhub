@@ -881,9 +881,44 @@ const AnalyticsCategorias = () => {
         hMap[cat] = filled;
       });
 
+      // Build installment impact map
+      const instTxs = (installmentRes.data ?? []) as {
+        id: string; name: string; category: string; amount: number; date: string;
+        installments: number | null; installment_current: number | null;
+        parent_transaction_id: string | null; recurrence_type: string;
+      }[];
+
+      // Group by parent (or self if parent) to find unique installment groups
+      const groupMap = new Map<string, { name: string; category: string; amount: number; total: number; maxCurrent: number }>();
+      instTxs.forEach((tx) => {
+        if (!tx.installments || tx.installments <= 1) return;
+        const groupId = tx.parent_transaction_id ?? tx.id;
+        const existing = groupMap.get(groupId);
+        const current = tx.installment_current ?? 1;
+        if (!existing) {
+          groupMap.set(groupId, { name: tx.name, category: tx.category, amount: tx.amount, total: tx.installments, maxCurrent: current });
+        } else {
+          existing.maxCurrent = Math.max(existing.maxCurrent, current);
+        }
+      });
+
+      const iMap: InstallmentImpactMap = {};
+      groupMap.forEach(({ name, category, amount, total, maxCurrent }) => {
+        const remaining = total - maxCurrent;
+        if (remaining <= 0) return;
+        if (!iMap[category]) {
+          iMap[category] = { category, monthlyAmount: 0, totalRemaining: 0, monthsRemaining: 0, impactPct: 0, items: [] };
+        }
+        iMap[category].monthlyAmount += amount;
+        iMap[category].totalRemaining += amount * remaining;
+        iMap[category].monthsRemaining = Math.max(iMap[category].monthsRemaining, remaining);
+        iMap[category].items.push({ name, amount, remaining, total });
+      });
+
       setTransactions([...baseTxs, ...materializedRecurring]);
       setPrevMonthTxs([...prevBaseTxs, ...prevMaterialized]);
       setHistoricalMap(hMap);
+      setInstallmentImpacts(iMap);
       setCustomCats(cats);
       setLoading(false);
     };
