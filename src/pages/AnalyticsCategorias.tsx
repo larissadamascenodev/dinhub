@@ -1,4 +1,4 @@
-import { useState, useEffect, useMemo, useCallback } from "react";
+import { useState, useEffect, useMemo, useCallback, useRef } from "react";
 import { useNavigate } from "react-router-dom";
 import { motion, AnimatePresence } from "framer-motion";
 import {
@@ -94,25 +94,37 @@ const GlassCard = ({ children, className = "" }: { children: React.ReactNode; cl
 const SummaryCard = ({ totalExpenses, topCategory, monthLabel }: {
   totalExpenses: number; topCategory?: CategorySummary; monthLabel: string;
 }) => (
-  <GlassCard className="p-4 md:p-5">
+  <GlassCard className="p-3 md:p-5">
     <div className="flex items-center justify-between">
       <div>
-        <p className="text-[10px] text-muted-foreground/50 uppercase tracking-wider font-medium">
+        <p className="text-[9px] md:text-[10px] text-muted-foreground/50 uppercase tracking-wider font-medium">
           Total de Despesas · {monthLabel}
         </p>
-        <p className="text-2xl md:text-3xl font-bold text-foreground tabular-nums mt-1">
+        <p className="text-lg md:text-3xl font-bold text-foreground tabular-nums mt-0.5 md:mt-1">
           {fmt(totalExpenses)}
         </p>
       </div>
       {topCategory && (
         <div className="text-right">
-          <p className="text-[10px] text-muted-foreground/50 uppercase tracking-wider font-medium">Maior gasto</p>
-          <p className="text-sm font-bold text-foreground mt-1">{topCategory.name}</p>
-          <p className="text-xs text-muted-foreground/60">{topCategory.percentage}% do total</p>
+          <p className="text-[9px] md:text-[10px] text-muted-foreground/50 uppercase tracking-wider font-medium">Maior gasto</p>
+          <p className="text-xs md:text-sm font-bold text-foreground mt-0.5">{topCategory.name}</p>
+          <p className="text-[10px] md:text-xs text-muted-foreground/60">{topCategory.percentage}%</p>
         </div>
       )}
     </div>
   </GlassCard>
+);
+
+// ── Donut: default center shows total ────────────────────
+const DonutDefaultCenter = ({ total }: { total: number }) => (
+  <g>
+    <text x="50%" y="46%" textAnchor="middle" fill="hsl(var(--muted-foreground))" fontSize={10} fontWeight={600}>
+      Total Despesas
+    </text>
+    <text x="50%" y="58%" textAnchor="middle" fill="hsl(var(--foreground))" fontSize={16} fontWeight={800}>
+      {fmt(total)}
+    </text>
+  </g>
 );
 
 // ── Custom active shape for donut ─────────────────────────
@@ -120,17 +132,49 @@ const renderActiveShape = (props: any) => {
   const { cx, cy, innerRadius, outerRadius, startAngle, endAngle, fill, payload, percent } = props;
   return (
     <g>
-      <Sector cx={cx} cy={cy} innerRadius={innerRadius} outerRadius={outerRadius + 8} startAngle={startAngle} endAngle={endAngle} fill={fill} opacity={0.9} />
-      <Sector cx={cx} cy={cy} innerRadius={innerRadius - 4} outerRadius={innerRadius - 1} startAngle={startAngle} endAngle={endAngle} fill={fill} opacity={0.4} />
-      <text x={cx} y={cy - 14} textAnchor="middle" fill="hsl(var(--foreground))" fontSize={11} fontWeight={700}>
+      <Sector cx={cx} cy={cy} innerRadius={innerRadius} outerRadius={outerRadius + 6} startAngle={startAngle} endAngle={endAngle} fill={fill} opacity={0.9} />
+      <Sector cx={cx} cy={cy} innerRadius={innerRadius - 3} outerRadius={innerRadius - 1} startAngle={startAngle} endAngle={endAngle} fill={fill} opacity={0.3} />
+      <text x={cx} y={cy - 12} textAnchor="middle" fill="hsl(var(--foreground))" fontSize={10} fontWeight={700}>
         {payload.fullName}
       </text>
-      <text x={cx} y={cy + 4} textAnchor="middle" fill="hsl(var(--foreground))" fontSize={18} fontWeight={800}>
+      <text x={cx} y={cy + 6} textAnchor="middle" fill="hsl(var(--foreground))" fontSize={16} fontWeight={800}>
         {fmt(payload.value)}
       </text>
-      <text x={cx} y={cy + 22} textAnchor="middle" fill="hsl(var(--muted-foreground))" fontSize={11} fontWeight={600}>
+      <text x={cx} y={cy + 22} textAnchor="middle" fill="hsl(var(--muted-foreground))" fontSize={10} fontWeight={600}>
         {(percent * 100).toFixed(0)}%
       </text>
+    </g>
+  );
+};
+
+// ── Default (non-active) donut shape ─────────────────────
+const renderDefaultShape = (props: any) => {
+  const { cx, cy, innerRadius, outerRadius, startAngle, endAngle, fill } = props;
+  return (
+    <Sector cx={cx} cy={cy} innerRadius={innerRadius} outerRadius={outerRadius} startAngle={startAngle} endAngle={endAngle} fill={fill} />
+  );
+};
+
+// ── Custom bar shape with icon on top ────────────────────
+const BarWithIcon = (props: any) => {
+  const { x, y, width, height, fill, payload } = props;
+  if (!payload?.iconName) return <rect x={x} y={y} width={width} height={height} fill={fill} rx={6} ry={6} />;
+
+  const IconComp = payload.iconComponent;
+  const iconSize = 14;
+  const iconX = x + width / 2 - iconSize / 2;
+  const iconY = y - iconSize - 4;
+
+  return (
+    <g>
+      <rect x={x} y={y} width={width} height={height} fill={fill} rx={6} ry={6} />
+      {IconComp && iconY > 0 && (
+        <foreignObject x={iconX} y={iconY} width={iconSize} height={iconSize}>
+          <div style={{ width: iconSize, height: iconSize, display: "flex", alignItems: "center", justifyContent: "center" }}>
+            <IconComp style={{ width: iconSize, height: iconSize, color: fill }} />
+          </div>
+        </foreignObject>
+      )}
     </g>
   );
 };
@@ -141,7 +185,12 @@ const CategoryChartSection = ({ categoryData, isMobile }: {
   isMobile: boolean;
 }) => {
   const [mode, setMode] = useState<"donut" | "bar">("donut");
-  const [activeIdx, setActiveIdx] = useState(0);
+  const [activeIdx, setActiveIdx] = useState<number | undefined>(undefined);
+  const scrollRef = useRef<HTMLDivElement>(null);
+  const [isDragging, setIsDragging] = useState(false);
+  const dragState = useRef({ startX: 0, scrollLeft: 0 });
+
+  const totalExpenses = useMemo(() => categoryData.reduce((s, c) => s + c.amount, 0), [categoryData]);
 
   const chartData = categoryData.map((c) => ({
     name: c.name.length > 8 ? c.name.slice(0, 7) + "…" : c.name,
@@ -149,7 +198,29 @@ const CategoryChartSection = ({ categoryData, isMobile }: {
     value: c.amount,
     fill: c.hexColor,
     percentage: c.percentage,
+    iconComponent: c.icon,
+    iconName: c.name,
   }));
+
+  // Drag to scroll for bar chart
+  const onMouseDown = useCallback((e: React.MouseEvent) => {
+    const el = scrollRef.current;
+    if (!el) return;
+    setIsDragging(true);
+    dragState.current = { startX: e.pageX - el.offsetLeft, scrollLeft: el.scrollLeft };
+    el.style.cursor = "grabbing";
+  }, []);
+  const onMouseMove = useCallback((e: React.MouseEvent) => {
+    if (!isDragging || !scrollRef.current) return;
+    e.preventDefault();
+    const el = scrollRef.current;
+    const x = e.pageX - el.offsetLeft;
+    el.scrollLeft = dragState.current.scrollLeft - (x - dragState.current.startX);
+  }, [isDragging]);
+  const onMouseUp = useCallback(() => {
+    setIsDragging(false);
+    if (scrollRef.current) scrollRef.current.style.cursor = "grab";
+  }, []);
 
   return (
     <GlassCard className="p-4 md:p-5">
@@ -182,27 +253,33 @@ const CategoryChartSection = ({ categoryData, isMobile }: {
             exit={{ opacity: 0, scale: 0.95 }}
             transition={{ duration: 0.2 }}
             style={{ height: isMobile ? 240 : 280 }}
+            onMouseLeave={() => setActiveIdx(undefined)}
           >
             <ResponsiveContainer width="100%" height="100%">
               <PieChart>
                 <Pie
                   activeIndex={activeIdx}
                   activeShape={renderActiveShape}
+                  inactiveShape={renderDefaultShape}
                   data={chartData}
                   cx="50%"
                   cy="50%"
-                  innerRadius={isMobile ? 60 : 75}
-                  outerRadius={isMobile ? 90 : 110}
+                  innerRadius={isMobile ? 58 : 72}
+                  outerRadius={isMobile ? 88 : 108}
                   dataKey="value"
+                  paddingAngle={2}
                   onMouseEnter={(_, idx) => setActiveIdx(idx)}
                   onClick={(_, idx) => setActiveIdx(idx)}
                   animationDuration={800}
                   animationEasing="ease-out"
                 >
                   {chartData.map((entry, i) => (
-                    <Cell key={i} fill={entry.fill} stroke="transparent" />
+                    <Cell key={i} fill={entry.fill} stroke="hsl(var(--background))" strokeWidth={2} />
                   ))}
                 </Pie>
+                {activeIdx === undefined && (
+                  <DonutDefaultCenter total={totalExpenses} />
+                )}
               </PieChart>
             </ResponsiveContainer>
           </motion.div>
@@ -213,21 +290,18 @@ const CategoryChartSection = ({ categoryData, isMobile }: {
             animate={{ opacity: 1, scale: 1 }}
             exit={{ opacity: 0, scale: 0.95 }}
             transition={{ duration: 0.2 }}
-            className="overflow-x-auto scrollbar-none"
+            ref={scrollRef}
+            className="overflow-x-auto scrollbar-none select-none"
+            style={{ cursor: "grab" }}
+            onMouseDown={onMouseDown}
+            onMouseMove={onMouseMove}
+            onMouseUp={onMouseUp}
+            onMouseLeave={onMouseUp}
           >
-            <div style={{ height: 200, minWidth: Math.max(categoryData.length * 56, 300) }}>
+            <div style={{ height: 220, minWidth: Math.max(categoryData.length * 56, 300) }}>
               <ResponsiveContainer width="100%" height="100%">
-                <BarChart data={chartData} margin={{ left: 0, right: 10, top: 5, bottom: 0 }}>
-                  {!isMobile && (
-                    <XAxis
-                      dataKey="name"
-                      tick={{ fill: "hsl(var(--muted-foreground))", fontSize: 10 }}
-                      axisLine={false}
-                      tickLine={false}
-                      interval={0}
-                    />
-                  )}
-                  {isMobile && <XAxis dataKey="name" hide />}
+                <BarChart data={chartData} margin={{ left: 4, right: 4, top: 24, bottom: 0 }}>
+                  <XAxis dataKey="name" hide />
                   <YAxis hide />
                   <Tooltip
                     cursor={false}
@@ -243,7 +317,7 @@ const CategoryChartSection = ({ categoryData, isMobile }: {
                       );
                     }}
                   />
-                  <Bar dataKey="value" radius={[6, 6, 0, 0]} animationDuration={800}>
+                  <Bar dataKey="value" shape={<BarWithIcon />} animationDuration={800}>
                     {chartData.map((entry, i) => (
                       <Cell key={i} fill={entry.fill} />
                     ))}
@@ -277,7 +351,7 @@ const CategoryList = ({ categoryData, onSelect, selectedCat }: {
           Todas as categorias · {categoryData.length}
         </p>
       </div>
-      <div className="px-4 md:px-5 pb-3 space-y-1 max-h-[420px] overflow-y-auto">
+      <div className="px-4 md:px-5 pb-3 space-y-1 max-h-[420px] overflow-y-auto scrollbar-none">
         {categoryData.map((cat, i) => {
           const CatIcon = cat.icon;
           const isSelected = selectedCat === cat.name;
