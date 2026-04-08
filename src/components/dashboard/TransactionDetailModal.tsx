@@ -305,18 +305,18 @@ const TransactionDetailModal = ({ open, tx, accountName, onClose, onRefresh, use
     switch (step) {
       case "detail":
         return (
-          <div className="space-y-0">
-            {/* Header buttons */}
-            <div className="flex items-center justify-between px-1 pb-2">
-              <button onClick={handleClose} className="w-9 h-9 rounded-full bg-muted/40 flex items-center justify-center text-muted-foreground hover:text-foreground transition-colors">
-                <X className="w-4 h-4" />
+          <div className="relative">
+            {/* Floating action buttons — absolute top */}
+            <div className="flex items-center justify-between mb-5">
+              <button onClick={handleClose} className="w-8 h-8 rounded-xl bg-muted/30 backdrop-blur-sm flex items-center justify-center text-muted-foreground hover:text-foreground hover:bg-muted/50 transition-all">
+                <X className="w-3.5 h-3.5" />
               </button>
               <div className="relative" ref={dropdownRef}>
                 <button
                   onClick={() => setShowDropdown(!showDropdown)}
-                  className="w-9 h-9 rounded-full bg-muted/40 flex items-center justify-center text-muted-foreground hover:text-foreground transition-colors"
+                  className="w-8 h-8 rounded-xl bg-muted/30 backdrop-blur-sm flex items-center justify-center text-muted-foreground hover:text-foreground hover:bg-muted/50 transition-all"
                 >
-                  <MoreVertical className="w-4 h-4" />
+                  <MoreVertical className="w-3.5 h-3.5" />
                 </button>
                 <AnimatePresence>
                   {showDropdown && (
@@ -348,81 +348,88 @@ const TransactionDetailModal = ({ open, tx, accountName, onClose, onRefresh, use
               </div>
             </div>
 
-            {/* Hero section */}
-            <div className="flex items-center gap-3.5 pb-5">
+            {/* Centered hero — icon + amount */}
+            <div className="flex flex-col items-center text-center mb-6">
               <div
-                className="w-12 h-12 rounded-xl flex items-center justify-center text-xl shrink-0"
-                style={{ background: isReceita ? "hsl(var(--primary) / 0.15)" : "hsl(var(--muted-foreground) / 0.12)" }}
+                className="w-14 h-14 rounded-2xl flex items-center justify-center text-2xl mb-3 ring-1 ring-border/10"
+                style={{ background: isReceita ? "hsl(var(--primary) / 0.12)" : "hsl(var(--muted-foreground) / 0.08)" }}
               >
                 {icon}
               </div>
-              <div className="flex-1 min-w-0">
-                <div className="flex items-center gap-2">
-                  <h2 className="text-sm font-extrabold text-foreground uppercase tracking-wide truncate">{tx.name}</h2>
-                </div>
-                <p className="text-xs text-muted-foreground mt-0.5">
-                  {tx.category} · {isPaid ? (isReceita ? "recebido" : "já pago") : "agendada"}
-                  {isRecurring && " · fixa"}
-                </p>
-              </div>
-              <div className="text-right shrink-0">
-                <p className={cn("text-base font-bold tabular-nums", isReceita ? "text-primary" : "text-foreground")}>
-                  {fmt(tx.amount)}
-                </p>
-                <span
-                  className={cn(
-                    "inline-block mt-1 px-2.5 py-0.5 rounded text-[9px] font-bold uppercase tracking-wider",
-                    isPaid
-                      ? "bg-primary/15 text-primary"
-                      : "bg-amber-500/15 text-amber-400"
-                  )}
-                >
-                  {isPaid ? (isReceita ? "Recebido" : "Pago") : "Pendente"}
-                </span>
-              </div>
+              <h2 className="text-sm font-bold text-foreground uppercase tracking-wider">{tx.name}</h2>
+              <p className="text-[11px] text-muted-foreground/60 mt-0.5">
+                {tx.category}
+                {isRecurring && " · fixa"}
+                {tx.installments && tx.installment_current ? ` · ${tx.installment_current}/${tx.installments}x` : ""}
+              </p>
+              <p className={cn(
+                "text-2xl font-extrabold tabular-nums mt-3 tracking-tight",
+                isReceita ? "text-primary" : "text-foreground"
+              )}>
+                {isReceita ? "+" : "−"}{fmt(tx.amount)}
+              </p>
+              <span
+                className={cn(
+                  "mt-2 px-3 py-1 rounded-full text-[10px] font-bold uppercase tracking-widest",
+                  isPaid
+                    ? "bg-primary/10 text-primary ring-1 ring-primary/20"
+                    : "bg-amber-500/10 text-amber-400 ring-1 ring-amber-500/20"
+                )}
+              >
+                {isPaid ? (isReceita ? "Recebido" : "Pago") : "Pendente"}
+              </span>
             </div>
 
-            {/* Divider */}
-            <div className="h-px bg-border/20" />
-
-            {/* Info rows */}
-            <div className="py-1">
-              <div className="flex items-center gap-3 py-3">
-                <CalendarDays className="w-4 h-4 text-muted-foreground/60 shrink-0" />
-                <span className="text-sm text-muted-foreground flex-1">Data</span>
-                <span className="text-sm font-semibold text-foreground">{formatFullDate(tx.date)}</span>
+            {/* Info card */}
+            <div className="rounded-xl bg-muted/20 ring-1 ring-border/10 divide-y divide-border/10 mb-4">
+              <div className="flex items-center gap-3 px-4 py-3">
+                <div className="w-7 h-7 rounded-lg bg-muted/40 flex items-center justify-center">
+                  <CalendarDays className="w-3.5 h-3.5 text-muted-foreground/70" />
+                </div>
+                <span className="text-[13px] text-muted-foreground flex-1">Data</span>
+                <span className="text-[13px] font-semibold text-foreground">{formatFullDate(tx.date)}</span>
               </div>
-              <div className="flex items-center gap-3 py-3">
-                <Tag className="w-4 h-4 text-muted-foreground/60 shrink-0" />
-                <span className="text-sm text-muted-foreground flex-1">Categoria</span>
-                <span className="text-sm font-semibold text-foreground">{tx.category}</span>
+              <div className="flex items-center gap-3 px-4 py-3">
+                <div className="w-7 h-7 rounded-lg bg-muted/40 flex items-center justify-center">
+                  <Tag className="w-3.5 h-3.5 text-muted-foreground/70" />
+                </div>
+                <span className="text-[13px] text-muted-foreground flex-1">Categoria</span>
+                <span className="text-[13px] font-semibold text-foreground">{tx.category}</span>
               </div>
-              <div className="flex items-center gap-3 py-3">
-                <Wallet className="w-4 h-4 text-muted-foreground/60 shrink-0" />
-                <span className="text-sm text-muted-foreground flex-1">Conta</span>
-                <span className="text-sm font-semibold text-foreground">
+              <div className="flex items-center gap-3 px-4 py-3">
+                <div className="w-7 h-7 rounded-lg bg-muted/40 flex items-center justify-center">
+                  <Wallet className="w-3.5 h-3.5 text-muted-foreground/70" />
+                </div>
+                <span className="text-[13px] text-muted-foreground flex-1">Conta</span>
+                <span className="text-[13px] font-semibold text-foreground">
                   {tx.payment_method === "cartao" ? "Cartão de crédito" : accountName || "Sem conta"}
                 </span>
               </div>
-              {tx.observation && (
-                <div className="flex items-center gap-3 py-3">
-                  <StickyNote className="w-4 h-4 text-muted-foreground/60 shrink-0" />
-                  <span className="text-sm text-muted-foreground flex-1">Nota</span>
-                  <span className="text-sm font-semibold text-foreground truncate max-w-[180px]">{tx.observation}</span>
-                </div>
-              )}
               {isRecurring && (
-                <div className="flex items-center gap-3 py-3">
-                  <RefreshCw className="w-4 h-4 text-muted-foreground/60 shrink-0" />
-                  <span className="text-sm text-muted-foreground flex-1">Recorrência</span>
-                  <span className="text-sm font-semibold text-foreground">Mensal</span>
+                <div className="flex items-center gap-3 px-4 py-3">
+                  <div className="w-7 h-7 rounded-lg bg-muted/40 flex items-center justify-center">
+                    <RefreshCw className="w-3.5 h-3.5 text-muted-foreground/70" />
+                  </div>
+                  <span className="text-[13px] text-muted-foreground flex-1">Recorrência</span>
+                  <span className="text-[13px] font-semibold text-foreground">Mensal</span>
                 </div>
               )}
               {tx.installments && tx.installment_current && (
-                <div className="flex items-center gap-3 py-3">
-                  <FileText className="w-4 h-4 text-muted-foreground/60 shrink-0" />
-                  <span className="text-sm text-muted-foreground flex-1">Parcela</span>
-                  <span className="text-sm font-semibold text-foreground">{tx.installment_current}/{tx.installments}x</span>
+                <div className="flex items-center gap-3 px-4 py-3">
+                  <div className="w-7 h-7 rounded-lg bg-muted/40 flex items-center justify-center">
+                    <FileText className="w-3.5 h-3.5 text-muted-foreground/70" />
+                  </div>
+                  <span className="text-[13px] text-muted-foreground flex-1">Parcela</span>
+                  <span className="text-[13px] font-semibold text-foreground">{tx.installment_current}/{tx.installments}x</span>
+                </div>
+              )}
+              {tx.observation && (
+                <div className="flex items-center gap-3 px-4 py-3">
+                  <div className="w-7 h-7 rounded-lg bg-muted/40 flex items-center justify-center">
+                    <StickyNote className="w-3.5 h-3.5 text-muted-foreground/70" />
+                  </div>
+                  <span className="text-[13px] text-muted-foreground flex-1">Nota</span>
+                  <span className="text-[13px] font-semibold text-foreground truncate max-w-[180px]">{tx.observation}</span>
                 </div>
               )}
             </div>
@@ -431,7 +438,7 @@ const TransactionDetailModal = ({ open, tx, accountName, onClose, onRefresh, use
             {!isPaid && (
               <button
                 onClick={() => setStep("pay-confirm")}
-                className="w-full py-3.5 rounded-xl text-sm font-bold bg-primary/20 text-primary hover:bg-primary/30 transition-all mt-2"
+                className="w-full py-3 rounded-xl text-sm font-bold bg-primary/15 text-primary ring-1 ring-primary/20 hover:bg-primary/25 transition-all"
               >
                 {isReceita ? "Marcar como recebido" : "Marcar como pago"}
               </button>
@@ -840,10 +847,10 @@ const TransactionDetailModal = ({ open, tx, accountName, onClose, onRefresh, use
             transition={{ type: "spring", damping: 30, stiffness: 300 }}
             onClick={(e) => e.stopPropagation()}
             className={cn(
-              "w-full max-w-md bg-card shadow-2xl",
+              "w-full max-w-md shadow-2xl",
               step === "edit-form"
-                ? "h-full md:h-auto md:max-h-[92vh] mx-0 md:mx-4 rounded-none md:rounded-2xl border-0 md:border md:border-border/20 p-0 flex flex-col overflow-hidden"
-                : "mx-4 mb-20 sm:mb-0 rounded-2xl border border-border/20 p-5 max-h-[75vh] overflow-y-auto"
+                ? "h-full md:h-auto md:max-h-[92vh] mx-0 md:mx-4 rounded-none md:rounded-2xl bg-card border-0 md:border md:border-border/20 p-0 flex flex-col overflow-hidden"
+                : "mx-4 mb-20 sm:mb-0 rounded-2xl bg-card/95 backdrop-blur-xl border border-border/15 p-5 max-h-[75vh] overflow-y-auto ring-1 ring-white/[0.03]"
             )}
           >
             {renderContent()}
