@@ -47,6 +47,31 @@ interface InvoiceData {
   year: number;
 }
 
+function getInvoiceStatusLabel(card: CreditCardItem): { label: string; isClosed: boolean } {
+  const now = new Date();
+  const today = now.getDate();
+  const closingDay = card.closing_day;
+  const dueDay = card.due_day;
+
+  if (today > closingDay) {
+    let dueDate: Date;
+    if (dueDay > closingDay) {
+      dueDate = new Date(now.getFullYear(), now.getMonth(), dueDay);
+    } else {
+      dueDate = new Date(now.getFullYear(), now.getMonth() + 1, dueDay);
+    }
+    const diffMs = dueDate.getTime() - now.getTime();
+    const diffDays = Math.ceil(diffMs / (1000 * 60 * 60 * 24));
+    if (diffDays < 0) return { label: `Venceu há ${Math.abs(diffDays)} dias`, isClosed: true };
+    if (diffDays === 0) return { label: "Vence hoje", isClosed: true };
+    if (diffDays === 1) return { label: "Vence amanhã", isClosed: true };
+    return { label: `Vence em ${diffDays} dias`, isClosed: true };
+  }
+
+  const daysUntilClose = closingDay - today;
+  return { label: `Fecha em ${daysUntilClose} dia${daysUntilClose > 1 ? "s" : ""}`, isClosed: false };
+}
+
 const ACCOUNT_TYPE_LABELS: Record<string, { label: string; icon: typeof Landmark }> = {
   cash: { label: "Dinheiro", icon: Banknote },
   checking: { label: "Conta corrente", icon: Landmark },
