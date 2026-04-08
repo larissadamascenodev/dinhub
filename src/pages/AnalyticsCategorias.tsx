@@ -4,6 +4,7 @@ import { motion, AnimatePresence } from "framer-motion";
 import {
   ArrowLeft, ChevronRight, Sparkles, TrendingUp, TrendingDown,
   AlertTriangle, Target, Brain, PieChart as PieChartIcon, Info, ShieldCheck, BarChart3,
+  Repeat,
 } from "lucide-react";
 import { supabase } from "@/integrations/supabase/client";
 import { useAuth } from "@/contexts/AuthContext";
@@ -79,6 +80,14 @@ interface InstallmentImpact {
 
 type InstallmentImpactMap = Record<string, InstallmentImpact>;
 
+interface HabitData {
+  category: string;
+  txCount: number;
+  dailyCost: number;
+  isHabit: boolean;
+  topMerchant: { name: string; count: number } | null;
+  amount: number;
+}
 
 // ── Reusable Glass Card ──────────────────────────────────
 const GlassCard = ({ children, className = "" }: { children: React.ReactNode; className?: string }) => (
@@ -333,11 +342,12 @@ const CategoryChartSection = ({ categoryData, isMobile }: {
 };
 
 // ── Category List with traffic-light bars ────────────────
-const CategoryList = ({ categoryData, onSelect, selectedCat, prevCategoryData }: {
+const CategoryList = ({ categoryData, onSelect, selectedCat, prevCategoryData, habitMap }: {
   categoryData: CategorySummary[];
   onSelect: (name: string) => void;
   selectedCat: string | null;
   prevCategoryData?: { name: string; amount: number }[];
+  habitMap?: Record<string, HabitData>;
 }) => {
   const getBarColor = (pct: number) => {
     if (pct > 40) return "hsl(var(--destructive))";
@@ -362,6 +372,7 @@ const CategoryList = ({ categoryData, onSelect, selectedCat, prevCategoryData }:
           const variation = prevAmount > 0
             ? Math.round(((cat.amount - prevAmount) / prevAmount) * 100)
             : null;
+          const habit = habitMap?.[cat.name];
           const isNew = prevAmount === 0 && cat.amount > 0;
           return (
             <motion.button
@@ -381,9 +392,14 @@ const CategoryList = ({ categoryData, onSelect, selectedCat, prevCategoryData }:
                 <CatIcon className="w-4 h-4 md:w-[18px] md:h-[18px]" style={{ color: cat.hexColor }} />
               </div>
               <div className="flex-1 min-w-0 text-left">
-                <div className="flex items-center gap-2">
+                <div className="flex items-center gap-1.5 flex-wrap">
                   <p className="text-xs md:text-sm font-semibold text-foreground truncate">{cat.name}</p>
-                  <span className="text-[9px] md:text-[10px] text-muted-foreground/40">{cat.txCount} lançamentos</span>
+                  {habit?.isHabit && (
+                    <span className="text-[7px] md:text-[8px] font-semibold px-1.5 py-0.5 rounded-full bg-primary/10 text-primary flex items-center gap-0.5">
+                      <Repeat className="w-2.5 h-2.5" /> Hábito
+                    </span>
+                  )}
+                  <span className="text-[9px] md:text-[10px] text-muted-foreground/40">{cat.txCount} lanç.</span>
                 </div>
                 <div className="flex items-center gap-2 mt-0.5">
                   <div className="flex-1 h-1.5 bg-border/15 rounded-full overflow-hidden">
@@ -409,10 +425,106 @@ const CategoryList = ({ categoryData, onSelect, selectedCat, prevCategoryData }:
               </div>
               <div className="text-right shrink-0">
                 <p className="text-xs md:text-sm font-bold text-foreground tabular-nums">{fmt(cat.amount)}</p>
+                {habit && habit.dailyCost > 0 && (
+                  <p className="text-[8px] md:text-[9px] text-muted-foreground/50 tabular-nums">{fmt(habit.dailyCost)}/dia</p>
+                )}
                 <p className="text-[9px] md:text-[10px] text-muted-foreground/40">{cat.percentage}%</p>
               </div>
               <ChevronRight className="w-3.5 h-3.5 text-muted-foreground/30" />
             </motion.button>
+          );
+        })}
+      </div>
+    </GlassCard>
+  );
+};
+
+// ── Habit Insights Section ───────────────────────────────
+const HabitInsightsSection = ({ habitMap, categoryData }: {
+  habitMap: Record<string, HabitData>;
+  categoryData: CategorySummary[];
+}) => {
+  const insights = useMemo(() => {
+    const results: { message: string; severity: "habit" | "merchant" | "daily" | "combo"; score: number }[] = [];
+    const habits = Object.values(habitMap);
+
+    habits.forEach((h) => {
+      const cat = categoryData.find((c) => c.name === h.category);
+      const isHighValue = cat ? cat.percentage > 20 : false;
+
+      // Combo: habit + high value
+      if (h.isHabit && isHighValue) {
+        results.push({
+          message: `Esse hábito com ${h.category} está pesando no seu mês 💸 Talvez seja um bom ponto pra ajustar`,
+          severity: "combo",
+          score: h.amount * 3 + h.txCount * 10,
+        });
+        return;
+      }
+
+      // Repeated merchant
+      if (h.topMerchant && h.topMerchant.count >= 4) {
+        results.push({
+          message: `Você gastou várias vezes com ${h.topMerchant.name} esse mês 👀 Pequenos valores… mas somam bastante`,
+          severity: "merchant",
+          score: h.amount * 2 + h.topMerchant.count * 8,
+        });
+      }
+
+      // Habit detected (general)
+      if (h.isHabit && !isHighValue) {
+        results.push({
+          message: `Você já fez ${h.txCount} gastos em ${h.category} esse mês 😅 Isso já virou um padrão`,
+          severity: "habit",
+          score: h.amount + h.txCount * 10,
+        });
+      }
+
+      // Daily cost insight (only if > R$10/day)
+      if (h.dailyCost >= 10 && !h.isHabit) {
+        results.push({
+          message: `Você está gastando cerca de ${fmt(h.dailyCost)}/dia em ${h.category}`,
+          severity: "daily",
+          score: h.dailyCost * 5,
+        });
+      }
+    });
+
+    return results.sort((a, b) => b.score - a.score).slice(0, 3);
+  }, [habitMap, categoryData]);
+
+  if (insights.length === 0) return null;
+
+  const severityConfig = {
+    combo: { icon: AlertTriangle, bg: "bg-destructive/5", border: "border-destructive/15", text: "text-destructive" },
+    habit: { icon: Repeat, bg: "bg-primary/5", border: "border-primary/15", text: "text-primary" },
+    merchant: { icon: Target, bg: "bg-warning/5", border: "border-warning/15", text: "text-warning" },
+    daily: { icon: TrendingUp, bg: "bg-muted/10", border: "border-border/20", text: "text-muted-foreground" },
+  };
+
+  return (
+    <GlassCard className="p-4 md:p-5">
+      <div className="flex items-center gap-2 mb-3">
+        <Repeat className="w-4 h-4 text-primary" />
+        <p className="text-[10px] md:text-[11px] text-muted-foreground/60 font-semibold uppercase tracking-wider">
+          Detecção de Hábitos
+        </p>
+      </div>
+      <div className="space-y-2">
+        {insights.map((ins, i) => {
+          const config = severityConfig[ins.severity];
+          const Icon = config.icon;
+          return (
+            <motion.div
+              key={i}
+              initial={{ opacity: 0, x: -10 }}
+              animate={{ opacity: 1, x: 0 }}
+              transition={{ delay: i * 0.1 }}
+              className={`flex items-start gap-2.5 p-2.5 rounded-xl ${config.bg} border ${config.border}`}
+            >
+              <Icon className={`w-3.5 h-3.5 mt-0.5 shrink-0 ${config.text}`} />
+              <p className="text-xs text-foreground/80 leading-relaxed">{ins.message}</p>
+            </motion.div>
           );
         })}
       </div>
@@ -1361,6 +1473,44 @@ const AnalyticsCategorias = () => {
       }));
   }, [transactions, customCats]);
 
+  // Build habit data
+  const habitMap: Record<string, HabitData> = useMemo(() => {
+    const now = new Date();
+    const isCurrentMonth = selectedMonth === now.getMonth() && selectedYear === now.getFullYear();
+    const daysElapsed = isCurrentMonth ? Math.max(now.getDate(), 1) : new Date(selectedYear, selectedMonth + 1, 0).getDate();
+
+    const expenseTxs = transactions.filter((t) => t.type === "despesa");
+    const catMap = new Map<string, { amount: number; txCount: number; names: Map<string, number> }>();
+
+    expenseTxs.forEach((t) => {
+      const entry = catMap.get(t.category) || { amount: 0, txCount: 0, names: new Map() };
+      entry.amount += t.amount;
+      entry.txCount += 1;
+      entry.names.set(t.name, (entry.names.get(t.name) || 0) + 1);
+      catMap.set(t.category, entry);
+    });
+
+    const result: Record<string, HabitData> = {};
+    catMap.forEach((data, category) => {
+      let topMerchant: { name: string; count: number } | null = null;
+      let maxCount = 0;
+      data.names.forEach((count, name) => {
+        if (count > maxCount) { maxCount = count; topMerchant = { name, count }; }
+      });
+
+      const isHabit = data.txCount >= 8 || (topMerchant !== null && topMerchant.count >= 4);
+      result[category] = {
+        category,
+        txCount: data.txCount,
+        dailyCost: data.amount / daysElapsed,
+        isHabit,
+        topMerchant: topMerchant && topMerchant.count >= 2 ? topMerchant : null,
+        amount: data.amount,
+      };
+    });
+    return result;
+  }, [transactions, selectedMonth, selectedYear]);
+
   const prevCategoryData = useMemo(() => {
     const map = new Map<string, { amount: number; count: number }>();
     prevMonthTxs.filter((t) => t.type === "despesa").forEach((t) => {
@@ -1495,8 +1645,11 @@ const AnalyticsCategorias = () => {
                   isMobile={isMobile}
                 />
 
-                {/* Comparison Insights — between chart and AI */}
+                {/* Comparison Insights */}
                 <ComparisonInsightsSection categoryData={categoryData} prevCategoryData={prevCategoryData} />
+
+                {/* Habit Insights */}
+                <HabitInsightsSection habitMap={habitMap} categoryData={categoryData} />
 
                 {/* AI Insights */}
                 <AIInsightsSection insights={aiInsights} loading={aiLoading} />
@@ -1507,6 +1660,7 @@ const AnalyticsCategorias = () => {
                   onSelect={setSelectedCategory}
                   selectedCat={null}
                   prevCategoryData={prevCategoryData}
+                  habitMap={habitMap}
                 />
 
                 {/* Alerts */}
