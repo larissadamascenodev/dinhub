@@ -306,6 +306,7 @@ export default function GerenciarCategorias() {
         onClose={() => setShowCreateModal(false)}
         onSave={handleCreate}
         title="Nova Categoria"
+        existingNames={[...defaults, ...filteredCustom.map(c => c.name)]}
       />
 
       {/* Edit Modal */}
@@ -317,6 +318,7 @@ export default function GerenciarCategorias() {
         initialIcon={editingCat?.icon ?? "file-text"}
         initialColor={editingCat?.color ?? "#8b5cf6"}
         title="Editar Categoria"
+        existingNames={[...defaults, ...filteredCustom.filter(c => c.id !== editingCat?.id).map(c => c.name)]}
       />
 
       {/* Edit Default Modal */}
@@ -328,6 +330,7 @@ export default function GerenciarCategorias() {
         initialIcon="file-text"
         initialColor="#8b5cf6"
         title="Editar Categoria Padrão"
+        existingNames={[...defaults.filter(d => d !== editingDefault), ...filteredCustom.map(c => c.name)]}
       />
     </div>
   );

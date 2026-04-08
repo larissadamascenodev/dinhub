@@ -6,23 +6,96 @@ const corsHeaders = {
 };
 
 const EXPENSE_CATEGORIES = [
-  "Alimentação", "Transporte", "Saúde", "Assinaturas",
-  "Lazer", "Moradia", "Educação", "Vestuário", "Outros",
+  "Alimentação", "Supermercado", "Transporte", "Saúde", "Assinaturas",
+  "Lazer", "Moradia", "Educação", "Vestuário", "Pets",
+  "Beleza", "Presentes", "Viagem", "Tecnologia", "Impostos",
+  "Farmácia", "Combustível", "Estacionamento", "Restaurante",
+  "Delivery", "Academia", "Streaming", "Telefonia", "Internet",
+  "Energia", "Água", "Gás", "Manutenção", "Seguros",
+  "Material Escolar", "Livros", "Jogos", "Cinema", "Festas",
+  "Eletrônicos", "Móveis", "Decoração", "Jardinagem",
+  "Limpeza", "Higiene", "Barbearia", "Cosméticos",
 ];
 
 const INCOME_CATEGORIES = [
-  "Salário", "Freelance", "Investimentos", "Outros",
+  "Salário", "Freelance", "Investimentos", "Vendas",
+  "Aluguéis", "Bônus", "Comissão", "Mesada",
+  "Dividendos", "Reembolso", "Cashback", "Prêmio",
 ];
+
+const CATEGORY_ICON_MAP: Record<string, { icon: string; color: string }> = {
+  "Alimentação": { icon: "utensils", color: "#f44336" },
+  "Supermercado": { icon: "shopping-cart", color: "#4caf50" },
+  "Transporte": { icon: "car", color: "#2196f3" },
+  "Saúde": { icon: "heart", color: "#e91e63" },
+  "Assinaturas": { icon: "repeat", color: "#9c27b0" },
+  "Lazer": { icon: "gamepad-2", color: "#ff9800" },
+  "Moradia": { icon: "home", color: "#00bcd4" },
+  "Educação": { icon: "graduation-cap", color: "#ffc107" },
+  "Vestuário": { icon: "shirt", color: "#673ab7" },
+  "Pets": { icon: "paw-print", color: "#795548" },
+  "Beleza": { icon: "scissors", color: "#e91e63" },
+  "Presentes": { icon: "gift", color: "#ff5722" },
+  "Viagem": { icon: "plane", color: "#00bcd4" },
+  "Tecnologia": { icon: "smartphone", color: "#3f51b5" },
+  "Impostos": { icon: "file-text", color: "#607060" },
+  "Farmácia": { icon: "pill", color: "#e91e63" },
+  "Combustível": { icon: "zap", color: "#ff9800" },
+  "Estacionamento": { icon: "car", color: "#607060" },
+  "Restaurante": { icon: "utensils", color: "#ff5722" },
+  "Delivery": { icon: "shopping-bag", color: "#ff9800" },
+  "Academia": { icon: "dumbbell", color: "#4caf50" },
+  "Streaming": { icon: "tv", color: "#9c27b0" },
+  "Telefonia": { icon: "smartphone", color: "#2196f3" },
+  "Internet": { icon: "globe", color: "#00bcd4" },
+  "Energia": { icon: "zap", color: "#ffc107" },
+  "Água": { icon: "zap", color: "#2196f3" },
+  "Gás": { icon: "zap", color: "#ff9800" },
+  "Manutenção": { icon: "wrench", color: "#607060" },
+  "Seguros": { icon: "file-text", color: "#3f51b5" },
+  "Material Escolar": { icon: "book-open", color: "#ffc107" },
+  "Livros": { icon: "book-open", color: "#795548" },
+  "Jogos": { icon: "gamepad-2", color: "#9c27b0" },
+  "Cinema": { icon: "clapperboard", color: "#e91e63" },
+  "Festas": { icon: "music", color: "#ff5722" },
+  "Eletrônicos": { icon: "monitor", color: "#3f51b5" },
+  "Móveis": { icon: "home", color: "#795548" },
+  "Decoração": { icon: "lightbulb", color: "#ff9800" },
+  "Jardinagem": { icon: "target", color: "#4caf50" },
+  "Limpeza": { icon: "star", color: "#00bcd4" },
+  "Higiene": { icon: "heart", color: "#2196f3" },
+  "Barbearia": { icon: "scissors", color: "#607060" },
+  "Cosméticos": { icon: "star", color: "#e91e63" },
+  "Salário": { icon: "dollar-sign", color: "#4caf50" },
+  "Freelance": { icon: "briefcase", color: "#2196f3" },
+  "Investimentos": { icon: "trending-up", color: "#4caf50" },
+  "Vendas": { icon: "shopping-bag", color: "#ff9800" },
+  "Aluguéis": { icon: "home", color: "#ffc107" },
+  "Bônus": { icon: "award", color: "#4caf50" },
+  "Comissão": { icon: "users", color: "#2196f3" },
+  "Mesada": { icon: "wallet", color: "#4caf50" },
+  "Dividendos": { icon: "trending-up", color: "#00bcd4" },
+  "Reembolso": { icon: "dollar-sign", color: "#4caf50" },
+  "Cashback": { icon: "dollar-sign", color: "#8bc34a" },
+  "Prêmio": { icon: "award", color: "#ffc107" },
+};
 
 serve(async (req) => {
   if (req.method === "OPTIONS") return new Response(null, { headers: corsHeaders });
 
   try {
-    const { description, type } = await req.json();
+    const { description, type, customCategories } = await req.json();
     const LOVABLE_API_KEY = Deno.env.get("LOVABLE_API_KEY");
     if (!LOVABLE_API_KEY) throw new Error("LOVABLE_API_KEY not configured");
 
-    const categories = type === "receita" ? INCOME_CATEGORIES : EXPENSE_CATEGORIES;
+    const baseCategories = type === "receita" ? INCOME_CATEGORIES : EXPENSE_CATEGORIES;
+    // Merge custom categories from client
+    const allCategories = [...baseCategories];
+    if (customCategories && Array.isArray(customCategories)) {
+      for (const cc of customCategories) {
+        if (!allCategories.includes(cc)) allCategories.push(cc);
+      }
+    }
 
     const response = await fetch("https://ai.gateway.lovable.dev/v1/chat/completions", {
       method: "POST",
@@ -35,7 +108,12 @@ serve(async (req) => {
         messages: [
           {
             role: "system",
-            content: `You categorize financial transactions. Given a description, return the most likely category from this list: ${categories.join(", ")}. Return ONLY the category name, nothing else.`,
+            content: `You categorize Brazilian financial transactions. Given a description, return the most likely category from this list: ${allCategories.join(", ")}. 
+IMPORTANT RULES:
+- NEVER return "Outros" as a category. Always pick a specific category.
+- If no existing category fits well, suggest a NEW descriptive category name in Portuguese (e.g., "Supermercado", "Farmácia", "Academia", "Streaming").
+- The category name should be a single word or short phrase, capitalized.
+- Return ONLY the category name.`,
           },
           {
             role: "user",
@@ -51,7 +129,7 @@ serve(async (req) => {
               parameters: {
                 type: "object",
                 properties: {
-                  category: { type: "string", enum: categories },
+                  category: { type: "string", description: "The category name. Must NOT be 'Outros'." },
                 },
                 required: ["category"],
                 additionalProperties: false,
@@ -64,12 +142,6 @@ serve(async (req) => {
     });
 
     if (!response.ok) {
-      if (response.status === 429) {
-        return new Response(JSON.stringify({ category: null }), {
-          status: 200,
-          headers: { ...corsHeaders, "Content-Type": "application/json" },
-        });
-      }
       return new Response(JSON.stringify({ category: null }), {
         status: 200,
         headers: { ...corsHeaders, "Content-Type": "application/json" },
@@ -78,18 +150,26 @@ serve(async (req) => {
 
     const data = await response.json();
     const toolCall = data.choices?.[0]?.message?.tool_calls?.[0];
-    let category = null;
+    let category: string | null = null;
 
     if (toolCall?.function?.arguments) {
       try {
         const args = JSON.parse(toolCall.function.arguments);
-        if (categories.includes(args.category)) {
+        if (args.category && args.category !== "Outros") {
           category = args.category;
         }
       } catch {}
     }
 
-    return new Response(JSON.stringify({ category }), {
+    // Determine icon/color for the category
+    let icon = "file-text";
+    let color = "#8b5cf6";
+    if (category && CATEGORY_ICON_MAP[category]) {
+      icon = CATEGORY_ICON_MAP[category].icon;
+      color = CATEGORY_ICON_MAP[category].color;
+    }
+
+    return new Response(JSON.stringify({ category, icon, color }), {
       headers: { ...corsHeaders, "Content-Type": "application/json" },
     });
   } catch (e) {

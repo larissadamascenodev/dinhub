@@ -364,14 +364,22 @@ export async function deleteCreditCard(id: string) {
   notifyFinanceDataChanged();
 }
 
-export async function suggestCategory(description: string, type: "receita" | "despesa"): Promise<string | null> {
+export async function suggestCategory(
+  description: string,
+  type: "receita" | "despesa",
+  customCategories?: string[]
+): Promise<{ category: string | null; icon?: string; color?: string }> {
   try {
     const { data, error } = await supabase.functions.invoke("suggest-category", {
-      body: { description, type },
+      body: { description, type, customCategories },
     });
-    if (error) return null;
-    return data?.category ?? null;
+    if (error) return { category: null };
+    return {
+      category: data?.category ?? null,
+      icon: data?.icon,
+      color: data?.color,
+    };
   } catch {
-    return null;
+    return { category: null };
   }
 }
