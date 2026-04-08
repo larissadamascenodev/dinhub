@@ -840,6 +840,32 @@ const CategoryDetail = ({
         </GlassCard>
       )}
 
+      {/* AI Insights for this category */}
+      {categoryInsights.length > 0 && (
+        <GlassCard className="p-4 md:p-5">
+          <div className="flex items-center gap-2 mb-3">
+            <Brain className="w-4 h-4 text-primary" />
+            <p className="text-[10px] md:text-[11px] text-muted-foreground/60 font-semibold uppercase tracking-wider">
+              Insights · {category.name}
+            </p>
+          </div>
+          <div className="space-y-2">
+            {categoryInsights.map((msg, i) => (
+              <motion.div
+                key={i}
+                initial={{ opacity: 0, x: -10 }}
+                animate={{ opacity: 1, x: 0 }}
+                transition={{ delay: i * 0.1 }}
+                className="flex items-start gap-2.5 p-2.5 rounded-xl bg-primary/5 border border-primary/10"
+              >
+                <Sparkles className="w-3.5 h-3.5 text-primary mt-0.5 shrink-0" />
+                <p className="text-xs text-foreground/80 leading-relaxed">{msg}</p>
+              </motion.div>
+            ))}
+          </div>
+        </GlassCard>
+      )}
+
       {/* AI Alerts for this category */}
       {categoryAlerts.length > 0 && <AlertsSection alerts={categoryAlerts} />}
 
