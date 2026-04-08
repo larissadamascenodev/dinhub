@@ -100,7 +100,6 @@ const AssinaturasCard = memo(() => {
   const [subscriptions, setSubscriptions] = useState<Subscription[]>([]);
   const [loading, setLoading] = useState(true);
   const [expanded, setExpanded] = useState(false);
-  const [loading, setLoading] = useState(true);
 
   useEffect(() => {
     if (!user) return;
