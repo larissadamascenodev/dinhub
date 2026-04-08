@@ -847,10 +847,10 @@ const TransactionDetailModal = ({ open, tx, accountName, onClose, onRefresh, use
             transition={{ type: "spring", damping: 30, stiffness: 300 }}
             onClick={(e) => e.stopPropagation()}
             className={cn(
-              "w-full max-w-md bg-card shadow-2xl",
+              "w-full max-w-md shadow-2xl",
               step === "edit-form"
-                ? "h-full md:h-auto md:max-h-[92vh] mx-0 md:mx-4 rounded-none md:rounded-2xl border-0 md:border md:border-border/20 p-0 flex flex-col overflow-hidden"
-                : "mx-4 mb-20 sm:mb-0 rounded-2xl border border-border/20 p-5 max-h-[75vh] overflow-y-auto"
+                ? "h-full md:h-auto md:max-h-[92vh] mx-0 md:mx-4 rounded-none md:rounded-2xl bg-card border-0 md:border md:border-border/20 p-0 flex flex-col overflow-hidden"
+                : "mx-4 mb-20 sm:mb-0 rounded-2xl bg-card/95 backdrop-blur-xl border border-border/15 p-5 max-h-[75vh] overflow-y-auto ring-1 ring-white/[0.03]"
             )}
           >
             {renderContent()}
