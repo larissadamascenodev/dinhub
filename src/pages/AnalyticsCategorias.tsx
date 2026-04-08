@@ -248,7 +248,7 @@ const AnalyticsCategorias = () => {
         <MonthSelector
           selectedMonth={selectedMonth}
           selectedYear={selectedYear}
-          onChange={(m, y) => { setMonth(m, y); setSelectedCategory(null); }}
+          onMonthChange={(m, y) => { setMonth(m, y); setSelectedCategory(null); }}
         />
       </div>
 
