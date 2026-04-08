@@ -1148,7 +1148,7 @@ const EvolutionChart = ({ data, hexColor, currentMonth }: {
 // ── Category Detail View ─────────────────────────────────
 const CategoryDetail = ({
   category, transactions, onBack, monthLabel, isMobile, totalExpenses,
-  historicalData, aiInsights, selectedMonth, installmentImpact,
+  historicalData, aiInsights, selectedMonth, installmentImpact, scoreData, habitData,
 }: {
   category: CategorySummary;
   transactions: TxRow[];
@@ -1160,6 +1160,8 @@ const CategoryDetail = ({
   aiInsights: AIInsights | null;
   selectedMonth: number;
   installmentImpact?: InstallmentImpact;
+  scoreData?: CategoryScoreData;
+  habitData?: HabitData;
 }) => {
   const catTxs = transactions
     .filter((t) => t.category === category.name && t.type === "despesa")
@@ -1168,13 +1170,44 @@ const CategoryDetail = ({
   const CatIcon = category.icon;
   const annualEstimate = category.amount * 12;
 
+  // Daily cost
+  const now = new Date();
+  const selectedYear = historicalData.length > 0 ? historicalData[historicalData.length - 1]?.year ?? now.getFullYear() : now.getFullYear();
+  const isCurrentMonth = selectedMonth === now.getMonth() && selectedYear === now.getFullYear();
+  const daysElapsed = isCurrentMonth ? Math.max(now.getDate(), 1) : new Date(selectedYear, selectedMonth + 1, 0).getDate();
+  const dailyCost = daysElapsed > 0 ? category.amount / daysElapsed : 0;
+  const projectedMonthly = dailyCost * 30;
+  const projectedAnnual = projectedMonthly * 12;
+
+  // Habit intensity
+  const habitIntensity = category.txCount < 6 ? "normal" : category.txCount < 10 ? "frequente" : "forte";
+  const habitConfig = {
+    normal: { label: "Normal", bg: "bg-success/10", text: "text-success" },
+    frequente: { label: "Frequente", bg: "bg-warning/10", text: "text-warning" },
+    forte: { label: "Hábito forte", bg: "bg-destructive/10", text: "text-destructive" },
+  };
+
+  // Internal distribution by merchant
+  const merchantDistribution = useMemo(() => {
+    const map = new Map<string, { amount: number; count: number }>();
+    catTxs.forEach((t) => {
+      const entry = map.get(t.name) || { amount: 0, count: 0 };
+      map.set(t.name, { amount: entry.amount + t.amount, count: entry.count + 1 });
+    });
+    return Array.from(map.entries())
+      .map(([name, data]) => ({ name, ...data, pct: category.amount > 0 ? Math.round((data.amount / category.amount) * 100) : 0 }))
+      .sort((a, b) => b.amount - a.amount)
+      .slice(0, 5);
+  }, [catTxs, category.amount]);
+
+  const topMerchant = merchantDistribution[0];
+
   // Filter AI data for this category
   const categoryAlerts = useMemo(() =>
     aiInsights?.alerts.filter((a) => a.category.toLowerCase() === category.name.toLowerCase()) ?? [],
     [aiInsights, category.name]
   );
 
-  // Filter insights mentioning this category
   const categoryInsights = useMemo(() => {
     if (!aiInsights?.insights) return [];
     const catLower = category.name.toLowerCase();
@@ -1193,19 +1226,10 @@ const CategoryDetail = ({
     const current = recent3[2]?.amount ?? 0;
     const prev = recent3[1]?.amount ?? 0;
     const older = recent3[0]?.amount ?? 0;
-
-    // Month-over-month change
     const momChange = prev > 0 ? Math.round(((current - prev) / prev) * 100) : null;
-
-    // 3-month average
     const avg3 = (current + prev + older) / 3;
-
-    // Check if there's a rising trend (each month higher than previous)
     const risingTrend = current > prev && prev > older && older > 0;
-
-    // Total increase over 3 months
     const totalIncrease = older > 0 ? Math.round(((current - older) / older) * 100) : null;
-
     return { momChange, avg3, risingTrend, totalIncrease, months: recent3 };
   }, [historicalData]);
 
@@ -1220,7 +1244,6 @@ const CategoryDetail = ({
         annualSaving: saving > 0 ? saving * 12 : 0,
       };
     }
-    // Local fallback: suggest reducing to 3-month average or 85% of current
     if (trendAnalysis && trendAnalysis.avg3 > 0 && category.amount > trendAnalysis.avg3 * 1.1) {
       const suggested = Math.round(trendAnalysis.avg3 / 10) * 10;
       const saving = category.amount - suggested;
@@ -1244,6 +1267,54 @@ const CategoryDetail = ({
     return null;
   }, [category, totalExpenses, categoryLimitSuggestion, trendAnalysis]);
 
+  // Dynamic insights (prioritized)
+  const dynamicInsights = useMemo(() => {
+    const results: { message: string; priority: number; type: string }[] = [];
+
+    // Score-based
+    if (scoreData?.score === "exagerado") {
+      results.push({ message: `Seus gastos com ${category.name} estão acima do ideal 🚨`, priority: 100, type: "score" });
+    } else if (scoreData?.score === "atencao") {
+      results.push({ message: `Fica de olho em ${category.name} 👀 Tá começando a subir`, priority: 60, type: "score" });
+    }
+
+    // Growth
+    if (trendAnalysis?.risingTrend) {
+      results.push({ message: `Esse gasto subiu nos últimos 3 meses seguidos 📈`, priority: 80, type: "growth" });
+    } else if (trendAnalysis?.momChange && trendAnalysis.momChange > 15) {
+      results.push({ message: `Aumento de ${trendAnalysis.momChange}% em relação ao mês anterior`, priority: 70, type: "growth" });
+    }
+
+    // Habit
+    if (habitIntensity === "forte") {
+      results.push({ message: `${category.txCount} transações esse mês — isso já virou parte da sua rotina 😅`, priority: 75, type: "habit" });
+    } else if (habitIntensity === "frequente") {
+      results.push({ message: `Frequência alta: ${category.txCount} gastos nessa categoria`, priority: 50, type: "habit" });
+    }
+
+    // Installment
+    if (installmentImpact && installmentImpact.totalRemaining > 300) {
+      results.push({ message: `Esse gasto ainda vai te acompanhar por ${installmentImpact.monthsRemaining} meses`, priority: 65, type: "installment" });
+    }
+
+    // Daily cost
+    if (dailyCost >= 10) {
+      results.push({ message: `Pequenos gastos diários… grande impacto no final do mês 👀`, priority: 40, type: "daily" });
+    }
+
+    // Merchant concentration
+    if (topMerchant && topMerchant.pct > 50) {
+      results.push({ message: `Grande parte dos seus gastos aqui vem de ${topMerchant.name} 👀`, priority: 55, type: "merchant" });
+    }
+
+    // Healthy
+    if (scoreData?.score === "saudavel" && results.length === 0) {
+      results.push({ message: `Boa! Seus gastos com ${category.name} estão sob controle 👍`, priority: 10, type: "healthy" });
+    }
+
+    return results.sort((a, b) => b.priority - a.priority).slice(0, 3);
+  }, [scoreData, trendAnalysis, habitIntensity, installmentImpact, dailyCost, topMerchant, category]);
+
   return (
     <motion.div
       initial={{ opacity: 0, x: 20 }}
@@ -1263,7 +1334,14 @@ const CategoryDetail = ({
           <CatIcon className="w-5 h-5" style={{ color: category.hexColor }} />
         </div>
         <div className="flex-1">
-          <h2 className="text-lg font-bold text-foreground">{category.name}</h2>
+          <div className="flex items-center gap-2">
+            <h2 className="text-lg font-bold text-foreground">{category.name}</h2>
+            {scoreData && (
+              <span className={`text-[8px] font-semibold px-1.5 py-0.5 rounded-full ${SCORE_CONFIG[scoreData.score].bg} ${SCORE_CONFIG[scoreData.score].text}`}>
+                {SCORE_CONFIG[scoreData.score].emoji} {SCORE_CONFIG[scoreData.score].label}
+              </span>
+            )}
+          </div>
           <p className="text-xs text-muted-foreground/60">{monthLabel}</p>
         </div>
         {trendAnalysis?.momChange != null && (
@@ -1278,13 +1356,13 @@ const CategoryDetail = ({
         )}
       </div>
 
-      {/* Stats — compact 2x2 grid */}
+      {/* Stats — compact grid */}
       <div className="grid grid-cols-2 gap-2">
         {[
           { label: "Total gasto", value: fmt(category.amount) },
-          { label: "Transações", value: String(category.txCount) },
+          { label: "Custo diário", value: `${fmt(dailyCost)}/dia` },
+          { label: "Transações", value: `${category.txCount} lanç.` },
           { label: "Média/transação", value: fmt(category.avgPerTx) },
-          { label: "Projeção anual", value: fmt(annualEstimate) },
         ].map((s) => (
           <GlassCard key={s.label} className="p-3 text-center">
             <p className="text-[9px] text-muted-foreground/50 uppercase tracking-wider font-medium">{s.label}</p>
@@ -1292,6 +1370,49 @@ const CategoryDetail = ({
           </GlassCard>
         ))}
       </div>
+
+      {/* Habit intensity */}
+      {category.txCount >= 6 && (
+        <GlassCard className="p-3">
+          <div className="flex items-center justify-between">
+            <div className="flex items-center gap-2">
+              <Repeat className="w-4 h-4 text-primary" />
+              <div>
+                <p className="text-xs font-semibold text-foreground">Intensidade do hábito</p>
+                <p className="text-[10px] text-muted-foreground/60">Você já fez {category.txCount} transações esse mês</p>
+              </div>
+            </div>
+            <span className={`text-[9px] font-semibold px-2 py-1 rounded-full ${habitConfig[habitIntensity].bg} ${habitConfig[habitIntensity].text}`}>
+              {habitConfig[habitIntensity].label}
+            </span>
+          </div>
+        </GlassCard>
+      )}
+
+      {/* Future projection */}
+      <GlassCard className="p-4">
+        <div className="flex items-center gap-2 mb-3">
+          <TrendingUp className="w-4 h-4 text-primary" />
+          <p className="text-[10px] text-muted-foreground/60 font-semibold uppercase tracking-wider">
+            Se continuar assim
+          </p>
+        </div>
+        <div className="grid grid-cols-2 gap-3">
+          <div className="text-center p-2.5 rounded-xl bg-muted/10 border border-border/10">
+            <p className="text-[9px] text-muted-foreground/50 uppercase">Por mês</p>
+            <p className="text-sm font-bold text-foreground tabular-nums mt-0.5">{fmt(projectedMonthly)}</p>
+          </div>
+          <div className="text-center p-2.5 rounded-xl bg-destructive/5 border border-destructive/10">
+            <p className="text-[9px] text-muted-foreground/50 uppercase">Por ano</p>
+            <p className="text-sm font-bold text-destructive tabular-nums mt-0.5">{fmt(projectedAnnual)}</p>
+          </div>
+        </div>
+        {projectedAnnual > 1000 && (
+          <p className="text-[10px] text-muted-foreground/60 mt-2 text-center">
+            Isso dá mais de {fmt(projectedAnnual)} por ano nessa categoria 💸
+          </p>
+        )}
+      </GlassCard>
 
       {/* Evolution Chart (6 months) */}
       <EvolutionChart
@@ -1318,6 +1439,78 @@ const CategoryDetail = ({
                 )}
               </p>
             </div>
+          </div>
+        </GlassCard>
+      )}
+
+      {/* Dynamic Insights */}
+      {dynamicInsights.length > 0 && (
+        <GlassCard className="p-4 md:p-5">
+          <div className="flex items-center gap-2 mb-3">
+            <span className="text-sm">💡</span>
+            <p className="text-[10px] md:text-[11px] text-muted-foreground/60 font-semibold uppercase tracking-wider">
+              O que está acontecendo aqui
+            </p>
+          </div>
+          <div className="space-y-2">
+            {dynamicInsights.map((ins, i) => {
+              const typeConfig: Record<string, { bg: string; border: string; icon: React.ReactNode }> = {
+                score: { bg: "bg-destructive/5", border: "border-destructive/15", icon: <AlertTriangle className="w-3.5 h-3.5 text-destructive" /> },
+                growth: { bg: "bg-warning/5", border: "border-warning/15", icon: <TrendingUp className="w-3.5 h-3.5 text-warning" /> },
+                habit: { bg: "bg-primary/5", border: "border-primary/15", icon: <Repeat className="w-3.5 h-3.5 text-primary" /> },
+                installment: { bg: "bg-blue-500/5", border: "border-blue-500/15", icon: <span className="text-xs">💳</span> },
+                daily: { bg: "bg-muted/10", border: "border-border/20", icon: <TrendingUp className="w-3.5 h-3.5 text-muted-foreground" /> },
+                merchant: { bg: "bg-warning/5", border: "border-warning/15", icon: <Target className="w-3.5 h-3.5 text-warning" /> },
+                healthy: { bg: "bg-success/5", border: "border-success/15", icon: <ShieldCheck className="w-3.5 h-3.5 text-success" /> },
+              };
+              const cfg = typeConfig[ins.type] || typeConfig.daily;
+              return (
+                <motion.div
+                  key={i}
+                  initial={{ opacity: 0, x: -10 }}
+                  animate={{ opacity: 1, x: 0 }}
+                  transition={{ delay: i * 0.1 }}
+                  className={`flex items-start gap-2.5 p-2.5 rounded-xl ${cfg.bg} border ${cfg.border}`}
+                >
+                  <span className="mt-0.5 shrink-0">{cfg.icon}</span>
+                  <p className="text-xs text-foreground/80 leading-relaxed">{ins.message}</p>
+                </motion.div>
+              );
+            })}
+          </div>
+        </GlassCard>
+      )}
+
+      {/* Internal distribution */}
+      {merchantDistribution.length > 1 && (
+        <GlassCard className="p-4 md:p-5">
+          <div className="flex items-center gap-2 mb-3">
+            <PieChartIcon className="w-4 h-4 text-primary" />
+            <p className="text-[10px] md:text-[11px] text-muted-foreground/60 font-semibold uppercase tracking-wider">
+              Distribuição interna
+            </p>
+          </div>
+          <div className="space-y-2">
+            {merchantDistribution.map((m, i) => (
+              <div key={m.name} className="flex items-center gap-3">
+                <div className="flex-1 min-w-0">
+                  <div className="flex items-center justify-between mb-0.5">
+                    <p className="text-xs font-semibold text-foreground truncate">{m.name}</p>
+                    <p className="text-xs font-bold text-foreground tabular-nums shrink-0 ml-2">{fmt(m.amount)}</p>
+                  </div>
+                  <div className="w-full h-1.5 bg-border/15 rounded-full overflow-hidden">
+                    <motion.div
+                      initial={{ width: 0 }}
+                      animate={{ width: `${m.pct}%` }}
+                      transition={{ delay: i * 0.05, duration: 0.5 }}
+                      className="h-full rounded-full"
+                      style={{ backgroundColor: category.hexColor, opacity: 1 - i * 0.15 }}
+                    />
+                  </div>
+                </div>
+                <span className="text-[9px] text-muted-foreground/50 shrink-0">{m.pct}%</span>
+              </div>
+            ))}
           </div>
         </GlassCard>
       )}
@@ -1354,7 +1547,7 @@ const CategoryDetail = ({
       {/* Installment Impact */}
       <CategoryInstallmentDetail impact={installmentImpact} />
 
-      {/* Smart limit + economy suggestion */}
+      {/* Smart limit + savings suggestion */}
       {smartSuggestion && (
         <GlassCard className="p-4 md:p-5 border-primary/20">
           <div className="flex items-start gap-3">
@@ -1363,33 +1556,39 @@ const CategoryDetail = ({
             </div>
             <div className="flex-1 min-w-0">
               <p className="text-xs font-semibold text-foreground">
-                💡 Sugestão de limite
+                💡 Sugestão de ajuste
               </p>
               <p className="text-[11px] text-muted-foreground/70 mt-1 leading-relaxed">
-                {smartSuggestion.message}
+                Se você reduzir {fmt(smartSuggestion.monthlySaving)} por mês aqui:
               </p>
               {smartSuggestion.monthlySaving > 0 && (
-                <div className="flex items-center gap-3 mt-2 py-2 px-3 rounded-lg bg-success/5 border border-success/10">
-                  <div>
-                    <p className="text-[9px] text-muted-foreground/50 uppercase tracking-wider font-medium">Economia/mês</p>
-                    <p className="text-xs font-bold text-success tabular-nums">{fmt(smartSuggestion.monthlySaving)}</p>
+                <div className="grid grid-cols-3 gap-2 mt-2 py-2 px-2 rounded-lg bg-success/5 border border-success/10">
+                  <div className="text-center">
+                    <p className="text-[8px] text-muted-foreground/50 uppercase">3 meses</p>
+                    <p className="text-[11px] font-bold text-success tabular-nums">{fmt(smartSuggestion.monthlySaving * 3)}</p>
                   </div>
-                  <div className="w-px h-6 bg-border/20" />
-                  <div>
-                    <p className="text-[9px] text-muted-foreground/50 uppercase tracking-wider font-medium">Economia/ano</p>
-                    <p className="text-xs font-bold text-success tabular-nums">{fmt(smartSuggestion.annualSaving)}</p>
+                  <div className="text-center">
+                    <p className="text-[8px] text-muted-foreground/50 uppercase">6 meses</p>
+                    <p className="text-[11px] font-bold text-success tabular-nums">{fmt(smartSuggestion.monthlySaving * 6)}</p>
+                  </div>
+                  <div className="text-center">
+                    <p className="text-[8px] text-muted-foreground/50 uppercase">1 ano</p>
+                    <p className="text-[11px] font-bold text-success tabular-nums">{fmt(smartSuggestion.annualSaving)}</p>
                   </div>
                 </div>
               )}
+              <p className="text-[10px] text-muted-foreground/60 mt-2 leading-relaxed">
+                {smartSuggestion.message}
+              </p>
               <button
                 onClick={() => {
                   toast.success(`Limite de ${fmt(smartSuggestion.suggestedLimit)} definido para ${category.name}! 🎯`, {
-                    description: "Em breve você poderá acompanhar o progresso aqui.",
+                    description: `Economia potencial de ${fmt(smartSuggestion.annualSaving)} por ano.`,
                   });
                 }}
-                className="mt-3 px-4 py-2 rounded-xl bg-primary/15 text-primary text-xs font-semibold border border-primary/20 hover:bg-primary/25 transition-colors"
+                className="mt-3 w-full px-4 py-2.5 rounded-xl bg-primary/15 text-primary text-xs font-semibold border border-primary/20 hover:bg-primary/25 transition-colors"
               >
-                Definir limite de {fmt(smartSuggestion.suggestedLimit)}
+                👉 Aplicar limite de {fmt(smartSuggestion.suggestedLimit)}
               </button>
             </div>
           </div>
@@ -1670,12 +1869,23 @@ const AnalyticsCategorias = () => {
     return result;
   }, [installmentImpacts, categoryData]);
 
-  // Fetch AI insights
+  // Fetch AI insights with debounce to prevent 429
+  const insightsCacheRef = useRef<{ key: string; data: AIInsights } | null>(null);
+  const insightsTimerRef = useRef<ReturnType<typeof setTimeout> | null>(null);
+
   const fetchInsights = useCallback(async () => {
     if (categoryData.length === 0 || totalExpenses === 0) {
       setAiInsights(null);
       return;
     }
+
+    // Cache key based on month + total + category count
+    const cacheKey = `${selectedMonth}-${selectedYear}-${categoryData.length}-${Math.round(totalExpenses)}`;
+    if (insightsCacheRef.current?.key === cacheKey) {
+      setAiInsights(insightsCacheRef.current.data);
+      return;
+    }
+
     setAiLoading(true);
     try {
       const { data, error } = await supabase.functions.invoke("category-insights", {
@@ -1690,20 +1900,29 @@ const AnalyticsCategorias = () => {
       });
       if (error) throw error;
       if (data?.error) throw new Error(data.error);
-      setAiInsights(data as AIInsights);
+      const result = data as AIInsights;
+      insightsCacheRef.current = { key: cacheKey, data: result };
+      setAiInsights(result);
     } catch (e: any) {
       console.error("AI insights error:", e);
       setAiInsights({ insights: ["Não foi possível gerar insights no momento."], alerts: [], limitSuggestions: [] });
     } finally {
       setAiLoading(false);
     }
-  }, [categoryData, totalExpenses, monthLabel, prevCategoryData]);
+  }, [categoryData, totalExpenses, monthLabel, prevCategoryData, selectedMonth, selectedYear]);
 
   useEffect(() => {
     if (!loading && categoryData.length > 0) {
-      fetchInsights();
+      // Debounce to avoid rapid consecutive calls
+      if (insightsTimerRef.current) clearTimeout(insightsTimerRef.current);
+      insightsTimerRef.current = setTimeout(() => {
+        fetchInsights();
+      }, 800);
+      return () => {
+        if (insightsTimerRef.current) clearTimeout(insightsTimerRef.current);
+      };
     }
-  }, [loading, categoryData.length > 0, selectedMonth, selectedYear]);
+  }, [loading, selectedMonth, selectedYear, fetchInsights]);
 
   if (loading) {
     return (
@@ -1747,6 +1966,8 @@ const AnalyticsCategorias = () => {
             aiInsights={aiInsights}
             selectedMonth={selectedMonth}
             installmentImpact={enrichedInstallmentImpacts.find((i) => i.category === selectedCategory)}
+            scoreData={scoreMap[selectedCategory]}
+            habitData={habitMap[selectedCategory]}
           />
         ) : (
           <motion.div
