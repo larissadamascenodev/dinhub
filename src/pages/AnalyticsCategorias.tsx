@@ -64,7 +64,18 @@ interface HistoricalEntry {
   amount: number;
 }
 
-type HistoricalMap = Record<string, HistoricalEntry[]>;
+
+interface InstallmentImpact {
+  category: string;
+  monthlyAmount: number;
+  totalRemaining: number;
+  monthsRemaining: number;
+  impactPct: number; // % of category total
+  items: { name: string; amount: number; remaining: number; total: number }[];
+}
+
+type InstallmentImpactMap = Record<string, InstallmentImpact>;
+
 
 // ── Reusable Glass Card ──────────────────────────────────
 const GlassCard = ({ children, className = "" }: { children: React.ReactNode; className?: string }) => (
