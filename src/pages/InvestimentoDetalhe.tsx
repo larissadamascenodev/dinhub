@@ -859,6 +859,99 @@ const InvestimentoDetalhe = () => {
           </Button>
         </div>
       </ModalOverlay>
+
+      {/* Delete Confirmation Modal */}
+      <ModalOverlay open={showDeleteConfirm} onClose={() => setShowDeleteConfirm(false)}>
+        <div className="space-y-4 text-center">
+          <div className="w-12 h-12 rounded-full bg-destructive/15 flex items-center justify-center mx-auto">
+            <Trash2 className="w-5 h-5 text-destructive" />
+          </div>
+          <h3 className="text-lg font-bold text-foreground">Excluir carteira</h3>
+          <p className="text-sm text-muted-foreground">
+            Tem certeza que deseja excluir <strong>{account?.name}</strong>? Esta ação não pode ser desfeita.
+          </p>
+          <div className="flex gap-3">
+            <Button variant="outline" onClick={() => setShowDeleteConfirm(false)} className="flex-1 h-11 rounded-xl">
+              Cancelar
+            </Button>
+            <Button onClick={() => { setShowDeleteConfirm(false); handleDelete(); }} className="flex-1 h-11 rounded-xl bg-destructive text-destructive-foreground hover:bg-destructive/90">
+              Excluir
+            </Button>
+          </div>
+        </div>
+      </ModalOverlay>
+
+      {/* Edit Modal */}
+      <ModalOverlay open={showEditModal} onClose={() => setShowEditModal(false)}>
+        <div className="space-y-4">
+          <div className="flex items-center justify-between">
+            <h3 className="text-lg font-bold text-foreground">Editar carteira</h3>
+            <button onClick={() => setShowEditModal(false)} className="w-8 h-8 rounded-xl bg-muted/20 flex items-center justify-center hover:bg-muted/30">
+              <X className="w-4 h-4 text-muted-foreground" />
+            </button>
+          </div>
+
+          <div>
+            <Label className="text-xs text-muted-foreground mb-1.5 block">Nome</Label>
+            <Input
+              value={editName}
+              onChange={(e) => setEditName(e.target.value)}
+              className="bg-muted/30 border-border/20 h-11 rounded-xl"
+            />
+          </div>
+
+          <div>
+            <Label className="text-xs text-muted-foreground mb-1.5 block">Taxa de rendimento</Label>
+            <div className="flex items-center gap-2 mb-1.5">
+              <button
+                type="button"
+                onClick={() => setEditRatePeriod("monthly")}
+                className={`px-3 py-1 rounded-lg text-xs font-medium transition-colors ${
+                  editRatePeriod === "monthly"
+                    ? "bg-primary text-primary-foreground"
+                    : "bg-muted/40 text-muted-foreground"
+                }`}
+              >
+                % a.m.
+              </button>
+              <button
+                type="button"
+                onClick={() => setEditRatePeriod("annual")}
+                className={`px-3 py-1 rounded-lg text-xs font-medium transition-colors ${
+                  editRatePeriod === "annual"
+                    ? "bg-primary text-primary-foreground"
+                    : "bg-muted/40 text-muted-foreground"
+                }`}
+              >
+                % a.a.
+              </button>
+            </div>
+            <div className="relative">
+              <Input
+                placeholder={editRatePeriod === "monthly" ? "0,50" : "6,00"}
+                type="number"
+                value={editRate}
+                onChange={(e) => setEditRate(e.target.value)}
+                className="bg-muted/30 border-border/20 h-11 rounded-xl pr-20"
+              />
+              <span className="absolute right-3 top-1/2 -translate-y-1/2 text-sm text-muted-foreground pointer-events-none">
+                {editRatePeriod === "monthly" ? "% a.m." : "% a.a."}
+              </span>
+            </div>
+          </div>
+
+          <Button
+            onClick={handleEditSubmit}
+            disabled={!editName.trim() || editSubmitting}
+            className="w-full h-11 rounded-xl bg-primary/15 text-primary hover:bg-primary/25 border border-primary/30 text-sm font-semibold"
+          >
+            {editSubmitting ? "Salvando..." : "Salvar alterações"}
+          </Button>
+        </div>
+      </ModalOverlay>
+
+      {/* Click-away for menu */}
+      {showMenu && <div className="fixed inset-0 z-40" onClick={() => setShowMenu(false)} />}
     </div>
   );
 };
