@@ -299,6 +299,7 @@ const DashboardLayout = () => {
           onSuccess={handleSuccess}
           initialType={modalType}
           prefillData={prefillData}
+          editTransaction={editTransaction}
         />
         <TransferModal open={showTransferModal} onClose={() => setShowTransferModal(false)} onSuccess={handleSuccess} />
         <InvoiceUploadReviewModal
