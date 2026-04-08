@@ -1,5 +1,17 @@
 import { supabase } from "@/integrations/supabase/client";
 
+const ACCOUNTS_CACHE_KEY = "accounts-active";
+const ACCOUNTS_WITH_INACTIVE_CACHE_KEY = "accounts-all";
+const CREDIT_CARDS_CACHE_KEY = "credit-cards";
+
+const queryCache = new Map<string, any[]>();
+const inflightCache = new Map<string, Promise<any[]>>();
+
+function clearQueryCache() {
+  queryCache.clear();
+  inflightCache.clear();
+}
+
 export interface CreateTransactionInput {
   name: string;
   type: "receita" | "despesa";
@@ -24,8 +36,29 @@ export interface TransactionFilters {
 }
 
 function notifyFinanceDataChanged() {
+  clearQueryCache();
   if (typeof window === "undefined") return;
   window.dispatchEvent(new CustomEvent("finance-data-changed"));
+}
+
+function getCachedList<T>(key: string, loader: () => Promise<T[]>): Promise<T[]> {
+  const cached = queryCache.get(key);
+  if (cached) return Promise.resolve(cached as T[]);
+
+  const inflight = inflightCache.get(key);
+  if (inflight) return inflight as Promise<T[]>;
+
+  const request = loader()
+    .then((result) => {
+      queryCache.set(key, result as any[]);
+      return result;
+    })
+    .finally(() => {
+      inflightCache.delete(key);
+    });
+
+  inflightCache.set(key, request as Promise<any[]>);
+  return request;
 }
 
 export async function createTransaction(input: CreateTransactionInput, userId: string) {
@@ -177,18 +210,22 @@ export async function getTransactionById(id: string) {
 }
 
 export async function getAccounts(includeInactive = false) {
-  let query = supabase
-    .from("accounts")
-    .select("*")
-    .order("is_default", { ascending: false });
+  const cacheKey = includeInactive ? ACCOUNTS_WITH_INACTIVE_CACHE_KEY : ACCOUNTS_CACHE_KEY;
 
-  if (!includeInactive) {
-    query = query.eq("is_active", true);
-  }
+  return getCachedList(cacheKey, async () => {
+    let query = supabase
+      .from("accounts")
+      .select("*")
+      .order("is_default", { ascending: false });
 
-  const { data, error } = await query;
-  if (error) throw error;
-  return data ?? [];
+    if (!includeInactive) {
+      query = query.eq("is_active", true);
+    }
+
+    const { data, error } = await query;
+    if (error) throw error;
+    return data ?? [];
+  });
 }
 
 export async function createAccount(
@@ -230,13 +267,15 @@ export interface CreditCardInput {
 }
 
 export async function getCreditCards() {
-  const { data, error } = await supabase
-    .from("credit_cards" as any)
-    .select("*")
-    .order("created_at", { ascending: true });
+  return getCachedList(CREDIT_CARDS_CACHE_KEY, async () => {
+    const { data, error } = await supabase
+      .from("credit_cards" as any)
+      .select("*")
+      .order("created_at", { ascending: true });
 
-  if (error) throw error;
-  return data ?? [];
+    if (error) throw error;
+    return data ?? [];
+  });
 }
 
 export async function createCreditCard(input: CreditCardInput, userId: string) {
