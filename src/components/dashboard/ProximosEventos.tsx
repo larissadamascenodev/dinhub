@@ -1,6 +1,6 @@
 import { memo, useMemo, useState } from "react";
-import { Check, Clock, AlertTriangle, ChevronRight, CalendarDays } from "lucide-react";
-import { motion } from "framer-motion";
+import { Check, Clock, AlertTriangle, ChevronRight, ChevronDown, CalendarDays } from "lucide-react";
+import { motion, AnimatePresence } from "framer-motion";
 import type { FinanceEvent } from "@/types/finance";
 
 interface Props {
@@ -31,322 +31,149 @@ const getStatusLabel = (status: string, type?: string) => {
   return STATUS_CONFIG[status as keyof typeof STATUS_CONFIG]?.label ?? status;
 };
 
-const LEGEND = [
-  { label: "Pago", color: "150 100% 45%" },
-  { label: "Pendente", color: "40 80% 50%" },
-  { label: "Atrasado", color: "0 60% 50%" },
-];
-
 const fmt = (v: number) =>
   v.toLocaleString("pt-BR", { style: "currency", currency: "BRL" });
 
-const parseDayFromDate = (dateStr: string): number | null => {
-  const match = dateStr.match(/^(\d{1,2})/);
-  return match ? parseInt(match[1], 10) : null;
+const MONTH_SHORT = ["jan", "fev", "mar", "abr", "mai", "jun", "jul", "ago", "set", "out", "nov", "dez"];
+
+const parseDateSafe = (dateStr: string): Date => {
+  if (dateStr.includes("T")) return new Date(dateStr);
+  return new Date(dateStr + "T12:00:00");
 };
 
-const DAY_INITIALS = ["D", "S", "T", "Q", "Q", "S", "S"];
-const MONTH_SHORT = ["jan", "fev", "mar", "abr", "mai", "jun", "jul", "ago", "set", "out", "nov", "dez"];
-const STATUS_PRIORITY: Record<string, number> = { atrasado: 3, pendente: 2, pago: 1, recebido: 1 };
-
-const getMonthWeeks = (month: number, year: number) => {
+const getWeekRange = () => {
   const today = new Date();
-  const firstDay = new Date(year, month, 1);
-  const startDow = firstDay.getDay();
-  const start = new Date(firstDay);
-  start.setDate(1 - startDow);
-
-  const lastDay = new Date(year, month + 1, 0);
-  const endDow = lastDay.getDay();
-  const end = new Date(lastDay);
-  end.setDate(lastDay.getDate() + (6 - endDow));
-
-  const weeks: Array<Array<{ day: number; month: number; dow: number; isToday: boolean; inMonth: boolean }>> = [];
-  const cursor = new Date(start);
-
-  while (cursor <= end) {
-    const week: typeof weeks[0] = [];
-    for (let i = 0; i < 7; i++) {
-      week.push({
-        day: cursor.getDate(),
-        month: cursor.getMonth(),
-        dow: cursor.getDay(),
-        isToday: cursor.toDateString() === today.toDateString(),
-        inMonth: cursor.getMonth() === month,
-      });
-      cursor.setDate(cursor.getDate() + 1);
-    }
-    weeks.push(week);
-  }
-  return weeks;
+  const dow = today.getDay();
+  const start = new Date(today);
+  start.setDate(today.getDate() - dow);
+  start.setHours(0, 0, 0, 0);
+  const end = new Date(start);
+  end.setDate(start.getDate() + 6);
+  end.setHours(23, 59, 59, 999);
+  return { start, end };
 };
 
 const ProximosEventos = memo(({ events, selectedMonth, selectedYear, onVerTodos, onEventClick }: Props) => {
-  const today = new Date();
+  const [expanded, setExpanded] = useState(false);
 
-  const dayStatusMap = useMemo(() => {
-    const map = new Map<number, { accent: string; priority: number; status: string }>();
-    for (const ev of events) {
-      const day = parseDayFromDate(ev.date);
-      if (day === null) continue;
-      const cfg = STATUS_CONFIG[ev.status];
-      const priority = STATUS_PRIORITY[ev.status] || 0;
-      const existing = map.get(day);
-      if (!existing || priority > existing.priority) {
-        map.set(day, { accent: cfg.accent, priority, status: ev.status });
-      }
+  const { weekEvents, restEvents } = useMemo(() => {
+    const { start, end } = getWeekRange();
+    const sorted = [...events]
+      .map((ev) => ({ ...ev, _date: parseDateSafe(ev.date) }))
+      .sort((a, b) => a._date.getTime() - b._date.getTime());
+
+    const week: typeof sorted = [];
+    const rest: typeof sorted = [];
+    for (const ev of sorted) {
+      if (ev._date >= start && ev._date <= end) week.push(ev);
+      else rest.push(ev);
     }
-    return map;
+    return { weekEvents: week, restEvents: rest };
   }, [events]);
 
-  const weeks = useMemo(() => getMonthWeeks(selectedMonth, selectedYear), [selectedMonth, selectedYear]);
+  const displayEvents = expanded ? [...weekEvents, ...restEvents].sort((a, b) => a._date.getTime() - b._date.getTime()) : weekEvents;
+  const totalRest = restEvents.length;
 
-  const initialWeek = (today.getMonth() === selectedMonth && today.getFullYear() === selectedYear)
-    ? weeks.findIndex((w) => w.some((d) => d.isToday)) || 0
-    : 0;
+  const renderEvent = (ev: typeof displayEvents[0], idx: number) => {
+    const cfg = STATUS_CONFIG[ev.status];
+    const a = cfg.accent;
+    const StatusIcon = cfg.Icon;
+    const isPaidOrReceived = ev.status === "pago" || ev.status === "recebido";
+    const isClickable = ev.isTransaction && ev.status === "pendente";
+    const day = ev._date.getDate();
+    const month = ev._date.getMonth();
 
-  const [weekIdx, setWeekIdx] = useState(initialWeek);
-  const clampedIdx = Math.max(0, Math.min(weekIdx, weeks.length - 1));
-  const days = weeks[clampedIdx];
+    return (
+      <motion.div
+        key={ev.id}
+        initial={{ opacity: 0, y: 6 }}
+        animate={{ opacity: 1, y: 0 }}
+        exit={{ opacity: 0, y: -4 }}
+        transition={{ delay: idx * 0.03, type: "spring", stiffness: 500, damping: 35 }}
+        className={`flex items-center gap-3 px-3 py-2 rounded-xl border transition-all ${isClickable ? "cursor-pointer hover:scale-[1.01] active:scale-[0.99]" : ""}`}
+        style={{
+          background: `hsl(${a} / 0.05)`,
+          borderColor: `hsl(${a} / 0.12)`,
+        }}
+        onClick={() => {
+          if (isClickable && onEventClick) onEventClick(ev);
+        }}
+      >
+        {/* Date chip */}
+        <div className="flex flex-col items-center shrink-0 w-9">
+          <span className="text-[9px] uppercase text-muted-foreground/40 font-semibold leading-none">
+            {MONTH_SHORT[month]}
+          </span>
+          <span className="text-base font-bold leading-tight" style={{ color: `hsl(${a})` }}>
+            {day < 10 ? `0${day}` : day}
+          </span>
+        </div>
 
-  const sortedEvents = useMemo(() => {
-    return [...events]
-      .map((ev) => ({ ...ev, _day: parseDayFromDate(ev.date) }))
-      .filter((ev) => ev._day !== null)
-      .sort((a, b) => a._day! - b._day!);
-  }, [events]);
+        {/* Divider line */}
+        <div className="w-px h-8 rounded-full" style={{ background: `hsl(${a} / 0.2)` }} />
+
+        {/* Content */}
+        <div className="flex-1 min-w-0">
+          <p className="text-[12px] font-semibold text-foreground/90 truncate">{ev.name}</p>
+          <div className="flex items-center gap-1.5 mt-0.5">
+            <StatusIcon className="w-2.5 h-2.5" style={{ color: `hsl(${a})` }} />
+            <span className="text-[9px] font-medium" style={{ color: `hsl(${a} / 0.7)` }}>
+              {getStatusLabel(ev.status, ev.type)}
+            </span>
+          </div>
+        </div>
+
+        {/* Amount */}
+        <p className="text-[12px] font-bold tabular-nums shrink-0" style={{ color: `hsl(${a})` }}>
+          {fmt(ev.amount)}
+        </p>
+      </motion.div>
+    );
+  };
 
   return (
     <div className="rounded-2xl bg-card/90 backdrop-blur-xl border border-border/30 shadow-lg shadow-black/20 overflow-hidden">
       {/* Header */}
-      <div className="flex items-center justify-between px-4 pt-4 pb-2">
+      <div className="flex items-center justify-between px-4 pt-3.5 pb-2">
         <div className="flex items-center gap-2">
           <CalendarDays className="w-4 h-4 text-primary" />
           <h2 className="text-sm font-bold text-foreground">Próximos Eventos</h2>
-        </div>
-        <button
-          onClick={onVerTodos}
-          className="flex items-center gap-0.5 text-[11px] text-primary font-semibold hover:opacity-80 transition-opacity"
-        >
-          Ver todos <ChevronRight className="w-3.5 h-3.5" />
-        </button>
-      </div>
-
-      {/* Calendar strip */}
-      <div className="px-4 pb-2">
-        <motion.div
-          key={`${selectedMonth}-${selectedYear}-${clampedIdx}`}
-          initial={{ opacity: 0, x: 20 }}
-          animate={{ opacity: 1, x: 0 }}
-          transition={{ duration: 0.2 }}
-          drag="x"
-          dragConstraints={{ left: 0, right: 0 }}
-          dragElastic={0.3}
-          onDragEnd={(_, info) => {
-            if (info.offset.x > 50 && clampedIdx > 0) setWeekIdx((w) => w - 1);
-            else if (info.offset.x < -50 && clampedIdx < weeks.length - 1) setWeekIdx((w) => w + 1);
-          }}
-          className="grid grid-cols-7 gap-1 cursor-grab active:cursor-grabbing select-none"
-        >
-          {days.map((d, i) => {
-            const dimmed = !d.inMonth;
-            const dayEvent = d.inMonth ? dayStatusMap.get(d.day) : undefined;
-
-            let circleStyle: React.CSSProperties;
-            const todayWithEvent = d.isToday && dayEvent && !dimmed;
-            if (todayWithEvent) {
-              const s = dayEvent!.status;
-              if (s === "pago" || s === "recebido") {
-                circleStyle = {
-                  background: "linear-gradient(160deg, hsl(150 100% 45% / 0.2) 0%, hsl(150 100% 45% / 0.1) 100%)",
-                  border: "1px solid hsl(150 100% 45% / 0.3)",
-                  color: "hsl(150 100% 45%)",
-                  boxShadow: "0 0 8px hsl(150 100% 45% / 0.2)",
-                };
-              } else if (s === "atrasado") {
-                circleStyle = {
-                  background: "linear-gradient(160deg, hsl(0 60% 50% / 0.2) 0%, hsl(0 60% 50% / 0.1) 100%)",
-                  border: "1px solid hsl(0 60% 50% / 0.3)",
-                  color: "hsl(0 60% 50%)",
-                  boxShadow: "0 0 8px hsl(0 60% 50% / 0.2)",
-                };
-              } else {
-                circleStyle = {
-                  background: "linear-gradient(160deg, hsl(40 80% 50% / 0.2) 0%, hsl(40 80% 50% / 0.1) 100%)",
-                  border: "1px solid hsl(40 80% 50% / 0.3)",
-                  color: "hsl(40 80% 50%)",
-                  boxShadow: "0 0 8px hsl(40 80% 50% / 0.2)",
-                };
-              }
-            } else if (!d.isToday && dayEvent && !dimmed) {
-              const s = dayEvent.status;
-              if (s === "pago" || s === "recebido") {
-                circleStyle = {
-                  background: "linear-gradient(160deg, hsl(150 100% 45% / 0.2) 0%, hsl(150 100% 45% / 0.1) 100%)",
-                  border: "1px solid hsl(150 100% 45% / 0.3)",
-                  color: "hsl(150 100% 45%)",
-                  boxShadow: "0 0 8px hsl(150 100% 45% / 0.2)",
-                };
-              } else if (s === "atrasado") {
-                circleStyle = {
-                  background: "linear-gradient(160deg, hsl(0 60% 50% / 0.2) 0%, hsl(0 60% 50% / 0.1) 100%)",
-                  border: "1px solid hsl(0 60% 50% / 0.3)",
-                  color: "hsl(0 60% 50%)",
-                  boxShadow: "0 0 8px hsl(0 60% 50% / 0.2)",
-                };
-              } else {
-                circleStyle = {
-                  background: "linear-gradient(160deg, hsl(40 80% 50% / 0.2) 0%, hsl(40 80% 50% / 0.1) 100%)",
-                  border: "1px solid hsl(40 80% 50% / 0.3)",
-                  color: "hsl(40 80% 50%)",
-                  boxShadow: "0 0 8px hsl(40 80% 50% / 0.2)",
-                };
-              }
-            } else {
-              circleStyle = d.isToday
-                ? { color: "hsl(var(--foreground))" }
-                : { color: "hsl(var(--muted-foreground) / 0.4)" };
-            }
-
-            return (
-              <div
-                key={`${d.day}-${d.month}-${i}`}
-                className={`flex flex-col items-center py-2 rounded-xl transition-all ${dimmed ? "opacity-20" : ""}`}
-              >
-                <span className={`text-[9px] mb-1.5 font-medium ${d.isToday ? "text-primary" : "text-muted-foreground/40"}`}>
-                  {DAY_INITIALS[d.dow]}
-                </span>
-                <div
-                  className="w-8 h-8 rounded-full flex items-center justify-center text-sm font-bold transition-all"
-                  style={circleStyle}
-                >
-                  {d.day}
-                </div>
-                {d.isToday && !dimmed && (
-                  <span className="w-1.5 h-1.5 rounded-full mt-1 bg-primary my-[5px]" />
-                )}
-              </div>
-            );
-          })}
-        </motion.div>
-
-        {/* Week dots */}
-        {weeks.length > 1 && (
-          <div className="flex items-center justify-center gap-1 mt-1.5">
-            {weeks.map((_, i) => (
-              <span
-                key={i}
-                className={`h-1 rounded-full transition-all ${i === clampedIdx ? "bg-primary w-2.5" : "bg-muted-foreground/15 w-1"}`}
-              />
-            ))}
-          </div>
-        )}
-
-        {/* Legend */}
-        <div className="flex items-center justify-center gap-4 mt-2.5 pb-1">
-          {LEGEND.map((l) => (
-            <div key={l.label} className="flex items-center gap-1.5">
-              <span className="w-2 h-2 rounded-full" style={{ background: `hsl(${l.color})` }} />
-              <span className="text-[10px] text-muted-foreground/50 font-medium">{l.label}</span>
-            </div>
-          ))}
+          <span className="text-[10px] text-muted-foreground/40 font-medium">· esta semana</span>
         </div>
       </div>
 
-      {/* Divider */}
-      <div className="h-px bg-border/20 mx-4" />
-
-      {/* Timeline events */}
-      <div className="relative px-4 py-3">
-        <div
-          className="absolute left-[22px] top-3 bottom-3 w-px"
-          style={{ background: "linear-gradient(180deg, hsl(40 80% 50% / 0.4), hsl(150 100% 45% / 0.3), transparent)" }}
-        />
-
-        <div className="space-y-3">
-          {sortedEvents.map((ev, idx) => {
-            const cfg = STATUS_CONFIG[ev.status];
-            const a = cfg.accent;
-            const StatusIcon = cfg.Icon;
-            const isPaidOrReceived = ev.status === "pago" || ev.status === "recebido";
-            const isClickable = ev.isTransaction && ev.status === "pendente";
-
-            return (
-              <motion.div
-                key={ev.id}
-                initial={{ opacity: 0, y: 8 }}
-                animate={{ opacity: 1, y: 0 }}
-                transition={{ delay: idx * 0.04, type: "spring", stiffness: 400, damping: 30 }}
-                className="flex gap-3"
-              >
-                <div className="flex flex-col items-center pt-3 shrink-0 z-10">
-                  <div
-                    className="w-3 h-3 rounded-full border-2"
-                    style={{
-                      borderColor: `hsl(${a})`,
-                      background: isPaidOrReceived ? `hsl(${a})` : "hsl(var(--card))",
-                      boxShadow: `0 0 6px hsl(${a} / 0.4)`,
-                    }}
-                  />
-                </div>
-
-                <div className="flex-1">
-                  <p className="text-[9px] text-muted-foreground/35 font-medium mb-1">
-                    {ev._day && ev._day < 10 ? `0${ev._day}` : ev._day} de {MONTH_SHORT[selectedMonth]}
-                  </p>
-
-                  <div
-                    className={`rounded-xl border px-3 py-2 transition-all ${isClickable ? "cursor-pointer hover:scale-[1.02] active:scale-[0.98]" : "hover:scale-[1.01]"}`}
-                    style={{
-                      background: `hsl(${a} / 0.06)`,
-                      borderColor: `hsl(${a} / 0.15)`,
-                    }}
-                    onClick={() => {
-                      if (isClickable && onEventClick) {
-                        onEventClick(ev);
-                      }
-                    }}
-                  >
-                    <div className="flex items-start gap-2.5">
-                      <div
-                        className="w-6 h-6 rounded-full flex items-center justify-center shrink-0 mt-0.5 my-[5px]"
-                        style={{
-                          background: isPaidOrReceived
-                            ? `linear-gradient(160deg, hsl(${a} / 0.2) 0%, hsl(${a} / 0.1) 100%)`
-                            : "transparent",
-                          border: isPaidOrReceived
-                            ? `1px solid hsl(${a} / 0.3)`
-                            : `1.5px solid hsl(${a} / 0.4)`,
-                          boxShadow: isPaidOrReceived ? `0 2px 8px -2px hsl(${a} / 0.3)` : "none",
-                        }}
-                      >
-                        <StatusIcon className="w-3 h-3" style={{ color: `hsl(${a})` }} />
-                      </div>
-
-                      <div className="flex-1 min-w-0">
-                        <p className="text-[13px] font-semibold text-foreground/90 truncate">{ev.name}</p>
-                        <p className="text-[9px] text-muted-foreground/40 font-medium mt-0.5">
-                          {ev.category}
-                          {ev.isTransaction && <span className="ml-1 opacity-60">· agendada</span>}
-                        </p>
-                      </div>
-
-                      <div className="flex flex-col items-end shrink-0">
-                        <p className="text-[13px] font-bold tabular-nums" style={{ color: `hsl(${a})` }}>
-                          {fmt(ev.amount)}
-                        </p>
-                        <span className="text-[8px] font-semibold uppercase mt-0.5" style={{ color: `hsl(${a} / 0.7)` }}>
-                          {getStatusLabel(ev.status, ev.type)}
-                        </span>
-                      </div>
-                    </div>
-                  </div>
-                </div>
-              </motion.div>
-            );
-          })}
-        </div>
+      {/* Events list */}
+      <div className="px-3 pb-2 space-y-1.5">
+        <AnimatePresence mode="popLayout">
+          {displayEvents.length > 0 ? (
+            displayEvents.map((ev, idx) => renderEvent(ev, idx))
+          ) : (
+            <motion.p
+              initial={{ opacity: 0 }}
+              animate={{ opacity: 1 }}
+              className="text-center text-[11px] text-muted-foreground/40 py-4"
+            >
+              Nenhum evento esta semana
+            </motion.p>
+          )}
+        </AnimatePresence>
       </div>
+
+      {/* Ver todos / Recolher */}
+      {(totalRest > 0 || expanded) && (
+        <div className="px-4 pb-3">
+          <button
+            onClick={() => setExpanded((v) => !v)}
+            className="w-full flex items-center justify-center gap-1 text-[11px] text-primary font-semibold py-1.5 rounded-lg hover:bg-primary/5 transition-colors"
+          >
+            {expanded ? (
+              <>Recolher <ChevronDown className="w-3.5 h-3.5 rotate-180" /></>
+            ) : (
+              <>Ver todos ({totalRest + weekEvents.length}) <ChevronRight className="w-3.5 h-3.5" /></>
+            )}
+          </button>
+        </div>
+      )}
     </div>
   );
 });
