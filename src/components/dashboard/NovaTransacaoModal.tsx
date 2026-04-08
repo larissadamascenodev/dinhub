@@ -349,13 +349,35 @@ const NovaTransacaoModal = ({ open, onClose, onSuccess, initialType = "despesa",
       }
       suggestTimeoutRef.current = setTimeout(async () => {
         setSuggestingCategory(true);
-        const cat = await suggestCategory(desc, txType);
-        setSuggestedCategory(cat);
-        if (cat && !category) setCategory(cat);
+        const customNames = customCategories.filter(c => c.type === txType).map(c => c.name);
+        const result = await suggestCategory(desc, txType, customNames);
+        const suggestedName = result.category;
+        setSuggestedCategory(suggestedName);
+        if (suggestedName && !category) {
+          setCategory(suggestedName);
+          // Auto-create category if it doesn't exist
+          const allCats = [
+            ...(txType === "receita" ? CATEGORIES_INCOME : CATEGORIES_EXPENSE),
+            ...customCategories.filter(c => c.type === txType).map(c => c.name),
+          ];
+          if (!allCats.includes(suggestedName) && user) {
+            try {
+              const cat = await createCustomCategory(user.id, {
+                name: suggestedName,
+                icon: result.icon || "file-text",
+                color: result.color || "#8b5cf6",
+                type: txType,
+              });
+              setCustomCategories(prev => [...prev, cat]);
+            } catch {
+              // silently fail - category might already exist
+            }
+          }
+        }
         setSuggestingCategory(false);
       }, 350);
     },
-    [category]
+    [category, customCategories, user]
   );
 
   const handleDescriptionChange = (val: string) => {
