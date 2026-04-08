@@ -307,7 +307,7 @@ const TransactionDetailModal = ({ open, tx, accountName, onClose, onRefresh, use
         return (
           <div className="space-y-0">
             {/* Header buttons */}
-            <div className="flex items-center justify-between px-1 pb-4">
+            <div className="flex items-center justify-between px-1 pb-2">
               <button onClick={handleClose} className="w-9 h-9 rounded-full bg-muted/40 flex items-center justify-center text-muted-foreground hover:text-foreground transition-colors">
                 <X className="w-4 h-4" />
               </button>
