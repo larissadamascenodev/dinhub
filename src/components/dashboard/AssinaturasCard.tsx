@@ -3,7 +3,8 @@ import { ChevronRight, ChevronUp, Pencil, Trash2, X } from "lucide-react";
 import { motion, AnimatePresence } from "framer-motion";
 import { supabase } from "@/integrations/supabase/client";
 import { useAuth } from "@/contexts/AuthContext";
-import { getDefaultCategoryIcon } from "@/lib/categoryIcons";
+import { getCategoryIcon } from "@/lib/categoryUtils";
+import { getCustomCategories, type CustomCategory } from "@/services/categoryService";
 import { deleteTransaction, getTransactionById } from "@/services/transactionService";
 import { toast } from "sonner";
 
@@ -130,7 +131,7 @@ function getDaysUntil(dueDay: number): number {
   return Math.max(0, diff);
 }
 
-const BrandIcon = ({ name, category, brand }: { name: string; category: string; brand: BrandInfo & { matched: boolean } }) => {
+const BrandIcon = ({ name, category, brand, customCategories }: { name: string; category: string; brand: BrandInfo & { matched: boolean }; customCategories?: CustomCategory[] }) => {
   const [imgError, setImgError] = useState(false);
 
   if (brand.matched && brand.logo && !imgError) {
@@ -149,7 +150,7 @@ const BrandIcon = ({ name, category, brand }: { name: string; category: string; 
     );
   }
 
-  const IconComponent = getDefaultCategoryIcon(category);
+  const IconComponent = getCategoryIcon(category, customCategories);
   return (
     <div className="w-10 h-10 rounded-xl flex items-center justify-center shrink-0 shadow-md bg-primary/10">
       <IconComponent className="w-5 h-5 text-primary" />
@@ -160,6 +161,7 @@ const BrandIcon = ({ name, category, brand }: { name: string; category: string; 
 const AssinaturasCard = memo(() => {
   const { user } = useAuth();
   const [subscriptions, setSubscriptions] = useState<Subscription[]>([]);
+  const [customCats, setCustomCats] = useState<CustomCategory[]>([]);
   const [loading, setLoading] = useState(true);
   const [expanded, setExpanded] = useState(false);
   const [activeTab, setActiveTab] = useState<RecurringType>("despesa");
@@ -205,7 +207,7 @@ const AssinaturasCard = memo(() => {
     setLoading(false);
   }, [user]);
 
-  useEffect(() => { fetchSubs(); }, [fetchSubs]);
+  useEffect(() => { fetchSubs(); getCustomCategories().then(setCustomCats).catch(() => {}); }, [fetchSubs]);
 
   // Listen for finance changes to refresh
   useEffect(() => {
@@ -345,7 +347,7 @@ const AssinaturasCard = memo(() => {
                 >
 
                   <div className="relative flex items-center gap-3 px-3 py-3">
-                    <BrandIcon name={sub.name} category={sub.category} brand={brand} />
+                    <BrandIcon name={sub.name} category={sub.category} brand={brand} customCategories={customCats} />
 
                     <div className="flex-1 min-w-0">
                       <p className="text-[12px] font-semibold text-foreground/90 truncate">{sub.name}</p>
