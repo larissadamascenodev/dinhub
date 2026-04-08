@@ -14,7 +14,7 @@ import { getCategoryIcon, getCategoryColor, getCategoryHexColor } from "@/lib/ca
 import MonthSelector from "@/components/dashboard/MonthSelector";
 import { useIsMobile } from "@/hooks/use-mobile";
 import {
-  BarChart, Bar, XAxis, YAxis, ResponsiveContainer, Tooltip, Cell,
+  BarChart, Bar, Cell, AreaChart, Area, XAxis, YAxis, ResponsiveContainer, Tooltip, CartesianGrid,
 } from "recharts";
 import { toast } from "sonner";
 
@@ -546,12 +546,35 @@ const CategoryInstallmentDetail = ({ impact }: { impact: InstallmentImpact | und
 };
 
 
+const EvolutionGlowDot = (props: any) => {
+  const { cx, cy } = props;
+  return (
+    <g>
+      <circle cx={cx} cy={cy} r={8} fill={props.stroke} opacity={0.15} />
+      <circle cx={cx} cy={cy} r={4} fill={props.stroke} stroke="hsl(220 20% 5%)" strokeWidth={2} />
+    </g>
+  );
+};
+
+const EvolutionChartTooltip = ({ active, payload }: any) => {
+  if (!active || !payload?.length) return null;
+  const d = payload[0].payload as HistoricalEntry;
+  return (
+    <div className="bg-popover border border-border/40 rounded-xl px-3 py-2 shadow-xl">
+      <p className="text-[10px] text-muted-foreground">{MONTH_NAMES[d.month]}/{d.year}</p>
+      <p className="text-sm font-bold tabular-nums text-foreground">{fmt(d.amount)}</p>
+    </div>
+  );
+};
+
 const EvolutionChart = ({ data, hexColor, currentMonth }: {
   data: HistoricalEntry[];
   hexColor: string;
   currentMonth: number;
 }) => {
   if (data.length < 2) return null;
+
+  const gradientId = `evo-gradient-${hexColor.replace("#", "")}`;
 
   return (
     <GlassCard className="p-4 md:p-5">
@@ -561,39 +584,42 @@ const EvolutionChart = ({ data, hexColor, currentMonth }: {
           Evolução Mensal
         </p>
       </div>
-      <div style={{ height: 160 }}>
+      <div style={{ height: 180 }}>
         <ResponsiveContainer width="100%" height="100%">
-          <BarChart data={data} margin={{ left: 0, right: 0, top: 5, bottom: 0 }}>
+          <AreaChart data={data} margin={{ top: 8, right: 12, left: -12, bottom: 0 }}>
+            <defs>
+              <linearGradient id={gradientId} x1="0" y1="0" x2="0" y2="1">
+                <stop offset="0%" stopColor={hexColor} stopOpacity={0.25} />
+                <stop offset="95%" stopColor={hexColor} stopOpacity={0} />
+              </linearGradient>
+            </defs>
+            <CartesianGrid strokeDasharray="3 3" stroke="hsl(220 12% 16%)" strokeOpacity={0.4} vertical={false} />
             <XAxis
               dataKey="label"
-              axisLine={false}
+              tick={{ fill: "hsl(220 8% 50%)", fontSize: 10 }}
               tickLine={false}
-              tick={{ fill: "hsl(var(--muted-foreground))", fontSize: 10 }}
+              axisLine={false}
             />
-            <YAxis hide />
-            <Tooltip
-              cursor={false}
-              content={({ active, payload }) => {
-                if (!active || !payload?.length) return null;
-                const d = payload[0].payload as HistoricalEntry;
-                return (
-                  <div className="rounded-lg bg-popover border border-border/30 px-3 py-2 shadow-xl">
-                    <p className="text-xs font-bold text-foreground">{MONTH_NAMES[d.month]}/{d.year}</p>
-                    <p className="text-[11px] text-muted-foreground tabular-nums">{fmt(d.amount)}</p>
-                  </div>
-                );
-              }}
+            <YAxis
+              tick={{ fill: "hsl(220 8% 50%)", fontSize: 9 }}
+              tickLine={false}
+              axisLine={false}
+              tickFormatter={(v: number) => fmt(v)}
+              width={72}
             />
-            <Bar dataKey="amount" radius={[6, 6, 0, 0]} animationDuration={600}>
-              {data.map((entry, i) => (
-                <Cell
-                  key={i}
-                  fill={hexColor}
-                  opacity={entry.month === currentMonth ? 1 : 0.45}
-                />
-              ))}
-            </Bar>
-          </BarChart>
+            <Tooltip content={<EvolutionChartTooltip />} cursor={{ stroke: "hsl(220 8% 50%)", strokeWidth: 1, strokeDasharray: "4 4" }} />
+            <Area
+              type="monotone"
+              dataKey="amount"
+              stroke={hexColor}
+              strokeWidth={2.5}
+              fill={`url(#${gradientId})`}
+              activeDot={<EvolutionGlowDot />}
+              dot={{ r: 3, fill: hexColor, stroke: "hsl(220 20% 5%)", strokeWidth: 2 }}
+              animationDuration={1200}
+              animationEasing="ease-out"
+            />
+          </AreaChart>
         </ResponsiveContainer>
       </div>
     </GlassCard>
