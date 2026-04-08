@@ -72,6 +72,8 @@ const CATEGORIES_EXPENSE = [
   "Alimentação", "Transporte", "Saúde", "Assinaturas",
   "Lazer", "Moradia", "Educação", "Vestuário", "Pets",
   "Beleza", "Presentes", "Viagem", "Tecnologia", "Impostos",
+  "Supermercado", "Conta de Luz", "Conta de Água", "Conta de Gás",
+  "Bebidas", "Delivery", "Cafeteria", "Academia", "Fast Food",
 ];
 const CATEGORIES_INCOME = [
   "Salário", "Freelance", "Investimentos", "Vendas",
