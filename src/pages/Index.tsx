@@ -113,7 +113,6 @@ const Index = () => {
                 <ReceitasDespesasCards receitas={receitas} receitasRecebidas={data.receitasRecebidas} receitasPendentes={data.receitasPendentes} despesas={despesas} despesasPagas={data.despesasPagas} despesasPendentes={data.despesasPendentes} compact />
               </motion.div>
             </div>
-            <BalancoCard balanco={balanco} />
             {/* MicroInteracoesCard temporarily disabled */}
             {isCurrentMonth && <GastosSemanaisCard />}
             {data.categories.length > 0 && (
@@ -156,7 +155,6 @@ const Index = () => {
           )}
           <SaldoCard saldoAtual={saldoMes} saldoPrevisto={saldoPrevisto} isFutureMonth={isFutureMonth} isPastMonth={data.isPastMonth} />
           <ReceitasDespesasCards receitas={receitas} receitasRecebidas={data.receitasRecebidas} receitasPendentes={data.receitasPendentes} despesas={despesas} despesasPagas={data.despesasPagas} despesasPendentes={data.despesasPendentes} compact />
-          <BalancoCard balanco={balanco} />
           {/* MicroInteracoesCard temporarily disabled */}
           <ProjectionCard />
           {isCurrentMonth && <GastosSemanaisCard />}
@@ -192,7 +190,7 @@ const Index = () => {
             <SaldoWalletCarousel saldoAtual={saldoMes} saldoPrevisto={saldoPrevisto} isFutureMonth={isFutureMonth} isPastMonth={data.isPastMonth} />
             <ReceitasDespesasCards receitas={receitas} receitasRecebidas={data.receitasRecebidas} receitasPendentes={data.receitasPendentes} despesas={despesas} despesasPagas={data.despesasPagas} despesasPendentes={data.despesasPendentes} mobile compact />
           </motion.div>
-          <BalancoCard balanco={balanco} />
+          
           {/* MicroInteracoesCard temporarily disabled */}
           <ProjectionCard />
           {isCurrentMonth && <GastosSemanaisCard />}
