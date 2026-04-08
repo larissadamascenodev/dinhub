@@ -240,7 +240,7 @@ export default function CategoryCreateModal({
             {/* Icon */}
             <div className="space-y-1.5">
               <label className="text-xs font-semibold text-muted-foreground uppercase tracking-wider">Ícone</label>
-              <div className="grid grid-cols-8 gap-1.5 max-h-[200px] overflow-y-auto pr-1">
+              <div className="grid grid-cols-8 gap-1.5 max-h-[200px] overflow-y-auto pr-1 scrollbar-none">
                 {ICON_OPTIONS.map(({ name: iconName, Icon: IconComp }) => (
                   <button
                     key={iconName}
