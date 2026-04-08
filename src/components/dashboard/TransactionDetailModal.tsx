@@ -341,7 +341,7 @@ const TransactionDetailModal = ({ open, tx, accountName, onClose, onRefresh, use
                   className="w-12 h-12 rounded-xl flex items-center justify-center text-xl shrink-0"
                   style={{ background: isReceita ? "hsl(var(--primary) / 0.15)" : "hsl(var(--muted) / 0.4)" }}
                 >
-                  {icon}
+                  <Icon className="w-6 h-6 text-foreground" />
                 </div>
                 <div className="min-w-0">
                   <h2 className="text-[15px] font-bold text-foreground truncate">{tx.name}</h2>
