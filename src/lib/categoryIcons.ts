@@ -3,6 +3,7 @@ import {
   PawPrint, Scissors, Gift, Plane, Smartphone, Receipt,
   Briefcase, TrendingUp, ShoppingBag, DollarSign, Award, Users, Wallet,
   FileText, Landmark, ShoppingCart, Zap, Droplets, Flame,
+  CupSoda, Truck, Coffee, Dumbbell, Plug, Pizza,
 } from "lucide-react";
 
 export const DEFAULT_CATEGORY_ICONS: Record<string, any> = {
@@ -24,6 +25,12 @@ export const DEFAULT_CATEGORY_ICONS: Record<string, any> = {
   "Conta de Luz": Zap,
   "Conta de Água": Droplets,
   "Conta de Gás": Flame,
+  "Bebidas": CupSoda,
+  "Delivery": Truck,
+  "Cafeteria": Coffee,
+  "Academia": Dumbbell,
+  "Energia": Plug,
+  "Fast Food": Pizza,
   "Salário": DollarSign,
   "Freelance": Briefcase,
   "Investimentos": TrendingUp,
@@ -56,6 +63,12 @@ export const DEFAULT_CATEGORY_COLORS: Record<string, string> = {
   "Conta de Luz":  "55 80% 50%",    // amarelo
   "Conta de Água": "195 80% 50%",   // azul água
   "Conta de Gás":  "15 80% 50%",    // laranja avermelhado
+  "Bebidas":       "320 55% 55%",   // rosa/magenta
+  "Delivery":      "170 60% 45%",   // verde azulado
+  "Cafeteria":     "28 65% 45%",    // marrom café
+  "Academia":      "260 55% 55%",   // roxo fitness
+  "Energia":       "48 85% 50%",    // amarelo elétrico
+  "Fast Food":     "10 75% 52%",    // vermelho tomate
   // Receitas
   "Salário":       "150 100% 45%",  // verde neon (primary)
   "Freelance":     "175 65% 45%",   // teal
