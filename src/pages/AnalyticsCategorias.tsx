@@ -14,7 +14,7 @@ import { getCategoryIcon, getCategoryColor, getCategoryHexColor } from "@/lib/ca
 import MonthSelector from "@/components/dashboard/MonthSelector";
 import { useIsMobile } from "@/hooks/use-mobile";
 import {
-  AreaChart, Area, XAxis, YAxis, ResponsiveContainer, Tooltip, CartesianGrid,
+  BarChart, Bar, Cell, AreaChart, Area, XAxis, YAxis, ResponsiveContainer, Tooltip, CartesianGrid,
 } from "recharts";
 import { toast } from "sonner";
 
