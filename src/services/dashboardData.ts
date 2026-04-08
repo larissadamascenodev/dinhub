@@ -1,8 +1,9 @@
-import { getFinancialSummary, computeDailyBehavior } from "@/lib/financeEngine";
+import { getFinancialSummary, computeDailyBehavior, fetchHistoricalAverages } from "@/lib/financeEngine";
 import type { DashboardData, FinanceEvent, Transaction } from "@/types/finance";
 
 export type FinanceDataOptions = {
   includeHistorical?: boolean;
+  userId?: string;
 };
 
 export const EMPTY_DASHBOARD_DATA: DashboardData = {
@@ -264,6 +265,29 @@ export async function buildDashboardData(
   };
 }
 
+function computeStatusFromData(paidExpense: number, avgExpense: number): "safe" | "warning" | "danger" {
+  if (avgExpense === 0) return "safe";
+  const ratio = paidExpense / avgExpense;
+  if (ratio > 1.3) return "danger";
+  if (ratio > 1.1) return "warning";
+  return "safe";
+}
+
+function mergeHistoricalIntoData(
+  base: DashboardData,
+  historical: { avgIncome: number; avgExpense: number }
+): DashboardData {
+  return {
+    ...base,
+    status: computeStatusFromData(base.despesasPagas, historical.avgExpense),
+    projection: {
+      nextMonthBalance: historical.avgIncome - historical.avgExpense,
+      avgIncome3m: historical.avgIncome,
+      avgExpense3m: historical.avgExpense,
+    },
+  };
+}
+
 export function prefetchDashboardData(
   month: number,
   year: number,
@@ -271,24 +295,76 @@ export function prefetchDashboardData(
 ) {
   const includeHistorical = options?.includeHistorical ?? false;
   const cacheKey = buildDashboardCacheKey(options?.userId, month, year);
-  const promiseKey = `${cacheKey}-${includeHistorical ? "hist" : "base"}`;
 
-  if (hasFreshDashboardCache(cacheKey) && (!includeHistorical || hasHistoricalDashboardCache(cacheKey))) {
-    return Promise.resolve(getCachedDashboardData(cacheKey) ?? EMPTY_DASHBOARD_DATA);
+  // Fast path: fresh base cache available
+  if (hasFreshDashboardCache(cacheKey)) {
+    if (!includeHistorical || hasHistoricalDashboardCache(cacheKey)) {
+      return Promise.resolve(getCachedDashboardData(cacheKey)!);
+    }
+
+    // Need historical but already have base — only fetch historical averages
+    const histKey = `${cacheKey}-hist-merge`;
+    const inflight = inflightPrefetches.get(histKey);
+    if (inflight) return inflight;
+
+    const baseData = getCachedDashboardData(cacheKey)!;
+    const request = fetchHistoricalAverages(month, year, 3)
+      .then((historical) => {
+        const merged = mergeHistoricalIntoData(baseData, historical);
+        setCachedDashboardData(cacheKey, merged, { historical: true });
+        return merged;
+      })
+      .finally(() => inflightPrefetches.delete(histKey));
+
+    inflightPrefetches.set(histKey, request);
+    return request;
   }
 
+  // No base cache — full fetch (always without historical for speed)
+  const promiseKey = `${cacheKey}-base`;
   const inflight = inflightPrefetches.get(promiseKey);
-  if (inflight) return inflight;
+  if (inflight) {
+    // If there's an inflight base fetch and we also need historical, chain it
+    if (includeHistorical) {
+      const histKey = `${cacheKey}-hist-merge`;
+      if (!inflightPrefetches.has(histKey)) {
+        const histRequest = inflight.then((baseData) => {
+          return fetchHistoricalAverages(month, year, 3).then((historical) => {
+            const merged = mergeHistoricalIntoData(baseData, historical);
+            setCachedDashboardData(cacheKey, merged, { historical: true });
+            return merged;
+          });
+        }).finally(() => inflightPrefetches.delete(histKey));
+        inflightPrefetches.set(histKey, histRequest);
+        return histRequest;
+      }
+      return inflightPrefetches.get(histKey)!;
+    }
+    return inflight;
+  }
 
-  const request = buildDashboardData(month, year, options)
+  const request = buildDashboardData(month, year, { ...options, includeHistorical: false })
     .then((result) => {
-      setCachedDashboardData(cacheKey, result, { historical: includeHistorical });
+      setCachedDashboardData(cacheKey, result);
       return result;
     })
-    .finally(() => {
-      inflightPrefetches.delete(promiseKey);
-    });
+    .finally(() => inflightPrefetches.delete(promiseKey));
 
   inflightPrefetches.set(promiseKey, request);
+
+  // If historical needed, chain it after base completes
+  if (includeHistorical) {
+    const histKey = `${cacheKey}-hist-merge`;
+    const histRequest = request.then((baseData) => {
+      return fetchHistoricalAverages(month, year, 3).then((historical) => {
+        const merged = mergeHistoricalIntoData(baseData, historical);
+        setCachedDashboardData(cacheKey, merged, { historical: true });
+        return merged;
+      });
+    }).finally(() => inflightPrefetches.delete(histKey));
+    inflightPrefetches.set(histKey, histRequest);
+    return histRequest;
+  }
+
   return request;
 }

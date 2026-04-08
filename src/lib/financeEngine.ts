@@ -220,7 +220,7 @@ async function fetchInvoiceTotalsForMonth(month: number, year: number) {
   return { invoiceExpense, invoicePaidExpense };
 }
 
-async function fetchHistoricalAverages(
+export async function fetchHistoricalAverages(
   currentMonth: number,
   currentYear: number,
   months: number = 3
