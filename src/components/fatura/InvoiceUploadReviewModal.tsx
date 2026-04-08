@@ -62,6 +62,7 @@ export default function InvoiceUploadReviewModal({
   return (
     <AnimatePresence>
       <motion.div
+        key="invoice-upload-review-overlay"
         initial={{ opacity: 0 }}
         animate={{ opacity: 1 }}
         exit={{ opacity: 0 }}
