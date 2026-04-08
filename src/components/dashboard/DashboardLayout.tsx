@@ -64,11 +64,21 @@ const DashboardLayout = () => {
     const handleScanner = () => {
       setShowScanChooser(true);
     };
+    const handleEditTransaction = (e: Event) => {
+      const detail = (e as CustomEvent).detail as EditTransactionData;
+      if (detail) {
+        setEditTransaction(detail);
+        setModalType(detail.type);
+        setShowModal(true);
+      }
+    };
     window.addEventListener("open-nova-transacao-direct", handleDirect);
     window.addEventListener("open-scanner", handleScanner);
+    window.addEventListener("edit-transaction", handleEditTransaction);
     return () => {
       window.removeEventListener("open-nova-transacao-direct", handleDirect);
       window.removeEventListener("open-scanner", handleScanner);
+      window.removeEventListener("edit-transaction", handleEditTransaction);
     };
   }, []);
 
