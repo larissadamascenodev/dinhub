@@ -2,7 +2,7 @@ import { createContext, useContext, useEffect, useState, useCallback, useMemo, u
 import { User, Session } from "@supabase/supabase-js";
 import { supabase } from "@/integrations/supabase/client";
 import { prefetchDashboardData } from "@/services/dashboardData";
-import { getAccounts, getCreditCards } from "@/services/transactionService";
+import { clearFinanceQueryCache, getAccounts, getCreditCards } from "@/services/transactionService";
 
 interface AuthContextType {
   user: User | null;
@@ -61,6 +61,7 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
   }, []);
 
   useEffect(() => {
+    clearFinanceQueryCache();
     if (!user) return;
 
     const now = new Date();
