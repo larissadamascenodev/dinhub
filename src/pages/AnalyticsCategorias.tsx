@@ -392,9 +392,14 @@ const CategoryList = ({ categoryData, onSelect, selectedCat, prevCategoryData, h
                 <CatIcon className="w-4 h-4 md:w-[18px] md:h-[18px]" style={{ color: cat.hexColor }} />
               </div>
               <div className="flex-1 min-w-0 text-left">
-                <div className="flex items-center gap-2">
+                <div className="flex items-center gap-1.5 flex-wrap">
                   <p className="text-xs md:text-sm font-semibold text-foreground truncate">{cat.name}</p>
-                  <span className="text-[9px] md:text-[10px] text-muted-foreground/40">{cat.txCount} lançamentos</span>
+                  {habit?.isHabit && (
+                    <span className="text-[7px] md:text-[8px] font-semibold px-1.5 py-0.5 rounded-full bg-primary/10 text-primary flex items-center gap-0.5">
+                      <Repeat className="w-2.5 h-2.5" /> Hábito
+                    </span>
+                  )}
+                  <span className="text-[9px] md:text-[10px] text-muted-foreground/40">{cat.txCount} lanç.</span>
                 </div>
                 <div className="flex items-center gap-2 mt-0.5">
                   <div className="flex-1 h-1.5 bg-border/15 rounded-full overflow-hidden">
@@ -420,6 +425,9 @@ const CategoryList = ({ categoryData, onSelect, selectedCat, prevCategoryData, h
               </div>
               <div className="text-right shrink-0">
                 <p className="text-xs md:text-sm font-bold text-foreground tabular-nums">{fmt(cat.amount)}</p>
+                {habit && habit.dailyCost > 0 && (
+                  <p className="text-[8px] md:text-[9px] text-muted-foreground/50 tabular-nums">{fmt(habit.dailyCost)}/dia</p>
+                )}
                 <p className="text-[9px] md:text-[10px] text-muted-foreground/40">{cat.percentage}%</p>
               </div>
               <ChevronRight className="w-3.5 h-3.5 text-muted-foreground/30" />
