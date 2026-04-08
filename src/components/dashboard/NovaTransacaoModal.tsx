@@ -123,6 +123,7 @@ const NovaTransacaoModal = ({ open, onClose, onSuccess, initialType = "despesa",
   const [observation, setObservation] = useState("");
   const [accountId, setAccountId] = useState<string>("");
   const [accounts, setAccounts] = useState<Account[]>([]);
+  const [loadingAccounts, setLoadingAccounts] = useState(true);
   const [newAccountName, setNewAccountName] = useState("");
   const [showNewAccount, setShowNewAccount] = useState(false);
   const [creditCards, setCreditCards] = useState<CreditCardItem[]>([]);
@@ -218,11 +219,17 @@ const NovaTransacaoModal = ({ open, onClose, onSuccess, initialType = "despesa",
   // Fetch accounts, credit cards and custom categories
   useEffect(() => {
     if (open && user) {
-      getAccounts().then((accs) => {
-        setAccounts(accs as Account[]);
-        const defaultAcc = accs.find((a: any) => a.is_default);
-        if (defaultAcc) setAccountId(defaultAcc.id);
-      });
+      setLoadingAccounts(true);
+      getAccounts()
+        .then((accs) => {
+          setAccounts(accs as Account[]);
+          const defaultAcc = accs.find((a: any) => a.is_default);
+          if (defaultAcc) setAccountId(defaultAcc.id);
+        })
+        .catch(() => {
+          toast.error("Erro ao carregar contas");
+        })
+        .finally(() => setLoadingAccounts(false));
       getCreditCards().then((cards) => {
         const typedCards = cards as unknown as CreditCardItem[];
         setCreditCards(typedCards);
@@ -631,7 +638,12 @@ const NovaTransacaoModal = ({ open, onClose, onSuccess, initialType = "despesa",
                 </div>
 
                 {paymentMethod === "conta" || type === "receita" ? (
-                  accounts.length === 0 ? (
+                  loadingAccounts ? (
+                    <div className="rounded-xl border border-border/20 bg-muted/30 p-4 flex items-center justify-center gap-2">
+                      <div className="w-4 h-4 border-2 border-primary/30 border-t-primary rounded-full animate-spin" />
+                      <span className="text-xs text-muted-foreground">Carregando contas...</span>
+                    </div>
+                  ) : accounts.length === 0 ? (
                     <div className="rounded-xl border border-primary/20 bg-primary/5 p-4 text-center space-y-2">
                       <Wallet className="w-6 h-6 text-primary mx-auto" />
                       <p className="text-xs text-foreground font-medium">Você precisa adicionar uma conta antes</p>

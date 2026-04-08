@@ -138,7 +138,7 @@ const PagarEditarModal = ({ open, event, onClose, onSuccess }: Props) => {
                     <Button
                       onClick={handlePay}
                       disabled={submitting}
-                      className="w-full h-11 font-semibold text-sm bg-primary hover:bg-primary/90"
+                      className="w-full h-11 font-semibold text-sm"
                     >
                       <Check className="w-4 h-4 mr-1.5" />
                       Marcar como pago

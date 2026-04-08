@@ -137,7 +137,7 @@ const Metas = () => {
           <motion.button
             whileTap={{ scale: 0.95 }}
             onClick={() => setShowCreateModal(true)}
-            className="mt-4 flex items-center gap-1.5 px-4 py-2.5 rounded-xl bg-primary text-primary-foreground text-xs font-bold"
+            className="mt-4 flex items-center gap-1.5 px-4 py-2.5 rounded-xl bg-primary/15 text-primary border border-primary/20 hover:bg-primary/25 text-xs font-bold"
           >
             <Plus className="w-4 h-4" />
             Criar meta
