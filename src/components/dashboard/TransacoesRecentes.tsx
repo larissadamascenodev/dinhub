@@ -77,8 +77,11 @@ const TxCard = ({ tx, onClick, customCategories }: { tx: Transaction; onClick: (
   const isReceita = tx.type === "receita";
   const isPaid = tx.status === "pago";
   const isPending = tx.status !== "pago";
-  const catColor = getCategoryColor(tx.category, customCategories);
-  const CatIcon = getCategoryIcon(tx.category, customCategories);
+
+  // Special handling for "Saldo inicial" entries
+  const isInitialBalance = tx.category === "Saldo inicial";
+  const catColor = isInitialBalance ? "210 80% 55%" : getCategoryColor(tx.category, customCategories);
+  const CatIcon = isInitialBalance ? Wallet : getCategoryIcon(tx.category, customCategories);
 
   return (
     <div
