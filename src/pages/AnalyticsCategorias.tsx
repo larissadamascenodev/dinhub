@@ -1966,6 +1966,8 @@ const AnalyticsCategorias = () => {
             aiInsights={aiInsights}
             selectedMonth={selectedMonth}
             installmentImpact={enrichedInstallmentImpacts.find((i) => i.category === selectedCategory)}
+            scoreData={scoreMap[selectedCategory]}
+            habitData={habitMap[selectedCategory]}
           />
         ) : (
           <motion.div
