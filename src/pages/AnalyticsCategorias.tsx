@@ -1645,8 +1645,11 @@ const AnalyticsCategorias = () => {
                   isMobile={isMobile}
                 />
 
-                {/* Comparison Insights — between chart and AI */}
+                {/* Comparison Insights */}
                 <ComparisonInsightsSection categoryData={categoryData} prevCategoryData={prevCategoryData} />
+
+                {/* Habit Insights */}
+                <HabitInsightsSection habitMap={habitMap} categoryData={categoryData} />
 
                 {/* AI Insights */}
                 <AIInsightsSection insights={aiInsights} loading={aiLoading} />
@@ -1657,6 +1660,7 @@ const AnalyticsCategorias = () => {
                   onSelect={setSelectedCategory}
                   selectedCat={null}
                   prevCategoryData={prevCategoryData}
+                  habitMap={habitMap}
                 />
 
                 {/* Alerts */}
