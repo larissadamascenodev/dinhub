@@ -1061,6 +1061,7 @@ const AnalyticsCategorias = () => {
             historicalData={historicalMap[selectedCategory] ?? []}
             aiInsights={aiInsights}
             selectedMonth={selectedMonth}
+            installmentImpact={enrichedInstallmentImpacts.find((i) => i.category === selectedCategory)}
           />
         ) : (
           <motion.div
@@ -1094,6 +1095,9 @@ const AnalyticsCategorias = () => {
 
                 {/* Alerts */}
                 {aiInsights && <AlertsSection alerts={aiInsights.alerts} />}
+
+                {/* Installment Insights */}
+                <InstallmentInsightsSection impacts={enrichedInstallmentImpacts} />
 
                 {/* Projections */}
                 <ProjectionsCard totalExpenses={totalExpenses} />
