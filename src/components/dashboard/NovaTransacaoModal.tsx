@@ -220,10 +220,15 @@ const NovaTransacaoModal = ({ open, onClose, onSuccess, initialType = "despesa",
     }
   }, [paidMonthFlags, paymentMethod, recurrenceType, installmentMonths.length]);
 
-  const allCategories = [
-    ...(type === "receita" ? CATEGORIES_INCOME : CATEGORIES_EXPENSE),
-    ...customCategories.filter((c) => c.type === type).map((c) => c.name),
-  ];
+  const allCategories = Array.from(
+    new Set([
+      ...(type === "receita" ? CATEGORIES_INCOME : CATEGORIES_EXPENSE),
+      ...customCategories
+        .filter((c) => c.type === type)
+        .map((c) => c.name.trim())
+        .filter(Boolean),
+    ])
+  );
 
   const filteredCategories = categorySearch
     ? allCategories.filter((c) => c.toLowerCase().includes(categorySearch.toLowerCase()))

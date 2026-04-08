@@ -54,29 +54,27 @@ export default function GerenciarCategorias() {
   useEffect(() => { fetchCategories(); }, [fetchCategories]);
 
   // Build unified list
-  const hiddenDefaults = customCats.filter((c) => c.type === tab && c.is_hidden_default).map((c) => c.name);
-  const customOnly = customCats.filter((c) => c.type === tab && !c.is_hidden_default);
+  const hiddenDefaults = new Set(
+    customCats
+      .filter((c) => c.type === tab && c.is_hidden_default)
+      .map((c) => c.name.trim().toLocaleLowerCase("pt-BR"))
+  );
 
-  const unifiedCategories: UnifiedCategory[] = [];
-
-  // Add visible defaults
-  Object.entries(DEFAULT_CATEGORY_TYPE)
+  const defaultCategories: UnifiedCategory[] = Object.entries(DEFAULT_CATEGORY_TYPE)
     .filter(([, type]) => type === tab)
-    .filter(([name]) => !hiddenDefaults.includes(name))
-    .forEach(([name]) => {
-      unifiedCategories.push({
-        id: `default-${name}`,
-        name,
-        icon: "",
-        color: DEFAULT_CATEGORY_HEX[name] || "#64748b",
-        type: tab,
-        isDefault: true,
-      });
-    });
+    .filter(([name]) => !hiddenDefaults.has(name.trim().toLocaleLowerCase("pt-BR")))
+    .map(([name]) => ({
+      id: `default-${name}`,
+      name,
+      icon: "",
+      color: DEFAULT_CATEGORY_HEX[name] || "#64748b",
+      type: tab,
+      isDefault: true,
+    }));
 
-  // Add custom categories
-  customOnly.forEach((cat) => {
-    unifiedCategories.push({
+  const customCategories = customCats
+    .filter((c) => c.type === tab && !c.is_hidden_default)
+    .map((cat) => ({
       id: cat.id,
       name: cat.name,
       icon: cat.icon,
@@ -84,11 +82,20 @@ export default function GerenciarCategorias() {
       type: cat.type,
       isDefault: false,
       customId: cat.id,
-    });
-  });
+    }));
 
-  // Sort alphabetically
-  unifiedCategories.sort((a, b) => a.name.localeCompare(b.name, "pt-BR"));
+  const unifiedCategories = Array.from(
+    [...defaultCategories, ...customCategories].reduce((map, category) => {
+      const key = category.name.trim().toLocaleLowerCase("pt-BR");
+      const existing = map.get(key);
+
+      if (!existing || (!category.isDefault && existing.isDefault)) {
+        map.set(key, category);
+      }
+
+      return map;
+    }, new Map<string, UnifiedCategory>()).values()
+  ).sort((a, b) => a.name.localeCompare(b.name, "pt-BR"));
 
   const allNames = unifiedCategories.map((c) => c.name);
 
