@@ -117,20 +117,36 @@ const GastosPorCategoria = memo(({ categories, selectedMonth, onVerAnalise }: Pr
         })}
       </div>
 
-      {hasMore && (
-        <div className="px-4 pb-3">
+      {hasMore && !expanded && (
+        <div className="px-4 pb-1">
           <button
-            onClick={() => setExpanded(!expanded)}
+            onClick={() => setExpanded(true)}
             className="w-full flex items-center justify-center gap-1 pt-2 border-t border-border/10 text-[10px] text-primary/70 hover:text-primary transition-colors font-medium"
           >
-            {expanded ? (
-              <>Mostrar menos <ChevronUp className="w-3 h-3" /></>
-            ) : (
-              <>Mais {sorted.length - INITIAL_COUNT} categorias <ChevronDown className="w-3 h-3" /></>
-            )}
+            Mais {sorted.length - INITIAL_COUNT} categorias <ChevronDown className="w-3 h-3" />
           </button>
         </div>
       )}
+      {hasMore && expanded && (
+        <div className="px-4 pb-1">
+          <button
+            onClick={() => setExpanded(false)}
+            className="w-full flex items-center justify-center gap-1 pt-2 border-t border-border/10 text-[10px] text-primary/70 hover:text-primary transition-colors font-medium"
+          >
+            Mostrar menos <ChevronUp className="w-3 h-3" />
+          </button>
+        </div>
+      )}
+
+      {/* Ver análise completa */}
+      <div className="px-4 pb-3">
+        <button
+          onClick={() => navigate("/analytics/categorias")}
+          className="w-full flex items-center justify-center gap-1 pt-2 border-t border-border/10 text-[10px] text-primary/70 hover:text-primary transition-colors font-medium"
+        >
+          Ver análise completa <ChevronRight className="w-3 h-3" />
+        </button>
+      </div>
     </div>
   );
 });
