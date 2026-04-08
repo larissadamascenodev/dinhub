@@ -1774,6 +1774,9 @@ const AnalyticsCategorias = () => {
                 {/* Habit Insights */}
                 <HabitInsightsSection habitMap={habitMap} categoryData={categoryData} />
 
+                {/* Score Insights */}
+                <ScoreInsightsSection scoreMap={scoreMap} categoryData={categoryData} />
+
                 {/* AI Insights */}
                 <AIInsightsSection insights={aiInsights} loading={aiLoading} />
 
@@ -1784,6 +1787,7 @@ const AnalyticsCategorias = () => {
                   selectedCat={null}
                   prevCategoryData={prevCategoryData}
                   habitMap={habitMap}
+                  scoreMap={scoreMap}
                 />
 
                 {/* Alerts */}
