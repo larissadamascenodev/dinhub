@@ -1,5 +1,5 @@
 import { memo, useMemo, useState } from "react";
-import { Check, Clock, AlertTriangle, ChevronRight, ChevronDown, CalendarDays } from "lucide-react";
+import { Check, Clock, AlertTriangle, ChevronRight, ChevronUp, CalendarDays } from "lucide-react";
 import { motion, AnimatePresence } from "framer-motion";
 import type { FinanceEvent } from "@/types/finance";
 
@@ -34,54 +34,28 @@ const getStatusLabel = (status: string, type?: string) => {
 const fmt = (v: number) =>
   v.toLocaleString("pt-BR", { style: "currency", currency: "BRL" });
 
-const MONTH_SHORT = ["jan", "fev", "mar", "abr", "mai", "jun", "jul", "ago", "set", "out", "nov", "dez"];
-
 const parseDateSafe = (dateStr: string): Date => {
   if (dateStr.includes("T")) return new Date(dateStr);
   return new Date(dateStr + "T12:00:00");
 };
 
-const getWeekRange = () => {
-  const today = new Date();
-  const dow = today.getDay();
-  const start = new Date(today);
-  start.setDate(today.getDate() - dow);
-  start.setHours(0, 0, 0, 0);
-  const end = new Date(start);
-  end.setDate(start.getDate() + 6);
-  end.setHours(23, 59, 59, 999);
-  return { start, end };
-};
-
 const ProximosEventos = memo(({ events, selectedMonth, selectedYear, onVerTodos, onEventClick }: Props) => {
   const [expanded, setExpanded] = useState(false);
 
-  const { weekEvents, restEvents } = useMemo(() => {
-    const { start, end } = getWeekRange();
-    const sorted = [...events]
+  const sortedEvents = useMemo(() => {
+    return [...events]
       .map((ev) => ({ ...ev, _date: parseDateSafe(ev.date) }))
       .sort((a, b) => a._date.getTime() - b._date.getTime());
-
-    const week: typeof sorted = [];
-    const rest: typeof sorted = [];
-    for (const ev of sorted) {
-      if (ev._date >= start && ev._date <= end) week.push(ev);
-      else rest.push(ev);
-    }
-    return { weekEvents: week, restEvents: rest };
   }, [events]);
 
-  const displayEvents = expanded ? [...weekEvents, ...restEvents].sort((a, b) => a._date.getTime() - b._date.getTime()) : weekEvents;
-  const totalRest = restEvents.length;
+  const displayEvents = expanded ? sortedEvents : sortedEvents.slice(0, 3);
+  const hasMore = sortedEvents.length > 3;
 
-  const renderEvent = (ev: typeof displayEvents[0], idx: number) => {
+  const renderEvent = (ev: typeof sortedEvents[0], idx: number) => {
     const cfg = STATUS_CONFIG[ev.status];
     const a = cfg.accent;
     const StatusIcon = cfg.Icon;
-    const isPaidOrReceived = ev.status === "pago" || ev.status === "recebido";
     const isClickable = ev.isTransaction && ev.status === "pendente";
-    const day = ev._date.getDate();
-    const month = ev._date.getMonth();
 
     return (
       <motion.div
@@ -90,7 +64,7 @@ const ProximosEventos = memo(({ events, selectedMonth, selectedYear, onVerTodos,
         animate={{ opacity: 1, y: 0 }}
         exit={{ opacity: 0, y: -4 }}
         transition={{ delay: idx * 0.03, type: "spring", stiffness: 500, damping: 35 }}
-        className={`flex items-center gap-3 px-3 py-2 rounded-xl border transition-all ${isClickable ? "cursor-pointer hover:scale-[1.01] active:scale-[0.99]" : ""}`}
+        className={`flex items-center gap-3 px-3 py-2.5 rounded-xl border transition-all ${isClickable ? "cursor-pointer hover:scale-[1.01] active:scale-[0.99]" : ""}`}
         style={{
           background: `hsl(${a} / 0.05)`,
           borderColor: `hsl(${a} / 0.12)`,
@@ -99,19 +73,6 @@ const ProximosEventos = memo(({ events, selectedMonth, selectedYear, onVerTodos,
           if (isClickable && onEventClick) onEventClick(ev);
         }}
       >
-        {/* Date chip */}
-        <div className="flex flex-col items-center shrink-0 w-9">
-          <span className="text-[9px] uppercase text-muted-foreground/40 font-semibold leading-none">
-            {MONTH_SHORT[month]}
-          </span>
-          <span className="text-base font-bold leading-tight" style={{ color: `hsl(${a})` }}>
-            {day < 10 ? `0${day}` : day}
-          </span>
-        </div>
-
-        {/* Divider line */}
-        <div className="w-px h-8 rounded-full" style={{ background: `hsl(${a} / 0.2)` }} />
-
         {/* Content */}
         <div className="flex-1 min-w-0">
           <p className="text-[12px] font-semibold text-foreground/90 truncate">{ev.name}</p>
@@ -138,7 +99,6 @@ const ProximosEventos = memo(({ events, selectedMonth, selectedYear, onVerTodos,
         <div className="flex items-center gap-2">
           <CalendarDays className="w-4 h-4 text-primary" />
           <h2 className="text-sm font-bold text-foreground">Próximos Eventos</h2>
-          <span className="text-[10px] text-muted-foreground/40 font-medium">· esta semana</span>
         </div>
       </div>
 
@@ -153,23 +113,23 @@ const ProximosEventos = memo(({ events, selectedMonth, selectedYear, onVerTodos,
               animate={{ opacity: 1 }}
               className="text-center text-[11px] text-muted-foreground/40 py-4"
             >
-              Nenhum evento esta semana
+              Nenhum evento este mês
             </motion.p>
           )}
         </AnimatePresence>
       </div>
 
       {/* Ver todos / Recolher */}
-      {(totalRest > 0 || expanded) && (
+      {hasMore && (
         <div className="px-4 pb-3">
           <button
             onClick={() => setExpanded((v) => !v)}
             className="w-full flex items-center justify-center gap-1 text-[11px] text-primary font-semibold py-1.5 rounded-lg hover:bg-primary/5 transition-colors"
           >
             {expanded ? (
-              <>Recolher <ChevronDown className="w-3.5 h-3.5 rotate-180" /></>
+              <>Recolher <ChevronUp className="w-3.5 h-3.5" /></>
             ) : (
-              <>Ver todos ({totalRest + weekEvents.length}) <ChevronRight className="w-3.5 h-3.5" /></>
+              <>Ver todos ({sortedEvents.length}) <ChevronRight className="w-3.5 h-3.5" /></>
             )}
           </button>
         </div>
