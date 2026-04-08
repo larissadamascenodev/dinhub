@@ -29,6 +29,7 @@ import {
 import { getCustomCategories, createCustomCategory, type CustomCategory } from "@/services/categoryService";
 import CategoryCreateModal, { getIconComponent } from "@/components/dashboard/CategoryCreateModal";
 import { getDefaultCategoryIcon, DEFAULT_EXPENSE_CATEGORIES, DEFAULT_INCOME_CATEGORIES } from "@/lib/categoryIcons";
+import { getCategoryHexColor } from "@/lib/categoryUtils";
 
 export interface EditTransactionData {
   id: string;
