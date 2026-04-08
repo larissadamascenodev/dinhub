@@ -5,6 +5,8 @@ import { supabase } from "@/integrations/supabase/client";
 import { useAuth } from "@/contexts/AuthContext";
 import { getDefaultCategoryIcon } from "@/lib/categoryIcons";
 
+type RecurringType = "despesa" | "receita";
+
 interface Subscription {
   id: string;
   name: string;
@@ -12,6 +14,7 @@ interface Subscription {
   dueDay: number;
   category: string;
   source: "conta" | "cartao";
+  txType: RecurringType;
 }
 
 const fmt = (v: number) =>
@@ -146,6 +149,7 @@ const AssinaturasCard = memo(() => {
   const [subscriptions, setSubscriptions] = useState<Subscription[]>([]);
   const [loading, setLoading] = useState(true);
   const [expanded, setExpanded] = useState(false);
+  const [activeTab, setActiveTab] = useState<RecurringType>("despesa");
 
   useEffect(() => {
     if (!user) return;
@@ -155,16 +159,15 @@ const AssinaturasCard = memo(() => {
 
       const { data: txs } = await supabase
         .from("transactions")
-        .select("id, name, amount, date, category, payment_method, credit_card_id")
+        .select("id, name, amount, date, category, payment_method, credit_card_id, type")
         .eq("user_id", user.id)
-        .eq("recurrence_type", "fixa")
-        .eq("type", "despesa");
+        .eq("recurrence_type", "fixa");
 
       if (!txs) { setLoading(false); return; }
 
       const seen = new Map<string, typeof txs[0]>();
       for (const tx of txs) {
-        const key = tx.name.toLowerCase().trim();
+        const key = `${tx.type}-${tx.name.toLowerCase().trim()}`;
         if (!seen.has(key) || tx.date < seen.get(key)!.date) {
           seen.set(key, tx);
         }
@@ -176,7 +179,8 @@ const AssinaturasCard = memo(() => {
         amount: Number(tx.amount),
         dueDay: new Date(tx.date + "T12:00:00").getDate(),
         category: tx.category,
-        source: tx.payment_method === "cartao" ? "cartao" : "conta",
+        source: tx.payment_method === "cartao" ? "cartao" as const : "conta" as const,
+        txType: tx.type as RecurringType,
       }));
 
       subs.sort((a, b) => getDaysUntil(a.dueDay) - getDaysUntil(b.dueDay));
@@ -188,7 +192,10 @@ const AssinaturasCard = memo(() => {
     fetchSubs();
   }, [user]);
 
-  const total = useMemo(() => subscriptions.reduce((s, x) => s + x.amount, 0), [subscriptions]);
+  const filtered = useMemo(() => subscriptions.filter((s) => s.txType === activeTab), [subscriptions, activeTab]);
+  const total = useMemo(() => filtered.reduce((s, x) => s + x.amount, 0), [filtered]);
+  const despesaCount = useMemo(() => subscriptions.filter((s) => s.txType === "despesa").length, [subscriptions]);
+  const receitaCount = useMemo(() => subscriptions.filter((s) => s.txType === "receita").length, [subscriptions]);
 
   if (loading) {
     return (
@@ -203,8 +210,8 @@ const AssinaturasCard = memo(() => {
 
   if (subscriptions.length === 0) return null;
 
-  const displaySubs = expanded ? subscriptions : subscriptions.slice(0, 3);
-  const hasMore = subscriptions.length > 3;
+  const displaySubs = expanded ? filtered : filtered.slice(0, 3);
+  const hasMore = filtered.length > 3;
 
   return (
     <div className="rounded-2xl bg-card/90 backdrop-blur-xl border border-border/30 shadow-lg shadow-black/20 overflow-hidden">
@@ -216,14 +223,38 @@ const AssinaturasCard = memo(() => {
         </div>
         <div className="text-right pt-1">
           <p className="text-[10px] text-muted-foreground/50">Total/mês</p>
-          <p className="text-[15px] font-bold text-primary tabular-nums">{fmt(total)}</p>
+          <p className={`text-[15px] font-bold tabular-nums ${activeTab === "receita" ? "text-emerald-400" : "text-primary"}`}>{fmt(total)}</p>
+        </div>
+      </div>
+
+      {/* Tabs */}
+      <div className="px-4 mt-1 mb-1.5">
+        <div className="relative flex rounded-lg bg-muted/20 p-0.5">
+          <motion.div
+            className="absolute top-0.5 bottom-0.5 rounded-md bg-primary/15 border border-primary/20"
+            layoutId="recorrentes-tab"
+            style={{ width: "50%", left: activeTab === "despesa" ? "0%" : "50%" }}
+            transition={{ type: "spring", stiffness: 400, damping: 30 }}
+          />
+          <button
+            onClick={() => { setActiveTab("despesa"); setExpanded(false); }}
+            className={`relative z-10 flex-1 text-[10px] font-semibold py-1.5 rounded-md transition-colors ${activeTab === "despesa" ? "text-primary" : "text-muted-foreground/50"}`}
+          >
+            Despesas {despesaCount > 0 && <span className="ml-0.5 opacity-60">({despesaCount})</span>}
+          </button>
+          <button
+            onClick={() => { setActiveTab("receita"); setExpanded(false); }}
+            className={`relative z-10 flex-1 text-[10px] font-semibold py-1.5 rounded-md transition-colors ${activeTab === "receita" ? "text-primary" : "text-muted-foreground/50"}`}
+          >
+            Receitas {receitaCount > 0 && <span className="ml-0.5 opacity-60">({receitaCount})</span>}
+          </button>
         </div>
       </div>
 
       {/* Cards list */}
       <div className="px-3 pb-2 mt-1.5 space-y-2">
         <AnimatePresence mode="popLayout">
-          {displaySubs.map((sub, idx) => {
+          {displaySubs.length > 0 ? displaySubs.map((sub, idx) => {
             const brand = getBrand(sub.name);
             const days = getDaysUntil(sub.dueDay);
 
@@ -240,7 +271,6 @@ const AssinaturasCard = memo(() => {
                   backdropFilter: "blur(16px)",
                 }}
               >
-                {/* Subtle brand glow for matched brands */}
                 {brand.matched && (
                   <div
                     className="absolute inset-0 opacity-[0.06] pointer-events-none"
@@ -264,7 +294,15 @@ const AssinaturasCard = memo(() => {
                 </div>
               </motion.div>
             );
-          })}
+          }) : (
+            <motion.p
+              initial={{ opacity: 0 }}
+              animate={{ opacity: 1 }}
+              className="text-center text-[11px] text-muted-foreground/40 py-4"
+            >
+              Nenhum {activeTab === "receita" ? "receita recorrente" : "gasto recorrente"}
+            </motion.p>
+          )}
         </AnimatePresence>
       </div>
 
@@ -278,7 +316,7 @@ const AssinaturasCard = memo(() => {
             {expanded ? (
               <>Recolher <ChevronUp className="w-3.5 h-3.5" /></>
             ) : (
-              <>Ver todos ({subscriptions.length}) <ChevronRight className="w-3.5 h-3.5" /></>
+              <>Ver todos ({filtered.length}) <ChevronRight className="w-3.5 h-3.5" /></>
             )}
           </button>
         </div>
