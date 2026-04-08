@@ -3,7 +3,7 @@ import { useNavigate } from "react-router-dom";
 import { motion, AnimatePresence } from "framer-motion";
 import {
   ArrowLeft, ChevronRight, Sparkles, TrendingUp, TrendingDown,
-  AlertTriangle, Target, Brain, PieChart, Info, ShieldCheck,
+  AlertTriangle, Target, Brain, PieChart as PieChartIcon, Info, ShieldCheck, BarChart3,
 } from "lucide-react";
 import { supabase } from "@/integrations/supabase/client";
 import { useAuth } from "@/contexts/AuthContext";
@@ -15,6 +15,7 @@ import MonthSelector from "@/components/dashboard/MonthSelector";
 import { useIsMobile } from "@/hooks/use-mobile";
 import {
   BarChart, Bar, Cell, AreaChart, Area, XAxis, YAxis, ResponsiveContainer, Tooltip, CartesianGrid,
+  PieChart, Pie, Sector,
 } from "recharts";
 import { toast } from "sonner";
 
