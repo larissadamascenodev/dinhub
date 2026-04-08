@@ -656,6 +656,79 @@ const ComparisonInsightsSection = ({ categoryData, prevCategoryData }: {
   );
 };
 
+// ── Score Insights Section ───────────────────────────────
+const ScoreInsightsSection = ({ scoreMap, categoryData }: {
+  scoreMap: Record<string, CategoryScoreData>;
+  categoryData: CategorySummary[];
+}) => {
+  const insights = useMemo(() => {
+    const results: { message: string; score: CategoryScore; impact: number }[] = [];
+
+    categoryData.forEach((cat) => {
+      const sc = scoreMap[cat.name];
+      if (!sc) return;
+
+      if (sc.score === "exagerado") {
+        results.push({
+          message: `Seus gastos com ${cat.name} estão acima do ideal 🚨 Talvez seja o melhor ponto pra ajustar agora`,
+          score: "exagerado",
+          impact: cat.amount,
+        });
+      } else if (sc.score === "atencao") {
+        results.push({
+          message: `Fica de olho em ${cat.name} 👀 Tá começando a subir`,
+          score: "atencao",
+          impact: cat.amount * 0.5,
+        });
+      } else {
+        results.push({
+          message: `Boa! Seus gastos com ${cat.name} estão sob controle 👍`,
+          score: "saudavel",
+          impact: 0,
+        });
+      }
+    });
+
+    // Prioritize: exagerado first, then atencao, limit to 3
+    return results
+      .sort((a, b) => {
+        const order = { exagerado: 0, atencao: 1, saudavel: 2 };
+        return order[a.score] - order[b.score] || b.impact - a.impact;
+      })
+      .slice(0, 3);
+  }, [scoreMap, categoryData]);
+
+  if (insights.length === 0) return null;
+
+  return (
+    <GlassCard className="p-4 md:p-5">
+      <div className="flex items-center gap-2 mb-3">
+        <ShieldCheck className="w-4 h-4 text-primary" />
+        <p className="text-[10px] md:text-[11px] text-muted-foreground/60 font-semibold uppercase tracking-wider">
+          Score de Categorias
+        </p>
+      </div>
+      <div className="space-y-2">
+        {insights.map((ins, i) => {
+          const cfg = SCORE_CONFIG[ins.score];
+          return (
+            <motion.div
+              key={i}
+              initial={{ opacity: 0, x: -10 }}
+              animate={{ opacity: 1, x: 0 }}
+              transition={{ delay: i * 0.1 }}
+              className={`flex items-start gap-2.5 p-2.5 rounded-xl ${cfg.bg} border ${cfg.border}`}
+            >
+              <span className="text-sm mt-0.5 shrink-0">{cfg.emoji}</span>
+              <p className="text-xs text-foreground/80 leading-relaxed">{ins.message}</p>
+            </motion.div>
+          );
+        })}
+      </div>
+    </GlassCard>
+  );
+};
+
 // ── AI Insights Section ──────────────────────────────────
 const AIInsightsSection = ({ insights, loading }: { insights: AIInsights | null; loading: boolean }) => {
   if (loading) {
