@@ -967,6 +967,20 @@ const AnalyticsCategorias = () => {
   const selectedCatData = categoryData.find((c) => c.name === selectedCategory);
   const monthLabel = MONTH_NAMES[selectedMonth];
 
+  // Compute impactPct for installment impacts
+  const enrichedInstallmentImpacts = useMemo(() => {
+    const result: InstallmentImpact[] = [];
+    Object.values(installmentImpacts).forEach((imp) => {
+      const catData = categoryData.find((c) => c.name === imp.category);
+      const catAmount = catData?.amount ?? 0;
+      result.push({
+        ...imp,
+        impactPct: catAmount > 0 ? Math.round((imp.monthlyAmount / catAmount) * 100) : 0,
+      });
+    });
+    return result;
+  }, [installmentImpacts, categoryData]);
+
   // Fetch AI insights
   const fetchInsights = useCallback(async () => {
     if (categoryData.length === 0 || totalExpenses === 0) {
