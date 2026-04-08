@@ -6,7 +6,7 @@ import { toast } from "sonner";
 import { useAuth } from "@/contexts/AuthContext";
 import { cn } from "@/lib/utils";
 import CategoryCreateModal, { getIconComponent } from "@/components/dashboard/CategoryCreateModal";
-import { getDefaultCategoryIcon, DEFAULT_CATEGORY_ICONS } from "@/lib/categoryIcons";
+import { getDefaultCategoryIcon, DEFAULT_CATEGORY_ICONS, DEFAULT_CATEGORY_HEX, DEFAULT_CATEGORY_TYPE } from "@/lib/categoryIcons";
 import {
   getCustomCategories,
   createCustomCategory,
