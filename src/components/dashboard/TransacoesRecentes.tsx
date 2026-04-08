@@ -4,7 +4,7 @@ import {
   Layers, ChevronUp, Clock, RefreshCw,
   ShoppingCart, Heart, Car, Utensils, Home as HomeIcon,
   Briefcase, GraduationCap, Shirt, TrendingUp, DollarSign, MoreHorizontal,
-  CreditCard, Wallet, Sparkles,
+  CreditCard, Wallet, Sparkles, Landmark,
 } from "lucide-react";
 import { getCustomCategories, type CustomCategory } from "@/services/categoryService";
 import { getIconComponent } from "@/components/dashboard/CategoryCreateModal";
@@ -32,7 +32,7 @@ const CATEGORY_ICONS: Record<string, typeof ShoppingCart> = {
   "Pets": Heart, "Beleza": Sparkles, "Presentes": Sparkles,
   "Viagem": Car, "Tecnologia": Sparkles, "Impostos": Wallet,
   "Vendas": DollarSign, "Aluguéis": HomeIcon, "Bônus": DollarSign,
-  "Comissão": DollarSign, "Mesada": Wallet,
+  "Comissão": DollarSign, "Mesada": Wallet, "Saldo inicial": Wallet,
 };
 
 const CATEGORY_COLORS: Record<string, string> = {

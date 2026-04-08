@@ -2,7 +2,7 @@ import {
   Utensils, Car, Heart, Repeat, Gamepad2, Home, GraduationCap, Shirt,
   PawPrint, Scissors, Gift, Plane, Smartphone, Receipt,
   Briefcase, TrendingUp, ShoppingBag, DollarSign, Award, Users, Wallet,
-  FileText,
+  FileText, Landmark, ShoppingCart,
 } from "lucide-react";
 
 export const DEFAULT_CATEGORY_ICONS: Record<string, any> = {
@@ -20,6 +20,7 @@ export const DEFAULT_CATEGORY_ICONS: Record<string, any> = {
   "Viagem": Plane,
   "Tecnologia": Smartphone,
   "Impostos": Receipt,
+  "Supermercado": ShoppingCart,
   "Salário": DollarSign,
   "Freelance": Briefcase,
   "Investimentos": TrendingUp,
@@ -28,7 +29,7 @@ export const DEFAULT_CATEGORY_ICONS: Record<string, any> = {
   "Bônus": Award,
   "Comissão": Users,
   "Mesada": Wallet,
-  "Saldo inicial": Wallet,
+  "Saldo inicial": Landmark,
 };
 
 export function getDefaultCategoryIcon(name: string) {
