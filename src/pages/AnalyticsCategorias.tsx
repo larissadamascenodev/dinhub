@@ -1640,6 +1640,19 @@ const AnalyticsCategorias = () => {
 
   const totalExpenses = useMemo(() => categoryData.reduce((s, c) => s + c.amount, 0), [categoryData]);
   const topCategory = categoryData[0];
+
+  // Compute score map
+  const scoreMap: Record<string, CategoryScoreData> = useMemo(() => {
+    const result: Record<string, CategoryScoreData> = {};
+    categoryData.forEach((cat) => {
+      const prev = prevCategoryData.find((p) => p.name === cat.name);
+      const prevAmount = prev?.amount ?? 0;
+      const variation = prevAmount > 0 ? Math.round(((cat.amount - prevAmount) / prevAmount) * 100) : null;
+      const score = computeCategoryScore(cat.percentage, variation, cat.txCount);
+      result[cat.name] = { score, percentage: cat.percentage, variation, txCount: cat.txCount };
+    });
+    return result;
+  }, [categoryData, prevCategoryData]);
   const selectedCatData = categoryData.find((c) => c.name === selectedCategory);
   const monthLabel = MONTH_NAMES[selectedMonth];
 
