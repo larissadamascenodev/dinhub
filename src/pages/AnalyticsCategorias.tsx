@@ -212,18 +212,14 @@ const BarWithIcon = (props: any) => {
   );
 };
 
-// ── Category Chart (Donut + Bar toggle) ──────────────────
+// ── Category Chart (Bar only) ─────────────────────────────
 const CategoryChartSection = ({ categoryData, isMobile }: {
   categoryData: CategorySummary[];
   isMobile: boolean;
 }) => {
-  const [mode, setMode] = useState<"donut" | "bar">("donut");
-  const [activeIdx, setActiveIdx] = useState<number | undefined>(undefined);
   const scrollRef = useRef<HTMLDivElement>(null);
   const [isDragging, setIsDragging] = useState(false);
   const dragState = useRef({ startX: 0, scrollLeft: 0 });
-
-  const totalExpenses = useMemo(() => categoryData.reduce((s, c) => s + c.amount, 0), [categoryData]);
 
   const chartData = categoryData.map((c) => ({
     name: c.name.length > 8 ? c.name.slice(0, 7) + "…" : c.name,
@@ -235,7 +231,6 @@ const CategoryChartSection = ({ categoryData, isMobile }: {
     iconName: c.name,
   }));
 
-  // Drag to scroll for bar chart
   const onMouseDown = useCallback((e: React.MouseEvent) => {
     const el = scrollRef.current;
     if (!el) return;
@@ -261,106 +256,46 @@ const CategoryChartSection = ({ categoryData, isMobile }: {
         <p className="text-[10px] md:text-[11px] text-muted-foreground/60 font-semibold uppercase tracking-wider">
           Gastos por Categoria
         </p>
-        <div className="flex items-center gap-1 bg-muted/20 rounded-lg p-0.5">
-          <button
-            onClick={() => setMode("donut")}
-            className={`p-1.5 rounded-md transition-colors ${mode === "donut" ? "bg-primary/15 text-primary" : "text-muted-foreground/50 hover:text-foreground/70"}`}
-          >
-            <PieChartIcon className="w-3.5 h-3.5" />
-          </button>
-          <button
-            onClick={() => setMode("bar")}
-            className={`p-1.5 rounded-md transition-colors ${mode === "bar" ? "bg-primary/15 text-primary" : "text-muted-foreground/50 hover:text-foreground/70"}`}
-          >
-            <BarChart3 className="w-3.5 h-3.5" />
-          </button>
-        </div>
+        <BarChart3 className="w-4 h-4 text-muted-foreground/40" />
       </div>
 
-      <AnimatePresence mode="wait">
-        {mode === "donut" ? (
-          <motion.div
-            key="donut"
-            initial={{ opacity: 0, scale: 0.95 }}
-            animate={{ opacity: 1, scale: 1 }}
-            exit={{ opacity: 0, scale: 0.95 }}
-            transition={{ duration: 0.2 }}
-            style={{ height: isMobile ? 240 : 280 }}
-            onMouseLeave={() => setActiveIdx(undefined)}
-          >
-            <ResponsiveContainer width="100%" height="100%">
-              <PieChart>
-                <Pie
-                  activeIndex={activeIdx}
-                  activeShape={renderActiveShape}
-                  inactiveShape={renderDefaultShape}
-                  data={chartData}
-                  cx="50%"
-                  cy="50%"
-                  innerRadius={isMobile ? 58 : 72}
-                  outerRadius={isMobile ? 88 : 108}
-                  dataKey="value"
-                  paddingAngle={2}
-                  onMouseEnter={(_, idx) => setActiveIdx(idx)}
-                  onClick={(_, idx) => setActiveIdx(idx)}
-                  animationDuration={800}
-                  animationEasing="ease-out"
-                >
-                  {chartData.map((entry, i) => (
-                    <Cell key={i} fill={entry.fill} stroke="hsl(var(--background))" strokeWidth={2} />
-                  ))}
-                </Pie>
-                {activeIdx === undefined && (
-                  <DonutDefaultCenter total={totalExpenses} />
-                )}
-              </PieChart>
-            </ResponsiveContainer>
-          </motion.div>
-        ) : (
-          <motion.div
-            key="bar"
-            initial={{ opacity: 0, scale: 0.95 }}
-            animate={{ opacity: 1, scale: 1 }}
-            exit={{ opacity: 0, scale: 0.95 }}
-            transition={{ duration: 0.2 }}
-            ref={scrollRef}
-            className="overflow-x-auto scrollbar-none select-none"
-            style={{ cursor: "grab" }}
-            onMouseDown={onMouseDown}
-            onMouseMove={onMouseMove}
-            onMouseUp={onMouseUp}
-            onMouseLeave={onMouseUp}
-          >
-            <div style={{ height: 220, minWidth: Math.max(categoryData.length * 56, 300) }}>
-              <ResponsiveContainer width="100%" height="100%">
-                <BarChart data={chartData} margin={{ left: 4, right: 4, top: 24, bottom: 0 }}>
-                  <XAxis dataKey="name" hide />
-                  <YAxis hide />
-                  <Tooltip
-                    cursor={false}
-                    content={({ active, payload }) => {
-                      if (!active || !payload?.length) return null;
-                      const d = payload[0].payload;
-                      return (
-                        <div className="rounded-lg bg-popover border border-border/30 px-3 py-2 shadow-xl">
-                          <p className="text-xs font-bold text-foreground">{d.fullName}</p>
-                          <p className="text-[11px] text-muted-foreground tabular-nums">{fmt(d.value)}</p>
-                          <p className="text-[10px] text-muted-foreground/60">{d.percentage}%</p>
-                        </div>
-                      );
-                    }}
-                  />
-                  <Bar dataKey="value" shape={<BarWithIcon />} animationDuration={800}>
-                    {chartData.map((entry, i) => (
-                      <Cell key={i} fill={entry.fill} />
-                    ))}
-                  </Bar>
-                </BarChart>
-              </ResponsiveContainer>
-            </div>
-          </motion.div>
-        )}
-      </AnimatePresence>
+      <div
+        ref={scrollRef}
+        className="overflow-x-auto scrollbar-none select-none"
+        style={{ cursor: "grab" }}
+        onMouseDown={onMouseDown}
+        onMouseMove={onMouseMove}
+        onMouseUp={onMouseUp}
+        onMouseLeave={onMouseUp}
+      >
+        <div style={{ height: 220, minWidth: Math.max(categoryData.length * 56, 300) }}>
+          <ResponsiveContainer width="100%" height="100%">
+            <BarChart data={chartData} margin={{ left: 4, right: 4, top: 24, bottom: 0 }}>
+              <XAxis dataKey="name" hide />
+              <YAxis hide />
+              <Tooltip
+                cursor={false}
+                content={({ active, payload }) => {
+                  if (!active || !payload?.length) return null;
+                  const d = payload[0].payload;
+                  return (
+                    <div className="rounded-lg bg-popover border border-border/30 px-3 py-2 shadow-xl">
+                      <p className="text-xs font-bold text-foreground">{d.fullName}</p>
+                      <p className="text-[11px] text-muted-foreground tabular-nums">{fmt(d.value)}</p>
+                      <p className="text-[10px] text-muted-foreground/60">{d.percentage}%</p>
+                    </div>
+                  );
+                }}
+              />
+              <Bar dataKey="value" shape={<BarWithIcon />} animationDuration={800}>
+                {chartData.map((entry, i) => (
+                  <Cell key={i} fill={entry.fill} />
+                ))}
+              </Bar>
+            </BarChart>
+          </ResponsiveContainer>
+        </div>
+      </div>
     </GlassCard>
   );
 };
