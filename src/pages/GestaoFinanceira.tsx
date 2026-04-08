@@ -53,7 +53,7 @@ function getInvoiceStatusLabel(card: CreditCardItem): { label: string; isClosed:
   const closingDay = card.closing_day;
   const dueDay = card.due_day;
 
-  if (today > closingDay) {
+  if (today >= closingDay) {
     let dueDate: Date;
     if (dueDay > closingDay) {
       dueDate = new Date(now.getFullYear(), now.getMonth(), dueDay);
