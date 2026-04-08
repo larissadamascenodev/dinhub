@@ -28,6 +28,7 @@ export const DEFAULT_CATEGORY_ICONS: Record<string, any> = {
   "Bônus": Award,
   "Comissão": Users,
   "Mesada": Wallet,
+  "Saldo inicial": Wallet,
 };
 
 export function getDefaultCategoryIcon(name: string) {
