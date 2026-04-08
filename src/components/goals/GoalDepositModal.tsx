@@ -104,7 +104,7 @@ const GoalDepositModal = ({ open, onClose, onSubmit, goalName }: GoalDepositModa
               whileTap={{ scale: 0.97 }}
               disabled={!amount || submitting}
               onClick={handleSubmit}
-              className="w-full py-3 rounded-xl bg-primary text-primary-foreground text-sm font-bold disabled:opacity-50 disabled:cursor-not-allowed"
+              className="w-full py-3 rounded-xl text-sm font-bold disabled:opacity-50 disabled:cursor-not-allowed"
             >
               {submitting ? "Depositando..." : "Confirmar depósito"}
             </motion.button>

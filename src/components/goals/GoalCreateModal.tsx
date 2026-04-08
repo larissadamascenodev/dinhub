@@ -120,7 +120,7 @@ const GoalCreateModal = ({ open, onClose, onSubmit }: GoalCreateModalProps) => {
               whileTap={{ scale: 0.97 }}
               disabled={!name.trim() || !targetAmount || submitting}
               onClick={handleSubmit}
-              className="w-full py-3 rounded-xl bg-primary text-primary-foreground text-sm font-bold disabled:opacity-50 disabled:cursor-not-allowed"
+              className="w-full py-3 rounded-xl text-sm font-bold disabled:opacity-50 disabled:cursor-not-allowed"
             >
               {submitting ? "Criando..." : "Criar meta"}
             </motion.button>

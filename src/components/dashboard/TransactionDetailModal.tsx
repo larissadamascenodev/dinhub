@@ -460,7 +460,7 @@ const TransactionDetailModal = ({ open, tx, accountName, onClose, onRefresh, use
               <button
                 onClick={handlePay}
                 disabled={loading}
-                className="w-full py-3 rounded-xl text-sm font-bold bg-primary text-primary-foreground hover:bg-primary/90 transition-all disabled:opacity-50"
+                className="w-full py-3 rounded-xl text-sm font-bold bg-primary/15 text-primary border border-primary/20 hover:bg-primary/25 transition-all disabled:opacity-50"
               >
                 {loading ? (isReceita ? "Confirmando..." : "Pagando...") : "Confirmar"}
               </button>
@@ -515,7 +515,7 @@ const TransactionDetailModal = ({ open, tx, accountName, onClose, onRefresh, use
                   <button
                     onClick={handleDelete}
                     disabled={loading}
-                    className="flex-1 py-3 rounded-xl text-sm font-bold bg-destructive text-white hover:bg-destructive/90 transition-all disabled:opacity-50"
+                    className="flex-1 py-3 rounded-xl text-sm font-bold bg-destructive/15 text-destructive border border-destructive/20 hover:bg-destructive/25 transition-all disabled:opacity-50"
                   >
                     {loading ? "Excluindo..." : "Excluir"}
                   </button>
@@ -545,7 +545,7 @@ const TransactionDetailModal = ({ open, tx, accountName, onClose, onRefresh, use
             <div className="space-y-2">
               <button
                 onClick={() => { setEditScope("this"); setStep("edit-form"); }}
-                className="w-full py-3.5 rounded-xl text-sm font-bold bg-primary text-primary-foreground hover:bg-primary/90 transition-all"
+                className="w-full py-3.5 rounded-xl text-sm font-bold bg-primary/15 text-primary border border-primary/20 hover:bg-primary/25 transition-all"
               >
                 Apenas esta
               </button>

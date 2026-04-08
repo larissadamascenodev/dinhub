@@ -456,7 +456,7 @@ const ContaDetalhe = () => {
             <AlertDialogCancel>Cancelar</AlertDialogCancel>
             <AlertDialogAction
               onClick={handleDeleteConfirm}
-              className="bg-destructive text-destructive-foreground hover:bg-destructive/90"
+              className="bg-destructive/15 text-destructive border border-destructive/20 hover:bg-destructive/25"
             >
               Excluir
             </AlertDialogAction>
