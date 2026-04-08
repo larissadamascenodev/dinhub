@@ -357,6 +357,12 @@ const CategoryList = ({ categoryData, onSelect, selectedCat, prevCategoryData }:
           const CatIcon = cat.icon;
           const isSelected = selectedCat === cat.name;
           const dimmed = selectedCat && !isSelected;
+          const prev = prevCategoryData?.find((p) => p.name === cat.name);
+          const prevAmount = prev?.amount ?? 0;
+          const variation = prevAmount > 0
+            ? Math.round(((cat.amount - prevAmount) / prevAmount) * 100)
+            : null;
+          const isNew = prevAmount === 0 && cat.amount > 0;
           return (
             <motion.button
               key={cat.name}
@@ -379,14 +385,26 @@ const CategoryList = ({ categoryData, onSelect, selectedCat, prevCategoryData }:
                   <p className="text-xs md:text-sm font-semibold text-foreground truncate">{cat.name}</p>
                   <span className="text-[9px] md:text-[10px] text-muted-foreground/40">{cat.txCount} lançamentos</span>
                 </div>
-                <div className="w-full h-1.5 bg-border/15 rounded-full mt-1.5 overflow-hidden">
-                  <motion.div
-                    initial={{ width: 0 }}
-                    animate={{ width: `${cat.percentage}%` }}
-                    transition={{ delay: 0.1 + i * 0.03, duration: 0.5, ease: "easeOut" }}
-                    className="h-full rounded-full"
-                    style={{ backgroundColor: getBarColor(cat.percentage) }}
-                  />
+                <div className="flex items-center gap-2 mt-0.5">
+                  <div className="flex-1 h-1.5 bg-border/15 rounded-full overflow-hidden">
+                    <motion.div
+                      initial={{ width: 0 }}
+                      animate={{ width: `${cat.percentage}%` }}
+                      transition={{ delay: 0.1 + i * 0.03, duration: 0.5, ease: "easeOut" }}
+                      className="h-full rounded-full"
+                      style={{ backgroundColor: getBarColor(cat.percentage) }}
+                    />
+                  </div>
+                  {isNew ? (
+                    <span className="text-[8px] md:text-[9px] font-semibold text-blue-400 whitespace-nowrap">Novo</span>
+                  ) : variation !== null ? (
+                    <span className={`text-[8px] md:text-[9px] font-semibold whitespace-nowrap flex items-center gap-0.5 ${
+                      variation > 0 ? "text-destructive" : variation < 0 ? "text-success" : "text-muted-foreground/50"
+                    }`}>
+                      {variation > 0 ? <TrendingUp className="w-2.5 h-2.5" /> : variation < 0 ? <TrendingDown className="w-2.5 h-2.5" /> : null}
+                      {variation > 0 ? "+" : ""}{variation}%
+                    </span>
+                  ) : null}
                 </div>
               </div>
               <div className="text-right shrink-0">
