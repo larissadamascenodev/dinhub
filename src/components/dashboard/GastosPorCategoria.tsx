@@ -1,8 +1,9 @@
-import { memo, useState, useMemo } from "react";
+import { memo, useState, useMemo, useEffect } from "react";
 import { motion } from "framer-motion";
 import { ChevronDown, ChevronUp } from "lucide-react";
 import type { CategoryExpense } from "@/types/finance";
-import { getDefaultCategoryIcon, getDefaultCategoryColor } from "@/lib/categoryIcons";
+import { getCategoryIcon, getCategoryColor } from "@/lib/categoryUtils";
+import { getCustomCategories, type CustomCategory } from "@/services/categoryService";
 
 interface Props {
   categories: CategoryExpense[];
@@ -24,13 +25,15 @@ const MONTH_NAMES = [
   "Julho", "Agosto", "Setembro", "Outubro", "Novembro", "Dezembro",
 ];
 
-const getCatColor = (name: string, fallbackIdx: number): string => {
-  const c = getDefaultCategoryColor(name);
+const getCatColor = (name: string, fallbackIdx: number, customCats?: CustomCategory[]): string => {
+  const c = getCategoryColor(name, customCats);
   if (c !== "220 10% 55%") return c;
   return FALLBACK_COLORS[fallbackIdx % FALLBACK_COLORS.length];
 };
 
 const GastosPorCategoria = memo(({ categories, selectedMonth, onVerAnalise }: Props) => {
+  const [customCats, setCustomCats] = useState<CustomCategory[]>([]);
+  useEffect(() => { getCustomCategories().then(setCustomCats).catch(() => {}); }, []);
   const sorted = useMemo(() => [...categories].sort((a, b) => b.amount - a.amount), [categories]);
   const totalExpenses = useMemo(() => sorted.reduce((sum, c) => sum + c.amount, 0), [sorted]);
   const hasMore = sorted.length > INITIAL_COUNT;
@@ -58,7 +61,7 @@ const GastosPorCategoria = memo(({ categories, selectedMonth, onVerAnalise }: Pr
           {sorted.map((cat, idx) => {
             const pct = totalExpenses > 0 ? (cat.amount / totalExpenses) * 100 : 0;
             if (pct < 1) return null;
-            const color = getCatColor(cat.name, idx);
+            const color = getCatColor(cat.name, idx, customCats);
             return (
               <motion.div
                 key={cat.name}
@@ -77,8 +80,8 @@ const GastosPorCategoria = memo(({ categories, selectedMonth, onVerAnalise }: Pr
       <div className="px-4 pb-3 space-y-2.5">
         {visible.map((cat, index) => {
           const pct = totalExpenses > 0 ? Math.round((cat.amount / totalExpenses) * 100) : 0;
-          const color = getCatColor(cat.name, sorted.indexOf(cat));
-          const IconComponent = getDefaultCategoryIcon(cat.name);
+          const color = getCatColor(cat.name, sorted.indexOf(cat), customCats);
+          const IconComponent = getCategoryIcon(cat.name, customCats);
 
           return (
             <motion.div
