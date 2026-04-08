@@ -12,6 +12,7 @@ import TransacoesRecentes from "@/components/dashboard/TransacoesRecentes";
 import ProximosEventos from "@/components/dashboard/ProximosEventos";
 import AssinaturasCard from "@/components/dashboard/AssinaturasCard";
 import GastosPorCategoria from "@/components/dashboard/GastosPorCategoria";
+import GastosSemanaisCard from "@/components/dashboard/GastosSemanaisCard";
 import MonthSelector from "@/components/dashboard/MonthSelector";
 import PagarEditarModal from "@/components/dashboard/PagarEditarModal";
 import OnboardingCard from "@/components/dashboard/OnboardingCard";
@@ -113,6 +114,7 @@ const Index = () => {
             </div>
             <BalancoCard balanco={balanco} />
             {/* MicroInteracoesCard temporarily disabled */}
+            {isCurrentMonth && <GastosSemanaisCard />}
             {data.categories.length > 0 && (
               <GastosPorCategoria
                 categories={data.categories}
@@ -155,6 +157,7 @@ const Index = () => {
           <BalancoCard balanco={balanco} />
           {/* MicroInteracoesCard temporarily disabled */}
           <ProjectionCard />
+          {isCurrentMonth && <GastosSemanaisCard />}
           {data.categories.length > 0 && (
             <GastosPorCategoria categories={data.categories} selectedMonth={selectedMonth} onVerAnalise={() => navigate("/transacoes")} />
           )}
@@ -189,6 +192,7 @@ const Index = () => {
           <BalancoCard balanco={balanco} />
           {/* MicroInteracoesCard temporarily disabled */}
           <ProjectionCard />
+          {isCurrentMonth && <GastosSemanaisCard />}
           {data.categories.length > 0 && (
             <GastosPorCategoria categories={data.categories} selectedMonth={selectedMonth} onVerAnalise={() => navigate("/transacoes")} />
           )}
