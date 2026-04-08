@@ -28,7 +28,7 @@ import {
 } from "@/services/transactionService";
 import { getCustomCategories, createCustomCategory, type CustomCategory } from "@/services/categoryService";
 import CategoryCreateModal, { getIconComponent } from "@/components/dashboard/CategoryCreateModal";
-import { getDefaultCategoryIcon } from "@/lib/categoryIcons";
+import { getDefaultCategoryIcon, DEFAULT_EXPENSE_CATEGORIES, DEFAULT_INCOME_CATEGORIES } from "@/lib/categoryIcons";
 
 export interface EditTransactionData {
   id: string;
@@ -68,17 +68,8 @@ interface Props {
   prefillData?: PrefillData | null;
 }
 
-const CATEGORIES_EXPENSE = [
-  "Alimentação", "Transporte", "Saúde", "Assinaturas",
-  "Lazer", "Moradia", "Educação", "Vestuário", "Pets",
-  "Beleza", "Presentes", "Viagem", "Tecnologia", "Impostos",
-  "Supermercado", "Conta de Luz", "Conta de Água", "Conta de Gás",
-  "Bebidas", "Delivery", "Cafeteria", "Academia", "Fast Food",
-];
-const CATEGORIES_INCOME = [
-  "Salário", "Freelance", "Investimentos", "Vendas",
-  "Aluguéis", "Bônus", "Comissão", "Mesada",
-];
+const CATEGORIES_EXPENSE = DEFAULT_EXPENSE_CATEGORIES;
+const CATEGORIES_INCOME = DEFAULT_INCOME_CATEGORIES;
 
 function formatCurrency(cents: number): string {
   return (cents / 100).toLocaleString("pt-BR", {
@@ -220,10 +211,15 @@ const NovaTransacaoModal = ({ open, onClose, onSuccess, initialType = "despesa",
     }
   }, [paidMonthFlags, paymentMethod, recurrenceType, installmentMonths.length]);
 
-  const allCategories = [
-    ...(type === "receita" ? CATEGORIES_INCOME : CATEGORIES_EXPENSE),
-    ...customCategories.filter((c) => c.type === type).map((c) => c.name),
-  ];
+  const allCategories = Array.from(
+    new Set([
+      ...(type === "receita" ? CATEGORIES_INCOME : CATEGORIES_EXPENSE),
+      ...customCategories
+        .filter((c) => c.type === type)
+        .map((c) => c.name.trim())
+        .filter(Boolean),
+    ])
+  );
 
   const filteredCategories = categorySearch
     ? allCategories.filter((c) => c.toLowerCase().includes(categorySearch.toLowerCase()))

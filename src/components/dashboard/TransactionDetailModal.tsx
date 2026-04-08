@@ -12,27 +12,10 @@ import { useAuth } from "@/contexts/AuthContext";
 import { supabase } from "@/integrations/supabase/client";
 import { format, subDays } from "date-fns";
 import { Calendar } from "@/components/ui/calendar";
+import { getDefaultCategoryIcon, DEFAULT_EXPENSE_CATEGORIES, DEFAULT_INCOME_CATEGORIES } from "@/lib/categoryIcons";
 
-const CATEGORY_ICONS: Record<string, string> = {
-  "Alimentação": "🍽️", "Transporte": "🚗", "Moradia": "🏠",
-  "Saúde": "❤️", "Educação": "🎓", "Vestuário": "👔",
-  "Salário": "💰", "Freelance": "💼", "Investimentos": "📈",
-  "Supermercado": "🛒", "Lazer": "🎮", "Assinaturas": "📦",
-  "Pets": "🐾", "Beleza": "💅", "Presentes": "🎁",
-  "Viagem": "✈️", "Tecnologia": "💻", "Impostos": "📄",
-  "Vendas": "💵", "Aluguéis": "🏘️", "Bônus": "🎉",
-  "Comissão": "🤝", "Mesada": "👛", "Plano de Saúde": "❤️",
-};
-
-const CATEGORIES_EXPENSE = [
-  "Alimentação", "Transporte", "Saúde", "Assinaturas",
-  "Lazer", "Moradia", "Educação", "Vestuário", "Pets",
-  "Beleza", "Presentes", "Viagem", "Tecnologia", "Impostos",
-];
-const CATEGORIES_INCOME = [
-  "Salário", "Freelance", "Investimentos", "Vendas",
-  "Aluguéis", "Bônus", "Comissão", "Mesada",
-];
+const CATEGORIES_EXPENSE = DEFAULT_EXPENSE_CATEGORIES;
+const CATEGORIES_INCOME = DEFAULT_INCOME_CATEGORIES;
 
 const MONTHS_FULL = ["janeiro", "fevereiro", "março", "abril", "maio", "junho", "julho", "agosto", "setembro", "outubro", "novembro", "dezembro"];
 
@@ -166,7 +149,7 @@ const TransactionDetailModal = ({ open, tx, accountName, onClose, onRefresh, use
   const isReceita = tx.type === "receita";
   const isPaid = tx.status === "pago";
   const isRecurring = tx.recurrence_type === "fixa";
-  const icon = CATEGORY_ICONS[tx.category] || "📋";
+  const Icon = getDefaultCategoryIcon(tx.category);
 
   const handleClose = () => {
     setStep("detail");
@@ -358,7 +341,7 @@ const TransactionDetailModal = ({ open, tx, accountName, onClose, onRefresh, use
                   className="w-12 h-12 rounded-xl flex items-center justify-center text-xl shrink-0"
                   style={{ background: isReceita ? "hsl(var(--primary) / 0.15)" : "hsl(var(--muted) / 0.4)" }}
                 >
-                  {icon}
+                  <Icon className="w-6 h-6 text-foreground" />
                 </div>
                 <div className="min-w-0">
                   <h2 className="text-[15px] font-bold text-foreground truncate">{tx.name}</h2>
@@ -520,7 +503,10 @@ const TransactionDetailModal = ({ open, tx, accountName, onClose, onRefresh, use
                                   className="w-8 h-8 rounded-lg flex items-center justify-center text-sm shrink-0"
                                   style={{ background: sIsReceita ? "hsl(var(--primary) / 0.12)" : "hsl(var(--muted) / 0.3)" }}
                                 >
-                                  {CATEGORY_ICONS[s.category] || "📋"}
+                                  {(() => {
+                                    const InstallmentIcon = getDefaultCategoryIcon(s.category);
+                                    return <InstallmentIcon className="w-4 h-4 text-foreground/80" />;
+                                  })()}
                                 </div>
                                 <div className="flex-1 min-w-0">
                                   <p className="text-[11px] font-semibold text-foreground/80 truncate">{s.name}</p>
