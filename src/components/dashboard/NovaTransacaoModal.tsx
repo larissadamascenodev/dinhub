@@ -112,7 +112,7 @@ const MONTH_NAMES_FULL = [
   "Julho", "Agosto", "Setembro", "Outubro", "Novembro", "Dezembro",
 ];
 
-const NovaTransacaoModal = ({ open, onClose, onSuccess, initialType = "despesa", initialPaymentMethod, initialCreditCardId, editTransaction }: Props) => {
+const NovaTransacaoModal = ({ open, onClose, onSuccess, initialType = "despesa", initialPaymentMethod, initialCreditCardId, editTransaction, prefillData }: Props) => {
   const { user } = useAuth();
   const navigate = useNavigate();
   const [type, setType] = useState<"receita" | "despesa">(initialType);
