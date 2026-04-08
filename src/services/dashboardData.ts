@@ -146,6 +146,7 @@ export async function buildDashboardData(
         isFatura: true,
         creditCardId: cardId,
         creditCardName: cardName,
+        creditCardColor: cardInfo?.color || null,
         faturaItemCount: itemCount,
       };
 

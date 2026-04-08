@@ -9,6 +9,7 @@ export interface Transaction {
   isFatura?: boolean;
   creditCardId?: string;
   creditCardName?: string;
+  creditCardColor?: string;
   faturaItemCount?: number;
 }
 
