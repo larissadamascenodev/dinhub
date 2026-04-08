@@ -38,6 +38,7 @@ const DashboardLayout = () => {
 
   // Fallback pre-fill for low confidence items
   const [prefillData, setPrefillData] = useState<PrefillData | null>(null);
+  const [editTransaction, setEditTransaction] = useState<EditTransactionData | null>(null);
 
   const scanCameraRef = useRef<HTMLInputElement>(null);
   const scanGalleryRef = useRef<HTMLInputElement>(null);
