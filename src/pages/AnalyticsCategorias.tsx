@@ -1869,12 +1869,23 @@ const AnalyticsCategorias = () => {
     return result;
   }, [installmentImpacts, categoryData]);
 
-  // Fetch AI insights
+  // Fetch AI insights with debounce to prevent 429
+  const insightsCacheRef = useRef<{ key: string; data: AIInsights } | null>(null);
+  const insightsTimerRef = useRef<ReturnType<typeof setTimeout> | null>(null);
+
   const fetchInsights = useCallback(async () => {
     if (categoryData.length === 0 || totalExpenses === 0) {
       setAiInsights(null);
       return;
     }
+
+    // Cache key based on month + total + category count
+    const cacheKey = `${selectedMonth}-${selectedYear}-${categoryData.length}-${Math.round(totalExpenses)}`;
+    if (insightsCacheRef.current?.key === cacheKey) {
+      setAiInsights(insightsCacheRef.current.data);
+      return;
+    }
+
     setAiLoading(true);
     try {
       const { data, error } = await supabase.functions.invoke("category-insights", {
@@ -1889,20 +1900,29 @@ const AnalyticsCategorias = () => {
       });
       if (error) throw error;
       if (data?.error) throw new Error(data.error);
-      setAiInsights(data as AIInsights);
+      const result = data as AIInsights;
+      insightsCacheRef.current = { key: cacheKey, data: result };
+      setAiInsights(result);
     } catch (e: any) {
       console.error("AI insights error:", e);
       setAiInsights({ insights: ["Não foi possível gerar insights no momento."], alerts: [], limitSuggestions: [] });
     } finally {
       setAiLoading(false);
     }
-  }, [categoryData, totalExpenses, monthLabel, prevCategoryData]);
+  }, [categoryData, totalExpenses, monthLabel, prevCategoryData, selectedMonth, selectedYear]);
 
   useEffect(() => {
     if (!loading && categoryData.length > 0) {
-      fetchInsights();
+      // Debounce to avoid rapid consecutive calls
+      if (insightsTimerRef.current) clearTimeout(insightsTimerRef.current);
+      insightsTimerRef.current = setTimeout(() => {
+        fetchInsights();
+      }, 800);
+      return () => {
+        if (insightsTimerRef.current) clearTimeout(insightsTimerRef.current);
+      };
     }
-  }, [loading, categoryData.length > 0, selectedMonth, selectedYear]);
+  }, [loading, selectedMonth, selectedYear, fetchInsights]);
 
   if (loading) {
     return (
