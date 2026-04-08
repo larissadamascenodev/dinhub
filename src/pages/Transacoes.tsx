@@ -127,19 +127,54 @@ const SwipeableItem = ({
   onDelete,
   onEdit,
   customCategories,
+  creditCards,
 }: {
   tx: TransactionRow;
   accountName: string;
   onDelete: (id: string) => void;
   onEdit: (tx: TransactionRow) => void;
   customCategories?: CustomCategory[];
+  creditCards?: any[];
 }) => {
   const x = useMotionValue(0);
   const editOpacity = useTransform(x, [0, 60, 120], [0, 0.5, 1]);
   const deleteOpacity = useTransform(x, [-120, -60, 0], [1, 0.5, 0]);
   const isReceita = tx.type === "receita";
-  const catColor = getCategoryColor(tx.category, customCategories);
-  const CatIcon = getCategoryIcon(tx.category, customCategories);
+
+  // Resolve icon & color based on special entries
+  const isFatura = tx.id.startsWith("fatura-");
+  const isInitialBalance = tx.id.startsWith("initial-balance-");
+
+  let CatIcon = getCategoryIcon(tx.category, customCategories);
+  let catColor = getCategoryColor(tx.category, customCategories);
+
+  if (isFatura) {
+    CatIcon = CreditCard;
+    const card = creditCards?.find((c: any) => c.id === tx.credit_card_id);
+    if (card?.color) {
+      // Convert hex to HSL for consistency
+      const hex = card.color;
+      const r = parseInt(hex.slice(1, 3), 16) / 255;
+      const g = parseInt(hex.slice(3, 5), 16) / 255;
+      const b = parseInt(hex.slice(5, 7), 16) / 255;
+      const max = Math.max(r, g, b), min = Math.min(r, g, b);
+      let h = 0, s = 0;
+      const l = (max + min) / 2;
+      if (max !== min) {
+        const d = max - min;
+        s = l > 0.5 ? d / (2 - max - min) : d / (max + min);
+        if (max === r) h = ((g - b) / d + (g < b ? 6 : 0)) / 6;
+        else if (max === g) h = ((b - r) / d + 2) / 6;
+        else h = ((r - g) / d + 4) / 6;
+      }
+      catColor = `${Math.round(h * 360)} ${Math.round(s * 100)}% ${Math.round(l * 100)}%`;
+    } else {
+      catColor = "260 70% 60%"; // fallback purple
+    }
+  } else if (isInitialBalance) {
+    CatIcon = Wallet;
+    catColor = "210 80% 55%"; // blue
+  }
   const isRecurring = tx.recurrence_type === "fixa" || (tx.installments && tx.installments > 1);
   const isPending = tx.status !== "pago";
 
@@ -854,6 +889,7 @@ const Transacoes = () => {
                         accountName={tx.account_id ? (accountMap[tx.account_id] || "Conta") : tx.payment_method === "cartao" ? "Cartão" : "Sem conta"}
                         onDelete={handleDelete}
                         customCategories={customCategories}
+                        creditCards={creditCards}
                         onEdit={(t) => {
                           if (t.id.startsWith("initial-balance-")) {
                             toast.info("Esse item mostra quando a conta foi criada com saldo inicial.");

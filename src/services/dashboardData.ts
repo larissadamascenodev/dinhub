@@ -101,7 +101,7 @@ export async function buildDashboardData(
     ])
   );
 
-  const cardMap = new Map((creditCards as any[]).map((c: any) => [c.id, { name: c.name, due_day: c.due_day }]));
+  const cardMap = new Map((creditCards as any[]).map((c: any) => [c.id, { name: c.name, due_day: c.due_day, color: c.color }]));
 
   const cardsWithInvoice = new Set(
     (invoicesForMonth as any[])
@@ -146,6 +146,7 @@ export async function buildDashboardData(
         isFatura: true,
         creditCardId: cardId,
         creditCardName: cardName,
+        creditCardColor: cardInfo?.color || null,
         faturaItemCount: itemCount,
       };
 
