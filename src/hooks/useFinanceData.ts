@@ -55,7 +55,7 @@ function buildCacheKey(userId: string | undefined, month: number, year: number, 
   return `${userId ?? ""}-${month}-${year}-${includeHistorical ? "hist" : "fast"}`;
 }
 
-async function buildDashboardData(month: number, year: number, options?: FinanceDataOptions & { userId?: string }): Promise<DashboardData> {
+export async function buildDashboardData(month: number, year: number, options?: FinanceDataOptions & { userId?: string }): Promise<DashboardData> {
   const includeHistorical = options?.includeHistorical ?? false;
 
   const { summary, transactions: rawTxs, events: rawEvents, creditCards, invoicesDetail: invoicesForMonth } = await getFinancialSummary(month, year, { includeHistorical, userId: options?.userId });
