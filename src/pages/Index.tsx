@@ -114,6 +114,7 @@ const Index = () => {
             </div>
             <BalancoCard balanco={balanco} />
             {/* MicroInteracoesCard temporarily disabled */}
+            {isCurrentMonth && <GastosSemanaisCard />}
             {data.categories.length > 0 && (
               <GastosPorCategoria
                 categories={data.categories}
@@ -156,6 +157,7 @@ const Index = () => {
           <BalancoCard balanco={balanco} />
           {/* MicroInteracoesCard temporarily disabled */}
           <ProjectionCard />
+          {isCurrentMonth && <GastosSemanaisCard />}
           {data.categories.length > 0 && (
             <GastosPorCategoria categories={data.categories} selectedMonth={selectedMonth} onVerAnalise={() => navigate("/transacoes")} />
           )}
@@ -190,6 +192,7 @@ const Index = () => {
           <BalancoCard balanco={balanco} />
           {/* MicroInteracoesCard temporarily disabled */}
           <ProjectionCard />
+          {isCurrentMonth && <GastosSemanaisCard />}
           {data.categories.length > 0 && (
             <GastosPorCategoria categories={data.categories} selectedMonth={selectedMonth} onVerAnalise={() => navigate("/transacoes")} />
           )}
