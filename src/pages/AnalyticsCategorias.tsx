@@ -115,66 +115,145 @@ const SummaryCard = ({ totalExpenses, topCategory, monthLabel }: {
   </GlassCard>
 );
 
-// ── Bar Chart Section ────────────────────────────────────
-const CategoryBarChart = ({ categoryData, onSelect, selectedCat }: {
+// ── Custom active shape for donut ─────────────────────────
+const renderActiveShape = (props: any) => {
+  const { cx, cy, innerRadius, outerRadius, startAngle, endAngle, fill, payload, percent } = props;
+  return (
+    <g>
+      <Sector cx={cx} cy={cy} innerRadius={innerRadius} outerRadius={outerRadius + 8} startAngle={startAngle} endAngle={endAngle} fill={fill} opacity={0.9} />
+      <Sector cx={cx} cy={cy} innerRadius={innerRadius - 4} outerRadius={innerRadius - 1} startAngle={startAngle} endAngle={endAngle} fill={fill} opacity={0.4} />
+      <text x={cx} y={cy - 14} textAnchor="middle" fill="hsl(var(--foreground))" fontSize={11} fontWeight={700}>
+        {payload.fullName}
+      </text>
+      <text x={cx} y={cy + 4} textAnchor="middle" fill="hsl(var(--foreground))" fontSize={18} fontWeight={800}>
+        {fmt(payload.value)}
+      </text>
+      <text x={cx} y={cy + 22} textAnchor="middle" fill="hsl(var(--muted-foreground))" fontSize={11} fontWeight={600}>
+        {(percent * 100).toFixed(0)}%
+      </text>
+    </g>
+  );
+};
+
+// ── Category Chart (Donut + Bar toggle) ──────────────────
+const CategoryChartSection = ({ categoryData, isMobile }: {
   categoryData: CategorySummary[];
-  onSelect: (name: string) => void;
-  selectedCat: string | null;
+  isMobile: boolean;
 }) => {
+  const [mode, setMode] = useState<"donut" | "bar">("donut");
+  const [activeIdx, setActiveIdx] = useState(0);
+
   const chartData = categoryData.map((c) => ({
-    name: c.name.length > 10 ? c.name.slice(0, 9) + "…" : c.name,
+    name: c.name.length > 8 ? c.name.slice(0, 7) + "…" : c.name,
     fullName: c.name,
     value: c.amount,
     fill: c.hexColor,
+    percentage: c.percentage,
   }));
 
   return (
     <GlassCard className="p-4 md:p-5">
-      <p className="text-[10px] md:text-[11px] text-muted-foreground/60 font-semibold uppercase tracking-wider mb-3">
-        Gastos por Categoria
-      </p>
-      <div style={{ height: 200 }}>
-        <ResponsiveContainer width="100%" height="100%">
-          <BarChart data={chartData} margin={{ left: -10, right: 10, top: 5, bottom: 0 }}>
-            <XAxis
-              dataKey="name"
-              tick={{ fill: "hsl(var(--muted-foreground))", fontSize: 10 }}
-              axisLine={false}
-              tickLine={false}
-              interval={0}
-            />
-            <YAxis hide />
-            <Tooltip
-              cursor={false}
-              content={({ active, payload }) => {
-                if (!active || !payload?.length) return null;
-                const d = payload[0].payload;
-                return (
-                  <div className="rounded-lg bg-popover border border-border/30 px-3 py-2 shadow-xl">
-                    <p className="text-xs font-bold text-foreground">{d.fullName}</p>
-                    <p className="text-[11px] text-muted-foreground tabular-nums">{fmt(d.value)}</p>
-                  </div>
-                );
-              }}
-            />
-            <Bar
-              dataKey="value"
-              radius={[6, 6, 0, 0]}
-              animationDuration={800}
-              cursor="pointer"
-              onClick={(data: any) => onSelect(data.fullName)}
-            >
-              {chartData.map((entry, i) => (
-                <Cell
-                  key={i}
-                  fill={entry.fill}
-                  opacity={selectedCat && selectedCat !== entry.fullName ? 0.25 : 1}
-                />
-              ))}
-            </Bar>
-          </BarChart>
-        </ResponsiveContainer>
+      <div className="flex items-center justify-between mb-3">
+        <p className="text-[10px] md:text-[11px] text-muted-foreground/60 font-semibold uppercase tracking-wider">
+          Gastos por Categoria
+        </p>
+        <div className="flex items-center gap-1 bg-muted/20 rounded-lg p-0.5">
+          <button
+            onClick={() => setMode("donut")}
+            className={`p-1.5 rounded-md transition-colors ${mode === "donut" ? "bg-primary/15 text-primary" : "text-muted-foreground/50 hover:text-foreground/70"}`}
+          >
+            <PieChartIcon className="w-3.5 h-3.5" />
+          </button>
+          <button
+            onClick={() => setMode("bar")}
+            className={`p-1.5 rounded-md transition-colors ${mode === "bar" ? "bg-primary/15 text-primary" : "text-muted-foreground/50 hover:text-foreground/70"}`}
+          >
+            <BarChart3 className="w-3.5 h-3.5" />
+          </button>
+        </div>
       </div>
+
+      <AnimatePresence mode="wait">
+        {mode === "donut" ? (
+          <motion.div
+            key="donut"
+            initial={{ opacity: 0, scale: 0.95 }}
+            animate={{ opacity: 1, scale: 1 }}
+            exit={{ opacity: 0, scale: 0.95 }}
+            transition={{ duration: 0.2 }}
+            style={{ height: isMobile ? 240 : 280 }}
+          >
+            <ResponsiveContainer width="100%" height="100%">
+              <PieChart>
+                <Pie
+                  activeIndex={activeIdx}
+                  activeShape={renderActiveShape}
+                  data={chartData}
+                  cx="50%"
+                  cy="50%"
+                  innerRadius={isMobile ? 60 : 75}
+                  outerRadius={isMobile ? 90 : 110}
+                  dataKey="value"
+                  onMouseEnter={(_, idx) => setActiveIdx(idx)}
+                  onClick={(_, idx) => setActiveIdx(idx)}
+                  animationDuration={800}
+                  animationEasing="ease-out"
+                >
+                  {chartData.map((entry, i) => (
+                    <Cell key={i} fill={entry.fill} stroke="transparent" />
+                  ))}
+                </Pie>
+              </PieChart>
+            </ResponsiveContainer>
+          </motion.div>
+        ) : (
+          <motion.div
+            key="bar"
+            initial={{ opacity: 0, scale: 0.95 }}
+            animate={{ opacity: 1, scale: 1 }}
+            exit={{ opacity: 0, scale: 0.95 }}
+            transition={{ duration: 0.2 }}
+            className="overflow-x-auto scrollbar-none"
+          >
+            <div style={{ height: 200, minWidth: Math.max(categoryData.length * 56, 300) }}>
+              <ResponsiveContainer width="100%" height="100%">
+                <BarChart data={chartData} margin={{ left: 0, right: 10, top: 5, bottom: 0 }}>
+                  {!isMobile && (
+                    <XAxis
+                      dataKey="name"
+                      tick={{ fill: "hsl(var(--muted-foreground))", fontSize: 10 }}
+                      axisLine={false}
+                      tickLine={false}
+                      interval={0}
+                    />
+                  )}
+                  {isMobile && <XAxis dataKey="name" hide />}
+                  <YAxis hide />
+                  <Tooltip
+                    cursor={false}
+                    content={({ active, payload }) => {
+                      if (!active || !payload?.length) return null;
+                      const d = payload[0].payload;
+                      return (
+                        <div className="rounded-lg bg-popover border border-border/30 px-3 py-2 shadow-xl">
+                          <p className="text-xs font-bold text-foreground">{d.fullName}</p>
+                          <p className="text-[11px] text-muted-foreground tabular-nums">{fmt(d.value)}</p>
+                          <p className="text-[10px] text-muted-foreground/60">{d.percentage}%</p>
+                        </div>
+                      );
+                    }}
+                  />
+                  <Bar dataKey="value" radius={[6, 6, 0, 0]} animationDuration={800}>
+                    {chartData.map((entry, i) => (
+                      <Cell key={i} fill={entry.fill} />
+                    ))}
+                  </Bar>
+                </BarChart>
+              </ResponsiveContainer>
+            </div>
+          </motion.div>
+        )}
+      </AnimatePresence>
     </GlassCard>
   );
 };
