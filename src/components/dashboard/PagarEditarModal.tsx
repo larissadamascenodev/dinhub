@@ -134,34 +134,14 @@ const PagarEditarModal = ({ open, event, onClose, onSuccess }: Props) => {
 
                 {/* Actions */}
                 {event.isTransaction && (
-                  <div className="space-y-2">
-                    <Button
-                      onClick={handlePay}
-                      disabled={submitting}
-                      className="w-full h-11 font-semibold text-sm"
-                    >
-                      <Check className="w-4 h-4 mr-1.5" />
-                      Marcar como pago
-                    </Button>
-                    <div className="flex gap-2">
-                      <Button
-                        variant="outline"
-                        onClick={() => { resetEdit(); setMode("edit"); }}
-                        className="flex-1 h-10 text-sm"
-                      >
-                        <Pencil className="w-3.5 h-3.5 mr-1.5" />
-                        Editar
-                      </Button>
-                      <Button
-                        variant="outline"
-                        onClick={handleDelete}
-                        disabled={submitting}
-                        className="h-10 text-sm text-destructive hover:text-destructive border-destructive/20 hover:bg-destructive/10"
-                      >
-                        <Trash2 className="w-3.5 h-3.5" />
-                      </Button>
-                    </div>
-                  </div>
+                  <Button
+                    onClick={handlePay}
+                    disabled={submitting}
+                    className="w-full h-11 font-semibold text-sm"
+                  >
+                    <Check className="w-4 h-4 mr-1.5" />
+                    Marcar como pago
+                  </Button>
                 )}
               </div>
             ) : (
