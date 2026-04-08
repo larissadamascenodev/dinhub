@@ -9,7 +9,8 @@ import { useAuth } from "@/contexts/AuthContext";
 import { useMonth } from "@/contexts/MonthContext";
 
 import { getRecurringForMonth } from "@/services/recurringService";
-import { getDefaultCategoryColor } from "@/lib/categoryIcons";
+import { getCustomCategories, type CustomCategory } from "@/services/categoryService";
+import { getCategoryIcon, getCategoryColor } from "@/lib/categoryUtils";
 
 const fmt = (v: number) =>
   v.toLocaleString("pt-BR", { style: "currency", currency: "BRL" });
