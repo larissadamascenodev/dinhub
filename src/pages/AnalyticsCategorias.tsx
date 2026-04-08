@@ -342,11 +342,12 @@ const CategoryChartSection = ({ categoryData, isMobile }: {
 };
 
 // ── Category List with traffic-light bars ────────────────
-const CategoryList = ({ categoryData, onSelect, selectedCat, prevCategoryData }: {
+const CategoryList = ({ categoryData, onSelect, selectedCat, prevCategoryData, habitMap }: {
   categoryData: CategorySummary[];
   onSelect: (name: string) => void;
   selectedCat: string | null;
   prevCategoryData?: { name: string; amount: number }[];
+  habitMap?: Record<string, HabitData>;
 }) => {
   const getBarColor = (pct: number) => {
     if (pct > 40) return "hsl(var(--destructive))";
