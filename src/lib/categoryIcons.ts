@@ -3,7 +3,7 @@ import {
   PawPrint, Scissors, Gift, Plane, Smartphone, Receipt,
   Briefcase, TrendingUp, ShoppingBag, DollarSign, Award, Users, Wallet,
   FileText, Landmark, ShoppingCart, Zap, Droplets, Flame,
-  CupSoda, Truck, Coffee, Dumbbell, Plug, Pizza,
+  CupSoda, Bike, Coffee, Dumbbell, Plug, Pizza, Building2,
 } from "lucide-react";
 
 export const DEFAULT_CATEGORY_ICONS: Record<string, any> = {
@@ -26,7 +26,7 @@ export const DEFAULT_CATEGORY_ICONS: Record<string, any> = {
   "Conta de Água": Droplets,
   "Conta de Gás": Flame,
   "Bebidas": CupSoda,
-  "Delivery": Truck,
+  "Delivery": Bike,
   "Cafeteria": Coffee,
   "Academia": Dumbbell,
   "Energia": Plug,
@@ -35,7 +35,7 @@ export const DEFAULT_CATEGORY_ICONS: Record<string, any> = {
   "Freelance": Briefcase,
   "Investimentos": TrendingUp,
   "Vendas": ShoppingBag,
-  "Aluguéis": Home,
+  "Aluguéis": Building2,
   "Bônus": Award,
   "Comissão": Users,
   "Mesada": Wallet,
