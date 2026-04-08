@@ -403,7 +403,149 @@ const LimitSuggestions = ({ suggestions }: { suggestions: AIInsights["limitSugge
   );
 };
 
-// ── Evolution Chart (6 months) ───────────────────────────
+// ── Installment Insights Section ─────────────────────────
+const InstallmentInsightsSection = ({ impacts }: { impacts: InstallmentImpact[] }) => {
+  // Filter only relevant impacts
+  const relevant = impacts
+    .filter((imp) => imp.totalRemaining > 300 || imp.monthsRemaining >= 3 || imp.impactPct > 20)
+    .sort((a, b) => b.totalRemaining - a.totalRemaining || b.monthsRemaining - a.monthsRemaining)
+    .slice(0, 3);
+
+  if (relevant.length === 0) return null;
+
+  const getSeverity = (imp: InstallmentImpact) => {
+    if (imp.impactPct > 50 || imp.totalRemaining > 2000) return "danger";
+    if (imp.impactPct > 30 || imp.totalRemaining > 1000) return "warning";
+    return "info";
+  };
+
+  const getMessage = (imp: InstallmentImpact) => {
+    const severity = getSeverity(imp);
+    if (severity === "danger") {
+      return `⚠️ Parte do seu orçamento futuro já está comprometido com ${imp.category}. Talvez seja melhor segurar novos gastos aqui por enquanto.`;
+    }
+    if (severity === "warning") {
+      return `Você ainda tem ${fmt(imp.totalRemaining)} comprometidos em ${imp.category}. Esse valor vai impactar seus próximos ${imp.monthsRemaining} meses 😅`;
+    }
+    return `Mesmo com parcelamentos ativos, seus gastos em ${imp.category} estão sob controle 👍`;
+  };
+
+  const severityStyles = {
+    info: { border: "border-blue-500/15", bg: "bg-blue-500/5", icon: "text-blue-400" },
+    warning: { border: "border-warning/15", bg: "bg-warning/5", icon: "text-warning" },
+    danger: { border: "border-destructive/15", bg: "bg-destructive/5", icon: "text-destructive" },
+  };
+
+  return (
+    <GlassCard className="p-4 md:p-5">
+      <div className="flex items-center gap-2 mb-3">
+        <span className="text-base">💳</span>
+        <p className="text-[10px] md:text-[11px] text-muted-foreground/60 font-semibold uppercase tracking-wider">
+          Impacto de Parcelamentos
+        </p>
+      </div>
+      <div className="space-y-2.5">
+        {relevant.map((imp, i) => {
+          const severity = getSeverity(imp);
+          const styles = severityStyles[severity];
+          return (
+            <motion.div
+              key={imp.category}
+              initial={{ opacity: 0, y: 8 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ delay: i * 0.1 }}
+              className={`p-3 rounded-xl ${styles.bg} border ${styles.border}`}
+            >
+              <p className="text-xs text-foreground/80 leading-relaxed">
+                {getMessage(imp)}
+              </p>
+              <div className="flex items-center gap-4 mt-2">
+                <div>
+                  <p className="text-[9px] text-muted-foreground/50 uppercase">Mensal</p>
+                  <p className="text-xs font-bold text-foreground tabular-nums">{fmt(imp.monthlyAmount)}</p>
+                </div>
+                <div>
+                  <p className="text-[9px] text-muted-foreground/50 uppercase">Restante</p>
+                  <p className="text-xs font-bold text-foreground tabular-nums">{fmt(imp.totalRemaining)}</p>
+                </div>
+                <div>
+                  <p className="text-[9px] text-muted-foreground/50 uppercase">Meses</p>
+                  <p className="text-xs font-bold text-foreground tabular-nums">⏳ {imp.monthsRemaining}</p>
+                </div>
+              </div>
+            </motion.div>
+          );
+        })}
+      </div>
+    </GlassCard>
+  );
+};
+
+// ── Category Installment Detail ──────────────────────────
+const CategoryInstallmentDetail = ({ impact }: { impact: InstallmentImpact | undefined }) => {
+  if (!impact || impact.items.length === 0) return null;
+
+  const isRelevant = impact.totalRemaining > 300 || impact.monthsRemaining >= 3 || impact.impactPct > 20;
+  if (!isRelevant) return null;
+
+  const isHighImpact = impact.impactPct > 30 || impact.totalRemaining > 1000;
+
+  return (
+    <GlassCard className={`p-4 md:p-5 ${isHighImpact ? "border-warning/20" : "border-border/20"}`}>
+      <div className="flex items-center gap-2 mb-3">
+        <span className="text-base">💳</span>
+        <p className="text-[10px] md:text-[11px] text-muted-foreground/60 font-semibold uppercase tracking-wider">
+          Parcelamentos Ativos
+        </p>
+      </div>
+
+      {/* Summary */}
+      <div className={`p-3 rounded-xl mb-3 ${isHighImpact ? "bg-warning/5 border border-warning/10" : "bg-muted/10 border border-border/10"}`}>
+        <p className="text-xs text-foreground/80 leading-relaxed">
+          {isHighImpact
+            ? `⚠️ ${fmt(impact.totalRemaining)} comprometidos nos próximos ${impact.monthsRemaining} meses. Cuidado com novos parcelamentos aqui.`
+            : `${fmt(impact.totalRemaining)} restantes em parcelamentos (${impact.monthsRemaining} meses). Tudo sob controle 👍`}
+        </p>
+      </div>
+
+      {/* Stats */}
+      <div className="grid grid-cols-3 gap-2 mb-3">
+        <div className="text-center">
+          <p className="text-[9px] text-muted-foreground/50 uppercase">Mensal</p>
+          <p className="text-sm font-bold text-foreground tabular-nums">{fmt(impact.monthlyAmount)}</p>
+        </div>
+        <div className="text-center">
+          <p className="text-[9px] text-muted-foreground/50 uppercase">Total restante</p>
+          <p className="text-sm font-bold text-foreground tabular-nums">{fmt(impact.totalRemaining)}</p>
+        </div>
+        <div className="text-center">
+          <p className="text-[9px] text-muted-foreground/50 uppercase">% da categoria</p>
+          <p className="text-sm font-bold text-foreground tabular-nums">{impact.impactPct}%</p>
+        </div>
+      </div>
+
+      {/* Items */}
+      <div className="space-y-1.5">
+        {impact.items.map((item, i) => (
+          <div key={i} className="flex items-center justify-between py-1.5 px-2 rounded-lg hover:bg-muted/10">
+            <div className="flex-1 min-w-0">
+              <p className="text-xs font-semibold text-foreground truncate">{item.name}</p>
+              <p className="text-[9px] text-muted-foreground/40">
+                {item.total - item.remaining} de {item.total} parcelas pagas
+              </p>
+            </div>
+            <div className="text-right shrink-0 ml-2">
+              <p className="text-xs font-bold text-foreground tabular-nums">{fmt(item.amount)}/mês</p>
+              <p className="text-[9px] text-muted-foreground/40">{item.remaining} restantes</p>
+            </div>
+          </div>
+        ))}
+      </div>
+    </GlassCard>
+  );
+};
+
+
 const EvolutionChart = ({ data, hexColor, currentMonth }: {
   data: HistoricalEntry[];
   hexColor: string;
