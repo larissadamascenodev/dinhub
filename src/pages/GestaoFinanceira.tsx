@@ -47,6 +47,31 @@ interface InvoiceData {
   year: number;
 }
 
+function getInvoiceStatusLabel(card: CreditCardItem): { label: string; isClosed: boolean } {
+  const now = new Date();
+  const today = now.getDate();
+  const closingDay = card.closing_day;
+  const dueDay = card.due_day;
+
+  if (today > closingDay) {
+    let dueDate: Date;
+    if (dueDay > closingDay) {
+      dueDate = new Date(now.getFullYear(), now.getMonth(), dueDay);
+    } else {
+      dueDate = new Date(now.getFullYear(), now.getMonth() + 1, dueDay);
+    }
+    const diffMs = dueDate.getTime() - now.getTime();
+    const diffDays = Math.ceil(diffMs / (1000 * 60 * 60 * 24));
+    if (diffDays < 0) return { label: `Venceu há ${Math.abs(diffDays)} dias`, isClosed: true };
+    if (diffDays === 0) return { label: "Vence hoje", isClosed: true };
+    if (diffDays === 1) return { label: "Vence amanhã", isClosed: true };
+    return { label: `Vence em ${diffDays} dias`, isClosed: true };
+  }
+
+  const daysUntilClose = closingDay - today;
+  return { label: `Fecha em ${daysUntilClose} dia${daysUntilClose > 1 ? "s" : ""}`, isClosed: false };
+}
+
 const ACCOUNT_TYPE_LABELS: Record<string, { label: string; icon: typeof Landmark }> = {
   cash: { label: "Dinheiro", icon: Banknote },
   checking: { label: "Conta corrente", icon: Landmark },
@@ -609,13 +634,26 @@ const GestaoFinanceira = () => {
                             </p>
                           </div>
                           <div className="text-right">
-                            <div className="flex items-center justify-end gap-1.5 mb-1.5">
-                              <div className={cn("w-1.5 h-1.5 rounded-full", (openInvoices[card.id] || 0) > 0 ? "bg-amber-400" : "bg-muted-foreground/40")} />
-                              <p className="text-[9px] text-muted-foreground uppercase tracking-widest font-medium">Fatura aberta</p>
-                            </div>
-                            <p className={cn("text-sm font-bold tabular-nums leading-[1.75rem]", (openInvoices[card.id] || 0) > 0 ? "text-amber-400" : "text-muted-foreground")}>
-                              {formatCurrency(openInvoices[card.id] || 0)}
-                            </p>
+                            {(() => {
+                              const invoiceAmount = openInvoices[card.id] || 0;
+                              const status = getInvoiceStatusLabel(card);
+                              return (
+                                <>
+                                  <div className="flex items-center justify-end gap-1.5 mb-1.5">
+                                    <div className={cn("w-1.5 h-1.5 rounded-full", status.isClosed ? "bg-primary" : invoiceAmount > 0 ? "bg-amber-400" : "bg-muted-foreground/40")} />
+                                    <p className="text-[9px] text-muted-foreground uppercase tracking-widest font-medium">
+                                      {status.isClosed ? "Fatura fechada" : "Fatura aberta"}
+                                    </p>
+                                  </div>
+                                  <p className={cn("text-sm font-bold tabular-nums leading-[1.75rem]", invoiceAmount > 0 ? (status.isClosed ? "text-foreground" : "text-amber-400") : "text-muted-foreground")}>
+                                    {formatCurrency(invoiceAmount)}
+                                  </p>
+                                  <p className={cn("text-[9px] mt-0.5 font-medium", status.isClosed ? "text-primary" : "text-muted-foreground/60")}>
+                                    {status.label}
+                                  </p>
+                                </>
+                              );
+                            })()}
                           </div>
                         </div>
                         <div className="flex items-center justify-between mt-2.5 mb-1">
@@ -701,13 +739,26 @@ const GestaoFinanceira = () => {
                             </p>
                           </div>
                           <div className="text-right">
-                            <div className="flex items-center justify-end gap-1.5 mb-1.5">
-                              <div className={cn("w-1.5 h-1.5 rounded-full", (openInvoices[card.id] || 0) > 0 ? "bg-amber-400" : "bg-muted-foreground/40")} />
-                              <p className="text-[9px] text-muted-foreground uppercase tracking-widest font-medium">Fatura aberta</p>
-                            </div>
-                            <p className={cn("text-sm font-bold tabular-nums leading-[1.75rem]", (openInvoices[card.id] || 0) > 0 ? "text-amber-400" : "text-muted-foreground")}>
-                              {formatCurrency(openInvoices[card.id] || 0)}
-                            </p>
+                            {(() => {
+                              const invoiceAmount = openInvoices[card.id] || 0;
+                              const status = getInvoiceStatusLabel(card);
+                              return (
+                                <>
+                                  <div className="flex items-center justify-end gap-1.5 mb-1.5">
+                                    <div className={cn("w-1.5 h-1.5 rounded-full", status.isClosed ? "bg-primary" : invoiceAmount > 0 ? "bg-amber-400" : "bg-muted-foreground/40")} />
+                                    <p className="text-[9px] text-muted-foreground uppercase tracking-widest font-medium">
+                                      {status.isClosed ? "Fatura fechada" : "Fatura aberta"}
+                                    </p>
+                                  </div>
+                                  <p className={cn("text-sm font-bold tabular-nums leading-[1.75rem]", invoiceAmount > 0 ? (status.isClosed ? "text-foreground" : "text-amber-400") : "text-muted-foreground")}>
+                                    {formatCurrency(invoiceAmount)}
+                                  </p>
+                                  <p className={cn("text-[9px] mt-0.5 font-medium", status.isClosed ? "text-primary" : "text-muted-foreground/60")}>
+                                    {status.label}
+                                  </p>
+                                </>
+                              );
+                            })()}
                           </div>
                         </div>
                         <div className="flex items-center justify-between mt-2.5 mb-1">
