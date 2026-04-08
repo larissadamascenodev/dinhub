@@ -11,28 +11,10 @@ import { excludeRecurringForMonth, excludeRecurringFromMonthOnward } from "@/ser
 import { useAuth } from "@/contexts/AuthContext";
 import { supabase } from "@/integrations/supabase/client";
 import { format, subDays } from "date-fns";
-import { Calendar } from "@/components/ui/calendar";
+import { getDefaultCategoryIcon, DEFAULT_EXPENSE_CATEGORIES, DEFAULT_INCOME_CATEGORIES } from "@/lib/categoryIcons";
 
-const CATEGORY_ICONS: Record<string, string> = {
-  "Alimentação": "🍽️", "Transporte": "🚗", "Moradia": "🏠",
-  "Saúde": "❤️", "Educação": "🎓", "Vestuário": "👔",
-  "Salário": "💰", "Freelance": "💼", "Investimentos": "📈",
-  "Supermercado": "🛒", "Lazer": "🎮", "Assinaturas": "📦",
-  "Pets": "🐾", "Beleza": "💅", "Presentes": "🎁",
-  "Viagem": "✈️", "Tecnologia": "💻", "Impostos": "📄",
-  "Vendas": "💵", "Aluguéis": "🏘️", "Bônus": "🎉",
-  "Comissão": "🤝", "Mesada": "👛", "Plano de Saúde": "❤️",
-};
-
-const CATEGORIES_EXPENSE = [
-  "Alimentação", "Transporte", "Saúde", "Assinaturas",
-  "Lazer", "Moradia", "Educação", "Vestuário", "Pets",
-  "Beleza", "Presentes", "Viagem", "Tecnologia", "Impostos",
-];
-const CATEGORIES_INCOME = [
-  "Salário", "Freelance", "Investimentos", "Vendas",
-  "Aluguéis", "Bônus", "Comissão", "Mesada",
-];
+const CATEGORIES_EXPENSE = DEFAULT_EXPENSE_CATEGORIES;
+const CATEGORIES_INCOME = DEFAULT_INCOME_CATEGORIES;
 
 const MONTHS_FULL = ["janeiro", "fevereiro", "março", "abril", "maio", "junho", "julho", "agosto", "setembro", "outubro", "novembro", "dezembro"];
 
