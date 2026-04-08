@@ -1,6 +1,6 @@
 import { useState, useEffect, useMemo, useRef } from "react";
 import { motion, AnimatePresence, useSpring, useTransform } from "framer-motion";
-import { ArrowLeft, Briefcase, ArrowDownLeft, ArrowUpRight, TrendingUp, X, Trash2, Info, Sparkles } from "lucide-react";
+import { ArrowLeft, Briefcase, ArrowDownLeft, ArrowUpRight, TrendingUp, X, Trash2, Info, Sparkles, MoreVertical, Pencil } from "lucide-react";
 import { useNavigate, useParams } from "react-router-dom";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -203,6 +203,17 @@ const InvestimentoDetalhe = () => {
   const [modalCents, setModalCents] = useState(0);
   const [modalSubmitting, setModalSubmitting] = useState(false);
 
+  // Menu & delete confirmation
+  const [showMenu, setShowMenu] = useState(false);
+  const [showDeleteConfirm, setShowDeleteConfirm] = useState(false);
+
+  // Edit modal
+  const [showEditModal, setShowEditModal] = useState(false);
+  const [editName, setEditName] = useState("");
+  const [editRate, setEditRate] = useState("");
+  const [editRatePeriod, setEditRatePeriod] = useState<"monthly" | "annual">("monthly");
+  const [editSubmitting, setEditSubmitting] = useState(false);
+
   // Simulation
   const [simPeriodIdx, setSimPeriodIdx] = useState(1); // default 1 year
   const [customMonths, setCustomMonths] = useState("");
@@ -343,13 +354,43 @@ const InvestimentoDetalhe = () => {
 
   const handleDelete = async () => {
     if (!accountId) return;
-    if (!confirm("Tem certeza que deseja excluir esta carteira?")) return;
     try {
       await supabase.from("accounts").update({ is_active: false } as any).eq("id", accountId);
       toast.success("Carteira excluída!");
       navigate("/gestao");
     } catch {
       toast.error("Erro ao excluir");
+    }
+  };
+
+  const openEditModal = () => {
+    if (!account) return;
+    setEditName(account.name);
+    setEditRate(account.annual_rate != null ? String(account.annual_rate) : "");
+    setEditRatePeriod("monthly");
+    setShowMenu(false);
+    setShowEditModal(true);
+  };
+
+  const handleEditSubmit = async () => {
+    if (!accountId || !editName.trim()) return;
+    setEditSubmitting(true);
+    try {
+      const raw = editRate ? parseFloat(editRate) : null;
+      const monthlyRate = raw != null && editRatePeriod === "annual"
+        ? Number(((Math.pow(1 + raw / 100, 1 / 12) - 1) * 100).toFixed(6))
+        : raw;
+      await supabase.from("accounts").update({
+        name: editName.trim(),
+        annual_rate: monthlyRate,
+      } as any).eq("id", accountId);
+      toast.success("Carteira atualizada!");
+      setShowEditModal(false);
+      fetchData();
+    } catch {
+      toast.error("Erro ao atualizar");
+    } finally {
+      setEditSubmitting(false);
     }
   };
 
@@ -378,9 +419,30 @@ const InvestimentoDetalhe = () => {
         <button onClick={() => navigate("/gestao")} className="flex items-center gap-1.5 text-sm text-muted-foreground hover:text-foreground transition-colors">
           <ArrowLeft className="w-4 h-4" /> Voltar
         </button>
-        <button onClick={handleDelete} className="w-8 h-8 rounded-xl bg-destructive/10 flex items-center justify-center hover:bg-destructive/20 transition-colors">
-          <Trash2 className="w-3.5 h-3.5 text-destructive" />
-        </button>
+        <div className="relative">
+          <button onClick={() => setShowMenu(v => !v)} className="w-8 h-8 rounded-xl bg-muted/20 flex items-center justify-center hover:bg-muted/30 transition-colors">
+            <MoreVertical className="w-4 h-4 text-muted-foreground" />
+          </button>
+          <AnimatePresence>
+            {showMenu && (
+              <motion.div
+                initial={{ opacity: 0, scale: 0.9, y: -4 }}
+                animate={{ opacity: 1, scale: 1, y: 0 }}
+                exit={{ opacity: 0, scale: 0.9, y: -4 }}
+                transition={{ duration: 0.15 }}
+                className="absolute right-0 top-10 z-50 w-40 rounded-xl border border-border/30 bg-card shadow-xl overflow-hidden"
+              >
+                <button onClick={openEditModal} className="flex items-center gap-2.5 w-full px-3.5 py-2.5 text-sm text-foreground hover:bg-muted/30 transition-colors">
+                  <Pencil className="w-3.5 h-3.5 text-muted-foreground" /> Editar
+                </button>
+                <div className="h-px bg-border/20" />
+                <button onClick={() => { setShowMenu(false); setShowDeleteConfirm(true); }} className="flex items-center gap-2.5 w-full px-3.5 py-2.5 text-sm text-destructive hover:bg-destructive/10 transition-colors">
+                  <Trash2 className="w-3.5 h-3.5" /> Excluir
+                </button>
+              </motion.div>
+            )}
+          </AnimatePresence>
+        </div>
       </div>
 
       {/* Main Card */}
@@ -797,6 +859,99 @@ const InvestimentoDetalhe = () => {
           </Button>
         </div>
       </ModalOverlay>
+
+      {/* Delete Confirmation Modal */}
+      <ModalOverlay open={showDeleteConfirm} onClose={() => setShowDeleteConfirm(false)}>
+        <div className="space-y-4 text-center">
+          <div className="w-12 h-12 rounded-full bg-destructive/15 flex items-center justify-center mx-auto">
+            <Trash2 className="w-5 h-5 text-destructive" />
+          </div>
+          <h3 className="text-lg font-bold text-foreground">Excluir carteira</h3>
+          <p className="text-sm text-muted-foreground">
+            Tem certeza que deseja excluir <strong>{account?.name}</strong>? Esta ação não pode ser desfeita.
+          </p>
+          <div className="flex gap-3">
+            <Button variant="outline" onClick={() => setShowDeleteConfirm(false)} className="flex-1 h-11 rounded-xl">
+              Cancelar
+            </Button>
+            <Button onClick={() => { setShowDeleteConfirm(false); handleDelete(); }} className="flex-1 h-11 rounded-xl bg-destructive text-destructive-foreground hover:bg-destructive/90">
+              Excluir
+            </Button>
+          </div>
+        </div>
+      </ModalOverlay>
+
+      {/* Edit Modal */}
+      <ModalOverlay open={showEditModal} onClose={() => setShowEditModal(false)}>
+        <div className="space-y-4">
+          <div className="flex items-center justify-between">
+            <h3 className="text-lg font-bold text-foreground">Editar carteira</h3>
+            <button onClick={() => setShowEditModal(false)} className="w-8 h-8 rounded-xl bg-muted/20 flex items-center justify-center hover:bg-muted/30">
+              <X className="w-4 h-4 text-muted-foreground" />
+            </button>
+          </div>
+
+          <div>
+            <Label className="text-xs text-muted-foreground mb-1.5 block">Nome</Label>
+            <Input
+              value={editName}
+              onChange={(e) => setEditName(e.target.value)}
+              className="bg-muted/30 border-border/20 h-11 rounded-xl"
+            />
+          </div>
+
+          <div>
+            <Label className="text-xs text-muted-foreground mb-1.5 block">Taxa de rendimento</Label>
+            <div className="flex items-center gap-2 mb-1.5">
+              <button
+                type="button"
+                onClick={() => setEditRatePeriod("monthly")}
+                className={`px-3 py-1 rounded-lg text-xs font-medium transition-colors ${
+                  editRatePeriod === "monthly"
+                    ? "bg-primary text-primary-foreground"
+                    : "bg-muted/40 text-muted-foreground"
+                }`}
+              >
+                % a.m.
+              </button>
+              <button
+                type="button"
+                onClick={() => setEditRatePeriod("annual")}
+                className={`px-3 py-1 rounded-lg text-xs font-medium transition-colors ${
+                  editRatePeriod === "annual"
+                    ? "bg-primary text-primary-foreground"
+                    : "bg-muted/40 text-muted-foreground"
+                }`}
+              >
+                % a.a.
+              </button>
+            </div>
+            <div className="relative">
+              <Input
+                placeholder={editRatePeriod === "monthly" ? "0,50" : "6,00"}
+                type="number"
+                value={editRate}
+                onChange={(e) => setEditRate(e.target.value)}
+                className="bg-muted/30 border-border/20 h-11 rounded-xl pr-20"
+              />
+              <span className="absolute right-3 top-1/2 -translate-y-1/2 text-sm text-muted-foreground pointer-events-none">
+                {editRatePeriod === "monthly" ? "% a.m." : "% a.a."}
+              </span>
+            </div>
+          </div>
+
+          <Button
+            onClick={handleEditSubmit}
+            disabled={!editName.trim() || editSubmitting}
+            className="w-full h-11 rounded-xl bg-primary/15 text-primary hover:bg-primary/25 border border-primary/30 text-sm font-semibold"
+          >
+            {editSubmitting ? "Salvando..." : "Salvar alterações"}
+          </Button>
+        </div>
+      </ModalOverlay>
+
+      {/* Click-away for menu */}
+      {showMenu && <div className="fixed inset-0 z-40" onClick={() => setShowMenu(false)} />}
     </div>
   );
 };
