@@ -316,7 +316,7 @@ const AssinaturasCard = memo(() => {
             {expanded ? (
               <>Recolher <ChevronUp className="w-3.5 h-3.5" /></>
             ) : (
-              <>Ver todos ({subscriptions.length}) <ChevronRight className="w-3.5 h-3.5" /></>
+              <>Ver todos ({filtered.length}) <ChevronRight className="w-3.5 h-3.5" /></>
             )}
           </button>
         </div>
