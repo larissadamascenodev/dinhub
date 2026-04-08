@@ -10,6 +10,7 @@ import BalancoCard from "@/components/dashboard/BalancoCard";
 import SaldoWalletCarousel from "@/components/dashboard/SaldoWalletCarousel";
 import TransacoesRecentes from "@/components/dashboard/TransacoesRecentes";
 import ProximosEventos from "@/components/dashboard/ProximosEventos";
+import AssinaturasCard from "@/components/dashboard/AssinaturasCard";
 import GastosPorCategoria from "@/components/dashboard/GastosPorCategoria";
 import MonthSelector from "@/components/dashboard/MonthSelector";
 import PagarEditarModal from "@/components/dashboard/PagarEditarModal";
@@ -125,6 +126,7 @@ const Index = () => {
             <ProjectionCard />
 
             <ProximosEventos events={data.events} selectedMonth={selectedMonth} selectedYear={selectedYear} onEventClick={handleEventClick} />
+            <AssinaturasCard />
           </div>
         </div>
 
@@ -157,6 +159,7 @@ const Index = () => {
           )}
           <TransacoesRecentes transactions={data.transactions} onDelete={refetch} />
           <ProximosEventos events={data.events} selectedMonth={selectedMonth} selectedYear={selectedYear} onEventClick={handleEventClick} />
+          <AssinaturasCard />
         </div>
 
         {/* MOBILE LAYOUT */}
@@ -192,6 +195,7 @@ const Index = () => {
           <div className="-mt-3">
             <ProximosEventos events={data.events} selectedMonth={selectedMonth} selectedYear={selectedYear} onEventClick={handleEventClick} />
           </div>
+          <AssinaturasCard />
         </div>
       <PagarEditarModal
         open={showPayModal}
