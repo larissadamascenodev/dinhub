@@ -9,7 +9,8 @@ import { useAuth } from "@/contexts/AuthContext";
 import { useMonth } from "@/contexts/MonthContext";
 
 import { getRecurringForMonth } from "@/services/recurringService";
-import { getDefaultCategoryColor } from "@/lib/categoryIcons";
+import { getCustomCategories, type CustomCategory } from "@/services/categoryService";
+import { getCategoryIcon, getCategoryColor } from "@/lib/categoryUtils";
 
 const fmt = (v: number) =>
   v.toLocaleString("pt-BR", { style: "currency", currency: "BRL" });
@@ -51,9 +52,11 @@ const TransacoesAnalytics = () => {
   const { user } = useAuth();
   const { selectedMonth, selectedYear } = useMonth();
   const [transactions, setTransactions] = useState<TransactionRow[]>([]);
-  
+  const [customCats, setCustomCats] = useState<CustomCategory[]>([]);
   const [loading, setLoading] = useState(true);
   const [dailyExpanded, setDailyExpanded] = useState(false);
+
+  useEffect(() => { getCustomCategories().then(setCustomCats).catch(() => {}); }, []);
 
   useEffect(() => {
     if (!user) return;
@@ -99,10 +102,11 @@ const TransacoesAnalytics = () => {
     return Array.from(map.entries())
       .sort((a, b) => b[1] - a[1])
       .map(([name, amount]) => ({
-        name, amount, color: `hsl(${getDefaultCategoryColor(name)})`,
+        name, amount, color: `hsl(${getCategoryColor(name, customCats)})`,
+        icon: getCategoryIcon(name, customCats),
         percentage: total > 0 ? ((amount / total) * 100).toFixed(0) : "0",
       }));
-  }, [transactions]);
+  }, [transactions, customCats]);
 
   const dailyData = useMemo(() => {
     const daysInMonth = new Date(selectedYear, selectedMonth + 1, 0).getDate();
@@ -198,9 +202,13 @@ const TransacoesAnalytics = () => {
         <GlassCard>
           <h3 className="text-[10px] font-semibold text-muted-foreground uppercase tracking-widest mb-3">Gastos por Categoria</h3>
           <div className="space-y-2.5">
-            {categoryData.slice(0, 6).map((cat) => (
+            {categoryData.slice(0, 6).map((cat) => {
+              const CatIcon = cat.icon;
+              return (
               <div key={cat.name} className="flex items-center gap-3">
-                <div className="w-2.5 h-2.5 rounded-full shrink-0" style={{ background: cat.color }} />
+                <div className="w-5 h-5 flex items-center justify-center shrink-0">
+                  <CatIcon className="w-4 h-4" style={{ color: cat.color }} />
+                </div>
                 <div className="flex-1 min-w-0">
                   <p className="text-xs font-semibold text-foreground truncate">{cat.name}</p>
                   <div className="w-full h-1 bg-border/20 rounded-full mt-1 overflow-hidden">
@@ -212,7 +220,8 @@ const TransacoesAnalytics = () => {
                   <p className="text-[9px] text-muted-foreground/50">{cat.percentage}%</p>
                 </div>
               </div>
-            ))}
+              );
+            })}
           </div>
         </GlassCard>
       )}
