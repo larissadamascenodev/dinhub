@@ -7,7 +7,7 @@ import MobileBottomNav from "@/components/dashboard/MobileBottomNav";
 import { useProfile } from "@/hooks/useProfile";
 import { useLoginStreak } from "@/hooks/useLoginStreak";
 import { MonthProvider } from "@/contexts/MonthContext";
-import NovaTransacaoModal, { type PrefillData } from "@/components/dashboard/NovaTransacaoModal";
+import NovaTransacaoModal, { type PrefillData, type EditTransactionData } from "@/components/dashboard/NovaTransacaoModal";
 import TransactionTypeChooser from "@/components/dashboard/TransactionTypeChooser";
 import TransferModal from "@/components/dashboard/TransferModal";
 import InvoiceUploadReviewModal, { type ExtractedItem } from "@/components/fatura/InvoiceUploadReviewModal";
@@ -38,6 +38,7 @@ const DashboardLayout = () => {
 
   // Fallback pre-fill for low confidence items
   const [prefillData, setPrefillData] = useState<PrefillData | null>(null);
+  const [editTransaction, setEditTransaction] = useState<EditTransactionData | null>(null);
 
   const scanCameraRef = useRef<HTMLInputElement>(null);
   const scanGalleryRef = useRef<HTMLInputElement>(null);
@@ -63,11 +64,21 @@ const DashboardLayout = () => {
     const handleScanner = () => {
       setShowScanChooser(true);
     };
+    const handleEditTransaction = (e: Event) => {
+      const detail = (e as CustomEvent).detail as EditTransactionData;
+      if (detail) {
+        setEditTransaction(detail);
+        setModalType(detail.type);
+        setShowModal(true);
+      }
+    };
     window.addEventListener("open-nova-transacao-direct", handleDirect);
     window.addEventListener("open-scanner", handleScanner);
+    window.addEventListener("edit-transaction", handleEditTransaction);
     return () => {
       window.removeEventListener("open-nova-transacao-direct", handleDirect);
       window.removeEventListener("open-scanner", handleScanner);
+      window.removeEventListener("edit-transaction", handleEditTransaction);
     };
   }, []);
 
@@ -192,6 +203,7 @@ const DashboardLayout = () => {
   const handleModalClose = useCallback(() => {
     setShowModal(false);
     setPrefillData(null);
+    setEditTransaction(null);
   }, []);
 
   return (
@@ -287,6 +299,7 @@ const DashboardLayout = () => {
           onSuccess={handleSuccess}
           initialType={modalType}
           prefillData={prefillData}
+          editTransaction={editTransaction}
         />
         <TransferModal open={showTransferModal} onClose={() => setShowTransferModal(false)} onSuccess={handleSuccess} />
         <InvoiceUploadReviewModal

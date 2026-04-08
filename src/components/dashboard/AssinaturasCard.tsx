@@ -1,9 +1,11 @@
-import { memo, useEffect, useState, useMemo } from "react";
-import { ChevronRight, ChevronUp } from "lucide-react";
+import { memo, useEffect, useState, useMemo, useCallback } from "react";
+import { ChevronRight, ChevronUp, Pencil, Trash2, X } from "lucide-react";
 import { motion, AnimatePresence } from "framer-motion";
 import { supabase } from "@/integrations/supabase/client";
 import { useAuth } from "@/contexts/AuthContext";
 import { getDefaultCategoryIcon } from "@/lib/categoryIcons";
+import { deleteTransaction, getTransactionById } from "@/services/transactionService";
+import { toast } from "sonner";
 
 type RecurringType = "despesa" | "receita";
 
@@ -20,12 +22,11 @@ interface Subscription {
 const fmt = (v: number) =>
   v.toLocaleString("pt-BR", { style: "currency", currency: "BRL" });
 
-// Known brands with logo URLs (using high-quality sources)
 type BrandInfo = {
   bg: string;
   fg: string;
-  logo?: string; // URL to logo image
-  icon?: string; // fallback text icon
+  logo?: string;
+  icon?: string;
 };
 
 const BRAND_MAP: Record<string, BrandInfo> = {
@@ -101,41 +102,25 @@ function getDaysUntil(dueDay: number): number {
   return Math.max(0, diff);
 }
 
-/** Renders brand logo or category-style Lucide icon */
 const BrandIcon = ({ name, category, brand }: { name: string; category: string; brand: BrandInfo & { matched: boolean } }) => {
   const [imgError, setImgError] = useState(false);
 
-  // Known brand with logo URL
   if (brand.matched && brand.logo && !imgError) {
     return (
-      <div
-        className="w-10 h-10 rounded-xl flex items-center justify-center shrink-0 shadow-md overflow-hidden"
-        style={{ background: brand.bg }}
-      >
-        <img
-          src={brand.logo}
-          alt={name}
-          className="w-6 h-6 object-contain"
-          onError={() => setImgError(true)}
-          loading="lazy"
-        />
+      <div className="w-10 h-10 rounded-xl flex items-center justify-center shrink-0 shadow-md overflow-hidden" style={{ background: brand.bg }}>
+        <img src={brand.logo} alt={name} className="w-6 h-6 object-contain" onError={() => setImgError(true)} loading="lazy" />
       </div>
     );
   }
 
-  // Known brand with text icon (no logo URL or image failed)
   if (brand.matched) {
     return (
-      <div
-        className="w-10 h-10 rounded-xl flex items-center justify-center shrink-0 shadow-md"
-        style={{ background: brand.bg, color: brand.fg }}
-      >
+      <div className="w-10 h-10 rounded-xl flex items-center justify-center shrink-0 shadow-md" style={{ background: brand.bg, color: brand.fg }}>
         <span className="text-[11px] font-black leading-none">{brand.icon || name.charAt(0).toUpperCase()}</span>
       </div>
     );
   }
 
-  // Fallback: use the Lucide category icon (same style as categories page)
   const IconComponent = getDefaultCategoryIcon(category);
   return (
     <div className="w-10 h-10 rounded-xl flex items-center justify-center shrink-0 shadow-md bg-primary/10">
@@ -151,46 +136,103 @@ const AssinaturasCard = memo(() => {
   const [expanded, setExpanded] = useState(false);
   const [activeTab, setActiveTab] = useState<RecurringType>("despesa");
 
-  useEffect(() => {
+  // Action sheet state
+  const [selectedSub, setSelectedSub] = useState<Subscription | null>(null);
+  const [showActions, setShowActions] = useState(false);
+  const [showDeleteConfirm, setShowDeleteConfirm] = useState(false);
+  const [deleting, setDeleting] = useState(false);
+
+  const fetchSubs = useCallback(async () => {
     if (!user) return;
+    setLoading(true);
 
-    const fetchSubs = async () => {
-      setLoading(true);
+    const { data: txs } = await supabase
+      .from("transactions")
+      .select("id, name, amount, date, category, payment_method, credit_card_id, type")
+      .eq("user_id", user.id)
+      .eq("recurrence_type", "fixa");
 
-      const { data: txs } = await supabase
-        .from("transactions")
-        .select("id, name, amount, date, category, payment_method, credit_card_id, type")
-        .eq("user_id", user.id)
-        .eq("recurrence_type", "fixa");
+    if (!txs) { setLoading(false); return; }
 
-      if (!txs) { setLoading(false); return; }
-
-      const seen = new Map<string, typeof txs[0]>();
-      for (const tx of txs) {
-        const key = `${tx.type}-${tx.name.toLowerCase().trim()}`;
-        if (!seen.has(key) || tx.date < seen.get(key)!.date) {
-          seen.set(key, tx);
-        }
+    const seen = new Map<string, typeof txs[0]>();
+    for (const tx of txs) {
+      const key = `${tx.type}-${tx.name.toLowerCase().trim()}`;
+      if (!seen.has(key) || tx.date < seen.get(key)!.date) {
+        seen.set(key, tx);
       }
+    }
 
-      const subs: Subscription[] = Array.from(seen.values()).map((tx) => ({
-        id: tx.id,
-        name: tx.name,
-        amount: Number(tx.amount),
-        dueDay: new Date(tx.date + "T12:00:00").getDate(),
-        category: tx.category,
-        source: tx.payment_method === "cartao" ? "cartao" as const : "conta" as const,
-        txType: tx.type as RecurringType,
-      }));
+    const subs: Subscription[] = Array.from(seen.values()).map((tx) => ({
+      id: tx.id,
+      name: tx.name,
+      amount: Number(tx.amount),
+      dueDay: new Date(tx.date + "T12:00:00").getDate(),
+      category: tx.category,
+      source: tx.payment_method === "cartao" ? "cartao" as const : "conta" as const,
+      txType: tx.type as RecurringType,
+    }));
 
-      subs.sort((a, b) => getDaysUntil(a.dueDay) - getDaysUntil(b.dueDay));
-
-      setSubscriptions(subs);
-      setLoading(false);
-    };
-
-    fetchSubs();
+    subs.sort((a, b) => getDaysUntil(a.dueDay) - getDaysUntil(b.dueDay));
+    setSubscriptions(subs);
+    setLoading(false);
   }, [user]);
+
+  useEffect(() => { fetchSubs(); }, [fetchSubs]);
+
+  // Listen for finance changes to refresh
+  useEffect(() => {
+    const handler = () => fetchSubs();
+    window.addEventListener("finance-data-changed", handler);
+    window.addEventListener("transaction-created", handler);
+    return () => {
+      window.removeEventListener("finance-data-changed", handler);
+      window.removeEventListener("transaction-created", handler);
+    };
+  }, [fetchSubs]);
+
+  const handleEdit = useCallback(async (sub: Subscription) => {
+    setShowActions(false);
+    try {
+      const tx = await getTransactionById(sub.id);
+      window.dispatchEvent(new CustomEvent("edit-transaction", {
+        detail: {
+          id: tx.id,
+          name: tx.name,
+          type: tx.type,
+          amount: Number(tx.amount),
+          category: tx.category,
+          date: tx.date,
+          status: tx.status,
+          payment_method: tx.payment_method,
+          account_id: tx.account_id,
+          credit_card_id: tx.credit_card_id,
+          recurrence_type: tx.recurrence_type,
+          installments: tx.installments,
+          installment_current: tx.installment_current,
+          observation: tx.observation,
+        },
+      }));
+    } catch {
+      toast.error("Erro ao carregar transação");
+    }
+  }, []);
+
+  const handleDelete = useCallback(async () => {
+    if (!selectedSub) return;
+    setDeleting(true);
+    try {
+      await deleteTransaction(selectedSub.id);
+      toast.success(`"${selectedSub.name}" removida com sucesso`);
+      setShowDeleteConfirm(false);
+      setShowActions(false);
+      setSelectedSub(null);
+      fetchSubs();
+    } catch {
+      toast.error("Erro ao excluir recorrência");
+    } finally {
+      setDeleting(false);
+    }
+  }, [selectedSub, fetchSubs]);
 
   const filtered = useMemo(() => subscriptions.filter((s) => s.txType === activeTab), [subscriptions, activeTab]);
   const total = useMemo(() => filtered.reduce((s, x) => s + x.amount, 0), [filtered]);
@@ -214,114 +256,219 @@ const AssinaturasCard = memo(() => {
   const hasMore = filtered.length > 3;
 
   return (
-    <div className="rounded-2xl bg-card/90 backdrop-blur-xl border border-border/30 shadow-lg shadow-black/20 overflow-hidden">
-      {/* Header with total */}
-      <div className="flex items-start justify-between px-4 pt-3.5 pb-1">
-        <div>
-          <h2 className="text-sm font-bold text-foreground">Recorrentes</h2>
-          <p className="text-[10px] text-muted-foreground/50 mt-0.5">Seus gastos fixos mensais</p>
+    <>
+      <div className="rounded-2xl bg-card/90 backdrop-blur-xl border border-border/30 shadow-lg shadow-black/20 overflow-hidden">
+        {/* Header with total */}
+        <div className="flex items-start justify-between px-4 pt-3.5 pb-1">
+          <div>
+            <h2 className="text-sm font-bold text-foreground">Recorrentes</h2>
+            <p className="text-[10px] text-muted-foreground/50 mt-0.5">Seus gastos fixos mensais</p>
+          </div>
+          <div className="text-right pt-1">
+            <p className="text-[10px] text-muted-foreground/50">Total/mês</p>
+            <p className={`text-[15px] font-bold tabular-nums ${activeTab === "receita" ? "text-emerald-400" : "text-primary"}`}>{fmt(total)}</p>
+          </div>
         </div>
-        <div className="text-right pt-1">
-          <p className="text-[10px] text-muted-foreground/50">Total/mês</p>
-          <p className={`text-[15px] font-bold tabular-nums ${activeTab === "receita" ? "text-emerald-400" : "text-primary"}`}>{fmt(total)}</p>
-        </div>
-      </div>
 
-      {/* Tabs */}
-      <div className="px-4 mt-1 mb-1.5">
-        <div className="relative flex rounded-lg bg-muted/20 p-0.5">
-          <motion.div
-            className="absolute top-0.5 bottom-0.5 rounded-md bg-primary/15 border border-primary/20"
-            layoutId="recorrentes-tab"
-            style={{ width: "50%", left: activeTab === "despesa" ? "0%" : "50%" }}
-            transition={{ type: "spring", stiffness: 400, damping: 30 }}
-          />
-          <button
-            onClick={() => { setActiveTab("despesa"); setExpanded(false); }}
-            className={`relative z-10 flex-1 text-[10px] font-semibold py-1.5 rounded-md transition-colors ${activeTab === "despesa" ? "text-primary" : "text-muted-foreground/50"}`}
-          >
-            Despesas {despesaCount > 0 && <span className="ml-0.5 opacity-60">({despesaCount})</span>}
-          </button>
-          <button
-            onClick={() => { setActiveTab("receita"); setExpanded(false); }}
-            className={`relative z-10 flex-1 text-[10px] font-semibold py-1.5 rounded-md transition-colors ${activeTab === "receita" ? "text-primary" : "text-muted-foreground/50"}`}
-          >
-            Receitas {receitaCount > 0 && <span className="ml-0.5 opacity-60">({receitaCount})</span>}
-          </button>
-        </div>
-      </div>
-
-      {/* Cards list */}
-      <div className="px-3 pb-2 mt-1.5 space-y-2">
-        <AnimatePresence mode="popLayout">
-          {displaySubs.length > 0 ? displaySubs.map((sub, idx) => {
-            const brand = getBrand(sub.name);
-            const days = getDaysUntil(sub.dueDay);
-
-            return (
-              <motion.div
-                key={sub.id}
-                initial={{ opacity: 0, y: 8 }}
-                animate={{ opacity: 1, y: 0 }}
-                exit={{ opacity: 0, y: -4 }}
-                transition={{ delay: idx * 0.04, type: "spring", stiffness: 400, damping: 30 }}
-                className="relative rounded-xl border border-white/[0.06] overflow-hidden"
-                style={{
-                  background: "linear-gradient(135deg, hsl(var(--card) / 0.95), hsl(var(--card) / 0.7))",
-                  backdropFilter: "blur(16px)",
-                }}
-              >
-                {brand.matched && (
-                  <div
-                    className="absolute inset-0 opacity-[0.06] pointer-events-none"
-                    style={{ background: `radial-gradient(ellipse at 20% 50%, ${brand.fg}, transparent 70%)` }}
-                  />
-                )}
-
-                <div className="relative flex items-center gap-3 px-3 py-3">
-                  <BrandIcon name={sub.name} category={sub.category} brand={brand} />
-
-                  <div className="flex-1 min-w-0">
-                    <p className="text-[12px] font-semibold text-foreground/90 truncate">{sub.name}</p>
-                    <p className="text-[10px] text-muted-foreground/50 mt-0.5">
-                      Dia {sub.dueDay} · {days === 0 ? "Hoje" : days === 1 ? "Amanhã" : `Em ${days} dias`}
-                    </p>
-                  </div>
-
-                  <div className="text-right shrink-0">
-                    <p className="text-[13px] font-bold text-foreground tabular-nums">{fmt(sub.amount)}</p>
-                  </div>
-                </div>
-              </motion.div>
-            );
-          }) : (
-            <motion.p
-              initial={{ opacity: 0 }}
-              animate={{ opacity: 1 }}
-              className="text-center text-[11px] text-muted-foreground/40 py-4"
+        {/* Tabs */}
+        <div className="px-4 mt-1 mb-1.5">
+          <div className="relative flex rounded-lg bg-muted/20 p-0.5">
+            <motion.div
+              className="absolute top-0.5 bottom-0.5 rounded-md bg-primary/15 border border-primary/20"
+              layoutId="recorrentes-tab"
+              style={{ width: "50%", left: activeTab === "despesa" ? "0%" : "50%" }}
+              transition={{ type: "spring", stiffness: 400, damping: 30 }}
+            />
+            <button
+              onClick={() => { setActiveTab("despesa"); setExpanded(false); }}
+              className={`relative z-10 flex-1 text-[10px] font-semibold py-1.5 rounded-md transition-colors ${activeTab === "despesa" ? "text-primary" : "text-muted-foreground/50"}`}
             >
-              Nenhum {activeTab === "receita" ? "receita recorrente" : "gasto recorrente"}
-            </motion.p>
-          )}
-        </AnimatePresence>
+              Despesas {despesaCount > 0 && <span className="ml-0.5 opacity-60">({despesaCount})</span>}
+            </button>
+            <button
+              onClick={() => { setActiveTab("receita"); setExpanded(false); }}
+              className={`relative z-10 flex-1 text-[10px] font-semibold py-1.5 rounded-md transition-colors ${activeTab === "receita" ? "text-primary" : "text-muted-foreground/50"}`}
+            >
+              Receitas {receitaCount > 0 && <span className="ml-0.5 opacity-60">({receitaCount})</span>}
+            </button>
+          </div>
+        </div>
+
+        {/* Cards list */}
+        <div className="px-3 pb-2 mt-1.5 space-y-2">
+          <AnimatePresence mode="popLayout">
+            {displaySubs.length > 0 ? displaySubs.map((sub, idx) => {
+              const brand = getBrand(sub.name);
+              const days = getDaysUntil(sub.dueDay);
+
+              return (
+                <motion.div
+                  key={sub.id}
+                  initial={{ opacity: 0, y: 8 }}
+                  animate={{ opacity: 1, y: 0 }}
+                  exit={{ opacity: 0, y: -4 }}
+                  transition={{ delay: idx * 0.04, type: "spring", stiffness: 400, damping: 30 }}
+                  className="relative rounded-xl border border-white/[0.06] overflow-hidden cursor-pointer hover:scale-[1.01] active:scale-[0.99] transition-transform"
+                  style={{
+                    background: "linear-gradient(135deg, hsl(var(--card) / 0.95), hsl(var(--card) / 0.7))",
+                    backdropFilter: "blur(16px)",
+                  }}
+                  onClick={() => { setSelectedSub(sub); setShowActions(true); }}
+                >
+                  {brand.matched && (
+                    <div
+                      className="absolute inset-0 opacity-[0.06] pointer-events-none"
+                      style={{ background: `radial-gradient(ellipse at 20% 50%, ${brand.fg}, transparent 70%)` }}
+                    />
+                  )}
+
+                  <div className="relative flex items-center gap-3 px-3 py-3">
+                    <BrandIcon name={sub.name} category={sub.category} brand={brand} />
+
+                    <div className="flex-1 min-w-0">
+                      <p className="text-[12px] font-semibold text-foreground/90 truncate">{sub.name}</p>
+                      <p className="text-[10px] text-muted-foreground/50 mt-0.5">
+                        Dia {sub.dueDay} · {days === 0 ? "Hoje" : days === 1 ? "Amanhã" : `Em ${days} dias`}
+                      </p>
+                    </div>
+
+                    <div className="text-right shrink-0">
+                      <p className="text-[13px] font-bold text-foreground tabular-nums">{fmt(sub.amount)}</p>
+                    </div>
+                  </div>
+                </motion.div>
+              );
+            }) : (
+              <motion.p
+                initial={{ opacity: 0 }}
+                animate={{ opacity: 1 }}
+                className="text-center text-[11px] text-muted-foreground/40 py-4"
+              >
+                Nenhum {activeTab === "receita" ? "receita recorrente" : "gasto recorrente"}
+              </motion.p>
+            )}
+          </AnimatePresence>
+        </div>
+
+        {/* Ver todos / Recolher */}
+        {hasMore && (
+          <div className="px-4 pb-3">
+            <button
+              onClick={() => setExpanded((v) => !v)}
+              className="w-full flex items-center justify-center gap-1 text-[11px] text-primary font-semibold py-1.5 rounded-lg hover:bg-primary/5 transition-colors"
+            >
+              {expanded ? (
+                <>Recolher <ChevronUp className="w-3.5 h-3.5" /></>
+              ) : (
+                <>Ver todos ({filtered.length}) <ChevronRight className="w-3.5 h-3.5" /></>
+              )}
+            </button>
+          </div>
+        )}
       </div>
 
-      {/* Ver todos / Recolher */}
-      {hasMore && (
-        <div className="px-4 pb-3">
-          <button
-            onClick={() => setExpanded((v) => !v)}
-            className="w-full flex items-center justify-center gap-1 text-[11px] text-primary font-semibold py-1.5 rounded-lg hover:bg-primary/5 transition-colors"
+      {/* Action Sheet Modal */}
+      <AnimatePresence>
+        {showActions && selectedSub && !showDeleteConfirm && (
+          <motion.div
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            exit={{ opacity: 0 }}
+            className="fixed inset-0 z-[60] bg-black/60 backdrop-blur-sm flex items-end sm:items-center justify-center"
+            onClick={() => { setShowActions(false); setSelectedSub(null); }}
           >
-            {expanded ? (
-              <>Recolher <ChevronUp className="w-3.5 h-3.5" /></>
-            ) : (
-              <>Ver todos ({filtered.length}) <ChevronRight className="w-3.5 h-3.5" /></>
-            )}
-          </button>
-        </div>
-      )}
-    </div>
+            <motion.div
+              initial={{ y: "100%" }}
+              animate={{ y: 0 }}
+              exit={{ y: "100%" }}
+              transition={{ type: "spring", damping: 28, stiffness: 300 }}
+              onClick={(e) => e.stopPropagation()}
+              className="w-full sm:max-w-sm rounded-t-2xl sm:rounded-2xl bg-card border border-border/20 shadow-2xl p-5 pb-24 sm:pb-5"
+            >
+              <div className="flex items-center justify-between mb-4">
+                <h3 className="text-sm font-bold text-foreground">{selectedSub.name}</h3>
+                <button onClick={() => { setShowActions(false); setSelectedSub(null); }} className="text-muted-foreground/50 hover:text-foreground transition-colors">
+                  <X className="w-4 h-4" />
+                </button>
+              </div>
+
+              <div className="space-y-2">
+                <motion.button
+                  whileTap={{ scale: 0.98 }}
+                  onClick={() => handleEdit(selectedSub)}
+                  className="w-full flex items-center gap-3 rounded-xl border border-border/15 bg-muted/10 hover:bg-muted/20 px-4 py-3.5 text-left transition-colors"
+                >
+                  <div className="w-10 h-10 rounded-lg bg-primary/10 border border-primary/20 flex items-center justify-center shrink-0">
+                    <Pencil className="w-5 h-5 text-primary" />
+                  </div>
+                  <div>
+                    <p className="text-[13px] font-bold text-foreground">Editar</p>
+                    <p className="text-[11px] text-muted-foreground">Alterar valor, nome ou categoria</p>
+                  </div>
+                </motion.button>
+
+                <motion.button
+                  whileTap={{ scale: 0.98 }}
+                  onClick={() => setShowDeleteConfirm(true)}
+                  className="w-full flex items-center gap-3 rounded-xl border border-red-500/15 bg-red-500/5 hover:bg-red-500/10 px-4 py-3.5 text-left transition-colors"
+                >
+                  <div className="w-10 h-10 rounded-lg bg-red-500/10 border border-red-500/20 flex items-center justify-center shrink-0">
+                    <Trash2 className="w-5 h-5 text-red-400" />
+                  </div>
+                  <div>
+                    <p className="text-[13px] font-bold text-red-400">Cancelar recorrência</p>
+                    <p className="text-[11px] text-muted-foreground">Remove esta e todas as futuras</p>
+                  </div>
+                </motion.button>
+              </div>
+            </motion.div>
+          </motion.div>
+        )}
+      </AnimatePresence>
+
+      {/* Delete Confirmation Modal */}
+      <AnimatePresence>
+        {showDeleteConfirm && selectedSub && (
+          <motion.div
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            exit={{ opacity: 0 }}
+            className="fixed inset-0 z-[70] bg-black/60 backdrop-blur-sm flex items-center justify-center px-4"
+            onClick={() => setShowDeleteConfirm(false)}
+          >
+            <motion.div
+              initial={{ scale: 0.95, opacity: 0 }}
+              animate={{ scale: 1, opacity: 1 }}
+              exit={{ scale: 0.95, opacity: 0 }}
+              transition={{ type: "spring", damping: 25, stiffness: 300 }}
+              onClick={(e) => e.stopPropagation()}
+              className="w-full max-w-sm rounded-2xl bg-card border border-border/20 shadow-2xl p-5"
+            >
+              <h3 className="text-sm font-bold text-foreground mb-1">Cancelar recorrência</h3>
+              <p className="text-[12px] text-muted-foreground mb-5">
+                Tem certeza que deseja cancelar <span className="font-semibold text-foreground">"{selectedSub.name}"</span>? Isso removerá esta transação e todas as futuras ocorrências.
+              </p>
+
+              <div className="flex gap-2">
+                <button
+                  onClick={() => setShowDeleteConfirm(false)}
+                  className="flex-1 text-[12px] font-semibold py-2.5 rounded-xl bg-muted/20 hover:bg-muted/30 text-foreground transition-colors"
+                >
+                  Voltar
+                </button>
+                <button
+                  onClick={handleDelete}
+                  disabled={deleting}
+                  className="flex-1 text-[12px] font-semibold py-2.5 rounded-xl bg-red-500/20 hover:bg-red-500/30 text-red-400 border border-red-500/20 transition-colors disabled:opacity-50"
+                >
+                  {deleting ? "Removendo..." : "Confirmar"}
+                </button>
+              </div>
+            </motion.div>
+          </motion.div>
+        )}
+      </AnimatePresence>
+    </>
   );
 });
 
