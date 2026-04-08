@@ -420,6 +420,91 @@ const CategoryList = ({ categoryData, onSelect, selectedCat, prevCategoryData }:
   );
 };
 
+// ── Comparison Insights Section ───────────────────────────
+const ComparisonInsightsSection = ({ categoryData, prevCategoryData }: {
+  categoryData: CategorySummary[];
+  prevCategoryData: { name: string; amount: number }[];
+}) => {
+  const insights = useMemo(() => {
+    const results: { message: string; severity: "up" | "down" | "new"; impact: number }[] = [];
+
+    categoryData.forEach((cat) => {
+      const prev = prevCategoryData.find((p) => p.name === cat.name);
+      const prevAmount = prev?.amount ?? 0;
+
+      if (prevAmount === 0 && cat.amount > 0) {
+        results.push({
+          message: `Você começou a gastar com ${cat.name} esse mês`,
+          severity: "new",
+          impact: cat.amount,
+        });
+        return;
+      }
+      if (prevAmount === 0) return;
+
+      const variation = ((cat.amount - prevAmount) / prevAmount) * 100;
+      if (variation > 20) {
+        results.push({
+          message: `Seus gastos com ${cat.name} aumentaram bastante esse mês 👀 Vale dar uma olhada pra entender o que mudou`,
+          severity: "up",
+          impact: Math.abs(variation),
+        });
+      } else if (variation >= 5) {
+        results.push({
+          message: `${cat.name} teve um leve aumento esse mês`,
+          severity: "up",
+          impact: Math.abs(variation),
+        });
+      } else if (variation < -1) {
+        results.push({
+          message: `Boa! Você reduziu seus gastos com ${cat.name} 👏`,
+          severity: "down",
+          impact: Math.abs(variation),
+        });
+      }
+    });
+
+    return results.sort((a, b) => b.impact - a.impact).slice(0, 3);
+  }, [categoryData, prevCategoryData]);
+
+  if (insights.length === 0) return null;
+
+  const severityConfig = {
+    up: { icon: TrendingUp, bg: "bg-destructive/5", border: "border-destructive/15", text: "text-destructive" },
+    down: { icon: TrendingDown, bg: "bg-success/5", border: "border-success/15", text: "text-success" },
+    new: { icon: Sparkles, bg: "bg-blue-500/5", border: "border-blue-500/15", text: "text-blue-400" },
+  };
+
+  return (
+    <GlassCard className="p-4 md:p-5">
+      <div className="flex items-center gap-2 mb-3">
+        <span className="text-sm">💡</span>
+        <p className="text-[10px] md:text-[11px] text-muted-foreground/60 font-semibold uppercase tracking-wider">
+          Insights Inteligentes
+        </p>
+      </div>
+      <div className="space-y-2">
+        {insights.map((ins, i) => {
+          const config = severityConfig[ins.severity];
+          const Icon = config.icon;
+          return (
+            <motion.div
+              key={i}
+              initial={{ opacity: 0, x: -10 }}
+              animate={{ opacity: 1, x: 0 }}
+              transition={{ delay: i * 0.1 }}
+              className={`flex items-start gap-2.5 p-2.5 rounded-xl ${config.bg} border ${config.border}`}
+            >
+              <Icon className={`w-3.5 h-3.5 mt-0.5 shrink-0 ${config.text}`} />
+              <p className="text-xs text-foreground/80 leading-relaxed">{ins.message}</p>
+            </motion.div>
+          );
+        })}
+      </div>
+    </GlassCard>
+  );
+};
+
 // ── AI Insights Section ──────────────────────────────────
 const AIInsightsSection = ({ insights, loading }: { insights: AIInsights | null; loading: boolean }) => {
   if (loading) {
