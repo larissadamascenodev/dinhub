@@ -479,18 +479,6 @@ const TransactionDetailModal = ({ open, tx, accountName, onClose, onRefresh, use
               )}
             </div>
 
-            {/* Action button */}
-            {!isPaid && (
-              <button
-                onClick={() => setStep("pay-confirm")}
-                className="w-full py-3.5 rounded-xl text-sm font-bold bg-primary/10 text-primary ring-1 ring-primary/30 hover:bg-primary/20 transition-all"
-              >
-                {isReceita ? "Receber" : "Marcar como pago"}
-              </button>
-            )}
-          </div>
-        );
-
             {/* Similar / Recurring Transactions */}
             {similarTxs.length > 1 && (
               <div className="mb-4 pt-3 border-t border-border/10">
@@ -554,6 +542,17 @@ const TransactionDetailModal = ({ open, tx, accountName, onClose, onRefresh, use
               </div>
             )}
 
+            {/* Action button */}
+            {!isPaid && (
+              <button
+                onClick={() => setStep("pay-confirm")}
+                className="w-full py-3.5 rounded-xl text-sm font-bold bg-primary/10 text-primary ring-1 ring-primary/30 hover:bg-primary/20 transition-all"
+              >
+                {isReceita ? "Receber" : "Marcar como pago"}
+              </button>
+            )}
+          </div>
+        );
 
       case "pay-confirm":
         return (
