@@ -372,6 +372,7 @@ const CategoryList = ({ categoryData, onSelect, selectedCat, prevCategoryData, h
           const variation = prevAmount > 0
             ? Math.round(((cat.amount - prevAmount) / prevAmount) * 100)
             : null;
+          const habit = habitMap?.[cat.name];
           const isNew = prevAmount === 0 && cat.amount > 0;
           return (
             <motion.button
