@@ -351,7 +351,7 @@ const CategoryList = ({ categoryData, onSelect, selectedCat }: {
           Todas as categorias · {categoryData.length}
         </p>
       </div>
-      <div className="px-4 md:px-5 pb-3 space-y-1 max-h-[420px] overflow-y-auto">
+      <div className="px-4 md:px-5 pb-3 space-y-1 max-h-[420px] overflow-y-auto scrollbar-none">
         {categoryData.map((cat, i) => {
           const CatIcon = cat.icon;
           const isSelected = selectedCat === cat.name;
