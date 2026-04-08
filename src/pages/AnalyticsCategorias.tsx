@@ -1184,25 +1184,26 @@ const AnalyticsCategorias = () => {
           >
             {categoryData.length > 0 ? (
               <>
-                {/* Summary */}
+                {/* Summary + Projections together */}
                 <SummaryCard totalExpenses={totalExpenses} topCategory={topCategory} monthLabel={monthLabel} />
+                <ProjectionsInline totalExpenses={totalExpenses} />
 
-                {/* Chart + List */}
-                <div className={isMobile ? "space-y-4" : "grid grid-cols-2 gap-4 items-start"}>
-                  <CategoryBarChart
-                    categoryData={categoryData}
-                    onSelect={setSelectedCategory}
-                    selectedCat={null}
-                  />
-                  <CategoryList
-                    categoryData={categoryData}
-                    onSelect={setSelectedCategory}
-                    selectedCat={null}
-                  />
-                </div>
+                {/* Chart — full width */}
+                <CategoryBarChart
+                  categoryData={categoryData}
+                  onSelect={setSelectedCategory}
+                  selectedCat={null}
+                />
 
-                {/* AI Insights */}
+                {/* AI Insights — between chart and categories */}
                 <AIInsightsSection insights={aiInsights} loading={aiLoading} />
+
+                {/* All Categories list */}
+                <CategoryList
+                  categoryData={categoryData}
+                  onSelect={setSelectedCategory}
+                  selectedCat={null}
+                />
 
                 {/* Alerts */}
                 {aiInsights && <AlertsSection alerts={aiInsights.alerts} />}
@@ -1210,11 +1211,8 @@ const AnalyticsCategorias = () => {
                 {/* Installment Insights */}
                 <InstallmentInsightsSection impacts={enrichedInstallmentImpacts} />
 
-                {/* Projections */}
-                <ProjectionsCard totalExpenses={totalExpenses} />
-
                 {/* Limit Suggestions */}
-                {aiInsights && <LimitSuggestions suggestions={aiInsights.limitSuggestions} />}
+                {aiInsights && <LimitSuggestions suggestions={aiInsights.limitSuggestions} categoryData={categoryData} />}
               </>
             ) : (
               <GlassCard className="p-8 text-center">
