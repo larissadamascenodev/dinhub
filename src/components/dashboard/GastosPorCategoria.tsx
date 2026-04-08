@@ -1,6 +1,7 @@
 import { memo, useState, useMemo, useEffect } from "react";
+import { useNavigate } from "react-router-dom";
 import { motion } from "framer-motion";
-import { ChevronDown, ChevronUp } from "lucide-react";
+import { ChevronDown, ChevronUp, ChevronRight } from "lucide-react";
 import type { CategoryExpense } from "@/types/finance";
 import { getCategoryIcon, getCategoryColor } from "@/lib/categoryUtils";
 import { getCustomCategories, type CustomCategory } from "@/services/categoryService";
@@ -32,6 +33,7 @@ const getCatColor = (name: string, fallbackIdx: number, customCats?: CustomCateg
 };
 
 const GastosPorCategoria = memo(({ categories, selectedMonth, onVerAnalise }: Props) => {
+  const navigate = useNavigate();
   const [customCats, setCustomCats] = useState<CustomCategory[]>([]);
   useEffect(() => { getCustomCategories().then(setCustomCats).catch(() => {}); }, []);
   const sorted = useMemo(() => [...categories].sort((a, b) => b.amount - a.amount), [categories]);
@@ -115,20 +117,36 @@ const GastosPorCategoria = memo(({ categories, selectedMonth, onVerAnalise }: Pr
         })}
       </div>
 
-      {hasMore && (
-        <div className="px-4 pb-3">
+      {hasMore && !expanded && (
+        <div className="px-4 pb-1">
           <button
-            onClick={() => setExpanded(!expanded)}
+            onClick={() => setExpanded(true)}
             className="w-full flex items-center justify-center gap-1 pt-2 border-t border-border/10 text-[10px] text-primary/70 hover:text-primary transition-colors font-medium"
           >
-            {expanded ? (
-              <>Mostrar menos <ChevronUp className="w-3 h-3" /></>
-            ) : (
-              <>Mais {sorted.length - INITIAL_COUNT} categorias <ChevronDown className="w-3 h-3" /></>
-            )}
+            Mais {sorted.length - INITIAL_COUNT} categorias <ChevronDown className="w-3 h-3" />
           </button>
         </div>
       )}
+      {hasMore && expanded && (
+        <div className="px-4 pb-1">
+          <button
+            onClick={() => setExpanded(false)}
+            className="w-full flex items-center justify-center gap-1 pt-2 border-t border-border/10 text-[10px] text-primary/70 hover:text-primary transition-colors font-medium"
+          >
+            Mostrar menos <ChevronUp className="w-3 h-3" />
+          </button>
+        </div>
+      )}
+
+      {/* Ver análise completa */}
+      <div className="px-4 pb-3">
+        <button
+          onClick={() => navigate("/analytics/categorias")}
+          className="w-full flex items-center justify-center gap-1 pt-2 border-t border-border/10 text-[10px] text-primary/70 hover:text-primary transition-colors font-medium"
+        >
+          Ver análise completa <ChevronRight className="w-3 h-3" />
+        </button>
+      </div>
     </div>
   );
 });

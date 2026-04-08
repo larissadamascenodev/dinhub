@@ -21,6 +21,7 @@ import BotFinanceBalanco from "./pages/BotFinanceBalanco.tsx";
 import GerenciarCategorias from "./pages/GerenciarCategorias.tsx";
 import Metas from "./pages/Metas.tsx";
 import MetaDetalhe from "./pages/MetaDetalhe.tsx";
+import AnalyticsCategorias from "./pages/AnalyticsCategorias.tsx";
 import NotFound from "./pages/NotFound.tsx";
 
 const queryClient = new QueryClient();
@@ -62,6 +63,7 @@ const App = () => (
               <Route path="/categorias" element={<GerenciarCategorias />} />
               <Route path="/metas" element={<Metas />} />
               <Route path="/metas/:goalId" element={<MetaDetalhe />} />
+              <Route path="/analytics/categorias" element={<AnalyticsCategorias />} />
             </Route>
             <Route path="*" element={<NotFound />} />
           </Routes>
