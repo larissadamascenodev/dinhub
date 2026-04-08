@@ -60,15 +60,15 @@ export default function GerenciarCategorias() {
   const unifiedCategories: UnifiedCategory[] = [];
 
   // Add visible defaults
-  Object.entries(DEFAULT_CATEGORY_MAP)
-    .filter(([, v]) => v.type === tab)
+  Object.entries(DEFAULT_CATEGORY_TYPE)
+    .filter(([, type]) => type === tab)
     .filter(([name]) => !hiddenDefaults.includes(name))
-    .forEach(([name, meta]) => {
+    .forEach(([name]) => {
       unifiedCategories.push({
         id: `default-${name}`,
         name,
         icon: "",
-        color: meta.color,
+        color: DEFAULT_CATEGORY_HEX[name] || "#64748b",
         type: tab,
         isDefault: true,
       });
