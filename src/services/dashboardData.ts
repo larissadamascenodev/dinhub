@@ -212,8 +212,10 @@ export async function buildDashboardData(
 
   const allEvents = [...events, ...pendingAsEvents, ...faturaPendingEvents].sort((a, b) => parseInt(a.date) - parseInt(b.date));
 
+  // Build category breakdown from ALL expense transactions in this month
+  // (including credit card purchases by their purchase date)
   const catMap = new Map<string, number>();
-  paidTxs
+  filteredTxs
     .filter((t) => t.type === "despesa")
     .forEach((t) => catMap.set(t.category, (catMap.get(t.category) ?? 0) + Number(t.amount)));
 
