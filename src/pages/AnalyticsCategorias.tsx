@@ -36,6 +36,8 @@ const SHORT_MONTH_NAMES = [
 interface TxRow {
   id: string; name: string; category: string; date: string;
   amount: number; type: string; status: string;
+  recurrence_type?: string; installments?: number | null;
+  installment_current?: number | null; parent_transaction_id?: string | null;
 }
 
 interface CategorySummary {
