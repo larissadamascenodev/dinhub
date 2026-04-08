@@ -17,6 +17,7 @@ import InvestimentoDetalhe from "./pages/InvestimentoDetalhe.tsx";
 import BotFinance from "./pages/BotFinance.tsx";
 import BotFinanceProjecoes from "./pages/BotFinanceProjecoes.tsx";
 import BotFinanceSaude from "./pages/BotFinanceSaude.tsx";
+import BotFinanceBalanco from "./pages/BotFinanceBalanco.tsx";
 import GerenciarCategorias from "./pages/GerenciarCategorias.tsx";
 import Metas from "./pages/Metas.tsx";
 import MetaDetalhe from "./pages/MetaDetalhe.tsx";
