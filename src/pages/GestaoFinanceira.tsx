@@ -170,6 +170,7 @@ const GestaoFinanceira = () => {
   const [newInvestmentType, setNewInvestmentType] = useState("cdb");
   const [newRateType, setNewRateType] = useState("percent_cdi");
   const [newAnnualRate, setNewAnnualRate] = useState("");
+  const [newRatePeriod, setNewRatePeriod] = useState<"monthly" | "annual">("monthly");
   const [newStartDate, setNewStartDate] = useState<Date>(new Date());
   const [newMaturityDate, setNewMaturityDate] = useState<Date | undefined>(undefined);
 
@@ -249,6 +250,7 @@ const GestaoFinanceira = () => {
     setNewInvestmentType("cdb");
     setNewRateType("percent_cdi");
     setNewAnnualRate("");
+    setNewRatePeriod("monthly");
     setNewStartDate(new Date());
     setNewMaturityDate(undefined);
   };
@@ -274,7 +276,15 @@ const GestaoFinanceira = () => {
       };
       if (newAccType === "investment") {
         accPayload.rate_type = "fixed_monthly";
-        accPayload.annual_rate = newAnnualRate ? parseFloat(newAnnualRate) : null;
+        if (newAnnualRate) {
+          const raw = parseFloat(newAnnualRate);
+          // Always store as monthly rate
+          accPayload.annual_rate = newRatePeriod === "annual"
+            ? Number(((Math.pow(1 + raw / 100, 1 / 12) - 1) * 100).toFixed(6))
+            : raw;
+        } else {
+          accPayload.annual_rate = null;
+        }
       }
       await createAccount(user.id, accPayload);
       toast.success("Conta criada!");
@@ -956,21 +966,47 @@ const GestaoFinanceira = () => {
           {newAccType === "investment" && (
             <>
               <div className="space-y-1.5">
-                <label className="text-sm font-medium text-foreground">Taxa de rendimento mensal</label>
+                <label className="text-sm font-medium text-foreground">Taxa de rendimento</label>
+                <div className="flex items-center gap-2 mb-1.5">
+                  <button
+                    type="button"
+                    onClick={() => setNewRatePeriod("monthly")}
+                    className={`px-3 py-1 rounded-lg text-xs font-medium transition-colors ${
+                      newRatePeriod === "monthly"
+                        ? "bg-primary text-primary-foreground"
+                        : "bg-muted/40 text-muted-foreground"
+                    }`}
+                  >
+                    % a.m.
+                  </button>
+                  <button
+                    type="button"
+                    onClick={() => setNewRatePeriod("annual")}
+                    className={`px-3 py-1 rounded-lg text-xs font-medium transition-colors ${
+                      newRatePeriod === "annual"
+                        ? "bg-primary text-primary-foreground"
+                        : "bg-muted/40 text-muted-foreground"
+                    }`}
+                  >
+                    % a.a.
+                  </button>
+                </div>
                 <div className="relative">
                   <Input
-                    placeholder="0,50"
+                    placeholder={newRatePeriod === "monthly" ? "0,50" : "6,00"}
                     type="number"
                     value={newAnnualRate}
                     onChange={(e) => setNewAnnualRate(e.target.value)}
                     className="bg-muted/30 border-border/20 h-11 rounded-xl pr-20"
                   />
                   <span className="absolute right-3 top-1/2 -translate-y-1/2 text-sm text-muted-foreground pointer-events-none">
-                    % a.m.
+                    {newRatePeriod === "monthly" ? "% a.m." : "% a.a."}
                   </span>
                 </div>
                 <p className="text-[11px] text-muted-foreground/70">
-                  Ex: 0,5 para 0,5% ao mês (juros compostos)
+                  {newRatePeriod === "monthly"
+                    ? "Ex: 0,5 para 0,5% ao mês (juros compostos)"
+                    : "Ex: 6 para 6% ao ano (será convertido para taxa mensal)"}
                 </p>
               </div>
               <div className="grid grid-cols-2 gap-3">
