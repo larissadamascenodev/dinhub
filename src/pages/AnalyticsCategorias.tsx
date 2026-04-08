@@ -366,14 +366,19 @@ const CategoryChartSection = ({ categoryData, isMobile }: {
 };
 
 // ── Category List with traffic-light bars ────────────────
-const CategoryList = ({ categoryData, onSelect, selectedCat, prevCategoryData, habitMap }: {
+const CategoryList = ({ categoryData, onSelect, selectedCat, prevCategoryData, habitMap, scoreMap }: {
   categoryData: CategorySummary[];
   onSelect: (name: string) => void;
   selectedCat: string | null;
   prevCategoryData?: { name: string; amount: number }[];
   habitMap?: Record<string, HabitData>;
+  scoreMap?: Record<string, CategoryScoreData>;
 }) => {
-  const getBarColor = (pct: number) => {
+  const getBarColor = (catName: string, pct: number) => {
+    const score = scoreMap?.[catName]?.score;
+    if (score === "exagerado") return "hsl(var(--destructive))";
+    if (score === "atencao") return "hsl(var(--warning))";
+    if (score === "saudavel") return "hsl(var(--success))";
     if (pct > 40) return "hsl(var(--destructive))";
     if (pct > 25) return "hsl(var(--warning))";
     return "hsl(var(--success))";
