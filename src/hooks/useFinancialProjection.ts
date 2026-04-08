@@ -1,6 +1,8 @@
-import { useState, useMemo, useCallback } from "react";
+import { useState, useMemo, useCallback, useEffect, useRef } from "react";
 import { useMonth } from "@/contexts/MonthContext";
-import { useFinanceData } from "@/hooks/useFinanceData";
+import { useFinanceData, buildDashboardData } from "@/hooks/useFinanceData";
+import { useAuth } from "@/contexts/AuthContext";
+import type { DashboardData } from "@/types/finance";
 import {
   getMonthlyProjection,
   getDailyLimit,
@@ -13,25 +15,60 @@ import {
 
 /**
  * React hook that wires the financial projection engine to live data.
- * Automatically recalculates on data changes (including real-time updates).
+ * Loads real financial data for each future month (recurring/scheduled transactions).
  */
 export function useFinancialProjection() {
   const { selectedMonth, selectedYear } = useMonth();
+  const { user } = useAuth();
   const { data, loading, refetch } = useFinanceData(selectedMonth, selectedYear, { includeHistorical: true });
 
   const [savingsBoost, setSavingsBoost] = useState(0);
   const [incomeBoost, setIncomeBoost] = useState(0);
   const [savingsGoal, setSavingsGoal] = useState(0);
 
+  // Per-month data for future months
+  const [monthDataMap, setMonthDataMap] = useState<Map<string, DashboardData>>(new Map());
+  const [futureLoading, setFutureLoading] = useState(false);
+  const loadingRef = useRef(false);
+
+  // Load real data for future months (1..11 months ahead)
+  useEffect(() => {
+    if (!user || loading) return;
+    if (loadingRef.current) return;
+    loadingRef.current = true;
+    setFutureLoading(true);
+
+    const months: { m: number; y: number }[] = [];
+    for (let i = 1; i < 12; i++) {
+      const d = new Date(selectedYear, selectedMonth + i, 1);
+      months.push({ m: d.getMonth(), y: d.getFullYear() });
+    }
+
+    Promise.all(
+      months.map(({ m, y }) =>
+        buildDashboardData(m, y, { includeHistorical: false, userId: user.id })
+          .then((result) => ({ key: `${m}-${y}`, data: result }))
+          .catch(() => ({ key: `${m}-${y}`, data: null }))
+      )
+    ).then((results) => {
+      const map = new Map<string, DashboardData>();
+      for (const r of results) {
+        if (r.data) map.set(r.key, r.data);
+      }
+      setMonthDataMap(map);
+      setFutureLoading(false);
+      loadingRef.current = false;
+    });
+  }, [user, loading, selectedMonth, selectedYear]);
+
   const params: SimulationParams = useMemo(
     () => ({ savingsBoost, incomeBoost }),
     [savingsBoost, incomeBoost]
   );
 
-  // All computed values derive from data + params — auto-update on real-time changes
   const projections = useMemo(
-    () => getMonthlyProjection(data, selectedMonth, selectedYear, params),
-    [data, selectedMonth, selectedYear, params]
+    () => getMonthlyProjection(data, selectedMonth, selectedYear, params, monthDataMap),
+    [data, selectedMonth, selectedYear, params, monthDataMap]
   );
 
   const dailyLimit = useMemo(
@@ -61,22 +98,18 @@ export function useFinancialProjection() {
 
   const refreshAll = useCallback(async () => {
     invalidateProjectionCache();
+    loadingRef.current = false;
     await refetch();
   }, [refetch]);
 
   return {
-    // Raw data
     data,
-    loading,
-
-    // Projections
+    loading: loading || futureLoading,
     projections,
     dailyLimit,
     simulation,
     healthScore,
     insight,
-
-    // Simulation controls
     savingsBoost,
     setSavingsBoost,
     incomeBoost,
@@ -84,11 +117,7 @@ export function useFinancialProjection() {
     savingsGoal,
     setSavingsGoal,
     resetSimulation,
-
-    // Actions
     refreshAll,
-
-    // Month context
     selectedMonth,
     selectedYear,
   };
