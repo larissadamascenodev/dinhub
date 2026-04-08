@@ -69,6 +69,7 @@ interface Props {
 }
 
 const TransactionDetailModal = ({ open, tx, accountName, onClose, onRefresh, userId, selectedMonth, selectedYear }: Props) => {
+  const [customCategories, setCustomCategories] = useState<CustomCategory[]>([]);
   const [step, setStep] = useState<ModalStep>("detail");
   const [loading, setLoading] = useState(false);
   const [editScope, setEditScope] = useState<"this" | "all">("all");
@@ -93,6 +94,10 @@ const TransactionDetailModal = ({ open, tx, accountName, onClose, onRefresh, use
   // Similar/recurring transactions
   const [similarTxs, setSimilarTxs] = useState<{ id: string; name: string; amount: number; date: string; status: string; category: string }[]>([]);
   const [similarExpanded, setSimilarExpanded] = useState(false);
+
+  useEffect(() => {
+    if (open) getCustomCategories().then(setCustomCategories).catch(() => {});
+  }, [open]);
 
   useEffect(() => {
     if (!open || !tx || !user) { setSimilarTxs([]); return; }
@@ -151,7 +156,7 @@ const TransactionDetailModal = ({ open, tx, accountName, onClose, onRefresh, use
   const isReceita = tx.type === "receita";
   const isPaid = tx.status === "pago";
   const isRecurring = tx.recurrence_type === "fixa";
-  const Icon = getDefaultCategoryIcon(tx.category);
+  const Icon = getCategoryIcon(tx.category, customCategories);
 
   const handleClose = () => {
     setStep("detail");
@@ -506,7 +511,7 @@ const TransactionDetailModal = ({ open, tx, accountName, onClose, onRefresh, use
                                   style={{ background: sIsReceita ? "hsl(var(--primary) / 0.12)" : "hsl(var(--muted) / 0.3)" }}
                                 >
                                   {(() => {
-                                    const InstallmentIcon = getDefaultCategoryIcon(s.category);
+                                    const InstallmentIcon = getCategoryIcon(s.category, customCategories);
                                     return <InstallmentIcon className="w-4 h-4 text-foreground/80" />;
                                   })()}
                                 </div>
