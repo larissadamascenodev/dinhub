@@ -483,21 +483,31 @@ const InstallmentInsightsSection = ({ impacts }: { impacts: InstallmentImpact[] 
               transition={{ delay: i * 0.1 }}
               className={`p-3 rounded-xl ${styles.bg} border ${styles.border}`}
             >
-              <p className="text-xs text-foreground/80 leading-relaxed">
+              <div className="flex items-center gap-2 mb-2">
+                <span className="text-xs">💳</span>
+                <p className="text-xs font-semibold text-foreground flex-1">{imp.category}</p>
+                <span className={`text-[9px] font-semibold px-1.5 py-0.5 rounded-full ${
+                  severity === "danger" ? "bg-destructive/10 text-destructive" :
+                  severity === "warning" ? "bg-warning/10 text-warning" : "bg-blue-500/10 text-blue-400"
+                }`}>
+                  {imp.impactPct}% da categoria
+                </span>
+              </div>
+              <p className="text-[11px] text-foreground/70 leading-relaxed mb-2">
                 {getMessage(imp)}
               </p>
-              <div className="flex items-center gap-4 mt-2">
+              <div className="grid grid-cols-3 gap-2 text-center py-1.5 rounded-lg bg-background/30">
                 <div>
-                  <p className="text-[9px] text-muted-foreground/50 uppercase">Mensal</p>
-                  <p className="text-xs font-bold text-foreground tabular-nums">{fmt(imp.monthlyAmount)}</p>
+                  <p className="text-[8px] text-muted-foreground/50 uppercase">Mensal</p>
+                  <p className="text-[11px] font-bold text-foreground tabular-nums">{fmt(imp.monthlyAmount)}</p>
                 </div>
                 <div>
-                  <p className="text-[9px] text-muted-foreground/50 uppercase">Restante</p>
-                  <p className="text-xs font-bold text-foreground tabular-nums">{fmt(imp.totalRemaining)}</p>
+                  <p className="text-[8px] text-muted-foreground/50 uppercase">Restante</p>
+                  <p className="text-[11px] font-bold text-foreground tabular-nums">{fmt(imp.totalRemaining)}</p>
                 </div>
                 <div>
-                  <p className="text-[9px] text-muted-foreground/50 uppercase">Meses</p>
-                  <p className="text-xs font-bold text-foreground tabular-nums">⏳ {imp.monthsRemaining}</p>
+                  <p className="text-[8px] text-muted-foreground/50 uppercase">Meses</p>
+                  <p className="text-[11px] font-bold text-foreground tabular-nums">⏳ {imp.monthsRemaining}</p>
                 </div>
               </div>
             </motion.div>
