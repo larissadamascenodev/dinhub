@@ -11,6 +11,8 @@ import {
   Cigarette, Wine, Pizza, Hammer, Key, Shield, Umbrella,
   Tent, Map, Truck, Anchor, Cloudy, Leaf, Flame,
   Gem, Crown, BadgeDollarSign, HandCoins, Receipt, Banknote,
+  Droplets, CupSoda, Package, Popcorn, Salad, IceCream,
+  Plug, Wifi, Phone, Building2,
 } from "lucide-react";
 import { Input } from "@/components/ui/input";
 import { cn } from "@/lib/utils";
@@ -91,6 +93,16 @@ const ICON_OPTIONS: { name: string; Icon: any }[] = [
   { name: "hand-coins", Icon: HandCoins },
   { name: "receipt", Icon: Receipt },
   { name: "banknote", Icon: Banknote },
+  { name: "droplets", Icon: Droplets },
+  { name: "cup-soda", Icon: CupSoda },
+  { name: "package", Icon: Package },
+  { name: "popcorn", Icon: Popcorn },
+  { name: "salad", Icon: Salad },
+  { name: "ice-cream", Icon: IceCream },
+  { name: "plug", Icon: Plug },
+  { name: "wifi", Icon: Wifi },
+  { name: "phone", Icon: Phone },
+  { name: "building-2", Icon: Building2 },
 ];
 
 const COLOR_OPTIONS = [
