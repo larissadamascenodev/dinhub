@@ -423,6 +423,16 @@ const CategoryList = ({ categoryData, onSelect, selectedCat, prevCategoryData, h
               <div className="flex-1 min-w-0 text-left">
                 <div className="flex items-center gap-1.5 flex-wrap">
                   <p className="text-xs md:text-sm font-semibold text-foreground truncate">{cat.name}</p>
+                  {(() => {
+                    const sc = scoreMap?.[cat.name];
+                    if (!sc) return null;
+                    const cfg = SCORE_CONFIG[sc.score];
+                    return (
+                      <span className={`text-[7px] md:text-[8px] font-semibold px-1.5 py-0.5 rounded-full ${cfg.bg} ${cfg.text} flex items-center gap-0.5`}>
+                        {cfg.emoji} {cfg.label}
+                      </span>
+                    );
+                  })()}
                   {habit?.isHabit && (
                     <span className="text-[7px] md:text-[8px] font-semibold px-1.5 py-0.5 rounded-full bg-primary/10 text-primary flex items-center gap-0.5">
                       <Repeat className="w-2.5 h-2.5" /> Hábito
