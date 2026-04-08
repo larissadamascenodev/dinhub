@@ -142,18 +142,14 @@ const DashboardLayout = () => {
   // Handle fallback from review modal: open NovaTransacaoModal pre-filled
   const handleFallbackItem = useCallback((item: ExtractedItem) => {
     setShowReviewModal(false);
-    setFallbackEditData({
-      id: "",
+    setPrefillData({
       name: item.description || "",
       type: (item.type as "receita" | "despesa") || "despesa",
       amount: item.amount || 0,
       category: item.category || "",
       date: item.date || new Date().toISOString().split("T")[0],
-      status: "pendente",
-      payment_method: "conta",
       recurrence_type: item.installment_total && item.installment_total > 1 ? "parcelado" : "unica",
       installments: item.installment_total || null,
-      installment_current: item.installment_current || null,
     });
     setModalType((item.type as "receita" | "despesa") || "despesa");
     setShowModal(true);
