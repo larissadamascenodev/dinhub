@@ -33,6 +33,7 @@ const getCatColor = (name: string, fallbackIdx: number, customCats?: CustomCateg
 };
 
 const GastosPorCategoria = memo(({ categories, selectedMonth, onVerAnalise }: Props) => {
+  const navigate = useNavigate();
   const [customCats, setCustomCats] = useState<CustomCategory[]>([]);
   useEffect(() => { getCustomCategories().then(setCustomCats).catch(() => {}); }, []);
   const sorted = useMemo(() => [...categories].sort((a, b) => b.amount - a.amount), [categories]);
