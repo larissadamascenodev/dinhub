@@ -6,7 +6,7 @@ import { toast } from "sonner";
 import { useAuth } from "@/contexts/AuthContext";
 import { cn } from "@/lib/utils";
 import CategoryCreateModal, { getIconComponent } from "@/components/dashboard/CategoryCreateModal";
-import { getDefaultCategoryIcon, DEFAULT_CATEGORY_ICONS } from "@/lib/categoryIcons";
+import { getDefaultCategoryIcon, DEFAULT_CATEGORY_ICONS, DEFAULT_CATEGORY_HEX, DEFAULT_CATEGORY_TYPE } from "@/lib/categoryIcons";
 import {
   getCustomCategories,
   createCustomCategory,
@@ -17,39 +17,7 @@ import {
   type CustomCategory,
 } from "@/services/categoryService";
 
-const DEFAULT_CATEGORY_MAP: Record<string, { type: "despesa" | "receita"; color: string }> = {
-  "Alimentação": { type: "despesa", color: "#f97316" },
-  "Transporte": { type: "despesa", color: "#3b82f6" },
-  "Saúde": { type: "despesa", color: "#ef4444" },
-  "Assinaturas": { type: "despesa", color: "#8b5cf6" },
-  "Lazer": { type: "despesa", color: "#ec4899" },
-  "Moradia": { type: "despesa", color: "#6366f1" },
-  "Educação": { type: "despesa", color: "#14b8a6" },
-  "Vestuário": { type: "despesa", color: "#f59e0b" },
-  "Pets": { type: "despesa", color: "#a855f7" },
-  "Beleza": { type: "despesa", color: "#d946ef" },
-  "Presentes": { type: "despesa", color: "#f43f5e" },
-  "Viagem": { type: "despesa", color: "#06b6d4" },
-  "Tecnologia": { type: "despesa", color: "#64748b" },
-  "Impostos": { type: "despesa", color: "#78716c" },
-  "Supermercado": { type: "despesa", color: "#22c55e" },
-  "Conta de Luz": { type: "despesa", color: "#eab308" },
-  "Conta de Água": { type: "despesa", color: "#0ea5e9" },
-  "Conta de Gás": { type: "despesa", color: "#ea580c" },
-  "Bebidas": { type: "despesa", color: "#c026d3" },
-  "Delivery": { type: "despesa", color: "#0d9488" },
-  "Cafeteria": { type: "despesa", color: "#92400e" },
-  "Academia": { type: "despesa", color: "#7c3aed" },
-  "Fast Food": { type: "despesa", color: "#dc2626" },
-  "Salário": { type: "receita", color: "#00e676" },
-  "Freelance": { type: "receita", color: "#0891b2" },
-  "Investimentos": { type: "receita", color: "#10b981" },
-  "Vendas": { type: "receita", color: "#e17055" },
-  "Aluguéis": { type: "receita", color: "#6d28d9" },
-  "Bônus": { type: "receita", color: "#84cc16" },
-  "Comissão": { type: "receita", color: "#0e7490" },
-  "Mesada": { type: "receita", color: "#65a30d" },
-};
+// Use centralized maps from categoryIcons — no local duplicate
 
 interface UnifiedCategory {
   id: string;
@@ -92,15 +60,15 @@ export default function GerenciarCategorias() {
   const unifiedCategories: UnifiedCategory[] = [];
 
   // Add visible defaults
-  Object.entries(DEFAULT_CATEGORY_MAP)
-    .filter(([, v]) => v.type === tab)
+  Object.entries(DEFAULT_CATEGORY_TYPE)
+    .filter(([, type]) => type === tab)
     .filter(([name]) => !hiddenDefaults.includes(name))
-    .forEach(([name, meta]) => {
+    .forEach(([name]) => {
       unifiedCategories.push({
         id: `default-${name}`,
         name,
         icon: "",
-        color: meta.color,
+        color: DEFAULT_CATEGORY_HEX[name] || "#64748b",
         type: tab,
         isDefault: true,
       });
