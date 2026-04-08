@@ -131,6 +131,14 @@ export const DEFAULT_CATEGORY_TYPE: Record<string, "despesa" | "receita"> = {
   "Comissão": "receita", "Mesada": "receita",
 };
 
+export const DEFAULT_EXPENSE_CATEGORIES = Object.keys(DEFAULT_CATEGORY_TYPE).filter(
+  (name) => DEFAULT_CATEGORY_TYPE[name] === "despesa"
+);
+
+export const DEFAULT_INCOME_CATEGORIES = Object.keys(DEFAULT_CATEGORY_TYPE).filter(
+  (name) => DEFAULT_CATEGORY_TYPE[name] === "receita"
+);
+
 export function getDefaultCategoryColor(name: string): string {
   return DEFAULT_CATEGORY_COLORS[name] || "220 10% 55%";
 }
