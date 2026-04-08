@@ -7,7 +7,7 @@ const CREDIT_CARDS_CACHE_KEY = "credit-cards";
 const queryCache = new Map<string, any[]>();
 const inflightCache = new Map<string, Promise<any[]>>();
 
-function clearQueryCache() {
+export function clearFinanceQueryCache() {
   queryCache.clear();
   inflightCache.clear();
 }
@@ -36,7 +36,7 @@ export interface TransactionFilters {
 }
 
 function notifyFinanceDataChanged() {
-  clearQueryCache();
+  clearFinanceQueryCache();
   if (typeof window === "undefined") return;
   window.dispatchEvent(new CustomEvent("finance-data-changed"));
 }
