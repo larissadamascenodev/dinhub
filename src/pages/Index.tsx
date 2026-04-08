@@ -159,6 +159,7 @@ const Index = () => {
           )}
           <TransacoesRecentes transactions={data.transactions} onDelete={refetch} />
           <ProximosEventos events={data.events} selectedMonth={selectedMonth} selectedYear={selectedYear} onEventClick={handleEventClick} />
+          <AssinaturasCard />
         </div>
 
         {/* MOBILE LAYOUT */}
