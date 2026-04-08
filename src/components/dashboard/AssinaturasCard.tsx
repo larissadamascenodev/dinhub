@@ -223,7 +223,31 @@ const AssinaturasCard = memo(() => {
         </div>
         <div className="text-right pt-1">
           <p className="text-[10px] text-muted-foreground/50">Total/mês</p>
-          <p className="text-[15px] font-bold text-primary tabular-nums">{fmt(total)}</p>
+          <p className={`text-[15px] font-bold tabular-nums ${activeTab === "receita" ? "text-emerald-400" : "text-primary"}`}>{fmt(total)}</p>
+        </div>
+      </div>
+
+      {/* Tabs */}
+      <div className="px-4 mt-1 mb-1.5">
+        <div className="relative flex rounded-lg bg-muted/20 p-0.5">
+          <motion.div
+            className="absolute top-0.5 bottom-0.5 rounded-md bg-primary/15 border border-primary/20"
+            layoutId="recorrentes-tab"
+            style={{ width: "50%", left: activeTab === "despesa" ? "0%" : "50%" }}
+            transition={{ type: "spring", stiffness: 400, damping: 30 }}
+          />
+          <button
+            onClick={() => { setActiveTab("despesa"); setExpanded(false); }}
+            className={`relative z-10 flex-1 text-[10px] font-semibold py-1.5 rounded-md transition-colors ${activeTab === "despesa" ? "text-primary" : "text-muted-foreground/50"}`}
+          >
+            Despesas {despesaCount > 0 && <span className="ml-0.5 opacity-60">({despesaCount})</span>}
+          </button>
+          <button
+            onClick={() => { setActiveTab("receita"); setExpanded(false); }}
+            className={`relative z-10 flex-1 text-[10px] font-semibold py-1.5 rounded-md transition-colors ${activeTab === "receita" ? "text-primary" : "text-muted-foreground/50"}`}
+          >
+            Receitas {receitaCount > 0 && <span className="ml-0.5 opacity-60">({receitaCount})</span>}
+          </button>
         </div>
       </div>
 
