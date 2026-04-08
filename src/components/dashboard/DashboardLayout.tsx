@@ -7,10 +7,11 @@ import MobileBottomNav from "@/components/dashboard/MobileBottomNav";
 import { useProfile } from "@/hooks/useProfile";
 import { useLoginStreak } from "@/hooks/useLoginStreak";
 import { MonthProvider } from "@/contexts/MonthContext";
-import NovaTransacaoModal from "@/components/dashboard/NovaTransacaoModal";
+import NovaTransacaoModal, { type PrefillData } from "@/components/dashboard/NovaTransacaoModal";
 import TransactionTypeChooser from "@/components/dashboard/TransactionTypeChooser";
 import TransferModal from "@/components/dashboard/TransferModal";
 import InvoiceUploadReviewModal, { type ExtractedItem } from "@/components/fatura/InvoiceUploadReviewModal";
+import ScanProcessingOverlay from "@/components/dashboard/ScanProcessingOverlay";
 import { supabase } from "@/integrations/supabase/client";
 import { createTransaction } from "@/services/transactionService";
 import { useAuth } from "@/contexts/AuthContext";
@@ -30,9 +31,13 @@ const DashboardLayout = () => {
   const [scanProcessing, setScanProcessing] = useState(false);
   const [extractedItems, setExtractedItems] = useState<ExtractedItem[]>([]);
   const [extractedMessage, setExtractedMessage] = useState("");
+  const [avgConfidence, setAvgConfidence] = useState<number>(0);
   const [showReviewModal, setShowReviewModal] = useState(false);
   const [confirmingImport, setConfirmingImport] = useState(false);
   const [showScanChooser, setShowScanChooser] = useState(false);
+
+  // Fallback pre-fill for low confidence items
+  const [prefillData, setPrefillData] = useState<PrefillData | null>(null);
 
   const scanCameraRef = useRef<HTMLInputElement>(null);
   const scanGalleryRef = useRef<HTMLInputElement>(null);
@@ -83,7 +88,7 @@ const DashboardLayout = () => {
   // OCR scan handler
   const handleScanFile = useCallback(async (file: File) => {
     setScanProcessing(true);
-    toast.loading("Processando com IA...", { id: "scan-processing" });
+    setShowScanChooser(false);
     try {
       const formData = new FormData();
       formData.append("file", file);
@@ -101,16 +106,53 @@ const DashboardLayout = () => {
         selected: true,
       }));
 
+      const confidence = data.avg_confidence || 0;
+
+      // If single item with low confidence OR no items found, go to fallback
+      if (items.length === 1 && confidence < 0.7) {
+        const item = items[0];
+        setScanProcessing(false);
+        // Open NovaTransacaoModal pre-filled
+        setPrefillData({
+          name: item.description || "",
+          type: (item.type as "receita" | "despesa") || "despesa",
+          amount: item.amount || 0,
+          category: item.category || "",
+          date: item.date || new Date().toISOString().split("T")[0],
+          recurrence_type: item.installment_total && item.installment_total > 1 ? "parcelado" : "unica",
+          installments: item.installment_total || null,
+        });
+        setModalType((item.type as "receita" | "despesa") || "despesa");
+        setShowModal(true);
+        toast.info("Confiança baixa — revise os dados antes de salvar", { duration: 4000 });
+        return;
+      }
+
       setExtractedItems(items);
       setExtractedMessage(data.message || "Lançamentos encontrados!");
+      setAvgConfidence(confidence);
       setShowReviewModal(true);
-      toast.dismiss("scan-processing");
     } catch (err: any) {
-      toast.dismiss("scan-processing");
       toast.error(err?.message || "Erro ao processar documento");
     } finally {
       setScanProcessing(false);
     }
+  }, []);
+
+  // Handle fallback from review modal: open NovaTransacaoModal pre-filled
+  const handleFallbackItem = useCallback((item: ExtractedItem) => {
+    setShowReviewModal(false);
+    setPrefillData({
+      name: item.description || "",
+      type: (item.type as "receita" | "despesa") || "despesa",
+      amount: item.amount || 0,
+      category: item.category || "",
+      date: item.date || new Date().toISOString().split("T")[0],
+      recurrence_type: item.installment_total && item.installment_total > 1 ? "parcelado" : "unica",
+      installments: item.installment_total || null,
+    });
+    setModalType((item.type as "receita" | "despesa") || "despesa");
+    setShowModal(true);
   }, []);
 
   // Confirm import of scanned transactions
@@ -146,6 +188,11 @@ const DashboardLayout = () => {
       setConfirmingImport(false);
     }
   }, [user, handleSuccess]);
+
+  const handleModalClose = useCallback(() => {
+    setShowModal(false);
+    setPrefillData(null);
+  }, []);
 
   return (
     <MonthProvider>
@@ -228,7 +275,19 @@ const DashboardLayout = () => {
         <input ref={scanCameraRef} type="file" accept="image/*" capture="environment" className="hidden" onChange={handleScanFileInput} />
         <input ref={scanGalleryRef} type="file" accept="image/*" className="hidden" onChange={handleScanFileInput} />
         <input ref={scanFileRef} type="file" accept=".pdf,.csv,.xls,.xlsx" className="hidden" onChange={handleScanFileInput} />
-        <NovaTransacaoModal open={showModal} onClose={() => setShowModal(false)} onSuccess={handleSuccess} initialType={modalType} />
+        
+        {/* Processing overlay */}
+        <AnimatePresence>
+          <ScanProcessingOverlay open={scanProcessing} />
+        </AnimatePresence>
+
+        <NovaTransacaoModal
+          open={showModal}
+          onClose={handleModalClose}
+          onSuccess={handleSuccess}
+          initialType={modalType}
+          prefillData={prefillData}
+        />
         <TransferModal open={showTransferModal} onClose={() => setShowTransferModal(false)} onSuccess={handleSuccess} />
         <InvoiceUploadReviewModal
           open={showReviewModal}
@@ -237,6 +296,8 @@ const DashboardLayout = () => {
           message={extractedMessage}
           onConfirm={handleConfirmScanImport}
           confirming={confirmingImport}
+          avgConfidence={avgConfidence}
+          onFallback={handleFallbackItem}
         />
       </div>
     </MonthProvider>

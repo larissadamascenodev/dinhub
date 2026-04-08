@@ -14,6 +14,7 @@ interface ExtractedItem {
   installment_total: number | null;
   category: string;
   type: string;
+  confidence: number;
 }
 
 const INVOICE_PROMPT = `Você é um assistente especializado em extrair transações de faturas de cartão de crédito brasileiras.
@@ -28,6 +29,7 @@ Para cada item extraído, retorne:
 - installment_total: total de parcelas (ex: se "3/10", retorne 10). null se não parcelado
 - category: categoria sugerida (alimentação, transporte, compras, saúde, educação, lazer, moradia, serviços, assinatura, outros)
 - type: sempre "despesa" para faturas de cartão
+- confidence: um número de 0 a 1 indicando sua confiança na extração (1 = certeza total, 0.5 = incerto). Avalie cada campo: se o valor foi claramente lido, data presente, descrição clara = alta confiança. Se valores estão borrados, ambíguos ou parcialmente legíveis = baixa confiança.
 
 REGRAS DE DETECÇÃO DE PARCELAMENTO:
 - Procure padrões como: "3/10", "03/10", "Parcela 3 de 10", "3x de 10", "PARC 03/10"
@@ -42,21 +44,32 @@ const TRANSACTION_PROMPT = `Você é um assistente especializado em extrair tran
 Analise o conteúdo fornecido (pode ser um comprovante de pagamento, recibo, nota fiscal, extrato bancário, print de transferência PIX, boleto, etc.) e extraia TODAS as transações/lançamentos encontrados.
 
 Para cada item extraído, retorne:
-- description: nome/descrição da transação
-- amount: valor em reais (número decimal, sem R$)
-- date: data da transação no formato YYYY-MM-DD (ou null se não disponível)
+- description: nome/descrição da transação (nome do favorecido, estabelecimento ou descrição do pagamento)
+- amount: valor em reais (número decimal, sem R$). Busque padrões: "R$ X.XXX,XX", "X.XXX,XX", "R$X,XX". Pegue o valor principal da transação.
+- date: data da transação no formato YYYY-MM-DD. Detecte: DD/MM/YYYY, DD/MM/YY, DD/MM HH:mm. Se não tiver ano, use ${new Date().getFullYear()}.
 - installment_current: número da parcela atual se parcelado, senão null
 - installment_total: total de parcelas se parcelado, senão null
-- category: categoria sugerida (alimentação, transporte, compras, saúde, educação, lazer, moradia, serviços, assinatura, salário, freelance, investimentos, vendas, aluguéis, outros)
+- category: categoria sugerida baseada em palavras-chave:
+  * ifood, restaurante, lanchonete, padaria, mercado, supermercado → alimentação
+  * uber, 99, táxi, ônibus, metrô, combustível, estacionamento → transporte
+  * farmácia, drogaria, hospital, clínica, médico → saúde
+  * netflix, spotify, amazon prime, disney → assinatura
+  * escola, curso, faculdade, livro → educação
+  * aluguel, condomínio, luz, água, gás, internet → moradia
+  * Se não identificar com confiança → outros
 - type: "despesa" para gastos/pagamentos ou "receita" para recebimentos/depósitos/transferências recebidas
-
-DICAS:
-- PIX enviado = despesa, PIX recebido = receita
-- Boleto pago = despesa
-- Depósito = receita
-- Salário = receita
-- Se for um recibo de compra = despesa
-- Se não conseguir determinar, use "despesa"
+  * Palavras que indicam RECEITA: "recebido", "pix recebido", "entrada", "depósito", "crédito", "salário", "transferência recebida"
+  * Palavras que indicam DESPESA: "pago", "pagamento", "transferência enviada", "débito", "pix enviado", "compra"
+  * Se não conseguir determinar, use "despesa"
+- confidence: um número de 0 a 1 indicando sua confiança na extração geral deste item:
+  * 0.9-1.0: valor claro, data presente, tipo identificado, descrição legível
+  * 0.7-0.9: maioria dos campos claros, alguma ambiguidade menor
+  * 0.5-0.7: alguns campos incertos, imagem parcialmente legível
+  * 0.0-0.5: dados muito incertos, imagem borrada ou ilegível
+  
+Também retorne "merchant" quando identificar o nome do destinatário/origem:
+- Procure após "para", "de", "favorecido", "destinatário", "pagador", "beneficiário"
+- Nome em destaque no comprovante
 
 IMPORTANTE: Retorne APENAS o JSON, sem markdown, sem explicação.
 Formato: { "items": [...] }`;
@@ -75,7 +88,7 @@ serve(async (req) => {
     let imageBase64: string | null = null;
     let mimeType = "image/png";
     let csvText: string | null = null;
-    let context = "invoice"; // default: invoice
+    let context = "invoice";
 
     if (contentType.includes("multipart/form-data")) {
       const formData = await req.formData();
@@ -114,7 +127,7 @@ serve(async (req) => {
     const systemPrompt = context === "transaction" ? TRANSACTION_PROMPT : INVOICE_PROMPT;
 
     const userTextInvoice = "Extraia todas as transações desta fatura de cartão de crédito. Identifique parcelamentos.";
-    const userTextTransaction = "Extraia todas as transações deste comprovante/recibo/extrato. Identifique o tipo (receita ou despesa).";
+    const userTextTransaction = "Extraia todas as transações deste comprovante/recibo/extrato. Identifique o tipo (receita ou despesa), valor, data, destinatário e categoria.";
     const userText = context === "transaction" ? userTextTransaction : userTextInvoice;
 
     let userContent: any[];
@@ -177,7 +190,7 @@ serve(async (req) => {
 
     rawContent = rawContent.replace(/```json\s*/g, "").replace(/```\s*/g, "").trim();
 
-    let parsed: { items: ExtractedItem[] };
+    let parsed: { items: any[] };
     try {
       parsed = JSON.parse(rawContent);
     } catch {
@@ -199,11 +212,16 @@ serve(async (req) => {
         installment_total: item.installment_total ? Number(item.installment_total) : null,
         category: item.category || "outros",
         type: item.type || "despesa",
+        confidence: typeof item.confidence === "number" ? Math.min(1, Math.max(0, item.confidence)) : 0.5,
+        merchant: item.merchant || null,
       }));
 
     const hasInstallments = cleanedItems.some((i) => i.installment_total && i.installment_total > 1);
     const totalItems = cleanedItems.length;
     const installmentItems = cleanedItems.filter((i) => i.installment_total && i.installment_total > 1);
+    const avgConfidence = cleanedItems.length > 0
+      ? cleanedItems.reduce((sum, i) => sum + i.confidence, 0) / cleanedItems.length
+      : 0;
 
     let message = `${totalItems} lançamento${totalItems > 1 ? "s" : ""} encontrado${totalItems > 1 ? "s" : ""} 🎯`;
     if (hasInstallments) {
@@ -215,12 +233,17 @@ serve(async (req) => {
       message = msgs[Math.floor(Math.random() * msgs.length)];
     }
 
+    if (avgConfidence < 0.5) {
+      message += " ⚠️ Confiança baixa — revise os dados com atenção.";
+    }
+
     return new Response(
       JSON.stringify({
         items: cleanedItems,
         message,
         total_items: totalItems,
         installment_items: installmentItems.length,
+        avg_confidence: Math.round(avgConfidence * 100) / 100,
       }),
       {
         status: 200,
