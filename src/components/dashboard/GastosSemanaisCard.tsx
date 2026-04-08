@@ -130,11 +130,11 @@ const GastosSemanaisCard = memo(() => {
       style={{ boxShadow: "0 4px 24px -4px rgba(0,0,0,0.3)" }}
     >
       {/* Header */}
-      <div className="flex items-start justify-between px-4 pt-4 pb-1">
+      <div className="flex items-start justify-between px-4 pt-3 pb-0">
         <div>
           <p className="text-[11px] text-muted-foreground/60 font-medium">Gastos essa semana</p>
           <div className="flex items-baseline gap-2 mt-0.5">
-            <p className="text-xl font-bold text-foreground tabular-nums">{fmt(total)}</p>
+            <p className="text-lg font-bold text-foreground tabular-nums">{fmt(total)}</p>
             {variation !== null && (
               <span className={`text-xs font-semibold ${variation > 0 ? "text-primary" : "text-emerald-400"}`}>
                 {variation > 0 ? "↑" : "↓"}{Math.abs(variation)}%
@@ -146,30 +146,30 @@ const GastosSemanaisCard = memo(() => {
       </div>
 
       {/* Chart */}
-      <div className="px-4 pb-4 pt-2">
+      <div className="px-4 pb-3 pt-2">
         <div className="relative">
           {/* Y axis labels */}
-          <div className="absolute right-0 top-0 bottom-5 flex flex-col justify-between text-[9px] text-muted-foreground/40 tabular-nums pointer-events-none">
+          <div className="absolute right-0 top-0 bottom-4 flex flex-col justify-between text-[9px] text-muted-foreground/40 tabular-nums pointer-events-none">
             <span>{fmt(yMax).replace("R$\u00a0", "R$ ")}</span>
             <span>R$ 0</span>
           </div>
 
           {/* Bars */}
-          <div className="flex items-end justify-between gap-2 pr-14" style={{ height: "80px" }}>
+          <div className="flex items-end justify-between gap-1.5 pr-14" style={{ height: "60px" }}>
             {weekData.map((day, idx) => {
-              const heightPct = day.amount > 0 ? Math.max((day.amount / yMax) * 100, 6) : 0;
+              const heightPct = day.amount > 0 ? Math.max((day.amount / yMax) * 100, 8) : 0;
               const isEmpty = day.amount === 0;
 
               return (
-                <div key={idx} className="flex-1 flex flex-col items-center gap-1.5">
+                <div key={idx} className="flex-1 flex flex-col items-center">
                   {isEmpty ? (
-                    <div className="w-3 h-3 rounded-full border-2 border-muted-foreground/20 mt-auto" />
+                    <div className="w-2.5 h-2.5 rounded-full border-2 border-muted-foreground/20 mt-auto" />
                   ) : (
                     <motion.div
                       initial={{ height: 0 }}
                       animate={{ height: `${heightPct}%` }}
                       transition={{ delay: idx * 0.06, duration: 0.4, ease: "easeOut" }}
-                      className="w-full max-w-[20px] rounded-t-md bg-primary mt-auto"
+                      className="w-full max-w-[14px] rounded-t-md bg-primary mt-auto"
                       style={{ minHeight: "4px" }}
                     />
                   )}
@@ -179,7 +179,7 @@ const GastosSemanaisCard = memo(() => {
           </div>
 
           {/* Day labels */}
-          <div className="flex justify-between pr-14 mt-1.5">
+          <div className="flex justify-between pr-14 mt-1">
             {weekData.map((day, idx) => (
               <div key={idx} className="flex-1 text-center">
                 <span className="text-[9px] text-muted-foreground/50">{day.label}</span>
