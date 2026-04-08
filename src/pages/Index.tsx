@@ -195,6 +195,7 @@ const Index = () => {
           <div className="-mt-3">
             <ProximosEventos events={data.events} selectedMonth={selectedMonth} selectedYear={selectedYear} onEventClick={handleEventClick} />
           </div>
+          <AssinaturasCard />
         </div>
       <PagarEditarModal
         open={showPayModal}
