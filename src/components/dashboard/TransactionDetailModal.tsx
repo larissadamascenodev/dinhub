@@ -306,141 +306,141 @@ const TransactionDetailModal = ({ open, tx, accountName, onClose, onRefresh, use
       case "detail":
         return (
           <div className="relative">
-            {/* Floating action buttons — absolute top */}
-            <div className="flex items-center justify-between mb-5">
-              <button onClick={handleClose} className="w-8 h-8 rounded-xl bg-muted/30 backdrop-blur-sm flex items-center justify-center text-muted-foreground hover:text-foreground hover:bg-muted/50 transition-all">
-                <X className="w-3.5 h-3.5" />
-              </button>
-              <div className="relative" ref={dropdownRef}>
-                <button
-                  onClick={() => setShowDropdown(!showDropdown)}
-                  className="w-8 h-8 rounded-xl bg-muted/30 backdrop-blur-sm flex items-center justify-center text-muted-foreground hover:text-foreground hover:bg-muted/50 transition-all"
+            {/* Header row: icon+name left, actions right */}
+            <div className="flex items-start justify-between gap-3">
+              <div className="flex items-center gap-3 min-w-0">
+                <div
+                  className="w-12 h-12 rounded-xl flex items-center justify-center text-xl shrink-0"
+                  style={{ background: isReceita ? "hsl(var(--primary) / 0.15)" : "hsl(var(--muted) / 0.4)" }}
                 >
-                  <MoreVertical className="w-3.5 h-3.5" />
+                  {icon}
+                </div>
+                <div className="min-w-0">
+                  <h2 className="text-[15px] font-bold text-foreground truncate">{tx.name}</h2>
+                  <p className="text-[11px] text-muted-foreground/60 flex items-center gap-1 mt-0.5">
+                    <Wallet className="w-3 h-3" />
+                    {tx.payment_method === "cartao" ? "Cartão de crédito" : accountName || "Sem conta"}
+                  </p>
+                </div>
+              </div>
+              <div className="flex items-center gap-1.5 shrink-0">
+                <button className="w-8 h-8 rounded-xl bg-muted/20 flex items-center justify-center text-muted-foreground/50 hover:text-foreground hover:bg-muted/40 transition-all">
+                  <Bell className="w-4 h-4" />
                 </button>
-                <AnimatePresence>
-                  {showDropdown && (
-                    <motion.div
-                      initial={{ opacity: 0, scale: 0.9, y: -4 }}
-                      animate={{ opacity: 1, scale: 1, y: 0 }}
-                      exit={{ opacity: 0, scale: 0.9, y: -4 }}
-                      transition={{ duration: 0.15 }}
-                      className="absolute right-0 top-10 z-10 w-40 rounded-xl bg-popover border border-border/30 shadow-xl overflow-hidden backdrop-blur-xl"
-                    >
-                      <button
-                        onClick={() => { setShowDropdown(false); openEditForm(); }}
-                        className="w-full flex items-center gap-2.5 px-4 py-2.5 text-sm font-medium text-foreground hover:bg-muted/40 transition-colors"
+                <div className="relative" ref={dropdownRef}>
+                  <button
+                    onClick={() => setShowDropdown(!showDropdown)}
+                    className="w-8 h-8 rounded-xl bg-muted/20 flex items-center justify-center text-muted-foreground/50 hover:text-foreground hover:bg-muted/40 transition-all"
+                  >
+                    <MoreVertical className="w-4 h-4" />
+                  </button>
+                  <AnimatePresence>
+                    {showDropdown && (
+                      <motion.div
+                        initial={{ opacity: 0, scale: 0.9, y: -4 }}
+                        animate={{ opacity: 1, scale: 1, y: 0 }}
+                        exit={{ opacity: 0, scale: 0.9, y: -4 }}
+                        transition={{ duration: 0.15 }}
+                        className="absolute right-0 top-10 z-10 w-40 rounded-xl bg-popover border border-border/30 shadow-xl overflow-hidden backdrop-blur-xl"
                       >
-                        <Pencil className="w-3.5 h-3.5 text-primary" />
-                        Editar
-                      </button>
-                      <div className="h-px bg-border/20" />
-                      <button
-                        onClick={() => { setShowDropdown(false); setStep("delete-confirm"); }}
-                        className="w-full flex items-center gap-2.5 px-4 py-2.5 text-sm font-medium text-destructive hover:bg-destructive/10 transition-colors"
-                      >
-                        <Trash2 className="w-3.5 h-3.5" />
-                        Excluir
-                      </button>
-                    </motion.div>
-                  )}
-                </AnimatePresence>
+                        <button
+                          onClick={() => { setShowDropdown(false); openEditForm(); }}
+                          className="w-full flex items-center gap-2.5 px-4 py-2.5 text-sm font-medium text-foreground hover:bg-muted/40 transition-colors"
+                        >
+                          <Pencil className="w-3.5 h-3.5 text-primary" />
+                          Editar
+                        </button>
+                        <div className="h-px bg-border/20" />
+                        <button
+                          onClick={() => { setShowDropdown(false); setStep("delete-confirm"); }}
+                          className="w-full flex items-center gap-2.5 px-4 py-2.5 text-sm font-medium text-destructive hover:bg-destructive/10 transition-colors"
+                        >
+                          <Trash2 className="w-3.5 h-3.5" />
+                          Excluir
+                        </button>
+                      </motion.div>
+                    )}
+                  </AnimatePresence>
+                </div>
+                <button onClick={handleClose} className="w-8 h-8 rounded-xl bg-muted/20 flex items-center justify-center text-muted-foreground/50 hover:text-foreground hover:bg-muted/40 transition-all">
+                  <X className="w-4 h-4" />
+                </button>
               </div>
             </div>
 
-            {/* Centered hero — icon + amount */}
-            <div className="flex flex-col items-center text-center mb-6">
-              <div
-                className="w-14 h-14 rounded-2xl flex items-center justify-center text-2xl mb-3 ring-1 ring-border/10"
-                style={{ background: isReceita ? "hsl(var(--primary) / 0.12)" : "hsl(var(--muted-foreground) / 0.08)" }}
-              >
-                {icon}
-              </div>
-              <h2 className="text-sm font-bold text-foreground uppercase tracking-wider">{tx.name}</h2>
-              <p className="text-[11px] text-muted-foreground/60 mt-0.5">
-                {tx.category}
-                {isRecurring && " · fixa"}
-                {tx.installments && tx.installment_current ? ` · ${tx.installment_current}/${tx.installments}x` : ""}
-              </p>
+            {/* Amount */}
+            <div className="mt-5 mb-4">
               <p className={cn(
-                "text-2xl font-extrabold tabular-nums mt-3 tracking-tight",
-                isReceita ? "text-primary" : "text-foreground"
+                "text-3xl font-extrabold tabular-nums tracking-tight",
+                isReceita ? "text-primary" : "text-destructive"
               )}>
                 {isReceita ? "+" : "−"}{fmt(tx.amount)}
               </p>
-              <span
-                className={cn(
-                  "mt-2 px-3 py-1 rounded-full text-[10px] font-bold uppercase tracking-widest",
-                  isPaid
-                    ? "bg-primary/10 text-primary ring-1 ring-primary/20"
-                    : "bg-amber-500/10 text-amber-400 ring-1 ring-amber-500/20"
+              {/* Tags row */}
+              <div className="flex items-center gap-2 mt-2.5">
+                {isRecurring && (
+                  <span className="flex items-center gap-1 text-[11px] font-medium text-muted-foreground">
+                    <RefreshCw className="w-3 h-3" /> {tx.payment_method === "cartao" ? "Assinatura" : "Variável"}
+                  </span>
                 )}
-              >
-                {isPaid ? (isReceita ? "Recebido" : "Pago") : "Pendente"}
-              </span>
-            </div>
-
-            {/* Info card */}
-            <div className="rounded-xl bg-muted/20 ring-1 ring-border/10 divide-y divide-border/10 mb-4">
-              <div className="flex items-center gap-3 px-4 py-3">
-                <div className="w-7 h-7 rounded-lg bg-muted/40 flex items-center justify-center">
-                  <CalendarDays className="w-3.5 h-3.5 text-muted-foreground/70" />
-                </div>
-                <span className="text-[13px] text-muted-foreground flex-1">Data</span>
-                <span className="text-[13px] font-semibold text-foreground">{formatFullDate(tx.date)}</span>
-              </div>
-              <div className="flex items-center gap-3 px-4 py-3">
-                <div className="w-7 h-7 rounded-lg bg-muted/40 flex items-center justify-center">
-                  <Tag className="w-3.5 h-3.5 text-muted-foreground/70" />
-                </div>
-                <span className="text-[13px] text-muted-foreground flex-1">Categoria</span>
-                <span className="text-[13px] font-semibold text-foreground">{tx.category}</span>
-              </div>
-              <div className="flex items-center gap-3 px-4 py-3">
-                <div className="w-7 h-7 rounded-lg bg-muted/40 flex items-center justify-center">
-                  <Wallet className="w-3.5 h-3.5 text-muted-foreground/70" />
-                </div>
-                <span className="text-[13px] text-muted-foreground flex-1">Conta</span>
-                <span className="text-[13px] font-semibold text-foreground">
-                  {tx.payment_method === "cartao" ? "Cartão de crédito" : accountName || "Sem conta"}
+                {tx.installments && tx.installment_current && (
+                  <span className="flex items-center gap-1 text-[11px] font-medium text-muted-foreground">
+                    <FileText className="w-3 h-3" /> {tx.installment_current}/{tx.installments}x
+                  </span>
+                )}
+                <span
+                  className={cn(
+                    "px-2.5 py-0.5 rounded text-[10px] font-bold uppercase tracking-wider flex items-center gap-1",
+                    isPaid
+                      ? "bg-primary/10 text-primary"
+                      : "bg-amber-500/15 text-amber-400"
+                  )}
+                >
+                  <Clock className="w-3 h-3" />
+                  {isPaid ? (isReceita ? "Recebido" : "Pago") : "Pendente"}
                 </span>
               </div>
-              {isRecurring && (
-                <div className="flex items-center gap-3 px-4 py-3">
-                  <div className="w-7 h-7 rounded-lg bg-muted/40 flex items-center justify-center">
-                    <RefreshCw className="w-3.5 h-3.5 text-muted-foreground/70" />
-                  </div>
-                  <span className="text-[13px] text-muted-foreground flex-1">Recorrência</span>
-                  <span className="text-[13px] font-semibold text-foreground">Mensal</span>
-                </div>
-              )}
-              {tx.installments && tx.installment_current && (
-                <div className="flex items-center gap-3 px-4 py-3">
-                  <div className="w-7 h-7 rounded-lg bg-muted/40 flex items-center justify-center">
-                    <FileText className="w-3.5 h-3.5 text-muted-foreground/70" />
-                  </div>
-                  <span className="text-[13px] text-muted-foreground flex-1">Parcela</span>
-                  <span className="text-[13px] font-semibold text-foreground">{tx.installment_current}/{tx.installments}x</span>
-                </div>
-              )}
+            </div>
+
+            {/* Info grid */}
+            <div className="grid grid-cols-2 gap-x-6 gap-y-4 mb-5 pt-4 border-t border-border/10">
+              <div>
+                <p className="text-[11px] text-muted-foreground/60 flex items-center gap-1 mb-1">
+                  <CalendarDays className="w-3 h-3" /> Data
+                </p>
+                <p className="text-[13px] font-semibold text-foreground">{formatFullDate(tx.date)}</p>
+              </div>
+              <div>
+                <p className="text-[11px] text-muted-foreground/60 flex items-center gap-1 mb-1">
+                  <Wallet className="w-3 h-3" /> Conta
+                </p>
+                <p className="text-[13px] font-semibold text-foreground">
+                  {tx.payment_method === "cartao" ? "Cartão de crédito" : accountName || "Sem conta"}
+                </p>
+              </div>
+              <div>
+                <p className="text-[11px] text-muted-foreground/60 flex items-center gap-1 mb-1">
+                  <Tag className="w-3 h-3" /> Categoria
+                </p>
+                <p className="text-[13px] font-semibold text-foreground">{tx.category}</p>
+              </div>
               {tx.observation && (
-                <div className="flex items-center gap-3 px-4 py-3">
-                  <div className="w-7 h-7 rounded-lg bg-muted/40 flex items-center justify-center">
-                    <StickyNote className="w-3.5 h-3.5 text-muted-foreground/70" />
-                  </div>
-                  <span className="text-[13px] text-muted-foreground flex-1">Nota</span>
-                  <span className="text-[13px] font-semibold text-foreground truncate max-w-[180px]">{tx.observation}</span>
+                <div>
+                  <p className="text-[11px] text-muted-foreground/60 flex items-center gap-1 mb-1">
+                    <StickyNote className="w-3 h-3" /> Nota
+                  </p>
+                  <p className="text-[13px] font-semibold text-foreground truncate">{tx.observation}</p>
                 </div>
               )}
             </div>
 
-            {/* Pay button */}
+            {/* Action button */}
             {!isPaid && (
               <button
                 onClick={() => setStep("pay-confirm")}
-                className="w-full py-3 rounded-xl text-sm font-bold bg-primary/15 text-primary ring-1 ring-primary/20 hover:bg-primary/25 transition-all"
+                className="w-full py-3.5 rounded-xl text-sm font-bold bg-primary/10 text-primary ring-1 ring-primary/30 hover:bg-primary/20 transition-all"
               >
-                {isReceita ? "Marcar como recebido" : "Marcar como pago"}
+                {isReceita ? "Receber" : "Marcar como pago"}
               </button>
             )}
           </div>
