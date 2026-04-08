@@ -211,11 +211,8 @@ const AssinaturasCard = memo(() => {
       {/* Header with total */}
       <div className="flex items-start justify-between px-4 pt-3.5 pb-1">
         <div>
-          <span className="inline-flex items-center text-[9px] font-bold uppercase tracking-wider px-2 py-0.5 rounded-full bg-primary/15 text-primary border border-primary/20">
-            Recorrentes
-          </span>
-          <h2 className="text-sm font-bold text-foreground mt-1.5">Assinaturas</h2>
-          <p className="text-[10px] text-muted-foreground/50 mt-0.5">Seus gastos fixos e recorrentes</p>
+          <h2 className="text-sm font-bold text-foreground">Recorrentes</h2>
+          <p className="text-[10px] text-muted-foreground/50 mt-0.5">Seus gastos fixos mensais</p>
         </div>
         <div className="text-right pt-1">
           <p className="text-[10px] text-muted-foreground/50">Total/mês</p>
