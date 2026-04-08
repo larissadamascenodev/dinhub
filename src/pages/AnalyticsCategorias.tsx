@@ -89,6 +89,30 @@ interface HabitData {
   amount: number;
 }
 
+type CategoryScore = "saudavel" | "atencao" | "exagerado";
+
+interface CategoryScoreData {
+  score: CategoryScore;
+  percentage: number;
+  variation: number | null;
+  txCount: number;
+}
+
+const SCORE_CONFIG = {
+  exagerado: { label: "Exagerado", emoji: "🔴", bg: "bg-destructive/10", text: "text-destructive", border: "border-destructive/20" },
+  atencao: { label: "Atenção", emoji: "🟡", bg: "bg-warning/10", text: "text-warning", border: "border-warning/20" },
+  saudavel: { label: "Saudável", emoji: "🟢", bg: "bg-success/10", text: "text-success", border: "border-success/20" },
+};
+
+function computeCategoryScore(pct: number, variation: number | null, txCount: number): CategoryScore {
+  // 🔴 Exagerado: any condition triggers it
+  if (pct > 30 || (variation !== null && variation > 25) || txCount >= 10) return "exagerado";
+  // 🟡 Atenção
+  if ((pct >= 15 && pct <= 30) || (variation !== null && variation >= 10 && variation <= 25) || (txCount >= 6 && txCount <= 9)) return "atencao";
+  // 🟢 Saudável
+  return "saudavel";
+}
+
 // ── Reusable Glass Card ──────────────────────────────────
 const GlassCard = ({ children, className = "" }: { children: React.ReactNode; className?: string }) => (
   <div
