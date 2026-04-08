@@ -9,7 +9,6 @@ import {
   buildDashboardCacheKey,
   clearDashboardCache,
   getCachedDashboardData,
-  hasHistoricalDashboardCache,
   prefetchDashboardData,
 } from "@/services/dashboardData";
 
@@ -36,19 +35,16 @@ export function useFinanceData(selectedMonth: number, selectedYear: number, opti
 
     if (authLoading) {
       setLoading(true);
-      return () => {
-        cancelled = true;
-      };
+      return () => { cancelled = true; };
     }
 
     if (!user) {
       setData(EMPTY_DASHBOARD_DATA);
       setLoading(false);
-      return () => {
-        cancelled = true;
-      };
+      return () => { cancelled = true; };
     }
 
+    // Try to hydrate from cache immediately
     const cached = getCachedDashboardData(cacheKey);
     if (cached) {
       setData(cached);
@@ -57,7 +53,11 @@ export function useFinanceData(selectedMonth: number, selectedYear: number, opti
       setLoading(true);
     }
 
-    const baseRequest = prefetchDashboardData(selectedMonth, selectedYear, { includeHistorical: false, userId: user.id })
+    // Single prefetch call — the service handles base vs historical splitting internally
+    prefetchDashboardData(selectedMonth, selectedYear, {
+      includeHistorical,
+      userId: user.id,
+    })
       .then((newData) => {
         if (!cancelled && activeKeyRef.current === cacheKey) {
           setData(newData);
@@ -71,20 +71,7 @@ export function useFinanceData(selectedMonth: number, selectedYear: number, opti
         }
       });
 
-    if (includeHistorical && !hasHistoricalDashboardCache(cacheKey)) {
-      void (cached
-        ? prefetchDashboardData(selectedMonth, selectedYear, { includeHistorical: true, userId: user.id })
-        : baseRequest.then(() => prefetchDashboardData(selectedMonth, selectedYear, { includeHistorical: true, userId: user.id })))
-        .then((historicalData) => {
-          if (!cancelled && activeKeyRef.current === cacheKey) {
-            setData(historicalData);
-          }
-        })
-        .catch((err) => {
-          console.error("Historical finance engine error:", err);
-        });
-    }
-
+    // Prefetch adjacent months after a short delay
     const timer = setTimeout(() => {
       for (const offset of [-1, 1]) {
         const m = offsetMonth(selectedMonth, selectedYear, offset);
@@ -96,7 +83,6 @@ export function useFinanceData(selectedMonth: number, selectedYear: number, opti
       cancelled = true;
       clearTimeout(timer);
     };
-
   }, [authLoading, cacheKey, user, selectedMonth, selectedYear, includeHistorical]);
 
   const refetch = useCallback(async () => {
@@ -105,20 +91,15 @@ export function useFinanceData(selectedMonth: number, selectedYear: number, opti
       clearDashboardCache();
       invalidateProjectionCache();
 
-      const baseData = await prefetchDashboardData(selectedMonth, selectedYear, { includeHistorical: false, userId: user.id });
+      const newData = await prefetchDashboardData(selectedMonth, selectedYear, {
+        includeHistorical,
+        userId: user.id,
+      });
       const key = buildDashboardCacheKey(user.id, selectedMonth, selectedYear);
 
       if (activeKeyRef.current === key) {
-        setData(baseData);
+        setData(newData);
         setLoading(false);
-      }
-
-      if (includeHistorical) {
-        void prefetchDashboardData(selectedMonth, selectedYear, { includeHistorical: true, userId: user.id }).then((historicalData) => {
-          if (activeKeyRef.current === key) {
-            setData(historicalData);
-          }
-        });
       }
     } catch (err) {
       console.error("Finance engine error:", err);
@@ -129,7 +110,7 @@ export function useFinanceData(selectedMonth: number, selectedYear: number, opti
     if (!user) return;
 
     const channel = supabase
-      .channel(`finance-realtime-${includeHistorical ? "hist" : "fast"}`)
+      .channel(`finance-realtime`)
       .on("postgres_changes", { event: "*", schema: "public", table: "transactions", filter: `user_id=eq.${user.id}` }, () => refetch())
       .on("postgres_changes", { event: "*", schema: "public", table: "finance_events", filter: `user_id=eq.${user.id}` }, () => refetch())
       .on("postgres_changes", { event: "*", schema: "public", table: "accounts", filter: `user_id=eq.${user.id}` }, () => refetch())
@@ -143,7 +124,7 @@ export function useFinanceData(selectedMonth: number, selectedYear: number, opti
       window.removeEventListener("finance-data-changed", handleFinanceChange);
       supabase.removeChannel(channel);
     };
-  }, [user, refetch, includeHistorical]);
+  }, [user, refetch]);
 
   return { data, loading, refetch };
 }

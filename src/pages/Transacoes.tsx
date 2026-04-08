@@ -362,7 +362,6 @@ const Transacoes = () => {
       supabase
         .from("transactions")
         .select("*")
-        .eq("user_id", user.id)
         .gte("date", start)
         .lte("date", end)
         .order("date", { ascending: false })
@@ -373,7 +372,6 @@ const Transacoes = () => {
       supabase
         .from("invoices")
         .select("credit_card_id, total_amount, is_paid, paid_amount")
-        .eq("user_id", user.id)
         .eq("month", selectedMonth + 1)
         .eq("year", selectedYear),
       getCustomCategories(),
