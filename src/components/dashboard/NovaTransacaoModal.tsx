@@ -47,6 +47,16 @@ export interface EditTransactionData {
   observation?: string | null;
 }
 
+export interface PrefillData {
+  name?: string;
+  type?: "receita" | "despesa";
+  amount?: number;
+  category?: string;
+  date?: string;
+  recurrence_type?: "unica" | "parcelado" | "fixa";
+  installments?: number | null;
+}
+
 interface Props {
   open: boolean;
   onClose: () => void;
@@ -55,6 +65,7 @@ interface Props {
   initialPaymentMethod?: "conta" | "cartao";
   initialCreditCardId?: string;
   editTransaction?: EditTransactionData | null;
+  prefillData?: PrefillData | null;
 }
 
 const CATEGORIES_EXPENSE = [
