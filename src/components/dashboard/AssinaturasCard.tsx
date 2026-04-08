@@ -207,7 +207,7 @@ const AssinaturasCard = memo(() => {
     setLoading(false);
   }, [user]);
 
-  useEffect(() => { fetchSubs(); }, [fetchSubs]);
+  useEffect(() => { fetchSubs(); getCustomCategories().then(setCustomCats).catch(() => {}); }, [fetchSubs]);
 
   // Listen for finance changes to refresh
   useEffect(() => {
@@ -347,7 +347,7 @@ const AssinaturasCard = memo(() => {
                 >
 
                   <div className="relative flex items-center gap-3 px-3 py-3">
-                    <BrandIcon name={sub.name} category={sub.category} brand={brand} />
+                    <BrandIcon name={sub.name} category={sub.category} brand={brand} customCategories={customCats} />
 
                     <div className="flex-1 min-w-0">
                       <p className="text-[12px] font-semibold text-foreground/90 truncate">{sub.name}</p>
