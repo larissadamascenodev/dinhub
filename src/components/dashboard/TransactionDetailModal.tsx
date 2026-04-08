@@ -105,6 +105,50 @@ const TransactionDetailModal = ({ open, tx, accountName, onClose, onRefresh, use
   const { user } = useAuth();
   const dropdownRef = useRef<HTMLDivElement>(null);
 
+  // Similar/recurring transactions
+  const [similarTxs, setSimilarTxs] = useState<{ id: string; name: string; amount: number; date: string; status: string; category: string }[]>([]);
+  const [similarExpanded, setSimilarExpanded] = useState(false);
+
+  useEffect(() => {
+    if (!open || !tx || !user) { setSimilarTxs([]); return; }
+
+    const fetchSimilar = async () => {
+      const isRec = tx.recurrence_type === "fixa";
+      const now = new Date();
+      const endOfYear = `${now.getFullYear()}-12-31`;
+
+      if (isRec) {
+        // Fetch all instances of this recurring transaction
+        const { data } = await supabase
+          .from("transactions")
+          .select("id, name, amount, date, status, category")
+          .eq("user_id", user.id)
+          .eq("name", tx.name)
+          .eq("type", tx.type)
+          .order("date", { ascending: false })
+          .limit(24);
+        setSimilarTxs(data || []);
+      } else {
+        // Find similar by name pattern (first 3+ chars match)
+        const namePrefix = tx.name.trim().toLowerCase().slice(0, Math.min(tx.name.length, 15));
+        if (namePrefix.length < 3) { setSimilarTxs([]); return; }
+
+        const { data } = await supabase
+          .from("transactions")
+          .select("id, name, amount, date, status, category")
+          .eq("user_id", user.id)
+          .eq("type", tx.type)
+          .ilike("name", `%${namePrefix}%`)
+          .neq("id", tx.id)
+          .order("date", { ascending: false })
+          .limit(10);
+        setSimilarTxs(data || []);
+      }
+    };
+
+    fetchSimilar();
+  }, [open, tx?.id, user]);
+
   // Close dropdown on outside click
   useEffect(() => {
     if (!showDropdown) return;
