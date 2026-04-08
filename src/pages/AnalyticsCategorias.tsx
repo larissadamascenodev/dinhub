@@ -66,11 +66,13 @@ interface HistoricalEntry {
 
 
 type HistoricalMap = Record<string, HistoricalEntry[]>;
+
+interface InstallmentImpact {
   category: string;
   monthlyAmount: number;
   totalRemaining: number;
   monthsRemaining: number;
-  impactPct: number; // % of category total
+  impactPct: number;
   items: { name: string; amount: number; remaining: number; total: number }[];
 }
 
