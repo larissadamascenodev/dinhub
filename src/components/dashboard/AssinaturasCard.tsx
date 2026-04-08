@@ -3,7 +3,8 @@ import { ChevronRight, ChevronUp, Pencil, Trash2, X } from "lucide-react";
 import { motion, AnimatePresence } from "framer-motion";
 import { supabase } from "@/integrations/supabase/client";
 import { useAuth } from "@/contexts/AuthContext";
-import { getDefaultCategoryIcon } from "@/lib/categoryIcons";
+import { getCategoryIcon } from "@/lib/categoryUtils";
+import { getCustomCategories, type CustomCategory } from "@/services/categoryService";
 import { deleteTransaction, getTransactionById } from "@/services/transactionService";
 import { toast } from "sonner";
 

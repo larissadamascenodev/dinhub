@@ -12,7 +12,9 @@ import { useAuth } from "@/contexts/AuthContext";
 import { supabase } from "@/integrations/supabase/client";
 import { format, subDays } from "date-fns";
 import { Calendar } from "@/components/ui/calendar";
-import { getDefaultCategoryIcon, DEFAULT_EXPENSE_CATEGORIES, DEFAULT_INCOME_CATEGORIES } from "@/lib/categoryIcons";
+import { DEFAULT_EXPENSE_CATEGORIES, DEFAULT_INCOME_CATEGORIES } from "@/lib/categoryIcons";
+import { getCategoryIcon } from "@/lib/categoryUtils";
+import { getCustomCategories, type CustomCategory } from "@/services/categoryService";
 
 const CATEGORIES_EXPENSE = DEFAULT_EXPENSE_CATEGORIES;
 const CATEGORIES_INCOME = DEFAULT_INCOME_CATEGORIES;
