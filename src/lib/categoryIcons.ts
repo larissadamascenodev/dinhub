@@ -138,3 +138,7 @@ export function getDefaultCategoryColor(name: string): string {
 export function getDefaultCategoryHex(name: string): string {
   return DEFAULT_CATEGORY_HEX[name] || "#64748b";
 }
+
+export function getDefaultCategoryIcon(name: string) {
+  return DEFAULT_CATEGORY_ICONS[name] || FileText;
+}
