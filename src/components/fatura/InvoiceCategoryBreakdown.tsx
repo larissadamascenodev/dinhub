@@ -1,5 +1,8 @@
+import { useState, useEffect } from "react";
 import { motion } from "framer-motion";
 import { formatCurrency } from "@/pages/FaturaCartao";
+import { getCategoryIcon, getCategoryColor } from "@/lib/categoryUtils";
+import { getCustomCategories, type CustomCategory } from "@/services/categoryService";
 
 interface CategoryData {
   category: string;
