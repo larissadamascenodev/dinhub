@@ -1,14 +1,15 @@
-import { useState, useEffect, useRef } from "react";
+import { useState, useEffect, useRef, useMemo } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import {
   X, MoreVertical, Pencil, Trash2, Bell, CalendarDays, Wallet, Tag, RefreshCw, Clock,
-  FileText, StickyNote, Check,
+  FileText, StickyNote, Check, History, ChevronDown, ChevronUp,
 } from "lucide-react";
 import { toast } from "sonner";
 import { cn } from "@/lib/utils";
 import { updateTransactionStatus, updateTransaction, deleteTransaction, getAccounts, createTransaction } from "@/services/transactionService";
 import { excludeRecurringForMonth, excludeRecurringFromMonthOnward } from "@/services/recurringService";
 import { useAuth } from "@/contexts/AuthContext";
+import { supabase } from "@/integrations/supabase/client";
 import { format, subDays } from "date-fns";
 import { Calendar } from "@/components/ui/calendar";
 
@@ -103,6 +104,50 @@ const TransactionDetailModal = ({ open, tx, accountName, onClose, onRefresh, use
   const amountInputRef = useRef<HTMLInputElement>(null);
   const { user } = useAuth();
   const dropdownRef = useRef<HTMLDivElement>(null);
+
+  // Similar/recurring transactions
+  const [similarTxs, setSimilarTxs] = useState<{ id: string; name: string; amount: number; date: string; status: string; category: string }[]>([]);
+  const [similarExpanded, setSimilarExpanded] = useState(false);
+
+  useEffect(() => {
+    if (!open || !tx || !user) { setSimilarTxs([]); return; }
+
+    const fetchSimilar = async () => {
+      const isRec = tx.recurrence_type === "fixa";
+      const now = new Date();
+      const endOfYear = `${now.getFullYear()}-12-31`;
+
+      if (isRec) {
+        // Fetch all instances of this recurring transaction
+        const { data } = await supabase
+          .from("transactions")
+          .select("id, name, amount, date, status, category")
+          .eq("user_id", user.id)
+          .eq("name", tx.name)
+          .eq("type", tx.type)
+          .order("date", { ascending: false })
+          .limit(24);
+        setSimilarTxs(data || []);
+      } else {
+        // Find similar by name pattern (first 3+ chars match)
+        const namePrefix = tx.name.trim().toLowerCase().slice(0, Math.min(tx.name.length, 15));
+        if (namePrefix.length < 3) { setSimilarTxs([]); return; }
+
+        const { data } = await supabase
+          .from("transactions")
+          .select("id, name, amount, date, status, category")
+          .eq("user_id", user.id)
+          .eq("type", tx.type)
+          .ilike("name", `%${namePrefix}%`)
+          .neq("id", tx.id)
+          .order("date", { ascending: false })
+          .limit(10);
+        setSimilarTxs(data || []);
+      }
+    };
+
+    fetchSimilar();
+  }, [open, tx?.id, user]);
 
   // Close dropdown on outside click
   useEffect(() => {
@@ -446,6 +491,68 @@ const TransactionDetailModal = ({ open, tx, accountName, onClose, onRefresh, use
           </div>
         );
 
+            {/* Similar / Recurring Transactions */}
+            {similarTxs.length > 1 && (
+              <div className="mb-4 pt-3 border-t border-border/10">
+                <button
+                  onClick={() => setSimilarExpanded(!similarExpanded)}
+                  className="w-full flex items-center justify-between mb-2"
+                >
+                  <p className="text-[11px] font-semibold text-muted-foreground/70 flex items-center gap-1.5">
+                    <History className="w-3.5 h-3.5" />
+                    {isRecurring ? "Histórico de Recorrência" : "Transações Semelhantes"}
+                  </p>
+                  {similarExpanded ? <ChevronUp className="w-3.5 h-3.5 text-muted-foreground/40" /> : <ChevronDown className="w-3.5 h-3.5 text-muted-foreground/40" />}
+                </button>
+
+                <AnimatePresence>
+                  {similarExpanded && (
+                    <motion.div
+                      initial={{ height: 0, opacity: 0 }}
+                      animate={{ height: "auto", opacity: 1 }}
+                      exit={{ height: 0, opacity: 0 }}
+                      transition={{ duration: 0.2 }}
+                      className="overflow-hidden"
+                    >
+                      <div className="space-y-1.5 max-h-48 overflow-y-auto scrollbar-none">
+                        {similarTxs
+                          .filter((s) => s.id !== tx.id)
+                          .slice(0, 12)
+                          .map((s) => {
+                            const sDate = new Date(s.date + "T12:00:00");
+                            const dateLabel = `${String(sDate.getDate()).padStart(2, "0")} ${MONTHS_FULL[sDate.getMonth()].slice(0, 3)}. ${sDate.getFullYear()}`;
+                            const sIsReceita = tx.type === "receita";
+
+                            return (
+                              <div
+                                key={s.id}
+                                className="flex items-center gap-3 rounded-xl border border-border/10 bg-muted/5 px-3 py-2.5"
+                              >
+                                <div
+                                  className="w-8 h-8 rounded-lg flex items-center justify-center text-sm shrink-0"
+                                  style={{ background: sIsReceita ? "hsl(var(--primary) / 0.12)" : "hsl(var(--muted) / 0.3)" }}
+                                >
+                                  {CATEGORY_ICONS[s.category] || "📋"}
+                                </div>
+                                <div className="flex-1 min-w-0">
+                                  <p className="text-[11px] font-semibold text-foreground/80 truncate">{s.name}</p>
+                                  <p className="text-[9px] text-muted-foreground/50">{dateLabel} · {s.category}</p>
+                                </div>
+                                <p className={cn(
+                                  "text-[12px] font-bold tabular-nums shrink-0",
+                                  sIsReceita ? "text-primary" : "text-foreground"
+                                )}>
+                                  {sIsReceita ? "+" : ""}{fmt(Number(s.amount))}
+                                </p>
+                              </div>
+                            );
+                          })}
+                      </div>
+                    </motion.div>
+                  )}
+                </AnimatePresence>
+              </div>
+            )}
 
 
       case "pay-confirm":
