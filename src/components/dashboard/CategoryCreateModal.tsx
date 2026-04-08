@@ -1,4 +1,4 @@
-import { useState, useRef } from "react";
+import { useState, useRef, useEffect } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import {
   X, Check, Plus,
@@ -7,6 +7,10 @@ import {
   Coffee, Dumbbell, Clapperboard, FileText, Wrench, ShoppingBag, Lightbulb, Target,
   Heart, Repeat, GraduationCap, TrendingUp, Award, Users, Wallet, PiggyBank,
   Zap, Star, Globe, Camera, Headphones, Monitor, Tv, Bus,
+  Landmark, Bike, Fuel, Baby, Stethoscope, Palette, UtensilsCrossed,
+  Cigarette, Wine, Pizza, Hammer, Key, Shield, Umbrella,
+  Tent, Map, Truck, Anchor, Cloudy, Leaf, Flame,
+  Gem, Crown, BadgeDollarSign, HandCoins, Receipt, Banknote,
 } from "lucide-react";
 import { Input } from "@/components/ui/input";
 import { cn } from "@/lib/utils";
@@ -19,6 +23,7 @@ interface Props {
   initialIcon?: string;
   initialColor?: string;
   title?: string;
+  existingNames?: string[];
 }
 
 const ICON_OPTIONS: { name: string; Icon: any }[] = [
@@ -62,13 +67,38 @@ const ICON_OPTIONS: { name: string; Icon: any }[] = [
   { name: "monitor", Icon: Monitor },
   { name: "tv", Icon: Tv },
   { name: "bus", Icon: Bus },
+  { name: "landmark", Icon: Landmark },
+  { name: "bike", Icon: Bike },
+  { name: "fuel", Icon: Fuel },
+  { name: "baby", Icon: Baby },
+  { name: "stethoscope", Icon: Stethoscope },
+  { name: "palette", Icon: Palette },
+  { name: "utensils-crossed", Icon: UtensilsCrossed },
+  { name: "wine", Icon: Wine },
+  { name: "pizza", Icon: Pizza },
+  { name: "hammer", Icon: Hammer },
+  { name: "key", Icon: Key },
+  { name: "shield", Icon: Shield },
+  { name: "umbrella", Icon: Umbrella },
+  { name: "tent", Icon: Tent },
+  { name: "map", Icon: Map },
+  { name: "truck", Icon: Truck },
+  { name: "leaf", Icon: Leaf },
+  { name: "flame", Icon: Flame },
+  { name: "gem", Icon: Gem },
+  { name: "crown", Icon: Crown },
+  { name: "badge-dollar-sign", Icon: BadgeDollarSign },
+  { name: "hand-coins", Icon: HandCoins },
+  { name: "receipt", Icon: Receipt },
+  { name: "banknote", Icon: Banknote },
 ];
 
 const COLOR_OPTIONS = [
   "#00e676", "#f44336", "#ff9800", "#2196f3", "#9c27b0",
   "#e91e63", "#00bcd4", "#8bc34a", "#ffc107", "#795548",
   "#607060", "#3f51b5", "#009688", "#ff5722", "#673ab7",
-  "#cddc39",
+  "#cddc39", "#4caf50", "#03a9f4", "#ff4081", "#7c4dff",
+  "#18ffff", "#69f0ae", "#ffab40", "#ea80fc",
 ];
 
 // Find the Icon component by name
@@ -80,15 +110,36 @@ export default function CategoryCreateModal({
   open, onClose, onSave,
   initialName = "", initialIcon = "file-text", initialColor = "#8b5cf6",
   title = "Nova Categoria",
+  existingNames = [],
 }: Props) {
   const [name, setName] = useState(initialName);
   const [icon, setIcon] = useState(initialIcon);
   const [color, setColor] = useState(initialColor);
+  const [showDuplicateConfirm, setShowDuplicateConfirm] = useState(false);
   const colorInputRef = useRef<HTMLInputElement>(null);
+
+  useEffect(() => {
+    if (open) {
+      setName(initialName);
+      setIcon(initialIcon);
+      setColor(initialColor);
+      setShowDuplicateConfirm(false);
+    }
+  }, [open, initialName, initialIcon, initialColor]);
 
   const handleSave = () => {
     if (!name.trim()) return;
-    onSave({ name: name.trim(), icon, color });
+    const trimmed = name.trim();
+    // Check for duplicate
+    const isDuplicate = existingNames.some(
+      (n) => n.toLowerCase() === trimmed.toLowerCase() && n.toLowerCase() !== initialName.toLowerCase()
+    );
+    if (isDuplicate && !showDuplicateConfirm) {
+      setShowDuplicateConfirm(true);
+      return;
+    }
+    onSave({ name: trimmed, icon, color });
+    setShowDuplicateConfirm(false);
   };
 
   if (!open) return null;
@@ -144,17 +195,52 @@ export default function CategoryCreateModal({
               <Input
                 placeholder="Ex: Streaming"
                 value={name}
-                onChange={(e) => setName(e.target.value)}
+                onChange={(e) => { setName(e.target.value); setShowDuplicateConfirm(false); }}
                 className="bg-muted/30 border-border/20 h-11 rounded-xl"
                 maxLength={30}
                 autoFocus
               />
             </div>
 
+            {/* Duplicate warning */}
+            <AnimatePresence>
+              {showDuplicateConfirm && (
+                <motion.div
+                  initial={{ opacity: 0, height: 0 }}
+                  animate={{ opacity: 1, height: "auto" }}
+                  exit={{ opacity: 0, height: 0 }}
+                  className="rounded-xl bg-destructive/10 border border-destructive/20 p-3"
+                >
+                  <p className="text-xs text-destructive font-medium">
+                    Já existe uma categoria com esse nome. Deseja substituir?
+                  </p>
+                  <div className="flex gap-2 mt-2">
+                    <button
+                      type="button"
+                      onClick={() => setShowDuplicateConfirm(false)}
+                      className="flex-1 h-8 rounded-lg text-[10px] font-bold border border-border/30 text-muted-foreground"
+                    >
+                      Não
+                    </button>
+                    <button
+                      type="button"
+                      onClick={() => {
+                        onSave({ name: name.trim(), icon, color });
+                        setShowDuplicateConfirm(false);
+                      }}
+                      className="flex-1 h-8 rounded-lg text-[10px] font-bold bg-destructive/20 text-destructive border border-destructive/30"
+                    >
+                      Sim, substituir
+                    </button>
+                  </div>
+                </motion.div>
+              )}
+            </AnimatePresence>
+
             {/* Icon */}
             <div className="space-y-1.5">
               <label className="text-xs font-semibold text-muted-foreground uppercase tracking-wider">Ícone</label>
-              <div className="grid grid-cols-8 gap-1.5">
+              <div className="grid grid-cols-8 gap-1.5 max-h-[200px] overflow-y-auto pr-1">
                 {ICON_OPTIONS.map(({ name: iconName, Icon: IconComp }) => (
                   <button
                     key={iconName}
