@@ -53,7 +53,7 @@ function getInvoiceStatusLabel(card: CreditCardItem): { label: string; isClosed:
   const closingDay = card.closing_day;
   const dueDay = card.due_day;
 
-  if (today > closingDay) {
+  if (today >= closingDay) {
     let dueDate: Date;
     if (dueDay > closingDay) {
       dueDate = new Date(now.getFullYear(), now.getMonth(), dueDay);
@@ -633,12 +633,11 @@ const GestaoFinanceira = () => {
                               {formatCurrency(available)}
                             </p>
                           </div>
-                          <div className="text-right">
-                            {(() => {
+                          {(() => {
                               const invoiceAmount = openInvoices[card.id] || 0;
                               const status = getInvoiceStatusLabel(card);
                               return (
-                                <>
+                                <div className="text-right">
                                   <div className="flex items-center justify-end gap-1.5 mb-1.5">
                                     <div className={cn("w-1.5 h-1.5 rounded-full", status.isClosed ? "bg-primary" : invoiceAmount > 0 ? "bg-amber-400" : "bg-muted-foreground/40")} />
                                     <p className="text-[9px] text-muted-foreground uppercase tracking-widest font-medium">
@@ -648,13 +647,9 @@ const GestaoFinanceira = () => {
                                   <p className={cn("text-sm font-bold tabular-nums leading-[1.75rem]", invoiceAmount > 0 ? (status.isClosed ? "text-foreground" : "text-amber-400") : "text-muted-foreground")}>
                                     {formatCurrency(invoiceAmount)}
                                   </p>
-                                  <p className={cn("text-[9px] mt-0.5 font-medium", status.isClosed ? "text-primary" : "text-muted-foreground/60")}>
-                                    {status.label}
-                                  </p>
-                                </>
+                                </div>
                               );
                             })()}
-                          </div>
                         </div>
                         <div className="flex items-center justify-between mt-2.5 mb-1">
                           <span className="text-[10px] font-medium text-muted-foreground">{formatCurrency(usedValue)} utilizado</span>
@@ -670,6 +665,14 @@ const GestaoFinanceira = () => {
                         </div>
                         <div className="flex items-center justify-between">
                           <span className="text-[10px] font-medium text-muted-foreground">{usedPct.toFixed(0)}% usado</span>
+                          {(() => {
+                            const status = getInvoiceStatusLabel(card);
+                            return (
+                              <span className={cn("text-[10px] font-medium", status.isClosed ? "text-primary" : "text-muted-foreground/60")}>
+                                {status.label}
+                              </span>
+                            );
+                          })()}
                         </div>
                       </div>
                     </div>
@@ -738,12 +741,11 @@ const GestaoFinanceira = () => {
                               {formatCurrency(available)}
                             </p>
                           </div>
-                          <div className="text-right">
-                            {(() => {
+                          {(() => {
                               const invoiceAmount = openInvoices[card.id] || 0;
                               const status = getInvoiceStatusLabel(card);
                               return (
-                                <>
+                                <div className="text-right">
                                   <div className="flex items-center justify-end gap-1.5 mb-1.5">
                                     <div className={cn("w-1.5 h-1.5 rounded-full", status.isClosed ? "bg-primary" : invoiceAmount > 0 ? "bg-amber-400" : "bg-muted-foreground/40")} />
                                     <p className="text-[9px] text-muted-foreground uppercase tracking-widest font-medium">
@@ -753,13 +755,9 @@ const GestaoFinanceira = () => {
                                   <p className={cn("text-sm font-bold tabular-nums leading-[1.75rem]", invoiceAmount > 0 ? (status.isClosed ? "text-foreground" : "text-amber-400") : "text-muted-foreground")}>
                                     {formatCurrency(invoiceAmount)}
                                   </p>
-                                  <p className={cn("text-[9px] mt-0.5 font-medium", status.isClosed ? "text-primary" : "text-muted-foreground/60")}>
-                                    {status.label}
-                                  </p>
-                                </>
+                                </div>
                               );
                             })()}
-                          </div>
                         </div>
                         <div className="flex items-center justify-between mt-2.5 mb-1">
                           <span className="text-[10px] font-medium text-muted-foreground">{formatCurrency(usedValue)} utilizado</span>
@@ -775,7 +773,14 @@ const GestaoFinanceira = () => {
                         </div>
                         <div className="flex items-center justify-between">
                           <span className="text-[10px] font-medium text-muted-foreground">{usedPct.toFixed(0)}% usado</span>
-                          
+                          {(() => {
+                            const status = getInvoiceStatusLabel(card);
+                            return (
+                              <span className={cn("text-[10px] font-medium", status.isClosed ? "text-primary" : "text-muted-foreground/60")}>
+                                {status.label}
+                              </span>
+                            );
+                          })()}
                         </div>
                       </div>
                     </div>
