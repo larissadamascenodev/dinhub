@@ -132,18 +132,17 @@ const CategoryBarChart = ({ categoryData, onSelect, selectedCat }: {
       <p className="text-[10px] md:text-[11px] text-muted-foreground/60 font-semibold uppercase tracking-wider mb-3">
         Gastos por Categoria
       </p>
-      <div style={{ height: Math.max(categoryData.length * 40, 120) }}>
+      <div style={{ height: 200 }}>
         <ResponsiveContainer width="100%" height="100%">
-          <BarChart data={chartData} layout="vertical" margin={{ left: 0, right: 10 }}>
-            <XAxis type="number" hide />
-            <YAxis
-              type="category"
+          <BarChart data={chartData} margin={{ left: -10, right: 10, top: 5, bottom: 0 }}>
+            <XAxis
               dataKey="name"
-              width={80}
-              tick={{ fill: "hsl(var(--muted-foreground))", fontSize: 11 }}
+              tick={{ fill: "hsl(var(--muted-foreground))", fontSize: 10 }}
               axisLine={false}
               tickLine={false}
+              interval={0}
             />
+            <YAxis hide />
             <Tooltip
               cursor={false}
               content={({ active, payload }) => {
@@ -159,7 +158,7 @@ const CategoryBarChart = ({ categoryData, onSelect, selectedCat }: {
             />
             <Bar
               dataKey="value"
-              radius={[0, 6, 6, 0]}
+              radius={[6, 6, 0, 0]}
               animationDuration={800}
               cursor="pointer"
               onClick={(data: any) => onSelect(data.fullName)}
