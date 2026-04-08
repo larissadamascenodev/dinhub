@@ -1568,9 +1568,7 @@ const AnalyticsCategorias = () => {
       setAiInsights(data as AIInsights);
     } catch (e: any) {
       console.error("AI insights error:", e);
-      if (e?.message?.includes("429") || e?.status === 429) {
-        toast.error("Limite de requisições excedido. Tente novamente em breve.");
-      }
+      setAiInsights({ insights: ["Não foi possível gerar insights no momento."], alerts: [], limitSuggestions: [] });
     } finally {
       setAiLoading(false);
     }
