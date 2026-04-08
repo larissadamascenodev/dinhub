@@ -116,6 +116,7 @@ const Index = () => {
             {data.categories.length > 0 && (
               <GastosPorCategoria
                 categories={data.categories}
+                selectedMonth={selectedMonth}
                 onVerAnalise={() => navigate("/transacoes")}
               />
             )}
@@ -155,7 +156,7 @@ const Index = () => {
           {/* MicroInteracoesCard temporarily disabled */}
           <ProjectionCard />
           {data.categories.length > 0 && (
-            <GastosPorCategoria categories={data.categories} onVerAnalise={() => navigate("/transacoes")} />
+            <GastosPorCategoria categories={data.categories} selectedMonth={selectedMonth} onVerAnalise={() => navigate("/transacoes")} />
           )}
           <TransacoesRecentes transactions={data.transactions} onDelete={refetch} />
           <ProximosEventos events={data.events} selectedMonth={selectedMonth} selectedYear={selectedYear} onEventClick={handleEventClick} />
@@ -189,7 +190,7 @@ const Index = () => {
           {/* MicroInteracoesCard temporarily disabled */}
           <ProjectionCard />
           {data.categories.length > 0 && (
-            <GastosPorCategoria categories={data.categories} onVerAnalise={() => navigate("/transacoes")} />
+            <GastosPorCategoria categories={data.categories} selectedMonth={selectedMonth} onVerAnalise={() => navigate("/transacoes")} />
           )}
           <TransacoesRecentes transactions={data.transactions} onDelete={refetch} />
           <div className="-mt-3">
