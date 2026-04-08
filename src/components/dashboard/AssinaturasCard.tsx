@@ -5,6 +5,8 @@ import { supabase } from "@/integrations/supabase/client";
 import { useAuth } from "@/contexts/AuthContext";
 import { getDefaultCategoryIcon } from "@/lib/categoryIcons";
 
+type RecurringType = "despesa" | "receita";
+
 interface Subscription {
   id: string;
   name: string;
@@ -12,6 +14,7 @@ interface Subscription {
   dueDay: number;
   category: string;
   source: "conta" | "cartao";
+  txType: RecurringType;
 }
 
 const fmt = (v: number) =>
