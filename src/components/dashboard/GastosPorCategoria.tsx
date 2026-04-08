@@ -2,7 +2,7 @@ import { memo, useState, useMemo } from "react";
 import { motion } from "framer-motion";
 import { ChevronDown, ChevronUp } from "lucide-react";
 import type { CategoryExpense } from "@/types/finance";
-import { getDefaultCategoryIcon } from "@/lib/categoryIcons";
+import { getDefaultCategoryIcon, getDefaultCategoryColor } from "@/lib/categoryIcons";
 
 interface Props {
   categories: CategoryExpense[];
@@ -13,23 +13,22 @@ interface Props {
 const fmt = (v: number) => v.toLocaleString("pt-BR", { style: "currency", currency: "BRL" });
 const INITIAL_COUNT = 5;
 
-const CATEGORY_COLORS = [
-  "hsl(330, 80%, 60%)",  // rosa
-  "hsl(250, 70%, 65%)",  // roxo
-  "hsl(35, 90%, 55%)",   // laranja
-  "hsl(150, 100%, 45%)", // verde (primary)
-  "hsl(200, 80%, 55%)",  // azul
-  "hsl(0, 70%, 55%)",    // vermelho
-  "hsl(60, 70%, 50%)",   // amarelo
-  "hsl(280, 60%, 55%)",  // violeta
-  "hsl(180, 60%, 45%)",  // teal
-  "hsl(15, 80%, 55%)",   // coral
+// Fallback colors for categories not in the centralized map
+const FALLBACK_COLORS = [
+  "330 80% 60%", "250 70% 65%", "35 90% 55%", "200 80% 55%",
+  "0 70% 55%", "60 70% 50%", "280 60% 55%", "180 60% 45%", "15 80% 55%",
 ];
 
 const MONTH_NAMES = [
   "Janeiro", "Fevereiro", "Março", "Abril", "Maio", "Junho",
   "Julho", "Agosto", "Setembro", "Outubro", "Novembro", "Dezembro",
 ];
+
+const getCatColor = (name: string, fallbackIdx: number): string => {
+  const c = getDefaultCategoryColor(name);
+  if (c !== "220 10% 55%") return c;
+  return FALLBACK_COLORS[fallbackIdx % FALLBACK_COLORS.length];
+};
 
 const GastosPorCategoria = memo(({ categories, selectedMonth, onVerAnalise }: Props) => {
   const sorted = useMemo(() => [...categories].sort((a, b) => b.amount - a.amount), [categories]);
@@ -59,6 +58,7 @@ const GastosPorCategoria = memo(({ categories, selectedMonth, onVerAnalise }: Pr
           {sorted.map((cat, idx) => {
             const pct = totalExpenses > 0 ? (cat.amount / totalExpenses) * 100 : 0;
             if (pct < 1) return null;
+            const color = getCatColor(cat.name, idx);
             return (
               <motion.div
                 key={cat.name}
@@ -66,7 +66,7 @@ const GastosPorCategoria = memo(({ categories, selectedMonth, onVerAnalise }: Pr
                 animate={{ width: `${pct}%` }}
                 transition={{ delay: idx * 0.05, duration: 0.5, ease: "easeOut" }}
                 className="h-full rounded-full"
-                style={{ backgroundColor: CATEGORY_COLORS[idx % CATEGORY_COLORS.length], minWidth: "6px" }}
+                style={{ backgroundColor: `hsl(${color})`, minWidth: "6px" }}
               />
             );
           })}
@@ -77,7 +77,7 @@ const GastosPorCategoria = memo(({ categories, selectedMonth, onVerAnalise }: Pr
       <div className="px-4 pb-3 space-y-2.5">
         {visible.map((cat, index) => {
           const pct = totalExpenses > 0 ? Math.round((cat.amount / totalExpenses) * 100) : 0;
-          const color = CATEGORY_COLORS[sorted.indexOf(cat) % CATEGORY_COLORS.length];
+          const color = getCatColor(cat.name, sorted.indexOf(cat));
           const IconComponent = getDefaultCategoryIcon(cat.name);
 
           return (
@@ -89,7 +89,7 @@ const GastosPorCategoria = memo(({ categories, selectedMonth, onVerAnalise }: Pr
               className="flex items-center gap-3"
             >
               <div className="w-5 h-5 flex items-center justify-center shrink-0">
-                <IconComponent className="w-4 h-4" style={{ color }} />
+                <IconComponent className="w-4 h-4" style={{ color: `hsl(${color})` }} />
               </div>
               <div className="flex-1 min-w-0">
                 <p className="text-xs font-semibold text-foreground truncate">{cat.name}</p>
@@ -99,7 +99,7 @@ const GastosPorCategoria = memo(({ categories, selectedMonth, onVerAnalise }: Pr
                     animate={{ width: `${pct}%` }}
                     transition={{ delay: 0.1 + index * 0.04, duration: 0.5, ease: "easeOut" }}
                     className="h-full rounded-full"
-                    style={{ backgroundColor: color }}
+                    style={{ backgroundColor: `hsl(${color})` }}
                   />
                 </div>
               </div>

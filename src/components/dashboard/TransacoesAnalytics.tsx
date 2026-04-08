@@ -9,6 +9,7 @@ import { useAuth } from "@/contexts/AuthContext";
 import { useMonth } from "@/contexts/MonthContext";
 
 import { getRecurringForMonth } from "@/services/recurringService";
+import { getDefaultCategoryColor } from "@/lib/categoryIcons";
 
 const fmt = (v: number) =>
   v.toLocaleString("pt-BR", { style: "currency", currency: "BRL" });
@@ -16,10 +17,6 @@ const fmt = (v: number) =>
 
 const WEEKDAYS_SHORT = ["D", "S", "T", "Q", "Q", "S", "S"];
 
-const CATEGORY_COLORS = [
-  "hsl(270 60% 55%)", "hsl(240 60% 60%)", "hsl(300 50% 55%)",
-  "hsl(210 70% 55%)", "hsl(330 60% 55%)", "hsl(190 70% 50%)",
-];
 
 interface TransactionRow {
   id: string; name: string; category: string; date: string;
@@ -101,8 +98,8 @@ const TransacoesAnalytics = () => {
     const total = Array.from(map.values()).reduce((s, v) => s + v, 0);
     return Array.from(map.entries())
       .sort((a, b) => b[1] - a[1])
-      .map(([name, amount], i) => ({
-        name, amount, color: CATEGORY_COLORS[i % CATEGORY_COLORS.length],
+      .map(([name, amount]) => ({
+        name, amount, color: `hsl(${getDefaultCategoryColor(name)})`,
         percentage: total > 0 ? ((amount / total) * 100).toFixed(0) : "0",
       }));
   }, [transactions]);

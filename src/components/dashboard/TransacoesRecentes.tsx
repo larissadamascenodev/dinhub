@@ -8,6 +8,7 @@ import {
 } from "lucide-react";
 import { getCustomCategories, type CustomCategory } from "@/services/categoryService";
 import { getIconComponent } from "@/components/dashboard/CategoryCreateModal";
+import { getDefaultCategoryColor } from "@/lib/categoryIcons";
 import { motion, AnimatePresence } from "framer-motion";
 import type { Transaction } from "@/types/finance";
 import { getTransactionById, getAccounts } from "@/services/transactionService";
@@ -35,16 +36,6 @@ const CATEGORY_ICONS: Record<string, typeof ShoppingCart> = {
   "Comissão": DollarSign, "Mesada": Wallet, "Saldo inicial": Wallet,
 };
 
-const CATEGORY_COLORS: Record<string, string> = {
-  "Alimentação": "0 60% 50%", "Transporte": "199 70% 48%", "Moradia": "150 100% 45%",
-  "Saúde": "150 100% 45%", "Educação": "40 80% 50%", "Vestuário": "280 60% 55%",
-  "Salário": "150 100% 45%", "Freelance": "199 70% 48%", "Investimentos": "150 100% 45%",
-  "Supermercado": "150 100% 45%", "Lazer": "40 80% 50%", "Assinaturas": "280 60% 55%",
-  "Pets": "30 80% 55%", "Beleza": "320 60% 55%", "Presentes": "340 60% 55%",
-  "Viagem": "199 70% 48%", "Tecnologia": "220 70% 55%", "Impostos": "0 60% 50%",
-  "Vendas": "150 100% 45%", "Aluguéis": "40 80% 50%", "Bônus": "150 100% 45%",
-  "Comissão": "199 70% 48%", "Mesada": "150 100% 45%",
-};
 
 const getCategoryIcon = (category: string, customCats?: CustomCategory[]) => {
   if (CATEGORY_ICONS[category]) return CATEGORY_ICONS[category];
@@ -71,12 +62,11 @@ const hexToHsl = (hex: string): string => {
 };
 
 const getCategoryColor = (category: string, customCats?: CustomCategory[]) => {
-  if (CATEGORY_COLORS[category]) return CATEGORY_COLORS[category];
   const custom = customCats?.find((c) => c.name === category && !c.is_hidden_default);
   if (custom && custom.color) {
     try { return hexToHsl(custom.color); } catch { /* fallback */ }
   }
-  return "220 10% 55%";
+  return getDefaultCategoryColor(category);
 };
 
 const FaturaCard = ({ tx, onClick }: { tx: Transaction; onClick: () => void }) => {
