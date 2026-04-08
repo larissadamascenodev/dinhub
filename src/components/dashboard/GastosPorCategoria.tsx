@@ -61,7 +61,7 @@ const GastosPorCategoria = memo(({ categories, selectedMonth, onVerAnalise }: Pr
           {sorted.map((cat, idx) => {
             const pct = totalExpenses > 0 ? (cat.amount / totalExpenses) * 100 : 0;
             if (pct < 1) return null;
-            const color = getCatColor(cat.name, idx);
+            const color = getCatColor(cat.name, idx, customCats);
             return (
               <motion.div
                 key={cat.name}
