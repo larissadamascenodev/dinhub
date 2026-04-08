@@ -1312,10 +1312,9 @@ const AnalyticsCategorias = () => {
                 <ProjectionsInline totalExpenses={totalExpenses} />
 
                 {/* Chart — full width */}
-                <CategoryBarChart
+                <CategoryChartSection
                   categoryData={categoryData}
-                  onSelect={setSelectedCategory}
-                  selectedCat={null}
+                  isMobile={isMobile}
                 />
 
                 {/* AI Insights — between chart and categories */}
