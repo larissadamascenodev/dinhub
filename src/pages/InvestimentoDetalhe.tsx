@@ -40,7 +40,8 @@ interface Transaction {
 }
 
 /* ═══════ Constants ═══════ */
-const CDI_ANNUAL_DEFAULT = 13.65; // % a.a. — editável
+const CDI_ANNUAL_DEFAULT = 14.79; // % a.a. — taxa CDI atual
+const BUSINESS_DAYS_PER_YEAR = 252; // dias úteis (padrão mercado BR)
 const IPCA_ANNUAL_DEFAULT = 4.5; // % a.a. — referência
 const POUPANCA_MONTHLY = 0.5;
 
@@ -259,13 +260,14 @@ const InvestimentoDetalhe = () => {
     if (!account) return { annualRate: 0, dailyRate: 0, monthlyRate: 0, dailyYield: 0, monthlyYield: 0, yearlyYield: 0, totalDeposits: 0, totalWithdrawals: 0, estimatedProfit: 0 };
 
     const annualRate = getAnnualRate(account.rate_type, account.annual_rate, account.investment_type);
-    const dailyRate = (1 + annualRate / 100) ** (1 / 365) - 1;
-    const monthlyRate = (1 + annualRate / 100) ** (1 / 12) - 1;
+    // Juros compostos com base em 252 dias úteis (padrão CDI/mercado BR)
+    const dailyRate = Math.pow(1 + annualRate / 100, 1 / BUSINESS_DAYS_PER_YEAR) - 1;
+    const monthlyRate = Math.pow(1 + annualRate / 100, 1 / 12) - 1;
 
     const balance = Number(account.current_balance);
     const dailyYield = balance * dailyRate;
     const monthlyYield = balance * monthlyRate;
-    const yearlyYield = balance * (annualRate / 100);
+    const yearlyYield = balance * (Math.pow(1 + annualRate / 100, 1) - 1);
 
     const totalDeposits = transactions.filter(t => t.to_account_id === accountId).reduce((s, t) => s + Number(t.amount), 0);
     const totalWithdrawals = transactions.filter(t => t.account_id === accountId).reduce((s, t) => s + Number(t.amount), 0);
