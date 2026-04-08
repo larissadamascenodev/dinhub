@@ -65,7 +65,7 @@ interface HistoricalEntry {
 }
 
 
-interface InstallmentImpact {
+type HistoricalMap = Record<string, HistoricalEntry[]>;
   category: string;
   monthlyAmount: number;
   totalRemaining: number;
