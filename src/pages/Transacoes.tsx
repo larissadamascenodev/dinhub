@@ -183,9 +183,9 @@ const SwipeableItem = ({
         {/* Category icon */}
         <div
           className="w-8 h-8 md:w-10 md:h-10 rounded-full flex items-center justify-center flex-shrink-0"
-          style={{ background: isPending ? "hsl(40 80% 50% / 0.12)" : `hsl(${catColor} / 0.12)` }}
+          style={{ background: `hsl(${catColor} / 0.12)` }}
         >
-          <CatIcon className="w-4 h-4 md:w-[18px] md:h-[18px]" style={{ color: isPending ? "hsl(40 80% 50%)" : `hsl(${catColor})` }} />
+          <CatIcon className="w-4 h-4 md:w-[18px] md:h-[18px]" style={{ color: `hsl(${catColor})` }} />
         </div>
 
         {/* Info */}
