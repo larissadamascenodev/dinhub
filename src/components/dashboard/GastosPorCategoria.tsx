@@ -75,7 +75,7 @@ const GastosPorCategoria = memo(({ categories, selectedMonth, onVerAnalise }: Pr
 
       {/* Stacked color bar - no rounding on segments, only on container */}
       <div className="px-4">
-        <div className="flex h-2.5 rounded-full overflow-hidden">
+        <div className="flex h-2.5 gap-[3px]">
           {sorted.map((cat, idx) => {
             const pct = totalExpenses > 0 ? (cat.amount / totalExpenses) * 100 : 0;
             if (pct < 0.5) return null;
@@ -89,10 +89,10 @@ const GastosPorCategoria = memo(({ categories, selectedMonth, onVerAnalise }: Pr
                 initial={{ width: 0 }}
                 animate={{ width: `${pct}%` }}
                 transition={{ delay: idx * 0.05, duration: 0.5, ease: "easeOut" }}
-                className="h-full cursor-pointer transition-opacity duration-200"
+                className="h-full rounded-full cursor-pointer transition-opacity duration-200"
                 style={{
                   backgroundColor: `hsl(${color})`,
-                  minWidth: "4px",
+                  minWidth: "6px",
                   opacity: hasSel && !isSelected ? 0.25 : 1,
                 }}
                 onClick={() => handleBarClick(cat.name)}
