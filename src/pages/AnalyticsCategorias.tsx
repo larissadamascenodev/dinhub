@@ -603,7 +603,7 @@ const EvolutionChart = ({ data, hexColor, currentMonth }: {
 // ── Category Detail View ─────────────────────────────────
 const CategoryDetail = ({
   category, transactions, onBack, monthLabel, isMobile, totalExpenses,
-  historicalData, aiInsights, selectedMonth,
+  historicalData, aiInsights, selectedMonth, installmentImpact,
 }: {
   category: CategorySummary;
   transactions: TxRow[];
@@ -614,6 +614,7 @@ const CategoryDetail = ({
   historicalData: HistoricalEntry[];
   aiInsights: AIInsights | null;
   selectedMonth: number;
+  installmentImpact?: InstallmentImpact;
 }) => {
   const catTxs = transactions
     .filter((t) => t.category === category.name && t.type === "despesa")
