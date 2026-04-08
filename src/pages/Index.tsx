@@ -126,6 +126,7 @@ const Index = () => {
             <ProjectionCard />
 
             <ProximosEventos events={data.events} selectedMonth={selectedMonth} selectedYear={selectedYear} onEventClick={handleEventClick} />
+            <AssinaturasCard />
           </div>
         </div>
 
