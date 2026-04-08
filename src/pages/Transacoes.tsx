@@ -2,8 +2,7 @@ import { useState, useEffect, useMemo, useCallback, useRef } from "react";
 import { useNavigate } from "react-router-dom";
 import { motion, AnimatePresence, useMotionValue, useTransform, PanInfo } from "framer-motion";
 import {
-  SlidersHorizontal, ShoppingCart, Heart, Car, Utensils, Home as HomeIcon,
-  Briefcase, GraduationCap, Shirt, TrendingUp, DollarSign, MoreHorizontal,
+  SlidersHorizontal,
   Trash2, RefreshCw, Layers, X, Search, Plus, Pencil, CreditCard, Wallet,
   Sparkles, Calendar as CalendarIcon, Clock,
 } from "lucide-react";
@@ -13,8 +12,7 @@ import { useAuth } from "@/contexts/AuthContext";
 import { useMonth } from "@/contexts/MonthContext";
 import { deleteTransaction, getAccounts, updateTransaction, getCreditCards } from "@/services/transactionService";
 import { getCustomCategories, type CustomCategory } from "@/services/categoryService";
-import { getIconComponent } from "@/components/dashboard/CategoryCreateModal";
-import { getDefaultCategoryColor } from "@/lib/categoryIcons";
+import { getCategoryIcon, getCategoryColor } from "@/lib/categoryUtils";
 import { useFinanceData } from "@/hooks/useFinanceData";
 import { getRecurringForMonth, excludeRecurringForMonth, excludeRecurringFromMonthOnward } from "@/services/recurringService";
 import MonthSelector from "@/components/dashboard/MonthSelector";
@@ -108,50 +106,6 @@ const fmt = (v: number) =>
 const WEEKDAYS = ["Domingo", "Segunda-Feira", "Terça-Feira", "Quarta-Feira", "Quinta-Feira", "Sexta-Feira", "Sábado"];
 const MONTHS_FULL = ["Janeiro", "Fevereiro", "Março", "Abril", "Maio", "Junho", "Julho", "Agosto", "Setembro", "Outubro", "Novembro", "Dezembro"];
 
-const CATEGORY_ICONS: Record<string, typeof ShoppingCart> = {
-  "Alimentação": Utensils, "Transporte": Car, "Moradia": HomeIcon,
-  "Saúde": Heart, "Educação": GraduationCap, "Vestuário": Shirt,
-  "Salário": DollarSign, "Freelance": Briefcase, "Investimentos": TrendingUp,
-  "Supermercado": ShoppingCart, "Lazer": Sparkles, "Assinaturas": CreditCard,
-  "Pets": Heart, "Beleza": Sparkles, "Presentes": Sparkles,
-  "Viagem": Car, "Tecnologia": Sparkles, "Impostos": Wallet,
-  "Vendas": DollarSign, "Aluguéis": HomeIcon, "Bônus": DollarSign,
-  "Comissão": DollarSign, "Mesada": Wallet, "Cartão de Crédito": CreditCard,
-  "Saldo inicial": Wallet,
-};
-
-
-const getCategoryIcon = (category: string, customCategories?: CustomCategory[]) => {
-  if (CATEGORY_ICONS[category]) return CATEGORY_ICONS[category];
-  const custom = customCategories?.find((c) => c.name === category && !c.is_hidden_default);
-  if (custom) return getIconComponent(custom.icon);
-  return MoreHorizontal;
-};
-
-const hexToHsl = (hex: string): string => {
-  const r = parseInt(hex.slice(1, 3), 16) / 255;
-  const g = parseInt(hex.slice(3, 5), 16) / 255;
-  const b = parseInt(hex.slice(5, 7), 16) / 255;
-  const max = Math.max(r, g, b), min = Math.min(r, g, b);
-  let h = 0, s = 0;
-  const l = (max + min) / 2;
-  if (max !== min) {
-    const d = max - min;
-    s = l > 0.5 ? d / (2 - max - min) : d / (max + min);
-    if (max === r) h = ((g - b) / d + (g < b ? 6 : 0)) / 6;
-    else if (max === g) h = ((b - r) / d + 2) / 6;
-    else h = ((r - g) / d + 4) / 6;
-  }
-  return `${Math.round(h * 360)} ${Math.round(s * 100)}% ${Math.round(l * 100)}%`;
-};
-
-const getCategoryColor = (category: string, customCategories?: CustomCategory[]) => {
-  const custom = customCategories?.find((c) => c.name === category && !c.is_hidden_default);
-  if (custom && custom.color) {
-    try { return hexToHsl(custom.color); } catch { /* fallback */ }
-  }
-  return getDefaultCategoryColor(category);
-};
 
 const formatDateHeader = (dateStr: string) => {
   const [y, m, d] = dateStr.split("-").map(Number);
