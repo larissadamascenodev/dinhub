@@ -191,7 +191,7 @@ const DashboardLayout = () => {
 
   const handleModalClose = useCallback(() => {
     setShowModal(false);
-    setFallbackEditData(null);
+    setPrefillData(null);
   }, []);
 
   return (
@@ -286,7 +286,7 @@ const DashboardLayout = () => {
           onClose={handleModalClose}
           onSuccess={handleSuccess}
           initialType={modalType}
-          editTransaction={fallbackEditData && fallbackEditData.id === "" ? undefined : fallbackEditData}
+          prefillData={prefillData}
         />
         <TransferModal open={showTransferModal} onClose={() => setShowTransferModal(false)} onSuccess={handleSuccess} />
         <InvoiceUploadReviewModal
