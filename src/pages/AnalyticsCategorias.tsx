@@ -338,37 +338,27 @@ const AlertsSection = ({ alerts }: { alerts: AIInsights["alerts"] }) => {
   );
 };
 
-// ── Projections Card ─────────────────────────────────────
-const ProjectionsCard = ({ totalExpenses }: { totalExpenses: number }) => {
+// ── Projections Inline (compact, merges with summary) ────
+const ProjectionsInline = ({ totalExpenses }: { totalExpenses: number }) => {
   const annualEstimate = totalExpenses * 12;
-  const savingsIfReduce200 = 200 * 12;
-
   return (
-    <GlassCard className="p-4 md:p-5">
-      <div className="flex items-center gap-2 mb-3">
-        <TrendingUp className="w-4 h-4 text-primary" />
-        <p className="text-[10px] md:text-[11px] text-muted-foreground/60 font-semibold uppercase tracking-wider">
-          Projeções Inteligentes
-        </p>
-      </div>
-      <div className="grid grid-cols-2 gap-3">
-        <div className="p-3 rounded-xl bg-destructive/5 border border-destructive/10">
-          <p className="text-[9px] text-muted-foreground/50 uppercase tracking-wider font-medium">Gasto anual estimado</p>
-          <p className="text-lg font-bold text-destructive tabular-nums mt-1">{fmt(annualEstimate)}</p>
-          <p className="text-[9px] text-muted-foreground/40 mt-0.5">Se continuar nesse ritmo</p>
-        </div>
-        <div className="p-3 rounded-xl bg-success/5 border border-success/10">
-          <p className="text-[9px] text-muted-foreground/50 uppercase tracking-wider font-medium">Economia possível</p>
-          <p className="text-lg font-bold text-success tabular-nums mt-1">{fmt(savingsIfReduce200)}</p>
-          <p className="text-[9px] text-muted-foreground/40 mt-0.5">Reduzindo R$ 200/mês</p>
-        </div>
-      </div>
-    </GlassCard>
+    <div className="grid grid-cols-2 gap-2">
+      <GlassCard className="p-3 text-center">
+        <p className="text-[9px] text-muted-foreground/50 uppercase tracking-wider font-medium">Gasto anual estimado</p>
+        <p className="text-base font-bold text-destructive tabular-nums mt-1">{fmt(annualEstimate)}</p>
+        <p className="text-[8px] text-muted-foreground/40 mt-0.5">Se continuar nesse ritmo</p>
+      </GlassCard>
+      <GlassCard className="p-3 text-center">
+        <p className="text-[9px] text-muted-foreground/50 uppercase tracking-wider font-medium">Média mensal</p>
+        <p className="text-base font-bold text-foreground tabular-nums mt-1">{fmt(totalExpenses)}</p>
+        <p className="text-[8px] text-muted-foreground/40 mt-0.5">Este mês</p>
+      </GlassCard>
+    </div>
   );
 };
 
-// ── Limit Suggestions ────────────────────────────────────
-const LimitSuggestions = ({ suggestions }: { suggestions: AIInsights["limitSuggestions"] }) => {
+// ── Limit Suggestions (detailed) ─────────────────────────
+const LimitSuggestions = ({ suggestions, categoryData }: { suggestions: AIInsights["limitSuggestions"]; categoryData: CategorySummary[] }) => {
   if (!suggestions || suggestions.length === 0) return null;
 
   return (
@@ -379,24 +369,62 @@ const LimitSuggestions = ({ suggestions }: { suggestions: AIInsights["limitSugge
           Sugestões de Limite
         </p>
       </div>
-      <div className="space-y-2">
-        {suggestions.map((s, i) => (
-          <motion.div
-            key={i}
-            initial={{ opacity: 0, y: 5 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ delay: i * 0.08 }}
-            className="flex items-center justify-between p-3 rounded-xl bg-primary/5 border border-primary/10"
-          >
-            <div className="flex-1 min-w-0">
-              <p className="text-xs font-semibold text-foreground">{s.category}</p>
-              <p className="text-[10px] text-muted-foreground/60 mt-0.5">{s.message}</p>
-            </div>
-            <div className="text-right shrink-0 ml-3">
-              <p className="text-sm font-bold text-primary tabular-nums">{fmt(s.suggestedLimit)}</p>
-            </div>
-          </motion.div>
-        ))}
+      <div className="space-y-2.5">
+        {suggestions.map((s, i) => {
+          const cat = categoryData.find((c) => c.name.toLowerCase() === s.category.toLowerCase());
+          const currentAmount = cat?.amount ?? 0;
+          const saving = currentAmount - s.suggestedLimit;
+          const annualSaving = saving > 0 ? saving * 12 : 0;
+          const CatIcon = cat?.icon;
+
+          return (
+            <motion.div
+              key={i}
+              initial={{ opacity: 0, y: 5 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ delay: i * 0.08 }}
+              className="p-3 rounded-xl bg-primary/5 border border-primary/10"
+            >
+              <div className="flex items-center gap-2.5 mb-2">
+                {CatIcon && (
+                  <div className="w-7 h-7 rounded-full flex items-center justify-center" style={{ background: `${cat?.hexColor}18` }}>
+                    <CatIcon className="w-3.5 h-3.5" style={{ color: cat?.hexColor }} />
+                  </div>
+                )}
+                <div className="flex-1 min-w-0">
+                  <p className="text-xs font-semibold text-foreground">{s.category}</p>
+                  <p className="text-[10px] text-muted-foreground/60">{s.message}</p>
+                </div>
+              </div>
+              <div className="flex items-center gap-3 mt-2">
+                <div className="flex-1 grid grid-cols-3 gap-2 text-center">
+                  <div>
+                    <p className="text-[8px] text-muted-foreground/50 uppercase">Atual</p>
+                    <p className="text-[11px] font-bold text-destructive tabular-nums">{fmt(currentAmount)}</p>
+                  </div>
+                  <div>
+                    <p className="text-[8px] text-muted-foreground/50 uppercase">Limite</p>
+                    <p className="text-[11px] font-bold text-primary tabular-nums">{fmt(s.suggestedLimit)}</p>
+                  </div>
+                  <div>
+                    <p className="text-[8px] text-muted-foreground/50 uppercase">Economia/ano</p>
+                    <p className="text-[11px] font-bold text-success tabular-nums">{fmt(annualSaving)}</p>
+                  </div>
+                </div>
+              </div>
+              <button
+                onClick={() => {
+                  toast.success(`Limite de ${fmt(s.suggestedLimit)} definido para ${s.category}! 🎯`, {
+                    description: `Economia potencial de ${fmt(annualSaving)} por ano.`,
+                  });
+                }}
+                className="mt-2.5 w-full px-3 py-1.5 rounded-lg bg-primary/10 text-primary text-[11px] font-semibold border border-primary/15 hover:bg-primary/20 transition-colors"
+              >
+                Definir limite de {fmt(s.suggestedLimit)}
+              </button>
+            </motion.div>
+          );
+        })}
       </div>
     </GlassCard>
   );
@@ -455,21 +483,31 @@ const InstallmentInsightsSection = ({ impacts }: { impacts: InstallmentImpact[] 
               transition={{ delay: i * 0.1 }}
               className={`p-3 rounded-xl ${styles.bg} border ${styles.border}`}
             >
-              <p className="text-xs text-foreground/80 leading-relaxed">
+              <div className="flex items-center gap-2 mb-2">
+                <span className="text-xs">💳</span>
+                <p className="text-xs font-semibold text-foreground flex-1">{imp.category}</p>
+                <span className={`text-[9px] font-semibold px-1.5 py-0.5 rounded-full ${
+                  severity === "danger" ? "bg-destructive/10 text-destructive" :
+                  severity === "warning" ? "bg-warning/10 text-warning" : "bg-blue-500/10 text-blue-400"
+                }`}>
+                  {imp.impactPct}% da categoria
+                </span>
+              </div>
+              <p className="text-[11px] text-foreground/70 leading-relaxed mb-2">
                 {getMessage(imp)}
               </p>
-              <div className="flex items-center gap-4 mt-2">
+              <div className="grid grid-cols-3 gap-2 text-center py-1.5 rounded-lg bg-background/30">
                 <div>
-                  <p className="text-[9px] text-muted-foreground/50 uppercase">Mensal</p>
-                  <p className="text-xs font-bold text-foreground tabular-nums">{fmt(imp.monthlyAmount)}</p>
+                  <p className="text-[8px] text-muted-foreground/50 uppercase">Mensal</p>
+                  <p className="text-[11px] font-bold text-foreground tabular-nums">{fmt(imp.monthlyAmount)}</p>
                 </div>
                 <div>
-                  <p className="text-[9px] text-muted-foreground/50 uppercase">Restante</p>
-                  <p className="text-xs font-bold text-foreground tabular-nums">{fmt(imp.totalRemaining)}</p>
+                  <p className="text-[8px] text-muted-foreground/50 uppercase">Restante</p>
+                  <p className="text-[11px] font-bold text-foreground tabular-nums">{fmt(imp.totalRemaining)}</p>
                 </div>
                 <div>
-                  <p className="text-[9px] text-muted-foreground/50 uppercase">Meses</p>
-                  <p className="text-xs font-bold text-foreground tabular-nums">⏳ {imp.monthsRemaining}</p>
+                  <p className="text-[8px] text-muted-foreground/50 uppercase">Meses</p>
+                  <p className="text-[11px] font-bold text-foreground tabular-nums">⏳ {imp.monthsRemaining}</p>
                 </div>
               </div>
             </motion.div>
@@ -1156,25 +1194,26 @@ const AnalyticsCategorias = () => {
           >
             {categoryData.length > 0 ? (
               <>
-                {/* Summary */}
+                {/* Summary + Projections together */}
                 <SummaryCard totalExpenses={totalExpenses} topCategory={topCategory} monthLabel={monthLabel} />
+                <ProjectionsInline totalExpenses={totalExpenses} />
 
-                {/* Chart + List */}
-                <div className={isMobile ? "space-y-4" : "grid grid-cols-2 gap-4 items-start"}>
-                  <CategoryBarChart
-                    categoryData={categoryData}
-                    onSelect={setSelectedCategory}
-                    selectedCat={null}
-                  />
-                  <CategoryList
-                    categoryData={categoryData}
-                    onSelect={setSelectedCategory}
-                    selectedCat={null}
-                  />
-                </div>
+                {/* Chart — full width */}
+                <CategoryBarChart
+                  categoryData={categoryData}
+                  onSelect={setSelectedCategory}
+                  selectedCat={null}
+                />
 
-                {/* AI Insights */}
+                {/* AI Insights — between chart and categories */}
                 <AIInsightsSection insights={aiInsights} loading={aiLoading} />
+
+                {/* All Categories list */}
+                <CategoryList
+                  categoryData={categoryData}
+                  onSelect={setSelectedCategory}
+                  selectedCat={null}
+                />
 
                 {/* Alerts */}
                 {aiInsights && <AlertsSection alerts={aiInsights.alerts} />}
@@ -1182,11 +1221,8 @@ const AnalyticsCategorias = () => {
                 {/* Installment Insights */}
                 <InstallmentInsightsSection impacts={enrichedInstallmentImpacts} />
 
-                {/* Projections */}
-                <ProjectionsCard totalExpenses={totalExpenses} />
-
                 {/* Limit Suggestions */}
-                {aiInsights && <LimitSuggestions suggestions={aiInsights.limitSuggestions} />}
+                {aiInsights && <LimitSuggestions suggestions={aiInsights.limitSuggestions} categoryData={categoryData} />}
               </>
             ) : (
               <GlassCard className="p-8 text-center">
