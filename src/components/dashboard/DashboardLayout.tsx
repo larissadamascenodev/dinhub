@@ -113,18 +113,14 @@ const DashboardLayout = () => {
         const item = items[0];
         setScanProcessing(false);
         // Open NovaTransacaoModal pre-filled
-        setFallbackEditData({
-          id: "", // empty = create mode but pre-filled
+        setPrefillData({
           name: item.description || "",
           type: (item.type as "receita" | "despesa") || "despesa",
           amount: item.amount || 0,
           category: item.category || "",
           date: item.date || new Date().toISOString().split("T")[0],
-          status: "pendente",
-          payment_method: "conta",
           recurrence_type: item.installment_total && item.installment_total > 1 ? "parcelado" : "unica",
           installments: item.installment_total || null,
-          installment_current: item.installment_current || null,
         });
         setModalType((item.type as "receita" | "despesa") || "despesa");
         setShowModal(true);
