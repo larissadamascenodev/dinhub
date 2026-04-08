@@ -123,7 +123,8 @@ const GastosSemanaisCard = memo(() => {
 
   if (total === 0 && weekData.every((d) => d.amount === 0)) return null;
 
-  const yMax = Math.ceil(maxAmount / 100) * 100 || 200;
+  // Scale Y axis: use 1.3x the max so bars fill nicely, minimum 10
+  const yMax = maxAmount > 0 ? Math.ceil((maxAmount * 1.3) / 10) * 10 : 200;
 
   return (
     <TooltipProvider delayDuration={0}>
@@ -155,7 +156,7 @@ const GastosSemanaisCard = memo(() => {
 
             <div className="flex items-end justify-between gap-1.5 pr-14" style={{ height: "60px" }}>
               {weekData.map((day, idx) => {
-                const heightPct = day.amount > 0 ? Math.max((day.amount / yMax) * 100, 8) : 0;
+                const heightPct = day.amount > 0 ? Math.max((day.amount / yMax) * 100, 12) : 0;
                 const isEmpty = day.amount === 0;
 
                 return (
@@ -175,8 +176,8 @@ const GastosSemanaisCard = memo(() => {
                         )}
                       </div>
                     </TooltipTrigger>
-                    <TooltipContent side="top" className="text-xs font-medium">
-                      {day.label}: {fmt(day.amount)}
+                    <TooltipContent side="top" className="text-xs font-medium whitespace-nowrap z-50">
+                      <span>{day.label}: {fmt(day.amount)}</span>
                     </TooltipContent>
                   </Tooltip>
                 );
