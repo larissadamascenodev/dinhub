@@ -131,7 +131,7 @@ function getDaysUntil(dueDay: number): number {
   return Math.max(0, diff);
 }
 
-const BrandIcon = ({ name, category, brand }: { name: string; category: string; brand: BrandInfo & { matched: boolean } }) => {
+const BrandIcon = ({ name, category, brand, customCategories }: { name: string; category: string; brand: BrandInfo & { matched: boolean }; customCategories?: CustomCategory[] }) => {
   const [imgError, setImgError] = useState(false);
 
   if (brand.matched && brand.logo && !imgError) {
@@ -150,7 +150,7 @@ const BrandIcon = ({ name, category, brand }: { name: string; category: string; 
     );
   }
 
-  const IconComponent = getDefaultCategoryIcon(category);
+  const IconComponent = getCategoryIcon(category, customCategories);
   return (
     <div className="w-10 h-10 rounded-xl flex items-center justify-center shrink-0 shadow-md bg-primary/10">
       <IconComponent className="w-5 h-5 text-primary" />
