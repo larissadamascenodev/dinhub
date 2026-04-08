@@ -125,9 +125,9 @@ const Index = () => {
           </div>
           <div className="space-y-4">
             <WalletSummaryCard />
+            {isCurrentMonth && <GastosSemanaisCard />}
             <ProjectionCard />
             <BalancoMensalCard />
-            {isCurrentMonth && <GastosSemanaisCard />}
             <ProximosEventos events={data.events} selectedMonth={selectedMonth} selectedYear={selectedYear} onEventClick={handleEventClick} />
             <AssinaturasCard />
             <InvestimentosResumoCard />

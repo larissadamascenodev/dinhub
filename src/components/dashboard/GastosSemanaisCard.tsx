@@ -4,6 +4,7 @@ import { ChevronRight } from "lucide-react";
 import { supabase } from "@/integrations/supabase/client";
 import { useAuth } from "@/contexts/AuthContext";
 import { useState, useEffect } from "react";
+import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from "@/components/ui/tooltip";
 
 const fmt = (v: number) =>
   v.toLocaleString("pt-BR", { style: "currency", currency: "BRL" });
@@ -26,7 +27,7 @@ const GastosSemanaisCard = memo(() => {
 
     const fetchWeekData = async () => {
       const now = new Date();
-      const dayOfWeek = now.getDay(); // 0=Sun, 1=Mon...
+      const dayOfWeek = now.getDay();
       const mondayOffset = dayOfWeek === 0 ? -6 : 1 - dayOfWeek;
       const monday = new Date(now);
       monday.setDate(now.getDate() + mondayOffset);
@@ -53,6 +54,7 @@ const GastosSemanaisCard = memo(() => {
           .select("date, amount")
           .eq("user_id", user.id)
           .eq("type", "despesa")
+          .eq("status", "pago")
           .gte("date", mondayStr)
           .lte("date", sundayStr),
         supabase
@@ -60,11 +62,11 @@ const GastosSemanaisCard = memo(() => {
           .select("amount")
           .eq("user_id", user.id)
           .eq("type", "despesa")
+          .eq("status", "pago")
           .gte("date", prevMondayStr)
           .lte("date", prevSundayStr),
       ]);
 
-      // Build day map
       const dayMap = new Map<number, number>();
       for (let i = 0; i < 7; i++) {
         dayMap.set(i, 0);
@@ -74,7 +76,7 @@ const GastosSemanaisCard = memo(() => {
         for (const tx of txs) {
           const d = new Date(tx.date + "T12:00:00");
           const dow = d.getDay();
-          const idx = dow === 0 ? 6 : dow - 1; // Mon=0, Sun=6
+          const idx = dow === 0 ? 6 : dow - 1;
           dayMap.set(idx, (dayMap.get(idx) || 0) + Number(tx.amount));
         }
       }
@@ -113,7 +115,7 @@ const GastosSemanaisCard = memo(() => {
       <div className="rounded-2xl border border-border/20 bg-card/60 backdrop-blur-xl p-4">
         <div className="animate-pulse space-y-3">
           <div className="h-4 w-32 bg-muted/30 rounded" />
-          <div className="h-24 w-full bg-muted/10 rounded-xl" />
+          <div className="h-16 w-full bg-muted/10 rounded-xl" />
         </div>
       </div>
     );
@@ -121,74 +123,77 @@ const GastosSemanaisCard = memo(() => {
 
   if (total === 0 && weekData.every((d) => d.amount === 0)) return null;
 
-  // Scale for Y axis
   const yMax = Math.ceil(maxAmount / 100) * 100 || 200;
 
   return (
-    <div
-      className="rounded-2xl border border-border/20 bg-card/60 backdrop-blur-xl overflow-hidden"
-      style={{ boxShadow: "0 4px 24px -4px rgba(0,0,0,0.3)" }}
-    >
-      {/* Header */}
-      <div className="flex items-start justify-between px-4 pt-3 pb-0">
-        <div>
-          <p className="text-[11px] text-muted-foreground/60 font-medium">Gastos essa semana</p>
-          <div className="flex items-baseline gap-2 mt-0.5">
-            <p className="text-lg font-bold text-foreground tabular-nums">{fmt(total)}</p>
-            {variation !== null && (
-              <span className={`text-xs font-semibold ${variation > 0 ? "text-primary" : "text-emerald-400"}`}>
-                {variation > 0 ? "↑" : "↓"}{Math.abs(variation)}%
-              </span>
-            )}
+    <TooltipProvider delayDuration={0}>
+      <div
+        className="rounded-2xl border border-border/20 bg-card/60 backdrop-blur-xl overflow-hidden"
+        style={{ boxShadow: "0 4px 24px -4px rgba(0,0,0,0.3)" }}
+      >
+        <div className="flex items-start justify-between px-4 pt-3 pb-0">
+          <div>
+            <p className="text-[11px] text-muted-foreground/60 font-medium">Gastos essa semana</p>
+            <div className="flex items-baseline gap-2 mt-0.5">
+              <p className="text-lg font-bold text-foreground tabular-nums">{fmt(total)}</p>
+              {variation !== null && (
+                <span className={`text-xs font-semibold ${variation > 0 ? "text-primary" : "text-emerald-400"}`}>
+                  {variation > 0 ? "↑" : "↓"}{Math.abs(variation)}%
+                </span>
+              )}
+            </div>
           </div>
+          <ChevronRight className="w-4 h-4 text-muted-foreground/30 mt-1" />
         </div>
-        <ChevronRight className="w-4 h-4 text-muted-foreground/30 mt-1" />
-      </div>
 
-      {/* Chart */}
-      <div className="px-4 pb-3 pt-2">
-        <div className="relative">
-          {/* Y axis labels */}
-          <div className="absolute right-0 top-0 bottom-4 flex flex-col justify-between text-[9px] text-muted-foreground/40 tabular-nums pointer-events-none">
-            <span>{fmt(yMax).replace("R$\u00a0", "R$ ")}</span>
-            <span>R$ 0</span>
-          </div>
+        <div className="px-4 pb-3 pt-2">
+          <div className="relative">
+            <div className="absolute right-0 top-0 bottom-4 flex flex-col justify-between text-[9px] text-muted-foreground/40 tabular-nums pointer-events-none">
+              <span>{fmt(yMax).replace("R$\u00a0", "R$ ")}</span>
+              <span>R$ 0</span>
+            </div>
 
-          {/* Bars */}
-          <div className="flex items-end justify-between gap-1.5 pr-14" style={{ height: "60px" }}>
-            {weekData.map((day, idx) => {
-              const heightPct = day.amount > 0 ? Math.max((day.amount / yMax) * 100, 8) : 0;
-              const isEmpty = day.amount === 0;
+            <div className="flex items-end justify-between gap-1.5 pr-14" style={{ height: "60px" }}>
+              {weekData.map((day, idx) => {
+                const heightPct = day.amount > 0 ? Math.max((day.amount / yMax) * 100, 8) : 0;
+                const isEmpty = day.amount === 0;
 
-              return (
-                <div key={idx} className="flex-1 flex flex-col items-center">
-                  {isEmpty ? (
-                    <div className="w-2.5 h-2.5 rounded-full border-2 border-muted-foreground/20 mt-auto" />
-                  ) : (
-                    <motion.div
-                      initial={{ height: 0 }}
-                      animate={{ height: `${heightPct}%` }}
-                      transition={{ delay: idx * 0.06, duration: 0.4, ease: "easeOut" }}
-                      className="w-full max-w-[14px] rounded-t-md bg-primary mt-auto"
-                      style={{ minHeight: "4px" }}
-                    />
-                  )}
+                return (
+                  <Tooltip key={idx}>
+                    <TooltipTrigger asChild>
+                      <div className="flex-1 flex flex-col items-center cursor-default">
+                        {isEmpty ? (
+                          <div className="w-2.5 h-2.5 rounded-full border-2 border-muted-foreground/20 mt-auto" />
+                        ) : (
+                          <motion.div
+                            initial={{ height: 0 }}
+                            animate={{ height: `${heightPct}%` }}
+                            transition={{ delay: idx * 0.06, duration: 0.4, ease: "easeOut" }}
+                            className="w-full max-w-[14px] rounded-t-md bg-primary mt-auto hover:opacity-80 transition-opacity"
+                            style={{ minHeight: "4px" }}
+                          />
+                        )}
+                      </div>
+                    </TooltipTrigger>
+                    <TooltipContent side="top" className="text-xs font-medium">
+                      {day.label}: {fmt(day.amount)}
+                    </TooltipContent>
+                  </Tooltip>
+                );
+              })}
+            </div>
+
+            <div className="flex justify-between pr-14 mt-1">
+              {weekData.map((day, idx) => (
+                <div key={idx} className="flex-1 text-center">
+                  <span className="text-[9px] text-muted-foreground/50">{day.label}</span>
                 </div>
-              );
-            })}
-          </div>
-
-          {/* Day labels */}
-          <div className="flex justify-between pr-14 mt-1">
-            {weekData.map((day, idx) => (
-              <div key={idx} className="flex-1 text-center">
-                <span className="text-[9px] text-muted-foreground/50">{day.label}</span>
-              </div>
-            ))}
+              ))}
+            </div>
           </div>
         </div>
       </div>
-    </div>
+    </TooltipProvider>
   );
 });
 
