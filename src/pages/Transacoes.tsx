@@ -857,20 +857,10 @@ const Transacoes = () => {
                           Hoje, {label}
                         </span>
                       </div>
-                      <span className="text-[10px] font-semibold text-muted-foreground/50">
-                        {dayTotal.desp > 0 && <span className="text-destructive">−{fmt(dayTotal.desp)}</span>}
-                        {dayTotal.rec > 0 && dayTotal.desp > 0 && " · "}
-                        {dayTotal.rec > 0 && <span className="text-primary">+{fmt(dayTotal.rec)}</span>}
-                      </span>
                     </div>
                   ) : (
                     <div className="flex-1 flex items-center justify-between">
                       <span className="text-[11px] md:text-xs font-semibold text-muted-foreground/70">{label}</span>
-                      <span className="text-[10px] font-semibold text-muted-foreground/40">
-                        {dayTotal.desp > 0 && <span className="text-destructive/60">−{fmt(dayTotal.desp)}</span>}
-                        {dayTotal.rec > 0 && dayTotal.desp > 0 && " · "}
-                        {dayTotal.rec > 0 && <span className="text-primary/60">+{fmt(dayTotal.rec)}</span>}
-                      </span>
                     </div>
                   )}
                 </div>
