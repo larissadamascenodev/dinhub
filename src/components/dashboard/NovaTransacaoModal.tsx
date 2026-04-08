@@ -1308,22 +1308,25 @@ const NovaTransacaoModal = ({ open, onClose, onSuccess, initialType = "despesa",
                             )}
                           >
                             {(() => {
+                              const catHex = getCategoryHexColor(cat, customCategories);
                               if (customCat) {
                                 const CatIcon = getIconComponent(customCat.icon);
                                 return (
                                   <span
                                     className="w-7 h-7 rounded-lg flex items-center justify-center shrink-0"
-                                    style={{ backgroundColor: `${customCat.color}20`, border: `1px solid ${customCat.color}30` }}
+                                    style={{ backgroundColor: `${catHex}20`, border: `1px solid ${catHex}30` }}
                                   >
-                                    <CatIcon className="w-3.5 h-3.5" style={{ color: customCat.color }} />
+                                    <CatIcon className="w-3.5 h-3.5" style={{ color: catHex }} />
                                   </span>
                                 );
                               }
                               const DefaultIcon = getDefaultCategoryIcon(cat);
                               return (
-                                <span className="w-7 h-7 rounded-lg flex items-center justify-center shrink-0 bg-primary/10 border border-primary/20"
-                                  style={{ filter: "drop-shadow(0 0 4px hsl(var(--primary) / 0.3))" }}>
-                                  <DefaultIcon className="w-3.5 h-3.5 text-primary" />
+                                <span
+                                  className="w-7 h-7 rounded-lg flex items-center justify-center shrink-0"
+                                  style={{ backgroundColor: `${catHex}20`, border: `1px solid ${catHex}30` }}
+                                >
+                                  <DefaultIcon className="w-3.5 h-3.5" style={{ color: catHex }} />
                                 </span>
                               );
                             })()}
