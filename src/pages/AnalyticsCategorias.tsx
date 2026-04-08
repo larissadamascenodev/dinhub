@@ -647,7 +647,6 @@ const CategoryDetail = ({
 
   const CatIcon = category.icon;
   const annualEstimate = category.amount * 12;
-  const savingsIf10PerDay = 10 * 30;
 
   // Filter AI data for this category
   const categoryAlerts = useMemo(() =>
@@ -660,28 +659,63 @@ const CategoryDetail = ({
     [aiInsights, category.name]
   );
 
-  // Fallback local limit suggestion
-  const localLimitSuggestion = useMemo(() => {
-    if (categoryLimitSuggestion) return null;
-    if (category.percentage > 25 && totalExpenses > 0) {
-      const suggested = Math.round(category.amount * 0.85 / 10) * 10;
+  // 3-month trend analysis
+  const trendAnalysis = useMemo(() => {
+    if (historicalData.length < 3) return null;
+    const recent3 = historicalData.slice(-3);
+    const current = recent3[2]?.amount ?? 0;
+    const prev = recent3[1]?.amount ?? 0;
+    const older = recent3[0]?.amount ?? 0;
+
+    // Month-over-month change
+    const momChange = prev > 0 ? Math.round(((current - prev) / prev) * 100) : null;
+
+    // 3-month average
+    const avg3 = (current + prev + older) / 3;
+
+    // Check if there's a rising trend (each month higher than previous)
+    const risingTrend = current > prev && prev > older && older > 0;
+
+    // Total increase over 3 months
+    const totalIncrease = older > 0 ? Math.round(((current - older) / older) * 100) : null;
+
+    return { momChange, avg3, risingTrend, totalIncrease, months: recent3 };
+  }, [historicalData]);
+
+  // Smart limit suggestion with economy potential
+  const smartSuggestion = useMemo(() => {
+    if (categoryLimitSuggestion) {
+      const saving = category.amount - categoryLimitSuggestion.suggestedLimit;
+      return {
+        suggestedLimit: categoryLimitSuggestion.suggestedLimit,
+        message: categoryLimitSuggestion.message,
+        monthlySaving: saving > 0 ? saving : 0,
+        annualSaving: saving > 0 ? saving * 12 : 0,
+      };
+    }
+    // Local fallback: suggest reducing to 3-month average or 85% of current
+    if (trendAnalysis && trendAnalysis.avg3 > 0 && category.amount > trendAnalysis.avg3 * 1.1) {
+      const suggested = Math.round(trendAnalysis.avg3 / 10) * 10;
+      const saving = category.amount - suggested;
       return {
         suggestedLimit: suggested,
-        message: `Essa categoria representa ${category.percentage}% dos seus gastos. Que tal limitar a ${fmt(suggested)}?`,
+        message: `Sua média dos últimos 3 meses é ${fmt(trendAnalysis.avg3)}. Definir um limite de ${fmt(suggested)} ajuda a controlar o crescimento.`,
+        monthlySaving: saving > 0 ? saving : 0,
+        annualSaving: saving > 0 ? saving * 12 : 0,
+      };
+    }
+    if (category.percentage > 25 && totalExpenses > 0) {
+      const suggested = Math.round(category.amount * 0.85 / 10) * 10;
+      const saving = category.amount - suggested;
+      return {
+        suggestedLimit: suggested,
+        message: `Essa categoria representa ${category.percentage}% dos seus gastos. Reduzindo para ${fmt(suggested)}/mês você economiza ${fmt(saving > 0 ? saving : 0)}.`,
+        monthlySaving: saving > 0 ? saving : 0,
+        annualSaving: saving > 0 ? saving * 12 : 0,
       };
     }
     return null;
-  }, [category, totalExpenses, categoryLimitSuggestion]);
-
-  // Trend vs previous month
-  const trend = useMemo(() => {
-    if (historicalData.length < 2) return null;
-    const current = historicalData[historicalData.length - 1]?.amount ?? 0;
-    const previous = historicalData[historicalData.length - 2]?.amount ?? 0;
-    if (previous === 0) return null;
-    const pctChange = Math.round(((current - previous) / previous) * 100);
-    return { pctChange, increased: pctChange > 0 };
-  }, [historicalData]);
+  }, [category, totalExpenses, categoryLimitSuggestion, trendAnalysis]);
 
   return (
     <motion.div
@@ -705,24 +739,25 @@ const CategoryDetail = ({
           <h2 className="text-lg font-bold text-foreground">{category.name}</h2>
           <p className="text-xs text-muted-foreground/60">{monthLabel}</p>
         </div>
-        {trend && (
+        {trendAnalysis?.momChange != null && (
           <div className={`flex items-center gap-1 px-2 py-1 rounded-full text-[10px] font-semibold ${
-            trend.increased
+            trendAnalysis.momChange > 0
               ? "bg-destructive/10 text-destructive"
               : "bg-success/10 text-success"
           }`}>
-            {trend.increased ? <TrendingUp className="w-3 h-3" /> : <TrendingDown className="w-3 h-3" />}
-            {trend.increased ? "+" : ""}{trend.pctChange}%
+            {trendAnalysis.momChange > 0 ? <TrendingUp className="w-3 h-3" /> : <TrendingDown className="w-3 h-3" />}
+            {trendAnalysis.momChange > 0 ? "+" : ""}{trendAnalysis.momChange}%
           </div>
         )}
       </div>
 
-      {/* Stats */}
-      <div className="grid grid-cols-3 gap-2">
+      {/* Stats — compact 2x2 grid */}
+      <div className="grid grid-cols-2 gap-2">
         {[
           { label: "Total gasto", value: fmt(category.amount) },
           { label: "Transações", value: String(category.txCount) },
           { label: "Média/transação", value: fmt(category.avgPerTx) },
+          { label: "Projeção anual", value: fmt(annualEstimate) },
         ].map((s) => (
           <GlassCard key={s.label} className="p-3 text-center">
             <p className="text-[9px] text-muted-foreground/50 uppercase tracking-wider font-medium">{s.label}</p>
@@ -738,18 +773,27 @@ const CategoryDetail = ({
         currentMonth={selectedMonth}
       />
 
-      {/* Projections for this category */}
-      <div className="grid grid-cols-2 gap-3">
-        <GlassCard className="p-3">
-          <p className="text-[9px] text-muted-foreground/50 uppercase tracking-wider font-medium">Projeção anual</p>
-          <p className="text-base font-bold text-foreground tabular-nums mt-1">{fmt(annualEstimate)}</p>
+      {/* 3-month trend alert */}
+      {trendAnalysis?.risingTrend && trendAnalysis.totalIncrease != null && (
+        <GlassCard className="p-4 border-warning/20">
+          <div className="flex items-start gap-3">
+            <div className="w-9 h-9 rounded-full bg-warning/10 flex items-center justify-center shrink-0">
+              <AlertTriangle className="w-4 h-4 text-warning" />
+            </div>
+            <div className="flex-1 min-w-0">
+              <p className="text-xs font-semibold text-foreground">Tendência de alta</p>
+              <p className="text-[11px] text-muted-foreground/70 mt-1 leading-relaxed">
+                {category.name} subiu {trendAnalysis.totalIncrease}% nos últimos 3 meses
+                {trendAnalysis.months && (
+                  <span>
+                    {" "}— de {fmt(trendAnalysis.months[0].amount)} para {fmt(trendAnalysis.months[2].amount)}
+                  </span>
+                )}
+              </p>
+            </div>
+          </div>
         </GlassCard>
-        <GlassCard className="p-3">
-          <p className="text-[9px] text-muted-foreground/50 uppercase tracking-wider font-medium">Economia potencial</p>
-          <p className="text-base font-bold text-success tabular-nums mt-1">{fmt(savingsIf10PerDay)}</p>
-          <p className="text-[8px] text-muted-foreground/40 mt-0.5">Reduzindo R$ 10/dia</p>
-        </GlassCard>
-      </div>
+      )}
 
       {/* AI Alerts for this category */}
       {categoryAlerts.length > 0 && <AlertsSection alerts={categoryAlerts} />}
@@ -757,8 +801,8 @@ const CategoryDetail = ({
       {/* Installment Impact */}
       <CategoryInstallmentDetail impact={installmentImpact} />
 
-
-      {(categoryLimitSuggestion || localLimitSuggestion) && (
+      {/* Smart limit + economy suggestion */}
+      {smartSuggestion && (
         <GlassCard className="p-4 md:p-5 border-primary/20">
           <div className="flex items-start gap-3">
             <div className="w-10 h-10 rounded-full bg-primary/10 flex items-center justify-center shrink-0">
@@ -769,18 +813,30 @@ const CategoryDetail = ({
                 💡 Sugestão de limite
               </p>
               <p className="text-[11px] text-muted-foreground/70 mt-1 leading-relaxed">
-                {categoryLimitSuggestion?.message || localLimitSuggestion?.message}
+                {smartSuggestion.message}
               </p>
+              {smartSuggestion.monthlySaving > 0 && (
+                <div className="flex items-center gap-3 mt-2 py-2 px-3 rounded-lg bg-success/5 border border-success/10">
+                  <div>
+                    <p className="text-[9px] text-muted-foreground/50 uppercase tracking-wider font-medium">Economia/mês</p>
+                    <p className="text-xs font-bold text-success tabular-nums">{fmt(smartSuggestion.monthlySaving)}</p>
+                  </div>
+                  <div className="w-px h-6 bg-border/20" />
+                  <div>
+                    <p className="text-[9px] text-muted-foreground/50 uppercase tracking-wider font-medium">Economia/ano</p>
+                    <p className="text-xs font-bold text-success tabular-nums">{fmt(smartSuggestion.annualSaving)}</p>
+                  </div>
+                </div>
+              )}
               <button
                 onClick={() => {
-                  const limit = categoryLimitSuggestion?.suggestedLimit ?? localLimitSuggestion?.suggestedLimit;
-                  toast.success(`Limite de ${fmt(limit!)} definido para ${category.name}! 🎯`, {
+                  toast.success(`Limite de ${fmt(smartSuggestion.suggestedLimit)} definido para ${category.name}! 🎯`, {
                     description: "Em breve você poderá acompanhar o progresso aqui.",
                   });
                 }}
                 className="mt-3 px-4 py-2 rounded-xl bg-primary/15 text-primary text-xs font-semibold border border-primary/20 hover:bg-primary/25 transition-colors"
               >
-                Definir limite de {fmt(categoryLimitSuggestion?.suggestedLimit ?? localLimitSuggestion?.suggestedLimit ?? 0)}
+                Definir limite de {fmt(smartSuggestion.suggestedLimit)}
               </button>
             </div>
           </div>
