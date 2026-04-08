@@ -7,7 +7,7 @@ import MobileBottomNav from "@/components/dashboard/MobileBottomNav";
 import { useProfile } from "@/hooks/useProfile";
 import { useLoginStreak } from "@/hooks/useLoginStreak";
 import { MonthProvider } from "@/contexts/MonthContext";
-import NovaTransacaoModal, { type PrefillData } from "@/components/dashboard/NovaTransacaoModal";
+import NovaTransacaoModal, { type PrefillData, type EditTransactionData } from "@/components/dashboard/NovaTransacaoModal";
 import TransactionTypeChooser from "@/components/dashboard/TransactionTypeChooser";
 import TransferModal from "@/components/dashboard/TransferModal";
 import InvoiceUploadReviewModal, { type ExtractedItem } from "@/components/fatura/InvoiceUploadReviewModal";
