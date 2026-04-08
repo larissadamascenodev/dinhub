@@ -3,7 +3,7 @@ import { useNavigate } from "react-router-dom";
 import { motion, AnimatePresence } from "framer-motion";
 import {
   ArrowLeft, ChevronRight, Sparkles, TrendingUp, TrendingDown,
-  AlertTriangle, Target, Brain, PieChart, Info,
+  AlertTriangle, Target, Brain, PieChart, Info, ShieldCheck,
 } from "lucide-react";
 import { supabase } from "@/integrations/supabase/client";
 import { useAuth } from "@/contexts/AuthContext";
@@ -25,6 +25,11 @@ const fmt = (v: number) =>
 const MONTH_NAMES = [
   "Janeiro", "Fevereiro", "Março", "Abril", "Maio", "Junho",
   "Julho", "Agosto", "Setembro", "Outubro", "Novembro", "Dezembro",
+];
+
+const SHORT_MONTH_NAMES = [
+  "Jan", "Fev", "Mar", "Abr", "Mai", "Jun",
+  "Jul", "Ago", "Set", "Out", "Nov", "Dez",
 ];
 
 // ── Types ────────────────────────────────────────────────
@@ -49,6 +54,15 @@ interface AIInsights {
   alerts: { category: string; message: string; severity: "info" | "warning" | "danger" }[];
   limitSuggestions: { category: string; suggestedLimit: number; message: string }[];
 }
+
+interface HistoricalEntry {
+  month: number;
+  year: number;
+  label: string;
+  amount: number;
+}
+
+type HistoricalMap = Record<string, HistoricalEntry[]>;
 
 // ── Reusable Glass Card ──────────────────────────────────
 const GlassCard = ({ children, className = "" }: { children: React.ReactNode; className?: string }) => (
@@ -374,9 +388,65 @@ const LimitSuggestions = ({ suggestions }: { suggestions: AIInsights["limitSugge
   );
 };
 
+// ── Evolution Chart (6 months) ───────────────────────────
+const EvolutionChart = ({ data, hexColor, currentMonth }: {
+  data: HistoricalEntry[];
+  hexColor: string;
+  currentMonth: number;
+}) => {
+  if (data.length < 2) return null;
+
+  return (
+    <GlassCard className="p-4 md:p-5">
+      <div className="flex items-center gap-2 mb-3">
+        <TrendingUp className="w-4 h-4 text-primary" />
+        <p className="text-[10px] md:text-[11px] text-muted-foreground/60 font-semibold uppercase tracking-wider">
+          Evolução Mensal
+        </p>
+      </div>
+      <div style={{ height: 160 }}>
+        <ResponsiveContainer width="100%" height="100%">
+          <BarChart data={data} margin={{ left: 0, right: 0, top: 5, bottom: 0 }}>
+            <XAxis
+              dataKey="label"
+              axisLine={false}
+              tickLine={false}
+              tick={{ fill: "hsl(var(--muted-foreground))", fontSize: 10 }}
+            />
+            <YAxis hide />
+            <Tooltip
+              cursor={false}
+              content={({ active, payload }) => {
+                if (!active || !payload?.length) return null;
+                const d = payload[0].payload as HistoricalEntry;
+                return (
+                  <div className="rounded-lg bg-popover border border-border/30 px-3 py-2 shadow-xl">
+                    <p className="text-xs font-bold text-foreground">{MONTH_NAMES[d.month]}/{d.year}</p>
+                    <p className="text-[11px] text-muted-foreground tabular-nums">{fmt(d.amount)}</p>
+                  </div>
+                );
+              }}
+            />
+            <Bar dataKey="amount" radius={[6, 6, 0, 0]} animationDuration={600}>
+              {data.map((entry, i) => (
+                <Cell
+                  key={i}
+                  fill={hexColor}
+                  opacity={entry.month === currentMonth ? 1 : 0.45}
+                />
+              ))}
+            </Bar>
+          </BarChart>
+        </ResponsiveContainer>
+      </div>
+    </GlassCard>
+  );
+};
+
 // ── Category Detail View ─────────────────────────────────
 const CategoryDetail = ({
   category, transactions, onBack, monthLabel, isMobile, totalExpenses,
+  historicalData, aiInsights, selectedMonth,
 }: {
   category: CategorySummary;
   transactions: TxRow[];
@@ -384,6 +454,9 @@ const CategoryDetail = ({
   monthLabel: string;
   isMobile: boolean;
   totalExpenses: number;
+  historicalData: HistoricalEntry[];
+  aiInsights: AIInsights | null;
+  selectedMonth: number;
 }) => {
   const catTxs = transactions
     .filter((t) => t.category === category.name && t.type === "despesa")
@@ -393,12 +466,39 @@ const CategoryDetail = ({
   const annualEstimate = category.amount * 12;
   const savingsIf10PerDay = 10 * 30;
 
-  const dailyMap = new Map<string, number>();
-  catTxs.forEach((t) => {
-    dailyMap.set(t.date, (dailyMap.get(t.date) ?? 0) + t.amount);
-  });
-  const dailyEntries = Array.from(dailyMap.entries()).sort(([a], [b]) => a.localeCompare(b));
-  const maxDaily = Math.max(...dailyEntries.map(([, v]) => v), 1);
+  // Filter AI data for this category
+  const categoryAlerts = useMemo(() =>
+    aiInsights?.alerts.filter((a) => a.category.toLowerCase() === category.name.toLowerCase()) ?? [],
+    [aiInsights, category.name]
+  );
+
+  const categoryLimitSuggestion = useMemo(() =>
+    aiInsights?.limitSuggestions.find((s) => s.category.toLowerCase() === category.name.toLowerCase()),
+    [aiInsights, category.name]
+  );
+
+  // Fallback local limit suggestion
+  const localLimitSuggestion = useMemo(() => {
+    if (categoryLimitSuggestion) return null;
+    if (category.percentage > 25 && totalExpenses > 0) {
+      const suggested = Math.round(category.amount * 0.85 / 10) * 10;
+      return {
+        suggestedLimit: suggested,
+        message: `Essa categoria representa ${category.percentage}% dos seus gastos. Que tal limitar a ${fmt(suggested)}?`,
+      };
+    }
+    return null;
+  }, [category, totalExpenses, categoryLimitSuggestion]);
+
+  // Trend vs previous month
+  const trend = useMemo(() => {
+    if (historicalData.length < 2) return null;
+    const current = historicalData[historicalData.length - 1]?.amount ?? 0;
+    const previous = historicalData[historicalData.length - 2]?.amount ?? 0;
+    if (previous === 0) return null;
+    const pctChange = Math.round(((current - previous) / previous) * 100);
+    return { pctChange, increased: pctChange > 0 };
+  }, [historicalData]);
 
   return (
     <motion.div
@@ -418,49 +518,42 @@ const CategoryDetail = ({
         >
           <CatIcon className="w-5 h-5" style={{ color: category.hexColor }} />
         </div>
-        <div>
+        <div className="flex-1">
           <h2 className="text-lg font-bold text-foreground">{category.name}</h2>
           <p className="text-xs text-muted-foreground/60">{monthLabel}</p>
         </div>
+        {trend && (
+          <div className={`flex items-center gap-1 px-2 py-1 rounded-full text-[10px] font-semibold ${
+            trend.increased
+              ? "bg-destructive/10 text-destructive"
+              : "bg-success/10 text-success"
+          }`}>
+            {trend.increased ? <TrendingUp className="w-3 h-3" /> : <TrendingDown className="w-3 h-3" />}
+            {trend.increased ? "+" : ""}{trend.pctChange}%
+          </div>
+        )}
       </div>
 
       {/* Stats */}
-      <div className={isMobile ? "space-y-4" : "grid grid-cols-2 gap-4"}>
-        <div className="grid grid-cols-3 gap-2">
-          {[
-            { label: "Total gasto", value: fmt(category.amount) },
-            { label: "Transações", value: String(category.txCount) },
-            { label: "Média/transação", value: fmt(category.avgPerTx) },
-          ].map((s) => (
-            <GlassCard key={s.label} className="p-3 text-center">
-              <p className="text-[9px] text-muted-foreground/50 uppercase tracking-wider font-medium">{s.label}</p>
-              <p className="text-sm font-bold text-foreground mt-1 tabular-nums">{s.value}</p>
-            </GlassCard>
-          ))}
-        </div>
-
-        {dailyEntries.length > 1 && (
-          <GlassCard className="p-4">
-            <p className="text-[10px] text-muted-foreground/60 font-semibold uppercase tracking-wider mb-3">
-              Padrão de gastos diários
-            </p>
-            <div className="flex items-end gap-1 h-20">
-              {dailyEntries.map(([date, amount]) => (
-                <div
-                  key={date}
-                  className="flex-1 rounded-t-sm min-w-[4px]"
-                  style={{
-                    height: `${Math.max((amount / maxDaily) * 100, 8)}%`,
-                    backgroundColor: category.hexColor,
-                    opacity: 0.7 + (amount / maxDaily) * 0.3,
-                  }}
-                  title={`${date}: ${fmt(amount)}`}
-                />
-              ))}
-            </div>
+      <div className="grid grid-cols-3 gap-2">
+        {[
+          { label: "Total gasto", value: fmt(category.amount) },
+          { label: "Transações", value: String(category.txCount) },
+          { label: "Média/transação", value: fmt(category.avgPerTx) },
+        ].map((s) => (
+          <GlassCard key={s.label} className="p-3 text-center">
+            <p className="text-[9px] text-muted-foreground/50 uppercase tracking-wider font-medium">{s.label}</p>
+            <p className="text-sm font-bold text-foreground mt-1 tabular-nums">{s.value}</p>
           </GlassCard>
-        )}
+        ))}
       </div>
+
+      {/* Evolution Chart (6 months) */}
+      <EvolutionChart
+        data={historicalData}
+        hexColor={category.hexColor}
+        currentMonth={selectedMonth}
+      />
 
       {/* Projections for this category */}
       <div className="grid grid-cols-2 gap-3">
@@ -474,6 +567,39 @@ const CategoryDetail = ({
           <p className="text-[8px] text-muted-foreground/40 mt-0.5">Reduzindo R$ 10/dia</p>
         </GlassCard>
       </div>
+
+      {/* AI Alerts for this category */}
+      {categoryAlerts.length > 0 && <AlertsSection alerts={categoryAlerts} />}
+
+      {/* Limit Suggestion CTA */}
+      {(categoryLimitSuggestion || localLimitSuggestion) && (
+        <GlassCard className="p-4 md:p-5 border-primary/20">
+          <div className="flex items-start gap-3">
+            <div className="w-10 h-10 rounded-full bg-primary/10 flex items-center justify-center shrink-0">
+              <ShieldCheck className="w-5 h-5 text-primary" />
+            </div>
+            <div className="flex-1 min-w-0">
+              <p className="text-xs font-semibold text-foreground">
+                💡 Sugestão de limite
+              </p>
+              <p className="text-[11px] text-muted-foreground/70 mt-1 leading-relaxed">
+                {categoryLimitSuggestion?.message || localLimitSuggestion?.message}
+              </p>
+              <button
+                onClick={() => {
+                  const limit = categoryLimitSuggestion?.suggestedLimit ?? localLimitSuggestion?.suggestedLimit;
+                  toast.success(`Limite de ${fmt(limit!)} definido para ${category.name}! 🎯`, {
+                    description: "Em breve você poderá acompanhar o progresso aqui.",
+                  });
+                }}
+                className="mt-3 px-4 py-2 rounded-xl bg-primary/15 text-primary text-xs font-semibold border border-primary/20 hover:bg-primary/25 transition-colors"
+              >
+                Definir limite de {fmt(categoryLimitSuggestion?.suggestedLimit ?? localLimitSuggestion?.suggestedLimit ?? 0)}
+              </button>
+            </div>
+          </div>
+        </GlassCard>
+      )}
 
       {/* Transaction list */}
       <GlassCard className="overflow-hidden">
@@ -511,13 +637,14 @@ const AnalyticsCategorias = () => {
   const { selectedMonth, selectedYear, setMonth } = useMonth();
   const [transactions, setTransactions] = useState<TxRow[]>([]);
   const [prevMonthTxs, setPrevMonthTxs] = useState<TxRow[]>([]);
+  const [historicalMap, setHistoricalMap] = useState<HistoricalMap>({});
   const [customCats, setCustomCats] = useState<CustomCategory[]>([]);
   const [loading, setLoading] = useState(true);
   const [selectedCategory, setSelectedCategory] = useState<string | null>(null);
   const [aiInsights, setAiInsights] = useState<AIInsights | null>(null);
   const [aiLoading, setAiLoading] = useState(false);
 
-  // Fetch transactions for current and previous month
+  // Fetch transactions for current month, previous month, and 6-month history
   useEffect(() => {
     if (!user) return;
     const fetchData = async () => {
@@ -531,11 +658,17 @@ const AnalyticsCategorias = () => {
       const prevStart = new Date(prevY, prevM, 1).toISOString().split("T")[0];
       const prevEnd = new Date(prevY, prevM + 1, 0).toISOString().split("T")[0];
 
-      const [txRes, prevTxRes, recurringTxs, prevRecurring, cats] = await Promise.all([
+      // 6-month history range (5 months back + current)
+      const histStart = new Date(selectedYear, selectedMonth - 5, 1).toISOString().split("T")[0];
+
+      const [txRes, prevTxRes, histRes, recurringTxs, prevRecurring, cats] = await Promise.all([
         supabase.from("transactions").select("*").eq("user_id", user.id)
           .gte("date", start).lte("date", end).order("date", { ascending: false }),
         supabase.from("transactions").select("*").eq("user_id", user.id)
           .gte("date", prevStart).lte("date", prevEnd),
+        supabase.from("transactions").select("id,category,date,amount,type").eq("user_id", user.id)
+          .eq("type", "despesa")
+          .gte("date", histStart).lte("date", end),
         getRecurringForMonth(selectedMonth, selectedYear),
         getRecurringForMonth(prevM, prevY),
         getCustomCategories(),
@@ -553,8 +686,42 @@ const AnalyticsCategorias = () => {
         date: `${prevY}-${String(prevM + 1).padStart(2, "0")}-${String(new Date(t.date).getDate()).padStart(2, "0")}`,
       })) as TxRow[];
 
+      // Build historical map from 6-month data
+      const histTxs = (histRes.data ?? []) as { id: string; category: string; date: string; amount: number; type: string }[];
+      const hMap: HistoricalMap = {};
+      histTxs.forEach((tx) => {
+        const d = new Date(tx.date + "T12:00:00");
+        const m = d.getMonth();
+        const y = d.getFullYear();
+        const key = tx.category;
+        if (!hMap[key]) hMap[key] = [];
+        const existing = hMap[key].find((e) => e.month === m && e.year === y);
+        if (existing) {
+          existing.amount += tx.amount;
+        } else {
+          hMap[key].push({ month: m, year: y, label: SHORT_MONTH_NAMES[m], amount: tx.amount });
+        }
+      });
+      // Sort each category's entries chronologically
+      Object.values(hMap).forEach((arr) => arr.sort((a, b) => a.year - b.year || a.month - b.month));
+
+      // Ensure all 6 months exist for each category (fill gaps with 0)
+      const allMonths: { month: number; year: number; label: string }[] = [];
+      for (let i = -5; i <= 0; i++) {
+        const d = new Date(selectedYear, selectedMonth + i, 1);
+        allMonths.push({ month: d.getMonth(), year: d.getFullYear(), label: SHORT_MONTH_NAMES[d.getMonth()] });
+      }
+      Object.keys(hMap).forEach((cat) => {
+        const filled = allMonths.map((slot) => {
+          const found = hMap[cat].find((e) => e.month === slot.month && e.year === slot.year);
+          return found ?? { ...slot, amount: 0 };
+        });
+        hMap[cat] = filled;
+      });
+
       setTransactions([...baseTxs, ...materializedRecurring]);
       setPrevMonthTxs([...prevBaseTxs, ...prevMaterialized]);
+      setHistoricalMap(hMap);
       setCustomCats(cats);
       setLoading(false);
     };
@@ -676,6 +843,9 @@ const AnalyticsCategorias = () => {
             monthLabel={monthLabel}
             isMobile={isMobile}
             totalExpenses={totalExpenses}
+            historicalData={historicalMap[selectedCategory] ?? []}
+            aiInsights={aiInsights}
+            selectedMonth={selectedMonth}
           />
         ) : (
           <motion.div
