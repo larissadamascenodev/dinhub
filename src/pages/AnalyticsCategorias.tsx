@@ -94,21 +94,21 @@ const GlassCard = ({ children, className = "" }: { children: React.ReactNode; cl
 const SummaryCard = ({ totalExpenses, topCategory, monthLabel }: {
   totalExpenses: number; topCategory?: CategorySummary; monthLabel: string;
 }) => (
-  <GlassCard className="p-4 md:p-5">
+  <GlassCard className="p-3 md:p-5">
     <div className="flex items-center justify-between">
       <div>
-        <p className="text-[10px] text-muted-foreground/50 uppercase tracking-wider font-medium">
+        <p className="text-[9px] md:text-[10px] text-muted-foreground/50 uppercase tracking-wider font-medium">
           Total de Despesas · {monthLabel}
         </p>
-        <p className="text-2xl md:text-3xl font-bold text-foreground tabular-nums mt-1">
+        <p className="text-lg md:text-3xl font-bold text-foreground tabular-nums mt-0.5 md:mt-1">
           {fmt(totalExpenses)}
         </p>
       </div>
       {topCategory && (
         <div className="text-right">
-          <p className="text-[10px] text-muted-foreground/50 uppercase tracking-wider font-medium">Maior gasto</p>
-          <p className="text-sm font-bold text-foreground mt-1">{topCategory.name}</p>
-          <p className="text-xs text-muted-foreground/60">{topCategory.percentage}% do total</p>
+          <p className="text-[9px] md:text-[10px] text-muted-foreground/50 uppercase tracking-wider font-medium">Maior gasto</p>
+          <p className="text-xs md:text-sm font-bold text-foreground mt-0.5">{topCategory.name}</p>
+          <p className="text-[10px] md:text-xs text-muted-foreground/60">{topCategory.percentage}%</p>
         </div>
       )}
     </div>
