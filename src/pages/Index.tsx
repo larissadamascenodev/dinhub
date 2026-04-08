@@ -114,7 +114,6 @@ const Index = () => {
               </motion.div>
             </div>
             {/* MicroInteracoesCard temporarily disabled */}
-            {isCurrentMonth && <GastosSemanaisCard />}
             {data.categories.length > 0 && (
               <GastosPorCategoria
                 categories={data.categories}
@@ -128,7 +127,7 @@ const Index = () => {
             <WalletSummaryCard />
             <ProjectionCard />
             <BalancoMensalCard />
-
+            {isCurrentMonth && <GastosSemanaisCard />}
             <ProximosEventos events={data.events} selectedMonth={selectedMonth} selectedYear={selectedYear} onEventClick={handleEventClick} />
             <AssinaturasCard />
             <InvestimentosResumoCard />
