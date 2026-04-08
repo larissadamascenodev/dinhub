@@ -800,6 +800,7 @@ const AnalyticsCategorias = () => {
   const [selectedCategory, setSelectedCategory] = useState<string | null>(null);
   const [aiInsights, setAiInsights] = useState<AIInsights | null>(null);
   const [aiLoading, setAiLoading] = useState(false);
+  const [installmentImpacts, setInstallmentImpacts] = useState<InstallmentImpactMap>({});
 
   // Fetch transactions for current month, previous month, and 6-month history
   useEffect(() => {
@@ -818,7 +819,7 @@ const AnalyticsCategorias = () => {
       // 6-month history range (5 months back + current)
       const histStart = new Date(selectedYear, selectedMonth - 5, 1).toISOString().split("T")[0];
 
-      const [txRes, prevTxRes, histRes, recurringTxs, prevRecurring, cats] = await Promise.all([
+      const [txRes, prevTxRes, histRes, installmentRes, recurringTxs, prevRecurring, cats] = await Promise.all([
         supabase.from("transactions").select("*").eq("user_id", user.id)
           .gte("date", start).lte("date", end).order("date", { ascending: false }),
         supabase.from("transactions").select("*").eq("user_id", user.id)
@@ -826,6 +827,10 @@ const AnalyticsCategorias = () => {
         supabase.from("transactions").select("id,category,date,amount,type").eq("user_id", user.id)
           .eq("type", "despesa")
           .gte("date", histStart).lte("date", end),
+        // Fetch all active installment transactions (future parcels)
+        supabase.from("transactions").select("id,name,category,amount,date,installments,installment_current,parent_transaction_id,recurrence_type")
+          .eq("user_id", user.id).eq("recurrence_type", "parcelado").eq("type", "despesa")
+          .gte("date", start),
         getRecurringForMonth(selectedMonth, selectedYear),
         getRecurringForMonth(prevM, prevY),
         getCustomCategories(),
