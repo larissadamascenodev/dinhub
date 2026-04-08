@@ -22,8 +22,26 @@ interface Props {
 const fmt = (v: number) =>
   v.toLocaleString("pt-BR", { style: "currency", currency: "BRL" });
 
+const hexToHslString = (hex: string): string => {
+  const r = parseInt(hex.slice(1, 3), 16) / 255;
+  const g = parseInt(hex.slice(3, 5), 16) / 255;
+  const b = parseInt(hex.slice(5, 7), 16) / 255;
+  const max = Math.max(r, g, b), min = Math.min(r, g, b);
+  let h = 0, s = 0;
+  const l = (max + min) / 2;
+  if (max !== min) {
+    const d = max - min;
+    s = l > 0.5 ? d / (2 - max - min) : d / (max + min);
+    if (max === r) h = ((g - b) / d + (g < b ? 6 : 0)) / 6;
+    else if (max === g) h = ((b - r) / d + 2) / 6;
+    else h = ((r - g) / d + 4) / 6;
+  }
+  return `${Math.round(h * 360)} ${Math.round(s * 100)}% ${Math.round(l * 100)}%`;
+};
+
 const FaturaCard = ({ tx, onClick }: { tx: Transaction; onClick: () => void }) => {
   const navigate = useNavigate();
+  const cardColor = tx.creditCardColor ? hexToHslString(tx.creditCardColor) : "260 70% 60%";
   return (
     <div
       className="group relative flex items-center gap-2.5 px-3 py-2.5 md:gap-3 md:px-4 md:py-3.5 rounded-xl bg-card/95 border border-primary/10 cursor-pointer hover:border-primary/25 transition-colors"
@@ -31,9 +49,9 @@ const FaturaCard = ({ tx, onClick }: { tx: Transaction; onClick: () => void }) =
     >
       <div
         className="w-8 h-8 md:w-10 md:h-10 rounded-full flex items-center justify-center flex-shrink-0"
-        style={{ background: "hsl(var(--primary) / 0.12)" }}
+        style={{ background: `hsl(${cardColor} / 0.12)` }}
       >
-        <CreditCard className="w-4 h-4 md:w-[18px] md:h-[18px] text-primary" />
+        <CreditCard className="w-4 h-4 md:w-[18px] md:h-[18px]" style={{ color: `hsl(${cardColor})` }} />
       </div>
       <div className="flex-1 min-w-0">
         <p className="text-xs md:text-[13px] font-bold text-foreground truncate">{tx.name}</p>
