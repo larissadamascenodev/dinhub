@@ -149,6 +149,7 @@ const AssinaturasCard = memo(() => {
   const [subscriptions, setSubscriptions] = useState<Subscription[]>([]);
   const [loading, setLoading] = useState(true);
   const [expanded, setExpanded] = useState(false);
+  const [activeTab, setActiveTab] = useState<RecurringType>("despesa");
 
   useEffect(() => {
     if (!user) return;
@@ -158,16 +159,15 @@ const AssinaturasCard = memo(() => {
 
       const { data: txs } = await supabase
         .from("transactions")
-        .select("id, name, amount, date, category, payment_method, credit_card_id")
+        .select("id, name, amount, date, category, payment_method, credit_card_id, type")
         .eq("user_id", user.id)
-        .eq("recurrence_type", "fixa")
-        .eq("type", "despesa");
+        .eq("recurrence_type", "fixa");
 
       if (!txs) { setLoading(false); return; }
 
       const seen = new Map<string, typeof txs[0]>();
       for (const tx of txs) {
-        const key = tx.name.toLowerCase().trim();
+        const key = `${tx.type}-${tx.name.toLowerCase().trim()}`;
         if (!seen.has(key) || tx.date < seen.get(key)!.date) {
           seen.set(key, tx);
         }
@@ -179,7 +179,8 @@ const AssinaturasCard = memo(() => {
         amount: Number(tx.amount),
         dueDay: new Date(tx.date + "T12:00:00").getDate(),
         category: tx.category,
-        source: tx.payment_method === "cartao" ? "cartao" : "conta",
+        source: tx.payment_method === "cartao" ? "cartao" as const : "conta" as const,
+        txType: tx.type as RecurringType,
       }));
 
       subs.sort((a, b) => getDaysUntil(a.dueDay) - getDaysUntil(b.dueDay));
@@ -191,7 +192,10 @@ const AssinaturasCard = memo(() => {
     fetchSubs();
   }, [user]);
 
-  const total = useMemo(() => subscriptions.reduce((s, x) => s + x.amount, 0), [subscriptions]);
+  const filtered = useMemo(() => subscriptions.filter((s) => s.txType === activeTab), [subscriptions, activeTab]);
+  const total = useMemo(() => filtered.reduce((s, x) => s + x.amount, 0), [filtered]);
+  const despesaCount = useMemo(() => subscriptions.filter((s) => s.txType === "despesa").length, [subscriptions]);
+  const receitaCount = useMemo(() => subscriptions.filter((s) => s.txType === "receita").length, [subscriptions]);
 
   if (loading) {
     return (
@@ -206,8 +210,8 @@ const AssinaturasCard = memo(() => {
 
   if (subscriptions.length === 0) return null;
 
-  const displaySubs = expanded ? subscriptions : subscriptions.slice(0, 3);
-  const hasMore = subscriptions.length > 3;
+  const displaySubs = expanded ? filtered : filtered.slice(0, 3);
+  const hasMore = filtered.length > 3;
 
   return (
     <div className="rounded-2xl bg-card/90 backdrop-blur-xl border border-border/30 shadow-lg shadow-black/20 overflow-hidden">
