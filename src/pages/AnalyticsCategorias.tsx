@@ -36,6 +36,8 @@ const SHORT_MONTH_NAMES = [
 interface TxRow {
   id: string; name: string; category: string; date: string;
   amount: number; type: string; status: string;
+  recurrence_type?: string; installments?: number | null;
+  installment_current?: number | null; parent_transaction_id?: string | null;
 }
 
 interface CategorySummary {
@@ -62,7 +64,20 @@ interface HistoricalEntry {
   amount: number;
 }
 
+
 type HistoricalMap = Record<string, HistoricalEntry[]>;
+
+interface InstallmentImpact {
+  category: string;
+  monthlyAmount: number;
+  totalRemaining: number;
+  monthsRemaining: number;
+  impactPct: number;
+  items: { name: string; amount: number; remaining: number; total: number }[];
+}
+
+type InstallmentImpactMap = Record<string, InstallmentImpact>;
+
 
 // ── Reusable Glass Card ──────────────────────────────────
 const GlassCard = ({ children, className = "" }: { children: React.ReactNode; className?: string }) => (
@@ -388,7 +403,149 @@ const LimitSuggestions = ({ suggestions }: { suggestions: AIInsights["limitSugge
   );
 };
 
-// ── Evolution Chart (6 months) ───────────────────────────
+// ── Installment Insights Section ─────────────────────────
+const InstallmentInsightsSection = ({ impacts }: { impacts: InstallmentImpact[] }) => {
+  // Filter only relevant impacts
+  const relevant = impacts
+    .filter((imp) => imp.totalRemaining > 300 || imp.monthsRemaining >= 3 || imp.impactPct > 20)
+    .sort((a, b) => b.totalRemaining - a.totalRemaining || b.monthsRemaining - a.monthsRemaining)
+    .slice(0, 3);
+
+  if (relevant.length === 0) return null;
+
+  const getSeverity = (imp: InstallmentImpact) => {
+    if (imp.impactPct > 50 || imp.totalRemaining > 2000) return "danger";
+    if (imp.impactPct > 30 || imp.totalRemaining > 1000) return "warning";
+    return "info";
+  };
+
+  const getMessage = (imp: InstallmentImpact) => {
+    const severity = getSeverity(imp);
+    if (severity === "danger") {
+      return `⚠️ Parte do seu orçamento futuro já está comprometido com ${imp.category}. Talvez seja melhor segurar novos gastos aqui por enquanto.`;
+    }
+    if (severity === "warning") {
+      return `Você ainda tem ${fmt(imp.totalRemaining)} comprometidos em ${imp.category}. Esse valor vai impactar seus próximos ${imp.monthsRemaining} meses 😅`;
+    }
+    return `Mesmo com parcelamentos ativos, seus gastos em ${imp.category} estão sob controle 👍`;
+  };
+
+  const severityStyles = {
+    info: { border: "border-blue-500/15", bg: "bg-blue-500/5", icon: "text-blue-400" },
+    warning: { border: "border-warning/15", bg: "bg-warning/5", icon: "text-warning" },
+    danger: { border: "border-destructive/15", bg: "bg-destructive/5", icon: "text-destructive" },
+  };
+
+  return (
+    <GlassCard className="p-4 md:p-5">
+      <div className="flex items-center gap-2 mb-3">
+        <span className="text-base">💳</span>
+        <p className="text-[10px] md:text-[11px] text-muted-foreground/60 font-semibold uppercase tracking-wider">
+          Impacto de Parcelamentos
+        </p>
+      </div>
+      <div className="space-y-2.5">
+        {relevant.map((imp, i) => {
+          const severity = getSeverity(imp);
+          const styles = severityStyles[severity];
+          return (
+            <motion.div
+              key={imp.category}
+              initial={{ opacity: 0, y: 8 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ delay: i * 0.1 }}
+              className={`p-3 rounded-xl ${styles.bg} border ${styles.border}`}
+            >
+              <p className="text-xs text-foreground/80 leading-relaxed">
+                {getMessage(imp)}
+              </p>
+              <div className="flex items-center gap-4 mt-2">
+                <div>
+                  <p className="text-[9px] text-muted-foreground/50 uppercase">Mensal</p>
+                  <p className="text-xs font-bold text-foreground tabular-nums">{fmt(imp.monthlyAmount)}</p>
+                </div>
+                <div>
+                  <p className="text-[9px] text-muted-foreground/50 uppercase">Restante</p>
+                  <p className="text-xs font-bold text-foreground tabular-nums">{fmt(imp.totalRemaining)}</p>
+                </div>
+                <div>
+                  <p className="text-[9px] text-muted-foreground/50 uppercase">Meses</p>
+                  <p className="text-xs font-bold text-foreground tabular-nums">⏳ {imp.monthsRemaining}</p>
+                </div>
+              </div>
+            </motion.div>
+          );
+        })}
+      </div>
+    </GlassCard>
+  );
+};
+
+// ── Category Installment Detail ──────────────────────────
+const CategoryInstallmentDetail = ({ impact }: { impact: InstallmentImpact | undefined }) => {
+  if (!impact || impact.items.length === 0) return null;
+
+  const isRelevant = impact.totalRemaining > 300 || impact.monthsRemaining >= 3 || impact.impactPct > 20;
+  if (!isRelevant) return null;
+
+  const isHighImpact = impact.impactPct > 30 || impact.totalRemaining > 1000;
+
+  return (
+    <GlassCard className={`p-4 md:p-5 ${isHighImpact ? "border-warning/20" : "border-border/20"}`}>
+      <div className="flex items-center gap-2 mb-3">
+        <span className="text-base">💳</span>
+        <p className="text-[10px] md:text-[11px] text-muted-foreground/60 font-semibold uppercase tracking-wider">
+          Parcelamentos Ativos
+        </p>
+      </div>
+
+      {/* Summary */}
+      <div className={`p-3 rounded-xl mb-3 ${isHighImpact ? "bg-warning/5 border border-warning/10" : "bg-muted/10 border border-border/10"}`}>
+        <p className="text-xs text-foreground/80 leading-relaxed">
+          {isHighImpact
+            ? `⚠️ ${fmt(impact.totalRemaining)} comprometidos nos próximos ${impact.monthsRemaining} meses. Cuidado com novos parcelamentos aqui.`
+            : `${fmt(impact.totalRemaining)} restantes em parcelamentos (${impact.monthsRemaining} meses). Tudo sob controle 👍`}
+        </p>
+      </div>
+
+      {/* Stats */}
+      <div className="grid grid-cols-3 gap-2 mb-3">
+        <div className="text-center">
+          <p className="text-[9px] text-muted-foreground/50 uppercase">Mensal</p>
+          <p className="text-sm font-bold text-foreground tabular-nums">{fmt(impact.monthlyAmount)}</p>
+        </div>
+        <div className="text-center">
+          <p className="text-[9px] text-muted-foreground/50 uppercase">Total restante</p>
+          <p className="text-sm font-bold text-foreground tabular-nums">{fmt(impact.totalRemaining)}</p>
+        </div>
+        <div className="text-center">
+          <p className="text-[9px] text-muted-foreground/50 uppercase">% da categoria</p>
+          <p className="text-sm font-bold text-foreground tabular-nums">{impact.impactPct}%</p>
+        </div>
+      </div>
+
+      {/* Items */}
+      <div className="space-y-1.5">
+        {impact.items.map((item, i) => (
+          <div key={i} className="flex items-center justify-between py-1.5 px-2 rounded-lg hover:bg-muted/10">
+            <div className="flex-1 min-w-0">
+              <p className="text-xs font-semibold text-foreground truncate">{item.name}</p>
+              <p className="text-[9px] text-muted-foreground/40">
+                {item.total - item.remaining} de {item.total} parcelas pagas
+              </p>
+            </div>
+            <div className="text-right shrink-0 ml-2">
+              <p className="text-xs font-bold text-foreground tabular-nums">{fmt(item.amount)}/mês</p>
+              <p className="text-[9px] text-muted-foreground/40">{item.remaining} restantes</p>
+            </div>
+          </div>
+        ))}
+      </div>
+    </GlassCard>
+  );
+};
+
+
 const EvolutionChart = ({ data, hexColor, currentMonth }: {
   data: HistoricalEntry[];
   hexColor: string;
@@ -446,7 +603,7 @@ const EvolutionChart = ({ data, hexColor, currentMonth }: {
 // ── Category Detail View ─────────────────────────────────
 const CategoryDetail = ({
   category, transactions, onBack, monthLabel, isMobile, totalExpenses,
-  historicalData, aiInsights, selectedMonth,
+  historicalData, aiInsights, selectedMonth, installmentImpact,
 }: {
   category: CategorySummary;
   transactions: TxRow[];
@@ -457,6 +614,7 @@ const CategoryDetail = ({
   historicalData: HistoricalEntry[];
   aiInsights: AIInsights | null;
   selectedMonth: number;
+  installmentImpact?: InstallmentImpact;
 }) => {
   const catTxs = transactions
     .filter((t) => t.category === category.name && t.type === "despesa")
@@ -571,7 +729,10 @@ const CategoryDetail = ({
       {/* AI Alerts for this category */}
       {categoryAlerts.length > 0 && <AlertsSection alerts={categoryAlerts} />}
 
-      {/* Limit Suggestion CTA */}
+      {/* Installment Impact */}
+      <CategoryInstallmentDetail impact={installmentImpact} />
+
+
       {(categoryLimitSuggestion || localLimitSuggestion) && (
         <GlassCard className="p-4 md:p-5 border-primary/20">
           <div className="flex items-start gap-3">
@@ -643,6 +804,7 @@ const AnalyticsCategorias = () => {
   const [selectedCategory, setSelectedCategory] = useState<string | null>(null);
   const [aiInsights, setAiInsights] = useState<AIInsights | null>(null);
   const [aiLoading, setAiLoading] = useState(false);
+  const [installmentImpacts, setInstallmentImpacts] = useState<InstallmentImpactMap>({});
 
   // Fetch transactions for current month, previous month, and 6-month history
   useEffect(() => {
@@ -661,7 +823,7 @@ const AnalyticsCategorias = () => {
       // 6-month history range (5 months back + current)
       const histStart = new Date(selectedYear, selectedMonth - 5, 1).toISOString().split("T")[0];
 
-      const [txRes, prevTxRes, histRes, recurringTxs, prevRecurring, cats] = await Promise.all([
+      const [txRes, prevTxRes, histRes, installmentRes, recurringTxs, prevRecurring, cats] = await Promise.all([
         supabase.from("transactions").select("*").eq("user_id", user.id)
           .gte("date", start).lte("date", end).order("date", { ascending: false }),
         supabase.from("transactions").select("*").eq("user_id", user.id)
@@ -669,6 +831,10 @@ const AnalyticsCategorias = () => {
         supabase.from("transactions").select("id,category,date,amount,type").eq("user_id", user.id)
           .eq("type", "despesa")
           .gte("date", histStart).lte("date", end),
+        // Fetch all active installment transactions (future parcels)
+        supabase.from("transactions").select("id,name,category,amount,date,installments,installment_current,parent_transaction_id,recurrence_type")
+          .eq("user_id", user.id).eq("recurrence_type", "parcelado").eq("type", "despesa")
+          .gte("date", start),
         getRecurringForMonth(selectedMonth, selectedYear),
         getRecurringForMonth(prevM, prevY),
         getCustomCategories(),
@@ -719,9 +885,44 @@ const AnalyticsCategorias = () => {
         hMap[cat] = filled;
       });
 
+      // Build installment impact map
+      const instTxs = (installmentRes.data ?? []) as {
+        id: string; name: string; category: string; amount: number; date: string;
+        installments: number | null; installment_current: number | null;
+        parent_transaction_id: string | null; recurrence_type: string;
+      }[];
+
+      // Group by parent (or self if parent) to find unique installment groups
+      const groupMap = new Map<string, { name: string; category: string; amount: number; total: number; maxCurrent: number }>();
+      instTxs.forEach((tx) => {
+        if (!tx.installments || tx.installments <= 1) return;
+        const groupId = tx.parent_transaction_id ?? tx.id;
+        const existing = groupMap.get(groupId);
+        const current = tx.installment_current ?? 1;
+        if (!existing) {
+          groupMap.set(groupId, { name: tx.name, category: tx.category, amount: tx.amount, total: tx.installments, maxCurrent: current });
+        } else {
+          existing.maxCurrent = Math.max(existing.maxCurrent, current);
+        }
+      });
+
+      const iMap: InstallmentImpactMap = {};
+      groupMap.forEach(({ name, category, amount, total, maxCurrent }) => {
+        const remaining = total - maxCurrent;
+        if (remaining <= 0) return;
+        if (!iMap[category]) {
+          iMap[category] = { category, monthlyAmount: 0, totalRemaining: 0, monthsRemaining: 0, impactPct: 0, items: [] };
+        }
+        iMap[category].monthlyAmount += amount;
+        iMap[category].totalRemaining += amount * remaining;
+        iMap[category].monthsRemaining = Math.max(iMap[category].monthsRemaining, remaining);
+        iMap[category].items.push({ name, amount, remaining, total });
+      });
+
       setTransactions([...baseTxs, ...materializedRecurring]);
       setPrevMonthTxs([...prevBaseTxs, ...prevMaterialized]);
       setHistoricalMap(hMap);
+      setInstallmentImpacts(iMap);
       setCustomCats(cats);
       setLoading(false);
     };
@@ -769,6 +970,20 @@ const AnalyticsCategorias = () => {
   const topCategory = categoryData[0];
   const selectedCatData = categoryData.find((c) => c.name === selectedCategory);
   const monthLabel = MONTH_NAMES[selectedMonth];
+
+  // Compute impactPct for installment impacts
+  const enrichedInstallmentImpacts = useMemo(() => {
+    const result: InstallmentImpact[] = [];
+    Object.values(installmentImpacts).forEach((imp) => {
+      const catData = categoryData.find((c) => c.name === imp.category);
+      const catAmount = catData?.amount ?? 0;
+      result.push({
+        ...imp,
+        impactPct: catAmount > 0 ? Math.round((imp.monthlyAmount / catAmount) * 100) : 0,
+      });
+    });
+    return result;
+  }, [installmentImpacts, categoryData]);
 
   // Fetch AI insights
   const fetchInsights = useCallback(async () => {
@@ -846,6 +1061,7 @@ const AnalyticsCategorias = () => {
             historicalData={historicalMap[selectedCategory] ?? []}
             aiInsights={aiInsights}
             selectedMonth={selectedMonth}
+            installmentImpact={enrichedInstallmentImpacts.find((i) => i.category === selectedCategory)}
           />
         ) : (
           <motion.div
@@ -879,6 +1095,9 @@ const AnalyticsCategorias = () => {
 
                 {/* Alerts */}
                 {aiInsights && <AlertsSection alerts={aiInsights.alerts} />}
+
+                {/* Installment Insights */}
+                <InstallmentInsightsSection impacts={enrichedInstallmentImpacts} />
 
                 {/* Projections */}
                 <ProjectionsCard totalExpenses={totalExpenses} />
