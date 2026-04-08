@@ -161,83 +161,96 @@ const AssinaturasCard = memo(() => {
 
   if (subscriptions.length === 0) return null;
 
-  return (
-    <div className="rounded-2xl bg-card/90 backdrop-blur-xl border border-border/30 shadow-lg shadow-black/20 overflow-hidden">
-      {/* Header */}
-      <div className="px-4 pt-3.5 pb-1">
-        <span className="inline-flex items-center text-[9px] font-bold uppercase tracking-wider px-2 py-0.5 rounded-full bg-primary/15 text-primary border border-primary/20">
-          Recorrentes
-        </span>
-        <h2 className="text-sm font-bold text-foreground mt-1.5">Assinaturas</h2>
-        <p className="text-[10px] text-muted-foreground/50 mt-0.5">Seus gastos fixos e recorrentes</p>
-      </div>
+    const displaySubs = expanded ? subscriptions : subscriptions.slice(0, 3);
+    const hasMore = subscriptions.length > 3;
 
-      {/* Cards list */}
-      <div className="px-3 pb-2 mt-1.5 space-y-2">
-        <AnimatePresence>
-          {subscriptions.map((sub, idx) => {
-            const brand = getBrand(sub.name);
-            const days = getDaysUntil(sub.dueDay);
-            const isFallback = brand.bg.startsWith("hsl");
+    return (
+      <div className="rounded-2xl bg-card/90 backdrop-blur-xl border border-border/30 shadow-lg shadow-black/20 overflow-hidden">
+        {/* Header with total */}
+        <div className="flex items-start justify-between px-4 pt-3.5 pb-1">
+          <div>
+            <span className="inline-flex items-center text-[9px] font-bold uppercase tracking-wider px-2 py-0.5 rounded-full bg-primary/15 text-primary border border-primary/20">
+              Recorrentes
+            </span>
+            <h2 className="text-sm font-bold text-foreground mt-1.5">Assinaturas</h2>
+            <p className="text-[10px] text-muted-foreground/50 mt-0.5">Seus gastos fixos e recorrentes</p>
+          </div>
+          <div className="text-right pt-1">
+            <p className="text-[10px] text-muted-foreground/50">Total/mês</p>
+            <p className="text-[15px] font-bold text-primary tabular-nums">{fmt(total)}</p>
+          </div>
+        </div>
 
-            return (
-              <motion.div
-                key={sub.id}
-                initial={{ opacity: 0, y: 8 }}
-                animate={{ opacity: 1, y: 0 }}
-                transition={{ delay: idx * 0.04, type: "spring", stiffness: 400, damping: 30 }}
-                className="relative rounded-xl border border-white/[0.06] overflow-hidden"
-                style={{
-                  background: "linear-gradient(135deg, hsl(var(--card) / 0.95), hsl(var(--card) / 0.7))",
-                  backdropFilter: "blur(16px)",
-                }}
-              >
-                {/* Subtle brand glow */}
-                {!isFallback && (
-                  <div
-                    className="absolute inset-0 opacity-[0.06] pointer-events-none"
-                    style={{ background: `radial-gradient(ellipse at 20% 50%, ${brand.bg}, transparent 70%)` }}
-                  />
-                )}
+        {/* Cards list */}
+        <div className="px-3 pb-2 mt-1.5 space-y-2">
+          <AnimatePresence mode="popLayout">
+            {displaySubs.map((sub, idx) => {
+              const brand = getBrand(sub.name);
+              const days = getDaysUntil(sub.dueDay);
+              const isFallback = brand.bg.startsWith("hsl");
 
-                <div className="relative flex items-center gap-3 px-3 py-3">
-                  {/* Brand icon */}
-                  <div
-                    className="w-10 h-10 rounded-xl flex items-center justify-center shrink-0 shadow-md"
-                    style={{
-                      background: isFallback ? brand.bg : brand.bg,
-                      color: brand.fg,
-                    }}
-                  >
-                    <span className="text-sm font-black leading-none">{brand.icon}</span>
+              return (
+                <motion.div
+                  key={sub.id}
+                  initial={{ opacity: 0, y: 8 }}
+                  animate={{ opacity: 1, y: 0 }}
+                  exit={{ opacity: 0, y: -4 }}
+                  transition={{ delay: idx * 0.04, type: "spring", stiffness: 400, damping: 30 }}
+                  className="relative rounded-xl border border-white/[0.06] overflow-hidden"
+                  style={{
+                    background: "linear-gradient(135deg, hsl(var(--card) / 0.95), hsl(var(--card) / 0.7))",
+                    backdropFilter: "blur(16px)",
+                  }}
+                >
+                  {!isFallback && (
+                    <div
+                      className="absolute inset-0 opacity-[0.06] pointer-events-none"
+                      style={{ background: `radial-gradient(ellipse at 20% 50%, ${brand.bg}, transparent 70%)` }}
+                    />
+                  )}
+
+                  <div className="relative flex items-center gap-3 px-3 py-3">
+                    <div
+                      className="w-10 h-10 rounded-xl flex items-center justify-center shrink-0 shadow-md"
+                      style={{ background: brand.bg, color: brand.fg }}
+                    >
+                      <span className="text-sm font-black leading-none">{brand.icon}</span>
+                    </div>
+
+                    <div className="flex-1 min-w-0">
+                      <p className="text-[12px] font-semibold text-foreground/90 truncate">{sub.name}</p>
+                      <p className="text-[10px] text-muted-foreground/50 mt-0.5">
+                        Dia {sub.dueDay} · {days === 0 ? "Hoje" : days === 1 ? "Amanhã" : `Em ${days} dias`}
+                      </p>
+                    </div>
+
+                    <div className="text-right shrink-0">
+                      <p className="text-[13px] font-bold text-foreground tabular-nums">{fmt(sub.amount)}</p>
+                    </div>
                   </div>
+                </motion.div>
+              );
+            })}
+          </AnimatePresence>
+        </div>
 
-                  {/* Info */}
-                  <div className="flex-1 min-w-0">
-                    <p className="text-[12px] font-semibold text-foreground/90 truncate">{sub.name}</p>
-                    <p className="text-[10px] text-muted-foreground/50 mt-0.5">
-                      Dia {sub.dueDay} · {days === 0 ? "Hoje" : days === 1 ? "Amanhã" : `Em ${days} dias`}
-                    </p>
-                  </div>
-
-                  {/* Amount */}
-                  <div className="text-right shrink-0">
-                    <p className="text-[13px] font-bold text-foreground tabular-nums">{fmt(sub.amount)}</p>
-                  </div>
-                </div>
-              </motion.div>
-            );
-          })}
-        </AnimatePresence>
+        {/* Ver todos / Recolher */}
+        {hasMore && (
+          <div className="px-4 pb-3">
+            <button
+              onClick={() => setExpanded((v) => !v)}
+              className="w-full flex items-center justify-center gap-1 text-[11px] text-primary font-semibold py-1.5 rounded-lg hover:bg-primary/5 transition-colors"
+            >
+              {expanded ? (
+                <>Recolher <ChevronUp className="w-3.5 h-3.5" /></>
+              ) : (
+                <>Ver todos ({subscriptions.length}) <ChevronRight className="w-3.5 h-3.5" /></>
+              )}
+            </button>
+          </div>
+        )}
       </div>
-
-      {/* Footer */}
-      <div className="flex items-center justify-between px-4 py-2.5 border-t border-border/15">
-        <span className="text-[10px] text-muted-foreground/50">Total/mês</span>
-        <span className="text-[13px] font-bold text-primary tabular-nums">{fmt(total)}</span>
-      </div>
-    </div>
-  );
+    );
 });
 
 AssinaturasCard.displayName = "AssinaturasCard";
