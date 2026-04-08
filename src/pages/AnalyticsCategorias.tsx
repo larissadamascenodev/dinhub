@@ -1338,7 +1338,7 @@ const AnalyticsCategorias = () => {
               </>
             ) : (
               <GlassCard className="p-8 text-center">
-                <PieChart className="w-8 h-8 text-muted-foreground/20 mx-auto mb-3" />
+                <PieChartIcon className="w-8 h-8 text-muted-foreground/20 mx-auto mb-3" />
                 <p className="text-sm text-muted-foreground/50">Sem despesas em {monthLabel}</p>
               </GlassCard>
             )}
