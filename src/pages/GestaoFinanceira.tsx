@@ -973,8 +973,8 @@ const GestaoFinanceira = () => {
                     onClick={() => setNewRatePeriod("monthly")}
                     className={`px-3 py-1 rounded-lg text-xs font-medium transition-colors ${
                       newRatePeriod === "monthly"
-                        ? "bg-primary text-primary-foreground"
-                        : "bg-muted/40 text-muted-foreground"
+                        ? "bg-primary/15 text-primary border border-primary/30"
+                        : "bg-muted/20 text-muted-foreground border border-transparent"
                     }`}
                   >
                     % a.m.
@@ -984,8 +984,8 @@ const GestaoFinanceira = () => {
                     onClick={() => setNewRatePeriod("annual")}
                     className={`px-3 py-1 rounded-lg text-xs font-medium transition-colors ${
                       newRatePeriod === "annual"
-                        ? "bg-primary text-primary-foreground"
-                        : "bg-muted/40 text-muted-foreground"
+                        ? "bg-primary/15 text-primary border border-primary/30"
+                        : "bg-muted/20 text-muted-foreground border border-transparent"
                     }`}
                   >
                     % a.a.

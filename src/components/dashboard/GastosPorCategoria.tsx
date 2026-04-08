@@ -88,10 +88,7 @@ const GastosPorCategoria = memo(({ categories, selectedMonth, onVerAnalise }: Pr
               transition={{ delay: index * 0.03 }}
               className="flex items-center gap-3"
             >
-              <div
-                className="w-9 h-9 rounded-xl flex items-center justify-center shrink-0"
-                style={{ backgroundColor: `${color}20` }}
-              >
+              <div className="w-5 h-5 flex items-center justify-center shrink-0">
                 <IconComponent className="w-4 h-4" style={{ color }} />
               </div>
               <div className="flex-1 min-w-0">
