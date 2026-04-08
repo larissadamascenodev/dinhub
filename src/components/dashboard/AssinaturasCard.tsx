@@ -343,12 +343,6 @@ const AssinaturasCard = memo(() => {
                   }}
                   onClick={() => { setSelectedSub(sub); setShowActions(true); }}
                 >
-                  {brand.matched && (
-                    <div
-                      className="absolute inset-0 opacity-[0.06] pointer-events-none"
-                      style={{ background: `radial-gradient(ellipse at 20% 50%, ${brand.fg}, transparent 70%)` }}
-                    />
-                  )}
 
                   <div className="relative flex items-center gap-3 px-3 py-3">
                     <BrandIcon name={sub.name} category={sub.category} brand={brand} />
