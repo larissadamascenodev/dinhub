@@ -102,10 +102,11 @@ const TransacoesAnalytics = () => {
     return Array.from(map.entries())
       .sort((a, b) => b[1] - a[1])
       .map(([name, amount]) => ({
-        name, amount, color: `hsl(${getDefaultCategoryColor(name)})`,
+        name, amount, color: `hsl(${getCategoryColor(name, customCats)})`,
+        icon: getCategoryIcon(name, customCats),
         percentage: total > 0 ? ((amount / total) * 100).toFixed(0) : "0",
       }));
-  }, [transactions]);
+  }, [transactions, customCats]);
 
   const dailyData = useMemo(() => {
     const daysInMonth = new Date(selectedYear, selectedMonth + 1, 0).getDate();
