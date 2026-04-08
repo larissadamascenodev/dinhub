@@ -296,19 +296,26 @@ const NovaTransacaoModal = ({ open, onClose, onSuccess, initialType = "despesa",
         setNewCardClosingDay("10");
         setNewCardDueDay("20");
       } else {
-        // Create mode: reset form
-        setType(initialType);
+        // Create mode: reset form (or pre-fill from OCR)
+        const pf = prefillData;
+        setType(pf?.type || initialType);
         setStatus("pago");
-        setDescription("");
-        setAmountCents(0);
-        setCategory("");
+        setDescription(pf?.name || "");
+        setAmountCents(pf?.amount ? Math.round(pf.amount * 100) : 0);
+        setCategory(pf?.category || "");
         setSuggestedCategory(null);
-        setDate(new Date());
-        setDateMode("hoje");
+        if (pf?.date) {
+          const pfDate = new Date(pf.date + "T12:00:00");
+          setDate(pfDate);
+          setDateMode("outros");
+        } else {
+          setDate(new Date());
+          setDateMode("hoje");
+        }
         setShowCalendar(false);
         setPaymentMethod(initialPaymentMethod ?? "conta");
-        setRecurrenceType("unica");
-        setInstallments(2);
+        setRecurrenceType((pf?.recurrence_type as any) || "unica");
+        setInstallments(pf?.installments || 2);
         setPaidInstallments(0);
         setPaidMonthFlags([]);
         setInstallmentFrequency("mensal");
@@ -323,9 +330,14 @@ const NovaTransacaoModal = ({ open, onClose, onSuccess, initialType = "despesa",
         setNewCardLimit("");
         setNewCardClosingDay("10");
         setNewCardDueDay("20");
+
+        // Trigger AI category suggestion if prefill has a name
+        if (pf?.name && pf.name.trim().length >= 2 && !pf.category) {
+          triggerSuggest(pf.name, pf.type || initialType);
+        }
       }
     }
-  }, [open, initialType, editTransaction]);
+  }, [open, initialType, editTransaction, prefillData]);
 
   // AI category suggestion with debounce - faster
   const triggerSuggest = useCallback(
