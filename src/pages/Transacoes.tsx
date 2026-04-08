@@ -2,8 +2,7 @@ import { useState, useEffect, useMemo, useCallback, useRef } from "react";
 import { useNavigate } from "react-router-dom";
 import { motion, AnimatePresence, useMotionValue, useTransform, PanInfo } from "framer-motion";
 import {
-  SlidersHorizontal, ShoppingCart, Heart, Car, Utensils, Home as HomeIcon,
-  Briefcase, GraduationCap, Shirt, TrendingUp, DollarSign, MoreHorizontal,
+  SlidersHorizontal,
   Trash2, RefreshCw, Layers, X, Search, Plus, Pencil, CreditCard, Wallet,
   Sparkles, Calendar as CalendarIcon, Clock,
 } from "lucide-react";
@@ -13,8 +12,9 @@ import { useAuth } from "@/contexts/AuthContext";
 import { useMonth } from "@/contexts/MonthContext";
 import { deleteTransaction, getAccounts, updateTransaction, getCreditCards } from "@/services/transactionService";
 import { getCustomCategories, type CustomCategory } from "@/services/categoryService";
-import { getIconComponent } from "@/components/dashboard/CategoryCreateModal";
-import { getDefaultCategoryColor } from "@/lib/categoryIcons";
+import { getCategoryIcon, getCategoryColor } from "@/lib/categoryUtils";
+import { useFinanceData } from "@/hooks/useFinanceData";
+import { getRecurringForMonth, excludeRecurringForMonth, excludeRecurringFromMonthOnward } from "@/services/recurringService";
 import { useFinanceData } from "@/hooks/useFinanceData";
 import { getRecurringForMonth, excludeRecurringForMonth, excludeRecurringFromMonthOnward } from "@/services/recurringService";
 import MonthSelector from "@/components/dashboard/MonthSelector";
