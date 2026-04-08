@@ -203,6 +203,7 @@ const DashboardLayout = () => {
   const handleModalClose = useCallback(() => {
     setShowModal(false);
     setPrefillData(null);
+    setEditTransaction(null);
   }, []);
 
   return (
