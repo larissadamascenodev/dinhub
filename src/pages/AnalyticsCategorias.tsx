@@ -729,7 +729,10 @@ const CategoryDetail = ({
       {/* AI Alerts for this category */}
       {categoryAlerts.length > 0 && <AlertsSection alerts={categoryAlerts} />}
 
-      {/* Limit Suggestion CTA */}
+      {/* Installment Impact */}
+      <CategoryInstallmentDetail impact={installmentImpact} />
+
+
       {(categoryLimitSuggestion || localLimitSuggestion) && (
         <GlassCard className="p-4 md:p-5 border-primary/20">
           <div className="flex items-start gap-3">
