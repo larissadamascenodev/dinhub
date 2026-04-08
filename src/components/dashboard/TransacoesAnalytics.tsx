@@ -52,9 +52,11 @@ const TransacoesAnalytics = () => {
   const { user } = useAuth();
   const { selectedMonth, selectedYear } = useMonth();
   const [transactions, setTransactions] = useState<TransactionRow[]>([]);
-  
+  const [customCats, setCustomCats] = useState<CustomCategory[]>([]);
   const [loading, setLoading] = useState(true);
   const [dailyExpanded, setDailyExpanded] = useState(false);
+
+  useEffect(() => { getCustomCategories().then(setCustomCats).catch(() => {}); }, []);
 
   useEffect(() => {
     if (!user) return;
