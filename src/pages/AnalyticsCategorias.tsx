@@ -692,6 +692,13 @@ const CategoryDetail = ({
     [aiInsights, category.name]
   );
 
+  // Filter insights mentioning this category
+  const categoryInsights = useMemo(() => {
+    if (!aiInsights?.insights) return [];
+    const catLower = category.name.toLowerCase();
+    return aiInsights.insights.filter((msg) => msg.toLowerCase().includes(catLower));
+  }, [aiInsights, category.name]);
+
   const categoryLimitSuggestion = useMemo(() =>
     aiInsights?.limitSuggestions.find((s) => s.category.toLowerCase() === category.name.toLowerCase()),
     [aiInsights, category.name]
