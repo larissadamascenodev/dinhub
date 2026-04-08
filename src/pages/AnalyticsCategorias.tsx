@@ -1473,6 +1473,44 @@ const AnalyticsCategorias = () => {
       }));
   }, [transactions, customCats]);
 
+  // Build habit data
+  const habitMap: Record<string, HabitData> = useMemo(() => {
+    const now = new Date();
+    const isCurrentMonth = selectedMonth === now.getMonth() && selectedYear === now.getFullYear();
+    const daysElapsed = isCurrentMonth ? Math.max(now.getDate(), 1) : new Date(selectedYear, selectedMonth + 1, 0).getDate();
+
+    const expenseTxs = transactions.filter((t) => t.type === "despesa");
+    const catMap = new Map<string, { amount: number; txCount: number; names: Map<string, number> }>();
+
+    expenseTxs.forEach((t) => {
+      const entry = catMap.get(t.category) || { amount: 0, txCount: 0, names: new Map() };
+      entry.amount += t.amount;
+      entry.txCount += 1;
+      entry.names.set(t.name, (entry.names.get(t.name) || 0) + 1);
+      catMap.set(t.category, entry);
+    });
+
+    const result: Record<string, HabitData> = {};
+    catMap.forEach((data, category) => {
+      let topMerchant: { name: string; count: number } | null = null;
+      let maxCount = 0;
+      data.names.forEach((count, name) => {
+        if (count > maxCount) { maxCount = count; topMerchant = { name, count }; }
+      });
+
+      const isHabit = data.txCount >= 8 || (topMerchant !== null && topMerchant.count >= 4);
+      result[category] = {
+        category,
+        txCount: data.txCount,
+        dailyCost: data.amount / daysElapsed,
+        isHabit,
+        topMerchant: topMerchant && topMerchant.count >= 2 ? topMerchant : null,
+        amount: data.amount,
+      };
+    });
+    return result;
+  }, [transactions, selectedMonth, selectedYear]);
+
   const prevCategoryData = useMemo(() => {
     const map = new Map<string, { amount: number; count: number }>();
     prevMonthTxs.filter((t) => t.type === "despesa").forEach((t) => {
