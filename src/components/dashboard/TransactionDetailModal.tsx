@@ -1,14 +1,15 @@
-import { useState, useEffect, useRef } from "react";
+import { useState, useEffect, useRef, useMemo } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import {
   X, MoreVertical, Pencil, Trash2, Bell, CalendarDays, Wallet, Tag, RefreshCw, Clock,
-  FileText, StickyNote, Check,
+  FileText, StickyNote, Check, History, ChevronDown, ChevronUp,
 } from "lucide-react";
 import { toast } from "sonner";
 import { cn } from "@/lib/utils";
 import { updateTransactionStatus, updateTransaction, deleteTransaction, getAccounts, createTransaction } from "@/services/transactionService";
 import { excludeRecurringForMonth, excludeRecurringFromMonthOnward } from "@/services/recurringService";
 import { useAuth } from "@/contexts/AuthContext";
+import { supabase } from "@/integrations/supabase/client";
 import { format, subDays } from "date-fns";
 import { Calendar } from "@/components/ui/calendar";
 
