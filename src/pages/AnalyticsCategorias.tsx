@@ -89,6 +89,30 @@ interface HabitData {
   amount: number;
 }
 
+type CategoryScore = "saudavel" | "atencao" | "exagerado";
+
+interface CategoryScoreData {
+  score: CategoryScore;
+  percentage: number;
+  variation: number | null;
+  txCount: number;
+}
+
+const SCORE_CONFIG = {
+  exagerado: { label: "Exagerado", emoji: "🔴", bg: "bg-destructive/10", text: "text-destructive", border: "border-destructive/20" },
+  atencao: { label: "Atenção", emoji: "🟡", bg: "bg-warning/10", text: "text-warning", border: "border-warning/20" },
+  saudavel: { label: "Saudável", emoji: "🟢", bg: "bg-success/10", text: "text-success", border: "border-success/20" },
+};
+
+function computeCategoryScore(pct: number, variation: number | null, txCount: number): CategoryScore {
+  // 🔴 Exagerado: any condition triggers it
+  if (pct > 30 || (variation !== null && variation > 25) || txCount >= 10) return "exagerado";
+  // 🟡 Atenção
+  if ((pct >= 15 && pct <= 30) || (variation !== null && variation >= 10 && variation <= 25) || (txCount >= 6 && txCount <= 9)) return "atencao";
+  // 🟢 Saudável
+  return "saudavel";
+}
+
 // ── Reusable Glass Card ──────────────────────────────────
 const GlassCard = ({ children, className = "" }: { children: React.ReactNode; className?: string }) => (
   <div
@@ -342,14 +366,19 @@ const CategoryChartSection = ({ categoryData, isMobile }: {
 };
 
 // ── Category List with traffic-light bars ────────────────
-const CategoryList = ({ categoryData, onSelect, selectedCat, prevCategoryData, habitMap }: {
+const CategoryList = ({ categoryData, onSelect, selectedCat, prevCategoryData, habitMap, scoreMap }: {
   categoryData: CategorySummary[];
   onSelect: (name: string) => void;
   selectedCat: string | null;
   prevCategoryData?: { name: string; amount: number }[];
   habitMap?: Record<string, HabitData>;
+  scoreMap?: Record<string, CategoryScoreData>;
 }) => {
-  const getBarColor = (pct: number) => {
+  const getBarColor = (catName: string, pct: number) => {
+    const score = scoreMap?.[catName]?.score;
+    if (score === "exagerado") return "hsl(var(--destructive))";
+    if (score === "atencao") return "hsl(var(--warning))";
+    if (score === "saudavel") return "hsl(var(--success))";
     if (pct > 40) return "hsl(var(--destructive))";
     if (pct > 25) return "hsl(var(--warning))";
     return "hsl(var(--success))";
@@ -394,6 +423,16 @@ const CategoryList = ({ categoryData, onSelect, selectedCat, prevCategoryData, h
               <div className="flex-1 min-w-0 text-left">
                 <div className="flex items-center gap-1.5 flex-wrap">
                   <p className="text-xs md:text-sm font-semibold text-foreground truncate">{cat.name}</p>
+                  {(() => {
+                    const sc = scoreMap?.[cat.name];
+                    if (!sc) return null;
+                    const cfg = SCORE_CONFIG[sc.score];
+                    return (
+                      <span className={`text-[7px] md:text-[8px] font-semibold px-1.5 py-0.5 rounded-full ${cfg.bg} ${cfg.text} flex items-center gap-0.5`}>
+                        {cfg.emoji} {cfg.label}
+                      </span>
+                    );
+                  })()}
                   {habit?.isHabit && (
                     <span className="text-[7px] md:text-[8px] font-semibold px-1.5 py-0.5 rounded-full bg-primary/10 text-primary flex items-center gap-0.5">
                       <Repeat className="w-2.5 h-2.5" /> Hábito
@@ -408,7 +447,7 @@ const CategoryList = ({ categoryData, onSelect, selectedCat, prevCategoryData, h
                       animate={{ width: `${cat.percentage}%` }}
                       transition={{ delay: 0.1 + i * 0.03, duration: 0.5, ease: "easeOut" }}
                       className="h-full rounded-full"
-                      style={{ backgroundColor: getBarColor(cat.percentage) }}
+                      style={{ backgroundColor: getBarColor(cat.name, cat.percentage) }}
                     />
                   </div>
                   {isNew ? (
@@ -608,6 +647,79 @@ const ComparisonInsightsSection = ({ categoryData, prevCategoryData }: {
               className={`flex items-start gap-2.5 p-2.5 rounded-xl ${config.bg} border ${config.border}`}
             >
               <Icon className={`w-3.5 h-3.5 mt-0.5 shrink-0 ${config.text}`} />
+              <p className="text-xs text-foreground/80 leading-relaxed">{ins.message}</p>
+            </motion.div>
+          );
+        })}
+      </div>
+    </GlassCard>
+  );
+};
+
+// ── Score Insights Section ───────────────────────────────
+const ScoreInsightsSection = ({ scoreMap, categoryData }: {
+  scoreMap: Record<string, CategoryScoreData>;
+  categoryData: CategorySummary[];
+}) => {
+  const insights = useMemo(() => {
+    const results: { message: string; score: CategoryScore; impact: number }[] = [];
+
+    categoryData.forEach((cat) => {
+      const sc = scoreMap[cat.name];
+      if (!sc) return;
+
+      if (sc.score === "exagerado") {
+        results.push({
+          message: `Seus gastos com ${cat.name} estão acima do ideal 🚨 Talvez seja o melhor ponto pra ajustar agora`,
+          score: "exagerado",
+          impact: cat.amount,
+        });
+      } else if (sc.score === "atencao") {
+        results.push({
+          message: `Fica de olho em ${cat.name} 👀 Tá começando a subir`,
+          score: "atencao",
+          impact: cat.amount * 0.5,
+        });
+      } else {
+        results.push({
+          message: `Boa! Seus gastos com ${cat.name} estão sob controle 👍`,
+          score: "saudavel",
+          impact: 0,
+        });
+      }
+    });
+
+    // Prioritize: exagerado first, then atencao, limit to 3
+    return results
+      .sort((a, b) => {
+        const order = { exagerado: 0, atencao: 1, saudavel: 2 };
+        return order[a.score] - order[b.score] || b.impact - a.impact;
+      })
+      .slice(0, 3);
+  }, [scoreMap, categoryData]);
+
+  if (insights.length === 0) return null;
+
+  return (
+    <GlassCard className="p-4 md:p-5">
+      <div className="flex items-center gap-2 mb-3">
+        <ShieldCheck className="w-4 h-4 text-primary" />
+        <p className="text-[10px] md:text-[11px] text-muted-foreground/60 font-semibold uppercase tracking-wider">
+          Score de Categorias
+        </p>
+      </div>
+      <div className="space-y-2">
+        {insights.map((ins, i) => {
+          const cfg = SCORE_CONFIG[ins.score];
+          return (
+            <motion.div
+              key={i}
+              initial={{ opacity: 0, x: -10 }}
+              animate={{ opacity: 1, x: 0 }}
+              transition={{ delay: i * 0.1 }}
+              className={`flex items-start gap-2.5 p-2.5 rounded-xl ${cfg.bg} border ${cfg.border}`}
+            >
+              <span className="text-sm mt-0.5 shrink-0">{cfg.emoji}</span>
               <p className="text-xs text-foreground/80 leading-relaxed">{ins.message}</p>
             </motion.div>
           );
@@ -1528,6 +1640,19 @@ const AnalyticsCategorias = () => {
 
   const totalExpenses = useMemo(() => categoryData.reduce((s, c) => s + c.amount, 0), [categoryData]);
   const topCategory = categoryData[0];
+
+  // Compute score map
+  const scoreMap: Record<string, CategoryScoreData> = useMemo(() => {
+    const result: Record<string, CategoryScoreData> = {};
+    categoryData.forEach((cat) => {
+      const prev = prevCategoryData.find((p) => p.name === cat.name);
+      const prevAmount = prev?.amount ?? 0;
+      const variation = prevAmount > 0 ? Math.round(((cat.amount - prevAmount) / prevAmount) * 100) : null;
+      const score = computeCategoryScore(cat.percentage, variation, cat.txCount);
+      result[cat.name] = { score, percentage: cat.percentage, variation, txCount: cat.txCount };
+    });
+    return result;
+  }, [categoryData, prevCategoryData]);
   const selectedCatData = categoryData.find((c) => c.name === selectedCategory);
   const monthLabel = MONTH_NAMES[selectedMonth];
 
@@ -1649,6 +1774,9 @@ const AnalyticsCategorias = () => {
                 {/* Habit Insights */}
                 <HabitInsightsSection habitMap={habitMap} categoryData={categoryData} />
 
+                {/* Score Insights */}
+                <ScoreInsightsSection scoreMap={scoreMap} categoryData={categoryData} />
+
                 {/* AI Insights */}
                 <AIInsightsSection insights={aiInsights} loading={aiLoading} />
 
@@ -1659,6 +1787,7 @@ const AnalyticsCategorias = () => {
                   selectedCat={null}
                   prevCategoryData={prevCategoryData}
                   habitMap={habitMap}
+                  scoreMap={scoreMap}
                 />
 
                 {/* Alerts */}
