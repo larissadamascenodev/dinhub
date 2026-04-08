@@ -161,6 +161,7 @@ const BrandIcon = ({ name, category, brand, customCategories }: { name: string; 
 const AssinaturasCard = memo(() => {
   const { user } = useAuth();
   const [subscriptions, setSubscriptions] = useState<Subscription[]>([]);
+  const [customCats, setCustomCats] = useState<CustomCategory[]>([]);
   const [loading, setLoading] = useState(true);
   const [expanded, setExpanded] = useState(false);
   const [activeTab, setActiveTab] = useState<RecurringType>("despesa");
