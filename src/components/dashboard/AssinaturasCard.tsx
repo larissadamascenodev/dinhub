@@ -254,7 +254,7 @@ const AssinaturasCard = memo(() => {
       {/* Cards list */}
       <div className="px-3 pb-2 mt-1.5 space-y-2">
         <AnimatePresence mode="popLayout">
-          {displaySubs.map((sub, idx) => {
+          {displaySubs.length > 0 ? displaySubs.map((sub, idx) => {
             const brand = getBrand(sub.name);
             const days = getDaysUntil(sub.dueDay);
 
@@ -271,7 +271,6 @@ const AssinaturasCard = memo(() => {
                   backdropFilter: "blur(16px)",
                 }}
               >
-                {/* Subtle brand glow for matched brands */}
                 {brand.matched && (
                   <div
                     className="absolute inset-0 opacity-[0.06] pointer-events-none"
@@ -295,7 +294,15 @@ const AssinaturasCard = memo(() => {
                 </div>
               </motion.div>
             );
-          })}
+          }) : (
+            <motion.p
+              initial={{ opacity: 0 }}
+              animate={{ opacity: 1 }}
+              className="text-center text-[11px] text-muted-foreground/40 py-4"
+            >
+              Nenhum {activeTab === "receita" ? "receita recorrente" : "gasto recorrente"}
+            </motion.p>
+          )}
         </AnimatePresence>
       </div>
 
