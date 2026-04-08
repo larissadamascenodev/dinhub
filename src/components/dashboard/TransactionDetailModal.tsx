@@ -11,6 +11,7 @@ import { excludeRecurringForMonth, excludeRecurringFromMonthOnward } from "@/ser
 import { useAuth } from "@/contexts/AuthContext";
 import { supabase } from "@/integrations/supabase/client";
 import { format, subDays } from "date-fns";
+import { Calendar } from "@/components/ui/calendar";
 import { getDefaultCategoryIcon, DEFAULT_EXPENSE_CATEGORIES, DEFAULT_INCOME_CATEGORIES } from "@/lib/categoryIcons";
 
 const CATEGORIES_EXPENSE = DEFAULT_EXPENSE_CATEGORIES;
@@ -148,7 +149,7 @@ const TransactionDetailModal = ({ open, tx, accountName, onClose, onRefresh, use
   const isReceita = tx.type === "receita";
   const isPaid = tx.status === "pago";
   const isRecurring = tx.recurrence_type === "fixa";
-  const icon = CATEGORY_ICONS[tx.category] || "📋";
+  const Icon = getDefaultCategoryIcon(tx.category);
 
   const handleClose = () => {
     setStep("detail");
@@ -502,7 +503,10 @@ const TransactionDetailModal = ({ open, tx, accountName, onClose, onRefresh, use
                                   className="w-8 h-8 rounded-lg flex items-center justify-center text-sm shrink-0"
                                   style={{ background: sIsReceita ? "hsl(var(--primary) / 0.12)" : "hsl(var(--muted) / 0.3)" }}
                                 >
-                                  {CATEGORY_ICONS[s.category] || "📋"}
+                                  {(() => {
+                                    const InstallmentIcon = getDefaultCategoryIcon(s.category);
+                                    return <InstallmentIcon className="w-4 h-4 text-foreground/80" />;
+                                  })()}
                                 </div>
                                 <div className="flex-1 min-w-0">
                                   <p className="text-[11px] font-semibold text-foreground/80 truncate">{s.name}</p>
