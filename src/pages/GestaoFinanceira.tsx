@@ -170,6 +170,7 @@ const GestaoFinanceira = () => {
   const [newInvestmentType, setNewInvestmentType] = useState("cdb");
   const [newRateType, setNewRateType] = useState("percent_cdi");
   const [newAnnualRate, setNewAnnualRate] = useState("");
+  const [newRatePeriod, setNewRatePeriod] = useState<"monthly" | "annual">("monthly");
   const [newStartDate, setNewStartDate] = useState<Date>(new Date());
   const [newMaturityDate, setNewMaturityDate] = useState<Date | undefined>(undefined);
 
