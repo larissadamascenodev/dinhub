@@ -11,6 +11,7 @@ import { Label } from "@/components/ui/label";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover";
 import { Calendar } from "@/components/ui/calendar";
+import { getCachedDashboardData, buildDashboardCacheKey } from "@/services/dashboardData";
 import { toast } from "sonner";
 import { useAuth } from "@/contexts/AuthContext";
 import { getAccounts, createAccount, getCreditCards, createCreditCard } from "@/services/transactionService";
@@ -126,10 +127,11 @@ const ModalOverlay = ({ open, onClose, children }: { open: boolean; onClose: () 
 const GestaoFinanceira = () => {
   const navigate = useNavigate();
   const { user } = useAuth();
+  const warmDashboardData = getCachedDashboardData(buildDashboardCacheKey(user?.id, new Date().getMonth(), new Date().getFullYear()));
   const [accounts, setAccounts] = useState<Account[]>([]);
   const [creditCards, setCreditCards] = useState<CreditCardItem[]>([]);
   const [openInvoices, setOpenInvoices] = useState<Record<string, number>>({});
-  const [loading, setLoading] = useState(true);
+  const [loading, setLoading] = useState(() => !warmDashboardData);
 
   const [accountsRef] = useEmblaCarousel({ loop: false, align: "start", dragFree: true, containScroll: "trimSnaps" });
   const [cardsRef] = useEmblaCarousel({ loop: false, align: "start", dragFree: true, containScroll: "trimSnaps" });
@@ -169,6 +171,7 @@ const GestaoFinanceira = () => {
       const [accs, cards] = await Promise.all([getAccounts(), getCreditCards()]);
       setAccounts(accs as unknown as Account[]);
       setCreditCards(cards as unknown as CreditCardItem[]);
+      setLoading(false);
 
       // Fetch open invoices for current month
       const now = new Date();

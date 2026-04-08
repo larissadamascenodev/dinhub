@@ -1,6 +1,8 @@
 import { createContext, useContext, useEffect, useState, useCallback, useMemo, useRef, ReactNode } from "react";
 import { User, Session } from "@supabase/supabase-js";
 import { supabase } from "@/integrations/supabase/client";
+import { prefetchDashboardData } from "@/services/dashboardData";
+import { clearFinanceQueryCache, getAccounts, getCreditCards } from "@/services/transactionService";
 
 interface AuthContextType {
   user: User | null;
@@ -57,6 +59,21 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
       subscription.unsubscribe();
     };
   }, []);
+
+  useEffect(() => {
+    clearFinanceQueryCache();
+    if (!user) return;
+
+    const now = new Date();
+    const month = now.getMonth();
+    const year = now.getFullYear();
+
+    void Promise.all([
+      prefetchDashboardData(month, year, { userId: user.id, includeHistorical: false }),
+      getAccounts(),
+      getCreditCards(),
+    ]).catch(() => {});
+  }, [user]);
 
   const signOut = useCallback(async () => {
     await supabase.auth.signOut();
