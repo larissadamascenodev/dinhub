@@ -13,6 +13,7 @@ import ProximosEventos from "@/components/dashboard/ProximosEventos";
 import AssinaturasCard from "@/components/dashboard/AssinaturasCard";
 import GastosPorCategoria from "@/components/dashboard/GastosPorCategoria";
 import GastosSemanaisCard from "@/components/dashboard/GastosSemanaisCard";
+import InvestimentosResumoCard from "@/components/dashboard/InvestimentosResumoCard";
 import MonthSelector from "@/components/dashboard/MonthSelector";
 import PagarEditarModal from "@/components/dashboard/PagarEditarModal";
 import OnboardingCard from "@/components/dashboard/OnboardingCard";
@@ -130,6 +131,7 @@ const Index = () => {
 
             <ProximosEventos events={data.events} selectedMonth={selectedMonth} selectedYear={selectedYear} onEventClick={handleEventClick} />
             <AssinaturasCard />
+            <InvestimentosResumoCard />
           </div>
         </div>
 
@@ -164,6 +166,7 @@ const Index = () => {
           <TransacoesRecentes transactions={data.transactions} onDelete={refetch} />
           <ProximosEventos events={data.events} selectedMonth={selectedMonth} selectedYear={selectedYear} onEventClick={handleEventClick} />
           <AssinaturasCard />
+          <InvestimentosResumoCard />
         </div>
 
         {/* MOBILE LAYOUT */}
@@ -201,6 +204,7 @@ const Index = () => {
             <ProximosEventos events={data.events} selectedMonth={selectedMonth} selectedYear={selectedYear} onEventClick={handleEventClick} />
           </div>
           <AssinaturasCard />
+          <InvestimentosResumoCard />
         </div>
       <PagarEditarModal
         open={showPayModal}
