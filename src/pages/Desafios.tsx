@@ -446,7 +446,7 @@ const Desafios = () => {
       <div className="mb-8">
         <div className="flex items-center justify-between mb-3">
           <h2 className="text-base font-bold text-foreground flex items-center gap-2">
-            <span className="text-primary">✨</span> Sugestões para Você
+            <span className="text-primary">✨</span> Recomendados para Você
           </h2>
           <button onClick={load} className="text-muted-foreground hover:text-foreground transition-colors">
             <RefreshCw className="w-4 h-4" />
