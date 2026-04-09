@@ -5,7 +5,7 @@ import {
   User, Pencil, Star, Flame, Target, TrendingUp, Swords, Trophy,
   Shield, Crown, Upload, FileText, Smartphone, MessageCircle, Trash2, LogOut,
   Bell, Globe, HelpCircle, Headphones, FileCheck, ChevronRight, Wallet, Settings, Camera,
-  MessageSquare,
+  MessageSquare, Shuffle,
 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -22,7 +22,7 @@ import { supabase } from "@/integrations/supabase/client";
 
 const Configuracoes = () => {
   const { user } = useAuth();
-  const { profile, updateDisplayName, uploadAvatar } = useProfile();
+  const { profile, updateDisplayName, updateBio, uploadAvatar } = useProfile();
   const navigate = useNavigate();
   const { streak } = useLoginStreak();
   const fileInputRef = useRef<HTMLInputElement>(null);
@@ -35,14 +35,36 @@ const Configuracoes = () => {
   const [resetting, setResetting] = useState(false);
   const [uploadingAvatar, setUploadingAvatar] = useState(false);
   const [previewUrl, setPreviewUrl] = useState<string | null>(null);
+  const [editBio, setEditBio] = useState("");
+
+  const BIO_SUGGESTIONS = [
+    "Focado em controle financeiro e evolução diária 💪",
+    "Cada centavo conta na construção do meu futuro 🚀",
+    "Economizando hoje para viver melhor amanhã 🌱",
+    "Transformando hábitos financeiros, um dia de cada vez ✨",
+    "Menos impulso, mais planejamento 📊",
+    "Construindo liberdade financeira com disciplina 💰",
+    "Investindo no meu futuro com consistência 📈",
+    "Domando os gastos e conquistando objetivos 🎯",
+  ];
+
+  const generateRandomBio = () => {
+    const current = editBio;
+    let newBio = current;
+    while (newBio === current) {
+      newBio = BIO_SUGGESTIONS[Math.floor(Math.random() * BIO_SUGGESTIONS.length)];
+    }
+    setEditBio(newBio);
+  };
 
   const displayName = profile?.display_name || user?.email?.split("@")[0] || "Usuário";
   const email = user?.email ?? "";
 
-  const handleSaveName = async () => {
+  const handleSaveProfile = async () => {
     if (!editName.trim()) return;
     await updateDisplayName(editName.trim());
-    toast.success("Nome atualizado!");
+    await updateBio(editBio.trim());
+    toast.success("Perfil atualizado!");
     setEditModalOpen(false);
   };
 
@@ -63,6 +85,7 @@ const Configuracoes = () => {
 
   const openEditModal = () => {
     setEditName(displayName);
+    setEditBio(profile?.bio || "");
     setPreviewUrl(profile?.avatar_url || null);
     setEditModalOpen(true);
   };
@@ -266,8 +289,29 @@ const Configuracoes = () => {
               />
             </div>
 
+            {/* Bio */}
+            <div className="space-y-2">
+              <div className="flex items-center justify-between">
+                <label className="text-xs font-semibold text-muted-foreground">Mensagem</label>
+                <button
+                  type="button"
+                  onClick={generateRandomBio}
+                  className="flex items-center gap-1 text-[10px] text-primary hover:text-primary/80 transition-colors"
+                >
+                  <Shuffle className="w-3 h-3" /> Gerar aleatória
+                </button>
+              </div>
+              <Input
+                value={editBio}
+                onChange={(e) => setEditBio(e.target.value)}
+                className="h-11 bg-muted/30 border-border/20 rounded-xl text-sm"
+                placeholder="Sua frase de motivação..."
+                maxLength={100}
+              />
+            </div>
+
             <Button
-              onClick={handleSaveName}
+              onClick={handleSaveProfile}
               disabled={!editName.trim() || uploadingAvatar}
               className="w-full h-11 rounded-xl font-bold"
             >
@@ -482,8 +526,8 @@ const Configuracoes = () => {
           </button>
         </div>
 
-        {/* Bio placeholder */}
-        <p className="text-xs text-muted-foreground mt-2">Focado em controle financeiro e evolução diária 💪</p>
+        {/* Bio */}
+        <p className="text-xs text-muted-foreground mt-2">{profile?.bio || "Focado em controle financeiro e evolução diária 💪"}</p>
 
       </motion.div>
 

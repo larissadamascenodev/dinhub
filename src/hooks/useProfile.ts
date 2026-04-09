@@ -6,6 +6,7 @@ export interface Profile {
   id: string;
   display_name: string | null;
   avatar_url: string | null;
+  bio: string | null;
   has_completed_profile: boolean;
   has_account: boolean;
   has_transactions: boolean;
@@ -59,6 +60,15 @@ export function useProfile() {
     await fetchProfile();
   }, [user, fetchProfile]);
 
+  const updateBio = useCallback(async (bio: string) => {
+    if (!user) return;
+    await supabase
+      .from("profiles" as any)
+      .update({ bio } as any)
+      .eq("id", user.id);
+    await fetchProfile();
+  }, [user, fetchProfile]);
+
   const uploadAvatar = useCallback(async (file: File) => {
     if (!user) return;
     const fileExt = file.name.split(".").pop();
@@ -92,5 +102,5 @@ export function useProfile() {
     ? profile.has_completed_profile && profile.has_account && profile.has_transactions
     : false;
 
-  return { profile, loading, refetch: fetchProfile, updateDisplayName, uploadAvatar, isOnboardingComplete };
+  return { profile, loading, refetch: fetchProfile, updateDisplayName, updateBio, uploadAvatar, isOnboardingComplete };
 }
