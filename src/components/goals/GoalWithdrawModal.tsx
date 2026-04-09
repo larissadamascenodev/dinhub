@@ -1,6 +1,6 @@
 import { useState, useEffect } from "react";
 import { motion, AnimatePresence } from "framer-motion";
-import { X, Wallet, Calendar, FileText, ChevronDown, ExternalLink } from "lucide-react";
+import { X, Wallet, Calendar, ChevronDown, ExternalLink, ArrowDownLeft } from "lucide-react";
 import { Target } from "lucide-react";
 import { supabase } from "@/integrations/supabase/client";
 
@@ -12,38 +12,37 @@ interface Account {
   type: string;
 }
 
-interface GoalDepositModalProps {
+interface GoalWithdrawModalProps {
   open: boolean;
   onClose: () => void;
-  onSubmit: (data: { amount: number; date: string; source?: string; account_id?: string }) => void;
+  onSubmit: (data: { amount: number; date: string; account_id?: string; destination?: string }) => void;
   goalName: string;
+  maxAmount: number;
 }
-
-const QUICK_AMOUNTS = [50, 100, 200, 500, 1000];
 
 const fmt = (v: number) =>
   v.toLocaleString("pt-BR", { style: "currency", currency: "BRL" });
 
-type SourceType = "conta" | "externa";
+type DestType = "conta" | "externa";
 
-const GoalDepositModal = ({ open, onClose, onSubmit, goalName }: GoalDepositModalProps) => {
+const GoalWithdrawModal = ({ open, onClose, onSubmit, goalName, maxAmount }: GoalWithdrawModalProps) => {
   const [amount, setAmount] = useState("");
   const [dateMode, setDateMode] = useState<"hoje" | "ontem" | "outros">("hoje");
   const [customDate, setCustomDate] = useState("");
-  const [source, setSource] = useState("");
+  const [destination, setDestination] = useState("");
   const [submitting, setSubmitting] = useState(false);
   const [accounts, setAccounts] = useState<Account[]>([]);
   const [selectedAccountId, setSelectedAccountId] = useState<string>("");
   const [showAccountPicker, setShowAccountPicker] = useState(false);
-  const [sourceType, setSourceType] = useState<SourceType>("conta");
+  const [destType, setDestType] = useState<DestType>("conta");
 
   useEffect(() => {
     if (!open) return;
     setAmount("");
-    setSource("");
+    setDestination("");
     setDateMode("hoje");
     setCustomDate("");
-    setSourceType("conta");
+    setDestType("conta");
     (async () => {
       const { data } = await supabase
         .from("accounts")
@@ -74,17 +73,18 @@ const GoalDepositModal = ({ open, onClose, onSubmit, goalName }: GoalDepositModa
   const handleSubmit = async () => {
     const val = parseFloat(amount.replace(",", "."));
     if (!val || val <= 0) return;
-    if (sourceType === "conta" && !selectedAccountId) return;
+    if (val > maxAmount) return;
+    if (destType === "conta" && !selectedAccountId) return;
     setSubmitting(true);
     try {
       await onSubmit({
         amount: val,
         date: getDate(),
-        source: sourceType === "externa" ? (source.trim() || "Conta externa") : source.trim() || undefined,
-        account_id: sourceType === "conta" ? selectedAccountId : undefined,
+        account_id: destType === "conta" ? selectedAccountId : undefined,
+        destination: destType === "externa" ? (destination.trim() || "Conta externa") : undefined,
       });
       setAmount("");
-      setSource("");
+      setDestination("");
       setDateMode("hoje");
       setCustomDate("");
     } finally {
@@ -98,7 +98,7 @@ const GoalDepositModal = ({ open, onClose, onSubmit, goalName }: GoalDepositModa
   };
 
   const parsedAmount = parseFloat(amount.replace(",", ".")) || 0;
-  const insufficientFunds = sourceType === "conta" && selectedAccount ? parsedAmount > selectedAccount.current_balance : false;
+  const exceedsBalance = parsedAmount > maxAmount;
 
   return (
     <AnimatePresence>
@@ -121,11 +121,11 @@ const GoalDepositModal = ({ open, onClose, onSubmit, goalName }: GoalDepositModa
             {/* Header */}
             <div className="flex items-center justify-between">
               <div className="flex items-center gap-2.5">
-                <div className="w-8 h-8 rounded-lg bg-primary/15 border border-primary/20 flex items-center justify-center">
-                  <Wallet className="w-4 h-4 text-primary" />
+                <div className="w-8 h-8 rounded-lg bg-orange-500/15 border border-orange-500/20 flex items-center justify-center">
+                  <ArrowDownLeft className="w-4 h-4 text-orange-400" />
                 </div>
                 <div>
-                  <h3 className="text-sm font-bold text-foreground">Depositar</h3>
+                  <h3 className="text-sm font-bold text-foreground">Sacar</h3>
                   <div className="flex items-center gap-1 mt-0.5">
                     <Target className="w-3 h-3 text-primary" />
                     <span className="text-[11px] text-muted-foreground">{goalName}</span>
@@ -137,15 +137,21 @@ const GoalDepositModal = ({ open, onClose, onSubmit, goalName }: GoalDepositModa
               </button>
             </div>
 
-            {/* Source type toggle */}
+            {/* Available balance */}
+            <div className="rounded-xl px-3 py-2.5 bg-muted/10 border border-border/15">
+              <p className="text-[10px] text-muted-foreground">Disponível para saque</p>
+              <p className="text-sm font-bold text-foreground tabular-nums">{fmt(maxAmount)}</p>
+            </div>
+
+            {/* Destination type toggle */}
             <div>
-              <p className="text-[10px] text-muted-foreground mb-2">Origem do depósito</p>
+              <p className="text-[10px] text-muted-foreground mb-2">Destino do saque</p>
               <div className="flex items-center gap-2">
                 <motion.button
                   whileTap={{ scale: 0.95 }}
-                  onClick={() => setSourceType("conta")}
+                  onClick={() => setDestType("conta")}
                   className={`flex-1 flex items-center justify-center gap-1.5 py-2.5 rounded-xl text-xs font-semibold border transition-colors ${
-                    sourceType === "conta"
+                    destType === "conta"
                       ? "bg-primary/15 border-primary/30 text-primary"
                       : "bg-muted/10 border-border/15 text-muted-foreground hover:bg-muted/20"
                   }`}
@@ -155,9 +161,9 @@ const GoalDepositModal = ({ open, onClose, onSubmit, goalName }: GoalDepositModa
                 </motion.button>
                 <motion.button
                   whileTap={{ scale: 0.95 }}
-                  onClick={() => setSourceType("externa")}
+                  onClick={() => setDestType("externa")}
                   className={`flex-1 flex items-center justify-center gap-1.5 py-2.5 rounded-xl text-xs font-semibold border transition-colors ${
-                    sourceType === "externa"
+                    destType === "externa"
                       ? "bg-primary/15 border-primary/30 text-primary"
                       : "bg-muted/10 border-border/15 text-muted-foreground hover:bg-muted/20"
                   }`}
@@ -168,10 +174,10 @@ const GoalDepositModal = ({ open, onClose, onSubmit, goalName }: GoalDepositModa
               </div>
             </div>
 
-            {/* Account selector (only for "conta") */}
-            {sourceType === "conta" && (
+            {/* Account selector */}
+            {destType === "conta" && (
               <div>
-                <p className="text-[10px] text-muted-foreground mb-2">Saindo da conta</p>
+                <p className="text-[10px] text-muted-foreground mb-2">Enviar para</p>
                 <div className="relative">
                   <button
                     onClick={() => setShowAccountPicker(!showAccountPicker)}
@@ -231,14 +237,14 @@ const GoalDepositModal = ({ open, onClose, onSubmit, goalName }: GoalDepositModa
               </div>
             )}
 
-            {/* External source label */}
-            {sourceType === "externa" && (
+            {/* External destination */}
+            {destType === "externa" && (
               <div>
-                <p className="text-[10px] text-muted-foreground mb-2">Nome da origem (opcional)</p>
+                <p className="text-[10px] text-muted-foreground mb-2">Destino (opcional)</p>
                 <input
-                  value={source}
-                  onChange={(e) => setSource(e.target.value)}
-                  placeholder="Ex: Pix de familiar, Banco X..."
+                  value={destination}
+                  onChange={(e) => setDestination(e.target.value)}
+                  placeholder="Ex: Banco X, Pix..."
                   className="w-full bg-muted/10 border border-border/15 rounded-xl px-3 py-2.5 text-sm text-foreground outline-none placeholder:text-muted-foreground/40"
                 />
               </div>
@@ -246,7 +252,7 @@ const GoalDepositModal = ({ open, onClose, onSubmit, goalName }: GoalDepositModa
 
             {/* Amount input */}
             <div>
-              <p className="text-[10px] text-muted-foreground mb-2">Valor do aporte</p>
+              <p className="text-[10px] text-muted-foreground mb-2">Valor do saque</p>
               <div className="flex items-baseline gap-1">
                 <span className="text-sm text-muted-foreground">R$</span>
                 <input
@@ -259,28 +265,9 @@ const GoalDepositModal = ({ open, onClose, onSubmit, goalName }: GoalDepositModa
                   autoFocus
                 />
               </div>
-
-              {insufficientFunds && (
-                <p className="text-[10px] text-destructive mt-1 font-medium">Saldo insuficiente nesta conta</p>
+              {exceedsBalance && (
+                <p className="text-[10px] text-destructive mt-1 font-medium">Valor excede o saldo da meta</p>
               )}
-
-              {/* Quick amount buttons */}
-              <div className="flex items-center gap-2 mt-3 flex-wrap">
-                {QUICK_AMOUNTS.map((v) => (
-                  <motion.button
-                    key={v}
-                    whileTap={{ scale: 0.95 }}
-                    onClick={() => setAmount(String(v))}
-                    className={`px-3 py-1.5 rounded-lg text-xs font-semibold border transition-colors ${
-                      amount === String(v)
-                        ? "bg-primary/15 border-primary/30 text-primary"
-                        : "bg-muted/10 border-border/15 text-muted-foreground hover:bg-muted/20"
-                    }`}
-                  >
-                    R$ {v}
-                  </motion.button>
-                ))}
-              </div>
             </div>
 
             {/* Date selector */}
@@ -292,7 +279,7 @@ const GoalDepositModal = ({ open, onClose, onSubmit, goalName }: GoalDepositModa
                     key={mode}
                     whileTap={{ scale: 0.95 }}
                     onClick={() => setDateMode(mode)}
-                    className={`px-3 py-1.5 rounded-lg text-xs font-semibold border transition-colors capitalize ${
+                    className={`px-3 py-1.5 rounded-lg text-xs font-semibold border transition-colors ${
                       dateMode === mode
                         ? "bg-primary/15 border-primary/30 text-primary"
                         : "bg-muted/10 border-border/15 text-muted-foreground hover:bg-muted/20"
@@ -305,11 +292,7 @@ const GoalDepositModal = ({ open, onClose, onSubmit, goalName }: GoalDepositModa
             </div>
 
             {dateMode === "outros" && (
-              <motion.div
-                initial={{ opacity: 0, height: 0 }}
-                animate={{ opacity: 1, height: "auto" }}
-                exit={{ opacity: 0, height: 0 }}
-              >
+              <motion.div initial={{ opacity: 0, height: 0 }} animate={{ opacity: 1, height: "auto" }} exit={{ opacity: 0, height: 0 }}>
                 <input
                   type="date"
                   value={customDate}
@@ -319,27 +302,14 @@ const GoalDepositModal = ({ open, onClose, onSubmit, goalName }: GoalDepositModa
               </motion.div>
             )}
 
-            {/* Observation (only for "conta" source) */}
-            {sourceType === "conta" && (
-              <div className="flex items-center gap-2">
-                <FileText className="w-4 h-4 text-muted-foreground/50 flex-shrink-0" />
-                <input
-                  value={source}
-                  onChange={(e) => setSource(e.target.value)}
-                  placeholder="Observação (opcional)"
-                  className="bg-transparent text-sm text-foreground outline-none w-full placeholder:text-muted-foreground/40"
-                />
-              </div>
-            )}
-
             {/* Submit */}
             <motion.button
               whileTap={{ scale: 0.97 }}
-              disabled={!amount || (sourceType === "conta" && !selectedAccountId) || submitting || insufficientFunds}
+              disabled={!amount || (destType === "conta" && !selectedAccountId) || submitting || exceedsBalance}
               onClick={handleSubmit}
-              className="w-full py-3.5 rounded-xl text-sm font-bold bg-primary/15 border border-primary/20 text-primary hover:bg-primary/20 transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
+              className="w-full py-3.5 rounded-xl text-sm font-bold bg-orange-500/15 border border-orange-500/20 text-orange-400 hover:bg-orange-500/20 transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
             >
-              {submitting ? "Depositando..." : "Confirmar Aporte"}
+              {submitting ? "Sacando..." : "Confirmar Saque"}
             </motion.button>
           </motion.div>
         </motion.div>
@@ -348,4 +318,4 @@ const GoalDepositModal = ({ open, onClose, onSubmit, goalName }: GoalDepositModa
   );
 };
 
-export default GoalDepositModal;
+export default GoalWithdrawModal;

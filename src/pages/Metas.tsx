@@ -8,6 +8,7 @@ import { fetchGoals, createGoal, createGoalDeposit, deleteGoal, generateGoalCove
 import GoalCreateModal from "@/components/goals/GoalCreateModal";
 import GoalDepositModal from "@/components/goals/GoalDepositModal";
 import GoalEditModal from "@/components/goals/GoalEditModal";
+import GoalConfirmModal from "@/components/goals/GoalConfirmModal";
 
 const fmt = (v: number) =>
   v.toLocaleString("pt-BR", { style: "currency", currency: "BRL" });
@@ -65,6 +66,8 @@ const Metas = () => {
   const [depositGoal, setDepositGoal] = useState<Goal | null>(null);
   const [editGoal, setEditGoal] = useState<Goal | null>(null);
   const [menuGoalId, setMenuGoalId] = useState<string | null>(null);
+  const [deleteGoalId, setDeleteGoalId] = useState<string | null>(null);
+  const [deletingGoal, setDeletingGoal] = useState(false);
 
   const loadGoals = useCallback(async () => {
     try {
@@ -129,14 +132,17 @@ const Metas = () => {
   );
 
   const handleDeleteGoal = useCallback(async (goalId: string) => {
-    if (!confirm("Tem certeza que deseja excluir esta meta?")) return;
+    setDeletingGoal(true);
     try {
       await deleteGoal(goalId);
       toast.success("Meta excluída");
+      setDeleteGoalId(null);
       setMenuGoalId(null);
       loadGoals();
     } catch {
       toast.error("Erro ao excluir meta");
+    } finally {
+      setDeletingGoal(false);
     }
   }, [loadGoals]);
 
@@ -280,7 +286,7 @@ const Metas = () => {
                               <Edit2 className="w-3.5 h-3.5" /> Editar
                             </button>
                             <button
-                              onClick={() => { handleDeleteGoal(goal.id); }}
+                              onClick={() => { setDeleteGoalId(goal.id); setMenuGoalId(null); }}
                               className="w-full flex items-center gap-2 px-3 py-2.5 text-xs font-semibold text-destructive hover:bg-destructive/10 transition-colors"
                             >
                               <Trash2 className="w-3.5 h-3.5" /> Excluir
@@ -366,6 +372,16 @@ const Metas = () => {
       {editGoal && (
         <GoalEditModal open={!!editGoal} onClose={() => setEditGoal(null)} goal={editGoal} onUpdated={loadGoals} />
       )}
+
+      <GoalConfirmModal
+        open={!!deleteGoalId}
+        onClose={() => setDeleteGoalId(null)}
+        onConfirm={() => deleteGoalId && handleDeleteGoal(deleteGoalId)}
+        title="Excluir meta"
+        description="Tem certeza que deseja excluir esta meta? Esta ação não pode ser desfeita."
+        confirmLabel="Excluir"
+        loading={deletingGoal}
+      />
     </div>
   );
 };
