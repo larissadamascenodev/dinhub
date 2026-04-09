@@ -219,6 +219,7 @@ export type Database = {
       }
       goals: {
         Row: {
+          cover_image: string | null
           created_at: string
           current_amount: number
           deadline: string | null
@@ -230,6 +231,7 @@ export type Database = {
           user_id: string
         }
         Insert: {
+          cover_image?: string | null
           created_at?: string
           current_amount?: number
           deadline?: string | null
@@ -241,6 +243,7 @@ export type Database = {
           user_id: string
         }
         Update: {
+          cover_image?: string | null
           created_at?: string
           current_amount?: number
           deadline?: string | null
