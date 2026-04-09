@@ -18,6 +18,7 @@ export interface CategoryExpense {
   amount: number;
   color: string;
   icon: string;
+  limit?: number;
 }
 
 export interface FinanceEvent {

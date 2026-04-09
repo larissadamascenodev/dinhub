@@ -65,6 +65,33 @@ export type Database = {
         }
         Relationships: []
       }
+      category_limits: {
+        Row: {
+          category: string
+          created_at: string
+          id: string
+          limit_amount: number
+          updated_at: string
+          user_id: string
+        }
+        Insert: {
+          category: string
+          created_at?: string
+          id?: string
+          limit_amount?: number
+          updated_at?: string
+          user_id: string
+        }
+        Update: {
+          category?: string
+          created_at?: string
+          id?: string
+          limit_amount?: number
+          updated_at?: string
+          user_id?: string
+        }
+        Relationships: []
+      }
       challenge_checkins: {
         Row: {
           checkin_date: string
