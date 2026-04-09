@@ -60,10 +60,11 @@ const Configuracoes = () => {
   const displayName = profile?.display_name || user?.email?.split("@")[0] || "Usuário";
   const email = user?.email ?? "";
 
-  const handleSaveName = async () => {
+  const handleSaveProfile = async () => {
     if (!editName.trim()) return;
     await updateDisplayName(editName.trim());
-    toast.success("Nome atualizado!");
+    await updateBio(editBio.trim());
+    toast.success("Perfil atualizado!");
     setEditModalOpen(false);
   };
 
@@ -84,6 +85,7 @@ const Configuracoes = () => {
 
   const openEditModal = () => {
     setEditName(displayName);
+    setEditBio(profile?.bio || "");
     setPreviewUrl(profile?.avatar_url || null);
     setEditModalOpen(true);
   };
