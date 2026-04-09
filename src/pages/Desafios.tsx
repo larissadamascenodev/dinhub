@@ -112,17 +112,17 @@ const SuggestionCard = ({
         </div>
 
         <div className="mt-auto space-y-3">
-          <div className="bg-primary/[0.06] border border-primary/10 rounded-xl px-3 py-2.5">
-            <p className="text-[9px] uppercase tracking-widest text-muted-foreground font-medium">
+          <div className="bg-primary/[0.06] border border-primary/10 rounded-lg px-2.5 py-1.5">
+            <p className="text-[8px] uppercase tracking-widest text-muted-foreground font-medium">
               {challenge.realPotential ? "Seu gasto recente" : "Economia Potencial"}
             </p>
-            <p className="text-base font-bold text-primary">
+            <p className="text-xs font-bold text-primary">
               R$ {challenge.realPotential
                 ? challenge.realPotential.toLocaleString("pt-BR", { minimumFractionDigits: 2 })
                 : Number(challenge.potential_savings).toLocaleString("pt-BR", { minimumFractionDigits: 2 })}
             </p>
             {challenge.realPotential && (
-              <p className="text-[9px] text-muted-foreground mt-0.5">nos últimos 30 dias</p>
+              <p className="text-[8px] text-muted-foreground">nos últimos 30 dias</p>
             )}
           </div>
           <Button
