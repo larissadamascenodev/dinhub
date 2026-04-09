@@ -161,13 +161,6 @@ const MetaDetalhe = () => {
   const totalWithdrawals = transactions.filter(t => Number(t.amount) < 0).reduce((s, t) => s + Math.abs(Number(t.amount)), 0);
   const visibleTxs = showAllHistory ? transactions : transactions.slice(0, 5);
 
-  // Circular progress for the hero
-  const circleSize = 120;
-  const strokeW = 8;
-  const radius = (circleSize - strokeW) / 2;
-  const circumference = 2 * Math.PI * radius;
-  const strokeDash = circumference * progress;
-
   return (
     <div className="pt-2 pb-8 space-y-4">
       {/* Header */}
@@ -203,69 +196,63 @@ const MetaDetalhe = () => {
 
       {showMenu && <div className="fixed inset-0 z-40" onClick={() => setShowMenu(false)} />}
 
-      {/* ═══ Hero Card — circular progress + value ═══ */}
+      {/* ═══ Hero Card — compact with thick ring ═══ */}
       <motion.div
         initial={{ opacity: 0, y: 16 }}
         animate={{ opacity: 1, y: 0 }}
         className="rounded-2xl border border-border/10 overflow-hidden"
         style={{ background: "linear-gradient(160deg, hsl(var(--card)) 0%, hsl(var(--background)) 100%)" }}
       >
-        <div className="flex flex-col items-center pt-6 pb-5 px-5">
-          {/* Circular progress */}
-          <div className="relative mb-4" style={{ width: circleSize, height: circleSize }}>
-            <svg width={circleSize} height={circleSize} className="-rotate-90">
-              <circle cx={circleSize / 2} cy={circleSize / 2} r={radius} fill="none" stroke="hsl(var(--secondary))" strokeWidth={strokeW} />
+        <div className="flex items-center gap-4 p-4">
+          {/* Thick ring progress */}
+          <div className="relative flex-shrink-0" style={{ width: 80, height: 80 }}>
+            <svg width={80} height={80} className="-rotate-90">
+              <circle cx={40} cy={40} r={32} fill="none" stroke="hsl(var(--secondary))" strokeWidth={10} />
               <motion.circle
-                cx={circleSize / 2} cy={circleSize / 2} r={radius} fill="none"
+                cx={40} cy={40} r={32} fill="none"
                 stroke="hsl(var(--primary))"
-                strokeWidth={strokeW}
+                strokeWidth={10}
                 strokeLinecap="round"
-                strokeDasharray={`${strokeDash} ${circumference - strokeDash}`}
-                initial={{ strokeDasharray: `0 ${circumference}` }}
-                animate={{ strokeDasharray: `${strokeDash} ${circumference - strokeDash}` }}
+                initial={{ strokeDasharray: `0 ${2 * Math.PI * 32}` }}
+                animate={{ strokeDasharray: `${2 * Math.PI * 32 * progress} ${2 * Math.PI * 32 * (1 - progress)}` }}
                 transition={{ duration: 1.2, ease: "easeOut" }}
-                style={{ filter: "drop-shadow(0 0 6px hsl(var(--primary) / 0.4))" }}
+                style={{ filter: "drop-shadow(0 0 8px hsl(var(--primary) / 0.5))" }}
               />
             </svg>
             <div className="absolute inset-0 flex flex-col items-center justify-center">
-              <span className={`text-2xl font-extrabold tabular-nums ${isComplete ? "text-primary" : "text-foreground"}`}>
-                {Math.round(progress * 100)}%
-              </span>
-              {isComplete && <span className="text-[9px] text-primary font-semibold">Concluída!</span>}
+              <span className="text-sm font-extrabold tabular-nums text-primary">{Math.round(progress * 100)}%</span>
+              <span className="text-[7px] text-muted-foreground">{isComplete ? "concluída" : "concluído"}</span>
             </div>
           </div>
 
-          {/* Name + values */}
-          <h2 className="text-lg font-bold text-foreground text-center">{goal.name}</h2>
-          <p className="text-2xl font-extrabold text-primary tabular-nums mt-1">{fmt(Number(goal.current_amount))}</p>
-          <p className="text-[11px] text-muted-foreground">
-            de {fmt(Number(goal.target_amount))}
-            {remaining > 0 && !isComplete && <span> · faltam {fmt(remaining)}</span>}
-          </p>
-          {goal.deadline && (
-            <p className="text-[10px] text-muted-foreground/60 mt-1">
-              Prazo: {format(new Date(goal.deadline + "T12:00:00"), "dd 'de' MMMM yyyy", { locale: ptBR })}
+          {/* Name + value */}
+          <div className="flex-1 min-w-0">
+            <h2 className="text-sm font-bold text-foreground truncate">{goal.name}</h2>
+            <p className="text-xl font-extrabold text-primary tabular-nums mt-0.5">{fmt(Number(goal.current_amount))}</p>
+            <p className="text-[10px] text-muted-foreground">
+              de {fmt(Number(goal.target_amount))}
+              {remaining > 0 && !isComplete && <span> · faltam {fmt(remaining)}</span>}
             </p>
-          )}
-
-          {/* Action buttons */}
-          {!isComplete && (
-            <div className="grid grid-cols-2 gap-2.5 w-full mt-5">
-              <button
-                onClick={() => setShowDeposit(true)}
-                className="flex items-center justify-center gap-1.5 py-2.5 rounded-xl bg-primary/10 text-primary text-[11px] font-semibold hover:bg-primary/20 transition-colors border border-primary/20"
-              >
-                <ArrowDownLeft className="w-3.5 h-3.5" /> Depósito
-              </button>
-              <button
-                onClick={() => setShowWithdraw(true)}
-                className="flex items-center justify-center gap-1.5 py-2.5 rounded-xl bg-destructive/10 text-destructive text-[11px] font-semibold hover:bg-destructive/20 transition-colors border border-destructive/20"
-              >
-                <ArrowUpRight className="w-3.5 h-3.5" /> Saque
-              </button>
-            </div>
-          )}
+          </div>
         </div>
+
+        {/* Action buttons */}
+        {!isComplete && (
+          <div className="grid grid-cols-2 gap-2 px-4 pb-4">
+            <button
+              onClick={() => setShowDeposit(true)}
+              className="flex items-center justify-center gap-1.5 py-2.5 rounded-xl bg-primary/10 text-primary text-[11px] font-semibold hover:bg-primary/20 transition-colors border border-primary/20"
+            >
+              <ArrowDownLeft className="w-3.5 h-3.5" /> Depósito
+            </button>
+            <button
+              onClick={() => setShowWithdraw(true)}
+              className="flex items-center justify-center gap-1.5 py-2.5 rounded-xl bg-destructive/10 text-destructive text-[11px] font-semibold hover:bg-destructive/20 transition-colors border border-destructive/20"
+            >
+              <ArrowUpRight className="w-3.5 h-3.5" /> Saque
+            </button>
+          </div>
+        )}
       </motion.div>
 
       {/* ═══ Quick stats row ═══ */}
