@@ -1347,7 +1347,7 @@ const AnalyticsCategorias = () => {
         return true;
       });
 
-      // Build historical map from 6-month data
+      // Non-credit-card transactions: group by date
       const histTxs = (histRes.data ?? []) as { id: string; category: string; date: string; amount: number; type: string; payment_method: string; credit_card_id: string | null }[];
       const hMap: HistoricalMap = {};
       histTxs.forEach((tx) => {
@@ -1363,6 +1363,28 @@ const AnalyticsCategorias = () => {
           hMap[key].push({ month: m, year: y, label: SHORT_MONTH_NAMES[m], amount: tx.amount });
         }
       });
+
+      // Credit card transactions: group by invoice month (1-based → 0-based)
+      const histIIs = (histInvoiceItemsRes.data ?? []) as any[];
+      histIIs.forEach((ii: any) => {
+        const tx = ii.transactions;
+        const inv = ii.invoices;
+        if (!tx || tx.type !== "despesa" || !inv) return;
+        const m = inv.month - 1; // convert to 0-based
+        const y = inv.year;
+        // Only include months within our 6-month window
+        const inRange = histMonths.some((hm) => hm.m1 === inv.month && hm.y1 === y);
+        if (!inRange) return;
+        const key = tx.category;
+        if (!hMap[key]) hMap[key] = [];
+        const existing = hMap[key].find((e) => e.month === m && e.year === y);
+        if (existing) {
+          existing.amount += ii.amount;
+        } else {
+          hMap[key].push({ month: m, year: y, label: SHORT_MONTH_NAMES[m], amount: ii.amount });
+        }
+      });
+
       Object.values(hMap).forEach((arr) => arr.sort((a, b) => a.year - b.year || a.month - b.month));
 
       const allMonths: { month: number; year: number; label: string }[] = [];
