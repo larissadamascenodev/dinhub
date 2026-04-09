@@ -72,11 +72,12 @@ const SuggestionCard = ({
         "shadow-lg", glow
       )}
     >
-      {/* Cover with pattern overlay */}
+      {/* Cover with image */}
       <div className={cn("relative h-36 bg-gradient-to-br flex flex-col justify-end p-4", gradient)}>
-        {/* Decorative circles */}
-        <div className="absolute top-0 right-0 w-24 h-24 rounded-full bg-white/[0.04] -translate-y-8 translate-x-8" />
-        <div className="absolute bottom-0 left-0 w-16 h-16 rounded-full bg-white/[0.03] translate-y-6 -translate-x-4" />
+        {challenge.cover_image && (
+          <img src={challenge.cover_image} alt={challenge.name} className="absolute inset-0 w-full h-full object-cover" loading="lazy" />
+        )}
+        <div className="absolute inset-0 bg-gradient-to-t from-black/70 via-black/30 to-transparent" />
         
         <div className="absolute top-2.5 left-3 flex items-center gap-1.5">
           <span className={cn("text-[10px] font-semibold px-2 py-0.5 rounded-full backdrop-blur-sm", DIFFICULTY_COLOR[challenge.difficulty])}>
