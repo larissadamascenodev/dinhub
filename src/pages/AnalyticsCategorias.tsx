@@ -1357,6 +1357,89 @@ const CategoryDetail = ({
   );
 };
 
+// ── Active Limits Section ────────────────────────────────
+const ActiveLimitsSection = ({ limits, categoryData, onRemoved }: {
+  limits: { category: string; limit_amount: number; id: string }[];
+  categoryData: CategorySummary[];
+  onRemoved?: () => void;
+}) => {
+  const { user } = useAuth();
+  if (limits.length === 0) return null;
+
+  const handleRemove = async (id: string, category: string) => {
+    const { error } = await supabase.from("category_limits").delete().eq("id", id);
+    if (error) { toast.error("Erro ao remover limite"); return; }
+    toast.success(`Limite de ${category} removido`);
+    onRemoved?.();
+    window.dispatchEvent(new Event("finance-data-changed"));
+  };
+
+  return (
+    <GlassCard className="p-4 md:p-5">
+      <div className="flex items-center gap-2 mb-3">
+        <ShieldCheck className="w-4 h-4 text-primary" />
+        <p className="text-[10px] md:text-[11px] text-muted-foreground/60 font-semibold uppercase tracking-wider">Limites Ativos</p>
+      </div>
+      <div className="flex gap-3 overflow-x-auto pb-2 scrollbar-none snap-x snap-mandatory" style={{ WebkitOverflowScrolling: "touch" }}>
+        {limits.map((lim) => {
+          const cat = categoryData.find((c) => c.name === lim.category);
+          const amount = cat?.amount ?? 0;
+          const ratio = lim.limit_amount > 0 ? amount / lim.limit_amount : 0;
+          const pct = Math.round(ratio * 100);
+          const CatIcon = getCategoryIcon(lim.category);
+          const hexColor = getCategoryHexColor(lim.category);
+          let statusColor = "text-success";
+          let statusLabel = "Sob controle";
+          let barColor = hexColor;
+          if (ratio > 1) { statusColor = "text-destructive"; statusLabel = "Ultrapassado"; barColor = "hsl(0 70% 55%)"; }
+          else if (ratio >= 0.8) { statusColor = "text-warning"; statusLabel = "Perto do limite"; barColor = "hsl(35 90% 55%)"; }
+
+          return (
+            <motion.div
+              key={lim.id}
+              initial={{ opacity: 0, y: 8 }}
+              animate={{ opacity: 1, y: 0 }}
+              className="min-w-[220px] max-w-[250px] snap-start p-3 rounded-xl border border-border/15 flex flex-col gap-2"
+              style={{
+                background: "linear-gradient(135deg, hsl(var(--card) / 0.8) 0%, hsl(var(--card) / 0.4) 50%, hsl(var(--card) / 0.6) 100%)",
+              }}
+            >
+              <div className="flex items-center gap-2">
+                <CatIcon className="w-4 h-4" style={{ color: hexColor }} />
+                <p className="text-xs font-semibold text-foreground truncate flex-1">{lim.category}</p>
+                <span className={`text-[9px] font-medium ${statusColor}`}>{statusLabel}</span>
+              </div>
+              <div className="relative w-full h-2 bg-border/20 rounded-full overflow-visible">
+                <motion.div
+                  initial={{ width: 0 }}
+                  animate={{ width: `${Math.min(pct, 100)}%` }}
+                  transition={{ duration: 0.6 }}
+                  className="h-full rounded-full absolute top-0 left-0"
+                  style={{ backgroundColor: barColor }}
+                />
+                <div
+                  className="absolute top-[-2px] w-[2px] h-[calc(100%+4px)] rounded-full bg-foreground/50"
+                  style={{ left: `${Math.min((lim.limit_amount / Math.max(amount, lim.limit_amount) * 1.2) / (Math.max(amount, lim.limit_amount) * 1.2) * 100 * Math.max(amount, lim.limit_amount) * 1.2 / Math.max(amount, lim.limit_amount, 1), 100)}%` }}
+                />
+              </div>
+              <div className="flex justify-between text-[10px]">
+                <span className="text-muted-foreground/60 tabular-nums">{fmt(amount)}</span>
+                <span className="text-muted-foreground/40 tabular-nums">/ {fmt(lim.limit_amount)}</span>
+              </div>
+              <button
+                onClick={() => handleRemove(lim.id, lim.category)}
+                className="text-[9px] text-destructive/60 hover:text-destructive transition-colors self-end"
+              >
+                Remover limite
+              </button>
+            </motion.div>
+          );
+        })}
+      </div>
+    </GlassCard>
+  );
+};
+
 // ── Main Page ────────────────────────────────────────────
 const AnalyticsCategorias = () => {
   const navigate = useNavigate();
@@ -1373,6 +1456,19 @@ const AnalyticsCategorias = () => {
   const [aiLoading, setAiLoading] = useState(false);
   const [installmentImpacts, setInstallmentImpacts] = useState<InstallmentImpactMap>({});
   const [userStartDate, setUserStartDate] = useState<Date | null>(null);
+  const [activeLimits, setActiveLimits] = useState<{ category: string; limit_amount: number; id: string }[]>([]);
+
+  // Fetch active limits
+  const fetchLimits = useCallback(async () => {
+    if (!user) return;
+    const { data } = await supabase
+      .from("category_limits")
+      .select("id, category, limit_amount")
+      .eq("user_id", user.id);
+    setActiveLimits((data ?? []).map(r => ({ id: r.id, category: r.category, limit_amount: Number(r.limit_amount) })));
+  }, [user]);
+
+  useEffect(() => { fetchLimits(); }, [fetchLimits]);
 
   // Fetch transactions for current month, previous month, and 6-month history
   useEffect(() => {
