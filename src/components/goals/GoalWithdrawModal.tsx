@@ -1,6 +1,6 @@
 import { useState, useEffect } from "react";
 import { motion, AnimatePresence } from "framer-motion";
-import { X, Wallet, Calendar, ChevronDown, ExternalLink, ArrowDownLeft } from "lucide-react";
+import { X, Wallet, Calendar, ChevronDown, ArrowUpRight } from "lucide-react";
 import { Target } from "lucide-react";
 import { supabase } from "@/integrations/supabase/client";
 
@@ -23,26 +23,20 @@ interface GoalWithdrawModalProps {
 const fmt = (v: number) =>
   v.toLocaleString("pt-BR", { style: "currency", currency: "BRL" });
 
-type DestType = "conta" | "externa";
-
 const GoalWithdrawModal = ({ open, onClose, onSubmit, goalName, maxAmount }: GoalWithdrawModalProps) => {
   const [amount, setAmount] = useState("");
   const [dateMode, setDateMode] = useState<"hoje" | "ontem" | "outros">("hoje");
   const [customDate, setCustomDate] = useState("");
-  const [destination, setDestination] = useState("");
   const [submitting, setSubmitting] = useState(false);
   const [accounts, setAccounts] = useState<Account[]>([]);
   const [selectedAccountId, setSelectedAccountId] = useState<string>("");
   const [showAccountPicker, setShowAccountPicker] = useState(false);
-  const [destType, setDestType] = useState<DestType>("conta");
 
   useEffect(() => {
     if (!open) return;
     setAmount("");
-    setDestination("");
     setDateMode("hoje");
     setCustomDate("");
-    setDestType("conta");
     (async () => {
       const { data } = await supabase
         .from("accounts")
@@ -52,9 +46,7 @@ const GoalWithdrawModal = ({ open, onClose, onSubmit, goalName, maxAmount }: Goa
         .order("is_default", { ascending: false });
       const accs = (data ?? []) as Account[];
       setAccounts(accs);
-      if (accs.length > 0) {
-        setSelectedAccountId(accs[0].id);
-      }
+      if (accs.length > 0) setSelectedAccountId(accs[0].id);
     })();
   }, [open]);
 
@@ -72,19 +64,15 @@ const GoalWithdrawModal = ({ open, onClose, onSubmit, goalName, maxAmount }: Goa
 
   const handleSubmit = async () => {
     const val = parseFloat(amount.replace(",", "."));
-    if (!val || val <= 0) return;
-    if (val > maxAmount) return;
-    if (destType === "conta" && !selectedAccountId) return;
+    if (!val || val <= 0 || val > maxAmount || !selectedAccountId) return;
     setSubmitting(true);
     try {
       await onSubmit({
         amount: val,
         date: getDate(),
-        account_id: destType === "conta" ? selectedAccountId : undefined,
-        destination: destType === "externa" ? (destination.trim() || "Conta externa") : undefined,
+        account_id: selectedAccountId,
       });
       setAmount("");
-      setDestination("");
       setDateMode("hoje");
       setCustomDate("");
     } finally {
@@ -93,8 +81,7 @@ const GoalWithdrawModal = ({ open, onClose, onSubmit, goalName, maxAmount }: Goa
   };
 
   const handleAmountChange = (raw: string) => {
-    const cleaned = raw.replace(/[^\d,\.]/g, "");
-    setAmount(cleaned);
+    setAmount(raw.replace(/[^\d,\.]/g, ""));
   };
 
   const parsedAmount = parseFloat(amount.replace(",", ".")) || 0;
@@ -121,8 +108,8 @@ const GoalWithdrawModal = ({ open, onClose, onSubmit, goalName, maxAmount }: Goa
             {/* Header */}
             <div className="flex items-center justify-between">
               <div className="flex items-center gap-2.5">
-                <div className="w-8 h-8 rounded-lg bg-orange-500/15 border border-orange-500/20 flex items-center justify-center">
-                  <ArrowDownLeft className="w-4 h-4 text-orange-400" />
+                <div className="w-8 h-8 rounded-lg bg-destructive/15 border border-destructive/20 flex items-center justify-center">
+                  <ArrowUpRight className="w-4 h-4 text-destructive" />
                 </div>
                 <div>
                   <h3 className="text-sm font-bold text-foreground">Sacar</h3>
@@ -143,131 +130,53 @@ const GoalWithdrawModal = ({ open, onClose, onSubmit, goalName, maxAmount }: Goa
               <p className="text-sm font-bold text-foreground tabular-nums">{fmt(maxAmount)}</p>
             </div>
 
-            {/* Destination type toggle */}
+            {/* Account selector */}
             <div>
-              <p className="text-[10px] text-muted-foreground mb-2">Destino do saque</p>
-              <div className="flex items-center gap-2">
-                <motion.button
-                  whileTap={{ scale: 0.95 }}
-                  onClick={() => setDestType("conta")}
-                  className={`flex-1 flex items-center justify-center gap-1.5 py-2.5 rounded-xl text-xs font-semibold border transition-colors ${
-                    destType === "conta"
-                      ? "bg-primary/15 border-primary/30 text-primary"
-                      : "bg-muted/10 border-border/15 text-muted-foreground hover:bg-muted/20"
-                  }`}
+              <p className="text-[10px] text-muted-foreground mb-2">Enviar para</p>
+              <div className="relative">
+                <button
+                  onClick={() => setShowAccountPicker(!showAccountPicker)}
+                  className="w-full flex items-center justify-between rounded-xl px-3 py-2.5 bg-muted/10 border border-border/15 hover:bg-muted/15 transition-colors"
                 >
-                  <Wallet className="w-3.5 h-3.5" />
-                  Minha conta
-                </motion.button>
-                <motion.button
-                  whileTap={{ scale: 0.95 }}
-                  onClick={() => setDestType("externa")}
-                  className={`flex-1 flex items-center justify-center gap-1.5 py-2.5 rounded-xl text-xs font-semibold border transition-colors ${
-                    destType === "externa"
-                      ? "bg-primary/15 border-primary/30 text-primary"
-                      : "bg-muted/10 border-border/15 text-muted-foreground hover:bg-muted/20"
-                  }`}
-                >
-                  <ExternalLink className="w-3.5 h-3.5" />
-                  Conta externa
-                </motion.button>
+                  <div className="flex items-center gap-2.5">
+                    <div className="w-7 h-7 rounded-lg flex items-center justify-center" style={{ backgroundColor: (selectedAccount?.color || "#8b5cf6") + "20" }}>
+                      <Wallet className="w-3.5 h-3.5" style={{ color: selectedAccount?.color || "#8b5cf6" }} />
+                    </div>
+                    <div className="text-left">
+                      <p className="text-xs font-semibold text-foreground">{selectedAccount?.name || "Selecione"}</p>
+                      {selectedAccount && <p className="text-[10px] text-muted-foreground tabular-nums">Saldo: {fmt(selectedAccount.current_balance)}</p>}
+                    </div>
+                  </div>
+                  <ChevronDown className={`w-4 h-4 text-muted-foreground transition-transform ${showAccountPicker ? "rotate-180" : ""}`} />
+                </button>
+                <AnimatePresence>
+                  {showAccountPicker && (
+                    <motion.div initial={{ opacity: 0, y: -4 }} animate={{ opacity: 1, y: 0 }} exit={{ opacity: 0, y: -4 }} className="absolute z-10 w-full mt-1 rounded-xl bg-card border border-border/20 shadow-xl overflow-hidden">
+                      {accounts.map((acc) => (
+                        <button key={acc.id} onClick={() => { setSelectedAccountId(acc.id); setShowAccountPicker(false); }} className={`w-full flex items-center gap-2.5 px-3 py-2.5 hover:bg-muted/10 transition-colors ${acc.id === selectedAccountId ? "bg-primary/5" : ""}`}>
+                          <div className="w-7 h-7 rounded-lg flex items-center justify-center" style={{ backgroundColor: (acc.color || "#8b5cf6") + "20" }}>
+                            <Wallet className="w-3.5 h-3.5" style={{ color: acc.color || "#8b5cf6" }} />
+                          </div>
+                          <div className="text-left">
+                            <p className="text-xs font-semibold text-foreground">{acc.name}</p>
+                            <p className="text-[10px] text-muted-foreground tabular-nums">{fmt(acc.current_balance)}</p>
+                          </div>
+                        </button>
+                      ))}
+                    </motion.div>
+                  )}
+                </AnimatePresence>
               </div>
             </div>
-
-            {/* Account selector */}
-            {destType === "conta" && (
-              <div>
-                <p className="text-[10px] text-muted-foreground mb-2">Enviar para</p>
-                <div className="relative">
-                  <button
-                    onClick={() => setShowAccountPicker(!showAccountPicker)}
-                    className="w-full flex items-center justify-between rounded-xl px-3 py-2.5 bg-muted/10 border border-border/15 hover:bg-muted/15 transition-colors"
-                  >
-                    <div className="flex items-center gap-2.5">
-                      <div
-                        className="w-7 h-7 rounded-lg flex items-center justify-center"
-                        style={{ backgroundColor: (selectedAccount?.color || "#8b5cf6") + "20" }}
-                      >
-                        <Wallet className="w-3.5 h-3.5" style={{ color: selectedAccount?.color || "#8b5cf6" }} />
-                      </div>
-                      <div className="text-left">
-                        <p className="text-xs font-semibold text-foreground">{selectedAccount?.name || "Selecione"}</p>
-                        {selectedAccount && (
-                          <p className="text-[10px] text-muted-foreground tabular-nums">
-                            Saldo: {fmt(selectedAccount.current_balance)}
-                          </p>
-                        )}
-                      </div>
-                    </div>
-                    <ChevronDown className={`w-4 h-4 text-muted-foreground transition-transform ${showAccountPicker ? "rotate-180" : ""}`} />
-                  </button>
-
-                  <AnimatePresence>
-                    {showAccountPicker && (
-                      <motion.div
-                        initial={{ opacity: 0, y: -4 }}
-                        animate={{ opacity: 1, y: 0 }}
-                        exit={{ opacity: 0, y: -4 }}
-                        className="absolute z-10 w-full mt-1 rounded-xl bg-card border border-border/20 shadow-xl overflow-hidden"
-                      >
-                        {accounts.map((acc) => (
-                          <button
-                            key={acc.id}
-                            onClick={() => { setSelectedAccountId(acc.id); setShowAccountPicker(false); }}
-                            className={`w-full flex items-center gap-2.5 px-3 py-2.5 hover:bg-muted/10 transition-colors ${
-                              acc.id === selectedAccountId ? "bg-primary/5" : ""
-                            }`}
-                          >
-                            <div
-                              className="w-7 h-7 rounded-lg flex items-center justify-center"
-                              style={{ backgroundColor: (acc.color || "#8b5cf6") + "20" }}
-                            >
-                              <Wallet className="w-3.5 h-3.5" style={{ color: acc.color || "#8b5cf6" }} />
-                            </div>
-                            <div className="text-left">
-                              <p className="text-xs font-semibold text-foreground">{acc.name}</p>
-                              <p className="text-[10px] text-muted-foreground tabular-nums">{fmt(acc.current_balance)}</p>
-                            </div>
-                          </button>
-                        ))}
-                      </motion.div>
-                    )}
-                  </AnimatePresence>
-                </div>
-              </div>
-            )}
-
-            {/* External destination */}
-            {destType === "externa" && (
-              <div>
-                <p className="text-[10px] text-muted-foreground mb-2">Destino (opcional)</p>
-                <input
-                  value={destination}
-                  onChange={(e) => setDestination(e.target.value)}
-                  placeholder="Ex: Banco X, Pix..."
-                  className="w-full bg-muted/10 border border-border/15 rounded-xl px-3 py-2.5 text-sm text-foreground outline-none placeholder:text-muted-foreground/40"
-                />
-              </div>
-            )}
 
             {/* Amount input */}
             <div>
               <p className="text-[10px] text-muted-foreground mb-2">Valor do saque</p>
               <div className="flex items-baseline gap-1">
                 <span className="text-sm text-muted-foreground">R$</span>
-                <input
-                  type="text"
-                  inputMode="decimal"
-                  value={amount}
-                  onChange={(e) => handleAmountChange(e.target.value)}
-                  placeholder="0,00"
-                  className="bg-transparent text-3xl font-bold text-foreground outline-none w-full tabular-nums placeholder:text-muted-foreground/30"
-                  autoFocus
-                />
+                <input type="text" inputMode="decimal" value={amount} onChange={(e) => handleAmountChange(e.target.value)} placeholder="0,00" className="bg-transparent text-3xl font-bold text-foreground outline-none w-full tabular-nums placeholder:text-muted-foreground/30" autoFocus />
               </div>
-              {exceedsBalance && (
-                <p className="text-[10px] text-destructive mt-1 font-medium">Valor excede o saldo da meta</p>
-              )}
+              {exceedsBalance && <p className="text-[10px] text-destructive mt-1 font-medium">Valor excede o saldo da meta</p>}
             </div>
 
             {/* Date selector */}
@@ -275,40 +184,20 @@ const GoalWithdrawModal = ({ open, onClose, onSubmit, goalName, maxAmount }: Goa
               <Calendar className="w-4 h-4 text-muted-foreground/50 flex-shrink-0" />
               <div className="flex items-center gap-1.5">
                 {(["hoje", "ontem", "outros"] as const).map((mode) => (
-                  <motion.button
-                    key={mode}
-                    whileTap={{ scale: 0.95 }}
-                    onClick={() => setDateMode(mode)}
-                    className={`px-3 py-1.5 rounded-lg text-xs font-semibold border transition-colors ${
-                      dateMode === mode
-                        ? "bg-primary/15 border-primary/30 text-primary"
-                        : "bg-muted/10 border-border/15 text-muted-foreground hover:bg-muted/20"
-                    }`}
-                  >
+                  <motion.button key={mode} whileTap={{ scale: 0.95 }} onClick={() => setDateMode(mode)} className={`px-3 py-1.5 rounded-lg text-xs font-semibold border transition-colors ${dateMode === mode ? "bg-primary/15 border-primary/30 text-primary" : "bg-muted/10 border-border/15 text-muted-foreground hover:bg-muted/20"}`}>
                     {mode === "hoje" ? "Hoje" : mode === "ontem" ? "Ontem" : "Outros"}
                   </motion.button>
                 ))}
               </div>
             </div>
-
             {dateMode === "outros" && (
               <motion.div initial={{ opacity: 0, height: 0 }} animate={{ opacity: 1, height: "auto" }} exit={{ opacity: 0, height: 0 }}>
-                <input
-                  type="date"
-                  value={customDate}
-                  onChange={(e) => setCustomDate(e.target.value)}
-                  className="w-full bg-muted/10 border border-border/15 rounded-lg px-3 py-2 text-sm text-foreground outline-none"
-                />
+                <input type="date" value={customDate} onChange={(e) => setCustomDate(e.target.value)} className="w-full bg-muted/10 border border-border/15 rounded-lg px-3 py-2 text-sm text-foreground outline-none" />
               </motion.div>
             )}
 
             {/* Submit */}
-            <motion.button
-              whileTap={{ scale: 0.97 }}
-              disabled={!amount || (destType === "conta" && !selectedAccountId) || submitting || exceedsBalance}
-              onClick={handleSubmit}
-              className="w-full py-3.5 rounded-xl text-sm font-bold bg-orange-500/15 border border-orange-500/20 text-orange-400 hover:bg-orange-500/20 transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
-            >
+            <motion.button whileTap={{ scale: 0.97 }} disabled={!amount || !selectedAccountId || submitting || exceedsBalance} onClick={handleSubmit} className="w-full py-3.5 rounded-xl text-sm font-bold bg-destructive/15 border border-destructive/20 text-destructive hover:bg-destructive/20 transition-colors disabled:opacity-50 disabled:cursor-not-allowed">
               {submitting ? "Sacando..." : "Confirmar Saque"}
             </motion.button>
           </motion.div>
