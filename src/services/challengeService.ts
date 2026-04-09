@@ -72,15 +72,54 @@ export async function fetchUserChallenges(): Promise<UserChallenge[]> {
       .eq("checkin_date", today)
       .maybeSingle();
 
+    const challenge = uc.challenge as Challenge;
+    const checkinCount = count ?? 0;
+    const realSavings = await calculateRealSavings(challenge, uc.started_at, checkinCount);
+
     enriched.push({
       ...uc,
-      challenge: uc.challenge as Challenge,
-      checkin_count: count ?? 0,
+      challenge,
+      checkin_count: checkinCount,
       checked_today: !!todayCheck,
+      real_savings: realSavings,
     });
   }
 
   return enriched;
+}
+
+async function calculateRealSavings(
+  challenge: Challenge,
+  startedAt: string,
+  checkinDays: number
+): Promise<number | null> {
+  const categories = CHALLENGE_CATEGORY_MAP[challenge.name];
+  if (!categories || categories.length === 0) return null;
+
+  // Get 30 days of spending BEFORE challenge started
+  const startDate = new Date(startedAt);
+  const historyEnd = new Date(startDate);
+  historyEnd.setDate(historyEnd.getDate() - 1);
+  const historyStart = new Date(historyEnd);
+  historyStart.setDate(historyStart.getDate() - 30);
+
+  const { data: transactions } = await supabase
+    .from("transactions")
+    .select("amount, date")
+    .eq("type", "despesa")
+    .in("category", categories)
+    .gte("date", historyStart.toISOString().split("T")[0])
+    .lte("date", historyEnd.toISOString().split("T")[0]);
+
+  if (!transactions || transactions.length === 0) return null;
+
+  // Calculate daily average based on distinct days with spending
+  const uniqueDays = new Set(transactions.map((t) => t.date));
+  const totalSpent = transactions.reduce((sum, t) => sum + Number(t.amount), 0);
+  const avgDaily = totalSpent / Math.max(uniqueDays.size, 1);
+
+  // Savings = average daily spending * days completed in challenge
+  return Math.round(avgDaily * checkinDays);
 }
 
 export async function acceptChallenge(challengeId: string, userId: string): Promise<void> {
