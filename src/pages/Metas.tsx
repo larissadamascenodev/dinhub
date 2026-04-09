@@ -286,7 +286,7 @@ const Metas = () => {
                               <Edit2 className="w-3.5 h-3.5" /> Editar
                             </button>
                             <button
-                              onClick={() => { handleDeleteGoal(goal.id); }}
+                              onClick={() => { setDeleteGoalId(goal.id); setMenuGoalId(null); }}
                               className="w-full flex items-center gap-2 px-3 py-2.5 text-xs font-semibold text-destructive hover:bg-destructive/10 transition-colors"
                             >
                               <Trash2 className="w-3.5 h-3.5" /> Excluir
