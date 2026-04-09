@@ -1258,19 +1258,31 @@ const AnalyticsCategorias = () => {
       // 6-month history range (5 months back + current)
       const histStart = new Date(selectedYear, selectedMonth - 5, 1).toISOString().split("T")[0];
 
-      const [txRes, prevTxRes, histRes, installmentRes, invoiceItemsRes, prevInvoiceItemsRes, recurringTxs, prevRecurring, cats] = await Promise.all([
+      // Compute 6-month history invoice range (1-based months for invoices table)
+      const histMonths: { m1: number; y1: number }[] = [];
+      for (let i = -5; i <= 0; i++) {
+        const d = new Date(selectedYear, selectedMonth + i, 1);
+        histMonths.push({ m1: d.getMonth() + 1, y1: d.getFullYear() });
+      }
+      const histMinM1 = histMonths[0].m1;
+      const histMinY = histMonths[0].y1;
+      const histMaxM1 = histMonths[histMonths.length - 1].m1;
+      const histMaxY = histMonths[histMonths.length - 1].y1;
+
+      const [txRes, prevTxRes, histRes, installmentRes, invoiceItemsRes, prevInvoiceItemsRes, histInvoiceItemsRes, recurringTxs, prevRecurring, cats] = await Promise.all([
         supabase.from("transactions").select("*").eq("user_id", user.id)
           .gte("date", start).lte("date", end).order("date", { ascending: false }),
         supabase.from("transactions").select("*").eq("user_id", user.id)
           .gte("date", prevStart).lte("date", prevEnd),
+        // Non-credit-card history (date-based is fine)
         supabase.from("transactions").select("id,category,date,amount,type,payment_method,credit_card_id").eq("user_id", user.id)
-          .eq("type", "despesa")
+          .eq("type", "despesa").eq("payment_method", "conta")
           .gte("date", histStart).lte("date", end),
         // Fetch all active installment transactions (future parcels)
         supabase.from("transactions").select("id,name,category,amount,date,installments,installment_current,parent_transaction_id,recurrence_type,payment_method,credit_card_id")
           .eq("user_id", user.id).eq("recurrence_type", "parcelado").eq("type", "despesa")
           .gte("date", start),
-        // Fetch invoice items for current month to know which credit card transactions belong here
+        // Fetch invoice items for current month
         supabase.from("invoice_items").select("*, invoices!inner(month, year, user_id, credit_card_id, is_paid), transactions!inner(name, category, amount, type, payment_method, installments, installment_current, parent_transaction_id, recurrence_type)")
           .eq("invoices.user_id", user.id)
           .eq("invoices.month", selectedMonth + 1)
@@ -1280,6 +1292,11 @@ const AnalyticsCategorias = () => {
           .eq("invoices.user_id", user.id)
           .eq("invoices.month", prevM + 1)
           .eq("invoices.year", prevY),
+        // Fetch invoice items for entire 6-month history (credit card history by invoice month)
+        supabase.from("invoice_items").select("amount, invoices!inner(month, year, user_id), transactions!inner(category, type)")
+          .eq("invoices.user_id", user.id)
+          .gte("invoices.year", histMinY)
+          .lte("invoices.year", histMaxY),
         getRecurringForMonth(selectedMonth, selectedYear),
         getRecurringForMonth(prevM, prevY),
         getCustomCategories(),
