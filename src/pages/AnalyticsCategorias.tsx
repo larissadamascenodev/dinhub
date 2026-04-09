@@ -658,6 +658,69 @@ const LimitSuggestions = ({ suggestions, categoryData }: { suggestions: AIInsigh
   );
 };
 
+// ── General Installments Overview (Hub) ──────────────────
+const AllInstallmentsOverview = ({ impacts }: { impacts: InstallmentImpact[] }) => {
+  const allItems = impacts.flatMap((imp) =>
+    imp.items.map((item) => ({ ...item, category: imp.category }))
+  );
+  if (allItems.length === 0) return null;
+
+  const totalMonthly = impacts.reduce((s, imp) => s + imp.monthlyAmount, 0);
+  const totalRemaining = impacts.reduce((s, imp) => s + imp.totalRemaining, 0);
+  const maxMonths = Math.max(...impacts.map((imp) => imp.monthsRemaining), 0);
+
+  return (
+    <div
+      className="rounded-2xl border border-border/20 p-3 md:p-4"
+      style={{
+        background: "linear-gradient(135deg, hsl(var(--card) / 0.8) 0%, hsl(var(--card) / 0.4) 50%, hsl(var(--card) / 0.6) 100%)",
+        backdropFilter: "blur(24px)",
+        boxShadow: "0 4px 20px -6px rgba(0,0,0,0.3), inset 0 1px 0 rgba(255,255,255,0.03)",
+      }}
+    >
+      <div className="flex items-center gap-2 mb-2.5">
+        <Repeat className="w-4 h-4 text-primary/70" />
+        <p className="text-[9px] md:text-[10px] text-muted-foreground/60 font-semibold uppercase tracking-wider">Parcelamentos Ativos</p>
+        <span className="ml-auto text-[9px] text-muted-foreground/40 bg-muted/10 px-1.5 py-0.5 rounded-full">{allItems.length} {allItems.length === 1 ? "item" : "itens"}</span>
+      </div>
+
+      {/* Summary stats */}
+      <div className="grid grid-cols-3 gap-1.5 mb-3">
+        <div className="text-center p-2 rounded-xl bg-muted/5 border border-border/10">
+          <p className="text-[8px] text-muted-foreground/50 uppercase">Mensal</p>
+          <p className="text-xs font-bold text-foreground tabular-nums mt-0.5">{fmt(totalMonthly)}</p>
+        </div>
+        <div className="text-center p-2 rounded-xl bg-muted/5 border border-border/10">
+          <p className="text-[8px] text-muted-foreground/50 uppercase">Total restante</p>
+          <p className="text-xs font-bold text-foreground tabular-nums mt-0.5">{fmt(totalRemaining)}</p>
+        </div>
+        <div className="text-center p-2 rounded-xl bg-muted/5 border border-border/10">
+          <p className="text-[8px] text-muted-foreground/50 uppercase">Duração</p>
+          <p className="text-xs font-bold text-foreground tabular-nums mt-0.5">{maxMonths} {maxMonths === 1 ? "mês" : "meses"}</p>
+        </div>
+      </div>
+
+      {/* Items list */}
+      <div className="space-y-1">
+        {allItems
+          .sort((a, b) => b.remaining - a.remaining)
+          .map((item, i) => (
+          <div key={i} className="flex items-center justify-between py-1.5 px-2 rounded-lg hover:bg-muted/10 transition-colors">
+            <div className="flex-1 min-w-0">
+              <p className="text-[11px] font-semibold text-foreground truncate">{item.name}</p>
+              <p className="text-[9px] text-muted-foreground/40">{item.category} · {item.paidInstallments} de {item.total} pagas</p>
+            </div>
+            <div className="text-right shrink-0 ml-2">
+              <p className="text-[11px] font-bold text-foreground tabular-nums">{fmt(item.amount)}/mês</p>
+              <p className="text-[9px] text-muted-foreground/40">{item.remaining} restantes</p>
+            </div>
+          </div>
+        ))}
+      </div>
+    </div>
+  );
+};
+
 // ── Installment Insights Section ─────────────────────────
 const InstallmentInsightsSection = ({ impacts }: { impacts: InstallmentImpact[] }) => {
   const relevant = impacts
@@ -1240,6 +1303,7 @@ const AnalyticsCategorias = () => {
   const [aiInsights, setAiInsights] = useState<AIInsights | null>(null);
   const [aiLoading, setAiLoading] = useState(false);
   const [installmentImpacts, setInstallmentImpacts] = useState<InstallmentImpactMap>({});
+  const [userStartDate, setUserStartDate] = useState<Date | null>(null);
 
   // Fetch transactions for current month, previous month, and 6-month history
   useEffect(() => {
@@ -1269,7 +1333,7 @@ const AnalyticsCategorias = () => {
       const histMaxM1 = histMonths[histMonths.length - 1].m1;
       const histMaxY = histMonths[histMonths.length - 1].y1;
 
-      const [txRes, prevTxRes, histRes, installmentRes, invoiceItemsRes, prevInvoiceItemsRes, histInvoiceItemsRes, recurringTxs, prevRecurring, cats] = await Promise.all([
+      const [txRes, prevTxRes, histRes, installmentRes, invoiceItemsRes, prevInvoiceItemsRes, histInvoiceItemsRes, profileRes, recurringTxs, prevRecurring, cats] = await Promise.all([
         supabase.from("transactions").select("*").eq("user_id", user.id)
           .gte("date", start).lte("date", end).order("date", { ascending: false }),
         supabase.from("transactions").select("*").eq("user_id", user.id)
@@ -1297,10 +1361,16 @@ const AnalyticsCategorias = () => {
           .eq("invoices.user_id", user.id)
           .gte("invoices.year", histMinY)
           .lte("invoices.year", histMaxY),
+        // Fetch user profile to get account creation date
+        supabase.from("profiles").select("created_at").eq("id", user.id).single(),
         getRecurringForMonth(selectedMonth, selectedYear),
         getRecurringForMonth(prevM, prevY),
         getCustomCategories(),
       ]);
+
+      // User start date for filtering history
+      const profileCreatedAt = profileRes.data?.created_at ? new Date(profileRes.data.created_at) : null;
+      setUserStartDate(profileCreatedAt);
 
       const baseTxs = (txRes.data ?? []) as TxRow[];
       const materializedRecurring = recurringTxs.map((t: any) => ({
@@ -1387,10 +1457,18 @@ const AnalyticsCategorias = () => {
 
       Object.values(hMap).forEach((arr) => arr.sort((a, b) => a.year - b.year || a.month - b.month));
 
+      // Build month slots, filtering out months before user account creation
+      const userStartMonth = profileCreatedAt ? profileCreatedAt.getMonth() : 0;
+      const userStartYear = profileCreatedAt ? profileCreatedAt.getFullYear() : 2000;
+
       const allMonths: { month: number; year: number; label: string }[] = [];
       for (let i = -5; i <= 0; i++) {
         const d = new Date(selectedYear, selectedMonth + i, 1);
-        allMonths.push({ month: d.getMonth(), year: d.getFullYear(), label: SHORT_MONTH_NAMES[d.getMonth()] });
+        const m = d.getMonth();
+        const y = d.getFullYear();
+        // Skip months before user started using the app
+        if (profileCreatedAt && (y < userStartYear || (y === userStartYear && m < userStartMonth))) continue;
+        allMonths.push({ month: m, year: y, label: SHORT_MONTH_NAMES[m] });
       }
       Object.keys(hMap).forEach((cat) => {
         const filled = allMonths.map((slot) => {
@@ -1709,6 +1787,11 @@ const AnalyticsCategorias = () => {
                   prevCategoryData={prevCategoryData}
                   habitMap={habitMap}
                 />
+
+                {/* General Installments Overview */}
+                {enrichedInstallmentImpacts.length > 0 && (
+                  <AllInstallmentsOverview impacts={enrichedInstallmentImpacts} />
+                )}
               </>
             ) : (
               <GlassCard className="p-8 text-center">
