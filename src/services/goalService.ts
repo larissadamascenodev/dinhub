@@ -8,6 +8,7 @@ export interface Goal {
   current_amount: number;
   monthly_contribution: number | null;
   deadline: string | null;
+  cover_image: string | null;
   created_at: string;
   updated_at: string;
 }
@@ -46,6 +47,7 @@ export async function createGoal(goal: {
   target_amount: number;
   monthly_contribution?: number | null;
   deadline?: string | null;
+  cover_image?: string | null;
 }, userId: string): Promise<Goal> {
   const { data, error } = await supabase
     .from("goals")
@@ -55,7 +57,8 @@ export async function createGoal(goal: {
       target_amount: goal.target_amount,
       monthly_contribution: goal.monthly_contribution ?? null,
       deadline: goal.deadline ?? null,
-    })
+      cover_image: goal.cover_image ?? null,
+    } as any)
     .select()
     .single();
   if (error) throw error;
@@ -67,8 +70,9 @@ export async function updateGoal(id: string, updates: Partial<{
   target_amount: number;
   monthly_contribution: number | null;
   deadline: string | null;
+  cover_image: string | null;
 }>): Promise<void> {
-  const { error } = await supabase.from("goals").update(updates).eq("id", id);
+  const { error } = await supabase.from("goals").update(updates as any).eq("id", id);
   if (error) throw error;
 }
 
@@ -113,6 +117,35 @@ export async function deleteGoalDeposit(id: string): Promise<void> {
   if (error) throw error;
 }
 
+/**
+ * Generate a cover image for a goal using AI based on goal name.
+ */
+export async function generateGoalCoverImage(goalName: string): Promise<string | null> {
+  try {
+    const prompt = `A beautiful, cinematic, slightly dark and moody photograph representing the concept of "${goalName}" as a financial savings goal. No text. Photorealistic, wide angle, atmospheric lighting.`;
+    
+    const response = await fetch("https://ai.gateway.lovable.dev/v1/chat/completions", {
+      method: "POST",
+      headers: {
+        Authorization: `Bearer ${import.meta.env.VITE_SUPABASE_PUBLISHABLE_KEY}`,
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify({
+        model: "google/gemini-2.5-flash-image",
+        messages: [{ role: "user", content: prompt }],
+        modalities: ["image", "text"],
+      }),
+    });
+
+    const data = await response.json();
+    const imageUrl = data.choices?.[0]?.message?.images?.[0]?.image_url?.url;
+    return imageUrl ?? null;
+  } catch (err) {
+    console.error("Failed to generate cover image:", err);
+    return null;
+  }
+}
+
 export function computeGoalInsights(
   goal: Goal,
   transactions: GoalTransaction[],
@@ -126,7 +159,6 @@ export function computeGoalInsights(
     return insights;
   }
 
-  // Monthly contribution prediction
   if (goal.monthly_contribution && goal.monthly_contribution > 0) {
     const monthsLeft = Math.ceil(remaining / goal.monthly_contribution);
     insights.push(
@@ -134,7 +166,6 @@ export function computeGoalInsights(
     );
   }
 
-  // History-based prediction
   const now = new Date();
   const threeMonthsAgo = new Date(now.getFullYear(), now.getMonth() - 3, 1);
   const recentDeposits = transactions.filter(
@@ -155,14 +186,12 @@ export function computeGoalInsights(
     }
   }
 
-  // Category suggestion
   if (topExpenseCategory) {
     insights.push(
       `Se reduzir gastos em "${topExpenseCategory}" em R$ 100/mês, você atinge sua meta mais rápido 😉`
     );
   }
 
-  // Encouragement
   const progress = goal.current_amount / goal.target_amount;
   if (progress > 0.5) {
     insights.push("Tá mais perto do que parece! 💪");
