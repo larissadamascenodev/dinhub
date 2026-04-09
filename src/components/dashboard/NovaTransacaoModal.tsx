@@ -232,7 +232,8 @@ const NovaTransacaoModal = ({ open, onClose, onSuccess, initialType = "despesa",
       setLoadingAccounts(true);
       getAccounts()
         .then((accs) => {
-          setAccounts(accs as Account[]);
+          const filtered = (accs as Account[]).filter((a) => a.type !== "investimento");
+          setAccounts(filtered);
           const defaultAcc = accs.find((a: any) => a.is_default);
           if (defaultAcc) setAccountId(defaultAcc.id);
         })
