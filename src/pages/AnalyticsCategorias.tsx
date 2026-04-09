@@ -500,8 +500,20 @@ const ComparisonInsightsSection = ({ categoryData, prevCategoryData }: {
   );
 };
 
-// ── AI Insights Section ──────────────────────────────────
+// ── AI Insights Section (carousel) ───────────────────────
 const AIInsightsSection = ({ insights, loading }: { insights: AIInsights | null; loading: boolean }) => {
+  const [currentIdx, setCurrentIdx] = useState(0);
+  const timerRef = useRef<ReturnType<typeof setInterval> | null>(null);
+  const msgs = insights?.insights ?? [];
+
+  useEffect(() => {
+    if (msgs.length <= 1) return;
+    timerRef.current = setInterval(() => {
+      setCurrentIdx((prev) => (prev + 1) % msgs.length);
+    }, 4000);
+    return () => { if (timerRef.current) clearInterval(timerRef.current); };
+  }, [msgs.length]);
+
   if (loading) {
     return (
       <GlassCard className="p-4">
@@ -519,7 +531,7 @@ const AIInsightsSection = ({ insights, loading }: { insights: AIInsights | null;
       </GlassCard>
     );
   }
-  if (!insights || insights.insights.length === 0) return null;
+  if (!insights || msgs.length === 0) return null;
   return (
     <GlassCard className="p-4 md:p-5">
       <div className="flex items-center gap-2 mb-3">
@@ -528,15 +540,32 @@ const AIInsightsSection = ({ insights, loading }: { insights: AIInsights | null;
           Insights da IA
         </p>
       </div>
-      <div className="space-y-2.5">
-        {insights.insights.map((msg, i) => (
-          <motion.div key={i} initial={{ opacity: 0, x: -10 }} animate={{ opacity: 1, x: 0 }} transition={{ delay: i * 0.1 }}
-            className="flex items-start gap-2.5 p-2.5 rounded-xl bg-primary/5 border border-primary/10">
+      <div className="relative overflow-hidden" style={{ minHeight: 48 }}>
+        <AnimatePresence mode="wait">
+          <motion.div
+            key={currentIdx}
+            initial={{ opacity: 0, x: 30 }}
+            animate={{ opacity: 1, x: 0 }}
+            exit={{ opacity: 0, x: -30 }}
+            transition={{ duration: 0.35 }}
+            className="flex items-start gap-2.5 p-2.5 rounded-xl bg-primary/5 border border-primary/10"
+          >
             <Sparkles className="w-3.5 h-3.5 text-primary mt-0.5 shrink-0" />
-            <p className="text-xs text-foreground/80 leading-relaxed">{msg}</p>
+            <p className="text-xs text-foreground/80 leading-relaxed">{msgs[currentIdx]}</p>
           </motion.div>
-        ))}
+        </AnimatePresence>
       </div>
+      {msgs.length > 1 && (
+        <div className="flex items-center justify-center gap-1.5 mt-2.5">
+          {msgs.map((_, i) => (
+            <button
+              key={i}
+              onClick={() => setCurrentIdx(i)}
+              className={`w-1.5 h-1.5 rounded-full transition-all duration-300 ${i === currentIdx ? "bg-primary w-4" : "bg-muted-foreground/20"}`}
+            />
+          ))}
+        </div>
+      )}
     </GlassCard>
   );
 };
