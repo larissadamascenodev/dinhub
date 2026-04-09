@@ -132,6 +132,7 @@ const Index = () => {
             <ProximosEventos events={data.events} selectedMonth={selectedMonth} selectedYear={selectedYear} onEventClick={handleEventClick} />
             <AssinaturasCard />
             <InvestimentosResumoCard />
+            <MetasResumoCard />
           </div>
         </div>
 
@@ -166,7 +167,8 @@ const Index = () => {
           <TransacoesRecentes transactions={data.transactions} onDelete={refetch} />
           <ProximosEventos events={data.events} selectedMonth={selectedMonth} selectedYear={selectedYear} onEventClick={handleEventClick} />
           <AssinaturasCard />
-          <InvestimentosResumoCard />
+           <InvestimentosResumoCard />
+           <MetasResumoCard />
         </div>
 
         {/* MOBILE LAYOUT */}
@@ -206,6 +208,7 @@ const Index = () => {
           </div>
           <AssinaturasCard />
           <InvestimentosResumoCard />
+          <MetasResumoCard />
         </div>
       <PagarEditarModal
         open={showPayModal}
