@@ -1258,19 +1258,31 @@ const AnalyticsCategorias = () => {
       // 6-month history range (5 months back + current)
       const histStart = new Date(selectedYear, selectedMonth - 5, 1).toISOString().split("T")[0];
 
-      const [txRes, prevTxRes, histRes, installmentRes, invoiceItemsRes, prevInvoiceItemsRes, recurringTxs, prevRecurring, cats] = await Promise.all([
+      // Compute 6-month history invoice range (1-based months for invoices table)
+      const histMonths: { m1: number; y1: number }[] = [];
+      for (let i = -5; i <= 0; i++) {
+        const d = new Date(selectedYear, selectedMonth + i, 1);
+        histMonths.push({ m1: d.getMonth() + 1, y1: d.getFullYear() });
+      }
+      const histMinM1 = histMonths[0].m1;
+      const histMinY = histMonths[0].y1;
+      const histMaxM1 = histMonths[histMonths.length - 1].m1;
+      const histMaxY = histMonths[histMonths.length - 1].y1;
+
+      const [txRes, prevTxRes, histRes, installmentRes, invoiceItemsRes, prevInvoiceItemsRes, histInvoiceItemsRes, recurringTxs, prevRecurring, cats] = await Promise.all([
         supabase.from("transactions").select("*").eq("user_id", user.id)
           .gte("date", start).lte("date", end).order("date", { ascending: false }),
         supabase.from("transactions").select("*").eq("user_id", user.id)
           .gte("date", prevStart).lte("date", prevEnd),
+        // Non-credit-card history (date-based is fine)
         supabase.from("transactions").select("id,category,date,amount,type,payment_method,credit_card_id").eq("user_id", user.id)
-          .eq("type", "despesa")
+          .eq("type", "despesa").eq("payment_method", "conta")
           .gte("date", histStart).lte("date", end),
         // Fetch all active installment transactions (future parcels)
         supabase.from("transactions").select("id,name,category,amount,date,installments,installment_current,parent_transaction_id,recurrence_type,payment_method,credit_card_id")
           .eq("user_id", user.id).eq("recurrence_type", "parcelado").eq("type", "despesa")
           .gte("date", start),
-        // Fetch invoice items for current month to know which credit card transactions belong here
+        // Fetch invoice items for current month
         supabase.from("invoice_items").select("*, invoices!inner(month, year, user_id, credit_card_id, is_paid), transactions!inner(name, category, amount, type, payment_method, installments, installment_current, parent_transaction_id, recurrence_type)")
           .eq("invoices.user_id", user.id)
           .eq("invoices.month", selectedMonth + 1)
@@ -1280,6 +1292,11 @@ const AnalyticsCategorias = () => {
           .eq("invoices.user_id", user.id)
           .eq("invoices.month", prevM + 1)
           .eq("invoices.year", prevY),
+        // Fetch invoice items for entire 6-month history (credit card history by invoice month)
+        supabase.from("invoice_items").select("amount, invoices!inner(month, year, user_id), transactions!inner(category, type)")
+          .eq("invoices.user_id", user.id)
+          .gte("invoices.year", histMinY)
+          .lte("invoices.year", histMaxY),
         getRecurringForMonth(selectedMonth, selectedYear),
         getRecurringForMonth(prevM, prevY),
         getCustomCategories(),
@@ -1330,7 +1347,7 @@ const AnalyticsCategorias = () => {
         return true;
       });
 
-      // Build historical map from 6-month data
+      // Non-credit-card transactions: group by date
       const histTxs = (histRes.data ?? []) as { id: string; category: string; date: string; amount: number; type: string; payment_method: string; credit_card_id: string | null }[];
       const hMap: HistoricalMap = {};
       histTxs.forEach((tx) => {
@@ -1346,6 +1363,28 @@ const AnalyticsCategorias = () => {
           hMap[key].push({ month: m, year: y, label: SHORT_MONTH_NAMES[m], amount: tx.amount });
         }
       });
+
+      // Credit card transactions: group by invoice month (1-based → 0-based)
+      const histIIs = (histInvoiceItemsRes.data ?? []) as any[];
+      histIIs.forEach((ii: any) => {
+        const tx = ii.transactions;
+        const inv = ii.invoices;
+        if (!tx || tx.type !== "despesa" || !inv) return;
+        const m = inv.month - 1; // convert to 0-based
+        const y = inv.year;
+        // Only include months within our 6-month window
+        const inRange = histMonths.some((hm) => hm.m1 === inv.month && hm.y1 === y);
+        if (!inRange) return;
+        const key = tx.category;
+        if (!hMap[key]) hMap[key] = [];
+        const existing = hMap[key].find((e) => e.month === m && e.year === y);
+        if (existing) {
+          existing.amount += ii.amount;
+        } else {
+          hMap[key].push({ month: m, year: y, label: SHORT_MONTH_NAMES[m], amount: ii.amount });
+        }
+      });
+
       Object.values(hMap).forEach((arr) => arr.sort((a, b) => a.year - b.year || a.month - b.month));
 
       const allMonths: { month: number; year: number; label: string }[] = [];
