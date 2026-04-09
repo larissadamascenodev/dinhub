@@ -8,6 +8,7 @@ import { fetchGoals, createGoal, createGoalDeposit, deleteGoal, generateGoalCove
 import GoalCreateModal from "@/components/goals/GoalCreateModal";
 import GoalDepositModal from "@/components/goals/GoalDepositModal";
 import GoalEditModal from "@/components/goals/GoalEditModal";
+import GoalConfirmModal from "@/components/goals/GoalConfirmModal";
 
 const fmt = (v: number) =>
   v.toLocaleString("pt-BR", { style: "currency", currency: "BRL" });
