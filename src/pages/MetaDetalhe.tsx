@@ -142,9 +142,10 @@ const MetaDetalhe = () => {
   const topInsight = insights.length > 0 ? insights[0] : null;
 
   let predictionText = "";
+  let predictionMonths = 0;
   if (!isComplete && goal.monthly_contribution && goal.monthly_contribution > 0) {
-    const months = Math.ceil(remaining / goal.monthly_contribution);
-    predictionText = `Você conclui em aproximadamente ${months} ${months === 1 ? "mês" : "meses"}`;
+    predictionMonths = Math.ceil(remaining / goal.monthly_contribution);
+    predictionText = `~${predictionMonths} ${predictionMonths === 1 ? "mês" : "meses"}`;
   }
 
   const getDepositDeleteDescription = (tx: GoalTransaction) => {
@@ -199,7 +200,6 @@ const MetaDetalhe = () => {
       {/* ═══ Main Card ═══ */}
       <motion.div initial={{ opacity: 0, y: 12 }} animate={{ opacity: 1, y: 0 }} className="relative rounded-2xl overflow-hidden border border-border/10" style={{ background: CARD_BG }}>
         <div className="p-5 space-y-4">
-          {/* Title row */}
           <div className="flex items-center gap-3">
             <div className="w-10 h-10 rounded-xl bg-primary/15 flex items-center justify-center">
               <Target className="w-5 h-5 text-primary" />
@@ -216,7 +216,6 @@ const MetaDetalhe = () => {
 
           <div className="h-px bg-border/10" />
 
-          {/* Balance */}
           <div>
             <div className="flex items-center gap-1.5 mb-1.5">
               <div className="w-1.5 h-1.5 rounded-full bg-primary" />
@@ -230,7 +229,7 @@ const MetaDetalhe = () => {
             </p>
           </div>
 
-          {/* Progress bar */}
+          {/* Progress */}
           <div>
             <div className="flex items-center justify-between mb-1.5">
               <p className="text-[10px] text-muted-foreground">Progresso</p>
@@ -252,7 +251,7 @@ const MetaDetalhe = () => {
                 }}
               />
             </div>
-            {remaining > 0 && (
+            {remaining > 0 && !isComplete && (
               <p className="text-[10px] text-muted-foreground mt-1.5">Faltam {fmt(remaining)}</p>
             )}
             {isComplete && (
@@ -290,39 +289,46 @@ const MetaDetalhe = () => {
         </motion.div>
       )}
 
-      {/* ═══ Prediction + Summary ═══ */}
-      {predictionText && (
-        <motion.div initial={{ opacity: 0, y: 12 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.05 }}>
-          <div className="rounded-2xl border border-border/10 p-4" style={{ background: CARD_BG }}>
-            <div className="flex items-center gap-2 mb-2">
-              <div className="w-6 h-6 rounded-lg bg-primary/15 flex items-center justify-center">
-                <Clock className="w-3 h-3 text-primary" />
+      {/* ═══ Compact info row: Previsão + Objetivo + Depósitos + Saques ═══ */}
+      <motion.div initial={{ opacity: 0, y: 12 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.05 }}>
+        <div className="rounded-2xl border border-border/10 p-3.5" style={{ background: CARD_BG }}>
+          <div className={`grid gap-3 ${predictionText ? "grid-cols-4" : "grid-cols-3"}`}>
+            {predictionText && (
+              <div className="text-center">
+                <div className="w-6 h-6 rounded-lg bg-primary/15 flex items-center justify-center mx-auto mb-1">
+                  <Clock className="w-3 h-3 text-primary" />
+                </div>
+                <p className="text-[8px] text-muted-foreground uppercase tracking-wider">Previsão</p>
+                <p className="text-xs font-bold text-foreground tabular-nums mt-0.5">{predictionText}</p>
               </div>
-              <span className="text-[9px] text-muted-foreground uppercase tracking-widest font-medium">Previsão</span>
-            </div>
-            <p className="text-sm font-bold text-foreground">{predictionText}</p>
-            {goal.monthly_contribution && goal.monthly_contribution > 0 && (
-              <p className="text-[10px] text-muted-foreground mt-1">
-                Contribuição mensal: {fmt(goal.monthly_contribution)}
-              </p>
             )}
+            <div className="text-center">
+              <div className="w-6 h-6 rounded-lg bg-muted/20 flex items-center justify-center mx-auto mb-1">
+                <Target className="w-3 h-3 text-muted-foreground" />
+              </div>
+              <p className="text-[8px] text-muted-foreground uppercase tracking-wider">Objetivo</p>
+              <p className="text-xs font-bold text-foreground tabular-nums mt-0.5">{fmt(Number(goal.target_amount))}</p>
+            </div>
+            <div className="text-center">
+              <div className="w-6 h-6 rounded-lg bg-primary/15 flex items-center justify-center mx-auto mb-1">
+                <ArrowDownLeft className="w-3 h-3 text-primary" />
+              </div>
+              <p className="text-[8px] text-muted-foreground uppercase tracking-wider">Depósitos</p>
+              <p className="text-xs font-bold text-primary tabular-nums mt-0.5">{fmt(totalDeposits)}</p>
+            </div>
+            <div className="text-center">
+              <div className="w-6 h-6 rounded-lg bg-destructive/15 flex items-center justify-center mx-auto mb-1">
+                <TrendingUp className="w-3 h-3 text-destructive" />
+              </div>
+              <p className="text-[8px] text-muted-foreground uppercase tracking-wider">Saques</p>
+              <p className="text-xs font-bold text-destructive tabular-nums mt-0.5">{fmt(totalWithdrawals)}</p>
+            </div>
           </div>
-        </motion.div>
-      )}
-
-      {/* ═══ Summary Cards ═══ */}
-      <motion.div initial={{ opacity: 0, y: 12 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.1 }} className="grid grid-cols-3 gap-3">
-        <div className="rounded-2xl border border-border/10 p-3" style={{ background: CARD_BG }}>
-          <p className="text-[9px] text-muted-foreground uppercase tracking-wider mb-1">Objetivo</p>
-          <p className="text-sm font-bold text-foreground tabular-nums">{fmt(Number(goal.target_amount))}</p>
-        </div>
-        <div className="rounded-2xl border border-border/10 p-3" style={{ background: CARD_BG }}>
-          <p className="text-[9px] text-muted-foreground uppercase tracking-wider mb-1">Depósitos</p>
-          <p className="text-sm font-bold text-primary tabular-nums">{fmt(totalDeposits)}</p>
-        </div>
-        <div className="rounded-2xl border border-border/10 p-3" style={{ background: CARD_BG }}>
-          <p className="text-[9px] text-muted-foreground uppercase tracking-wider mb-1">Saques</p>
-          <p className="text-sm font-bold text-destructive tabular-nums">{fmt(totalWithdrawals)}</p>
+          {goal.monthly_contribution && goal.monthly_contribution > 0 && (
+            <p className="text-[10px] text-muted-foreground text-center mt-2.5 pt-2.5 border-t border-border/10">
+              Contribuição mensal: {fmt(goal.monthly_contribution)}
+            </p>
+          )}
         </div>
       </motion.div>
 
@@ -376,49 +382,11 @@ const MetaDetalhe = () => {
       </motion.div>
 
       {/* ═══ Modals ═══ */}
-      <GoalDepositModal
-        open={showDeposit}
-        onClose={() => setShowDeposit(false)}
-        onSubmit={handleDeposit}
-        goalName={goal.name}
-      />
-
-      <GoalWithdrawModal
-        open={showWithdraw}
-        onClose={() => setShowWithdraw(false)}
-        onSubmit={handleWithdraw}
-        goalName={goal.name}
-        maxAmount={goal.current_amount}
-      />
-
-      {showEdit && (
-        <GoalEditModal
-          open={showEdit}
-          onClose={() => setShowEdit(false)}
-          goal={goal}
-          onUpdated={load}
-        />
-      )}
-
-      <GoalConfirmModal
-        open={showDeleteGoal}
-        onClose={() => setShowDeleteGoal(false)}
-        onConfirm={handleDeleteGoal}
-        title="Excluir meta"
-        description={`Tem certeza que deseja excluir a meta "${goal.name}"? Esta ação não pode ser desfeita.`}
-        confirmLabel="Excluir"
-        loading={deletingGoal}
-      />
-
-      <GoalConfirmModal
-        open={!!depositToDelete}
-        onClose={() => setDepositToDelete(null)}
-        onConfirm={handleDeleteDeposit}
-        title="Remover depósito"
-        description={depositToDelete ? getDepositDeleteDescription(depositToDelete) : ""}
-        confirmLabel="Remover"
-        loading={deletingDeposit}
-      />
+      <GoalDepositModal open={showDeposit} onClose={() => setShowDeposit(false)} onSubmit={handleDeposit} goalName={goal.name} />
+      <GoalWithdrawModal open={showWithdraw} onClose={() => setShowWithdraw(false)} onSubmit={handleWithdraw} goalName={goal.name} maxAmount={goal.current_amount} />
+      {showEdit && <GoalEditModal open={showEdit} onClose={() => setShowEdit(false)} goal={goal} onUpdated={load} />}
+      <GoalConfirmModal open={showDeleteGoal} onClose={() => setShowDeleteGoal(false)} onConfirm={handleDeleteGoal} title="Excluir meta" description={`Tem certeza que deseja excluir a meta "${goal.name}"? Esta ação não pode ser desfeita.`} confirmLabel="Excluir" loading={deletingGoal} />
+      <GoalConfirmModal open={!!depositToDelete} onClose={() => setDepositToDelete(null)} onConfirm={handleDeleteDeposit} title="Remover depósito" description={depositToDelete ? getDepositDeleteDescription(depositToDelete) : ""} confirmLabel="Remover" loading={deletingDeposit} />
     </div>
   );
 };

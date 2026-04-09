@@ -1,6 +1,6 @@
 import { useState } from "react";
 import { motion, AnimatePresence } from "framer-motion";
-import { X, Target } from "lucide-react";
+import { X, Target, Loader2 } from "lucide-react";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 
@@ -120,9 +120,16 @@ const GoalCreateModal = ({ open, onClose, onSubmit }: GoalCreateModalProps) => {
               whileTap={{ scale: 0.97 }}
               disabled={!name.trim() || !targetAmount || submitting}
               onClick={handleSubmit}
-              className="w-full py-3 rounded-xl text-sm font-bold disabled:opacity-50 disabled:cursor-not-allowed"
+              className="w-full py-3 rounded-xl text-sm font-bold bg-primary/15 border border-primary/20 text-primary hover:bg-primary/20 transition-colors disabled:opacity-50 disabled:cursor-not-allowed flex items-center justify-center gap-2"
             >
-              {submitting ? "Criando..." : "Criar meta"}
+              {submitting ? (
+                <>
+                  <Loader2 className="w-4 h-4 animate-spin" />
+                  Gerando imagem e criando...
+                </>
+              ) : (
+                "Criar meta"
+              )}
             </motion.button>
           </motion.div>
         </motion.div>
