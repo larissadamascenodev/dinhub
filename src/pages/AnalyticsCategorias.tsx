@@ -137,18 +137,19 @@ const SummaryCard = ({ totalExpenses, topCategory, monthLabel }: {
         boxShadow: "0 8px 32px -8px rgba(0,0,0,0.4), inset 0 1px 0 rgba(255,255,255,0.04)",
       }}
     >
-      <p className="text-[10px] text-muted-foreground/50 mb-0.5">Total em {monthLabel}</p>
-      <p className="text-2xl md:text-3xl font-bold text-foreground tabular-nums">{fmt(totalExpenses)}</p>
-
-      {topCategory && (
-        <div className="flex items-center gap-4 mt-2">
-          <span className="flex items-center gap-1.5 text-[11px] text-muted-foreground/70">
-            <span className="w-2 h-2 rounded-full" style={{ backgroundColor: topCategory.hexColor }} />
-            {topCategory.name} <span className="text-muted-foreground/40">{topCategory.percentage}%</span>
-          </span>
-          <span className="text-[11px] text-muted-foreground/50">· maior gasto</span>
+      <div className="flex items-start justify-between">
+        <div>
+          <p className="text-[10px] text-muted-foreground/50 mb-0.5">Total em {monthLabel}</p>
+          <p className="text-2xl md:text-3xl font-bold text-foreground tabular-nums">{fmt(totalExpenses)}</p>
         </div>
-      )}
+        {topCategory && (
+          <div className="text-right">
+            <p className="text-[9px] text-muted-foreground/50 uppercase tracking-wider font-medium">Maior gasto</p>
+            <p className="text-xs font-bold text-foreground mt-0.5">{topCategory.name}</p>
+            <p className="text-[10px] text-muted-foreground/40">{topCategory.percentage}%</p>
+          </div>
+        )}
+      </div>
 
       <div className="border-t border-border/5 mt-3 pt-3 grid grid-cols-2 gap-3">
         <div>
