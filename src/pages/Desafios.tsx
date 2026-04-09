@@ -1,4 +1,4 @@
-import { useState, useEffect, useCallback } from "react";
+import { useState, useEffect, useCallback, useRef } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import { ArrowLeft, Check, ChevronDown, ChevronUp, Flame, MoreVertical, Plus, RefreshCw, Trash2, Trophy, X } from "lucide-react";
 import { useNavigate } from "react-router-dom";
@@ -462,17 +462,11 @@ const Desafios = () => {
         ) : suggestions.length === 0 ? (
           <p className="text-sm text-muted-foreground py-6 text-center">Você já aceitou todos os desafios disponíveis! 🎉</p>
         ) : (
-          <div className="flex gap-3 overflow-x-auto pb-2 snap-x snap-mandatory scrollbar-hide">
-            {suggestions.map((c, i) => (
-              <SuggestionCard
-                key={c.id}
-                challenge={c}
-                index={i}
-                onAccept={() => handleAccept(c.id)}
-                loading={acceptingId === c.id}
-              />
-            ))}
-          </div>
+          <SuggestionsCarousel
+            suggestions={suggestions}
+            onAccept={handleAccept}
+            acceptingId={acceptingId}
+          />
         )}
       </div>
 
