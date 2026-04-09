@@ -1022,9 +1022,16 @@ const CategoryDetail = ({
         const paidAmount = catTxs.filter(t => t.status === "pago").reduce((s, t) => s + t.amount, 0);
         const pendingAmount = catTxs.filter(t => t.status !== "pago").reduce((s, t) => s + t.amount, 0);
         return (
-          <GlassCard className="p-4 md:p-5">
+          <div
+            className="rounded-2xl border border-border/20 p-4 md:p-5"
+            style={{
+              background: "linear-gradient(135deg, hsl(var(--card) / 0.8) 0%, hsl(var(--card) / 0.4) 50%, hsl(var(--card) / 0.6) 100%)",
+              backdropFilter: "blur(24px)",
+              boxShadow: "0 8px 32px -8px rgba(0,0,0,0.4), inset 0 1px 0 rgba(255,255,255,0.04)",
+            }}
+          >
             <p className="text-[10px] text-muted-foreground/50 mb-0.5">Total em {monthLabel}</p>
-            <p className="text-2xl md:text-3xl font-bold text-primary tabular-nums">{fmt(category.amount)}</p>
+            <p className="text-2xl md:text-3xl font-bold text-foreground tabular-nums">{fmt(category.amount)}</p>
             <div className="flex items-center gap-4 mt-2">
               <span className="flex items-center gap-1.5 text-[11px] text-muted-foreground/70">
                 <span className="w-2 h-2 rounded-full bg-success" /> {fmt(paidAmount)} <span className="text-muted-foreground/40">pago</span>
@@ -1033,7 +1040,7 @@ const CategoryDetail = ({
                 <span className="w-2 h-2 rounded-full bg-warning" /> {fmt(pendingAmount)} <span className="text-muted-foreground/40">pendente</span>
               </span>
             </div>
-            <div className="border-t border-border/10 mt-3 pt-3 grid grid-cols-2 gap-3">
+            <div className="border-t border-border/5 mt-3 pt-3 grid grid-cols-2 gap-3">
               <div>
                 <p className="text-[9px] text-muted-foreground/50 uppercase tracking-wider font-medium">Média/transação</p>
                 <p className="text-sm font-bold text-foreground mt-0.5 tabular-nums">{fmt(category.avgPerTx)}</p>
@@ -1043,7 +1050,7 @@ const CategoryDetail = ({
                 <p className="text-sm font-bold text-foreground mt-0.5 tabular-nums">{category.txCount} lançamentos</p>
               </div>
             </div>
-          </GlassCard>
+          </div>
         );
       })()}
 
@@ -1184,22 +1191,41 @@ const CategoryDetail = ({
         </GlassCard>
       )}
 
-      {/* AI Insights for this category */}
-      {categoryInsights.length > 0 && (
+      {/* Huby — unified insights + alerts for this category */}
+      {(categoryInsights.length > 0 || categoryAlerts.length > 0) && (
         <GlassCard className="p-4 md:p-5">
           <div className="flex items-center gap-2 mb-3">
             <Brain className="w-4 h-4 text-primary" />
             <p className="text-[10px] md:text-[11px] text-muted-foreground/60 font-semibold uppercase tracking-wider">
-              Insights · {category.name}
+              Huby · {category.name}
             </p>
           </div>
           <div className="space-y-2">
-            {categoryInsights.map((msg, i) => (
+            {categoryAlerts.map((alert, i) => (
               <motion.div
-                key={i}
+                key={`alert-${i}`}
                 initial={{ opacity: 0, x: -10 }}
                 animate={{ opacity: 1, x: 0 }}
                 transition={{ delay: i * 0.1 }}
+                className={`flex items-start gap-2.5 p-2.5 rounded-xl ${
+                  alert.severity === "danger" ? "bg-destructive/5 border border-destructive/15" :
+                  alert.severity === "warning" ? "bg-warning/5 border border-warning/15" :
+                  "bg-blue-500/5 border border-blue-500/15"
+                }`}
+              >
+                <AlertTriangle className={`w-3.5 h-3.5 mt-0.5 shrink-0 ${
+                  alert.severity === "danger" ? "text-destructive" :
+                  alert.severity === "warning" ? "text-warning" : "text-blue-400"
+                }`} />
+                <p className="text-xs text-foreground/80 leading-relaxed">{alert.message}</p>
+              </motion.div>
+            ))}
+            {categoryInsights.map((msg, i) => (
+              <motion.div
+                key={`insight-${i}`}
+                initial={{ opacity: 0, x: -10 }}
+                animate={{ opacity: 1, x: 0 }}
+                transition={{ delay: (categoryAlerts.length + i) * 0.1 }}
                 className="flex items-start gap-2.5 p-2.5 rounded-xl bg-primary/5 border border-primary/10"
               >
                 <Sparkles className="w-3.5 h-3.5 text-primary mt-0.5 shrink-0" />
@@ -1209,9 +1235,6 @@ const CategoryDetail = ({
           </div>
         </GlassCard>
       )}
-
-      {/* AI Alerts for this category */}
-      {categoryAlerts.length > 0 && <AlertsSection alerts={categoryAlerts} />}
 
       {/* Installment Impact */}
       <CategoryInstallmentDetail impact={installmentImpact} />
