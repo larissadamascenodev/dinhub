@@ -821,7 +821,7 @@ const CategoryInstallmentDetail = ({ impact }: { impact: InstallmentImpact | und
             : `${fmt(impact.totalRemaining)} restantes em parcelamentos (${impact.monthsRemaining} meses). Tudo sob controle 👍`}
         </p>
       </div>
-      <div className="grid grid-cols-3 gap-1.5 mb-2.5">
+      <div className="grid grid-cols-2 gap-1.5 mb-2.5">
         <div className="text-center p-1.5 rounded-lg bg-muted/5">
           <p className="text-[8px] text-muted-foreground/50 uppercase">Mensal</p>
           <p className="text-xs font-bold text-foreground tabular-nums mt-0.5">{fmt(impact.monthlyAmount)}</p>
@@ -829,10 +829,6 @@ const CategoryInstallmentDetail = ({ impact }: { impact: InstallmentImpact | und
         <div className="text-center p-1.5 rounded-lg bg-muted/5">
           <p className="text-[8px] text-muted-foreground/50 uppercase">Total restante</p>
           <p className="text-xs font-bold text-foreground tabular-nums mt-0.5">{fmt(impact.totalRemaining)}</p>
-        </div>
-        <div className="text-center p-1.5 rounded-lg bg-muted/5">
-          <p className="text-[8px] text-muted-foreground/50 uppercase">% da categoria</p>
-          <p className="text-xs font-bold text-foreground tabular-nums mt-0.5">{impact.impactPct}%</p>
         </div>
       </div>
       <div className="space-y-1">
