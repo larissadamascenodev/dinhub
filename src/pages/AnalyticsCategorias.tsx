@@ -1264,30 +1264,6 @@ const CategoryDetail = ({
         </GlassCard>
       )}
 
-      {/* Transaction list */}
-      <GlassCard className="overflow-hidden">
-        <div className="px-4 pt-3 pb-2">
-          <p className="text-[10px] text-muted-foreground/60 font-semibold uppercase tracking-wider">
-            Lançamentos · {catTxs.length}
-          </p>
-        </div>
-        <div className={`divide-y divide-border/10 ${!isMobile ? "max-h-[400px] overflow-y-auto" : ""}`}>
-          {catTxs.map((tx) => (
-            <div key={tx.id} className="flex items-center gap-3 px-4 py-2.5">
-              <div className="flex-1 min-w-0">
-                <p className="text-xs font-semibold text-foreground truncate">{tx.name}</p>
-                <p className="text-[9px] text-muted-foreground/40 mt-0.5">
-                  {new Date(tx.date + "T12:00:00").toLocaleDateString("pt-BR", { day: "numeric", month: "short" })}
-                </p>
-              </div>
-              <p className="text-xs font-bold tabular-nums text-destructive">−{fmt(tx.amount)}</p>
-            </div>
-          ))}
-          {catTxs.length === 0 && (
-            <p className="text-xs text-muted-foreground/40 text-center py-6">Nenhum lançamento</p>
-          )}
-        </div>
-      </GlassCard>
     </motion.div>
   );
 };
