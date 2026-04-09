@@ -1270,7 +1270,7 @@ const AnalyticsCategorias = () => {
       const histMaxM1 = histMonths[histMonths.length - 1].m1;
       const histMaxY = histMonths[histMonths.length - 1].y1;
 
-      const [txRes, prevTxRes, histRes, installmentRes, invoiceItemsRes, prevInvoiceItemsRes, histInvoiceItemsRes, recurringTxs, prevRecurring, cats] = await Promise.all([
+      const [txRes, prevTxRes, histRes, installmentRes, invoiceItemsRes, prevInvoiceItemsRes, histInvoiceItemsRes, profileRes, recurringTxs, prevRecurring, cats] = await Promise.all([
         supabase.from("transactions").select("*").eq("user_id", user.id)
           .gte("date", start).lte("date", end).order("date", { ascending: false }),
         supabase.from("transactions").select("*").eq("user_id", user.id)
@@ -1298,10 +1298,16 @@ const AnalyticsCategorias = () => {
           .eq("invoices.user_id", user.id)
           .gte("invoices.year", histMinY)
           .lte("invoices.year", histMaxY),
+        // Fetch user profile to get account creation date
+        supabase.from("profiles").select("created_at").eq("id", user.id).single(),
         getRecurringForMonth(selectedMonth, selectedYear),
         getRecurringForMonth(prevM, prevY),
         getCustomCategories(),
       ]);
+
+      // User start date for filtering history
+      const profileCreatedAt = profileRes.data?.created_at ? new Date(profileRes.data.created_at) : null;
+      setUserStartDate(profileCreatedAt);
 
       const baseTxs = (txRes.data ?? []) as TxRow[];
       const materializedRecurring = recurringTxs.map((t: any) => ({
