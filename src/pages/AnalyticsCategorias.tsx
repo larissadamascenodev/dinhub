@@ -626,9 +626,11 @@ const AlertsSection = ({ alerts }: { alerts: AIInsights["alerts"] }) => {
 
 
 
-const LimitSuggestionItem = ({ suggestion, currentAmount }: { suggestion: AIInsights["limitSuggestions"][0]; currentAmount: number }) => {
+const LimitSuggestionItem = ({ suggestion, currentAmount, onApplied }: { suggestion: AIInsights["limitSuggestions"][0]; currentAmount: number; onApplied?: () => void }) => {
+  const { user } = useAuth();
   const [customLimit, setCustomLimit] = useState(suggestion.suggestedLimit);
   const [editing, setEditing] = useState(false);
+  const [saving, setSaving] = useState(false);
 
   const monthlySaving = Math.max(currentAmount - customLimit, 0);
   const saving3m = monthlySaving * 3;
@@ -639,9 +641,32 @@ const LimitSuggestionItem = ({ suggestion, currentAmount }: { suggestion: AIInsi
     if (!isNaN(val) && val >= 0) setCustomLimit(val);
   };
 
+  const handleApply = async () => {
+    if (!user) return;
+    setSaving(true);
+    try {
+      const { error } = await supabase
+        .from("category_limits")
+        .upsert(
+          { user_id: user.id, category: suggestion.category, limit_amount: customLimit },
+          { onConflict: "user_id,category" }
+        );
+      if (error) throw error;
+      toast.success(`Limite de ${fmt(customLimit)} definido para ${suggestion.category}`, {
+        description: monthlySaving > 0 ? `Economia potencial de ${fmt(saving1y)} por ano.` : undefined,
+      });
+      onApplied?.();
+      window.dispatchEvent(new Event("finance-data-changed"));
+    } catch {
+      toast.error("Erro ao salvar limite");
+    } finally {
+      setSaving(false);
+    }
+  };
+
   return (
     <motion.div initial={{ opacity: 0, y: 8 }} animate={{ opacity: 1, y: 0 }}
-      className="p-3 rounded-xl bg-primary/5 border border-primary/10">
+      className="min-w-[260px] max-w-[290px] snap-start p-3 rounded-xl bg-primary/5 border border-primary/10 flex flex-col">
       <p className="text-xs font-semibold text-foreground">{suggestion.category}</p>
       <p className="text-[11px] text-muted-foreground/70 mt-1">{suggestion.message}</p>
 
@@ -697,15 +722,16 @@ const LimitSuggestionItem = ({ suggestion, currentAmount }: { suggestion: AIInsi
       )}
 
       <button
-        onClick={() => toast.success(`Limite de ${fmt(customLimit)} definido para ${suggestion.category}! 🎯`, { description: monthlySaving > 0 ? `Economia potencial de ${fmt(saving1y)} por ano.` : undefined })}
-        className="mt-2.5 w-full px-3 py-1.5 rounded-lg bg-primary/10 text-primary text-[11px] font-semibold border border-primary/15 hover:bg-primary/20 transition-colors">
-        Aplicar limite de {fmt(customLimit)}
+        onClick={handleApply}
+        disabled={saving}
+        className="mt-2.5 w-full px-3 py-1.5 rounded-lg bg-primary/10 text-primary text-[11px] font-semibold border border-primary/15 hover:bg-primary/20 transition-colors disabled:opacity-50">
+        {saving ? "Salvando..." : `Aplicar limite de ${fmt(customLimit)}`}
       </button>
     </motion.div>
   );
 };
 
-const LimitSuggestions = ({ suggestions, categoryData }: { suggestions: AIInsights["limitSuggestions"]; categoryData: CategorySummary[] }) => {
+const LimitSuggestions = ({ suggestions, categoryData, onApplied }: { suggestions: AIInsights["limitSuggestions"]; categoryData: CategorySummary[]; onApplied?: () => void }) => {
   if (!suggestions || suggestions.length === 0) return null;
   return (
     <GlassCard className="p-4 md:p-5">
@@ -713,10 +739,10 @@ const LimitSuggestions = ({ suggestions, categoryData }: { suggestions: AIInsigh
         <Target className="w-4 h-4 text-primary" />
         <p className="text-[10px] md:text-[11px] text-muted-foreground/60 font-semibold uppercase tracking-wider">Sugestões de Limite</p>
       </div>
-      <div className="space-y-2.5">
+      <div className="flex gap-3 overflow-x-auto pb-2 scrollbar-none snap-x snap-mandatory" style={{ WebkitOverflowScrolling: "touch" }}>
         {suggestions.map((s, i) => {
           const cat = categoryData.find((c) => c.name === s.category);
-          return <LimitSuggestionItem key={i} suggestion={s} currentAmount={cat?.amount ?? 0} />;
+          return <LimitSuggestionItem key={i} suggestion={s} currentAmount={cat?.amount ?? 0} onApplied={onApplied} />;
         })}
       </div>
     </GlassCard>
@@ -1324,55 +1350,102 @@ const CategoryDetail = ({
       {/* Installment Impact */}
       <CategoryInstallmentDetail impact={installmentImpact} />
 
-      {/* Smart limit suggestion */}
-      {smartSuggestion && (
-        <div
-          className="rounded-2xl border border-primary/15 p-3 md:p-4"
-          style={{
-            background: "linear-gradient(135deg, hsl(var(--card) / 0.8) 0%, hsl(var(--card) / 0.4) 50%, hsl(var(--card) / 0.6) 100%)",
-            backdropFilter: "blur(24px)",
-            boxShadow: "0 4px 20px -6px rgba(0,0,0,0.3), inset 0 1px 0 rgba(255,255,255,0.03)",
-          }}
-        >
-          <div className="flex items-center gap-2 mb-2">
-            <ShieldCheck className="w-4 h-4 text-primary" />
-            <p className="text-[9px] md:text-[10px] text-muted-foreground/60 font-semibold uppercase tracking-wider">
-              💡 Sugestão de ajuste
-            </p>
-          </div>
-          <p className="text-[11px] text-muted-foreground/70 leading-relaxed">
-            {smartSuggestion.message}
-          </p>
-          {smartSuggestion.monthlySaving > 0 && (
-            <div className="grid grid-cols-3 gap-1.5 mt-2">
-              <div className="text-center p-1.5 rounded-lg bg-success/5 border border-success/10">
-                <p className="text-[8px] text-muted-foreground/50 uppercase">3 meses</p>
-                <p className="text-[11px] font-bold text-success tabular-nums mt-0.5">{fmt(smartSuggestion.monthlySaving * 3)}</p>
-              </div>
-              <div className="text-center p-1.5 rounded-lg bg-success/5 border border-success/10">
-                <p className="text-[8px] text-muted-foreground/50 uppercase">6 meses</p>
-                <p className="text-[11px] font-bold text-success tabular-nums mt-0.5">{fmt(smartSuggestion.monthlySaving * 6)}</p>
-              </div>
-              <div className="text-center p-1.5 rounded-lg bg-success/5 border border-success/10">
-                <p className="text-[8px] text-muted-foreground/50 uppercase">1 ano</p>
-                <p className="text-[11px] font-bold text-success tabular-nums mt-0.5">{fmt(smartSuggestion.annualSaving)}</p>
-              </div>
-            </div>
-          )}
-          <button
-            onClick={() => {
-              toast.success(`Limite de ${fmt(smartSuggestion.suggestedLimit)} definido para ${category.name}! 🎯`, {
-                description: `Economia potencial de ${fmt(smartSuggestion.annualSaving)} por ano.`,
-              });
-            }}
-            className="mt-2.5 w-full px-3 py-2 rounded-xl bg-primary/15 text-primary text-[11px] font-semibold border border-primary/20 hover:bg-primary/25 transition-colors"
-          >
-            Aplicar limite de {fmt(smartSuggestion.suggestedLimit)}
-          </button>
-        </div>
-      )}
+
+
 
     </motion.div>
+  );
+};
+
+// ── Active Limits Section ────────────────────────────────
+const ActiveLimitsSection = ({ limits, categoryData, onRemoved }: {
+  limits: { category: string; limit_amount: number; id: string }[];
+  categoryData: CategorySummary[];
+  onRemoved?: () => void;
+}) => {
+  const { user } = useAuth();
+  if (limits.length === 0) return null;
+
+  const handleRemove = async (id: string, category: string) => {
+    const { error } = await supabase.from("category_limits").delete().eq("id", id);
+    if (error) { toast.error("Erro ao remover limite"); return; }
+    toast.success(`Limite de ${category} removido`);
+    onRemoved?.();
+    window.dispatchEvent(new Event("finance-data-changed"));
+  };
+
+  return (
+    <GlassCard className="p-4 md:p-5">
+      <div className="flex items-center gap-2 mb-3">
+        <ShieldCheck className="w-4 h-4 text-primary" />
+        <p className="text-[10px] md:text-[11px] text-muted-foreground/60 font-semibold uppercase tracking-wider">Limites Ativos</p>
+      </div>
+      <div className="flex gap-3 overflow-x-auto pb-2 scrollbar-none snap-x snap-mandatory" style={{ WebkitOverflowScrolling: "touch" }}>
+        {limits.map((lim) => {
+          const cat = categoryData.find((c) => c.name === lim.category);
+          const amount = cat?.amount ?? 0;
+          const ratio = lim.limit_amount > 0 ? amount / lim.limit_amount : 0;
+          const pct = Math.round(ratio * 100);
+          const CatIcon = getCategoryIcon(lim.category);
+          const hexColor = getCategoryHexColor(lim.category);
+          let statusColor = "text-success";
+          let statusLabel = "Sob controle";
+          let barColor = hexColor;
+          if (ratio > 1) { statusColor = "text-destructive"; statusLabel = "Ultrapassado"; barColor = "hsl(0 70% 55%)"; }
+          else if (ratio >= 0.8) { statusColor = "text-warning"; statusLabel = "Perto do limite"; barColor = "hsl(35 90% 55%)"; }
+
+          return (
+            <motion.div
+              key={lim.id}
+              initial={{ opacity: 0, y: 8 }}
+              animate={{ opacity: 1, y: 0 }}
+              className="min-w-[220px] max-w-[250px] snap-start p-3 rounded-xl border border-border/15 flex flex-col gap-2"
+              style={{
+                background: "linear-gradient(135deg, hsl(var(--card) / 0.8) 0%, hsl(var(--card) / 0.4) 50%, hsl(var(--card) / 0.6) 100%)",
+              }}
+            >
+              <div className="flex items-center gap-2">
+                <CatIcon className="w-4 h-4" style={{ color: hexColor }} />
+                <p className="text-xs font-semibold text-foreground truncate flex-1">{lim.category}</p>
+                <span className={`text-[9px] font-medium ${statusColor}`}>{statusLabel}</span>
+              </div>
+              <div className="relative w-full h-2 bg-border/20 rounded-full overflow-visible">
+                {(() => {
+                  const maxScale = Math.max(amount, lim.limit_amount) * 1.2;
+                  const barW = Math.min((amount / maxScale) * 100, 100);
+                  const markerPos = (lim.limit_amount / maxScale) * 100;
+                  return (
+                    <>
+                      <motion.div
+                        initial={{ width: 0 }}
+                        animate={{ width: `${barW}%` }}
+                        transition={{ duration: 0.6 }}
+                        className="h-full rounded-full absolute top-0 left-0"
+                        style={{ backgroundColor: barColor }}
+                      />
+                      <div
+                        className="absolute top-[-2px] w-[2px] h-[calc(100%+4px)] rounded-full bg-foreground/50"
+                        style={{ left: `${markerPos}%` }}
+                      />
+                    </>
+                  );
+                })()}
+              </div>
+              <div className="flex justify-between text-[10px]">
+                <span className="text-muted-foreground/60 tabular-nums">{fmt(amount)}</span>
+                <span className="text-muted-foreground/40 tabular-nums">/ {fmt(lim.limit_amount)}</span>
+              </div>
+              <button
+                onClick={() => handleRemove(lim.id, lim.category)}
+                className="text-[9px] text-destructive/60 hover:text-destructive transition-colors self-end"
+              >
+                Remover limite
+              </button>
+            </motion.div>
+          );
+        })}
+      </div>
+    </GlassCard>
   );
 };
 
@@ -1392,6 +1465,19 @@ const AnalyticsCategorias = () => {
   const [aiLoading, setAiLoading] = useState(false);
   const [installmentImpacts, setInstallmentImpacts] = useState<InstallmentImpactMap>({});
   const [userStartDate, setUserStartDate] = useState<Date | null>(null);
+  const [activeLimits, setActiveLimits] = useState<{ category: string; limit_amount: number; id: string }[]>([]);
+
+  // Fetch active limits
+  const fetchLimits = useCallback(async () => {
+    if (!user) return;
+    const { data } = await supabase
+      .from("category_limits")
+      .select("id, category, limit_amount")
+      .eq("user_id", user.id);
+    setActiveLimits((data ?? []).map(r => ({ id: r.id, category: r.category, limit_amount: Number(r.limit_amount) })));
+  }, [user]);
+
+  useEffect(() => { fetchLimits(); }, [fetchLimits]);
 
   // Fetch transactions for current month, previous month, and 6-month history
   useEffect(() => {
@@ -1875,6 +1961,22 @@ const AnalyticsCategorias = () => {
                   prevCategoryData={prevCategoryData}
                   habitMap={habitMap}
                 />
+
+                {/* Active Limits */}
+                <ActiveLimitsSection
+                  limits={activeLimits}
+                  categoryData={categoryData}
+                  onRemoved={fetchLimits}
+                />
+
+                {/* Limit Suggestions from AI */}
+                {aiInsights?.limitSuggestions && aiInsights.limitSuggestions.length > 0 && (
+                  <LimitSuggestions
+                    suggestions={aiInsights.limitSuggestions.filter(s => !activeLimits.some(l => l.category === s.category))}
+                    categoryData={categoryData}
+                    onApplied={fetchLimits}
+                  />
+                )}
 
                 {/* General Installments Overview */}
                 {enrichedInstallmentImpacts.length > 0 && (

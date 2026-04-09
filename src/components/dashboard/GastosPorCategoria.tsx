@@ -1,4 +1,4 @@
-import { memo, useState, useMemo, useEffect } from "react";
+import { memo, useState, useMemo, useEffect, useRef } from "react";
 import { useNavigate } from "react-router-dom";
 import { motion } from "framer-motion";
 import { ChevronDown, ChevronUp, ChevronRight } from "lucide-react";
@@ -6,6 +6,7 @@ import type { CategoryExpense } from "@/types/finance";
 import { getCategoryIcon, getCategoryColor } from "@/lib/categoryUtils";
 import { getCustomCategories, type CustomCategory } from "@/services/categoryService";
 import { supabase } from "@/integrations/supabase/client";
+import { toast } from "sonner";
 
 interface Props {
   categories: CategoryExpense[];
@@ -41,6 +42,7 @@ const GastosPorCategoria = memo(({ categories, selectedMonth, onVerAnalise }: Pr
   useEffect(() => { getCustomCategories().then(setCustomCats).catch(() => {}); }, []);
 
   // Fetch category limits
+  const notifiedRef = useRef<Set<string>>(new Set());
   useEffect(() => {
     const fetchLimits = async () => {
       const { data } = await supabase
@@ -55,7 +57,25 @@ const GastosPorCategoria = memo(({ categories, selectedMonth, onVerAnalise }: Pr
       }
     };
     fetchLimits();
+
+    const handleChange = () => fetchLimits();
+    window.addEventListener("finance-data-changed", handleChange);
+    return () => window.removeEventListener("finance-data-changed", handleChange);
   }, []);
+
+  // Notify when limits are exceeded
+  useEffect(() => {
+    if (Object.keys(limits).length === 0 || categories.length === 0) return;
+    categories.forEach((cat) => {
+      const limit = limits[cat.name];
+      if (limit && limit > 0 && cat.amount > limit && !notifiedRef.current.has(cat.name)) {
+        notifiedRef.current.add(cat.name);
+        toast.error(`Limite ultrapassado em ${cat.name}`, {
+          description: `Gasto: ${fmt(cat.amount)} / Limite: ${fmt(limit)}`,
+        });
+      }
+    });
+  }, [limits, categories]);
 
   const sorted = useMemo(() => [...categories].sort((a, b) => b.amount - a.amount), [categories]);
   const totalExpenses = useMemo(() => sorted.reduce((sum, c) => sum + c.amount, 0), [sorted]);
