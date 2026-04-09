@@ -130,7 +130,7 @@ const SummaryCard = ({ totalExpenses, topCategory, monthLabel }: {
   const annualEstimate = totalExpenses * 12;
   return (
     <div
-      className="rounded-2xl border border-border/20 p-4 md:p-5"
+      className="rounded-2xl border border-border/20 p-3 md:p-5"
       style={{
         background: "linear-gradient(135deg, hsl(var(--card) / 0.8) 0%, hsl(var(--card) / 0.4) 50%, hsl(var(--card) / 0.6) 100%)",
         backdropFilter: "blur(24px)",
@@ -151,7 +151,7 @@ const SummaryCard = ({ totalExpenses, topCategory, monthLabel }: {
         )}
       </div>
 
-      <div className="border-t border-border/5 mt-3 pt-3 grid grid-cols-2 gap-3">
+      <div className="border-t border-border/5 mt-2 pt-2 grid grid-cols-2 gap-3">
         <div>
           <p className="text-[9px] text-muted-foreground/50 uppercase tracking-wider font-medium">Gasto anual estimado</p>
           <p className="text-sm font-bold text-destructive mt-0.5 tabular-nums">{fmt(annualEstimate)}</p>
