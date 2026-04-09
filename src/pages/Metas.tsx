@@ -164,10 +164,9 @@ const Metas = () => {
         <motion.button
           whileTap={{ scale: 0.95 }}
           onClick={() => setShowCreateModal(true)}
-          className="flex items-center gap-1.5 px-3 py-2 rounded-xl bg-primary/15 border border-primary/20 text-primary text-xs font-semibold hover:bg-primary/20 transition-colors"
+          className="w-8 h-8 rounded-xl bg-primary/15 border border-primary/20 flex items-center justify-center hover:bg-primary/20 transition-colors"
         >
-          <Plus className="w-4 h-4" />
-          Nova Meta
+          <Plus className="w-4 h-4 text-primary" />
         </motion.button>
       </div>
 
