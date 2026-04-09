@@ -1,7 +1,7 @@
 import { useState, useEffect, useCallback } from "react";
 import { useParams, useNavigate } from "react-router-dom";
 import { motion, AnimatePresence } from "framer-motion";
-import { ArrowLeft, TrendingUp, Sparkles, Clock, MoreVertical, Pencil, Trash2, ArrowDownLeft, Target } from "lucide-react";
+import { ArrowLeft, Sparkles, Clock, MoreVertical, Pencil, Trash2, ArrowDownLeft, ArrowUpRight, Target, ChevronDown, ChevronUp } from "lucide-react";
 import { toast } from "sonner";
 import { useAuth } from "@/contexts/AuthContext";
 import {
@@ -26,8 +26,6 @@ import { supabase } from "@/integrations/supabase/client";
 const fmt = (v: number) =>
   v.toLocaleString("pt-BR", { style: "currency", currency: "BRL" });
 
-const CARD_BG = "linear-gradient(135deg, hsl(var(--card)) 0%, hsl(var(--background)) 100%)";
-
 const MetaDetalhe = () => {
   const { goalId } = useParams<{ goalId: string }>();
   const navigate = useNavigate();
@@ -44,6 +42,7 @@ const MetaDetalhe = () => {
   const [depositToDelete, setDepositToDelete] = useState<GoalTransaction | null>(null);
   const [deletingDeposit, setDeletingDeposit] = useState(false);
   const [accountNames, setAccountNames] = useState<Record<string, string>>({});
+  const [showAllHistory, setShowAllHistory] = useState(false);
 
   const load = useCallback(async () => {
     if (!goalId) return;
@@ -129,8 +128,9 @@ const MetaDetalhe = () => {
   if (loading || !goal) {
     return (
       <div className="pt-2 pb-8 space-y-4">
-        <div className="h-40 rounded-2xl bg-card animate-pulse" />
-        <div className="h-24 rounded-2xl bg-card animate-pulse" />
+        <div className="h-52 rounded-2xl bg-card/40 animate-pulse" />
+        <div className="h-20 rounded-2xl bg-card/40 animate-pulse" />
+        <div className="h-32 rounded-2xl bg-card/40 animate-pulse" />
       </div>
     );
   }
@@ -141,11 +141,9 @@ const MetaDetalhe = () => {
   const insights = computeGoalInsights(goal, transactions);
   const topInsight = insights.length > 0 ? insights[0] : null;
 
-  let predictionText = "";
   let predictionMonths = 0;
   if (!isComplete && goal.monthly_contribution && goal.monthly_contribution > 0) {
     predictionMonths = Math.ceil(remaining / goal.monthly_contribution);
-    predictionText = `~${predictionMonths} ${predictionMonths === 1 ? "mês" : "meses"}`;
   }
 
   const getDepositDeleteDescription = (tx: GoalTransaction) => {
@@ -161,9 +159,17 @@ const MetaDetalhe = () => {
 
   const totalDeposits = transactions.filter(t => Number(t.amount) > 0).reduce((s, t) => s + Number(t.amount), 0);
   const totalWithdrawals = transactions.filter(t => Number(t.amount) < 0).reduce((s, t) => s + Math.abs(Number(t.amount)), 0);
+  const visibleTxs = showAllHistory ? transactions : transactions.slice(0, 5);
+
+  // Circular progress for the hero
+  const circleSize = 120;
+  const strokeW = 8;
+  const radius = (circleSize - strokeW) / 2;
+  const circumference = 2 * Math.PI * radius;
+  const strokeDash = circumference * progress;
 
   return (
-    <div className="pt-2 pb-8 space-y-5">
+    <div className="pt-2 pb-8 space-y-4">
       {/* Header */}
       <div className="flex items-center justify-between">
         <button onClick={() => navigate("/metas")} className="flex items-center gap-1.5 text-sm text-muted-foreground hover:text-foreground transition-colors">
@@ -197,71 +203,54 @@ const MetaDetalhe = () => {
 
       {showMenu && <div className="fixed inset-0 z-40" onClick={() => setShowMenu(false)} />}
 
-      {/* ═══ Main Card ═══ */}
-      <motion.div initial={{ opacity: 0, y: 12 }} animate={{ opacity: 1, y: 0 }} className="relative rounded-2xl overflow-hidden border border-border/10" style={{ background: CARD_BG }}>
-        <div className="p-5 space-y-4">
-          <div className="flex items-center gap-3">
-            <div className="w-10 h-10 rounded-xl bg-primary/15 flex items-center justify-center">
-              <Target className="w-5 h-5 text-primary" />
-            </div>
-            <div className="flex-1 min-w-0">
-              <p className="text-base font-bold text-foreground leading-tight truncate">{goal.name}</p>
-              {goal.deadline && (
-                <p className="text-[10px] text-muted-foreground mt-0.5">
-                  Prazo: {format(new Date(goal.deadline + "T12:00:00"), "dd MMM yyyy", { locale: ptBR })}
-                </p>
-              )}
-            </div>
-          </div>
-
-          <div className="h-px bg-border/10" />
-
-          <div>
-            <div className="flex items-center gap-1.5 mb-1.5">
-              <div className="w-1.5 h-1.5 rounded-full bg-primary" />
-              <p className="text-[9px] text-muted-foreground uppercase tracking-widest font-medium">Acumulado</p>
-            </div>
-            <p className="text-3xl font-extrabold tabular-nums tracking-tight text-foreground">
-              {fmt(Number(goal.current_amount))}
-            </p>
-            <p className="text-[11px] text-muted-foreground mt-0.5">
-              de {fmt(Number(goal.target_amount))}
-            </p>
-          </div>
-
-          {/* Progress */}
-          <div>
-            <div className="flex items-center justify-between mb-1.5">
-              <p className="text-[10px] text-muted-foreground">Progresso</p>
-              <span className={`text-xs font-bold tabular-nums ${isComplete ? "text-primary" : "text-foreground"}`}>
+      {/* ═══ Hero Card — circular progress + value ═══ */}
+      <motion.div
+        initial={{ opacity: 0, y: 16 }}
+        animate={{ opacity: 1, y: 0 }}
+        className="rounded-2xl border border-border/10 overflow-hidden"
+        style={{ background: "linear-gradient(160deg, hsl(var(--card)) 0%, hsl(var(--background)) 100%)" }}
+      >
+        <div className="flex flex-col items-center pt-6 pb-5 px-5">
+          {/* Circular progress */}
+          <div className="relative mb-4" style={{ width: circleSize, height: circleSize }}>
+            <svg width={circleSize} height={circleSize} className="-rotate-90">
+              <circle cx={circleSize / 2} cy={circleSize / 2} r={radius} fill="none" stroke="hsl(var(--secondary))" strokeWidth={strokeW} />
+              <motion.circle
+                cx={circleSize / 2} cy={circleSize / 2} r={radius} fill="none"
+                stroke="hsl(var(--primary))"
+                strokeWidth={strokeW}
+                strokeLinecap="round"
+                strokeDasharray={`${strokeDash} ${circumference - strokeDash}`}
+                initial={{ strokeDasharray: `0 ${circumference}` }}
+                animate={{ strokeDasharray: `${strokeDash} ${circumference - strokeDash}` }}
+                transition={{ duration: 1.2, ease: "easeOut" }}
+                style={{ filter: "drop-shadow(0 0 6px hsl(var(--primary) / 0.4))" }}
+              />
+            </svg>
+            <div className="absolute inset-0 flex flex-col items-center justify-center">
+              <span className={`text-2xl font-extrabold tabular-nums ${isComplete ? "text-primary" : "text-foreground"}`}>
                 {Math.round(progress * 100)}%
               </span>
+              {isComplete && <span className="text-[9px] text-primary font-semibold">Concluída!</span>}
             </div>
-            <div className="relative h-2.5 w-full rounded-full bg-secondary overflow-hidden">
-              <motion.div
-                initial={{ width: 0 }}
-                animate={{ width: `${progress * 100}%` }}
-                transition={{ duration: 1, ease: "easeOut" }}
-                className="h-full rounded-full"
-                style={{
-                  background: isComplete
-                    ? "hsl(var(--primary))"
-                    : "linear-gradient(90deg, hsl(var(--primary) / 0.6), hsl(var(--primary)))",
-                  boxShadow: "0 0 12px hsl(var(--primary) / 0.4)",
-                }}
-              />
-            </div>
-            {remaining > 0 && !isComplete && (
-              <p className="text-[10px] text-muted-foreground mt-1.5">Faltam {fmt(remaining)}</p>
-            )}
-            {isComplete && (
-              <p className="text-[10px] text-primary mt-1.5 font-semibold">Meta concluída! 🎉</p>
-            )}
           </div>
+
+          {/* Name + values */}
+          <h2 className="text-lg font-bold text-foreground text-center">{goal.name}</h2>
+          <p className="text-2xl font-extrabold text-primary tabular-nums mt-1">{fmt(Number(goal.current_amount))}</p>
+          <p className="text-[11px] text-muted-foreground">
+            de {fmt(Number(goal.target_amount))}
+            {remaining > 0 && !isComplete && <span> · faltam {fmt(remaining)}</span>}
+          </p>
+          {goal.deadline && (
+            <p className="text-[10px] text-muted-foreground/60 mt-1">
+              Prazo: {format(new Date(goal.deadline + "T12:00:00"), "dd 'de' MMMM yyyy", { locale: ptBR })}
+            </p>
+          )}
 
           {/* Action buttons */}
           {!isComplete && (
-            <div className="grid grid-cols-2 gap-2">
+            <div className="grid grid-cols-2 gap-2.5 w-full mt-5">
               <button
                 onClick={() => setShowDeposit(true)}
                 className="flex items-center justify-center gap-1.5 py-2.5 rounded-xl bg-primary/10 text-primary text-[11px] font-semibold hover:bg-primary/20 transition-colors border border-primary/20"
@@ -272,114 +261,87 @@ const MetaDetalhe = () => {
                 onClick={() => setShowWithdraw(true)}
                 className="flex items-center justify-center gap-1.5 py-2.5 rounded-xl bg-destructive/10 text-destructive text-[11px] font-semibold hover:bg-destructive/20 transition-colors border border-destructive/20"
               >
-                <TrendingUp className="w-3.5 h-3.5" /> Saque
+                <ArrowUpRight className="w-3.5 h-3.5" /> Saque
               </button>
             </div>
           )}
         </div>
       </motion.div>
 
-      {/* ═══ Insight + Previsão ═══ */}
-      <motion.div initial={{ opacity: 0, y: 8 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.08 }} className="space-y-2.5">
-        {topInsight && (
-          <div className="flex items-start gap-2.5 rounded-2xl border border-primary/10 bg-primary/[0.04] p-3.5">
-            <Sparkles className="w-4 h-4 text-primary shrink-0 mt-0.5" />
-            <p className="text-xs text-muted-foreground leading-relaxed">{topInsight}</p>
+      {/* ═══ Quick stats row ═══ */}
+      <motion.div initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.06 }} className="grid grid-cols-3 gap-2">
+        {[
+          { label: "Depósitos", value: fmt(totalDeposits), color: "text-primary" },
+          { label: "Saques", value: fmt(totalWithdrawals), color: "text-destructive" },
+          { label: predictionMonths > 0 ? "Previsão" : "Contribuição", value: predictionMonths > 0 ? `${predictionMonths} ${predictionMonths === 1 ? "mês" : "meses"}` : goal.monthly_contribution ? fmt(goal.monthly_contribution) + "/mês" : "—", color: "text-foreground" },
+        ].map((item, i) => (
+          <div key={i} className="rounded-xl border border-border/10 p-2.5 text-center" style={{ background: "linear-gradient(160deg, hsl(var(--card)) 0%, hsl(var(--background)) 100%)" }}>
+            <p className="text-[8px] text-muted-foreground uppercase tracking-wider font-medium">{item.label}</p>
+            <p className={`text-[11px] font-bold tabular-nums mt-0.5 ${item.color}`}>{item.value}</p>
           </div>
-        )}
-
-        {predictionText && (
-          <div className="flex items-center gap-3 rounded-2xl border border-border/10 p-3.5" style={{ background: CARD_BG }}>
-            <div className="w-8 h-8 rounded-xl bg-primary/10 flex items-center justify-center flex-shrink-0">
-              <Clock className="w-4 h-4 text-primary" />
-            </div>
-            <div className="flex-1">
-              <p className="text-[10px] text-muted-foreground">Previsão de conclusão</p>
-              <p className="text-sm font-bold text-foreground">{predictionText}</p>
-            </div>
-            {goal.monthly_contribution && goal.monthly_contribution > 0 && (
-              <span className="text-[10px] bg-primary/10 text-primary px-2 py-1 rounded-lg font-medium tabular-nums">
-                {fmt(goal.monthly_contribution)}/mês
-              </span>
-            )}
-          </div>
-        )}
+        ))}
       </motion.div>
 
-      {/* ═══ Resumo ═══ */}
-      <motion.div initial={{ opacity: 0, y: 12 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.12 }}>
-        <div className="rounded-2xl border border-border/10 p-4 space-y-3" style={{ background: CARD_BG }}>
-          <div className="flex items-center justify-between">
-            <p className="text-[9px] text-muted-foreground uppercase tracking-widest font-medium">Resumo</p>
+      {/* ═══ Insight ═══ */}
+      {topInsight && (
+        <motion.div initial={{ opacity: 0, y: 8 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.1 }}>
+          <div className="flex items-start gap-2.5 rounded-xl border border-primary/10 bg-primary/[0.04] p-3">
+            <Sparkles className="w-3.5 h-3.5 text-primary shrink-0 mt-0.5" />
+            <p className="text-[11px] text-muted-foreground leading-relaxed">{topInsight}</p>
           </div>
-          <div className="space-y-2">
-            <div className="flex items-center justify-between py-1">
-              <span className="text-xs text-muted-foreground">Objetivo</span>
-              <span className="text-xs font-semibold text-foreground tabular-nums">{fmt(Number(goal.target_amount))}</span>
-            </div>
-            <div className="h-px bg-border/8" />
-            <div className="flex items-center justify-between py-1">
-              <span className="text-xs text-muted-foreground">Total depositado</span>
-              <span className="text-xs font-semibold text-primary tabular-nums">{fmt(totalDeposits)}</span>
-            </div>
-            <div className="h-px bg-border/8" />
-            <div className="flex items-center justify-between py-1">
-              <span className="text-xs text-muted-foreground">Total sacado</span>
-              <span className="text-xs font-semibold text-destructive tabular-nums">{fmt(totalWithdrawals)}</span>
-            </div>
-            <div className="h-px bg-border/8" />
-            <div className="flex items-center justify-between py-1">
-              <span className="text-xs text-foreground font-medium">Saldo atual</span>
-              <span className="text-sm font-bold text-primary tabular-nums">{fmt(Number(goal.current_amount))}</span>
-            </div>
-          </div>
-        </div>
-      </motion.div>
+        </motion.div>
+      )}
 
       {/* ═══ History ═══ */}
-      <motion.div initial={{ opacity: 0, y: 12 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.15 }}>
-        <div className="rounded-2xl border border-border/10 p-4" style={{ background: CARD_BG }}>
-          <p className="text-[9px] text-muted-foreground uppercase tracking-widest font-medium mb-3">Histórico de movimentações</p>
+      <motion.div initial={{ opacity: 0, y: 12 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.14 }}>
+        <div className="rounded-2xl border border-border/10 overflow-hidden" style={{ background: "linear-gradient(160deg, hsl(var(--card)) 0%, hsl(var(--background)) 100%)" }}>
+          <div className="px-4 pt-3.5 pb-2">
+            <p className="text-[9px] text-muted-foreground uppercase tracking-widest font-medium">Movimentações</p>
+          </div>
           {transactions.length === 0 ? (
-            <p className="text-[11px] text-muted-foreground text-center py-6">Nenhuma movimentação ainda</p>
+            <p className="text-[11px] text-muted-foreground text-center py-8 px-4">Nenhuma movimentação ainda</p>
           ) : (
-            <div className="space-y-2">
-              {transactions.map((tx) => {
+            <div className="px-3 pb-3 space-y-1">
+              {visibleTxs.map((tx) => {
                 const isWithdraw = Number(tx.amount) < 0;
                 const absAmount = Math.abs(Number(tx.amount));
                 return (
-                  <div key={tx.id} className="flex items-center justify-between rounded-xl p-3 bg-muted/5 border border-border/10 hover:border-border/20 transition-colors">
-                    <div className="flex items-center gap-3">
-                      <div className={`w-8 h-8 rounded-lg flex items-center justify-center ${isWithdraw ? "bg-destructive/10" : "bg-primary/10"}`}>
-                        {isWithdraw ? (
-                          <TrendingUp className="w-4 h-4 text-destructive" />
-                        ) : (
-                          <ArrowDownLeft className="w-4 h-4 text-primary" />
-                        )}
-                      </div>
-                      <div>
-                        <p className={`text-xs font-semibold ${isWithdraw ? "text-destructive" : "text-primary"}`}>
-                          {isWithdraw ? "- " : "+ "}{fmt(absAmount)}
-                        </p>
-                        <p className="text-[10px] text-muted-foreground">
-                          {format(new Date(tx.date + "T12:00:00"), "dd MMM yyyy", { locale: ptBR })}
-                          {tx.source ? ` · ${tx.source}` : ""}
-                          {tx.account_id && accountNames[tx.account_id] ? ` · ${accountNames[tx.account_id]}` : ""}
-                        </p>
-                      </div>
+                  <div key={tx.id} className="flex items-center gap-3 rounded-xl px-2.5 py-2.5 hover:bg-muted/5 transition-colors group">
+                    <div className={`w-7 h-7 rounded-lg flex items-center justify-center flex-shrink-0 ${isWithdraw ? "bg-destructive/10" : "bg-primary/10"}`}>
+                      {isWithdraw ? <ArrowUpRight className="w-3.5 h-3.5 text-destructive" /> : <ArrowDownLeft className="w-3.5 h-3.5 text-primary" />}
                     </div>
+                    <div className="flex-1 min-w-0">
+                      <p className={`text-xs font-semibold ${isWithdraw ? "text-destructive" : "text-primary"}`}>
+                        {isWithdraw ? "Saque" : "Depósito"}
+                      </p>
+                      <p className="text-[10px] text-muted-foreground truncate">
+                        {format(new Date(tx.date + "T12:00:00"), "dd MMM yyyy", { locale: ptBR })}
+                        {tx.source ? ` · ${tx.source}` : ""}
+                        {tx.account_id && accountNames[tx.account_id] ? ` · ${accountNames[tx.account_id]}` : ""}
+                      </p>
+                    </div>
+                    <span className={`text-xs font-bold tabular-nums ${isWithdraw ? "text-destructive" : "text-primary"}`}>
+                      {isWithdraw ? "-" : "+"}{fmt(absAmount)}
+                    </span>
                     {!isWithdraw && (
-                      <motion.button
-                        whileTap={{ scale: 0.9 }}
+                      <button
                         onClick={() => setDepositToDelete(tx)}
-                        className="p-1.5 rounded-lg hover:bg-destructive/10 transition-colors"
+                        className="p-1 rounded-md opacity-0 group-hover:opacity-100 hover:bg-destructive/10 transition-all"
                       >
-                        <Trash2 className="w-3.5 h-3.5 text-muted-foreground hover:text-destructive" />
-                      </motion.button>
+                        <Trash2 className="w-3 h-3 text-muted-foreground hover:text-destructive" />
+                      </button>
                     )}
                   </div>
                 );
               })}
+              {transactions.length > 5 && (
+                <button
+                  onClick={() => setShowAllHistory(v => !v)}
+                  className="w-full flex items-center justify-center gap-1 py-2 text-[10px] text-muted-foreground hover:text-foreground transition-colors"
+                >
+                  {showAllHistory ? <><ChevronUp className="w-3 h-3" /> Mostrar menos</> : <><ChevronDown className="w-3 h-3" /> Ver todas ({transactions.length})</>}
+                </button>
+              )}
             </div>
           )}
         </div>
