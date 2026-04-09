@@ -1,4 +1,5 @@
 import { useState, useRef } from "react";
+import { useLoginStreak } from "@/hooks/useLoginStreak";
 import { motion, AnimatePresence } from "framer-motion";
 import {
   User, Pencil, Star, Flame, Target, TrendingUp, Swords, Trophy,
