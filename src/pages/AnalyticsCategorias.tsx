@@ -1670,21 +1670,11 @@ const AnalyticsCategorias = () => {
                 {/* Summary (unified card) */}
                 <SummaryCard totalExpenses={totalExpenses} topCategory={topCategory} monthLabel={monthLabel} />
 
-                {/* Comparison Insights — above chart */}
-                <ComparisonInsightsSection categoryData={categoryData} prevCategoryData={prevCategoryData} />
-
                 {/* Chart — full width */}
                 <CategoryChartSection
                   categoryData={categoryData}
                   isMobile={isMobile}
                 />
-
-
-                {/* Dicas · Huby */}
-                <AIInsightsSection insights={aiInsights} loading={aiLoading} />
-
-                {/* Alertas */}
-                {aiInsights && <AlertsSection alerts={aiInsights.alerts} />}
 
                 {/* All Categories list */}
                 <CategoryList
@@ -1694,12 +1684,6 @@ const AnalyticsCategorias = () => {
                   prevCategoryData={prevCategoryData}
                   habitMap={habitMap}
                 />
-
-                {/* Installment Insights */}
-                <InstallmentInsightsSection impacts={enrichedInstallmentImpacts} />
-
-                {/* Limit Suggestions */}
-                {aiInsights && <LimitSuggestions suggestions={aiInsights.limitSuggestions} categoryData={categoryData} />}
               </>
             ) : (
               <GlassCard className="p-8 text-center">
