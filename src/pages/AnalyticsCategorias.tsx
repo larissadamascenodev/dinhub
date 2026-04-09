@@ -1324,53 +1324,8 @@ const CategoryDetail = ({
       {/* Installment Impact */}
       <CategoryInstallmentDetail impact={installmentImpact} />
 
-      {/* Smart limit suggestion */}
-      {smartSuggestion && (
-        <div
-          className="rounded-2xl border border-primary/15 p-3 md:p-4"
-          style={{
-            background: "linear-gradient(135deg, hsl(var(--card) / 0.8) 0%, hsl(var(--card) / 0.4) 50%, hsl(var(--card) / 0.6) 100%)",
-            backdropFilter: "blur(24px)",
-            boxShadow: "0 4px 20px -6px rgba(0,0,0,0.3), inset 0 1px 0 rgba(255,255,255,0.03)",
-          }}
-        >
-          <div className="flex items-center gap-2 mb-2">
-            <ShieldCheck className="w-4 h-4 text-primary" />
-            <p className="text-[9px] md:text-[10px] text-muted-foreground/60 font-semibold uppercase tracking-wider">
-              💡 Sugestão de ajuste
-            </p>
-          </div>
-          <p className="text-[11px] text-muted-foreground/70 leading-relaxed">
-            {smartSuggestion.message}
-          </p>
-          {smartSuggestion.monthlySaving > 0 && (
-            <div className="grid grid-cols-3 gap-1.5 mt-2">
-              <div className="text-center p-1.5 rounded-lg bg-success/5 border border-success/10">
-                <p className="text-[8px] text-muted-foreground/50 uppercase">3 meses</p>
-                <p className="text-[11px] font-bold text-success tabular-nums mt-0.5">{fmt(smartSuggestion.monthlySaving * 3)}</p>
-              </div>
-              <div className="text-center p-1.5 rounded-lg bg-success/5 border border-success/10">
-                <p className="text-[8px] text-muted-foreground/50 uppercase">6 meses</p>
-                <p className="text-[11px] font-bold text-success tabular-nums mt-0.5">{fmt(smartSuggestion.monthlySaving * 6)}</p>
-              </div>
-              <div className="text-center p-1.5 rounded-lg bg-success/5 border border-success/10">
-                <p className="text-[8px] text-muted-foreground/50 uppercase">1 ano</p>
-                <p className="text-[11px] font-bold text-success tabular-nums mt-0.5">{fmt(smartSuggestion.annualSaving)}</p>
-              </div>
-            </div>
-          )}
-          <button
-            onClick={() => {
-              toast.success(`Limite de ${fmt(smartSuggestion.suggestedLimit)} definido para ${category.name}! 🎯`, {
-                description: `Economia potencial de ${fmt(smartSuggestion.annualSaving)} por ano.`,
-              });
-            }}
-            className="mt-2.5 w-full px-3 py-2 rounded-xl bg-primary/15 text-primary text-[11px] font-semibold border border-primary/20 hover:bg-primary/25 transition-colors"
-          >
-            Aplicar limite de {fmt(smartSuggestion.suggestedLimit)}
-          </button>
-        </div>
-      )}
+
+
 
     </motion.div>
   );
