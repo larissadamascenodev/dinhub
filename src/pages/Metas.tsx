@@ -132,14 +132,17 @@ const Metas = () => {
   );
 
   const handleDeleteGoal = useCallback(async (goalId: string) => {
-    if (!confirm("Tem certeza que deseja excluir esta meta?")) return;
+    setDeletingGoal(true);
     try {
       await deleteGoal(goalId);
       toast.success("Meta excluída");
+      setDeleteGoalId(null);
       setMenuGoalId(null);
       loadGoals();
     } catch {
       toast.error("Erro ao excluir meta");
+    } finally {
+      setDeletingGoal(false);
     }
   }, [loadGoals]);
 
