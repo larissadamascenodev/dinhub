@@ -135,12 +135,12 @@ export async function createGoalDeposit(deposit: {
       category: "Meta",
       date: deposit.date,
       amount: deposit.amount,
-      type: "despesa",
+      type: "investimento",
       status: "pago",
       payment_method: "conta",
       recurrence_type: "unica",
       account_id: deposit.account_id,
-      observation: `Depósito automático para meta "${goalName}"`,
+      observation: `Reserva para meta "${goalName}"`,
     });
   }
 
