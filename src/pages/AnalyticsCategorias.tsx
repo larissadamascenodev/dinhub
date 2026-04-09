@@ -1394,10 +1394,18 @@ const AnalyticsCategorias = () => {
 
       Object.values(hMap).forEach((arr) => arr.sort((a, b) => a.year - b.year || a.month - b.month));
 
+      // Build month slots, filtering out months before user account creation
+      const userStartMonth = profileCreatedAt ? profileCreatedAt.getMonth() : 0;
+      const userStartYear = profileCreatedAt ? profileCreatedAt.getFullYear() : 2000;
+
       const allMonths: { month: number; year: number; label: string }[] = [];
       for (let i = -5; i <= 0; i++) {
         const d = new Date(selectedYear, selectedMonth + i, 1);
-        allMonths.push({ month: d.getMonth(), year: d.getFullYear(), label: SHORT_MONTH_NAMES[d.getMonth()] });
+        const m = d.getMonth();
+        const y = d.getFullYear();
+        // Skip months before user started using the app
+        if (profileCreatedAt && (y < userStartYear || (y === userStartYear && m < userStartMonth))) continue;
+        allMonths.push({ month: m, year: y, label: SHORT_MONTH_NAMES[m] });
       }
       Object.keys(hMap).forEach((cat) => {
         const filled = allMonths.map((slot) => {
