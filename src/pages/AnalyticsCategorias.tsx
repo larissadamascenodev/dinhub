@@ -1034,20 +1034,35 @@ const CategoryDetail = ({
         )}
       </div>
 
-      {/* Stats — compact grid */}
-      <div className="grid grid-cols-2 gap-2">
-        {[
-          { label: "Total gasto", value: fmt(category.amount) },
-          { label: "Custo diário", value: `${fmt(dailyCost)}/dia` },
-          { label: "Transações", value: `${category.txCount} lanç.` },
-          { label: "Média/transação", value: fmt(category.avgPerTx) },
-        ].map((s) => (
-          <GlassCard key={s.label} className="p-3 text-center">
-            <p className="text-[9px] text-muted-foreground/50 uppercase tracking-wider font-medium">{s.label}</p>
-            <p className="text-sm font-bold text-foreground mt-1 tabular-nums">{s.value}</p>
+      {/* Summary card */}
+      {(() => {
+        const paidAmount = catTxs.filter(t => t.status === "pago").reduce((s, t) => s + t.amount, 0);
+        const pendingAmount = catTxs.filter(t => t.status !== "pago").reduce((s, t) => s + t.amount, 0);
+        return (
+          <GlassCard className="p-4 md:p-5">
+            <p className="text-[10px] text-muted-foreground/50 mb-0.5">Total em {monthLabel}</p>
+            <p className="text-2xl md:text-3xl font-bold text-primary tabular-nums">{fmt(category.amount)}</p>
+            <div className="flex items-center gap-4 mt-2">
+              <span className="flex items-center gap-1.5 text-[11px] text-muted-foreground/70">
+                <span className="w-2 h-2 rounded-full bg-success" /> {fmt(paidAmount)} <span className="text-muted-foreground/40">pago</span>
+              </span>
+              <span className="flex items-center gap-1.5 text-[11px] text-muted-foreground/70">
+                <span className="w-2 h-2 rounded-full bg-warning" /> {fmt(pendingAmount)} <span className="text-muted-foreground/40">pendente</span>
+              </span>
+            </div>
+            <div className="border-t border-border/10 mt-3 pt-3 grid grid-cols-2 gap-3">
+              <div>
+                <p className="text-[9px] text-muted-foreground/50 uppercase tracking-wider font-medium">Média/transação</p>
+                <p className="text-sm font-bold text-foreground mt-0.5 tabular-nums">{fmt(category.avgPerTx)}</p>
+              </div>
+              <div>
+                <p className="text-[9px] text-muted-foreground/50 uppercase tracking-wider font-medium">Transações</p>
+                <p className="text-sm font-bold text-foreground mt-0.5 tabular-nums">{category.txCount} lanç.</p>
+              </div>
+            </div>
           </GlassCard>
-        ))}
-      </div>
+        );
+      })()}
 
       {/* Habit intensity */}
       {category.txCount >= 6 && (
