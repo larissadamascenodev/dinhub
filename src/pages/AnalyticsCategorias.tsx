@@ -196,15 +196,15 @@ const BarWithIcon = (props: any) => {
   const IconComp = payload.iconComponent;
   const iconSize = 14;
   const iconX = x + width / 2 - iconSize / 2;
-  const iconY = y + 4; // inside the bar, near the top edge
+  const iconY = y + 4;
 
   return (
     <g>
       <rect x={x} y={y} width={width} height={height} fill={fill} rx={6} ry={6} />
       {IconComp && height > iconSize + 6 && (
         <foreignObject x={iconX} y={iconY} width={iconSize} height={iconSize}>
-          <div style={{ width: iconSize, height: iconSize, display: "flex", alignItems: "center", justifyContent: "center" }}>
-            <IconComp style={{ width: iconSize, height: iconSize, color: "rgba(255,255,255,0.9)" }} />
+          <div style={{ width: iconSize, height: iconSize, display: "flex", alignItems: "center", justifyContent: "center", filter: "brightness(0.45)" }}>
+            <IconComp style={{ width: iconSize, height: iconSize, color: fill }} />
           </div>
         </foreignObject>
       )}
