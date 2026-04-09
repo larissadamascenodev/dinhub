@@ -5,6 +5,7 @@ import { ChevronDown, ChevronUp, ChevronRight } from "lucide-react";
 import type { CategoryExpense } from "@/types/finance";
 import { getCategoryIcon, getCategoryColor } from "@/lib/categoryUtils";
 import { getCustomCategories, type CustomCategory } from "@/services/categoryService";
+import { supabase } from "@/integrations/supabase/client";
 
 interface Props {
   categories: CategoryExpense[];
@@ -35,8 +36,26 @@ const GastosPorCategoria = memo(({ categories, selectedMonth, onVerAnalise }: Pr
   const navigate = useNavigate();
   const [customCats, setCustomCats] = useState<CustomCategory[]>([]);
   const [selectedCat, setSelectedCat] = useState<string | null>(null);
+  const [limits, setLimits] = useState<Record<string, number>>({});
 
   useEffect(() => { getCustomCategories().then(setCustomCats).catch(() => {}); }, []);
+
+  // Fetch category limits
+  useEffect(() => {
+    const fetchLimits = async () => {
+      const { data } = await supabase
+        .from("category_limits")
+        .select("category, limit_amount");
+      if (data) {
+        const map: Record<string, number> = {};
+        for (const row of data) {
+          map[row.category] = Number(row.limit_amount);
+        }
+        setLimits(map);
+      }
+    };
+    fetchLimits();
+  }, []);
 
   const sorted = useMemo(() => [...categories].sort((a, b) => b.amount - a.amount), [categories]);
   const totalExpenses = useMemo(() => sorted.reduce((sum, c) => sum + c.amount, 0), [sorted]);
@@ -73,7 +92,7 @@ const GastosPorCategoria = memo(({ categories, selectedMonth, onVerAnalise }: Pr
         </button>
       </div>
 
-      {/* Stacked color bar - no rounding on segments, only on container */}
+      {/* Stacked color bar */}
       <div className="px-4">
         <div className="flex h-2.5 gap-[3px]">
           {visible.map((cat) => {
@@ -132,6 +151,25 @@ const GastosPorCategoria = memo(({ categories, selectedMonth, onVerAnalise }: Pr
           const IconComponent = getCategoryIcon(cat.name, customCats);
           const isSelected = selectedCat === cat.name;
           const hasSel = selectedCat !== null;
+          const limit = limits[cat.name];
+          const hasLimit = limit !== undefined && limit > 0;
+          const limitRatio = hasLimit ? cat.amount / limit : 0;
+          const maxScale = hasLimit ? Math.max(cat.amount, limit) * 1.2 : totalExpenses;
+          const barPct = hasLimit ? Math.min((cat.amount / maxScale) * 100, 100) : pct;
+          const markerPct = hasLimit ? (limit / maxScale) * 100 : 0;
+
+          // Color based on limit proximity
+          let barColor = `hsl(${color})`;
+          let limitLabel = "";
+          if (hasLimit) {
+            if (limitRatio > 1) {
+              barColor = "hsl(0 70% 55%)"; // red
+              limitLabel = "Limite ultrapassado";
+            } else if (limitRatio >= 0.8) {
+              barColor = "hsl(35 90% 55%)"; // amber/warning
+              limitLabel = "Perto do limite";
+            }
+          }
 
           return (
             <motion.div
@@ -147,20 +185,41 @@ const GastosPorCategoria = memo(({ categories, selectedMonth, onVerAnalise }: Pr
                 <IconComponent className="w-4 h-4" style={{ color: `hsl(${color})` }} />
               </div>
               <div className="flex-1 min-w-0">
-                <p className="text-xs font-semibold text-foreground truncate">{cat.name}</p>
-                <div className="w-full h-1 bg-border/20 rounded-full mt-1 overflow-hidden">
+                <div className="flex items-center justify-between">
+                  <p className="text-xs font-semibold text-foreground truncate">{cat.name}</p>
+                  {hasLimit && limitLabel && (
+                    <p className={`text-[8px] font-medium ${limitRatio > 1 ? "text-destructive" : "text-warning"}`}>
+                      {limitLabel}
+                    </p>
+                  )}
+                </div>
+                <div className="relative w-full h-1.5 bg-border/20 rounded-full mt-1 overflow-visible">
                   <motion.div
                     initial={{ width: 0 }}
-                    animate={{ width: `${pct}%` }}
+                    animate={{ width: `${barPct}%` }}
                     transition={{ delay: 0.1 + index * 0.04, duration: 0.5, ease: "easeOut" }}
-                    className="h-full rounded-full"
-                    style={{ backgroundColor: `hsl(${color})` }}
+                    className="h-full rounded-full absolute top-0 left-0"
+                    style={{ backgroundColor: barColor }}
                   />
+                  {/* Limit marker */}
+                  {hasLimit && (
+                    <div
+                      className="absolute top-[-2px] w-[2px] h-[calc(100%+4px)] rounded-full bg-foreground/50"
+                      style={{ left: `${markerPct}%` }}
+                      title={`Limite: ${fmt(limit)}`}
+                    />
+                  )}
                 </div>
               </div>
               <div className="text-right shrink-0">
                 <p className="text-xs font-bold text-foreground tabular-nums">{fmt(cat.amount)}</p>
-                <p className="text-[9px] text-muted-foreground/50">{pct}%</p>
+                {hasLimit ? (
+                  <p className="text-[9px] text-muted-foreground/50 tabular-nums">
+                    / {fmt(limit)}
+                  </p>
+                ) : (
+                  <p className="text-[9px] text-muted-foreground/50">{pct}%</p>
+                )}
               </div>
             </motion.div>
           );
