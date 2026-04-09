@@ -76,7 +76,7 @@ interface InstallmentImpact {
   totalRemaining: number;
   monthsRemaining: number;
   impactPct: number;
-  items: { name: string; amount: number; remaining: number; total: number }[];
+  items: { name: string; amount: number; remaining: number; total: number; paidInstallments: number }[];
 }
 
 type InstallmentImpactMap = Record<string, InstallmentImpact>;
@@ -752,7 +752,7 @@ const CategoryInstallmentDetail = ({ impact }: { impact: InstallmentImpact | und
           <div key={i} className="flex items-center justify-between py-1.5 px-2 rounded-lg hover:bg-muted/10">
             <div className="flex-1 min-w-0">
               <p className="text-[11px] font-semibold text-foreground truncate">{item.name}</p>
-              <p className="text-[9px] text-muted-foreground/40">{item.total - item.remaining} de {item.total} parcelas pagas</p>
+              <p className="text-[9px] text-muted-foreground/40">{item.paidInstallments} de {item.total} parcelas pagas</p>
             </div>
             <div className="text-right shrink-0 ml-2">
               <p className="text-[11px] font-bold text-foreground tabular-nums">{fmt(item.amount)}/mês</p>
@@ -1424,7 +1424,7 @@ const AnalyticsCategorias = () => {
         iMap[category].monthlyAmount += amount;
         iMap[category].totalRemaining += amount * remaining;
         iMap[category].monthsRemaining = Math.max(iMap[category].monthsRemaining, remaining);
-        iMap[category].items.push({ name, amount, remaining, total });
+        iMap[category].items.push({ name, amount, remaining, total, paidInstallments });
       });
 
       setTransactions([...filteredBaseTxs, ...extraCcTxs, ...materializedRecurring]);
