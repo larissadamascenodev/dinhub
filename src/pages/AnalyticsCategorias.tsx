@@ -1953,11 +1953,28 @@ const AnalyticsCategorias = () => {
                   habitMap={habitMap}
                 />
 
+                {/* Active Limits */}
+                <ActiveLimitsSection
+                  limits={activeLimits}
+                  categoryData={categoryData}
+                  onRemoved={fetchLimits}
+                />
+
+                {/* Limit Suggestions from AI */}
+                {aiInsights?.limitSuggestions && aiInsights.limitSuggestions.length > 0 && (
+                  <LimitSuggestions
+                    suggestions={aiInsights.limitSuggestions.filter(s => !activeLimits.some(l => l.category === s.category))}
+                    categoryData={categoryData}
+                    onApplied={fetchLimits}
+                  />
+                )}
+
                 {/* General Installments Overview */}
                 {enrichedInstallmentImpacts.length > 0 && (
                   <AllInstallmentsOverview impacts={enrichedInstallmentImpacts} />
                 )}
               </>
+            )
             ) : (
               <GlassCard className="p-8 text-center">
                 <PieChartIcon className="w-8 h-8 text-muted-foreground/20 mx-auto mb-3" />
