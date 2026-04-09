@@ -711,42 +711,56 @@ const InstallmentInsightsSection = ({ impacts }: { impacts: InstallmentImpact[] 
 // ── Category Installment Detail ──────────────────────────
 const CategoryInstallmentDetail = ({ impact }: { impact: InstallmentImpact | undefined }) => {
   if (!impact || impact.items.length === 0) return null;
-  const isRelevant = impact.totalRemaining > 300 || impact.monthsRemaining >= 3 || impact.impactPct > 20;
-  if (!isRelevant) return null;
   const isHighImpact = impact.impactPct > 30 || impact.totalRemaining > 1000;
   return (
-    <GlassCard className={`p-4 md:p-5 ${isHighImpact ? "border-warning/20" : "border-border/20"}`}>
-      <div className="flex items-center gap-2 mb-3">
-        <span className="text-base">💳</span>
-        <p className="text-[10px] md:text-[11px] text-muted-foreground/60 font-semibold uppercase tracking-wider">Parcelamentos Ativos</p>
+    <div
+      className="rounded-2xl border border-border/20 p-3 md:p-4"
+      style={{
+        background: "linear-gradient(135deg, hsl(var(--card) / 0.8) 0%, hsl(var(--card) / 0.4) 50%, hsl(var(--card) / 0.6) 100%)",
+        backdropFilter: "blur(24px)",
+        boxShadow: "0 4px 20px -6px rgba(0,0,0,0.3), inset 0 1px 0 rgba(255,255,255,0.03)",
+      }}
+    >
+      <div className="flex items-center gap-2 mb-2.5">
+        <span className="text-sm">💳</span>
+        <p className="text-[9px] md:text-[10px] text-muted-foreground/60 font-semibold uppercase tracking-wider">Parcelamentos Ativos</p>
       </div>
-      <div className={`p-3 rounded-xl mb-3 ${isHighImpact ? "bg-warning/5 border border-warning/10" : "bg-muted/10 border border-border/10"}`}>
-        <p className="text-xs text-foreground/80 leading-relaxed">
+      <div className={`p-2.5 rounded-xl mb-2.5 ${isHighImpact ? "bg-warning/5 border border-warning/10" : "bg-muted/10 border border-border/10"}`}>
+        <p className="text-[11px] text-foreground/80 leading-relaxed">
           {isHighImpact
             ? `⚠️ ${fmt(impact.totalRemaining)} comprometidos nos próximos ${impact.monthsRemaining} meses.`
             : `${fmt(impact.totalRemaining)} restantes em parcelamentos (${impact.monthsRemaining} meses). Tudo sob controle 👍`}
         </p>
       </div>
-      <div className="grid grid-cols-3 gap-2 mb-3">
-        <div className="text-center"><p className="text-[9px] text-muted-foreground/50 uppercase">Mensal</p><p className="text-sm font-bold text-foreground tabular-nums">{fmt(impact.monthlyAmount)}</p></div>
-        <div className="text-center"><p className="text-[9px] text-muted-foreground/50 uppercase">Total restante</p><p className="text-sm font-bold text-foreground tabular-nums">{fmt(impact.totalRemaining)}</p></div>
-        <div className="text-center"><p className="text-[9px] text-muted-foreground/50 uppercase">% da categoria</p><p className="text-sm font-bold text-foreground tabular-nums">{impact.impactPct}%</p></div>
+      <div className="grid grid-cols-3 gap-1.5 mb-2.5">
+        <div className="text-center p-1.5 rounded-lg bg-muted/5">
+          <p className="text-[8px] text-muted-foreground/50 uppercase">Mensal</p>
+          <p className="text-xs font-bold text-foreground tabular-nums mt-0.5">{fmt(impact.monthlyAmount)}</p>
+        </div>
+        <div className="text-center p-1.5 rounded-lg bg-muted/5">
+          <p className="text-[8px] text-muted-foreground/50 uppercase">Total restante</p>
+          <p className="text-xs font-bold text-foreground tabular-nums mt-0.5">{fmt(impact.totalRemaining)}</p>
+        </div>
+        <div className="text-center p-1.5 rounded-lg bg-muted/5">
+          <p className="text-[8px] text-muted-foreground/50 uppercase">% da categoria</p>
+          <p className="text-xs font-bold text-foreground tabular-nums mt-0.5">{impact.impactPct}%</p>
+        </div>
       </div>
-      <div className="space-y-1.5">
+      <div className="space-y-1">
         {impact.items.map((item, i) => (
           <div key={i} className="flex items-center justify-between py-1.5 px-2 rounded-lg hover:bg-muted/10">
             <div className="flex-1 min-w-0">
-              <p className="text-xs font-semibold text-foreground truncate">{item.name}</p>
+              <p className="text-[11px] font-semibold text-foreground truncate">{item.name}</p>
               <p className="text-[9px] text-muted-foreground/40">{item.total - item.remaining} de {item.total} parcelas pagas</p>
             </div>
             <div className="text-right shrink-0 ml-2">
-              <p className="text-xs font-bold text-foreground tabular-nums">{fmt(item.amount)}/mês</p>
+              <p className="text-[11px] font-bold text-foreground tabular-nums">{fmt(item.amount)}/mês</p>
               <p className="text-[9px] text-muted-foreground/40">{item.remaining} restantes</p>
             </div>
           </div>
         ))}
       </div>
-    </GlassCard>
+    </div>
   );
 };
 
@@ -1061,26 +1075,6 @@ const CategoryDetail = ({
         );
       })()}
 
-      {/* Habit intensity */}
-      {category.txCount >= 6 && (
-        <GlassCard className="p-3">
-          <div className="flex items-center justify-between">
-            <div className="flex items-center gap-2">
-              <Repeat className="w-4 h-4 text-primary" />
-              <div>
-                <p className="text-xs font-semibold text-foreground">Intensidade do hábito</p>
-                <p className="text-[10px] text-muted-foreground/60">Você já fez {category.txCount} transações esse mês</p>
-              </div>
-            </div>
-            <span className={`text-[9px] font-semibold px-2 py-1 rounded-full ${habitConfig[habitIntensity].bg} ${habitConfig[habitIntensity].text}`}>
-              {habitConfig[habitIntensity].label}
-            </span>
-          </div>
-        </GlassCard>
-      )}
-
-
-
 
       {/* Evolution Chart (6 months) */}
       <EvolutionChart
@@ -1089,77 +1083,74 @@ const CategoryDetail = ({
         currentMonth={selectedMonth}
       />
 
-      {/* 3-month trend alert */}
-      {trendAnalysis?.risingTrend && trendAnalysis.totalIncrease != null && (
-        <GlassCard className="p-4 border-warning/20">
-          <div className="flex items-start gap-3">
-            <div className="w-9 h-9 rounded-full bg-warning/10 flex items-center justify-center shrink-0">
+      {/* 3-month trend */}
+      {trendAnalysis && trendAnalysis.momChange != null && (
+        <div
+          className="rounded-2xl border border-border/20 p-3 md:p-4"
+          style={{
+            background: "linear-gradient(135deg, hsl(var(--card) / 0.8) 0%, hsl(var(--card) / 0.4) 50%, hsl(var(--card) / 0.6) 100%)",
+            backdropFilter: "blur(24px)",
+            boxShadow: "0 4px 20px -6px rgba(0,0,0,0.3), inset 0 1px 0 rgba(255,255,255,0.03)",
+          }}
+        >
+          <div className="flex items-center gap-2 mb-2">
+            {trendAnalysis.risingTrend ? (
               <TrendingUp className="w-4 h-4 text-warning" />
-            </div>
-            <div className="flex-1 min-w-0">
-              <p className="text-xs font-semibold text-foreground">Tendência de alta</p>
-              <p className="text-[11px] text-muted-foreground/70 mt-1 leading-relaxed">
-                {category.name} vem subindo há 3 meses seguidos — saiu de {trendAnalysis.months ? fmt(trendAnalysis.months[0].amount) : "—"} para {trendAnalysis.months ? fmt(trendAnalysis.months[2].amount) : "—"} ({trendAnalysis.totalIncrease}% a mais)
-              </p>
-            </div>
-          </div>
-        </GlassCard>
-      )}
-
-      {/* Dynamic Insights — Huby */}
-      {dynamicInsights.length > 0 && (
-        <GlassCard className="p-4 md:p-5">
-          <div className="flex items-center gap-2 mb-3">
-            <Brain className="w-4 h-4 text-primary" />
-            <p className="text-[10px] md:text-[11px] text-muted-foreground/60 font-semibold uppercase tracking-wider">
-              Huby diz
+            ) : trendAnalysis.momChange < 0 ? (
+              <TrendingDown className="w-4 h-4 text-success" />
+            ) : (
+              <TrendingUp className="w-4 h-4 text-muted-foreground" />
+            )}
+            <p className="text-[9px] md:text-[10px] text-muted-foreground/60 font-semibold uppercase tracking-wider">
+              Tendência · 3 meses
             </p>
           </div>
-          <div className="space-y-2">
-            {dynamicInsights.map((ins, i) => {
-              const typeConfig: Record<string, { bg: string; border: string; icon: React.ReactNode }> = {
-                score: { bg: "bg-destructive/5", border: "border-destructive/15", icon: <AlertTriangle className="w-3.5 h-3.5 text-destructive" /> },
-                growth: { bg: "bg-warning/5", border: "border-warning/15", icon: <TrendingUp className="w-3.5 h-3.5 text-warning" /> },
-                habit: { bg: "bg-primary/5", border: "border-primary/15", icon: <Repeat className="w-3.5 h-3.5 text-primary" /> },
-                installment: { bg: "bg-blue-500/5", border: "border-blue-500/15", icon: <Target className="w-3.5 h-3.5 text-blue-400" /> },
-                daily: { bg: "bg-muted/10", border: "border-border/20", icon: <TrendingUp className="w-3.5 h-3.5 text-muted-foreground" /> },
-                merchant: { bg: "bg-warning/5", border: "border-warning/15", icon: <Target className="w-3.5 h-3.5 text-warning" /> },
-                healthy: { bg: "bg-success/5", border: "border-success/15", icon: <ShieldCheck className="w-3.5 h-3.5 text-success" /> },
-              };
-              const cfg = typeConfig[ins.type] || typeConfig.daily;
-              return (
-                <motion.div
-                  key={i}
-                  initial={{ opacity: 0, x: -10 }}
-                  animate={{ opacity: 1, x: 0 }}
-                  transition={{ delay: i * 0.1 }}
-                  className={`flex items-start gap-2.5 p-2.5 rounded-xl ${cfg.bg} border ${cfg.border}`}
-                >
-                  <span className="mt-0.5 shrink-0">{cfg.icon}</span>
-                  <p className="text-xs text-foreground/80 leading-relaxed">{ins.message}</p>
-                </motion.div>
-              );
-            })}
-          </div>
-        </GlassCard>
+          <p className="text-[11px] text-foreground/80 leading-relaxed">
+            {trendAnalysis.risingTrend
+              ? `${category.name} vem subindo há 3 meses — de ${trendAnalysis.months ? fmt(trendAnalysis.months[0].amount) : "—"} para ${trendAnalysis.months ? fmt(trendAnalysis.months[2].amount) : "—"} (${trendAnalysis.totalIncrease ?? 0}% a mais)`
+              : trendAnalysis.momChange > 0
+                ? `Aumentou ${trendAnalysis.momChange}% em relação ao mês passado`
+                : trendAnalysis.momChange < 0
+                  ? `Reduziu ${Math.abs(trendAnalysis.momChange)}% em relação ao mês passado 👏`
+                  : `Estável em relação ao mês passado`
+            }
+          </p>
+          {trendAnalysis.months && (
+            <div className="grid grid-cols-3 gap-1.5 mt-2">
+              {trendAnalysis.months.map((m, i) => (
+                <div key={i} className="text-center p-1.5 rounded-lg bg-muted/5">
+                  <p className="text-[8px] text-muted-foreground/50 uppercase">{MONTH_NAMES[m.month]?.slice(0, 3)}</p>
+                  <p className="text-[11px] font-bold text-foreground tabular-nums mt-0.5">{fmt(m.amount)}</p>
+                </div>
+              ))}
+            </div>
+          )}
+        </div>
       )}
 
       {/* Internal distribution */}
       {merchantDistribution.length > 1 && (
-        <GlassCard className="p-4 md:p-5">
-          <div className="flex items-center gap-2 mb-3">
+        <div
+          className="rounded-2xl border border-border/20 p-3 md:p-4"
+          style={{
+            background: "linear-gradient(135deg, hsl(var(--card) / 0.8) 0%, hsl(var(--card) / 0.4) 50%, hsl(var(--card) / 0.6) 100%)",
+            backdropFilter: "blur(24px)",
+            boxShadow: "0 4px 20px -6px rgba(0,0,0,0.3), inset 0 1px 0 rgba(255,255,255,0.03)",
+          }}
+        >
+          <div className="flex items-center gap-2 mb-2.5">
             <PieChartIcon className="w-4 h-4 text-primary" />
-            <p className="text-[10px] md:text-[11px] text-muted-foreground/60 font-semibold uppercase tracking-wider">
+            <p className="text-[9px] md:text-[10px] text-muted-foreground/60 font-semibold uppercase tracking-wider">
               Distribuição interna
             </p>
           </div>
-          <div className="space-y-2">
+          <div className="space-y-2.5">
             {merchantDistribution.map((m, i) => (
               <div key={m.name} className="flex items-center gap-3">
                 <div className="flex-1 min-w-0">
-                  <div className="flex items-center justify-between mb-0.5">
-                    <p className="text-xs font-semibold text-foreground truncate">{m.name}</p>
-                    <p className="text-xs font-bold text-foreground tabular-nums shrink-0 ml-2">{fmt(m.amount)}</p>
+                  <div className="flex items-center justify-between mb-1">
+                    <p className="text-[11px] font-semibold text-foreground truncate">{m.name}</p>
+                    <p className="text-[11px] font-bold text-foreground tabular-nums shrink-0 ml-2">{fmt(m.amount)}</p>
                   </div>
                   <div className="w-full h-1.5 bg-border/15 rounded-full overflow-hidden">
                     <motion.div
@@ -1171,63 +1162,62 @@ const CategoryDetail = ({
                     />
                   </div>
                 </div>
-                <span className="text-[9px] text-muted-foreground/50 shrink-0">{m.pct}%</span>
+                <span className="text-[9px] text-muted-foreground/50 shrink-0 w-7 text-right">{m.pct}%</span>
               </div>
             ))}
           </div>
-        </GlassCard>
+        </div>
       )}
-
 
       {/* Installment Impact */}
       <CategoryInstallmentDetail impact={installmentImpact} />
 
-      {/* Smart limit + savings suggestion */}
+      {/* Smart limit suggestion */}
       {smartSuggestion && (
-        <GlassCard className="p-4 md:p-5 border-primary/20">
-          <div className="flex items-start gap-3">
-            <div className="w-10 h-10 rounded-full bg-primary/10 flex items-center justify-center shrink-0">
-              <ShieldCheck className="w-5 h-5 text-primary" />
-            </div>
-            <div className="flex-1 min-w-0">
-              <p className="text-xs font-semibold text-foreground">
-                💡 Sugestão de ajuste
-              </p>
-              <p className="text-[11px] text-muted-foreground/70 mt-1 leading-relaxed">
-                Se você reduzir {fmt(smartSuggestion.monthlySaving)} por mês aqui:
-              </p>
-              {smartSuggestion.monthlySaving > 0 && (
-                <div className="grid grid-cols-3 gap-2 mt-2 py-2 px-2 rounded-lg bg-success/5 border border-success/10">
-                  <div className="text-center">
-                    <p className="text-[8px] text-muted-foreground/50 uppercase">3 meses</p>
-                    <p className="text-[11px] font-bold text-success tabular-nums">{fmt(smartSuggestion.monthlySaving * 3)}</p>
-                  </div>
-                  <div className="text-center">
-                    <p className="text-[8px] text-muted-foreground/50 uppercase">6 meses</p>
-                    <p className="text-[11px] font-bold text-success tabular-nums">{fmt(smartSuggestion.monthlySaving * 6)}</p>
-                  </div>
-                  <div className="text-center">
-                    <p className="text-[8px] text-muted-foreground/50 uppercase">1 ano</p>
-                    <p className="text-[11px] font-bold text-success tabular-nums">{fmt(smartSuggestion.annualSaving)}</p>
-                  </div>
-                </div>
-              )}
-              <p className="text-[10px] text-muted-foreground/60 mt-2 leading-relaxed">
-                {smartSuggestion.message}
-              </p>
-              <button
-                onClick={() => {
-                  toast.success(`Limite de ${fmt(smartSuggestion.suggestedLimit)} definido para ${category.name}! 🎯`, {
-                    description: `Economia potencial de ${fmt(smartSuggestion.annualSaving)} por ano.`,
-                  });
-                }}
-                className="mt-3 w-full px-4 py-2.5 rounded-xl bg-primary/15 text-primary text-xs font-semibold border border-primary/20 hover:bg-primary/25 transition-colors"
-              >
-                👉 Aplicar limite de {fmt(smartSuggestion.suggestedLimit)}
-              </button>
-            </div>
+        <div
+          className="rounded-2xl border border-primary/15 p-3 md:p-4"
+          style={{
+            background: "linear-gradient(135deg, hsl(var(--card) / 0.8) 0%, hsl(var(--card) / 0.4) 50%, hsl(var(--card) / 0.6) 100%)",
+            backdropFilter: "blur(24px)",
+            boxShadow: "0 4px 20px -6px rgba(0,0,0,0.3), inset 0 1px 0 rgba(255,255,255,0.03)",
+          }}
+        >
+          <div className="flex items-center gap-2 mb-2">
+            <ShieldCheck className="w-4 h-4 text-primary" />
+            <p className="text-[9px] md:text-[10px] text-muted-foreground/60 font-semibold uppercase tracking-wider">
+              💡 Sugestão de ajuste
+            </p>
           </div>
-        </GlassCard>
+          <p className="text-[11px] text-muted-foreground/70 leading-relaxed">
+            {smartSuggestion.message}
+          </p>
+          {smartSuggestion.monthlySaving > 0 && (
+            <div className="grid grid-cols-3 gap-1.5 mt-2">
+              <div className="text-center p-1.5 rounded-lg bg-success/5 border border-success/10">
+                <p className="text-[8px] text-muted-foreground/50 uppercase">3 meses</p>
+                <p className="text-[11px] font-bold text-success tabular-nums mt-0.5">{fmt(smartSuggestion.monthlySaving * 3)}</p>
+              </div>
+              <div className="text-center p-1.5 rounded-lg bg-success/5 border border-success/10">
+                <p className="text-[8px] text-muted-foreground/50 uppercase">6 meses</p>
+                <p className="text-[11px] font-bold text-success tabular-nums mt-0.5">{fmt(smartSuggestion.monthlySaving * 6)}</p>
+              </div>
+              <div className="text-center p-1.5 rounded-lg bg-success/5 border border-success/10">
+                <p className="text-[8px] text-muted-foreground/50 uppercase">1 ano</p>
+                <p className="text-[11px] font-bold text-success tabular-nums mt-0.5">{fmt(smartSuggestion.annualSaving)}</p>
+              </div>
+            </div>
+          )}
+          <button
+            onClick={() => {
+              toast.success(`Limite de ${fmt(smartSuggestion.suggestedLimit)} definido para ${category.name}! 🎯`, {
+                description: `Economia potencial de ${fmt(smartSuggestion.annualSaving)} por ano.`,
+              });
+            }}
+            className="mt-2.5 w-full px-3 py-2 rounded-xl bg-primary/15 text-primary text-[11px] font-semibold border border-primary/20 hover:bg-primary/25 transition-colors"
+          >
+            Aplicar limite de {fmt(smartSuggestion.suggestedLimit)}
+          </button>
+        </div>
       )}
 
     </motion.div>
