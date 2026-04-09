@@ -22,9 +22,9 @@ import {
 
 const DIFFICULTY_LABEL: Record<string, string> = { facil: "Fácil", medio: "Médio", dificil: "Difícil" };
 const DIFFICULTY_COLOR: Record<string, string> = {
-  facil: "bg-primary/80 text-primary-foreground",
-  medio: "bg-warning/80 text-warning-foreground",
-  dificil: "bg-destructive/80 text-destructive-foreground",
+  facil: "bg-primary/15 text-primary border border-primary/20",
+  medio: "bg-warning/15 text-warning border border-warning/20",
+  dificil: "bg-destructive/15 text-destructive border border-destructive/20",
 };
 
 const COVER_GRADIENTS = [
@@ -229,7 +229,7 @@ const ActiveCard = ({
           <div className="flex-1 bg-primary/[0.06] border border-primary/10 rounded-xl px-2.5 py-2 flex items-center gap-1.5">
             <Flame className="w-3.5 h-3.5 text-primary" />
             <div>
-              <p className="text-[9px] text-muted-foreground">Streak</p>
+              <p className="text-[9px] text-muted-foreground">Sequência</p>
               <p className="text-xs text-foreground font-semibold">{uc.checkin_count ?? 0} dias</p>
             </div>
           </div>
