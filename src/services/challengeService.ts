@@ -23,12 +23,12 @@ for (const [challengeName, cats] of Object.entries(CHALLENGE_CATEGORY_MAP)) {
 
 // Personalized messages per challenge
 const CHALLENGE_HINTS: Record<string, string> = {
-  "Semana Sem Delivery": "Você tem gastado bastante com alimentação e delivery 👀",
-  "30 Dias Sem Compras por Impulso": "Suas compras online estão pesando no orçamento 🛍️",
-  "Café de Casa por 15 Dias": "Cafezinhos fora somam mais do que parece ☕",
-  "Transporte Consciente por 15 Dias": "Transporte por app tem consumido uma boa fatia 🚗",
-  "Semana Sem Streaming Extra": "Assinaturas extras estão acumulando 📺",
-  "30 Dias de Almoço em Casa": "Almoçar fora tem pesado no bolso 🍽️",
+  "Semana Sem Delivery": "Você tem gastado bastante com alimentação e delivery",
+  "30 Dias Sem Compras por Impulso": "Suas compras online estão pesando no orçamento",
+  "Café de Casa por 15 Dias": "Cafezinhos fora somam mais do que parece",
+  "Transporte Consciente por 15 Dias": "Transporte por app tem consumido uma boa fatia",
+  "Semana Sem Streaming Extra": "Assinaturas extras estão acumulando",
+  "30 Dias de Almoço em Casa": "Almoçar fora tem pesado no bolso",
 };
 
 export interface Challenge {
