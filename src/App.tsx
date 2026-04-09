@@ -22,6 +22,7 @@ import GerenciarCategorias from "./pages/GerenciarCategorias.tsx";
 import Metas from "./pages/Metas.tsx";
 import MetaDetalhe from "./pages/MetaDetalhe.tsx";
 import AnalyticsCategorias from "./pages/AnalyticsCategorias.tsx";
+import Desafios from "./pages/Desafios.tsx";
 import NotFound from "./pages/NotFound.tsx";
 
 const queryClient = new QueryClient();
