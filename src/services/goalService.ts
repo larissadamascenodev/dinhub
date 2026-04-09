@@ -153,6 +153,89 @@ export async function deleteGoalDeposit(id: string): Promise<void> {
 }
 
 /**
+ * Withdraw from a goal — creates a negative goal_transaction and optionally a revenue transaction on the destination account.
+ */
+export async function createGoalWithdraw(withdraw: {
+  goal_id: string;
+  amount: number;
+  date: string;
+  account_id?: string;
+  destination?: string;
+}, userId: string): Promise<GoalTransaction> {
+  // 1. Create a negative goal transaction
+  const { data, error } = await supabase
+    .from("goal_transactions")
+    .insert({
+      goal_id: withdraw.goal_id,
+      user_id: userId,
+      amount: -withdraw.amount,
+      date: withdraw.date,
+      source: withdraw.destination ?? null,
+      account_id: withdraw.account_id ?? null,
+    } as any)
+    .select()
+    .single();
+  if (error) throw error;
+
+  // 2. If returning to a user account, create a revenue transaction
+  if (withdraw.account_id) {
+    const { data: goalData } = await supabase
+      .from("goals")
+      .select("name")
+      .eq("id", withdraw.goal_id)
+      .single();
+
+    const goalName = goalData?.name ?? "Meta";
+
+    await supabase.from("transactions").insert({
+      user_id: userId,
+      name: `Saque: ${goalName}`,
+      category: "Meta",
+      date: withdraw.date,
+      amount: withdraw.amount,
+      type: "receita",
+      status: "pago",
+      payment_method: "conta",
+      recurrence_type: "unica",
+      account_id: withdraw.account_id,
+      observation: `Saque da meta "${goalName}"`,
+    });
+  }
+
+  return data as GoalTransaction;
+}
+
+/**
+ * Delete a goal deposit and reverse the account transaction if it came from a registered account.
+ */
+export async function deleteGoalDepositWithRefund(
+  deposit: GoalTransaction,
+  userId: string,
+  goalName: string
+): Promise<void> {
+  // Delete the goal transaction
+  const { error } = await supabase.from("goal_transactions").delete().eq("id", deposit.id);
+  if (error) throw error;
+
+  // If deposit came from a registered account, create a revenue to refund
+  if (deposit.account_id && Number(deposit.amount) > 0) {
+    await supabase.from("transactions").insert({
+      user_id: userId,
+      name: `Estorno: ${goalName}`,
+      category: "Meta",
+      date: new Date().toISOString().split("T")[0],
+      amount: Math.abs(Number(deposit.amount)),
+      type: "receita",
+      status: "pago",
+      payment_method: "conta",
+      recurrence_type: "unica",
+      account_id: deposit.account_id,
+      observation: `Estorno de depósito da meta "${goalName}"`,
+    });
+  }
+}
+
+/**
  * Generate a cover image for a goal using AI based on goal name.
  */
 export async function generateGoalCoverImage(goalName: string): Promise<string | null> {
