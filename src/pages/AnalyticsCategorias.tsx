@@ -1974,7 +1974,6 @@ const AnalyticsCategorias = () => {
                   <AllInstallmentsOverview impacts={enrichedInstallmentImpacts} />
                 )}
               </>
-            )
             ) : (
               <GlassCard className="p-8 text-center">
                 <PieChartIcon className="w-8 h-8 text-muted-foreground/20 mx-auto mb-3" />
