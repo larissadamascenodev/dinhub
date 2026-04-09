@@ -161,13 +161,6 @@ const MetaDetalhe = () => {
   const totalWithdrawals = transactions.filter(t => Number(t.amount) < 0).reduce((s, t) => s + Math.abs(Number(t.amount)), 0);
   const visibleTxs = showAllHistory ? transactions : transactions.slice(0, 5);
 
-  // Circular progress for the hero
-  const circleSize = 120;
-  const strokeW = 8;
-  const radius = (circleSize - strokeW) / 2;
-  const circumference = 2 * Math.PI * radius;
-  const strokeDash = circumference * progress;
-
   return (
     <div className="pt-2 pb-8 space-y-4">
       {/* Header */}
