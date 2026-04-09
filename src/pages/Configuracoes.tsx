@@ -150,7 +150,7 @@ const Configuracoes = () => {
   /* ── Feature cards ── */
   const featureCards = [
     { icon: Target, label: "Metas", sub: "Objetivos", path: "/metas" },
-    { icon: Swords, label: "Desafios", sub: "Competições" },
+    { icon: Swords, label: "Desafios", sub: "Competições", path: "/desafios" },
   ];
 
   /* ── Conta items ── */

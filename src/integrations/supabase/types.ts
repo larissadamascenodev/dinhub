@@ -65,6 +65,83 @@ export type Database = {
         }
         Relationships: []
       }
+      challenge_checkins: {
+        Row: {
+          checkin_date: string
+          created_at: string
+          id: string
+          user_challenge_id: string
+          user_id: string
+        }
+        Insert: {
+          checkin_date?: string
+          created_at?: string
+          id?: string
+          user_challenge_id: string
+          user_id: string
+        }
+        Update: {
+          checkin_date?: string
+          created_at?: string
+          id?: string
+          user_challenge_id?: string
+          user_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "challenge_checkins_user_challenge_id_fkey"
+            columns: ["user_challenge_id"]
+            isOneToOne: false
+            referencedRelation: "user_challenges"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      challenges: {
+        Row: {
+          cover_image: string | null
+          created_at: string
+          description: string | null
+          difficulty: string
+          duration_days: number
+          icon: string | null
+          id: string
+          is_system: boolean
+          name: string
+          potential_savings: number
+          updated_at: string
+          user_id: string | null
+        }
+        Insert: {
+          cover_image?: string | null
+          created_at?: string
+          description?: string | null
+          difficulty?: string
+          duration_days?: number
+          icon?: string | null
+          id?: string
+          is_system?: boolean
+          name: string
+          potential_savings?: number
+          updated_at?: string
+          user_id?: string | null
+        }
+        Update: {
+          cover_image?: string | null
+          created_at?: string
+          description?: string | null
+          difficulty?: string
+          duration_days?: number
+          icon?: string | null
+          id?: string
+          is_system?: boolean
+          name?: string
+          potential_savings?: number
+          updated_at?: string
+          user_id?: string | null
+        }
+        Relationships: []
+      }
       credit_cards: {
         Row: {
           closing_day: number
@@ -596,6 +673,50 @@ export type Database = {
             columns: ["to_account_id"]
             isOneToOne: false
             referencedRelation: "accounts"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      user_challenges: {
+        Row: {
+          challenge_id: string
+          completed_at: string | null
+          created_at: string
+          id: string
+          progress: number
+          started_at: string
+          status: string
+          updated_at: string
+          user_id: string
+        }
+        Insert: {
+          challenge_id: string
+          completed_at?: string | null
+          created_at?: string
+          id?: string
+          progress?: number
+          started_at?: string
+          status?: string
+          updated_at?: string
+          user_id: string
+        }
+        Update: {
+          challenge_id?: string
+          completed_at?: string | null
+          created_at?: string
+          id?: string
+          progress?: number
+          started_at?: string
+          status?: string
+          updated_at?: string
+          user_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "user_challenges_challenge_id_fkey"
+            columns: ["challenge_id"]
+            isOneToOne: false
+            referencedRelation: "challenges"
             referencedColumns: ["id"]
           },
         ]
