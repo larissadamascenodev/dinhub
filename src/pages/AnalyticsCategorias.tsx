@@ -1588,13 +1588,13 @@ const AnalyticsCategorias = () => {
     <div className={`pb-28 ${isMobile ? "max-w-lg mx-auto" : "max-w-5xl mx-auto"}`}>
       {/* Header — hidden when viewing category detail */}
       {!selectedCategory && (
-        <div className="flex items-center gap-3 mb-2">
-          <button onClick={() => navigate(-1)} className="p-1.5 rounded-lg hover:bg-muted/30 transition-colors">
-            <ArrowLeft className="w-5 h-5 text-muted-foreground" />
+        <div className="flex items-center gap-2 mb-2">
+          <button onClick={() => navigate(-1)} className="p-1.5 rounded-lg hover:bg-muted/30 transition-colors shrink-0">
+            <ArrowLeft className="w-4 h-4 md:w-5 md:h-5 text-muted-foreground" />
           </button>
-          <div className="flex-1">
-            <h1 className="text-lg md:text-xl font-bold text-foreground">Categorias</h1>
-            <p className="text-xs text-muted-foreground/50">Veja para onde seu dinheiro está indo 👀</p>
+          <div className="flex-1 min-w-0">
+            <h1 className="text-base md:text-xl font-bold text-foreground leading-tight">Categorias</h1>
+            <p className="text-[10px] md:text-xs text-muted-foreground/50 truncate">Veja para onde seu dinheiro está indo 👀</p>
           </div>
           <MonthSelector
             selectedMonth={selectedMonth}
