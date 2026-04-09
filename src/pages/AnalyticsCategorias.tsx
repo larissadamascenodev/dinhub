@@ -318,34 +318,28 @@ const CategoryChartSection = ({ categoryData, isMobile }: {
   );
 };
 
-// ── Category List with traffic-light bars ────────────────
-const CategoryList = ({ categoryData, onSelect, selectedCat, prevCategoryData, habitMap, scoreMap }: {
+// ── Category List with expandable ────────────────────────
+const CategoryList = ({ categoryData, onSelect, selectedCat, prevCategoryData, habitMap }: {
   categoryData: CategorySummary[];
   onSelect: (name: string) => void;
   selectedCat: string | null;
   prevCategoryData?: { name: string; amount: number }[];
   habitMap?: Record<string, HabitData>;
-  scoreMap?: Record<string, CategoryScoreData>;
 }) => {
-  const getBarColor = (catName: string, pct: number) => {
-    const score = scoreMap?.[catName]?.score;
-    if (score === "exagerado") return "hsl(var(--destructive))";
-    if (score === "atencao") return "hsl(var(--warning))";
-    if (score === "saudavel") return "hsl(var(--success))";
-    if (pct > 40) return "hsl(var(--destructive))";
-    if (pct > 25) return "hsl(var(--warning))";
-    return "hsl(var(--success))";
-  };
+  const [expanded, setExpanded] = useState(false);
+  const INITIAL_COUNT = 5;
+  const visibleData = expanded ? categoryData : categoryData.slice(0, INITIAL_COUNT);
+  const hasMore = categoryData.length > INITIAL_COUNT;
 
   return (
     <GlassCard className="overflow-hidden">
-      <div className="px-4 md:px-5 pt-4 pb-2">
+      <div className="px-4 md:px-5 pt-4 pb-2 flex items-center justify-between">
         <p className="text-[10px] md:text-[11px] text-muted-foreground/60 font-semibold uppercase tracking-wider">
-          Todas as categorias · {categoryData.length}
+          Categorias · {categoryData.length}
         </p>
       </div>
-      <div className="px-4 md:px-5 pb-3 space-y-1 max-h-[420px] overflow-y-auto scrollbar-none">
-        {categoryData.map((cat, i) => {
+      <div className="px-4 md:px-5 pb-3 space-y-1">
+        {visibleData.map((cat, i) => {
           const CatIcon = cat.icon;
           const isSelected = selectedCat === cat.name;
           const dimmed = selectedCat && !isSelected;
@@ -376,16 +370,6 @@ const CategoryList = ({ categoryData, onSelect, selectedCat, prevCategoryData, h
               <div className="flex-1 min-w-0 text-left">
                 <div className="flex items-center gap-1.5 flex-wrap">
                   <p className="text-xs md:text-sm font-semibold text-foreground truncate">{cat.name}</p>
-                  {(() => {
-                    const sc = scoreMap?.[cat.name];
-                    if (!sc) return null;
-                    const cfg = SCORE_CONFIG[sc.score];
-                    return (
-                      <span className={`text-[7px] md:text-[8px] font-semibold px-1.5 py-0.5 rounded-full ${cfg.bg} ${cfg.text} flex items-center gap-0.5`}>
-                        {cfg.emoji} {cfg.label}
-                      </span>
-                    );
-                  })()}
                   {habit?.isHabit && (
                     <span className="text-[7px] md:text-[8px] font-semibold px-1.5 py-0.5 rounded-full bg-primary/10 text-primary flex items-center gap-0.5">
                       <Repeat className="w-2.5 h-2.5" /> Hábito
@@ -400,7 +384,7 @@ const CategoryList = ({ categoryData, onSelect, selectedCat, prevCategoryData, h
                       animate={{ width: `${cat.percentage}%` }}
                       transition={{ delay: 0.1 + i * 0.03, duration: 0.5, ease: "easeOut" }}
                       className="h-full rounded-full"
-                      style={{ backgroundColor: getBarColor(cat.name, cat.percentage) }}
+                      style={{ backgroundColor: `hsl(${getCategoryColor(cat.name, [])})` }}
                     />
                   </div>
                   {isNew ? (
@@ -417,9 +401,6 @@ const CategoryList = ({ categoryData, onSelect, selectedCat, prevCategoryData, h
               </div>
               <div className="text-right shrink-0">
                 <p className="text-xs md:text-sm font-bold text-foreground tabular-nums">{fmt(cat.amount)}</p>
-                {habit && habit.dailyCost > 0 && (
-                  <p className="text-[8px] md:text-[9px] text-muted-foreground/50 tabular-nums">{fmt(habit.dailyCost)}/dia</p>
-                )}
                 <p className="text-[9px] md:text-[10px] text-muted-foreground/40">{cat.percentage}%</p>
               </div>
               <ChevronRight className="w-3.5 h-3.5 text-muted-foreground/30" />
@@ -427,6 +408,14 @@ const CategoryList = ({ categoryData, onSelect, selectedCat, prevCategoryData, h
           );
         })}
       </div>
+      {hasMore && (
+        <button
+          onClick={() => setExpanded(!expanded)}
+          className="w-full py-2.5 text-[11px] font-semibold text-primary hover:text-primary/80 transition-colors border-t border-border/10"
+        >
+          {expanded ? "Ver menos" : `Ver todas (${categoryData.length})`}
+        </button>
+      )}
     </GlassCard>
   );
 };
@@ -545,7 +534,7 @@ const AIInsightsSection = ({ insights, loading }: { insights: AIInsights | null;
       <div className="flex items-center gap-2 mb-3">
         <Brain className="w-4 h-4 text-primary" />
         <p className="text-[10px] md:text-[11px] text-muted-foreground/60 font-semibold uppercase tracking-wider">
-          Dicas
+          Dicas · Huby
         </p>
       </div>
       <div className="relative overflow-hidden" style={{ minHeight: 48 }}>
@@ -1691,8 +1680,11 @@ const AnalyticsCategorias = () => {
                 />
 
 
-                {/* AI Insights */}
+                {/* Dicas · Huby */}
                 <AIInsightsSection insights={aiInsights} loading={aiLoading} />
+
+                {/* Alertas */}
+                {aiInsights && <AlertsSection alerts={aiInsights.alerts} />}
 
                 {/* All Categories list */}
                 <CategoryList
@@ -1701,11 +1693,7 @@ const AnalyticsCategorias = () => {
                   selectedCat={null}
                   prevCategoryData={prevCategoryData}
                   habitMap={habitMap}
-                  scoreMap={scoreMap}
                 />
-
-                {/* Alerts */}
-                {aiInsights && <AlertsSection alerts={aiInsights.alerts} />}
 
                 {/* Installment Insights */}
                 <InstallmentInsightsSection impacts={enrichedInstallmentImpacts} />
