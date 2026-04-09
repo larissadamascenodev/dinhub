@@ -626,9 +626,11 @@ const AlertsSection = ({ alerts }: { alerts: AIInsights["alerts"] }) => {
 
 
 
-const LimitSuggestionItem = ({ suggestion, currentAmount }: { suggestion: AIInsights["limitSuggestions"][0]; currentAmount: number }) => {
+const LimitSuggestionItem = ({ suggestion, currentAmount, onApplied }: { suggestion: AIInsights["limitSuggestions"][0]; currentAmount: number; onApplied?: () => void }) => {
+  const { user } = useAuth();
   const [customLimit, setCustomLimit] = useState(suggestion.suggestedLimit);
   const [editing, setEditing] = useState(false);
+  const [saving, setSaving] = useState(false);
 
   const monthlySaving = Math.max(currentAmount - customLimit, 0);
   const saving3m = monthlySaving * 3;
@@ -639,9 +641,32 @@ const LimitSuggestionItem = ({ suggestion, currentAmount }: { suggestion: AIInsi
     if (!isNaN(val) && val >= 0) setCustomLimit(val);
   };
 
+  const handleApply = async () => {
+    if (!user) return;
+    setSaving(true);
+    try {
+      const { error } = await supabase
+        .from("category_limits")
+        .upsert(
+          { user_id: user.id, category: suggestion.category, limit_amount: customLimit },
+          { onConflict: "user_id,category" }
+        );
+      if (error) throw error;
+      toast.success(`Limite de ${fmt(customLimit)} definido para ${suggestion.category}`, {
+        description: monthlySaving > 0 ? `Economia potencial de ${fmt(saving1y)} por ano.` : undefined,
+      });
+      onApplied?.();
+      window.dispatchEvent(new Event("finance-data-changed"));
+    } catch {
+      toast.error("Erro ao salvar limite");
+    } finally {
+      setSaving(false);
+    }
+  };
+
   return (
     <motion.div initial={{ opacity: 0, y: 8 }} animate={{ opacity: 1, y: 0 }}
-      className="p-3 rounded-xl bg-primary/5 border border-primary/10">
+      className="min-w-[260px] max-w-[290px] snap-start p-3 rounded-xl bg-primary/5 border border-primary/10 flex flex-col">
       <p className="text-xs font-semibold text-foreground">{suggestion.category}</p>
       <p className="text-[11px] text-muted-foreground/70 mt-1">{suggestion.message}</p>
 
@@ -697,15 +722,16 @@ const LimitSuggestionItem = ({ suggestion, currentAmount }: { suggestion: AIInsi
       )}
 
       <button
-        onClick={() => toast.success(`Limite de ${fmt(customLimit)} definido para ${suggestion.category}! 🎯`, { description: monthlySaving > 0 ? `Economia potencial de ${fmt(saving1y)} por ano.` : undefined })}
-        className="mt-2.5 w-full px-3 py-1.5 rounded-lg bg-primary/10 text-primary text-[11px] font-semibold border border-primary/15 hover:bg-primary/20 transition-colors">
-        Aplicar limite de {fmt(customLimit)}
+        onClick={handleApply}
+        disabled={saving}
+        className="mt-2.5 w-full px-3 py-1.5 rounded-lg bg-primary/10 text-primary text-[11px] font-semibold border border-primary/15 hover:bg-primary/20 transition-colors disabled:opacity-50">
+        {saving ? "Salvando..." : `Aplicar limite de ${fmt(customLimit)}`}
       </button>
     </motion.div>
   );
 };
 
-const LimitSuggestions = ({ suggestions, categoryData }: { suggestions: AIInsights["limitSuggestions"]; categoryData: CategorySummary[] }) => {
+const LimitSuggestions = ({ suggestions, categoryData, onApplied }: { suggestions: AIInsights["limitSuggestions"]; categoryData: CategorySummary[]; onApplied?: () => void }) => {
   if (!suggestions || suggestions.length === 0) return null;
   return (
     <GlassCard className="p-4 md:p-5">
@@ -713,10 +739,10 @@ const LimitSuggestions = ({ suggestions, categoryData }: { suggestions: AIInsigh
         <Target className="w-4 h-4 text-primary" />
         <p className="text-[10px] md:text-[11px] text-muted-foreground/60 font-semibold uppercase tracking-wider">Sugestões de Limite</p>
       </div>
-      <div className="space-y-2.5">
+      <div className="flex gap-3 overflow-x-auto pb-2 scrollbar-none snap-x snap-mandatory" style={{ WebkitOverflowScrolling: "touch" }}>
         {suggestions.map((s, i) => {
           const cat = categoryData.find((c) => c.name === s.category);
-          return <LimitSuggestionItem key={i} suggestion={s} currentAmount={cat?.amount ?? 0} />;
+          return <LimitSuggestionItem key={i} suggestion={s} currentAmount={cat?.amount ?? 0} onApplied={onApplied} />;
         })}
       </div>
     </GlassCard>
