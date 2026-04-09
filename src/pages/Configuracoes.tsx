@@ -24,6 +24,7 @@ const Configuracoes = () => {
   const { user } = useAuth();
   const { profile, updateDisplayName, uploadAvatar } = useProfile();
   const navigate = useNavigate();
+  const { streak } = useLoginStreak();
   const fileInputRef = useRef<HTMLInputElement>(null);
 
   const [editModalOpen, setEditModalOpen] = useState(false);
