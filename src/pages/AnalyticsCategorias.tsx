@@ -658,6 +658,69 @@ const LimitSuggestions = ({ suggestions, categoryData }: { suggestions: AIInsigh
   );
 };
 
+// ── General Installments Overview (Hub) ──────────────────
+const AllInstallmentsOverview = ({ impacts }: { impacts: InstallmentImpact[] }) => {
+  const allItems = impacts.flatMap((imp) =>
+    imp.items.map((item) => ({ ...item, category: imp.category }))
+  );
+  if (allItems.length === 0) return null;
+
+  const totalMonthly = impacts.reduce((s, imp) => s + imp.monthlyAmount, 0);
+  const totalRemaining = impacts.reduce((s, imp) => s + imp.totalRemaining, 0);
+  const maxMonths = Math.max(...impacts.map((imp) => imp.monthsRemaining), 0);
+
+  return (
+    <div
+      className="rounded-2xl border border-border/20 p-3 md:p-4"
+      style={{
+        background: "linear-gradient(135deg, hsl(var(--card) / 0.8) 0%, hsl(var(--card) / 0.4) 50%, hsl(var(--card) / 0.6) 100%)",
+        backdropFilter: "blur(24px)",
+        boxShadow: "0 4px 20px -6px rgba(0,0,0,0.3), inset 0 1px 0 rgba(255,255,255,0.03)",
+      }}
+    >
+      <div className="flex items-center gap-2 mb-2.5">
+        <Repeat className="w-4 h-4 text-primary/70" />
+        <p className="text-[9px] md:text-[10px] text-muted-foreground/60 font-semibold uppercase tracking-wider">Parcelamentos Ativos</p>
+        <span className="ml-auto text-[9px] text-muted-foreground/40 bg-muted/10 px-1.5 py-0.5 rounded-full">{allItems.length} {allItems.length === 1 ? "item" : "itens"}</span>
+      </div>
+
+      {/* Summary stats */}
+      <div className="grid grid-cols-3 gap-1.5 mb-3">
+        <div className="text-center p-2 rounded-xl bg-muted/5 border border-border/10">
+          <p className="text-[8px] text-muted-foreground/50 uppercase">Mensal</p>
+          <p className="text-xs font-bold text-foreground tabular-nums mt-0.5">{fmt(totalMonthly)}</p>
+        </div>
+        <div className="text-center p-2 rounded-xl bg-muted/5 border border-border/10">
+          <p className="text-[8px] text-muted-foreground/50 uppercase">Total restante</p>
+          <p className="text-xs font-bold text-foreground tabular-nums mt-0.5">{fmt(totalRemaining)}</p>
+        </div>
+        <div className="text-center p-2 rounded-xl bg-muted/5 border border-border/10">
+          <p className="text-[8px] text-muted-foreground/50 uppercase">Duração</p>
+          <p className="text-xs font-bold text-foreground tabular-nums mt-0.5">{maxMonths} {maxMonths === 1 ? "mês" : "meses"}</p>
+        </div>
+      </div>
+
+      {/* Items list */}
+      <div className="space-y-1">
+        {allItems
+          .sort((a, b) => b.remaining - a.remaining)
+          .map((item, i) => (
+          <div key={i} className="flex items-center justify-between py-1.5 px-2 rounded-lg hover:bg-muted/10 transition-colors">
+            <div className="flex-1 min-w-0">
+              <p className="text-[11px] font-semibold text-foreground truncate">{item.name}</p>
+              <p className="text-[9px] text-muted-foreground/40">{item.category} · {item.paidInstallments} de {item.total} pagas</p>
+            </div>
+            <div className="text-right shrink-0 ml-2">
+              <p className="text-[11px] font-bold text-foreground tabular-nums">{fmt(item.amount)}/mês</p>
+              <p className="text-[9px] text-muted-foreground/40">{item.remaining} restantes</p>
+            </div>
+          </div>
+        ))}
+      </div>
+    </div>
+  );
+};
+
 // ── Installment Insights Section ─────────────────────────
 const InstallmentInsightsSection = ({ impacts }: { impacts: InstallmentImpact[] }) => {
   const relevant = impacts
