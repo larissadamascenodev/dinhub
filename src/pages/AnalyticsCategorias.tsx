@@ -1413,8 +1413,8 @@ const AnalyticsCategorias = () => {
       });
 
       const iMap: InstallmentImpactMap = {};
-      groupMap.forEach(({ name, category, amount, total, maxCurrent }) => {
-        const remaining = total - maxCurrent;
+      groupMap.forEach(({ name, category, amount, total, currentInstallment }) => {
+        const remaining = total - currentInstallment;
         if (remaining <= 0) return;
         if (!iMap[category]) {
           iMap[category] = { category, monthlyAmount: 0, totalRemaining: 0, monthsRemaining: 0, impactPct: 0, items: [] };
