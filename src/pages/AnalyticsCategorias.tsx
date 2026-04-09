@@ -404,15 +404,14 @@ const CategoryList = ({ categoryData, onSelect, selectedCat, prevCategoryData, h
         })}
       </div>
       {hasMore && (
-        <button
-          onClick={() => setExpanded(!expanded)}
-          className="w-full py-2.5 text-[11px] font-semibold text-primary hover:text-primary/80 transition-colors rounded-xl border border-border/10"
-          style={{
-            background: "linear-gradient(135deg, hsl(var(--card) / 0.6) 0%, hsl(var(--card) / 0.3) 100%)",
-          }}
-        >
-          {expanded ? "Ver menos" : `Ver todas (${categoryData.length})`}
-        </button>
+        <div className="px-4">
+          <button
+            onClick={() => setExpanded(!expanded)}
+            className="w-full flex items-center justify-center gap-1 pt-2 border-t border-border/10 text-[10px] text-muted-foreground/50 hover:text-muted-foreground transition-colors font-medium"
+          >
+            {expanded ? <ChevronUp className="w-3 h-3" /> : <ChevronDown className="w-3 h-3" />}
+          </button>
+        </div>
       )}
     </div>
   );
