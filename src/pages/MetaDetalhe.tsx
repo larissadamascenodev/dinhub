@@ -1,7 +1,7 @@
 import { useState, useEffect, useCallback } from "react";
 import { useParams, useNavigate } from "react-router-dom";
-import { motion, AnimatePresence } from "framer-motion";
-import { ArrowLeft, Target, TrendingUp, Sparkles, Calendar, Trash2, Edit2, Clock } from "lucide-react";
+import { motion } from "framer-motion";
+import { ArrowLeft, TrendingUp, Sparkles, Trash2, Clock } from "lucide-react";
 import { toast } from "sonner";
 import { useAuth } from "@/contexts/AuthContext";
 import {
@@ -105,6 +105,7 @@ const MetaDetalhe = () => {
   const remaining = goal.target_amount - goal.current_amount;
   const isComplete = progress >= 1;
   const insights = computeGoalInsights(goal, transactions);
+  const topInsight = insights.length > 0 ? insights[0] : null;
 
   // Prediction
   let predictionText = "";
@@ -201,8 +202,8 @@ const MetaDetalhe = () => {
           className="rounded-2xl p-4 bg-card/80 backdrop-blur-xl border border-border/15"
         >
           <div className="flex items-center gap-2.5">
-            <div className="w-9 h-9 rounded-xl bg-blue-500/10 border border-blue-500/20 flex items-center justify-center">
-              <Clock className="w-4 h-4 text-blue-400" />
+            <div className="w-9 h-9 rounded-xl bg-accent/10 border border-accent/20 flex items-center justify-center">
+              <Clock className="w-4 h-4 text-accent-foreground" />
             </div>
             <div>
               <p className="text-xs font-bold text-foreground">Previsão</p>
@@ -212,29 +213,19 @@ const MetaDetalhe = () => {
         </motion.div>
       )}
 
-      {/* Insights */}
-      {insights.length > 0 && (
+      {/* Single insight from BY */}
+      {topInsight && (
         <motion.div
           initial={{ opacity: 0, y: 10 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ delay: 0.15 }}
-          className="rounded-2xl p-4 bg-card/80 backdrop-blur-xl border border-border/15 space-y-2.5"
+          className="rounded-2xl p-4 bg-card/80 backdrop-blur-xl border border-border/15"
         >
-          <div className="flex items-center gap-2">
+          <div className="flex items-center gap-2 mb-2">
             <Sparkles className="w-4 h-4 text-primary" />
-            <p className="text-xs font-bold text-foreground">Insights da Nexia</p>
+            <p className="text-xs font-bold text-foreground">Insight da BY</p>
           </div>
-          {insights.map((insight, i) => (
-            <motion.div
-              key={i}
-              initial={{ opacity: 0, x: -8 }}
-              animate={{ opacity: 1, x: 0 }}
-              transition={{ delay: 0.2 + i * 0.05 }}
-              className="rounded-xl p-3 bg-muted/10 border border-border/10"
-            >
-              <p className="text-xs text-muted-foreground leading-relaxed">{insight}</p>
-            </motion.div>
-          ))}
+          <p className="text-xs text-muted-foreground leading-relaxed">{topInsight}</p>
         </motion.div>
       )}
 
