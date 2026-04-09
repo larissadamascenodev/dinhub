@@ -65,6 +65,7 @@ const App = () => (
               <Route path="/metas" element={<Metas />} />
               <Route path="/metas/:goalId" element={<MetaDetalhe />} />
               <Route path="/analytics/categorias" element={<AnalyticsCategorias />} />
+              <Route path="/desafios" element={<Desafios />} />
             </Route>
             <Route path="*" element={<NotFound />} />
           </Routes>
