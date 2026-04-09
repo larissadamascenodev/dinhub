@@ -332,13 +332,13 @@ const CategoryList = ({ categoryData, onSelect, selectedCat, prevCategoryData, h
   const hasMore = categoryData.length > INITIAL_COUNT;
 
   return (
-    <GlassCard className="overflow-hidden">
-      <div className="px-4 md:px-5 pt-4 pb-2 flex items-center justify-between">
+    <div className="space-y-2">
+      <div className="flex items-center justify-between px-1">
         <p className="text-[10px] md:text-[11px] text-muted-foreground/60 font-semibold uppercase tracking-wider">
           Categorias · {categoryData.length}
         </p>
       </div>
-      <div className="px-4 md:px-5 pb-3 space-y-1">
+      <div className="space-y-2">
         {visibleData.map((cat, i) => {
           const CatIcon = cat.icon;
           const isSelected = selectedCat === cat.name;
@@ -357,9 +357,14 @@ const CategoryList = ({ categoryData, onSelect, selectedCat, prevCategoryData, h
               animate={{ opacity: dimmed ? 0.35 : 1, y: 0 }}
               transition={{ delay: i * 0.03 }}
               onClick={() => onSelect(cat.name)}
-              className={`w-full flex items-center gap-3 py-2.5 md:py-3 rounded-xl transition-colors px-2 -mx-2 ${
-                isSelected ? "bg-muted/30" : "hover:bg-muted/20"
+              className={`w-full flex items-center gap-3 py-3 md:py-3.5 rounded-2xl transition-colors px-4 border ${
+                isSelected ? "border-primary/20" : "border-border/15 hover:border-border/30"
               }`}
+              style={{
+                background: "linear-gradient(135deg, hsl(var(--card) / 0.8) 0%, hsl(var(--card) / 0.4) 50%, hsl(var(--card) / 0.6) 100%)",
+                backdropFilter: "blur(24px)",
+                boxShadow: "0 4px 20px -6px rgba(0,0,0,0.3), inset 0 1px 0 rgba(255,255,255,0.03)",
+              }}
             >
               <div
                 className="w-9 h-9 md:w-10 md:h-10 rounded-full flex items-center justify-center shrink-0"
@@ -377,7 +382,7 @@ const CategoryList = ({ categoryData, onSelect, selectedCat, prevCategoryData, h
                   )}
                   <span className="text-[9px] md:text-[10px] text-muted-foreground/40">{cat.txCount} lanç.</span>
                 </div>
-                <div className="flex items-center gap-2 mt-0.5">
+                <div className="flex items-center gap-2 mt-1">
                   <div className="flex-1 h-1.5 bg-border/15 rounded-full overflow-hidden">
                     <motion.div
                       initial={{ width: 0 }}
@@ -401,12 +406,15 @@ const CategoryList = ({ categoryData, onSelect, selectedCat, prevCategoryData, h
       {hasMore && (
         <button
           onClick={() => setExpanded(!expanded)}
-          className="w-full py-2.5 text-[11px] font-semibold text-primary hover:text-primary/80 transition-colors border-t border-border/10"
+          className="w-full py-2.5 text-[11px] font-semibold text-primary hover:text-primary/80 transition-colors rounded-xl border border-border/10"
+          style={{
+            background: "linear-gradient(135deg, hsl(var(--card) / 0.6) 0%, hsl(var(--card) / 0.3) 100%)",
+          }}
         >
           {expanded ? "Ver menos" : `Ver todas (${categoryData.length})`}
         </button>
       )}
-    </GlassCard>
+    </div>
   );
 };
 
