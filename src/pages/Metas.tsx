@@ -372,6 +372,16 @@ const Metas = () => {
       {editGoal && (
         <GoalEditModal open={!!editGoal} onClose={() => setEditGoal(null)} goal={editGoal} onUpdated={loadGoals} />
       )}
+
+      <GoalConfirmModal
+        open={!!deleteGoalId}
+        onClose={() => setDeleteGoalId(null)}
+        onConfirm={() => deleteGoalId && handleDeleteGoal(deleteGoalId)}
+        title="Excluir meta"
+        description="Tem certeza que deseja excluir esta meta? Esta ação não pode ser desfeita."
+        confirmLabel="Excluir"
+        loading={deletingGoal}
+      />
     </div>
   );
 };
