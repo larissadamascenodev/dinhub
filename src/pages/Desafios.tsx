@@ -72,18 +72,19 @@ const SuggestionCard = ({
         "shadow-lg", glow
       )}
     >
-      {/* Cover with pattern overlay */}
+      {/* Cover with image */}
       <div className={cn("relative h-36 bg-gradient-to-br flex flex-col justify-end p-4", gradient)}>
-        {/* Decorative circles */}
-        <div className="absolute top-0 right-0 w-24 h-24 rounded-full bg-white/[0.04] -translate-y-8 translate-x-8" />
-        <div className="absolute bottom-0 left-0 w-16 h-16 rounded-full bg-white/[0.03] translate-y-6 -translate-x-4" />
+        {challenge.cover_image && (
+          <img src={challenge.cover_image} alt={challenge.name} className="absolute inset-0 w-full h-full object-cover" loading="lazy" />
+        )}
+        <div className="absolute inset-0 bg-gradient-to-t from-black/70 via-black/30 to-transparent" />
         
-        <div className="absolute top-2.5 left-3 flex items-center gap-1.5">
+        <div className="absolute top-2.5 left-3 flex items-center gap-1.5 z-10">
           <span className={cn("text-[10px] font-semibold px-2 py-0.5 rounded-full backdrop-blur-sm", DIFFICULTY_COLOR[challenge.difficulty])}>
             {DIFFICULTY_LABEL[challenge.difficulty] ?? challenge.difficulty}
           </span>
         </div>
-        <span className="absolute top-2.5 right-3 text-[10px] font-medium px-2 py-0.5 rounded-full bg-black/30 backdrop-blur-sm text-white/80 border border-white/10">
+        <span className="absolute top-2.5 right-3 text-[10px] font-medium px-2 py-0.5 rounded-full bg-black/30 backdrop-blur-sm text-white/80 border border-white/10 z-10">
           ⏱ {challenge.duration_days} dias
         </span>
         
@@ -162,15 +163,17 @@ const ActiveCard = ({
     >
       {/* Cover */}
       <div className={cn("relative h-28 bg-gradient-to-br flex items-center justify-center", gradient)}>
-        {/* Decorative circles */}
-        <div className="absolute top-0 right-0 w-20 h-20 rounded-full bg-white/[0.04] -translate-y-6 translate-x-6" />
+        {c.cover_image && (
+          <img src={c.cover_image} alt={c.name} className="absolute inset-0 w-full h-full object-cover" loading="lazy" />
+        )}
+        <div className="absolute inset-0 bg-gradient-to-t from-black/60 via-black/20 to-transparent" />
         
-        <span className={cn("absolute top-2.5 left-3 text-[10px] font-semibold px-2 py-0.5 rounded-full backdrop-blur-sm", DIFFICULTY_COLOR[c.difficulty])}>
+        <span className={cn("absolute top-2.5 left-3 text-[10px] font-semibold px-2 py-0.5 rounded-full backdrop-blur-sm z-10", DIFFICULTY_COLOR[c.difficulty])}>
           {DIFFICULTY_LABEL[c.difficulty] ?? c.difficulty}
         </span>
 
         {/* Menu */}
-        <div className="absolute top-2.5 right-3">
+        <div className="absolute top-2.5 right-3 z-10">
           <button onClick={() => setMenuOpen(!menuOpen)} className="p-1.5 rounded-full bg-black/20 backdrop-blur-sm hover:bg-black/40 text-white/80 transition-colors">
             <MoreVertical className="w-3.5 h-3.5" />
           </button>
@@ -193,7 +196,7 @@ const ActiveCard = ({
           </AnimatePresence>
         </div>
 
-        <span className="text-5xl drop-shadow-lg opacity-70">{c.icon}</span>
+        <span className="text-5xl drop-shadow-lg opacity-70 relative z-10">{c.icon}</span>
       </div>
 
       {/* Body */}
