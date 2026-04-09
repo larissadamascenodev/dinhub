@@ -181,6 +181,7 @@ export type Database = {
       }
       goal_transactions: {
         Row: {
+          account_id: string | null
           amount: number
           created_at: string
           date: string
@@ -190,6 +191,7 @@ export type Database = {
           user_id: string
         }
         Insert: {
+          account_id?: string | null
           amount: number
           created_at?: string
           date?: string
@@ -199,6 +201,7 @@ export type Database = {
           user_id: string
         }
         Update: {
+          account_id?: string | null
           amount?: number
           created_at?: string
           date?: string
@@ -208,6 +211,13 @@ export type Database = {
           user_id?: string
         }
         Relationships: [
+          {
+            foreignKeyName: "goal_transactions_account_id_fkey"
+            columns: ["account_id"]
+            isOneToOne: false
+            referencedRelation: "accounts"
+            referencedColumns: ["id"]
+          },
           {
             foreignKeyName: "goal_transactions_goal_id_fkey"
             columns: ["goal_id"]

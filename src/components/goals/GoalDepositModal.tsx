@@ -1,16 +1,28 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { motion, AnimatePresence } from "framer-motion";
-import { X, Wallet, Calendar, FileText } from "lucide-react";
+import { X, Wallet, Calendar, FileText, ChevronDown } from "lucide-react";
 import { Target } from "lucide-react";
+import { supabase } from "@/integrations/supabase/client";
+
+interface Account {
+  id: string;
+  name: string;
+  current_balance: number;
+  color: string | null;
+  type: string;
+}
 
 interface GoalDepositModalProps {
   open: boolean;
   onClose: () => void;
-  onSubmit: (data: { amount: number; date: string; source?: string }) => void;
+  onSubmit: (data: { amount: number; date: string; source?: string; account_id?: string }) => void;
   goalName: string;
 }
 
 const QUICK_AMOUNTS = [50, 100, 200, 500, 1000];
+
+const fmt = (v: number) =>
+  v.toLocaleString("pt-BR", { style: "currency", currency: "BRL" });
 
 const GoalDepositModal = ({ open, onClose, onSubmit, goalName }: GoalDepositModalProps) => {
   const [amount, setAmount] = useState("");
@@ -18,6 +30,28 @@ const GoalDepositModal = ({ open, onClose, onSubmit, goalName }: GoalDepositModa
   const [customDate, setCustomDate] = useState("");
   const [source, setSource] = useState("");
   const [submitting, setSubmitting] = useState(false);
+  const [accounts, setAccounts] = useState<Account[]>([]);
+  const [selectedAccountId, setSelectedAccountId] = useState<string>("");
+  const [showAccountPicker, setShowAccountPicker] = useState(false);
+
+  useEffect(() => {
+    if (!open) return;
+    (async () => {
+      const { data } = await supabase
+        .from("accounts")
+        .select("id, name, current_balance, color, type")
+        .eq("is_active", true)
+        .not("type", "eq", "investment")
+        .order("is_default", { ascending: false });
+      const accs = (data ?? []) as Account[];
+      setAccounts(accs);
+      if (accs.length > 0 && !selectedAccountId) {
+        setSelectedAccountId(accs[0].id);
+      }
+    })();
+  }, [open]);
+
+  const selectedAccount = accounts.find((a) => a.id === selectedAccountId);
 
   const getDate = () => {
     if (dateMode === "hoje") return new Date().toISOString().split("T")[0];
@@ -32,12 +66,14 @@ const GoalDepositModal = ({ open, onClose, onSubmit, goalName }: GoalDepositModa
   const handleSubmit = async () => {
     const val = parseFloat(amount.replace(",", "."));
     if (!val || val <= 0) return;
+    if (!selectedAccountId) return;
     setSubmitting(true);
     try {
       await onSubmit({
         amount: val,
         date: getDate(),
         source: source.trim() || undefined,
+        account_id: selectedAccountId,
       });
       setAmount("");
       setSource("");
@@ -49,12 +85,12 @@ const GoalDepositModal = ({ open, onClose, onSubmit, goalName }: GoalDepositModa
   };
 
   const handleAmountChange = (raw: string) => {
-    // Allow only digits and comma/dot
     const cleaned = raw.replace(/[^\d,\.]/g, "");
     setAmount(cleaned);
   };
 
-  const displayAmount = amount || "0,00";
+  const parsedAmount = parseFloat(amount.replace(",", ".")) || 0;
+  const insufficientFunds = selectedAccount ? parsedAmount > selectedAccount.current_balance : false;
 
   return (
     <AnimatePresence>
@@ -93,6 +129,67 @@ const GoalDepositModal = ({ open, onClose, onSubmit, goalName }: GoalDepositModa
               </button>
             </div>
 
+            {/* Account selector */}
+            <div>
+              <p className="text-[10px] text-muted-foreground mb-2">Saindo da conta</p>
+              <div className="relative">
+                <button
+                  onClick={() => setShowAccountPicker(!showAccountPicker)}
+                  className="w-full flex items-center justify-between rounded-xl px-3 py-2.5 bg-muted/10 border border-border/15 hover:bg-muted/15 transition-colors"
+                >
+                  <div className="flex items-center gap-2.5">
+                    <div
+                      className="w-7 h-7 rounded-lg flex items-center justify-center"
+                      style={{ backgroundColor: (selectedAccount?.color || "#8b5cf6") + "20" }}
+                    >
+                      <Wallet className="w-3.5 h-3.5" style={{ color: selectedAccount?.color || "#8b5cf6" }} />
+                    </div>
+                    <div className="text-left">
+                      <p className="text-xs font-semibold text-foreground">{selectedAccount?.name || "Selecione"}</p>
+                      {selectedAccount && (
+                        <p className="text-[10px] text-muted-foreground tabular-nums">
+                          Saldo: {fmt(selectedAccount.current_balance)}
+                        </p>
+                      )}
+                    </div>
+                  </div>
+                  <ChevronDown className={`w-4 h-4 text-muted-foreground transition-transform ${showAccountPicker ? "rotate-180" : ""}`} />
+                </button>
+
+                <AnimatePresence>
+                  {showAccountPicker && (
+                    <motion.div
+                      initial={{ opacity: 0, y: -4 }}
+                      animate={{ opacity: 1, y: 0 }}
+                      exit={{ opacity: 0, y: -4 }}
+                      className="absolute z-10 w-full mt-1 rounded-xl bg-card border border-border/20 shadow-xl overflow-hidden"
+                    >
+                      {accounts.map((acc) => (
+                        <button
+                          key={acc.id}
+                          onClick={() => { setSelectedAccountId(acc.id); setShowAccountPicker(false); }}
+                          className={`w-full flex items-center gap-2.5 px-3 py-2.5 hover:bg-muted/10 transition-colors ${
+                            acc.id === selectedAccountId ? "bg-primary/5" : ""
+                          }`}
+                        >
+                          <div
+                            className="w-7 h-7 rounded-lg flex items-center justify-center"
+                            style={{ backgroundColor: (acc.color || "#8b5cf6") + "20" }}
+                          >
+                            <Wallet className="w-3.5 h-3.5" style={{ color: acc.color || "#8b5cf6" }} />
+                          </div>
+                          <div className="text-left">
+                            <p className="text-xs font-semibold text-foreground">{acc.name}</p>
+                            <p className="text-[10px] text-muted-foreground tabular-nums">{fmt(acc.current_balance)}</p>
+                          </div>
+                        </button>
+                      ))}
+                    </motion.div>
+                  )}
+                </AnimatePresence>
+              </div>
+            </div>
+
             {/* Amount input */}
             <div>
               <p className="text-[10px] text-muted-foreground mb-2">Valor do aporte</p>
@@ -108,6 +205,10 @@ const GoalDepositModal = ({ open, onClose, onSubmit, goalName }: GoalDepositModa
                   autoFocus
                 />
               </div>
+
+              {insufficientFunds && (
+                <p className="text-[10px] text-destructive mt-1 font-medium">Saldo insuficiente nesta conta</p>
+              )}
 
               {/* Quick amount buttons */}
               <div className="flex items-center gap-2 mt-3 flex-wrap">
@@ -178,7 +279,7 @@ const GoalDepositModal = ({ open, onClose, onSubmit, goalName }: GoalDepositModa
             {/* Submit */}
             <motion.button
               whileTap={{ scale: 0.97 }}
-              disabled={!amount || submitting}
+              disabled={!amount || !selectedAccountId || submitting || insufficientFunds}
               onClick={handleSubmit}
               className="w-full py-3.5 rounded-xl text-sm font-bold bg-primary/15 border border-primary/20 text-primary hover:bg-primary/20 transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
             >

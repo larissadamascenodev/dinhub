@@ -49,11 +49,11 @@ const MetaDetalhe = () => {
   }, [load]);
 
   const handleDeposit = useCallback(
-    async (data: { amount: number; date: string; source?: string }) => {
+    async (data: { amount: number; date: string; source?: string; account_id?: string }) => {
       if (!user || !goalId) return;
       try {
         await createGoalDeposit(
-          { goal_id: goalId, amount: data.amount, date: data.date, source: data.source },
+          { goal_id: goalId, amount: data.amount, date: data.date, source: data.source, account_id: data.account_id },
           user.id
         );
         toast.success("Depósito realizado! 💰");

@@ -20,6 +20,7 @@ export interface GoalTransaction {
   amount: number;
   date: string;
   source: string | null;
+  account_id: string | null;
   created_at: string;
 }
 
@@ -91,12 +92,18 @@ export async function fetchGoalTransactions(goalId: string): Promise<GoalTransac
   return (data ?? []) as GoalTransaction[];
 }
 
+/**
+ * Creates a goal deposit AND a corresponding expense transaction to deduct from the account.
+ * This works like investments — money leaves the available balance but stays in patrimony.
+ */
 export async function createGoalDeposit(deposit: {
   goal_id: string;
   amount: number;
   date: string;
   source?: string | null;
+  account_id?: string;
 }, userId: string): Promise<GoalTransaction> {
+  // 1. Create the goal transaction
   const { data, error } = await supabase
     .from("goal_transactions")
     .insert({
@@ -105,10 +112,38 @@ export async function createGoalDeposit(deposit: {
       amount: deposit.amount,
       date: deposit.date,
       source: deposit.source ?? null,
-    })
+      account_id: deposit.account_id ?? null,
+    } as any)
     .select()
     .single();
   if (error) throw error;
+
+  // 2. Create a debit transaction on the account (like investments)
+  if (deposit.account_id) {
+    // Fetch goal name for the transaction description
+    const { data: goalData } = await supabase
+      .from("goals")
+      .select("name")
+      .eq("id", deposit.goal_id)
+      .single();
+
+    const goalName = goalData?.name ?? "Meta";
+
+    await supabase.from("transactions").insert({
+      user_id: userId,
+      name: `Aporte: ${goalName}`,
+      category: "Meta",
+      date: deposit.date,
+      amount: deposit.amount,
+      type: "despesa",
+      status: "pago",
+      payment_method: "conta",
+      recurrence_type: "unica",
+      account_id: deposit.account_id,
+      observation: `Depósito automático para meta "${goalName}"`,
+    });
+  }
+
   return data as GoalTransaction;
 }
 
