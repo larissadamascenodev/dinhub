@@ -527,7 +527,7 @@ const AIInsightsSection = ({ insights, loading }: { insights: AIInsights | null;
       <div className="flex items-center gap-2 mb-3">
         <Brain className="w-4 h-4 text-primary" />
         <p className="text-[10px] md:text-[11px] text-muted-foreground/60 font-semibold uppercase tracking-wider">
-          Insights da IA
+          Dicas
         </p>
       </div>
       <div className="relative overflow-hidden" style={{ minHeight: 48 }}>
