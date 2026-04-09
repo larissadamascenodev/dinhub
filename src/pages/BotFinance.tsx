@@ -35,12 +35,6 @@ const tools: ToolCard[] = [
     description: "Entenda como seus gastos se distribuem e onde otimizar",
     disabled: true,
   },
-  {
-    icon: <Target className="w-5 h-5" />,
-    title: "Metas Financeiras",
-    description: "Defina objetivos, acompanhe progresso e receba dicas inteligentes",
-    path: "/metas",
-  },
 ];
 
 const BotFinance = () => {
