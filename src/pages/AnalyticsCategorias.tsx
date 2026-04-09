@@ -1107,19 +1107,21 @@ const CategoryDetail = ({
       className="space-y-4"
     >
       {/* Header */}
-      <div className="flex items-center gap-3">
-        <button onClick={onBack} className="p-1.5 rounded-lg hover:bg-muted/30 transition-colors">
-          <ArrowLeft className="w-5 h-5 text-muted-foreground" />
+      <div>
+        <button onClick={onBack} className="p-1.5 rounded-lg hover:bg-muted/30 transition-colors mb-1">
+          <ArrowLeft className="w-4 h-4 md:w-5 md:h-5 text-muted-foreground" />
         </button>
-        <div
-          className="w-10 h-10 rounded-full flex items-center justify-center"
-          style={{ background: `${category.hexColor}20` }}
-        >
-          <CatIcon className="w-5 h-5" style={{ color: category.hexColor }} />
-        </div>
-        <div className="flex-1">
-          <h2 className="text-lg font-bold text-foreground">{category.name}</h2>
-          <p className="text-xs text-muted-foreground/60">{monthLabel}</p>
+        <div className="flex items-center gap-2.5">
+          <div
+            className="w-8 h-8 rounded-full flex items-center justify-center shrink-0"
+            style={{ background: `${category.hexColor}20` }}
+          >
+            <CatIcon className="w-4 h-4" style={{ color: category.hexColor }} />
+          </div>
+          <div className="min-w-0">
+            <h2 className="text-base font-bold text-foreground truncate">{category.name}</h2>
+            <p className="text-[10px] text-muted-foreground/60">{monthLabel}</p>
+          </div>
         </div>
       </div>
 
@@ -1749,18 +1751,18 @@ const AnalyticsCategorias = () => {
     <div className={`pb-28 ${isMobile ? "max-w-lg mx-auto" : "max-w-5xl mx-auto"}`}>
       {/* Header — hidden when viewing category detail */}
       {!selectedCategory && (
-        <div className="flex items-center gap-2 mb-2">
-          <button onClick={() => navigate(-1)} className="p-1.5 rounded-lg hover:bg-muted/30 transition-colors shrink-0">
+        <div className="mb-3">
+          <button onClick={() => navigate(-1)} className="p-1.5 rounded-lg hover:bg-muted/30 transition-colors mb-1">
             <ArrowLeft className="w-4 h-4 md:w-5 md:h-5 text-muted-foreground" />
           </button>
-          <div className="flex-1 min-w-0">
+          <div className="flex items-center justify-between">
             <h1 className="text-base md:text-xl font-bold text-foreground leading-tight">Categorias</h1>
+            <MonthSelector
+              selectedMonth={selectedMonth}
+              selectedYear={selectedYear}
+              onMonthChange={(m, y) => { setMonth(m, y); setSelectedCategory(null); setAiInsights(null); }}
+            />
           </div>
-          <MonthSelector
-            selectedMonth={selectedMonth}
-            selectedYear={selectedYear}
-            onMonthChange={(m, y) => { setMonth(m, y); setSelectedCategory(null); setAiInsights(null); }}
-          />
         </div>
       )}
 
