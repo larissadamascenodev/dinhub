@@ -66,6 +66,8 @@ const Metas = () => {
   const [depositGoal, setDepositGoal] = useState<Goal | null>(null);
   const [editGoal, setEditGoal] = useState<Goal | null>(null);
   const [menuGoalId, setMenuGoalId] = useState<string | null>(null);
+  const [deleteGoalId, setDeleteGoalId] = useState<string | null>(null);
+  const [deletingGoal, setDeletingGoal] = useState(false);
 
   const loadGoals = useCallback(async () => {
     try {
