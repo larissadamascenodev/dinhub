@@ -123,30 +123,48 @@ const GlassCard = ({ children, className = "" }: { children: React.ReactNode; cl
   </div>
 );
 
-// ── Summary Card ─────────────────────────────────────────
+// ── Summary Card (unified) ───────────────────────────────
 const SummaryCard = ({ totalExpenses, topCategory, monthLabel }: {
   totalExpenses: number; topCategory?: CategorySummary; monthLabel: string;
-}) => (
-  <GlassCard className="p-3 md:p-5">
-    <div className="flex items-center justify-between">
-      <div>
-        <p className="text-[9px] md:text-[10px] text-muted-foreground/50 uppercase tracking-wider font-medium">
-          Total de Despesas · {monthLabel}
-        </p>
-        <p className="text-lg md:text-3xl font-bold text-foreground tabular-nums mt-0.5 md:mt-1">
-          {fmt(totalExpenses)}
-        </p>
-      </div>
-      {topCategory && (
-        <div className="text-right">
-          <p className="text-[9px] md:text-[10px] text-muted-foreground/50 uppercase tracking-wider font-medium">Maior gasto</p>
-          <p className="text-xs md:text-sm font-bold text-foreground mt-0.5">{topCategory.name}</p>
-          <p className="text-[10px] md:text-xs text-muted-foreground/60">{topCategory.percentage}%</p>
+}) => {
+  const annualEstimate = totalExpenses * 12;
+  return (
+    <GlassCard className="p-4 md:p-5">
+      {/* Top row */}
+      <div className="flex items-center justify-between mb-4">
+        <div>
+          <p className="text-[9px] md:text-[10px] text-muted-foreground/50 uppercase tracking-wider font-medium">
+            Total de Despesas · {monthLabel}
+          </p>
+          <p className="text-xl md:text-3xl font-bold text-foreground tabular-nums mt-0.5">
+            {fmt(totalExpenses)}
+          </p>
         </div>
-      )}
-    </div>
-  </GlassCard>
-);
+        {topCategory && (
+          <div className="text-right">
+            <p className="text-[9px] md:text-[10px] text-muted-foreground/50 uppercase tracking-wider font-medium">Maior gasto</p>
+            <p className="text-xs md:text-sm font-bold text-foreground mt-0.5">{topCategory.name}</p>
+            <p className="text-[10px] md:text-xs text-muted-foreground/60">{topCategory.percentage}%</p>
+          </div>
+        )}
+      </div>
+
+      {/* Bottom row — projections */}
+      <div className="grid grid-cols-2 gap-2">
+        <div className="rounded-xl bg-background/40 border border-border/10 p-3 text-center">
+          <p className="text-[8px] md:text-[9px] text-muted-foreground/50 uppercase tracking-wider font-medium">Gasto anual estimado</p>
+          <p className="text-sm md:text-base font-bold text-destructive tabular-nums mt-1">{fmt(annualEstimate)}</p>
+          <p className="text-[7px] md:text-[8px] text-muted-foreground/40 mt-0.5">Se continuar nesse ritmo</p>
+        </div>
+        <div className="rounded-xl bg-background/40 border border-border/10 p-3 text-center">
+          <p className="text-[8px] md:text-[9px] text-muted-foreground/50 uppercase tracking-wider font-medium">Média mensal</p>
+          <p className="text-sm md:text-base font-bold text-foreground tabular-nums mt-1">{fmt(totalExpenses)}</p>
+          <p className="text-[7px] md:text-[8px] text-muted-foreground/40 mt-0.5">Este mês</p>
+        </div>
+      </div>
+    </GlassCard>
+  );
+};
 
 // ── Donut: default center shows total ────────────────────
 const DonutDefaultCenter = ({ total }: { total: number }) => (
@@ -1676,21 +1694,17 @@ const AnalyticsCategorias = () => {
           >
             {categoryData.length > 0 ? (
               <>
-                {/* Summary + Projections together */}
+                {/* Summary (unified card) */}
                 <SummaryCard totalExpenses={totalExpenses} topCategory={topCategory} monthLabel={monthLabel} />
-                <ProjectionsInline totalExpenses={totalExpenses} />
+
+                {/* Comparison Insights — above chart */}
+                <ComparisonInsightsSection categoryData={categoryData} prevCategoryData={prevCategoryData} />
 
                 {/* Chart — full width */}
                 <CategoryChartSection
                   categoryData={categoryData}
                   isMobile={isMobile}
                 />
-
-                {/* Comparison Insights */}
-                <ComparisonInsightsSection categoryData={categoryData} prevCategoryData={prevCategoryData} />
-
-
-
 
 
                 {/* AI Insights */}
