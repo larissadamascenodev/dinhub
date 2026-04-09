@@ -207,7 +207,7 @@ const Configuracoes = () => {
 
   /* ── Conta items ── */
   const contaItems = [
-    { icon: Shield, label: "Segurança", sub: "Alterar senha de acesso", action: true },
+    { icon: Shield, label: "Segurança", sub: "Alterar senha de acesso", action: true, onClick: () => setPasswordModalOpen(true) },
     { icon: Crown, label: "Assinatura", sub: "Gerenciar plano e pagamentos", action: true },
   ];
   const dadosItems = [
