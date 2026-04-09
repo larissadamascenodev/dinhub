@@ -1,7 +1,7 @@
 import { useState, useEffect, useCallback } from "react";
 import { useParams, useNavigate } from "react-router-dom";
 import { motion, AnimatePresence } from "framer-motion";
-import { ArrowLeft, TrendingUp, Sparkles, Clock, MoreVertical, Edit2, Trash2, ArrowDownLeft, Wallet } from "lucide-react";
+import { ArrowLeft, TrendingUp, Sparkles, Clock, MoreVertical, Pencil, Trash2, ArrowDownLeft, Target } from "lucide-react";
 import { toast } from "sonner";
 import { useAuth } from "@/contexts/AuthContext";
 import {
@@ -26,153 +26,7 @@ import { supabase } from "@/integrations/supabase/client";
 const fmt = (v: number) =>
   v.toLocaleString("pt-BR", { style: "currency", currency: "BRL" });
 
-/* ─── sub-components ─── */
-
-const ProgressSection = ({ progress, isComplete, remaining }: { progress: number; isComplete: boolean; remaining: number }) => (
-  <motion.div
-    initial={{ opacity: 0, y: 12 }}
-    animate={{ opacity: 1, y: 0 }}
-    transition={{ delay: 0.05 }}
-    className="rounded-2xl p-5 bg-card/80 backdrop-blur-xl border border-border/15 shadow-lg"
-  >
-    <div className="flex items-center justify-between mb-3">
-      <p className="text-sm font-bold text-foreground">Progresso</p>
-      <span className={`text-lg font-bold tabular-nums ${isComplete ? "text-primary" : "text-foreground"}`}>
-        {Math.round(progress * 100)}%
-      </span>
-    </div>
-    <div className="relative h-3 w-full rounded-full bg-secondary overflow-hidden">
-      <motion.div
-        initial={{ width: 0 }}
-        animate={{ width: `${progress * 100}%` }}
-        transition={{ duration: 1, ease: "easeOut" }}
-        className="h-full rounded-full"
-        style={{
-          background: isComplete
-            ? "hsl(var(--primary))"
-            : "linear-gradient(90deg, hsl(var(--primary) / 0.6), hsl(var(--primary)))",
-          boxShadow: "0 0 12px hsl(var(--primary) / 0.4)",
-        }}
-      />
-    </div>
-    {remaining > 0 && (
-      <p className="text-xs text-muted-foreground mt-2">Faltam {fmt(remaining)}</p>
-    )}
-    {isComplete && (
-      <p className="text-xs text-primary mt-2 font-semibold">Meta concluída! 🎉</p>
-    )}
-  </motion.div>
-);
-
-const PredictionSection = ({ text }: { text: string }) => (
-  <motion.div
-    initial={{ opacity: 0, y: 12 }}
-    animate={{ opacity: 1, y: 0 }}
-    transition={{ delay: 0.1 }}
-    className="rounded-2xl p-4 bg-card/80 backdrop-blur-xl border border-border/15"
-  >
-    <div className="flex items-center gap-2.5">
-      <div className="w-9 h-9 rounded-xl bg-accent/10 border border-accent/20 flex items-center justify-center">
-        <Clock className="w-4 h-4 text-accent-foreground" />
-      </div>
-      <div>
-        <p className="text-xs font-bold text-foreground">Previsão</p>
-        <p className="text-[11px] text-muted-foreground">{text}</p>
-      </div>
-    </div>
-  </motion.div>
-);
-
-const InsightSection = ({ text }: { text: string }) => (
-  <motion.div
-    initial={{ opacity: 0, y: 12 }}
-    animate={{ opacity: 1, y: 0 }}
-    transition={{ delay: 0.15 }}
-    className="rounded-2xl p-4 bg-card/80 backdrop-blur-xl border border-border/15"
-  >
-    <div className="flex items-center gap-2 mb-2">
-      <Sparkles className="w-4 h-4 text-primary" />
-      <p className="text-xs font-bold text-foreground">Insight da BY</p>
-    </div>
-    <p className="text-xs text-muted-foreground leading-relaxed">{text}</p>
-  </motion.div>
-);
-
-interface TransactionItemProps {
-  tx: GoalTransaction;
-  accountNames: Record<string, string>;
-  onDelete: (tx: GoalTransaction) => void;
-}
-
-const TransactionItem = ({ tx, accountNames, onDelete }: TransactionItemProps) => {
-  const isWithdraw = Number(tx.amount) < 0;
-  const absAmount = Math.abs(Number(tx.amount));
-
-  return (
-    <div className="flex items-center justify-between rounded-xl p-3 bg-muted/5 border border-border/10 hover:border-border/20 transition-colors">
-      <div className="flex items-center gap-3">
-        <div className={`w-8 h-8 rounded-lg flex items-center justify-center ${
-          isWithdraw ? "bg-orange-500/10" : "bg-primary/10"
-        }`}>
-          {isWithdraw ? (
-            <ArrowDownLeft className="w-4 h-4 text-orange-400" />
-          ) : (
-            <TrendingUp className="w-4 h-4 text-primary" />
-          )}
-        </div>
-        <div>
-          <p className={`text-xs font-semibold ${isWithdraw ? "text-orange-400" : "text-primary"}`}>
-            {isWithdraw ? "- " : "+ "}{fmt(absAmount)}
-          </p>
-          <p className="text-[10px] text-muted-foreground">
-            {format(new Date(tx.date + "T12:00:00"), "dd MMM yyyy", { locale: ptBR })}
-            {tx.source ? ` · ${tx.source}` : ""}
-            {tx.account_id && accountNames[tx.account_id] ? ` · ${accountNames[tx.account_id]}` : ""}
-          </p>
-        </div>
-      </div>
-      {!isWithdraw && (
-        <motion.button
-          whileTap={{ scale: 0.9 }}
-          onClick={() => onDelete(tx)}
-          className="p-1.5 rounded-lg hover:bg-destructive/10 transition-colors"
-        >
-          <Trash2 className="w-3.5 h-3.5 text-muted-foreground hover:text-destructive" />
-        </motion.button>
-      )}
-    </div>
-  );
-};
-
-const HistorySection = ({
-  transactions,
-  accountNames,
-  onDeleteTx,
-}: {
-  transactions: GoalTransaction[];
-  accountNames: Record<string, string>;
-  onDeleteTx: (tx: GoalTransaction) => void;
-}) => (
-  <motion.div
-    initial={{ opacity: 0, y: 12 }}
-    animate={{ opacity: 1, y: 0 }}
-    transition={{ delay: 0.2 }}
-    className="rounded-2xl p-4 bg-card/80 backdrop-blur-xl border border-border/15"
-  >
-    <p className="text-xs font-bold text-foreground mb-3">Histórico de movimentações</p>
-    {transactions.length === 0 ? (
-      <p className="text-[11px] text-muted-foreground text-center py-6">Nenhuma movimentação ainda</p>
-    ) : (
-      <div className="space-y-2">
-        {transactions.map((tx) => (
-          <TransactionItem key={tx.id} tx={tx} accountNames={accountNames} onDelete={onDeleteTx} />
-        ))}
-      </div>
-    )}
-  </motion.div>
-);
-
-/* ─── main page ─── */
+const CARD_BG = "linear-gradient(135deg, hsl(var(--card)) 0%, hsl(var(--background)) 100%)";
 
 const MetaDetalhe = () => {
   const { goalId } = useParams<{ goalId: string }>();
@@ -274,10 +128,9 @@ const MetaDetalhe = () => {
 
   if (loading || !goal) {
     return (
-      <div className="space-y-4 pb-8">
-        <div className="h-8 w-32 bg-card/60 animate-pulse rounded-lg" />
-        <div className="h-48 bg-card/60 animate-pulse rounded-2xl" />
-        <div className="h-32 bg-card/60 animate-pulse rounded-2xl" />
+      <div className="pt-2 pb-8 space-y-4">
+        <div className="h-40 rounded-2xl bg-card animate-pulse" />
+        <div className="h-24 rounded-2xl bg-card animate-pulse" />
       </div>
     );
   }
@@ -305,54 +158,35 @@ const MetaDetalhe = () => {
     return `O depósito de ${amt} será removido da meta.`;
   };
 
+  const totalDeposits = transactions.filter(t => Number(t.amount) > 0).reduce((s, t) => s + Number(t.amount), 0);
+  const totalWithdrawals = transactions.filter(t => Number(t.amount) < 0).reduce((s, t) => s + Math.abs(Number(t.amount)), 0);
+
   return (
-    <div className="space-y-4 pb-8">
-      {/* ─── Header ─── */}
-      <div className="flex items-center gap-3">
-        <motion.button
-          whileTap={{ scale: 0.9 }}
-          onClick={() => navigate("/metas")}
-          className="p-2 rounded-xl hover:bg-muted/20 transition-colors flex-shrink-0"
-        >
-          <ArrowLeft className="w-5 h-5 text-foreground" />
-        </motion.button>
-
-        <div className="flex-1 min-w-0">
-          <h1 className="text-base font-bold text-foreground truncate">{goal.name}</h1>
-          <p className="text-[11px] text-muted-foreground tabular-nums">
-            {fmt(Number(goal.current_amount))} de {fmt(Number(goal.target_amount))}
-          </p>
-        </div>
-
-        {/* 3-dot menu */}
-        <div className="relative flex-shrink-0">
-          <motion.button
-            whileTap={{ scale: 0.9 }}
-            onClick={() => setShowMenu(!showMenu)}
-            className="p-2 rounded-xl hover:bg-muted/20 transition-colors"
-          >
-            <MoreVertical className="w-5 h-5 text-muted-foreground" />
-          </motion.button>
+    <div className="pt-2 pb-8 space-y-5">
+      {/* Header */}
+      <div className="flex items-center justify-between">
+        <button onClick={() => navigate("/metas")} className="flex items-center gap-1.5 text-sm text-muted-foreground hover:text-foreground transition-colors">
+          <ArrowLeft className="w-4 h-4" /> Voltar
+        </button>
+        <div className="relative">
+          <button onClick={() => setShowMenu(v => !v)} className="w-8 h-8 rounded-xl bg-muted/20 flex items-center justify-center hover:bg-muted/30 transition-colors">
+            <MoreVertical className="w-4 h-4 text-muted-foreground" />
+          </button>
           <AnimatePresence>
             {showMenu && (
               <motion.div
                 initial={{ opacity: 0, scale: 0.9, y: -4 }}
                 animate={{ opacity: 1, scale: 1, y: 0 }}
                 exit={{ opacity: 0, scale: 0.9, y: -4 }}
-                className="absolute right-0 mt-1 w-44 rounded-xl bg-card border border-border/20 shadow-2xl overflow-hidden z-20"
+                transition={{ duration: 0.15 }}
+                className="absolute right-0 top-10 z-50 w-40 rounded-xl border border-border/30 bg-card shadow-xl overflow-hidden"
               >
-                <button
-                  onClick={() => { setShowEdit(true); setShowMenu(false); }}
-                  className="w-full flex items-center gap-2.5 px-4 py-3 text-xs font-semibold text-foreground hover:bg-muted/10 transition-colors"
-                >
-                  <Edit2 className="w-4 h-4" /> Editar meta
+                <button onClick={() => { setShowEdit(true); setShowMenu(false); }} className="flex items-center gap-2.5 w-full px-3.5 py-2.5 text-sm text-foreground hover:bg-muted/30 transition-colors">
+                  <Pencil className="w-3.5 h-3.5 text-muted-foreground" /> Editar
                 </button>
-                <div className="h-px bg-border/10 mx-3" />
-                <button
-                  onClick={() => { setShowDeleteGoal(true); setShowMenu(false); }}
-                  className="w-full flex items-center gap-2.5 px-4 py-3 text-xs font-semibold text-destructive hover:bg-destructive/10 transition-colors"
-                >
-                  <Trash2 className="w-4 h-4" /> Excluir meta
+                <div className="h-px bg-border/20" />
+                <button onClick={() => { setShowDeleteGoal(true); setShowMenu(false); }} className="flex items-center gap-2.5 w-full px-3.5 py-2.5 text-sm text-destructive hover:bg-destructive/10 transition-colors">
+                  <Trash2 className="w-3.5 h-3.5" /> Excluir
                 </button>
               </motion.div>
             )}
@@ -360,49 +194,188 @@ const MetaDetalhe = () => {
         </div>
       </div>
 
-      {/* Close menu overlay */}
-      {showMenu && <div className="fixed inset-0 z-10" onClick={() => setShowMenu(false)} />}
+      {showMenu && <div className="fixed inset-0 z-40" onClick={() => setShowMenu(false)} />}
 
-      {/* ─── Action buttons ─── */}
-      {!isComplete && (
-        <motion.div
-          initial={{ opacity: 0, y: 12 }}
-          animate={{ opacity: 1, y: 0 }}
-          className="flex items-center gap-2"
-        >
-          <motion.button
-            whileTap={{ scale: 0.95 }}
-            onClick={() => setShowDeposit(true)}
-            className="flex-1 flex items-center justify-center gap-2 py-3 rounded-xl bg-primary/15 border border-primary/25 text-primary text-sm font-semibold hover:bg-primary/20 transition-colors"
-          >
-            <TrendingUp className="w-4 h-4" />
-            Depositar
-          </motion.button>
-          <motion.button
-            whileTap={{ scale: 0.95 }}
-            onClick={() => setShowWithdraw(true)}
-            className="flex-1 flex items-center justify-center gap-2 py-3 rounded-xl bg-orange-500/15 border border-orange-500/25 text-orange-400 text-sm font-semibold hover:bg-orange-500/20 transition-colors"
-          >
-            <ArrowDownLeft className="w-4 h-4" />
-            Sacar
-          </motion.button>
+      {/* ═══ Main Card ═══ */}
+      <motion.div initial={{ opacity: 0, y: 12 }} animate={{ opacity: 1, y: 0 }} className="relative rounded-2xl overflow-hidden border border-border/10" style={{ background: CARD_BG }}>
+        <div className="p-5 space-y-4">
+          {/* Title row */}
+          <div className="flex items-center gap-3">
+            <div className="w-10 h-10 rounded-xl bg-primary/15 flex items-center justify-center">
+              <Target className="w-5 h-5 text-primary" />
+            </div>
+            <div className="flex-1 min-w-0">
+              <p className="text-base font-bold text-foreground leading-tight truncate">{goal.name}</p>
+              {goal.deadline && (
+                <p className="text-[10px] text-muted-foreground mt-0.5">
+                  Prazo: {format(new Date(goal.deadline + "T12:00:00"), "dd MMM yyyy", { locale: ptBR })}
+                </p>
+              )}
+            </div>
+          </div>
+
+          <div className="h-px bg-border/10" />
+
+          {/* Balance */}
+          <div>
+            <div className="flex items-center gap-1.5 mb-1.5">
+              <div className="w-1.5 h-1.5 rounded-full bg-primary" />
+              <p className="text-[9px] text-muted-foreground uppercase tracking-widest font-medium">Acumulado</p>
+            </div>
+            <p className="text-3xl font-extrabold tabular-nums tracking-tight text-foreground">
+              {fmt(Number(goal.current_amount))}
+            </p>
+            <p className="text-[11px] text-muted-foreground mt-0.5">
+              de {fmt(Number(goal.target_amount))}
+            </p>
+          </div>
+
+          {/* Progress bar */}
+          <div>
+            <div className="flex items-center justify-between mb-1.5">
+              <p className="text-[10px] text-muted-foreground">Progresso</p>
+              <span className={`text-xs font-bold tabular-nums ${isComplete ? "text-primary" : "text-foreground"}`}>
+                {Math.round(progress * 100)}%
+              </span>
+            </div>
+            <div className="relative h-2.5 w-full rounded-full bg-secondary overflow-hidden">
+              <motion.div
+                initial={{ width: 0 }}
+                animate={{ width: `${progress * 100}%` }}
+                transition={{ duration: 1, ease: "easeOut" }}
+                className="h-full rounded-full"
+                style={{
+                  background: isComplete
+                    ? "hsl(var(--primary))"
+                    : "linear-gradient(90deg, hsl(var(--primary) / 0.6), hsl(var(--primary)))",
+                  boxShadow: "0 0 12px hsl(var(--primary) / 0.4)",
+                }}
+              />
+            </div>
+            {remaining > 0 && (
+              <p className="text-[10px] text-muted-foreground mt-1.5">Faltam {fmt(remaining)}</p>
+            )}
+            {isComplete && (
+              <p className="text-[10px] text-primary mt-1.5 font-semibold">Meta concluída! 🎉</p>
+            )}
+          </div>
+
+          {/* Action buttons */}
+          {!isComplete && (
+            <div className="grid grid-cols-2 gap-2">
+              <button
+                onClick={() => setShowDeposit(true)}
+                className="flex items-center justify-center gap-1.5 py-2.5 rounded-xl bg-primary/10 text-primary text-[11px] font-semibold hover:bg-primary/20 transition-colors border border-primary/20"
+              >
+                <ArrowDownLeft className="w-3.5 h-3.5" /> Depósito
+              </button>
+              <button
+                onClick={() => setShowWithdraw(true)}
+                className="flex items-center justify-center gap-1.5 py-2.5 rounded-xl bg-destructive/10 text-destructive text-[11px] font-semibold hover:bg-destructive/20 transition-colors border border-destructive/20"
+              >
+                <TrendingUp className="w-3.5 h-3.5" /> Saque
+              </button>
+            </div>
+          )}
+        </div>
+      </motion.div>
+
+      {/* ═══ Insight ═══ */}
+      {topInsight && (
+        <motion.div initial={{ opacity: 0, y: 8 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.1 }}>
+          <div className="flex items-start gap-2.5 rounded-2xl border border-primary/10 bg-primary/[0.04] p-3.5">
+            <Sparkles className="w-4 h-4 text-primary shrink-0 mt-0.5" />
+            <p className="text-xs text-muted-foreground leading-relaxed">{topInsight}</p>
+          </div>
         </motion.div>
       )}
 
-      {/* ─── Content sections ─── */}
-      <ProgressSection progress={progress} isComplete={isComplete} remaining={remaining} />
+      {/* ═══ Prediction + Summary ═══ */}
+      {predictionText && (
+        <motion.div initial={{ opacity: 0, y: 12 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.05 }}>
+          <div className="rounded-2xl border border-border/10 p-4" style={{ background: CARD_BG }}>
+            <div className="flex items-center gap-2 mb-2">
+              <div className="w-6 h-6 rounded-lg bg-primary/15 flex items-center justify-center">
+                <Clock className="w-3 h-3 text-primary" />
+              </div>
+              <span className="text-[9px] text-muted-foreground uppercase tracking-widest font-medium">Previsão</span>
+            </div>
+            <p className="text-sm font-bold text-foreground">{predictionText}</p>
+            {goal.monthly_contribution && goal.monthly_contribution > 0 && (
+              <p className="text-[10px] text-muted-foreground mt-1">
+                Contribuição mensal: {fmt(goal.monthly_contribution)}
+              </p>
+            )}
+          </div>
+        </motion.div>
+      )}
 
-      {predictionText && <PredictionSection text={predictionText} />}
+      {/* ═══ Summary Cards ═══ */}
+      <motion.div initial={{ opacity: 0, y: 12 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.1 }} className="grid grid-cols-3 gap-3">
+        <div className="rounded-2xl border border-border/10 p-3" style={{ background: CARD_BG }}>
+          <p className="text-[9px] text-muted-foreground uppercase tracking-wider mb-1">Objetivo</p>
+          <p className="text-sm font-bold text-foreground tabular-nums">{fmt(Number(goal.target_amount))}</p>
+        </div>
+        <div className="rounded-2xl border border-border/10 p-3" style={{ background: CARD_BG }}>
+          <p className="text-[9px] text-muted-foreground uppercase tracking-wider mb-1">Depósitos</p>
+          <p className="text-sm font-bold text-primary tabular-nums">{fmt(totalDeposits)}</p>
+        </div>
+        <div className="rounded-2xl border border-border/10 p-3" style={{ background: CARD_BG }}>
+          <p className="text-[9px] text-muted-foreground uppercase tracking-wider mb-1">Saques</p>
+          <p className="text-sm font-bold text-destructive tabular-nums">{fmt(totalWithdrawals)}</p>
+        </div>
+      </motion.div>
 
-      {topInsight && <InsightSection text={topInsight} />}
+      {/* ═══ History ═══ */}
+      <motion.div initial={{ opacity: 0, y: 12 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.15 }}>
+        <div className="rounded-2xl border border-border/10 p-4" style={{ background: CARD_BG }}>
+          <p className="text-[9px] text-muted-foreground uppercase tracking-widest font-medium mb-3">Histórico de movimentações</p>
+          {transactions.length === 0 ? (
+            <p className="text-[11px] text-muted-foreground text-center py-6">Nenhuma movimentação ainda</p>
+          ) : (
+            <div className="space-y-2">
+              {transactions.map((tx) => {
+                const isWithdraw = Number(tx.amount) < 0;
+                const absAmount = Math.abs(Number(tx.amount));
+                return (
+                  <div key={tx.id} className="flex items-center justify-between rounded-xl p-3 bg-muted/5 border border-border/10 hover:border-border/20 transition-colors">
+                    <div className="flex items-center gap-3">
+                      <div className={`w-8 h-8 rounded-lg flex items-center justify-center ${isWithdraw ? "bg-destructive/10" : "bg-primary/10"}`}>
+                        {isWithdraw ? (
+                          <TrendingUp className="w-4 h-4 text-destructive" />
+                        ) : (
+                          <ArrowDownLeft className="w-4 h-4 text-primary" />
+                        )}
+                      </div>
+                      <div>
+                        <p className={`text-xs font-semibold ${isWithdraw ? "text-destructive" : "text-primary"}`}>
+                          {isWithdraw ? "- " : "+ "}{fmt(absAmount)}
+                        </p>
+                        <p className="text-[10px] text-muted-foreground">
+                          {format(new Date(tx.date + "T12:00:00"), "dd MMM yyyy", { locale: ptBR })}
+                          {tx.source ? ` · ${tx.source}` : ""}
+                          {tx.account_id && accountNames[tx.account_id] ? ` · ${accountNames[tx.account_id]}` : ""}
+                        </p>
+                      </div>
+                    </div>
+                    {!isWithdraw && (
+                      <motion.button
+                        whileTap={{ scale: 0.9 }}
+                        onClick={() => setDepositToDelete(tx)}
+                        className="p-1.5 rounded-lg hover:bg-destructive/10 transition-colors"
+                      >
+                        <Trash2 className="w-3.5 h-3.5 text-muted-foreground hover:text-destructive" />
+                      </motion.button>
+                    )}
+                  </div>
+                );
+              })}
+            </div>
+          )}
+        </div>
+      </motion.div>
 
-      <HistorySection
-        transactions={transactions}
-        accountNames={accountNames}
-        onDeleteTx={setDepositToDelete}
-      />
-
-      {/* ─── Modals ─── */}
+      {/* ═══ Modals ═══ */}
       <GoalDepositModal
         open={showDeposit}
         onClose={() => setShowDeposit(false)}
