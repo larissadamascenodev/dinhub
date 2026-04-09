@@ -163,6 +163,27 @@ export async function fetchUserChallenges(): Promise<UserChallenge[]> {
   const enriched: UserChallenge[] = [];
 
   for (const uc of (data ?? []) as any[]) {
+    const challenge = uc.challenge as Challenge;
+
+    // --- Violation detection ---
+    const violated = await checkViolation(challenge, uc.started_at);
+    if (violated) {
+      // Delete all check-ins and reset the challenge
+      await supabase
+        .from("challenge_checkins")
+        .delete()
+        .eq("user_challenge_id", uc.id);
+
+      await supabase
+        .from("user_challenges")
+        .update({ started_at: new Date().toISOString(), progress: 0 } as any)
+        .eq("id", uc.id);
+
+      // Reload this challenge with fresh data
+      uc.started_at = new Date().toISOString();
+      uc.progress = 0;
+    }
+
     const { count } = await supabase
       .from("challenge_checkins")
       .select("*", { count: "exact", head: true })
@@ -175,7 +196,6 @@ export async function fetchUserChallenges(): Promise<UserChallenge[]> {
       .eq("checkin_date", today)
       .maybeSingle();
 
-    const challenge = uc.challenge as Challenge;
     const checkinCount = count ?? 0;
     const realSavings = await calculateRealSavings(challenge, uc.started_at, checkinCount);
 
@@ -189,6 +209,32 @@ export async function fetchUserChallenges(): Promise<UserChallenge[]> {
   }
 
   return enriched;
+}
+
+/**
+ * Checks if a violation occurred: any new expense transaction in the challenge's
+ * related categories created AFTER the challenge started_at.
+ * Old installments (created_at < started_at) are ignored.
+ */
+async function checkViolation(challenge: Challenge, startedAt: string): Promise<boolean> {
+  const categories = CHALLENGE_CATEGORY_MAP[challenge.name];
+  if (!categories || categories.length === 0) return false;
+
+  const startDate = new Date(startedAt).toISOString().split("T")[0];
+
+  // Find any expense in related categories where:
+  // - date >= started_at (happened during challenge)
+  // - created_at >= started_at (not an old installment)
+  const { data: violations } = await supabase
+    .from("transactions")
+    .select("id, created_at, recurrence_type")
+    .eq("type", "despesa")
+    .in("category", categories)
+    .gte("date", startDate)
+    .gte("created_at", startedAt)
+    .limit(1);
+
+  return (violations?.length ?? 0) > 0;
 }
 
 async function calculateRealSavings(
