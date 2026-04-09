@@ -674,6 +674,7 @@ const AllInstallmentsOverview = ({ impacts }: { impacts: InstallmentImpact[] }) 
   const totalMonthly = impacts.reduce((s, imp) => s + imp.monthlyAmount, 0);
   const totalRemaining = impacts.reduce((s, imp) => s + imp.totalRemaining, 0);
   const maxMonths = Math.max(...impacts.map((imp) => imp.monthsRemaining), 0);
+  const isHighImpact = totalRemaining > 2000 || maxMonths >= 6;
   const hasMore = allItems.length > INITIAL_INSTALLMENT_COUNT;
   const visible = expanded ? allItems : allItems.slice(0, INITIAL_INSTALLMENT_COUNT);
 
@@ -692,21 +693,28 @@ const AllInstallmentsOverview = ({ impacts }: { impacts: InstallmentImpact[] }) 
         <span className="ml-auto text-[9px] text-muted-foreground/40 bg-muted/10 px-1.5 py-0.5 rounded-full">{allItems.length} {allItems.length === 1 ? "item" : "itens"}</span>
       </div>
 
-      <div className="grid grid-cols-3 gap-1.5 mb-3">
-        <div className="text-center p-2 rounded-xl bg-muted/5 border border-border/10">
+      {/* Alert banner */}
+      <div className={`p-2.5 rounded-xl mb-2.5 ${isHighImpact ? "bg-warning/5 border border-warning/10" : "bg-muted/10 border border-border/10"}`}>
+        <p className="text-[11px] text-foreground/80 leading-relaxed">
+          {isHighImpact
+            ? `⚠️ ${fmt(totalRemaining)} comprometidos nos próximos ${maxMonths} meses.`
+            : `${fmt(totalRemaining)} restantes em parcelamentos (${maxMonths} meses). Tudo sob controle 👍`}
+        </p>
+      </div>
+
+      {/* Stats: only mensal + restante */}
+      <div className="grid grid-cols-2 gap-1.5 mb-2.5">
+        <div className="text-center p-1.5 rounded-lg bg-muted/5">
           <p className="text-[8px] text-muted-foreground/50 uppercase">Mensal</p>
           <p className="text-xs font-bold text-foreground tabular-nums mt-0.5">{fmt(totalMonthly)}</p>
         </div>
-        <div className="text-center p-2 rounded-xl bg-muted/5 border border-border/10">
+        <div className="text-center p-1.5 rounded-lg bg-muted/5">
           <p className="text-[8px] text-muted-foreground/50 uppercase">Total restante</p>
           <p className="text-xs font-bold text-foreground tabular-nums mt-0.5">{fmt(totalRemaining)}</p>
         </div>
-        <div className="text-center p-2 rounded-xl bg-muted/5 border border-border/10">
-          <p className="text-[8px] text-muted-foreground/50 uppercase">Duração</p>
-          <p className="text-xs font-bold text-foreground tabular-nums mt-0.5">{maxMonths} {maxMonths === 1 ? "mês" : "meses"}</p>
-        </div>
       </div>
 
+      {/* Items list */}
       <div className="space-y-1">
         {visible.map((item, i) => (
           <div key={i} className="flex items-center justify-between py-1.5 px-2 rounded-lg hover:bg-muted/10 transition-colors">
