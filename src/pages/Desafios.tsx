@@ -367,7 +367,69 @@ const CreateChallengeModal = ({
   );
 };
 
-/* ─────── Main Page ─────── */
+/* ─────── Suggestions Carousel (drag/swipe) ─────── */
+const SuggestionsCarousel = ({
+  suggestions,
+  onAccept,
+  acceptingId,
+}: {
+  suggestions: Challenge[];
+  onAccept: (id: string) => void;
+  acceptingId: string | null;
+}) => {
+  const scrollRef = useRef<HTMLDivElement>(null);
+  const isDragging = useRef(false);
+  const startX = useRef(0);
+  const scrollLeft = useRef(0);
+
+  const handlePointerDown = (e: React.PointerEvent) => {
+    const el = scrollRef.current;
+    if (!el) return;
+    isDragging.current = true;
+    el.setPointerCapture(e.pointerId);
+    startX.current = e.clientX;
+    scrollLeft.current = el.scrollLeft;
+    el.style.cursor = "grabbing";
+    el.style.userSelect = "none";
+  };
+
+  const handlePointerMove = (e: React.PointerEvent) => {
+    if (!isDragging.current || !scrollRef.current) return;
+    const dx = e.clientX - startX.current;
+    scrollRef.current.scrollLeft = scrollLeft.current - dx;
+  };
+
+  const handlePointerUp = (e: React.PointerEvent) => {
+    if (!scrollRef.current) return;
+    isDragging.current = false;
+    scrollRef.current.releasePointerCapture(e.pointerId);
+    scrollRef.current.style.cursor = "grab";
+    scrollRef.current.style.userSelect = "";
+  };
+
+  return (
+    <div
+      ref={scrollRef}
+      className="flex gap-3 overflow-x-auto pb-2 scrollbar-hide cursor-grab"
+      style={{ WebkitOverflowScrolling: "touch" }}
+      onPointerDown={handlePointerDown}
+      onPointerMove={handlePointerMove}
+      onPointerUp={handlePointerUp}
+      onPointerLeave={handlePointerUp}
+    >
+      {suggestions.map((c, i) => (
+        <SuggestionCard
+          key={c.id}
+          challenge={c}
+          index={i}
+          onAccept={() => onAccept(c.id)}
+          loading={acceptingId === c.id}
+        />
+      ))}
+    </div>
+  );
+};
+
 const Desafios = () => {
   const navigate = useNavigate();
   const { user } = useAuth();
