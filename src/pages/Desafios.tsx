@@ -28,12 +28,21 @@ const DIFFICULTY_COLOR: Record<string, string> = {
 };
 
 const COVER_GRADIENTS = [
-  "from-emerald-900/60 to-emerald-700/30",
-  "from-blue-900/60 to-blue-700/30",
-  "from-purple-900/60 to-purple-700/30",
-  "from-amber-900/60 to-amber-700/30",
-  "from-rose-900/60 to-rose-700/30",
-  "from-cyan-900/60 to-cyan-700/30",
+  "from-emerald-500/30 via-emerald-900/50 to-emerald-950/80",
+  "from-blue-500/30 via-blue-900/50 to-blue-950/80",
+  "from-purple-500/30 via-purple-900/50 to-purple-950/80",
+  "from-amber-500/30 via-amber-900/50 to-amber-950/80",
+  "from-rose-500/30 via-rose-900/50 to-rose-950/80",
+  "from-cyan-500/30 via-cyan-900/50 to-cyan-950/80",
+];
+
+const COVER_GLOW = [
+  "shadow-emerald-500/20",
+  "shadow-blue-500/20",
+  "shadow-purple-500/20",
+  "shadow-amber-500/20",
+  "shadow-rose-500/20",
+  "shadow-cyan-500/20",
 ];
 
 /* ─────── Suggestion Card ─────── */
@@ -50,52 +59,67 @@ const SuggestionCard = ({
 }) => {
   const [expanded, setExpanded] = useState(false);
   const gradient = COVER_GRADIENTS[index % COVER_GRADIENTS.length];
+  const glow = COVER_GLOW[index % COVER_GLOW.length];
 
   return (
     <motion.div
       initial={{ opacity: 0, y: 20 }}
       animate={{ opacity: 1, y: 0 }}
       transition={{ delay: index * 0.05 }}
-      className="min-w-[260px] max-w-[280px] snap-start rounded-xl bg-card border border-border/40 overflow-hidden flex flex-col"
+      className={cn(
+        "min-w-[270px] max-w-[290px] snap-start rounded-2xl overflow-hidden flex flex-col",
+        "bg-card/80 backdrop-blur-md border border-white/[0.06]",
+        "shadow-lg", glow
+      )}
     >
-      {/* Cover */}
-      <div className={cn("relative h-32 bg-gradient-to-br flex items-end p-3", gradient)}>
-        <span className={cn("absolute top-2 left-2 text-[10px] font-semibold px-2 py-0.5 rounded", DIFFICULTY_COLOR[challenge.difficulty])}>
-          {DIFFICULTY_LABEL[challenge.difficulty] ?? challenge.difficulty}
+      {/* Cover with pattern overlay */}
+      <div className={cn("relative h-36 bg-gradient-to-br flex flex-col justify-end p-4", gradient)}>
+        {/* Decorative circles */}
+        <div className="absolute top-0 right-0 w-24 h-24 rounded-full bg-white/[0.04] -translate-y-8 translate-x-8" />
+        <div className="absolute bottom-0 left-0 w-16 h-16 rounded-full bg-white/[0.03] translate-y-6 -translate-x-4" />
+        
+        <div className="absolute top-2.5 left-3 flex items-center gap-1.5">
+          <span className={cn("text-[10px] font-semibold px-2 py-0.5 rounded-full backdrop-blur-sm", DIFFICULTY_COLOR[challenge.difficulty])}>
+            {DIFFICULTY_LABEL[challenge.difficulty] ?? challenge.difficulty}
+          </span>
+        </div>
+        <span className="absolute top-2.5 right-3 text-[10px] font-medium px-2 py-0.5 rounded-full bg-black/30 backdrop-blur-sm text-white/80 border border-white/10">
+          ⏱ {challenge.duration_days} dias
         </span>
-        <span className="absolute top-2 right-2 text-[10px] font-medium px-2 py-0.5 rounded bg-background/60 text-foreground">
-          {challenge.duration_days} dias
-        </span>
-        <p className="text-sm font-bold text-foreground leading-tight flex items-center gap-1.5">
-          <span className="text-lg">{challenge.icon}</span> {challenge.name}
-        </p>
+        
+        <div className="relative z-10">
+          <span className="text-2xl mb-1 block drop-shadow-lg">{challenge.icon}</span>
+          <p className="text-sm font-bold text-white leading-tight drop-shadow-md">
+            {challenge.name}
+          </p>
+        </div>
       </div>
 
       {/* Body */}
-      <div className="p-3 flex flex-col flex-1 gap-2">
+      <div className="p-4 flex flex-col flex-1 gap-3">
         <div>
-          <p className={cn("text-xs text-muted-foreground", !expanded && "line-clamp-2")}>{challenge.description}</p>
+          <p className={cn("text-xs text-muted-foreground leading-relaxed", !expanded && "line-clamp-2")}>{challenge.description}</p>
           {challenge.description && challenge.description.length > 80 && (
-            <button onClick={() => setExpanded(!expanded)} className="text-[11px] text-primary flex items-center gap-0.5 mt-0.5">
+            <button onClick={() => setExpanded(!expanded)} className="text-[11px] text-primary flex items-center gap-0.5 mt-1 hover:underline">
               {expanded ? <><ChevronUp className="w-3 h-3" /> Ver menos</> : <><ChevronDown className="w-3 h-3" /> Ver mais</>}
             </button>
           )}
         </div>
 
-        <div className="mt-auto space-y-2">
-          <div className="bg-secondary/60 rounded-lg px-3 py-2">
-            <p className="text-[9px] uppercase tracking-wider text-muted-foreground">Economia Potencial</p>
-            <p className="text-sm font-bold text-primary">
+        <div className="mt-auto space-y-3">
+          <div className="bg-primary/[0.06] border border-primary/10 rounded-xl px-3 py-2.5">
+            <p className="text-[9px] uppercase tracking-widest text-muted-foreground font-medium">Economia Potencial</p>
+            <p className="text-base font-bold text-primary">
               R$ {Number(challenge.potential_savings).toLocaleString("pt-BR", { minimumFractionDigits: 2 })}
             </p>
           </div>
           <Button
-            className="w-full bg-primary/15 text-primary border border-primary/30 hover:bg-primary/25"
+            className="w-full bg-primary/15 text-primary border border-primary/30 hover:bg-primary/25 rounded-xl h-10 font-semibold"
             size="sm"
             disabled={loading}
             onClick={onAccept}
           >
-            <Check className="w-4 h-4 mr-1" /> Aceitar Desafio
+            <Check className="w-4 h-4 mr-1.5" /> Aceitar Desafio
           </Button>
         </div>
       </div>
@@ -123,24 +147,32 @@ const ActiveCard = ({
   const daysLeft = Math.max(0, c.duration_days - (uc.checkin_count ?? 0));
   const savedEstimate = Number(c.potential_savings) * (progressPct / 100);
   const gradient = COVER_GRADIENTS[index % COVER_GRADIENTS.length];
+  const glow = COVER_GLOW[index % COVER_GLOW.length];
 
   return (
     <motion.div
       initial={{ opacity: 0, y: 20 }}
       animate={{ opacity: 1, y: 0 }}
       transition={{ delay: index * 0.05 }}
-      className="rounded-xl bg-card border border-border/40 overflow-hidden flex flex-col relative"
+      className={cn(
+        "rounded-2xl overflow-hidden flex flex-col relative",
+        "bg-card/80 backdrop-blur-md border border-white/[0.06]",
+        "shadow-lg", glow
+      )}
     >
       {/* Cover */}
-      <div className={cn("relative h-24 bg-gradient-to-br flex items-center justify-center", gradient)}>
-        <span className={cn("absolute top-2 left-2 text-[10px] font-semibold px-2 py-0.5 rounded", DIFFICULTY_COLOR[c.difficulty])}>
+      <div className={cn("relative h-28 bg-gradient-to-br flex items-center justify-center", gradient)}>
+        {/* Decorative circles */}
+        <div className="absolute top-0 right-0 w-20 h-20 rounded-full bg-white/[0.04] -translate-y-6 translate-x-6" />
+        
+        <span className={cn("absolute top-2.5 left-3 text-[10px] font-semibold px-2 py-0.5 rounded-full backdrop-blur-sm", DIFFICULTY_COLOR[c.difficulty])}>
           {DIFFICULTY_LABEL[c.difficulty] ?? c.difficulty}
         </span>
 
         {/* Menu */}
-        <div className="absolute top-2 right-2">
-          <button onClick={() => setMenuOpen(!menuOpen)} className="p-1 rounded-full bg-background/40 hover:bg-background/60 text-foreground">
-            <MoreVertical className="w-4 h-4" />
+        <div className="absolute top-2.5 right-3">
+          <button onClick={() => setMenuOpen(!menuOpen)} className="p-1.5 rounded-full bg-black/20 backdrop-blur-sm hover:bg-black/40 text-white/80 transition-colors">
+            <MoreVertical className="w-3.5 h-3.5" />
           </button>
           <AnimatePresence>
             {menuOpen && (
@@ -148,7 +180,7 @@ const ActiveCard = ({
                 initial={{ opacity: 0, scale: 0.9 }}
                 animate={{ opacity: 1, scale: 1 }}
                 exit={{ opacity: 0, scale: 0.9 }}
-                className="absolute right-0 mt-1 bg-popover border border-border rounded-lg shadow-lg z-20 overflow-hidden"
+                className="absolute right-0 mt-1 bg-popover/95 backdrop-blur-md border border-border rounded-xl shadow-xl z-20 overflow-hidden"
               >
                 <button
                   onClick={() => { setMenuOpen(false); onAbandon(); }}
@@ -161,43 +193,56 @@ const ActiveCard = ({
           </AnimatePresence>
         </div>
 
-        <span className="text-4xl opacity-60">{c.icon}</span>
+        <span className="text-5xl drop-shadow-lg opacity-70">{c.icon}</span>
       </div>
 
       {/* Body */}
-      <div className="p-3 flex flex-col flex-1 gap-2">
+      <div className="p-4 flex flex-col flex-1 gap-3">
         <div>
           <p className="text-sm font-bold text-foreground flex items-center gap-1.5">
-            <span>{c.icon}</span> {c.name}
+            {c.name}
           </p>
-          <p className="text-[11px] text-muted-foreground">{daysLeft} dias restantes</p>
+          <p className="text-[11px] text-muted-foreground mt-0.5">{daysLeft} dias restantes</p>
         </div>
 
         {/* Progress */}
-        <div className="space-y-1">
+        <div className="space-y-1.5">
           <div className="flex justify-between text-[11px]">
             <span className="text-muted-foreground">Progresso</span>
             <span className="font-bold text-primary">{progressPct}%</span>
           </div>
-          <Progress value={progressPct} className="h-2 bg-secondary" />
+          <div className="h-2.5 rounded-full bg-secondary/80 overflow-hidden">
+            <motion.div
+              className="h-full rounded-full bg-gradient-to-r from-primary/80 to-primary"
+              initial={{ width: 0 }}
+              animate={{ width: `${progressPct}%` }}
+              transition={{ duration: 0.8, ease: "easeOut" }}
+            />
+          </div>
         </div>
 
         {/* Stats */}
         <div className="flex gap-2">
-          <div className="flex-1 bg-secondary/60 rounded-lg px-2 py-1.5 flex items-center gap-1.5">
-            <Flame className="w-3 h-3 text-primary" />
-            <span className="text-[11px] text-foreground font-medium">{uc.checkin_count ?? 0} dias</span>
+          <div className="flex-1 bg-primary/[0.06] border border-primary/10 rounded-xl px-2.5 py-2 flex items-center gap-1.5">
+            <Flame className="w-3.5 h-3.5 text-primary" />
+            <div>
+              <p className="text-[9px] text-muted-foreground">Streak</p>
+              <p className="text-xs text-foreground font-semibold">{uc.checkin_count ?? 0} dias</p>
+            </div>
           </div>
-          <div className="flex-1 bg-secondary/60 rounded-lg px-2 py-1.5 flex items-center gap-1.5">
-            <Trophy className="w-3 h-3 text-primary" />
-            <span className="text-[11px] text-foreground font-medium">R$ {savedEstimate.toFixed(0)},00</span>
+          <div className="flex-1 bg-primary/[0.06] border border-primary/10 rounded-xl px-2.5 py-2 flex items-center gap-1.5">
+            <Trophy className="w-3.5 h-3.5 text-primary" />
+            <div>
+              <p className="text-[9px] text-muted-foreground">Economizado</p>
+              <p className="text-xs text-foreground font-semibold">R$ {savedEstimate.toFixed(0)}</p>
+            </div>
           </div>
         </div>
 
         {/* Check-in */}
         <Button
           className={cn(
-            "w-full mt-auto",
+            "w-full mt-auto rounded-xl h-10 font-semibold",
             uc.checked_today
               ? "bg-secondary text-muted-foreground cursor-default"
               : "bg-primary/15 text-primary border border-primary/30 hover:bg-primary/25"
@@ -206,13 +251,12 @@ const ActiveCard = ({
           disabled={uc.checked_today || loadingId === uc.id}
           onClick={onCheckin}
         >
-          <Flame className="w-4 h-4 mr-1" /> {uc.checked_today ? "Feito hoje ✓" : "Check-in diário"}
+          <Flame className="w-4 h-4 mr-1.5" /> {uc.checked_today ? "Feito hoje ✓" : "Check-in diário"}
         </Button>
       </div>
     </motion.div>
   );
 };
-
 /* ─────── Create Modal ─────── */
 const CreateChallengeModal = ({
   open,
