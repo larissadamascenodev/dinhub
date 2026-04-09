@@ -98,6 +98,34 @@ const Configuracoes = () => {
     setEditModalOpen(true);
   };
 
+  const handleChangePassword = async () => {
+    if (!newPassword || !confirmPassword) {
+      toast.error("Preencha todos os campos");
+      return;
+    }
+    if (newPassword.length < 6) {
+      toast.error("A nova senha deve ter no mínimo 6 caracteres");
+      return;
+    }
+    if (newPassword !== confirmPassword) {
+      toast.error("As senhas não coincidem");
+      return;
+    }
+    setChangingPassword(true);
+    try {
+      const { error } = await supabase.auth.updateUser({ password: newPassword });
+      if (error) throw error;
+      toast.success("Senha alterada com sucesso!");
+      setPasswordModalOpen(false);
+      setCurrentPassword("");
+      setNewPassword("");
+      setConfirmPassword("");
+    } catch (err: any) {
+      toast.error(err?.message || "Erro ao alterar senha");
+    } finally {
+      setChangingPassword(false);
+    }
+  };
 
   const handleLogout = async () => {
     await supabase.auth.signOut();
