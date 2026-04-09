@@ -1057,7 +1057,7 @@ const CategoryDetail = ({
               </div>
               <div>
                 <p className="text-[9px] text-muted-foreground/50 uppercase tracking-wider font-medium">Transações</p>
-                <p className="text-sm font-bold text-foreground mt-0.5 tabular-nums">{category.txCount} lanç.</p>
+                <p className="text-sm font-bold text-foreground mt-0.5 tabular-nums">{category.txCount} lançamentos</p>
               </div>
             </div>
           </GlassCard>
