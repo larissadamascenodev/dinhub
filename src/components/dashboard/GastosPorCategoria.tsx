@@ -76,8 +76,10 @@ const GastosPorCategoria = memo(({ categories, selectedMonth, onVerAnalise }: Pr
       {/* Stacked color bar - no rounding on segments, only on container */}
       <div className="px-4">
         <div className="flex h-2.5 gap-[3px]">
-          {sorted.map((cat, idx) => {
-            const pct = totalExpenses > 0 ? (cat.amount / totalExpenses) * 100 : 0;
+          {visible.map((cat) => {
+            const idx = sorted.indexOf(cat);
+            const visibleTotal = visible.reduce((s, c) => s + c.amount, 0);
+            const pct = visibleTotal > 0 ? (cat.amount / visibleTotal) * 100 : 0;
             if (pct < 0.5) return null;
             const color = getCatColor(cat.name, idx, customCats);
             const isSelected = selectedCat === cat.name;
