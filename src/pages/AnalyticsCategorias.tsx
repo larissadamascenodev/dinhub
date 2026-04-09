@@ -384,7 +384,7 @@ const CategoryList = ({ categoryData, onSelect, selectedCat, prevCategoryData, h
                       animate={{ width: `${cat.percentage}%` }}
                       transition={{ delay: 0.1 + i * 0.03, duration: 0.5, ease: "easeOut" }}
                       className="h-full rounded-full"
-                      style={{ backgroundColor: `hsl(${getCategoryColor(cat.name, [])})` }}
+                      style={{ backgroundColor: cat.hexColor }}
                     />
                   </div>
                 </div>
