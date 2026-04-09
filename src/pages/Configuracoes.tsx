@@ -492,13 +492,6 @@ const Configuracoes = () => {
         {/* Bio placeholder */}
         <p className="text-xs text-muted-foreground mt-2">Focado em controle financeiro e evolução diária 💪</p>
 
-        <div className="mt-3">
-          <div className="flex items-center justify-between mb-1">
-            <span className="text-[10px] text-muted-foreground">Progresso de nível</span>
-            <span className="text-[10px] text-muted-foreground">0 / 200 XP</span>
-          </div>
-          <Progress value={0} className="h-1.5" />
-        </div>
       </motion.div>
 
       {/* ═══ Carteira Card ═══ */}
