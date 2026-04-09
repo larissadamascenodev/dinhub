@@ -172,12 +172,12 @@ export default function BotFinanceBalanco() {
                       {proj.delta === 0 ? (
                         <Minus className="w-3 h-3 text-muted-foreground" />
                       ) : isPos ? (
-                        <TrendingUp className="w-3 h-3 text-emerald-400" />
+                        <TrendingUp className="w-3 h-3 text-primary" />
                       ) : (
-                        <TrendingDown className="w-3 h-3 text-red-400" />
+                        <TrendingDown className="w-3 h-3 text-destructive" />
                       )}
                       <p className={`text-[12px] font-bold tabular-nums ${
-                        proj.delta === 0 ? "text-muted-foreground" : isPos ? "text-emerald-400" : "text-red-400"
+                        proj.delta === 0 ? "text-muted-foreground" : isPos ? "text-primary" : "text-destructive"
                       }`}>
                         {isPos && proj.delta > 0 ? "+" : ""}{fmt(proj.delta)}
                       </p>
@@ -186,10 +186,10 @@ export default function BotFinanceBalanco() {
 
                   <div className="flex items-center gap-3 text-[9px] mb-1.5">
                     <span className="text-muted-foreground/60">
-                      Receitas: <span className="text-emerald-400/80 font-semibold">{fmt(proj.income)}</span>
+                      Receitas: <span className="text-primary/80 font-semibold">{fmt(proj.income)}</span>
                     </span>
                     <span className="text-muted-foreground/60">
-                      Despesas: <span className="text-red-400/80 font-semibold">{fmt(proj.expense)}</span>
+                      Despesas: <span className="text-destructive/80 font-semibold">{fmt(proj.expense)}</span>
                     </span>
                   </div>
 
@@ -198,7 +198,7 @@ export default function BotFinanceBalanco() {
                       initial={{ width: 0 }}
                       animate={{ width: `${barPct}%` }}
                       transition={{ delay: 0.1 + idx * 0.03, duration: 0.5, ease: "easeOut" }}
-                      className={`h-full rounded-full ${isPos ? "bg-emerald-400/70" : "bg-red-400/70"}`}
+                      className={`h-full rounded-full ${isPos ? "bg-primary/70" : "bg-destructive/70"}`}
                     />
                   </div>
                 </div>
