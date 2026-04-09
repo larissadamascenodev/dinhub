@@ -1417,8 +1417,8 @@ const AnalyticsCategorias = () => {
         iMap[category].items.push({ name, amount, remaining, total });
       });
 
-      setTransactions([...baseTxs, ...materializedRecurring]);
-      setPrevMonthTxs([...prevBaseTxs, ...prevMaterialized]);
+      setTransactions([...filteredBaseTxs, ...extraCcTxs, ...materializedRecurring]);
+      setPrevMonthTxs([...filteredPrevBaseTxs, ...prevMaterialized]);
       setHistoricalMap(hMap);
       setInstallmentImpacts(iMap);
       setCustomCats(cats);
