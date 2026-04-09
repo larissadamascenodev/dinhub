@@ -1,17 +1,17 @@
 import { useState, useCallback, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import { motion, AnimatePresence } from "framer-motion";
-import { Target, Plus, Wallet, Clock, MoreVertical, Shield, Sparkles } from "lucide-react";
+import { Target, Plus, Wallet, Clock, MoreVertical, Sparkles, Edit2, Trash2 } from "lucide-react";
 import { toast } from "sonner";
 import { useAuth } from "@/contexts/AuthContext";
-import { fetchGoals, createGoal, createGoalDeposit, generateGoalCoverImage, updateGoal, type Goal } from "@/services/goalService";
+import { fetchGoals, createGoal, createGoalDeposit, deleteGoal, generateGoalCoverImage, updateGoal, type Goal } from "@/services/goalService";
 import GoalCreateModal from "@/components/goals/GoalCreateModal";
 import GoalDepositModal from "@/components/goals/GoalDepositModal";
+import GoalEditModal from "@/components/goals/GoalEditModal";
 
 const fmt = (v: number) =>
   v.toLocaleString("pt-BR", { style: "currency", currency: "BRL" });
 
-// Palette for goal dots in donut
 const GOAL_COLORS = [
   "hsl(40 90% 55%)",
   "hsl(150 100% 45%)",
@@ -63,13 +63,14 @@ const Metas = () => {
   const [loading, setLoading] = useState(true);
   const [showCreateModal, setShowCreateModal] = useState(false);
   const [depositGoal, setDepositGoal] = useState<Goal | null>(null);
+  const [editGoal, setEditGoal] = useState<Goal | null>(null);
+  const [menuGoalId, setMenuGoalId] = useState<string | null>(null);
 
   const loadGoals = useCallback(async () => {
     try {
       const data = await fetchGoals();
       setGoals(data);
 
-      // Generate cover images for goals that don't have one
       for (const goal of data) {
         if (!goal.cover_image) {
           generateGoalCoverImage(goal.name).then(async (imageUrl) => {
@@ -97,7 +98,6 @@ const Metas = () => {
     async (data: { name: string; target_amount: number; monthly_contribution?: number | null; deadline?: string | null }) => {
       if (!user) return;
       try {
-        // Generate cover image
         const coverImage = await generateGoalCoverImage(data.name);
         await createGoal({ ...data, cover_image: coverImage }, user.id);
         toast.success("Meta criada com sucesso! 🎯");
@@ -128,18 +128,24 @@ const Metas = () => {
     [user, depositGoal, loadGoals]
   );
 
+  const handleDeleteGoal = useCallback(async (goalId: string) => {
+    if (!confirm("Tem certeza que deseja excluir esta meta?")) return;
+    try {
+      await deleteGoal(goalId);
+      toast.success("Meta excluída");
+      setMenuGoalId(null);
+      loadGoals();
+    } catch {
+      toast.error("Erro ao excluir meta");
+    }
+  }, [loadGoals]);
+
   const totalGuardado = goals.reduce((s, g) => s + g.current_amount, 0);
   const totalObjetivo = goals.reduce((s, g) => s + g.target_amount, 0);
   const avgProgress =
     goals.length > 0
       ? goals.reduce((s, g) => s + Math.min(1, g.current_amount / g.target_amount), 0) / goals.length
       : 0;
-
-  const nextGoal = goals
-    .filter((g) => g.current_amount < g.target_amount)
-    .sort((a, b) => (b.current_amount / b.target_amount) - (a.current_amount / a.target_amount))[0] ?? null;
-
-  const nextGoalProgress = nextGoal ? Math.min(1, nextGoal.current_amount / nextGoal.target_amount) : 0;
 
   return (
     <div className="space-y-5 pb-8">
@@ -191,56 +197,14 @@ const Metas = () => {
         </motion.div>
       )}
 
-      {/* Próxima Conquista */}
-      {nextGoal && (
-        <motion.div initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.05 }} className="rounded-xl overflow-hidden relative">
-          <div className="absolute inset-0" style={{ background: "linear-gradient(160deg, hsl(220 15% 14% / 0.6) 0%, hsl(220 18% 8% / 0.75) 50%, hsl(220 20% 4% / 0.9) 100%)" }} />
-          <div className="absolute inset-0 border border-border/10 rounded-xl" />
-          <div className="relative px-4 py-3.5 space-y-3">
-            <div className="flex items-center gap-1.5">
-              <span className="text-[9px]">✨</span>
-              <p className="text-[8px] text-primary uppercase tracking-[0.15em] font-bold">Próxima Conquista</p>
-            </div>
-            <div className="flex items-center justify-between">
-              <div className="flex items-center gap-2.5">
-                <div className="w-8 h-8 rounded-xl bg-primary/10 border border-primary/20 flex items-center justify-center">
-                  <Shield className="w-4 h-4 text-primary" />
-                </div>
-                <p className="text-sm font-bold text-foreground">{nextGoal.name}</p>
-              </div>
-              <span className="text-base font-bold text-primary tabular-nums">{Math.round(nextGoalProgress * 100)}%</span>
-            </div>
-            <div className="relative h-2 w-full rounded-full bg-secondary overflow-hidden">
-              <motion.div initial={{ width: 0 }} animate={{ width: `${nextGoalProgress * 100}%` }} transition={{ duration: 0.8, ease: "easeOut" }}
-                className="h-full rounded-full"
-                style={{ background: "linear-gradient(90deg, hsl(150 100% 45% / 0.6), hsl(150 100% 45%))", boxShadow: "0 0 8px hsl(150 100% 45% / 0.3)" }} />
-            </div>
-            <div className="flex items-center justify-between text-[10px]">
-              <span className="text-foreground/70 tabular-nums">{fmt(nextGoal.current_amount)}</span>
-              <span className="text-muted-foreground/60 tabular-nums">faltam {fmt(nextGoal.target_amount - nextGoal.current_amount)}</span>
-            </div>
-            <div className="flex items-center gap-2">
-              <motion.button whileTap={{ scale: 0.95 }} onClick={(e) => { e.stopPropagation(); setDepositGoal(nextGoal); }}
-                className="flex-1 flex items-center justify-center gap-1.5 py-2.5 rounded-xl bg-primary/15 border border-primary/20 text-primary text-xs font-bold hover:bg-primary/20 transition-colors">
-                <Wallet className="w-3.5 h-3.5" /> Depositar
-              </motion.button>
-              <motion.button whileTap={{ scale: 0.95 }} onClick={() => navigate(`/metas/${nextGoal.id}`)}
-                className="flex items-center justify-center gap-1.5 px-4 py-2.5 rounded-xl bg-muted/10 border border-border/15 text-foreground/80 text-xs font-semibold hover:bg-muted/15 transition-colors">
-                <Clock className="w-3.5 h-3.5" /> Histórico
-              </motion.button>
-            </div>
-          </div>
-        </motion.div>
-      )}
-
       {/* Section title */}
       {goals.length > 0 && (
         <p className="text-sm font-bold font-display text-foreground">Todas as Metas</p>
       )}
 
-      {/* Goals list — full-width cards with cover image */}
+      {/* Goals grid — 2 per row on desktop, 1 on mobile */}
       {loading ? (
-        <div className="space-y-3">
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
           {[1, 2].map((i) => (
             <div key={i} className="h-48 rounded-xl bg-card/60 animate-pulse" />
           ))}
@@ -258,12 +222,13 @@ const Metas = () => {
           </motion.button>
         </motion.div>
       ) : (
-        <div className="space-y-3">
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
           <AnimatePresence>
             {goals.map((goal, idx) => {
               const progress = Math.min(1, goal.current_amount / goal.target_amount);
               const remaining = goal.target_amount - goal.current_amount;
               const isComplete = progress >= 1;
+              const isMenuOpen = menuGoalId === goal.id;
 
               return (
                 <motion.div
@@ -278,33 +243,53 @@ const Metas = () => {
                   {/* Cover image */}
                   <div className="relative h-28 md:h-32 overflow-hidden">
                     {goal.cover_image ? (
-                      <img
-                        src={goal.cover_image}
-                        alt={goal.name}
-                        className="w-full h-full object-cover"
-                      />
+                      <img src={goal.cover_image} alt={goal.name} className="w-full h-full object-cover" />
                     ) : (
                       <div className="w-full h-full bg-gradient-to-br from-primary/20 to-primary/5 flex items-center justify-center">
                         <Target className="w-10 h-10 text-primary/30" />
                       </div>
                     )}
-                    {/* Gradient overlay */}
                     <div className="absolute inset-0 bg-gradient-to-t from-card via-card/60 to-transparent" />
 
-                    {/* Coin icon top-left */}
                     <div className="absolute top-2.5 left-2.5 w-7 h-7 rounded-full bg-primary/20 backdrop-blur-sm border border-primary/30 flex items-center justify-center">
                       <Sparkles className="w-3.5 h-3.5 text-primary" />
                     </div>
 
-                    {/* Menu top-right */}
-                    <button
-                      onClick={(e) => { e.stopPropagation(); navigate(`/metas/${goal.id}`); }}
-                      className="absolute top-2.5 right-2.5 w-7 h-7 rounded-full bg-black/30 backdrop-blur-sm flex items-center justify-center"
-                    >
-                      <MoreVertical className="w-3.5 h-3.5 text-white/70" />
-                    </button>
+                    {/* Three dots menu */}
+                    <div className="absolute top-2.5 right-2.5">
+                      <button
+                        onClick={(e) => { e.stopPropagation(); setMenuGoalId(isMenuOpen ? null : goal.id); }}
+                        className="w-7 h-7 rounded-full bg-black/30 backdrop-blur-sm flex items-center justify-center"
+                      >
+                        <MoreVertical className="w-3.5 h-3.5 text-white/70" />
+                      </button>
 
-                    {/* Goal name + faltam over image */}
+                      <AnimatePresence>
+                        {isMenuOpen && (
+                          <motion.div
+                            initial={{ opacity: 0, scale: 0.9, y: -4 }}
+                            animate={{ opacity: 1, scale: 1, y: 0 }}
+                            exit={{ opacity: 0, scale: 0.9, y: -4 }}
+                            className="absolute right-0 mt-1 w-36 rounded-xl bg-card border border-border/20 shadow-xl overflow-hidden z-10"
+                            onClick={(e) => e.stopPropagation()}
+                          >
+                            <button
+                              onClick={() => { setEditGoal(goal); setMenuGoalId(null); }}
+                              className="w-full flex items-center gap-2 px-3 py-2.5 text-xs font-semibold text-foreground hover:bg-muted/10 transition-colors"
+                            >
+                              <Edit2 className="w-3.5 h-3.5" /> Editar
+                            </button>
+                            <button
+                              onClick={() => { handleDeleteGoal(goal.id); }}
+                              className="w-full flex items-center gap-2 px-3 py-2.5 text-xs font-semibold text-destructive hover:bg-destructive/10 transition-colors"
+                            >
+                              <Trash2 className="w-3.5 h-3.5" /> Excluir
+                            </button>
+                          </motion.div>
+                        )}
+                      </AnimatePresence>
+                    </div>
+
                     <div className="absolute bottom-2 left-3 right-3">
                       <div className="flex items-center gap-2">
                         <Target className="w-4 h-4 text-primary flex-shrink-0" />
@@ -320,7 +305,6 @@ const Metas = () => {
 
                   {/* Bottom section */}
                   <div className="px-3 pb-3 pt-1.5">
-                    {/* Progress bar */}
                     <div className="flex items-center gap-2 mb-1.5">
                       <div className="flex-1 relative h-2 rounded-full bg-secondary overflow-hidden">
                         <motion.div
@@ -341,13 +325,11 @@ const Metas = () => {
                       </span>
                     </div>
 
-                    {/* Amounts row */}
                     <div className="flex items-center justify-between mb-2.5">
                       <span className="text-[10px] font-semibold text-primary tabular-nums">{fmt(goal.current_amount)}</span>
                       <span className="text-[10px] text-muted-foreground/60 tabular-nums">{fmt(goal.target_amount)}</span>
                     </div>
 
-                    {/* Actions */}
                     {!isComplete && (
                       <div className="flex items-center gap-2">
                         <motion.button
@@ -374,8 +356,16 @@ const Metas = () => {
         </div>
       )}
 
+      {/* Close menu on outside click */}
+      {menuGoalId && (
+        <div className="fixed inset-0 z-[5]" onClick={() => setMenuGoalId(null)} />
+      )}
+
       <GoalCreateModal open={showCreateModal} onClose={() => setShowCreateModal(false)} onSubmit={handleCreateGoal} />
       <GoalDepositModal open={!!depositGoal} onClose={() => setDepositGoal(null)} onSubmit={handleDeposit} goalName={depositGoal?.name ?? ""} />
+      {editGoal && (
+        <GoalEditModal open={!!editGoal} onClose={() => setEditGoal(null)} goal={editGoal} onUpdated={loadGoals} />
+      )}
     </div>
   );
 };
