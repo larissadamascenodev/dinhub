@@ -1595,7 +1595,6 @@ const AnalyticsCategorias = () => {
           </button>
           <div className="flex-1 min-w-0">
             <h1 className="text-base md:text-xl font-bold text-foreground leading-tight">Categorias</h1>
-            <p className="text-[10px] md:text-xs text-muted-foreground/50 truncate">Veja para onde seu dinheiro está indo 👀</p>
           </div>
           <MonthSelector
             selectedMonth={selectedMonth}
