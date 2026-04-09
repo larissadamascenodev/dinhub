@@ -279,56 +279,60 @@ const MetaDetalhe = () => {
         </div>
       </motion.div>
 
-      {/* ═══ Insight ═══ */}
-      {topInsight && (
-        <motion.div initial={{ opacity: 0, y: 8 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.1 }}>
+      {/* ═══ Insight + Previsão ═══ */}
+      <motion.div initial={{ opacity: 0, y: 8 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.08 }} className="space-y-2.5">
+        {topInsight && (
           <div className="flex items-start gap-2.5 rounded-2xl border border-primary/10 bg-primary/[0.04] p-3.5">
             <Sparkles className="w-4 h-4 text-primary shrink-0 mt-0.5" />
             <p className="text-xs text-muted-foreground leading-relaxed">{topInsight}</p>
           </div>
-        </motion.div>
-      )}
+        )}
 
-      {/* ═══ Compact info row: Previsão + Objetivo + Depósitos + Saques ═══ */}
-      <motion.div initial={{ opacity: 0, y: 12 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.05 }}>
-        <div className="rounded-2xl border border-border/10 p-3.5" style={{ background: CARD_BG }}>
-          <div className={`grid gap-3 ${predictionText ? "grid-cols-4" : "grid-cols-3"}`}>
-            {predictionText && (
-              <div className="text-center">
-                <div className="w-6 h-6 rounded-lg bg-primary/15 flex items-center justify-center mx-auto mb-1">
-                  <Clock className="w-3 h-3 text-primary" />
-                </div>
-                <p className="text-[8px] text-muted-foreground uppercase tracking-wider">Previsão</p>
-                <p className="text-xs font-bold text-foreground tabular-nums mt-0.5">{predictionText}</p>
-              </div>
+        {predictionText && (
+          <div className="flex items-center gap-3 rounded-2xl border border-border/10 p-3.5" style={{ background: CARD_BG }}>
+            <div className="w-8 h-8 rounded-xl bg-primary/10 flex items-center justify-center flex-shrink-0">
+              <Clock className="w-4 h-4 text-primary" />
+            </div>
+            <div className="flex-1">
+              <p className="text-[10px] text-muted-foreground">Previsão de conclusão</p>
+              <p className="text-sm font-bold text-foreground">{predictionText}</p>
+            </div>
+            {goal.monthly_contribution && goal.monthly_contribution > 0 && (
+              <span className="text-[10px] bg-primary/10 text-primary px-2 py-1 rounded-lg font-medium tabular-nums">
+                {fmt(goal.monthly_contribution)}/mês
+              </span>
             )}
-            <div className="text-center">
-              <div className="w-6 h-6 rounded-lg bg-muted/20 flex items-center justify-center mx-auto mb-1">
-                <Target className="w-3 h-3 text-muted-foreground" />
-              </div>
-              <p className="text-[8px] text-muted-foreground uppercase tracking-wider">Objetivo</p>
-              <p className="text-xs font-bold text-foreground tabular-nums mt-0.5">{fmt(Number(goal.target_amount))}</p>
+          </div>
+        )}
+      </motion.div>
+
+      {/* ═══ Resumo ═══ */}
+      <motion.div initial={{ opacity: 0, y: 12 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.12 }}>
+        <div className="rounded-2xl border border-border/10 p-4 space-y-3" style={{ background: CARD_BG }}>
+          <div className="flex items-center justify-between">
+            <p className="text-[9px] text-muted-foreground uppercase tracking-widest font-medium">Resumo</p>
+          </div>
+          <div className="space-y-2">
+            <div className="flex items-center justify-between py-1">
+              <span className="text-xs text-muted-foreground">Objetivo</span>
+              <span className="text-xs font-semibold text-foreground tabular-nums">{fmt(Number(goal.target_amount))}</span>
             </div>
-            <div className="text-center">
-              <div className="w-6 h-6 rounded-lg bg-primary/15 flex items-center justify-center mx-auto mb-1">
-                <ArrowDownLeft className="w-3 h-3 text-primary" />
-              </div>
-              <p className="text-[8px] text-muted-foreground uppercase tracking-wider">Depósitos</p>
-              <p className="text-xs font-bold text-primary tabular-nums mt-0.5">{fmt(totalDeposits)}</p>
+            <div className="h-px bg-border/8" />
+            <div className="flex items-center justify-between py-1">
+              <span className="text-xs text-muted-foreground">Total depositado</span>
+              <span className="text-xs font-semibold text-primary tabular-nums">{fmt(totalDeposits)}</span>
             </div>
-            <div className="text-center">
-              <div className="w-6 h-6 rounded-lg bg-destructive/15 flex items-center justify-center mx-auto mb-1">
-                <TrendingUp className="w-3 h-3 text-destructive" />
-              </div>
-              <p className="text-[8px] text-muted-foreground uppercase tracking-wider">Saques</p>
-              <p className="text-xs font-bold text-destructive tabular-nums mt-0.5">{fmt(totalWithdrawals)}</p>
+            <div className="h-px bg-border/8" />
+            <div className="flex items-center justify-between py-1">
+              <span className="text-xs text-muted-foreground">Total sacado</span>
+              <span className="text-xs font-semibold text-destructive tabular-nums">{fmt(totalWithdrawals)}</span>
+            </div>
+            <div className="h-px bg-border/8" />
+            <div className="flex items-center justify-between py-1">
+              <span className="text-xs text-foreground font-medium">Saldo atual</span>
+              <span className="text-sm font-bold text-primary tabular-nums">{fmt(Number(goal.current_amount))}</span>
             </div>
           </div>
-          {goal.monthly_contribution && goal.monthly_contribution > 0 && (
-            <p className="text-[10px] text-muted-foreground text-center mt-2.5 pt-2.5 border-t border-border/10">
-              Contribuição mensal: {fmt(goal.monthly_contribution)}
-            </p>
-          )}
         </div>
       </motion.div>
 
