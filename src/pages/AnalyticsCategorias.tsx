@@ -129,40 +129,38 @@ const SummaryCard = ({ totalExpenses, topCategory, monthLabel }: {
 }) => {
   const annualEstimate = totalExpenses * 12;
   return (
-    <GlassCard className="p-4 md:p-5">
-      {/* Top row */}
-      <div className="flex items-center justify-between mb-4">
-        <div>
-          <p className="text-[9px] md:text-[10px] text-muted-foreground/50 uppercase tracking-wider font-medium">
-            Total de Despesas · {monthLabel}
-          </p>
-          <p className="text-xl md:text-3xl font-bold text-foreground tabular-nums mt-0.5">
-            {fmt(totalExpenses)}
-          </p>
-        </div>
-        {topCategory && (
-          <div className="text-right">
-            <p className="text-[9px] md:text-[10px] text-muted-foreground/50 uppercase tracking-wider font-medium">Maior gasto</p>
-            <p className="text-xs md:text-sm font-bold text-foreground mt-0.5">{topCategory.name}</p>
-            <p className="text-[10px] md:text-xs text-muted-foreground/60">{topCategory.percentage}%</p>
-          </div>
-        )}
-      </div>
+    <div
+      className="rounded-2xl border border-border/20 p-4 md:p-5"
+      style={{
+        background: "linear-gradient(135deg, hsl(var(--card) / 0.8) 0%, hsl(var(--card) / 0.4) 50%, hsl(var(--card) / 0.6) 100%)",
+        backdropFilter: "blur(24px)",
+        boxShadow: "0 8px 32px -8px rgba(0,0,0,0.4), inset 0 1px 0 rgba(255,255,255,0.04)",
+      }}
+    >
+      <p className="text-[10px] text-muted-foreground/50 mb-0.5">Total em {monthLabel}</p>
+      <p className="text-2xl md:text-3xl font-bold text-foreground tabular-nums">{fmt(totalExpenses)}</p>
 
-      {/* Bottom row — projections */}
-      <div className="grid grid-cols-2 gap-2">
-        <div className="rounded-xl bg-background/40 border border-border/10 p-3 text-center">
-          <p className="text-[8px] md:text-[9px] text-muted-foreground/50 uppercase tracking-wider font-medium">Gasto anual estimado</p>
-          <p className="text-sm md:text-base font-bold text-destructive tabular-nums mt-1">{fmt(annualEstimate)}</p>
-          <p className="text-[7px] md:text-[8px] text-muted-foreground/40 mt-0.5">Se continuar nesse ritmo</p>
+      {topCategory && (
+        <div className="flex items-center gap-4 mt-2">
+          <span className="flex items-center gap-1.5 text-[11px] text-muted-foreground/70">
+            <span className="w-2 h-2 rounded-full" style={{ backgroundColor: topCategory.hexColor }} />
+            {topCategory.name} <span className="text-muted-foreground/40">{topCategory.percentage}%</span>
+          </span>
+          <span className="text-[11px] text-muted-foreground/50">· maior gasto</span>
         </div>
-        <div className="rounded-xl bg-background/40 border border-border/10 p-3 text-center">
-          <p className="text-[8px] md:text-[9px] text-muted-foreground/50 uppercase tracking-wider font-medium">Média mensal</p>
-          <p className="text-sm md:text-base font-bold text-foreground tabular-nums mt-1">{fmt(totalExpenses)}</p>
-          <p className="text-[7px] md:text-[8px] text-muted-foreground/40 mt-0.5">Este mês</p>
+      )}
+
+      <div className="border-t border-border/5 mt-3 pt-3 grid grid-cols-2 gap-3">
+        <div>
+          <p className="text-[9px] text-muted-foreground/50 uppercase tracking-wider font-medium">Gasto anual estimado</p>
+          <p className="text-sm font-bold text-destructive mt-0.5 tabular-nums">{fmt(annualEstimate)}</p>
+        </div>
+        <div>
+          <p className="text-[9px] text-muted-foreground/50 uppercase tracking-wider font-medium">Média mensal</p>
+          <p className="text-sm font-bold text-foreground mt-0.5 tabular-nums">{fmt(totalExpenses)}</p>
         </div>
       </div>
-    </GlassCard>
+    </div>
   );
 };
 
