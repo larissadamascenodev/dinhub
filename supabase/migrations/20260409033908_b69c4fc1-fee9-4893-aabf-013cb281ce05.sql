@@ -1,0 +1,1 @@
+ALTER TABLE public.goal_transactions ADD COLUMN account_id uuid REFERENCES public.accounts(id) DEFAULT NULL;
