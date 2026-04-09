@@ -4,7 +4,7 @@ import {
   User, Pencil, Star, Flame, Target, TrendingUp, Swords, Trophy,
   Shield, Crown, Upload, FileText, Smartphone, MessageCircle, Trash2, LogOut,
   Bell, Globe, HelpCircle, Headphones, FileCheck, ChevronRight, Wallet, Settings, Camera,
-  MessageSquare, Sparkles, Briefcase,
+  MessageSquare,
 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -33,15 +33,6 @@ const Configuracoes = () => {
   const [resetting, setResetting] = useState(false);
   const [uploadingAvatar, setUploadingAvatar] = useState(false);
   const [previewUrl, setPreviewUrl] = useState<string | null>(null);
-  const [botPersonality, setBotPersonalityState] = useState<"casual" | "assessor">(() => {
-    const saved = localStorage.getItem("bot_personality");
-    return saved === "assessor" ? "assessor" : "casual";
-  });
-
-  const setBotPersonality = (value: "casual" | "assessor") => {
-    setBotPersonalityState(value);
-    localStorage.setItem("bot_personality", value);
-  };
 
   const displayName = profile?.display_name || user?.email?.split("@")[0] || "Usuário";
   const email = user?.email ?? "";
@@ -543,76 +534,6 @@ const Configuracoes = () => {
         ))}
       </div>
 
-      {/* ═══ Personalidade do Fin ═══ */}
-      <motion.div
-        initial={{ opacity: 0, y: 8 }}
-        animate={{ opacity: 1, y: 0 }}
-        transition={{ delay: 0.3 }}
-        className="rounded-xl border border-border/20 bg-card/60 backdrop-blur-sm p-4"
-      >
-        <div className="flex items-center gap-2 mb-3">
-          <MessageSquare className="w-4 h-4 text-primary" />
-          <p className="text-xs font-bold text-foreground">Personalidade do Fin</p>
-        </div>
-
-        {/* Toggle selector */}
-        <div className="relative rounded-xl bg-background/60 border border-border/20 flex overflow-hidden mb-4">
-          <motion.div
-            className="absolute inset-y-0 bg-primary/15 border border-primary/40 rounded-xl"
-            initial={false}
-            animate={{
-              left: botPersonality === "casual" ? "0px" : "50%",
-              width: "50%",
-            }}
-            transition={{ type: "spring", stiffness: 350, damping: 30 }}
-          />
-          <button
-            onClick={() => setBotPersonality("casual")}
-            className={cn(
-              "relative z-10 flex-1 h-9 rounded-xl text-xs font-bold flex items-center justify-center gap-1.5 transition-colors duration-200",
-              botPersonality === "casual" ? "text-primary" : "text-muted-foreground hover:text-foreground"
-            )}
-          >
-            <Sparkles className="w-3.5 h-3.5" /> Casual
-          </button>
-          <button
-            onClick={() => setBotPersonality("assessor")}
-            className={cn(
-              "relative z-10 flex-1 h-9 rounded-xl text-xs font-bold flex items-center justify-center gap-1.5 transition-colors duration-200",
-              botPersonality === "assessor" ? "text-primary" : "text-muted-foreground hover:text-foreground"
-            )}
-          >
-            <Briefcase className="w-3.5 h-3.5" /> Assessor
-          </button>
-        </div>
-
-        {/* Preview da personalidade */}
-        <div className="flex items-center justify-between mb-2">
-          <span className="text-[10px] text-muted-foreground">Prévia</span>
-          <span className="text-[9px] font-bold text-primary bg-primary/15 px-2 py-0.5 rounded-full">ATIVO</span>
-        </div>
-        <AnimatePresence mode="wait">
-          <motion.div
-            key={botPersonality}
-            initial={{ opacity: 0, y: 4 }}
-            animate={{ opacity: 1, y: 0 }}
-            exit={{ opacity: 0, y: -4 }}
-            transition={{ duration: 0.2 }}
-            className="rounded-lg bg-primary/[0.05] border border-primary/10 p-3"
-          >
-            <p className="text-[11px] text-muted-foreground leading-relaxed">
-              {botPersonality === "casual"
-                ? "Irônico, descontraído, zoeiro com carinho"
-                : "Sério, objetivo, tom de consultor financeiro"}
-            </p>
-            <p className="text-[10px] text-primary/60 mt-1.5 italic">
-              {botPersonality === "casual"
-                ? '"Mais Uber? Tá formando parceria! 😅 Anotei R$45"'
-                : '"Registrado: R$45,00 — Transporte. Saldo atualizado."'}
-            </p>
-          </motion.div>
-        </AnimatePresence>
-      </motion.div>
 
       {/* ═══ Tabs: Conta / Configurações ═══ */}
       <div className="relative rounded-xl bg-card/90 backdrop-blur-xl border border-border/30 shadow-lg shadow-black/30 flex overflow-hidden">
