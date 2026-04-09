@@ -243,30 +243,28 @@ const Metas = () => {
                   exit={{ opacity: 0, y: -12 }}
                   transition={{ delay: idx * 0.05 }}
                   onClick={() => navigate(`/metas/${goal.id}`)}
-                  className="rounded-xl overflow-hidden bg-card/80 backdrop-blur-xl border border-border/15 shadow-lg shadow-black/10 cursor-pointer hover:border-primary/20 transition-all active:scale-[0.99] relative"
+                  className="rounded-2xl overflow-hidden cursor-pointer active:scale-[0.98] transition-transform relative group"
+                  style={{ boxShadow: "0 4px 24px -4px rgba(0,0,0,0.35)" }}
                 >
-                  {/* Cover image */}
-                  <div className="relative h-28 md:h-32 overflow-hidden">
+                  {/* Full card background image */}
+                  <div className="relative">
                     {goal.cover_image ? (
-                      <img src={goal.cover_image} alt={goal.name} className="w-full h-full object-cover" />
+                      <img src={goal.cover_image} alt={goal.name} className="w-full h-44 md:h-48 object-cover" />
                     ) : (
-                      <div className="w-full h-full bg-gradient-to-br from-primary/20 to-primary/5 flex items-center justify-center">
-                        <Target className="w-10 h-10 text-primary/30" />
+                      <div className="w-full h-44 md:h-48 bg-gradient-to-br from-primary/20 via-card to-card flex items-center justify-center">
+                        <Target className="w-12 h-12 text-primary/20" />
                       </div>
                     )}
-                    <div className="absolute inset-0 bg-gradient-to-t from-card via-card/60 to-transparent" />
+                    {/* Dark overlay gradient */}
+                    <div className="absolute inset-0 bg-gradient-to-t from-black/90 via-black/50 to-black/20" />
 
-                    <div className="absolute top-2.5 left-2.5 w-7 h-7 rounded-full bg-primary/20 backdrop-blur-sm border border-primary/30 flex items-center justify-center">
-                      <Sparkles className="w-3.5 h-3.5 text-primary" />
-                    </div>
-
-                    {/* Three dots menu */}
-                    <div className="absolute top-2.5 right-2.5">
+                    {/* Three dots menu — top right */}
+                    <div className="absolute top-3 right-3 z-10">
                       <button
                         onClick={(e) => { e.stopPropagation(); setMenuGoalId(isMenuOpen ? null : goal.id); }}
-                        className="w-7 h-7 rounded-full bg-black/30 backdrop-blur-sm flex items-center justify-center"
+                        className="w-8 h-8 rounded-full bg-black/40 backdrop-blur-md flex items-center justify-center hover:bg-black/60 transition-colors"
                       >
-                        <MoreVertical className="w-3.5 h-3.5 text-white/70" />
+                        <MoreVertical className="w-4 h-4 text-white/80" />
                       </button>
 
                       <AnimatePresence>
@@ -275,7 +273,7 @@ const Metas = () => {
                             initial={{ opacity: 0, scale: 0.9, y: -4 }}
                             animate={{ opacity: 1, scale: 1, y: 0 }}
                             exit={{ opacity: 0, scale: 0.9, y: -4 }}
-                            className="absolute right-0 mt-1 w-36 rounded-xl bg-card border border-border/20 shadow-xl overflow-hidden z-10"
+                            className="absolute right-0 mt-1 w-36 rounded-xl bg-card border border-border/20 shadow-xl overflow-hidden z-20"
                             onClick={(e) => e.stopPropagation()}
                           >
                             <button
@@ -295,64 +293,67 @@ const Metas = () => {
                       </AnimatePresence>
                     </div>
 
-                    <div className="absolute bottom-2 left-3 right-3">
-                      <div className="flex items-center gap-2">
-                        <Target className="w-4 h-4 text-primary flex-shrink-0" />
-                        <div className="min-w-0">
-                          <p className="text-sm font-bold text-foreground truncate">{goal.name}</p>
-                          <p className="text-[10px] text-muted-foreground">
-                            {isComplete ? "Meta concluída! 🎉" : `Faltam ${fmt(remaining)}`}
-                          </p>
-                        </div>
-                      </div>
-                    </div>
-                  </div>
-
-                  {/* Bottom section */}
-                  <div className="px-3 pb-3 pt-1.5">
-                    <div className="flex items-center gap-2 mb-1.5">
-                      <div className="flex-1 relative h-2 rounded-full bg-secondary overflow-hidden">
-                        <motion.div
-                          initial={{ width: 0 }}
-                          animate={{ width: `${progress * 100}%` }}
-                          transition={{ duration: 0.8, ease: "easeOut", delay: idx * 0.08 }}
-                          className="h-full rounded-full"
-                          style={{
-                            background: isComplete
-                              ? "hsl(150 100% 45%)"
-                              : "linear-gradient(90deg, hsl(150 100% 45% / 0.6), hsl(150 100% 45%))",
-                            boxShadow: "0 0 6px hsl(150 100% 45% / 0.3)",
-                          }}
-                        />
-                      </div>
-                      <span className={`text-xs font-bold tabular-nums ${isComplete ? "text-primary" : "text-primary/80"}`}>
-                        {Math.round(progress * 100)}%
-                      </span>
-                    </div>
-
-                    <div className="flex items-center justify-between mb-2.5">
-                      <span className="text-[10px] font-semibold text-primary tabular-nums">{fmt(goal.current_amount)}</span>
-                      <span className="text-[10px] text-muted-foreground/60 tabular-nums">{fmt(goal.target_amount)}</span>
-                    </div>
-
-                    {!isComplete && (
-                      <div className="flex items-center gap-2">
-                        <motion.button
-                          whileTap={{ scale: 0.95 }}
-                          onClick={(e) => { e.stopPropagation(); setDepositGoal(goal); }}
-                          className="flex-1 flex items-center justify-center gap-1.5 py-2.5 rounded-xl bg-primary/15 border border-primary/20 text-primary text-xs font-bold hover:bg-primary/20 transition-colors"
-                        >
-                          <Wallet className="w-3.5 h-3.5" /> Depositar
-                        </motion.button>
-                        <motion.button
-                          whileTap={{ scale: 0.95 }}
-                          onClick={(e) => { e.stopPropagation(); navigate(`/metas/${goal.id}`); }}
-                          className="w-10 h-10 rounded-xl bg-muted/10 border border-border/15 flex items-center justify-center hover:bg-muted/15 transition-colors flex-shrink-0"
-                        >
-                          <Clock className="w-4 h-4 text-foreground/60" />
-                        </motion.button>
+                    {/* Badge top left */}
+                    {isComplete && (
+                      <div className="absolute top-3 left-3">
+                        <span className="text-[10px] font-bold bg-primary/25 backdrop-blur-md text-primary px-2.5 py-1 rounded-full border border-primary/30">
+                          ✓ Concluída
+                        </span>
                       </div>
                     )}
+
+                    {/* Content overlay at bottom */}
+                    <div className="absolute bottom-0 left-0 right-0 px-4 pb-4 pt-8">
+                      {/* Title */}
+                      <p className="text-base font-bold text-white truncate mb-1">{goal.name}</p>
+
+                      {/* Amount row */}
+                      <div className="flex items-baseline gap-1.5 mb-3">
+                        <span className="text-lg font-bold text-primary tabular-nums">{fmt(goal.current_amount)}</span>
+                        <span className="text-[11px] text-white/40">/ {fmt(goal.target_amount)}</span>
+                      </div>
+
+                      {/* Progress bar */}
+                      <div className="flex items-center gap-2.5 mb-3">
+                        <div className="flex-1 relative h-2 rounded-full bg-white/10 overflow-hidden">
+                          <motion.div
+                            initial={{ width: 0 }}
+                            animate={{ width: `${progress * 100}%` }}
+                            transition={{ duration: 0.8, ease: "easeOut", delay: idx * 0.08 }}
+                            className="h-full rounded-full"
+                            style={{
+                              background: isComplete
+                                ? "hsl(150 100% 45%)"
+                                : "linear-gradient(90deg, hsl(150 100% 45% / 0.5), hsl(150 100% 45%))",
+                              boxShadow: "0 0 8px hsl(150 100% 45% / 0.4)",
+                            }}
+                          />
+                        </div>
+                        <span className="text-xs font-bold text-primary tabular-nums min-w-[32px] text-right">
+                          {Math.round(progress * 100)}%
+                        </span>
+                      </div>
+
+                      {/* Action buttons */}
+                      {!isComplete && (
+                        <div className="flex items-center gap-2">
+                          <motion.button
+                            whileTap={{ scale: 0.95 }}
+                            onClick={(e) => { e.stopPropagation(); setDepositGoal(goal); }}
+                            className="flex-1 flex items-center justify-center gap-1.5 py-2.5 rounded-xl bg-primary/20 backdrop-blur-sm border border-primary/25 text-primary text-xs font-bold hover:bg-primary/30 transition-colors"
+                          >
+                            <Wallet className="w-3.5 h-3.5" /> Depositar
+                          </motion.button>
+                          <motion.button
+                            whileTap={{ scale: 0.95 }}
+                            onClick={(e) => { e.stopPropagation(); navigate(`/metas/${goal.id}`); }}
+                            className="w-10 h-10 rounded-xl bg-white/10 backdrop-blur-sm border border-white/10 flex items-center justify-center hover:bg-white/15 transition-colors flex-shrink-0"
+                          >
+                            <Clock className="w-4 h-4 text-white/60" />
+                          </motion.button>
+                        </div>
+                      )}
+                    </div>
                   </div>
                 </motion.div>
               );
