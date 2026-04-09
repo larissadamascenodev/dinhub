@@ -1,0 +1,1 @@
+ALTER TABLE public.goals ADD COLUMN cover_image TEXT DEFAULT NULL;
