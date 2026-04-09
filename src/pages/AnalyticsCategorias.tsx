@@ -1410,17 +1410,26 @@ const ActiveLimitsSection = ({ limits, categoryData, onRemoved }: {
                 <span className={`text-[9px] font-medium ${statusColor}`}>{statusLabel}</span>
               </div>
               <div className="relative w-full h-2 bg-border/20 rounded-full overflow-visible">
-                <motion.div
-                  initial={{ width: 0 }}
-                  animate={{ width: `${Math.min(pct, 100)}%` }}
-                  transition={{ duration: 0.6 }}
-                  className="h-full rounded-full absolute top-0 left-0"
-                  style={{ backgroundColor: barColor }}
-                />
-                <div
-                  className="absolute top-[-2px] w-[2px] h-[calc(100%+4px)] rounded-full bg-foreground/50"
-                  style={{ left: `${Math.min((lim.limit_amount / Math.max(amount, lim.limit_amount) * 1.2) / (Math.max(amount, lim.limit_amount) * 1.2) * 100 * Math.max(amount, lim.limit_amount) * 1.2 / Math.max(amount, lim.limit_amount, 1), 100)}%` }}
-                />
+                {(() => {
+                  const maxScale = Math.max(amount, lim.limit_amount) * 1.2;
+                  const barW = Math.min((amount / maxScale) * 100, 100);
+                  const markerPos = (lim.limit_amount / maxScale) * 100;
+                  return (
+                    <>
+                      <motion.div
+                        initial={{ width: 0 }}
+                        animate={{ width: `${barW}%` }}
+                        transition={{ duration: 0.6 }}
+                        className="h-full rounded-full absolute top-0 left-0"
+                        style={{ backgroundColor: barColor }}
+                      />
+                      <div
+                        className="absolute top-[-2px] w-[2px] h-[calc(100%+4px)] rounded-full bg-foreground/50"
+                        style={{ left: `${markerPos}%` }}
+                      />
+                    </>
+                  );
+                })()}
               </div>
               <div className="flex justify-between text-[10px]">
                 <span className="text-muted-foreground/60 tabular-nums">{fmt(amount)}</span>
