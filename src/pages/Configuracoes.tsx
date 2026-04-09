@@ -466,10 +466,10 @@ const Configuracoes = () => {
             <p className="text-xs text-muted-foreground truncate">{email}</p>
             <div className="flex items-center gap-2 mt-1.5">
               <span className="text-[10px] font-bold bg-primary/15 text-primary px-2 py-0.5 rounded-full flex items-center gap-1">
-                <Star className="w-3 h-3" /> LV 1
+                <Crown className="w-3 h-3" /> Free
               </span>
               <span className="text-[10px] font-bold bg-amber-500/15 text-amber-400 px-2 py-0.5 rounded-full flex items-center gap-1">
-                <Flame className="w-3 h-3" /> 0 dias
+                <Flame className="w-3 h-3" /> {streak} {streak === 1 ? "dia" : "dias"}
               </span>
             </div>
           </div>
