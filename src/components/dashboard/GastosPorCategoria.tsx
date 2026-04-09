@@ -1,4 +1,4 @@
-import { memo, useState, useMemo, useEffect } from "react";
+import { memo, useState, useMemo, useEffect, useRef } from "react";
 import { useNavigate } from "react-router-dom";
 import { motion } from "framer-motion";
 import { ChevronDown, ChevronUp, ChevronRight } from "lucide-react";
@@ -6,6 +6,7 @@ import type { CategoryExpense } from "@/types/finance";
 import { getCategoryIcon, getCategoryColor } from "@/lib/categoryUtils";
 import { getCustomCategories, type CustomCategory } from "@/services/categoryService";
 import { supabase } from "@/integrations/supabase/client";
+import { toast } from "sonner";
 
 interface Props {
   categories: CategoryExpense[];
