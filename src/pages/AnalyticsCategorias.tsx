@@ -413,98 +413,7 @@ const CategoryList = ({ categoryData, onSelect, selectedCat, prevCategoryData, h
   );
 };
 
-// ── Habit Insights Section ───────────────────────────────
-const HabitInsightsSection = ({ habitMap, categoryData }: {
-  habitMap: Record<string, HabitData>;
-  categoryData: CategorySummary[];
-}) => {
-  const insights = useMemo(() => {
-    const results: { message: string; severity: "habit" | "merchant" | "daily" | "combo"; score: number }[] = [];
-    const habits = Object.values(habitMap);
 
-    habits.forEach((h) => {
-      const cat = categoryData.find((c) => c.name === h.category);
-      const isHighValue = cat ? cat.percentage > 20 : false;
-
-      // Combo: habit + high value
-      if (h.isHabit && isHighValue) {
-        results.push({
-          message: `Esse hábito com ${h.category} está pesando no seu mês 💸 Talvez seja um bom ponto pra ajustar`,
-          severity: "combo",
-          score: h.amount * 3 + h.txCount * 10,
-        });
-        return;
-      }
-
-      // Repeated merchant
-      if (h.topMerchant && h.topMerchant.count >= 4) {
-        results.push({
-          message: `Você gastou várias vezes com ${h.topMerchant.name} esse mês 👀 Pequenos valores… mas somam bastante`,
-          severity: "merchant",
-          score: h.amount * 2 + h.topMerchant.count * 8,
-        });
-      }
-
-      // Habit detected (general)
-      if (h.isHabit && !isHighValue) {
-        results.push({
-          message: `Você já fez ${h.txCount} gastos em ${h.category} esse mês 😅 Isso já virou um padrão`,
-          severity: "habit",
-          score: h.amount + h.txCount * 10,
-        });
-      }
-
-      // Daily cost insight (only if > R$10/day)
-      if (h.dailyCost >= 10 && !h.isHabit) {
-        results.push({
-          message: `Você está gastando cerca de ${fmt(h.dailyCost)}/dia em ${h.category}`,
-          severity: "daily",
-          score: h.dailyCost * 5,
-        });
-      }
-    });
-
-    return results.sort((a, b) => b.score - a.score).slice(0, 3);
-  }, [habitMap, categoryData]);
-
-  if (insights.length === 0) return null;
-
-  const severityConfig = {
-    combo: { icon: AlertTriangle, bg: "bg-destructive/5", border: "border-destructive/15", text: "text-destructive" },
-    habit: { icon: Repeat, bg: "bg-primary/5", border: "border-primary/15", text: "text-primary" },
-    merchant: { icon: Target, bg: "bg-warning/5", border: "border-warning/15", text: "text-warning" },
-    daily: { icon: TrendingUp, bg: "bg-muted/10", border: "border-border/20", text: "text-muted-foreground" },
-  };
-
-  return (
-    <GlassCard className="p-4 md:p-5">
-      <div className="flex items-center gap-2 mb-3">
-        <Repeat className="w-4 h-4 text-primary" />
-        <p className="text-[10px] md:text-[11px] text-muted-foreground/60 font-semibold uppercase tracking-wider">
-          Detecção de Hábitos
-        </p>
-      </div>
-      <div className="space-y-2">
-        {insights.map((ins, i) => {
-          const config = severityConfig[ins.severity];
-          const Icon = config.icon;
-          return (
-            <motion.div
-              key={i}
-              initial={{ opacity: 0, x: -10 }}
-              animate={{ opacity: 1, x: 0 }}
-              transition={{ delay: i * 0.1 }}
-              className={`flex items-start gap-2.5 p-2.5 rounded-xl ${config.bg} border ${config.border}`}
-            >
-              <Icon className={`w-3.5 h-3.5 mt-0.5 shrink-0 ${config.text}`} />
-              <p className="text-xs text-foreground/80 leading-relaxed">{ins.message}</p>
-            </motion.div>
-          );
-        })}
-      </div>
-    </GlassCard>
-  );
-};
 
 // ── Comparison Insights Section ───────────────────────────
 const ComparisonInsightsSection = ({ categoryData, prevCategoryData }: {
@@ -1927,8 +1836,7 @@ const AnalyticsCategorias = () => {
                 {/* Comparison Insights */}
                 <ComparisonInsightsSection categoryData={categoryData} prevCategoryData={prevCategoryData} />
 
-                {/* Habit Insights */}
-                <HabitInsightsSection habitMap={habitMap} categoryData={categoryData} />
+
 
                 {/* Score Insights */}
                 <ScoreInsightsSection scoreMap={scoreMap} categoryData={categoryData} />
