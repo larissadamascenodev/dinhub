@@ -1749,18 +1749,18 @@ const AnalyticsCategorias = () => {
     <div className={`pb-28 ${isMobile ? "max-w-lg mx-auto" : "max-w-5xl mx-auto"}`}>
       {/* Header — hidden when viewing category detail */}
       {!selectedCategory && (
-        <div className="flex items-center gap-2 mb-2">
-          <button onClick={() => navigate(-1)} className="p-1.5 rounded-lg hover:bg-muted/30 transition-colors shrink-0">
+        <div className="mb-3">
+          <button onClick={() => navigate(-1)} className="p-1.5 rounded-lg hover:bg-muted/30 transition-colors mb-1">
             <ArrowLeft className="w-4 h-4 md:w-5 md:h-5 text-muted-foreground" />
           </button>
-          <div className="flex-1 min-w-0">
+          <div className="flex items-center justify-between">
             <h1 className="text-base md:text-xl font-bold text-foreground leading-tight">Categorias</h1>
+            <MonthSelector
+              selectedMonth={selectedMonth}
+              selectedYear={selectedYear}
+              onMonthChange={(m, y) => { setMonth(m, y); setSelectedCategory(null); setAiInsights(null); }}
+            />
           </div>
-          <MonthSelector
-            selectedMonth={selectedMonth}
-            selectedYear={selectedYear}
-            onMonthChange={(m, y) => { setMonth(m, y); setSelectedCategory(null); setAiInsights(null); }}
-          />
         </div>
       )}
 
