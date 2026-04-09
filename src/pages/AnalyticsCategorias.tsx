@@ -1374,33 +1374,41 @@ const AnalyticsCategorias = () => {
         payment_method: string; credit_card_id: string | null;
       }[];
 
-      // Group by parent (or self if parent) to find unique installment groups
-      const groupMap = new Map<string, { name: string; category: string; amount: number; total: number; maxCurrent: number }>();
-      instTxs.forEach((tx) => {
-        if (!tx.installments || tx.installments <= 1) return;
-        const groupId = tx.parent_transaction_id ?? tx.id;
-        const existing = groupMap.get(groupId);
-        const current = tx.installment_current ?? 1;
-        if (!existing) {
-          groupMap.set(groupId, { name: tx.name, category: tx.category, amount: tx.amount, total: tx.installments, maxCurrent: current });
-        } else {
-          existing.maxCurrent = Math.max(existing.maxCurrent, current);
-        }
-      });
+      // Build installment groups — use CURRENT MONTH's installment number only
+      // (not max across all future months, which would make remaining = 0)
+      const groupMap = new Map<string, { name: string; category: string; amount: number; total: number; currentInstallment: number }>();
 
-      // Also detect installments from invoice items (credit card parcels)
+      // First, use invoice items (credit card parcels) scoped to this month — most accurate
       invoiceItems.forEach((ii: any) => {
         const tx = ii.transactions;
         if (!tx || tx.type !== "despesa") return;
         if (ii.total_installments <= 1) return;
         const groupId = tx.parent_transaction_id ?? ii.transaction_id;
-        if (groupMap.has(groupId)) return; // Already tracked
+        if (groupMap.has(groupId)) return;
         groupMap.set(groupId, {
           name: tx.name,
           category: tx.category,
           amount: ii.amount,
           total: ii.total_installments,
-          maxCurrent: ii.installment_number,
+          currentInstallment: ii.installment_number,
+        });
+      });
+
+      // Then, add non-credit-card installments from transactions table
+      // Only use transactions whose date falls within the current month
+      instTxs.forEach((tx) => {
+        if (!tx.installments || tx.installments <= 1) return;
+        if (tx.payment_method === "cartao" && tx.credit_card_id) return; // already handled via invoice items
+        const groupId = tx.parent_transaction_id ?? tx.id;
+        if (groupMap.has(groupId)) return;
+        const txDate = new Date(tx.date + "T12:00:00");
+        if (txDate.getMonth() !== selectedMonth || txDate.getFullYear() !== selectedYear) return;
+        groupMap.set(groupId, {
+          name: tx.name,
+          category: tx.category,
+          amount: tx.amount,
+          total: tx.installments,
+          currentInstallment: tx.installment_current ?? 1,
         });
       });
 
