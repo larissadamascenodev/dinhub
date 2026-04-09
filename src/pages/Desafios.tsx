@@ -90,7 +90,7 @@ const SuggestionCard = ({
             </p>
           </div>
           <Button
-            className="w-full bg-primary text-primary-foreground hover:bg-primary/90"
+            className="w-full bg-primary/15 text-primary border border-primary/30 hover:bg-primary/25"
             size="sm"
             disabled={loading}
             onClick={onAccept}
