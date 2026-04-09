@@ -42,18 +42,20 @@ export default function BotFinanceBalanco() {
 
   return (
     <div className="space-y-4 pb-4">
-      {/* Header */}
-      <motion.div initial={{ opacity: 0, y: 8 }} animate={{ opacity: 1, y: 0 }} className="flex items-center gap-3">
+      {/* Back button */}
+      <motion.div initial={{ opacity: 0, y: 8 }} animate={{ opacity: 1, y: 0 }}>
         <button
           onClick={() => navigate(-1)}
           className="w-8 h-8 rounded-xl bg-secondary flex items-center justify-center hover:bg-secondary/80 transition-colors"
         >
           <ArrowLeft className="w-4 h-4 text-foreground" />
         </button>
-        <div>
-          <h1 className="font-display text-base font-bold">Balanço Mensal</h1>
-          <p className="text-[10px] text-muted-foreground">Receitas vs Despesas — atualizado em tempo real</p>
-        </div>
+      </motion.div>
+
+      {/* Title */}
+      <motion.div initial={{ opacity: 0, y: 8 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.03 }}>
+        <h1 className="font-display text-base font-bold">Balanço Mensal</h1>
+        <p className="text-[10px] text-muted-foreground">Receitas vs Despesas</p>
       </motion.div>
 
       {/* Summary Card */}
