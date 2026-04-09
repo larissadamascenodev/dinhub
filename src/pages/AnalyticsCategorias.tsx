@@ -387,16 +387,6 @@ const CategoryList = ({ categoryData, onSelect, selectedCat, prevCategoryData, h
                       style={{ backgroundColor: `hsl(${getCategoryColor(cat.name, [])})` }}
                     />
                   </div>
-                  {isNew ? (
-                    <span className="text-[8px] md:text-[9px] font-semibold text-blue-400 whitespace-nowrap">Novo</span>
-                  ) : variation !== null ? (
-                    <span className={`text-[8px] md:text-[9px] font-semibold whitespace-nowrap flex items-center gap-0.5 ${
-                      variation > 0 ? "text-destructive" : variation < 0 ? "text-success" : "text-muted-foreground/50"
-                    }`}>
-                      {variation > 0 ? <TrendingUp className="w-2.5 h-2.5" /> : variation < 0 ? <TrendingDown className="w-2.5 h-2.5" /> : null}
-                      {variation > 0 ? "+" : ""}{variation}%
-                    </span>
-                  ) : null}
                 </div>
               </div>
               <div className="text-right shrink-0">
