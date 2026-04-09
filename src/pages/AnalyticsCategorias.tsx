@@ -636,24 +636,8 @@ const AlertsSection = ({ alerts }: { alerts: AIInsights["alerts"] }) => {
   );
 };
 
-// ── Projections Inline ───────────────────────────────────
-const ProjectionsInline = ({ totalExpenses }: { totalExpenses: number }) => {
-  const annualEstimate = totalExpenses * 12;
-  return (
-    <div className="grid grid-cols-2 gap-2">
-      <GlassCard className="p-3 text-center">
-        <p className="text-[9px] text-muted-foreground/50 uppercase tracking-wider font-medium">Gasto anual estimado</p>
-        <p className="text-base font-bold text-destructive tabular-nums mt-1">{fmt(annualEstimate)}</p>
-        <p className="text-[8px] text-muted-foreground/40 mt-0.5">Se continuar nesse ritmo</p>
-      </GlassCard>
-      <GlassCard className="p-3 text-center">
-        <p className="text-[9px] text-muted-foreground/50 uppercase tracking-wider font-medium">Média mensal</p>
-        <p className="text-base font-bold text-foreground tabular-nums mt-1">{fmt(totalExpenses)}</p>
-        <p className="text-[8px] text-muted-foreground/40 mt-0.5">Este mês</p>
-      </GlassCard>
-    </div>
-  );
-};
+
+
 
 
 const LimitSuggestions = ({ suggestions, categoryData }: { suggestions: AIInsights["limitSuggestions"]; categoryData: CategorySummary[] }) => {
