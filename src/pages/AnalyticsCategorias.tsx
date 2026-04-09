@@ -1240,6 +1240,7 @@ const AnalyticsCategorias = () => {
   const [aiInsights, setAiInsights] = useState<AIInsights | null>(null);
   const [aiLoading, setAiLoading] = useState(false);
   const [installmentImpacts, setInstallmentImpacts] = useState<InstallmentImpactMap>({});
+  const [userStartDate, setUserStartDate] = useState<Date | null>(null);
 
   // Fetch transactions for current month, previous month, and 6-month history
   useEffect(() => {
