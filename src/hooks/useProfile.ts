@@ -6,6 +6,7 @@ export interface Profile {
   id: string;
   display_name: string | null;
   avatar_url: string | null;
+  bio: string | null;
   has_completed_profile: boolean;
   has_account: boolean;
   has_transactions: boolean;
