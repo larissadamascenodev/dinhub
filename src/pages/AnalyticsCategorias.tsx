@@ -711,42 +711,56 @@ const InstallmentInsightsSection = ({ impacts }: { impacts: InstallmentImpact[] 
 // ── Category Installment Detail ──────────────────────────
 const CategoryInstallmentDetail = ({ impact }: { impact: InstallmentImpact | undefined }) => {
   if (!impact || impact.items.length === 0) return null;
-  const isRelevant = impact.totalRemaining > 300 || impact.monthsRemaining >= 3 || impact.impactPct > 20;
-  if (!isRelevant) return null;
   const isHighImpact = impact.impactPct > 30 || impact.totalRemaining > 1000;
   return (
-    <GlassCard className={`p-4 md:p-5 ${isHighImpact ? "border-warning/20" : "border-border/20"}`}>
-      <div className="flex items-center gap-2 mb-3">
-        <span className="text-base">💳</span>
-        <p className="text-[10px] md:text-[11px] text-muted-foreground/60 font-semibold uppercase tracking-wider">Parcelamentos Ativos</p>
+    <div
+      className="rounded-2xl border border-border/20 p-3 md:p-4"
+      style={{
+        background: "linear-gradient(135deg, hsl(var(--card) / 0.8) 0%, hsl(var(--card) / 0.4) 50%, hsl(var(--card) / 0.6) 100%)",
+        backdropFilter: "blur(24px)",
+        boxShadow: "0 4px 20px -6px rgba(0,0,0,0.3), inset 0 1px 0 rgba(255,255,255,0.03)",
+      }}
+    >
+      <div className="flex items-center gap-2 mb-2.5">
+        <span className="text-sm">💳</span>
+        <p className="text-[9px] md:text-[10px] text-muted-foreground/60 font-semibold uppercase tracking-wider">Parcelamentos Ativos</p>
       </div>
-      <div className={`p-3 rounded-xl mb-3 ${isHighImpact ? "bg-warning/5 border border-warning/10" : "bg-muted/10 border border-border/10"}`}>
-        <p className="text-xs text-foreground/80 leading-relaxed">
+      <div className={`p-2.5 rounded-xl mb-2.5 ${isHighImpact ? "bg-warning/5 border border-warning/10" : "bg-muted/10 border border-border/10"}`}>
+        <p className="text-[11px] text-foreground/80 leading-relaxed">
           {isHighImpact
             ? `⚠️ ${fmt(impact.totalRemaining)} comprometidos nos próximos ${impact.monthsRemaining} meses.`
             : `${fmt(impact.totalRemaining)} restantes em parcelamentos (${impact.monthsRemaining} meses). Tudo sob controle 👍`}
         </p>
       </div>
-      <div className="grid grid-cols-3 gap-2 mb-3">
-        <div className="text-center"><p className="text-[9px] text-muted-foreground/50 uppercase">Mensal</p><p className="text-sm font-bold text-foreground tabular-nums">{fmt(impact.monthlyAmount)}</p></div>
-        <div className="text-center"><p className="text-[9px] text-muted-foreground/50 uppercase">Total restante</p><p className="text-sm font-bold text-foreground tabular-nums">{fmt(impact.totalRemaining)}</p></div>
-        <div className="text-center"><p className="text-[9px] text-muted-foreground/50 uppercase">% da categoria</p><p className="text-sm font-bold text-foreground tabular-nums">{impact.impactPct}%</p></div>
+      <div className="grid grid-cols-3 gap-1.5 mb-2.5">
+        <div className="text-center p-1.5 rounded-lg bg-muted/5">
+          <p className="text-[8px] text-muted-foreground/50 uppercase">Mensal</p>
+          <p className="text-xs font-bold text-foreground tabular-nums mt-0.5">{fmt(impact.monthlyAmount)}</p>
+        </div>
+        <div className="text-center p-1.5 rounded-lg bg-muted/5">
+          <p className="text-[8px] text-muted-foreground/50 uppercase">Total restante</p>
+          <p className="text-xs font-bold text-foreground tabular-nums mt-0.5">{fmt(impact.totalRemaining)}</p>
+        </div>
+        <div className="text-center p-1.5 rounded-lg bg-muted/5">
+          <p className="text-[8px] text-muted-foreground/50 uppercase">% da categoria</p>
+          <p className="text-xs font-bold text-foreground tabular-nums mt-0.5">{impact.impactPct}%</p>
+        </div>
       </div>
-      <div className="space-y-1.5">
+      <div className="space-y-1">
         {impact.items.map((item, i) => (
           <div key={i} className="flex items-center justify-between py-1.5 px-2 rounded-lg hover:bg-muted/10">
             <div className="flex-1 min-w-0">
-              <p className="text-xs font-semibold text-foreground truncate">{item.name}</p>
+              <p className="text-[11px] font-semibold text-foreground truncate">{item.name}</p>
               <p className="text-[9px] text-muted-foreground/40">{item.total - item.remaining} de {item.total} parcelas pagas</p>
             </div>
             <div className="text-right shrink-0 ml-2">
-              <p className="text-xs font-bold text-foreground tabular-nums">{fmt(item.amount)}/mês</p>
+              <p className="text-[11px] font-bold text-foreground tabular-nums">{fmt(item.amount)}/mês</p>
               <p className="text-[9px] text-muted-foreground/40">{item.remaining} restantes</p>
             </div>
           </div>
         ))}
       </div>
-    </GlassCard>
+    </div>
   );
 };
 
