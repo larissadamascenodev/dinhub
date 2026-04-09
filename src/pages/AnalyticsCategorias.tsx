@@ -1072,29 +1072,6 @@ const CategoryDetail = ({
         </GlassCard>
       )}
 
-      {/* Future projection */}
-      <GlassCard className="p-4">
-        <div className="flex items-center gap-2 mb-3">
-          <TrendingUp className="w-4 h-4 text-primary" />
-          <p className="text-[10px] text-muted-foreground/60 font-semibold uppercase tracking-wider">
-            Projeção · Huby
-          </p>
-        </div>
-        <p className="text-[11px] text-muted-foreground/70 mb-3 leading-relaxed">
-          Se você mantiver esse mesmo gasto de {fmt(category.amount)} todo mês em {category.name}:
-        </p>
-        <div className="grid grid-cols-2 gap-3">
-          <div className="text-center p-2.5 rounded-xl bg-muted/10 border border-border/10">
-            <p className="text-[9px] text-muted-foreground/50 uppercase">Próximos 6 meses</p>
-            <p className="text-sm font-bold text-foreground tabular-nums mt-0.5">{fmt(category.amount * 6)}</p>
-          </div>
-          <div className="text-center p-2.5 rounded-xl bg-destructive/5 border border-destructive/10">
-            <p className="text-[9px] text-muted-foreground/50 uppercase">Em 1 ano</p>
-            <p className="text-sm font-bold text-destructive tabular-nums mt-0.5">{fmt(category.amount * 12)}</p>
-          </div>
-        </div>
-      </GlassCard>
-
       {/* Huby Diz — alertas above chart */}
       {(categoryInsights.length > 0 || categoryAlerts.length > 0) && (
         <GlassCard className="p-4 md:p-5">
