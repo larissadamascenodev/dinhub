@@ -951,43 +951,43 @@ const CategoryDetail = ({
 
     // Score-based
     if (scoreData?.score === "exagerado") {
-      results.push({ message: `Seus gastos com ${category.name} estão acima do ideal 🚨`, priority: 100, type: "score" });
+      results.push({ message: `Huby aqui: seus gastos com ${category.name} tão bem acima da média, vale dar uma segurada`, priority: 100, type: "score" });
     } else if (scoreData?.score === "atencao") {
-      results.push({ message: `Fica de olho em ${category.name} 👀 Tá começando a subir`, priority: 60, type: "score" });
+      results.push({ message: `Huby avisa: ${category.name} tá começando a subir, fica de olho`, priority: 60, type: "score" });
     }
 
     // Growth
     if (trendAnalysis?.risingTrend) {
-      results.push({ message: `Esse gasto subiu nos últimos 3 meses seguidos 📈`, priority: 80, type: "growth" });
+      results.push({ message: `Esse gasto vem subindo nos últimos 3 meses seguidos — hora de repensar`, priority: 80, type: "growth" });
     } else if (trendAnalysis?.momChange && trendAnalysis.momChange > 15) {
-      results.push({ message: `Aumento de ${trendAnalysis.momChange}% em relação ao mês anterior`, priority: 70, type: "growth" });
+      results.push({ message: `Aumentou ${trendAnalysis.momChange}% comparado ao mês passado`, priority: 70, type: "growth" });
     }
 
     // Habit
     if (habitIntensity === "forte") {
-      results.push({ message: `${category.txCount} transações esse mês — isso já virou parte da sua rotina 😅`, priority: 75, type: "habit" });
+      results.push({ message: `${category.txCount} vezes esse mês — isso já virou parte da sua rotina, né?`, priority: 75, type: "habit" });
     } else if (habitIntensity === "frequente") {
-      results.push({ message: `Frequência alta: ${category.txCount} gastos nessa categoria`, priority: 50, type: "habit" });
+      results.push({ message: `Frequência alta: ${category.txCount} gastos nessa categoria esse mês`, priority: 50, type: "habit" });
     }
 
     // Installment
     if (installmentImpact && installmentImpact.totalRemaining > 300) {
-      results.push({ message: `Esse gasto ainda vai te acompanhar por ${installmentImpact.monthsRemaining} meses`, priority: 65, type: "installment" });
+      results.push({ message: `Ainda tem ${fmt(installmentImpact.totalRemaining)} de parcelas pra pagar nos próximos ${installmentImpact.monthsRemaining} meses`, priority: 65, type: "installment" });
     }
 
     // Daily cost
     if (dailyCost >= 10) {
-      results.push({ message: `Pequenos gastos diários… grande impacto no final do mês 👀`, priority: 40, type: "daily" });
+      results.push({ message: `Dá ${fmt(dailyCost)} por dia nessa categoria — parece pouco mas soma rápido`, priority: 40, type: "daily" });
     }
 
     // Merchant concentration
     if (topMerchant && topMerchant.pct > 50) {
-      results.push({ message: `Grande parte dos seus gastos aqui vem de ${topMerchant.name} 👀`, priority: 55, type: "merchant" });
+      results.push({ message: `A maior parte dos gastos aqui vem de ${topMerchant.name} — continua assim vai virar sócio`, priority: 55, type: "merchant" });
     }
 
     // Healthy
     if (scoreData?.score === "saudavel" && results.length === 0) {
-      results.push({ message: `Boa! Seus gastos com ${category.name} estão sob controle 👍`, priority: 10, type: "healthy" });
+      results.push({ message: `Tudo certo por aqui! Seus gastos com ${category.name} tão sob controle`, priority: 10, type: "healthy" });
     }
 
     return results.sort((a, b) => b.priority - a.priority).slice(0, 3);
@@ -1012,26 +1012,9 @@ const CategoryDetail = ({
           <CatIcon className="w-5 h-5" style={{ color: category.hexColor }} />
         </div>
         <div className="flex-1">
-          <div className="flex items-center gap-2">
-            <h2 className="text-lg font-bold text-foreground">{category.name}</h2>
-            {scoreData && (
-              <span className={`text-[8px] font-semibold px-1.5 py-0.5 rounded-full ${SCORE_CONFIG[scoreData.score].bg} ${SCORE_CONFIG[scoreData.score].text}`}>
-                {SCORE_CONFIG[scoreData.score].emoji} {SCORE_CONFIG[scoreData.score].label}
-              </span>
-            )}
-          </div>
+          <h2 className="text-lg font-bold text-foreground">{category.name}</h2>
           <p className="text-xs text-muted-foreground/60">{monthLabel}</p>
         </div>
-        {trendAnalysis?.momChange != null && (
-          <div className={`flex items-center gap-1 px-2 py-1 rounded-full text-[10px] font-semibold ${
-            trendAnalysis.momChange > 0
-              ? "bg-destructive/10 text-destructive"
-              : "bg-success/10 text-success"
-          }`}>
-            {trendAnalysis.momChange > 0 ? <TrendingUp className="w-3 h-3" /> : <TrendingDown className="w-3 h-3" />}
-            {trendAnalysis.momChange > 0 ? "+" : ""}{trendAnalysis.momChange}%
-          </div>
-        )}
       </div>
 
       {/* Summary card */}
@@ -1087,24 +1070,22 @@ const CategoryDetail = ({
         <div className="flex items-center gap-2 mb-3">
           <TrendingUp className="w-4 h-4 text-primary" />
           <p className="text-[10px] text-muted-foreground/60 font-semibold uppercase tracking-wider">
-            Se continuar assim
+            Projeção · Huby
           </p>
         </div>
+        <p className="text-[11px] text-muted-foreground/70 mb-3 leading-relaxed">
+          Se você mantiver esse mesmo gasto de {fmt(category.amount)} todo mês em {category.name}:
+        </p>
         <div className="grid grid-cols-2 gap-3">
           <div className="text-center p-2.5 rounded-xl bg-muted/10 border border-border/10">
-            <p className="text-[9px] text-muted-foreground/50 uppercase">Por mês</p>
-            <p className="text-sm font-bold text-foreground tabular-nums mt-0.5">{fmt(projectedMonthly)}</p>
+            <p className="text-[9px] text-muted-foreground/50 uppercase">Próximos 6 meses</p>
+            <p className="text-sm font-bold text-foreground tabular-nums mt-0.5">{fmt(category.amount * 6)}</p>
           </div>
           <div className="text-center p-2.5 rounded-xl bg-destructive/5 border border-destructive/10">
-            <p className="text-[9px] text-muted-foreground/50 uppercase">Por ano</p>
-            <p className="text-sm font-bold text-destructive tabular-nums mt-0.5">{fmt(projectedAnnual)}</p>
+            <p className="text-[9px] text-muted-foreground/50 uppercase">Em 1 ano</p>
+            <p className="text-sm font-bold text-destructive tabular-nums mt-0.5">{fmt(category.amount * 12)}</p>
           </div>
         </div>
-        {projectedAnnual > 1000 && (
-          <p className="text-[10px] text-muted-foreground/60 mt-2 text-center">
-            Isso dá mais de {fmt(projectedAnnual)} por ano nessa categoria 💸
-          </p>
-        )}
       </GlassCard>
 
       {/* Evolution Chart (6 months) */}
@@ -1119,30 +1100,25 @@ const CategoryDetail = ({
         <GlassCard className="p-4 border-warning/20">
           <div className="flex items-start gap-3">
             <div className="w-9 h-9 rounded-full bg-warning/10 flex items-center justify-center shrink-0">
-              <AlertTriangle className="w-4 h-4 text-warning" />
+              <TrendingUp className="w-4 h-4 text-warning" />
             </div>
             <div className="flex-1 min-w-0">
               <p className="text-xs font-semibold text-foreground">Tendência de alta</p>
               <p className="text-[11px] text-muted-foreground/70 mt-1 leading-relaxed">
-                {category.name} subiu {trendAnalysis.totalIncrease}% nos últimos 3 meses
-                {trendAnalysis.months && (
-                  <span>
-                    {" "}— de {fmt(trendAnalysis.months[0].amount)} para {fmt(trendAnalysis.months[2].amount)}
-                  </span>
-                )}
+                {category.name} vem subindo há 3 meses seguidos — saiu de {trendAnalysis.months ? fmt(trendAnalysis.months[0].amount) : "—"} para {trendAnalysis.months ? fmt(trendAnalysis.months[2].amount) : "—"} ({trendAnalysis.totalIncrease}% a mais)
               </p>
             </div>
           </div>
         </GlassCard>
       )}
 
-      {/* Dynamic Insights */}
+      {/* Dynamic Insights — Huby */}
       {dynamicInsights.length > 0 && (
         <GlassCard className="p-4 md:p-5">
           <div className="flex items-center gap-2 mb-3">
-            <span className="text-sm">💡</span>
+            <Brain className="w-4 h-4 text-primary" />
             <p className="text-[10px] md:text-[11px] text-muted-foreground/60 font-semibold uppercase tracking-wider">
-              O que está acontecendo aqui
+              Huby diz
             </p>
           </div>
           <div className="space-y-2">
@@ -1151,7 +1127,7 @@ const CategoryDetail = ({
                 score: { bg: "bg-destructive/5", border: "border-destructive/15", icon: <AlertTriangle className="w-3.5 h-3.5 text-destructive" /> },
                 growth: { bg: "bg-warning/5", border: "border-warning/15", icon: <TrendingUp className="w-3.5 h-3.5 text-warning" /> },
                 habit: { bg: "bg-primary/5", border: "border-primary/15", icon: <Repeat className="w-3.5 h-3.5 text-primary" /> },
-                installment: { bg: "bg-blue-500/5", border: "border-blue-500/15", icon: <span className="text-xs">💳</span> },
+                installment: { bg: "bg-blue-500/5", border: "border-blue-500/15", icon: <Target className="w-3.5 h-3.5 text-blue-400" /> },
                 daily: { bg: "bg-muted/10", border: "border-border/20", icon: <TrendingUp className="w-3.5 h-3.5 text-muted-foreground" /> },
                 merchant: { bg: "bg-warning/5", border: "border-warning/15", icon: <Target className="w-3.5 h-3.5 text-warning" /> },
                 healthy: { bg: "bg-success/5", border: "border-success/15", icon: <ShieldCheck className="w-3.5 h-3.5 text-success" /> },
