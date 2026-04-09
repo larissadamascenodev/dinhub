@@ -719,7 +719,7 @@ const CategoryInstallmentDetail = ({ impact }: { impact: InstallmentImpact | und
   );
 };
 
-
+const EvolutionGlowDot = (props: any) => {
   const { cx, cy } = props;
   return (
     <g>
