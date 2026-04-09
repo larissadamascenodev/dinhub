@@ -146,7 +146,7 @@ const ActiveCard = ({
   const c = uc.challenge!;
   const progressPct = Math.min(100, Math.round(((uc.checkin_count ?? 0) / c.duration_days) * 100));
   const daysLeft = Math.max(0, c.duration_days - (uc.checkin_count ?? 0));
-  const savedEstimate = Number(c.potential_savings) * (progressPct / 100);
+  const hasRealSavings = uc.real_savings !== null && uc.real_savings !== undefined && uc.real_savings > 0;
   const gradient = COVER_GRADIENTS[index % COVER_GRADIENTS.length];
   const glow = COVER_GLOW[index % COVER_GLOW.length];
 
@@ -237,7 +237,9 @@ const ActiveCard = ({
             <Trophy className="w-3.5 h-3.5 text-primary" />
             <div>
               <p className="text-[9px] text-muted-foreground">Economizado</p>
-              <p className="text-xs text-foreground font-semibold">R$ {savedEstimate.toFixed(0)}</p>
+              <p className="text-xs text-foreground font-semibold">
+                {hasRealSavings ? `R$ ${uc.real_savings}` : "—"}
+              </p>
             </div>
           </div>
         </div>
