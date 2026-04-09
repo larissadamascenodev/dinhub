@@ -16,8 +16,10 @@ import { supabase } from "@/integrations/supabase/client";
 import { createTransaction } from "@/services/transactionService";
 import { useAuth } from "@/contexts/AuthContext";
 import { toast } from "sonner";
+import { useSwipeBack } from "@/hooks/useSwipeBack";
 
 const DashboardLayout = () => {
+  useSwipeBack();
   const profileState = useProfile();
   const { profile } = profileState;
   const { user } = useAuth();
