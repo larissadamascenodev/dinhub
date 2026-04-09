@@ -526,8 +526,8 @@ const Configuracoes = () => {
           </button>
         </div>
 
-        {/* Bio placeholder */}
-        <p className="text-xs text-muted-foreground mt-2">Focado em controle financeiro e evolução diária 💪</p>
+        {/* Bio */}
+        <p className="text-xs text-muted-foreground mt-2">{profile?.bio || "Focado em controle financeiro e evolução diária 💪"}</p>
 
       </motion.div>
 
