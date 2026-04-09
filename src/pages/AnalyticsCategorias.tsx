@@ -1075,26 +1075,6 @@ const CategoryDetail = ({
         );
       })()}
 
-      {/* Habit intensity */}
-      {category.txCount >= 6 && (
-        <GlassCard className="p-3">
-          <div className="flex items-center justify-between">
-            <div className="flex items-center gap-2">
-              <Repeat className="w-4 h-4 text-primary" />
-              <div>
-                <p className="text-xs font-semibold text-foreground">Intensidade do hábito</p>
-                <p className="text-[10px] text-muted-foreground/60">Você já fez {category.txCount} transações esse mês</p>
-              </div>
-            </div>
-            <span className={`text-[9px] font-semibold px-2 py-1 rounded-full ${habitConfig[habitIntensity].bg} ${habitConfig[habitIntensity].text}`}>
-              {habitConfig[habitIntensity].label}
-            </span>
-          </div>
-        </GlassCard>
-      )}
-
-
-
 
       {/* Evolution Chart (6 months) */}
       <EvolutionChart
