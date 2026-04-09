@@ -188,7 +188,7 @@ const renderDefaultShape = (props: any) => {
   );
 };
 
-// ── Custom bar shape with icon on top ────────────────────
+// ── Custom bar shape with icon inside at the top ─────────
 const BarWithIcon = (props: any) => {
   const { x, y, width, height, fill, payload } = props;
   if (!payload?.iconName) return <rect x={x} y={y} width={width} height={height} fill={fill} rx={6} ry={6} />;
@@ -196,15 +196,15 @@ const BarWithIcon = (props: any) => {
   const IconComp = payload.iconComponent;
   const iconSize = 14;
   const iconX = x + width / 2 - iconSize / 2;
-  const iconY = y - iconSize - 4;
+  const iconY = y + 4; // inside the bar, near the top edge
 
   return (
     <g>
       <rect x={x} y={y} width={width} height={height} fill={fill} rx={6} ry={6} />
-      {IconComp && iconY > 0 && (
+      {IconComp && height > iconSize + 6 && (
         <foreignObject x={iconX} y={iconY} width={iconSize} height={iconSize}>
           <div style={{ width: iconSize, height: iconSize, display: "flex", alignItems: "center", justifyContent: "center" }}>
-            <IconComp style={{ width: iconSize, height: iconSize, color: fill }} />
+            <IconComp style={{ width: iconSize, height: iconSize, color: "rgba(255,255,255,0.9)" }} />
           </div>
         </foreignObject>
       )}
