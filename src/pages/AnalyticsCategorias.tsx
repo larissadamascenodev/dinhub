@@ -627,6 +627,85 @@ const AlertsSection = ({ alerts }: { alerts: AIInsights["alerts"] }) => {
 
 
 
+const LimitSuggestionItem = ({ suggestion, currentAmount }: { suggestion: AIInsights["limitSuggestions"][0]; currentAmount: number }) => {
+  const [customLimit, setCustomLimit] = useState(suggestion.suggestedLimit);
+  const [editing, setEditing] = useState(false);
+
+  const monthlySaving = Math.max(currentAmount - customLimit, 0);
+  const saving3m = monthlySaving * 3;
+  const saving1y = monthlySaving * 12;
+
+  const handleInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const val = parseFloat(e.target.value.replace(/[^\d.,]/g, "").replace(",", "."));
+    if (!isNaN(val) && val >= 0) setCustomLimit(val);
+  };
+
+  return (
+    <motion.div initial={{ opacity: 0, y: 8 }} animate={{ opacity: 1, y: 0 }}
+      className="p-3 rounded-xl bg-primary/5 border border-primary/10">
+      <p className="text-xs font-semibold text-foreground">{suggestion.category}</p>
+      <p className="text-[11px] text-muted-foreground/70 mt-1">{suggestion.message}</p>
+
+      {/* Editable limit */}
+      <div className="mt-2.5 flex items-center gap-2">
+        <p className="text-[10px] text-muted-foreground/50 shrink-0">Limite:</p>
+        {editing ? (
+          <div className="flex items-center gap-1.5 flex-1">
+            <span className="text-[11px] text-muted-foreground/60">R$</span>
+            <input
+              type="number"
+              value={customLimit}
+              onChange={handleInputChange}
+              onBlur={() => setEditing(false)}
+              onKeyDown={(e) => e.key === "Enter" && setEditing(false)}
+              autoFocus
+              className="flex-1 bg-background/50 border border-border/30 rounded-lg px-2 py-1 text-xs font-bold text-foreground tabular-nums outline-none focus:border-primary/40 transition-colors"
+              min={0}
+              step={50}
+            />
+          </div>
+        ) : (
+          <button
+            onClick={() => setEditing(true)}
+            className="flex items-center gap-1.5 px-2.5 py-1 rounded-lg bg-background/30 border border-border/20 hover:border-primary/30 transition-colors"
+          >
+            <span className="text-xs font-bold text-foreground tabular-nums">{fmt(customLimit)}</span>
+            <span className="text-[9px] text-primary/60">editar</span>
+          </button>
+        )}
+      </div>
+
+      {/* Savings projection */}
+      {monthlySaving > 0 && (
+        <motion.div
+          initial={{ opacity: 0, height: 0 }}
+          animate={{ opacity: 1, height: "auto" }}
+          className="mt-2 grid grid-cols-3 gap-1.5 text-center py-1.5 rounded-lg bg-success/5 border border-success/10"
+        >
+          <div>
+            <p className="text-[8px] text-muted-foreground/50 uppercase">Por mês</p>
+            <p className="text-[11px] font-bold text-success tabular-nums">{fmt(monthlySaving)}</p>
+          </div>
+          <div>
+            <p className="text-[8px] text-muted-foreground/50 uppercase">Em 3 meses</p>
+            <p className="text-[11px] font-bold text-success tabular-nums">{fmt(saving3m)}</p>
+          </div>
+          <div>
+            <p className="text-[8px] text-muted-foreground/50 uppercase">Em 1 ano</p>
+            <p className="text-[11px] font-bold text-success tabular-nums">{fmt(saving1y)}</p>
+          </div>
+        </motion.div>
+      )}
+
+      <button
+        onClick={() => toast.success(`Limite de ${fmt(customLimit)} definido para ${suggestion.category}! 🎯`, { description: monthlySaving > 0 ? `Economia potencial de ${fmt(saving1y)} por ano.` : undefined })}
+        className="mt-2.5 w-full px-3 py-1.5 rounded-lg bg-primary/10 text-primary text-[11px] font-semibold border border-primary/15 hover:bg-primary/20 transition-colors">
+        Aplicar limite de {fmt(customLimit)}
+      </button>
+    </motion.div>
+  );
+};
+
 const LimitSuggestions = ({ suggestions, categoryData }: { suggestions: AIInsights["limitSuggestions"]; categoryData: CategorySummary[] }) => {
   if (!suggestions || suggestions.length === 0) return null;
   return (
@@ -638,20 +717,7 @@ const LimitSuggestions = ({ suggestions, categoryData }: { suggestions: AIInsigh
       <div className="space-y-2.5">
         {suggestions.map((s, i) => {
           const cat = categoryData.find((c) => c.name === s.category);
-          const annualSaving = (cat ? cat.amount - s.suggestedLimit : 0) * 12;
-          return (
-            <motion.div key={i} initial={{ opacity: 0, y: 8 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: i * 0.1 }}
-              className="p-3 rounded-xl bg-primary/5 border border-primary/10">
-              <p className="text-xs font-semibold text-foreground">{s.category}</p>
-              <p className="text-[11px] text-muted-foreground/70 mt-1">{s.message}</p>
-              <p className="text-[10px] text-muted-foreground/50 mt-1">Limite sugerido: {fmt(s.suggestedLimit)}</p>
-              <button
-                onClick={() => toast.success(`Limite de ${fmt(s.suggestedLimit)} definido para ${s.category}! 🎯`, { description: `Economia potencial de ${fmt(annualSaving)} por ano.` })}
-                className="mt-2.5 w-full px-3 py-1.5 rounded-lg bg-primary/10 text-primary text-[11px] font-semibold border border-primary/15 hover:bg-primary/20 transition-colors">
-                Definir limite de {fmt(s.suggestedLimit)}
-              </button>
-            </motion.div>
-          );
+          return <LimitSuggestionItem key={i} suggestion={s} currentAmount={cat?.amount ?? 0} />;
         })}
       </div>
     </GlassCard>
