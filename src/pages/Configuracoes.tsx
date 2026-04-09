@@ -22,7 +22,7 @@ import { supabase } from "@/integrations/supabase/client";
 
 const Configuracoes = () => {
   const { user } = useAuth();
-  const { profile, updateDisplayName, uploadAvatar } = useProfile();
+  const { profile, updateDisplayName, updateBio, uploadAvatar } = useProfile();
   const navigate = useNavigate();
   const { streak } = useLoginStreak();
   const fileInputRef = useRef<HTMLInputElement>(null);
@@ -35,6 +35,27 @@ const Configuracoes = () => {
   const [resetting, setResetting] = useState(false);
   const [uploadingAvatar, setUploadingAvatar] = useState(false);
   const [previewUrl, setPreviewUrl] = useState<string | null>(null);
+  const [editBio, setEditBio] = useState("");
+
+  const BIO_SUGGESTIONS = [
+    "Focado em controle financeiro e evolução diária 💪",
+    "Cada centavo conta na construção do meu futuro 🚀",
+    "Economizando hoje para viver melhor amanhã 🌱",
+    "Transformando hábitos financeiros, um dia de cada vez ✨",
+    "Menos impulso, mais planejamento 📊",
+    "Construindo liberdade financeira com disciplina 💰",
+    "Investindo no meu futuro com consistência 📈",
+    "Domando os gastos e conquistando objetivos 🎯",
+  ];
+
+  const generateRandomBio = () => {
+    const current = editBio;
+    let newBio = current;
+    while (newBio === current) {
+      newBio = BIO_SUGGESTIONS[Math.floor(Math.random() * BIO_SUGGESTIONS.length)];
+    }
+    setEditBio(newBio);
+  };
 
   const displayName = profile?.display_name || user?.email?.split("@")[0] || "Usuário";
   const email = user?.email ?? "";
