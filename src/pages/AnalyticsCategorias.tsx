@@ -2,7 +2,7 @@ import { useState, useEffect, useMemo, useCallback, useRef } from "react";
 import { useNavigate } from "react-router-dom";
 import { motion, AnimatePresence } from "framer-motion";
 import {
-  ArrowLeft, ChevronRight, Sparkles, TrendingUp, TrendingDown,
+  ArrowLeft, ChevronRight, ChevronDown, ChevronUp, Sparkles, TrendingUp, TrendingDown,
   AlertTriangle, Target, Brain, PieChart as PieChartIcon, Info, ShieldCheck, BarChart3,
   Repeat,
 } from "lucide-react";
@@ -659,15 +659,23 @@ const LimitSuggestions = ({ suggestions, categoryData }: { suggestions: AIInsigh
 };
 
 // ── General Installments Overview (Hub) ──────────────────
+const INITIAL_INSTALLMENT_COUNT = 3;
+
 const AllInstallmentsOverview = ({ impacts }: { impacts: InstallmentImpact[] }) => {
-  const allItems = impacts.flatMap((imp) =>
-    imp.items.map((item) => ({ ...item, category: imp.category }))
+  const [expanded, setExpanded] = useState(false);
+  const allItems = useMemo(() =>
+    impacts.flatMap((imp) =>
+      imp.items.map((item) => ({ ...item, category: imp.category }))
+    ).sort((a, b) => (b.amount * b.remaining) - (a.amount * a.remaining)),
+    [impacts]
   );
   if (allItems.length === 0) return null;
 
   const totalMonthly = impacts.reduce((s, imp) => s + imp.monthlyAmount, 0);
   const totalRemaining = impacts.reduce((s, imp) => s + imp.totalRemaining, 0);
   const maxMonths = Math.max(...impacts.map((imp) => imp.monthsRemaining), 0);
+  const hasMore = allItems.length > INITIAL_INSTALLMENT_COUNT;
+  const visible = expanded ? allItems : allItems.slice(0, INITIAL_INSTALLMENT_COUNT);
 
   return (
     <div
@@ -684,7 +692,6 @@ const AllInstallmentsOverview = ({ impacts }: { impacts: InstallmentImpact[] }) 
         <span className="ml-auto text-[9px] text-muted-foreground/40 bg-muted/10 px-1.5 py-0.5 rounded-full">{allItems.length} {allItems.length === 1 ? "item" : "itens"}</span>
       </div>
 
-      {/* Summary stats */}
       <div className="grid grid-cols-3 gap-1.5 mb-3">
         <div className="text-center p-2 rounded-xl bg-muted/5 border border-border/10">
           <p className="text-[8px] text-muted-foreground/50 uppercase">Mensal</p>
@@ -700,11 +707,8 @@ const AllInstallmentsOverview = ({ impacts }: { impacts: InstallmentImpact[] }) 
         </div>
       </div>
 
-      {/* Items list */}
       <div className="space-y-1">
-        {allItems
-          .sort((a, b) => b.remaining - a.remaining)
-          .map((item, i) => (
+        {visible.map((item, i) => (
           <div key={i} className="flex items-center justify-between py-1.5 px-2 rounded-lg hover:bg-muted/10 transition-colors">
             <div className="flex-1 min-w-0">
               <p className="text-[11px] font-semibold text-foreground truncate">{item.name}</p>
@@ -717,6 +721,19 @@ const AllInstallmentsOverview = ({ impacts }: { impacts: InstallmentImpact[] }) 
           </div>
         ))}
       </div>
+
+      {hasMore && (
+        <button
+          onClick={() => setExpanded(!expanded)}
+          className="w-full flex items-center justify-center gap-1 pt-2 mt-1 border-t border-border/10 text-[10px] text-muted-foreground/50 hover:text-muted-foreground transition-colors font-medium"
+        >
+          {expanded ? (
+            <><ChevronUp className="w-3 h-3" /> Mostrar menos</>
+          ) : (
+            <><ChevronDown className="w-3 h-3" /> Ver todos ({allItems.length})</>
+          )}
+        </button>
+      )}
     </div>
   );
 };
