@@ -439,6 +439,12 @@ const Desafios = () => {
     setLoading(true);
     try {
       const [s, a] = await Promise.all([fetchSuggestions(), fetchUserChallenges()]);
+      // Show violation toasts
+      for (const uc of a) {
+        if (uc.violated && uc.challenge) {
+          toast.error(`Desafio "${uc.challenge.name}" foi quebrado! Uma nova despesa foi detectada nas categorias monitoradas. O progresso foi reiniciado.`, { duration: 6000 });
+        }
+      }
       // Filter out already accepted suggestions
       const acceptedIds = new Set(a.map((uc) => uc.challenge_id));
       setSuggestions(s.filter((c) => !acceptedIds.has(c.id)));

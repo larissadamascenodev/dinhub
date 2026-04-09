@@ -2,12 +2,12 @@ import { supabase } from "@/integrations/supabase/client";
 
 // Maps challenge names to related transaction categories
 const CHALLENGE_CATEGORY_MAP: Record<string, string[]> = {
-  "Semana Sem Delivery": ["Delivery", "Alimentação"],
+  "Semana Sem Delivery": ["Delivery", "Fast Food", "Fast-food"],
   "30 Dias Sem Compras por Impulso": ["Compras online", "Eletrônicos", "Vestuário"],
-  "Café de Casa por 15 Dias": ["Alimentação", "Bebida"],
+  "Café de Casa por 15 Dias": ["Café", "Bebida"],
   "Transporte Consciente por 15 Dias": ["Transporte", "Uber"],
   "Semana Sem Streaming Extra": ["Assinaturas", "Streaming"],
-  "30 Dias de Almoço em Casa": ["Alimentação", "Delivery"],
+  "30 Dias de Almoço em Casa": ["Fast Food", "Fast-food", "Delivery"],
 };
 
 // Reverse map: category → challenge names it's relevant to
@@ -59,6 +59,7 @@ export interface UserChallenge {
   checkin_count?: number;
   checked_today?: boolean;
   real_savings?: number | null;
+  violated?: boolean;
 }
 
 interface CategorySpending {
@@ -205,6 +206,7 @@ export async function fetchUserChallenges(): Promise<UserChallenge[]> {
       checkin_count: checkinCount,
       checked_today: !!todayCheck,
       real_savings: realSavings,
+      violated,
     });
   }
 
