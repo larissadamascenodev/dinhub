@@ -500,79 +500,6 @@ const ComparisonInsightsSection = ({ categoryData, prevCategoryData }: {
   );
 };
 
-// ── Score Insights Section ───────────────────────────────
-const ScoreInsightsSection = ({ scoreMap, categoryData }: {
-  scoreMap: Record<string, CategoryScoreData>;
-  categoryData: CategorySummary[];
-}) => {
-  const insights = useMemo(() => {
-    const results: { message: string; score: CategoryScore; impact: number }[] = [];
-
-    categoryData.forEach((cat) => {
-      const sc = scoreMap[cat.name];
-      if (!sc) return;
-
-      if (sc.score === "exagerado") {
-        results.push({
-          message: `Seus gastos com ${cat.name} estão acima do ideal 🚨 Talvez seja o melhor ponto pra ajustar agora`,
-          score: "exagerado",
-          impact: cat.amount,
-        });
-      } else if (sc.score === "atencao") {
-        results.push({
-          message: `Fica de olho em ${cat.name} 👀 Tá começando a subir`,
-          score: "atencao",
-          impact: cat.amount * 0.5,
-        });
-      } else {
-        results.push({
-          message: `Boa! Seus gastos com ${cat.name} estão sob controle 👍`,
-          score: "saudavel",
-          impact: 0,
-        });
-      }
-    });
-
-    // Prioritize: exagerado first, then atencao, limit to 3
-    return results
-      .sort((a, b) => {
-        const order = { exagerado: 0, atencao: 1, saudavel: 2 };
-        return order[a.score] - order[b.score] || b.impact - a.impact;
-      })
-      .slice(0, 3);
-  }, [scoreMap, categoryData]);
-
-  if (insights.length === 0) return null;
-
-  return (
-    <GlassCard className="p-4 md:p-5">
-      <div className="flex items-center gap-2 mb-3">
-        <ShieldCheck className="w-4 h-4 text-primary" />
-        <p className="text-[10px] md:text-[11px] text-muted-foreground/60 font-semibold uppercase tracking-wider">
-          Score de Categorias
-        </p>
-      </div>
-      <div className="space-y-2">
-        {insights.map((ins, i) => {
-          const cfg = SCORE_CONFIG[ins.score];
-          return (
-            <motion.div
-              key={i}
-              initial={{ opacity: 0, x: -10 }}
-              animate={{ opacity: 1, x: 0 }}
-              transition={{ delay: i * 0.1 }}
-              className={`flex items-start gap-2.5 p-2.5 rounded-xl ${cfg.bg} border ${cfg.border}`}
-            >
-              <span className="text-sm mt-0.5 shrink-0">{cfg.emoji}</span>
-              <p className="text-xs text-foreground/80 leading-relaxed">{ins.message}</p>
-            </motion.div>
-          );
-        })}
-      </div>
-    </GlassCard>
-  );
-};
-
 // ── AI Insights Section ──────────────────────────────────
 const AIInsightsSection = ({ insights, loading }: { insights: AIInsights | null; loading: boolean }) => {
   if (loading) {
@@ -592,9 +519,7 @@ const AIInsightsSection = ({ insights, loading }: { insights: AIInsights | null;
       </GlassCard>
     );
   }
-
   if (!insights || insights.insights.length === 0) return null;
-
   return (
     <GlassCard className="p-4 md:p-5">
       <div className="flex items-center gap-2 mb-3">
@@ -605,13 +530,8 @@ const AIInsightsSection = ({ insights, loading }: { insights: AIInsights | null;
       </div>
       <div className="space-y-2.5">
         {insights.insights.map((msg, i) => (
-          <motion.div
-            key={i}
-            initial={{ opacity: 0, x: -10 }}
-            animate={{ opacity: 1, x: 0 }}
-            transition={{ delay: i * 0.1 }}
-            className="flex items-start gap-2.5 p-2.5 rounded-xl bg-primary/5 border border-primary/10"
-          >
+          <motion.div key={i} initial={{ opacity: 0, x: -10 }} animate={{ opacity: 1, x: 0 }} transition={{ delay: i * 0.1 }}
+            className="flex items-start gap-2.5 p-2.5 rounded-xl bg-primary/5 border border-primary/10">
             <Sparkles className="w-3.5 h-3.5 text-primary mt-0.5 shrink-0" />
             <p className="text-xs text-foreground/80 leading-relaxed">{msg}</p>
           </motion.div>
@@ -624,33 +544,24 @@ const AIInsightsSection = ({ insights, loading }: { insights: AIInsights | null;
 // ── Alerts Section ───────────────────────────────────────
 const AlertsSection = ({ alerts }: { alerts: AIInsights["alerts"] }) => {
   if (!alerts || alerts.length === 0) return null;
-
   const severityConfig = {
     info: { icon: Info, borderColor: "border-blue-500/20", bgColor: "bg-blue-500/5", textColor: "text-blue-400" },
     warning: { icon: AlertTriangle, borderColor: "border-warning/20", bgColor: "bg-warning/5", textColor: "text-warning" },
     danger: { icon: AlertTriangle, borderColor: "border-destructive/20", bgColor: "bg-destructive/5", textColor: "text-destructive" },
   };
-
   return (
     <GlassCard className="p-4 md:p-5">
       <div className="flex items-center gap-2 mb-3">
         <AlertTriangle className="w-4 h-4 text-warning" />
-        <p className="text-[10px] md:text-[11px] text-muted-foreground/60 font-semibold uppercase tracking-wider">
-          Alertas de Comportamento
-        </p>
+        <p className="text-[10px] md:text-[11px] text-muted-foreground/60 font-semibold uppercase tracking-wider">Alertas de Comportamento</p>
       </div>
       <div className="space-y-2">
         {alerts.map((alert, i) => {
           const config = severityConfig[alert.severity];
           const AlertIcon = config.icon;
           return (
-            <motion.div
-              key={i}
-              initial={{ opacity: 0, y: 5 }}
-              animate={{ opacity: 1, y: 0 }}
-              transition={{ delay: i * 0.08 }}
-              className={`flex items-start gap-2.5 p-2.5 rounded-xl ${config.bgColor} border ${config.borderColor}`}
-            >
+            <motion.div key={i} initial={{ opacity: 0, y: 5 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: i * 0.08 }}
+              className={`flex items-start gap-2.5 p-2.5 rounded-xl ${config.bgColor} border ${config.borderColor}`}>
               <AlertIcon className={`w-3.5 h-3.5 mt-0.5 shrink-0 ${config.textColor}`} />
               <div>
                 <p className="text-[10px] font-semibold text-foreground/70 uppercase">{alert.category}</p>
@@ -664,7 +575,7 @@ const AlertsSection = ({ alerts }: { alerts: AIInsights["alerts"] }) => {
   );
 };
 
-// ── Projections Inline (compact, merges with summary) ────
+// ── Projections Inline ───────────────────────────────────
 const ProjectionsInline = ({ totalExpenses }: { totalExpenses: number }) => {
   const annualEstimate = totalExpenses * 12;
   return (
@@ -683,69 +594,28 @@ const ProjectionsInline = ({ totalExpenses }: { totalExpenses: number }) => {
   );
 };
 
-// ── Limit Suggestions (detailed) ─────────────────────────
+// ── Limit Suggestions ────────────────────────────────────
 const LimitSuggestions = ({ suggestions, categoryData }: { suggestions: AIInsights["limitSuggestions"]; categoryData: CategorySummary[] }) => {
   if (!suggestions || suggestions.length === 0) return null;
-
   return (
     <GlassCard className="p-4 md:p-5">
       <div className="flex items-center gap-2 mb-3">
         <Target className="w-4 h-4 text-primary" />
-        <p className="text-[10px] md:text-[11px] text-muted-foreground/60 font-semibold uppercase tracking-wider">
-          Sugestões de Limite
-        </p>
+        <p className="text-[10px] md:text-[11px] text-muted-foreground/60 font-semibold uppercase tracking-wider">Sugestões de Limite</p>
       </div>
       <div className="space-y-2.5">
         {suggestions.map((s, i) => {
-          const cat = categoryData.find((c) => c.name.toLowerCase() === s.category.toLowerCase());
-          const currentAmount = cat?.amount ?? 0;
-          const saving = currentAmount - s.suggestedLimit;
-          const annualSaving = saving > 0 ? saving * 12 : 0;
-          const CatIcon = cat?.icon;
-
+          const cat = categoryData.find((c) => c.name === s.category);
+          const annualSaving = (cat ? cat.amount - s.suggestedLimit : 0) * 12;
           return (
-            <motion.div
-              key={i}
-              initial={{ opacity: 0, y: 5 }}
-              animate={{ opacity: 1, y: 0 }}
-              transition={{ delay: i * 0.08 }}
-              className="p-3 rounded-xl bg-primary/5 border border-primary/10"
-            >
-              <div className="flex items-center gap-2.5 mb-2">
-                {CatIcon && (
-                  <div className="w-7 h-7 rounded-full flex items-center justify-center" style={{ background: `${cat?.hexColor}18` }}>
-                    <CatIcon className="w-3.5 h-3.5" style={{ color: cat?.hexColor }} />
-                  </div>
-                )}
-                <div className="flex-1 min-w-0">
-                  <p className="text-xs font-semibold text-foreground">{s.category}</p>
-                  <p className="text-[10px] text-muted-foreground/60">{s.message}</p>
-                </div>
-              </div>
-              <div className="flex items-center gap-3 mt-2">
-                <div className="flex-1 grid grid-cols-3 gap-2 text-center">
-                  <div>
-                    <p className="text-[8px] text-muted-foreground/50 uppercase">Atual</p>
-                    <p className="text-[11px] font-bold text-destructive tabular-nums">{fmt(currentAmount)}</p>
-                  </div>
-                  <div>
-                    <p className="text-[8px] text-muted-foreground/50 uppercase">Limite</p>
-                    <p className="text-[11px] font-bold text-primary tabular-nums">{fmt(s.suggestedLimit)}</p>
-                  </div>
-                  <div>
-                    <p className="text-[8px] text-muted-foreground/50 uppercase">Economia/ano</p>
-                    <p className="text-[11px] font-bold text-success tabular-nums">{fmt(annualSaving)}</p>
-                  </div>
-                </div>
-              </div>
+            <motion.div key={i} initial={{ opacity: 0, y: 8 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: i * 0.1 }}
+              className="p-3 rounded-xl bg-primary/5 border border-primary/10">
+              <p className="text-xs font-semibold text-foreground">{s.category}</p>
+              <p className="text-[11px] text-muted-foreground/70 mt-1">{s.message}</p>
+              <p className="text-[10px] text-muted-foreground/50 mt-1">Limite sugerido: {fmt(s.suggestedLimit)}</p>
               <button
-                onClick={() => {
-                  toast.success(`Limite de ${fmt(s.suggestedLimit)} definido para ${s.category}! 🎯`, {
-                    description: `Economia potencial de ${fmt(annualSaving)} por ano.`,
-                  });
-                }}
-                className="mt-2.5 w-full px-3 py-1.5 rounded-lg bg-primary/10 text-primary text-[11px] font-semibold border border-primary/15 hover:bg-primary/20 transition-colors"
-              >
+                onClick={() => toast.success(`Limite de ${fmt(s.suggestedLimit)} definido para ${s.category}! 🎯`, { description: `Economia potencial de ${fmt(annualSaving)} por ano.` })}
+                className="mt-2.5 w-full px-3 py-1.5 rounded-lg bg-primary/10 text-primary text-[11px] font-semibold border border-primary/15 hover:bg-primary/20 transition-colors">
                 Definir limite de {fmt(s.suggestedLimit)}
               </button>
             </motion.div>
@@ -758,83 +628,46 @@ const LimitSuggestions = ({ suggestions, categoryData }: { suggestions: AIInsigh
 
 // ── Installment Insights Section ─────────────────────────
 const InstallmentInsightsSection = ({ impacts }: { impacts: InstallmentImpact[] }) => {
-  // Filter only relevant impacts
   const relevant = impacts
     .filter((imp) => imp.totalRemaining > 300 || imp.monthsRemaining >= 3 || imp.impactPct > 20)
-    .sort((a, b) => b.totalRemaining - a.totalRemaining || b.monthsRemaining - a.monthsRemaining)
+    .sort((a, b) => b.totalRemaining - a.totalRemaining)
     .slice(0, 3);
-
   if (relevant.length === 0) return null;
-
   const getSeverity = (imp: InstallmentImpact) => {
     if (imp.impactPct > 50 || imp.totalRemaining > 2000) return "danger";
     if (imp.impactPct > 30 || imp.totalRemaining > 1000) return "warning";
     return "info";
   };
-
   const getMessage = (imp: InstallmentImpact) => {
     const severity = getSeverity(imp);
-    if (severity === "danger") {
-      return `⚠️ Parte do seu orçamento futuro já está comprometido com ${imp.category}. Talvez seja melhor segurar novos gastos aqui por enquanto.`;
-    }
-    if (severity === "warning") {
-      return `Você ainda tem ${fmt(imp.totalRemaining)} comprometidos em ${imp.category}. Esse valor vai impactar seus próximos ${imp.monthsRemaining} meses 😅`;
-    }
-    return `Mesmo com parcelamentos ativos, seus gastos em ${imp.category} estão sob controle 👍`;
+    if (severity === "danger") return `⚠️ Parte do seu orçamento futuro já está comprometido com ${imp.category}.`;
+    if (severity === "warning") return `Você ainda tem ${fmt(imp.totalRemaining)} comprometidos em ${imp.category}. Próximos ${imp.monthsRemaining} meses 😅`;
+    return `Parcelamentos em ${imp.category} estão sob controle 👍`;
   };
-
   const severityStyles = {
-    info: { border: "border-blue-500/15", bg: "bg-blue-500/5", icon: "text-blue-400" },
-    warning: { border: "border-warning/15", bg: "bg-warning/5", icon: "text-warning" },
-    danger: { border: "border-destructive/15", bg: "bg-destructive/5", icon: "text-destructive" },
+    info: { border: "border-blue-500/15", bg: "bg-blue-500/5" },
+    warning: { border: "border-warning/15", bg: "bg-warning/5" },
+    danger: { border: "border-destructive/15", bg: "bg-destructive/5" },
   };
-
   return (
     <GlassCard className="p-4 md:p-5">
       <div className="flex items-center gap-2 mb-3">
         <span className="text-base">💳</span>
-        <p className="text-[10px] md:text-[11px] text-muted-foreground/60 font-semibold uppercase tracking-wider">
-          Impacto de Parcelamentos
-        </p>
+        <p className="text-[10px] md:text-[11px] text-muted-foreground/60 font-semibold uppercase tracking-wider">Impacto de Parcelamentos</p>
       </div>
       <div className="space-y-2.5">
         {relevant.map((imp, i) => {
           const severity = getSeverity(imp);
           const styles = severityStyles[severity];
           return (
-            <motion.div
-              key={imp.category}
-              initial={{ opacity: 0, y: 8 }}
-              animate={{ opacity: 1, y: 0 }}
-              transition={{ delay: i * 0.1 }}
-              className={`p-3 rounded-xl ${styles.bg} border ${styles.border}`}
-            >
-              <div className="flex items-center gap-2 mb-2">
-                <span className="text-xs">💳</span>
-                <p className="text-xs font-semibold text-foreground flex-1">{imp.category}</p>
-                <span className={`text-[9px] font-semibold px-1.5 py-0.5 rounded-full ${
-                  severity === "danger" ? "bg-destructive/10 text-destructive" :
-                  severity === "warning" ? "bg-warning/10 text-warning" : "bg-blue-500/10 text-blue-400"
-                }`}>
-                  {imp.impactPct}% da categoria
-                </span>
-              </div>
-              <p className="text-[11px] text-foreground/70 leading-relaxed mb-2">
-                {getMessage(imp)}
-              </p>
+            <motion.div key={imp.category} initial={{ opacity: 0, y: 8 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: i * 0.1 }}
+              className={`p-3 rounded-xl ${styles.bg} border ${styles.border}`}>
+              <p className="text-xs font-semibold text-foreground mb-1">{imp.category}</p>
+              <p className="text-[11px] text-foreground/70 leading-relaxed mb-2">{getMessage(imp)}</p>
               <div className="grid grid-cols-3 gap-2 text-center py-1.5 rounded-lg bg-background/30">
-                <div>
-                  <p className="text-[8px] text-muted-foreground/50 uppercase">Mensal</p>
-                  <p className="text-[11px] font-bold text-foreground tabular-nums">{fmt(imp.monthlyAmount)}</p>
-                </div>
-                <div>
-                  <p className="text-[8px] text-muted-foreground/50 uppercase">Restante</p>
-                  <p className="text-[11px] font-bold text-foreground tabular-nums">{fmt(imp.totalRemaining)}</p>
-                </div>
-                <div>
-                  <p className="text-[8px] text-muted-foreground/50 uppercase">Meses</p>
-                  <p className="text-[11px] font-bold text-foreground tabular-nums">⏳ {imp.monthsRemaining}</p>
-                </div>
+                <div><p className="text-[8px] text-muted-foreground/50 uppercase">Mensal</p><p className="text-[11px] font-bold text-foreground tabular-nums">{fmt(imp.monthlyAmount)}</p></div>
+                <div><p className="text-[8px] text-muted-foreground/50 uppercase">Restante</p><p className="text-[11px] font-bold text-foreground tabular-nums">{fmt(imp.totalRemaining)}</p></div>
+                <div><p className="text-[8px] text-muted-foreground/50 uppercase">Meses</p><p className="text-[11px] font-bold text-foreground tabular-nums">⏳ {imp.monthsRemaining}</p></div>
               </div>
             </motion.div>
           );
@@ -847,55 +680,33 @@ const InstallmentInsightsSection = ({ impacts }: { impacts: InstallmentImpact[] 
 // ── Category Installment Detail ──────────────────────────
 const CategoryInstallmentDetail = ({ impact }: { impact: InstallmentImpact | undefined }) => {
   if (!impact || impact.items.length === 0) return null;
-
   const isRelevant = impact.totalRemaining > 300 || impact.monthsRemaining >= 3 || impact.impactPct > 20;
   if (!isRelevant) return null;
-
   const isHighImpact = impact.impactPct > 30 || impact.totalRemaining > 1000;
-
   return (
     <GlassCard className={`p-4 md:p-5 ${isHighImpact ? "border-warning/20" : "border-border/20"}`}>
       <div className="flex items-center gap-2 mb-3">
         <span className="text-base">💳</span>
-        <p className="text-[10px] md:text-[11px] text-muted-foreground/60 font-semibold uppercase tracking-wider">
-          Parcelamentos Ativos
-        </p>
+        <p className="text-[10px] md:text-[11px] text-muted-foreground/60 font-semibold uppercase tracking-wider">Parcelamentos Ativos</p>
       </div>
-
-      {/* Summary */}
       <div className={`p-3 rounded-xl mb-3 ${isHighImpact ? "bg-warning/5 border border-warning/10" : "bg-muted/10 border border-border/10"}`}>
         <p className="text-xs text-foreground/80 leading-relaxed">
           {isHighImpact
-            ? `⚠️ ${fmt(impact.totalRemaining)} comprometidos nos próximos ${impact.monthsRemaining} meses. Cuidado com novos parcelamentos aqui.`
+            ? `⚠️ ${fmt(impact.totalRemaining)} comprometidos nos próximos ${impact.monthsRemaining} meses.`
             : `${fmt(impact.totalRemaining)} restantes em parcelamentos (${impact.monthsRemaining} meses). Tudo sob controle 👍`}
         </p>
       </div>
-
-      {/* Stats */}
       <div className="grid grid-cols-3 gap-2 mb-3">
-        <div className="text-center">
-          <p className="text-[9px] text-muted-foreground/50 uppercase">Mensal</p>
-          <p className="text-sm font-bold text-foreground tabular-nums">{fmt(impact.monthlyAmount)}</p>
-        </div>
-        <div className="text-center">
-          <p className="text-[9px] text-muted-foreground/50 uppercase">Total restante</p>
-          <p className="text-sm font-bold text-foreground tabular-nums">{fmt(impact.totalRemaining)}</p>
-        </div>
-        <div className="text-center">
-          <p className="text-[9px] text-muted-foreground/50 uppercase">% da categoria</p>
-          <p className="text-sm font-bold text-foreground tabular-nums">{impact.impactPct}%</p>
-        </div>
+        <div className="text-center"><p className="text-[9px] text-muted-foreground/50 uppercase">Mensal</p><p className="text-sm font-bold text-foreground tabular-nums">{fmt(impact.monthlyAmount)}</p></div>
+        <div className="text-center"><p className="text-[9px] text-muted-foreground/50 uppercase">Total restante</p><p className="text-sm font-bold text-foreground tabular-nums">{fmt(impact.totalRemaining)}</p></div>
+        <div className="text-center"><p className="text-[9px] text-muted-foreground/50 uppercase">% da categoria</p><p className="text-sm font-bold text-foreground tabular-nums">{impact.impactPct}%</p></div>
       </div>
-
-      {/* Items */}
       <div className="space-y-1.5">
         {impact.items.map((item, i) => (
           <div key={i} className="flex items-center justify-between py-1.5 px-2 rounded-lg hover:bg-muted/10">
             <div className="flex-1 min-w-0">
               <p className="text-xs font-semibold text-foreground truncate">{item.name}</p>
-              <p className="text-[9px] text-muted-foreground/40">
-                {item.total - item.remaining} de {item.total} parcelas pagas
-              </p>
+              <p className="text-[9px] text-muted-foreground/40">{item.total - item.remaining} de {item.total} parcelas pagas</p>
             </div>
             <div className="text-right shrink-0 ml-2">
               <p className="text-xs font-bold text-foreground tabular-nums">{fmt(item.amount)}/mês</p>
@@ -907,7 +718,6 @@ const CategoryInstallmentDetail = ({ impact }: { impact: InstallmentImpact | und
     </GlassCard>
   );
 };
-
 
 const EvolutionGlowDot = (props: any) => {
   const { cx, cy } = props;
@@ -1838,8 +1648,7 @@ const AnalyticsCategorias = () => {
 
 
 
-                {/* Score Insights */}
-                <ScoreInsightsSection scoreMap={scoreMap} categoryData={categoryData} />
+
 
                 {/* AI Insights */}
                 <AIInsightsSection insights={aiInsights} loading={aiLoading} />
