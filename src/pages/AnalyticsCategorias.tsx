@@ -2,7 +2,7 @@ import { useState, useEffect, useMemo, useCallback, useRef } from "react";
 import { useNavigate } from "react-router-dom";
 import { motion, AnimatePresence } from "framer-motion";
 import {
-  ArrowLeft, ChevronRight, Sparkles, TrendingUp, TrendingDown,
+  ArrowLeft, ChevronRight, ChevronDown, ChevronUp, Sparkles, TrendingUp, TrendingDown,
   AlertTriangle, Target, Brain, PieChart as PieChartIcon, Info, ShieldCheck, BarChart3,
   Repeat,
 } from "lucide-react";
