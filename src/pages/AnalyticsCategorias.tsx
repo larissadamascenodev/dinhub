@@ -1257,18 +1257,28 @@ const AnalyticsCategorias = () => {
       // 6-month history range (5 months back + current)
       const histStart = new Date(selectedYear, selectedMonth - 5, 1).toISOString().split("T")[0];
 
-      const [txRes, prevTxRes, histRes, installmentRes, recurringTxs, prevRecurring, cats] = await Promise.all([
+      const [txRes, prevTxRes, histRes, installmentRes, invoiceItemsRes, prevInvoiceItemsRes, recurringTxs, prevRecurring, cats] = await Promise.all([
         supabase.from("transactions").select("*").eq("user_id", user.id)
           .gte("date", start).lte("date", end).order("date", { ascending: false }),
         supabase.from("transactions").select("*").eq("user_id", user.id)
           .gte("date", prevStart).lte("date", prevEnd),
-        supabase.from("transactions").select("id,category,date,amount,type").eq("user_id", user.id)
+        supabase.from("transactions").select("id,category,date,amount,type,payment_method,credit_card_id").eq("user_id", user.id)
           .eq("type", "despesa")
           .gte("date", histStart).lte("date", end),
         // Fetch all active installment transactions (future parcels)
-        supabase.from("transactions").select("id,name,category,amount,date,installments,installment_current,parent_transaction_id,recurrence_type")
+        supabase.from("transactions").select("id,name,category,amount,date,installments,installment_current,parent_transaction_id,recurrence_type,payment_method,credit_card_id")
           .eq("user_id", user.id).eq("recurrence_type", "parcelado").eq("type", "despesa")
           .gte("date", start),
+        // Fetch invoice items for current month to know which credit card transactions belong here
+        supabase.from("invoice_items").select("*, invoices!inner(month, year, user_id, credit_card_id), transactions!inner(name, category, amount, type, payment_method, installments, installment_current, parent_transaction_id, recurrence_type)")
+          .eq("invoices.user_id", user.id)
+          .eq("invoices.month", selectedMonth + 1) // invoices use 1-based months
+          .eq("invoices.year", selectedYear),
+        // Fetch invoice items for previous month
+        supabase.from("invoice_items").select("*, invoices!inner(month, year, user_id), transactions!inner(name, category, amount, type)")
+          .eq("invoices.user_id", user.id)
+          .eq("invoices.month", prevM + 1)
+          .eq("invoices.year", prevY),
         getRecurringForMonth(selectedMonth, selectedYear),
         getRecurringForMonth(prevM, prevY),
         getCustomCategories(),
@@ -1280,14 +1290,50 @@ const AnalyticsCategorias = () => {
         date: `${selectedYear}-${String(selectedMonth + 1).padStart(2, "0")}-${String(new Date(t.date).getDate()).padStart(2, "0")}`,
       })) as TxRow[];
 
+      // Build a set of transaction IDs that belong to this month's invoices
+      const invoiceItems = (invoiceItemsRes.data ?? []) as any[];
+      const invoiceTxIds = new Set(invoiceItems.map((ii: any) => ii.transaction_id));
+
+      // Filter base transactions: for credit card txs, only include if they have an invoice item in this month
+      const filteredBaseTxs = baseTxs.filter((tx) => {
+        if (tx.payment_method === "cartao" && tx.credit_card_id) {
+          return invoiceTxIds.has(tx.id);
+        }
+        return true;
+      });
+
+      // Also add credit card transactions that have invoice items in this month but whose date is in a different month
+      const existingTxIds = new Set(filteredBaseTxs.map((t) => t.id));
+      const extraCcTxIds = [...invoiceTxIds].filter((id) => !existingTxIds.has(id));
+      let extraCcTxs: TxRow[] = [];
+      if (extraCcTxIds.length > 0) {
+        // Fetch these transactions
+        const { data: extraData } = await supabase.from("transactions").select("*")
+          .eq("user_id", user.id)
+          .in("id", extraCcTxIds);
+        extraCcTxs = (extraData ?? []) as TxRow[];
+      }
+
       const prevBaseTxs = (prevTxRes.data ?? []) as TxRow[];
       const prevMaterialized = prevRecurring.map((t: any) => ({
         ...t,
         date: `${prevY}-${String(prevM + 1).padStart(2, "0")}-${String(new Date(t.date).getDate()).padStart(2, "0")}`,
       })) as TxRow[];
 
+      // Filter previous month credit card txs similarly
+      const prevInvoiceItems = (prevInvoiceItemsRes.data ?? []) as any[];
+      const prevInvoiceTxIds = new Set(prevInvoiceItems.map((ii: any) => ii.transaction_id));
+      const filteredPrevBaseTxs = prevBaseTxs.filter((tx) => {
+        if (tx.payment_method === "cartao" && tx.credit_card_id) {
+          return prevInvoiceTxIds.has(tx.id);
+        }
+        return true;
+      });
+
       // Build historical map from 6-month data
-      const histTxs = (histRes.data ?? []) as { id: string; category: string; date: string; amount: number; type: string }[];
+      // For non-credit-card txs, use date-based grouping
+      // For credit card txs, we use date-based as an approximation (invoice items query per month would be too heavy)
+      const histTxs = (histRes.data ?? []) as { id: string; category: string; date: string; amount: number; type: string; payment_method: string; credit_card_id: string | null }[];
       const hMap: HistoricalMap = {};
       histTxs.forEach((tx) => {
         const d = new Date(tx.date + "T12:00:00");
@@ -1319,11 +1365,12 @@ const AnalyticsCategorias = () => {
         hMap[cat] = filled;
       });
 
-      // Build installment impact map
+      // Build installment impact map from both regular installments AND invoice items
       const instTxs = (installmentRes.data ?? []) as {
         id: string; name: string; category: string; amount: number; date: string;
         installments: number | null; installment_current: number | null;
         parent_transaction_id: string | null; recurrence_type: string;
+        payment_method: string; credit_card_id: string | null;
       }[];
 
       // Group by parent (or self if parent) to find unique installment groups
@@ -1338,6 +1385,22 @@ const AnalyticsCategorias = () => {
         } else {
           existing.maxCurrent = Math.max(existing.maxCurrent, current);
         }
+      });
+
+      // Also detect installments from invoice items (credit card parcels)
+      invoiceItems.forEach((ii: any) => {
+        const tx = ii.transactions;
+        if (!tx || tx.type !== "despesa") return;
+        if (ii.total_installments <= 1) return;
+        const groupId = tx.parent_transaction_id ?? ii.transaction_id;
+        if (groupMap.has(groupId)) return; // Already tracked
+        groupMap.set(groupId, {
+          name: tx.name,
+          category: tx.category,
+          amount: ii.amount,
+          total: ii.total_installments,
+          maxCurrent: ii.installment_number,
+        });
       });
 
       const iMap: InstallmentImpactMap = {};
