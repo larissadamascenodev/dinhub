@@ -289,8 +289,29 @@ const Configuracoes = () => {
               />
             </div>
 
+            {/* Bio */}
+            <div className="space-y-2">
+              <div className="flex items-center justify-between">
+                <label className="text-xs font-semibold text-muted-foreground">Mensagem</label>
+                <button
+                  type="button"
+                  onClick={generateRandomBio}
+                  className="flex items-center gap-1 text-[10px] text-primary hover:text-primary/80 transition-colors"
+                >
+                  <Shuffle className="w-3 h-3" /> Gerar aleatória
+                </button>
+              </div>
+              <Input
+                value={editBio}
+                onChange={(e) => setEditBio(e.target.value)}
+                className="h-11 bg-muted/30 border-border/20 rounded-xl text-sm"
+                placeholder="Sua frase de motivação..."
+                maxLength={100}
+              />
+            </div>
+
             <Button
-              onClick={handleSaveName}
+              onClick={handleSaveProfile}
               disabled={!editName.trim() || uploadingAvatar}
               className="w-full h-11 rounded-xl font-bold"
             >
