@@ -5,7 +5,7 @@ import {
   User, Pencil, Star, Flame, Target, TrendingUp, Swords, Trophy,
   Shield, Crown, Upload, FileText, Smartphone, MessageCircle, Trash2, LogOut,
   Bell, Globe, HelpCircle, Headphones, FileCheck, ChevronRight, Wallet, Settings, Camera,
-  MessageSquare, Shuffle,
+  MessageSquare, Shuffle, Eye, EyeOff,
 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -36,6 +36,14 @@ const Configuracoes = () => {
   const [uploadingAvatar, setUploadingAvatar] = useState(false);
   const [previewUrl, setPreviewUrl] = useState<string | null>(null);
   const [editBio, setEditBio] = useState("");
+  const [passwordModalOpen, setPasswordModalOpen] = useState(false);
+  const [currentPassword, setCurrentPassword] = useState("");
+  const [newPassword, setNewPassword] = useState("");
+  const [confirmPassword, setConfirmPassword] = useState("");
+  const [showCurrentPw, setShowCurrentPw] = useState(false);
+  const [showNewPw, setShowNewPw] = useState(false);
+  const [showConfirmPw, setShowConfirmPw] = useState(false);
+  const [changingPassword, setChangingPassword] = useState(false);
 
   const BIO_SUGGESTIONS = [
     "Focado em controle financeiro e evolução diária 💪",
@@ -90,6 +98,34 @@ const Configuracoes = () => {
     setEditModalOpen(true);
   };
 
+  const handleChangePassword = async () => {
+    if (!newPassword || !confirmPassword) {
+      toast.error("Preencha todos os campos");
+      return;
+    }
+    if (newPassword.length < 6) {
+      toast.error("A nova senha deve ter no mínimo 6 caracteres");
+      return;
+    }
+    if (newPassword !== confirmPassword) {
+      toast.error("As senhas não coincidem");
+      return;
+    }
+    setChangingPassword(true);
+    try {
+      const { error } = await supabase.auth.updateUser({ password: newPassword });
+      if (error) throw error;
+      toast.success("Senha alterada com sucesso!");
+      setPasswordModalOpen(false);
+      setCurrentPassword("");
+      setNewPassword("");
+      setConfirmPassword("");
+    } catch (err: any) {
+      toast.error(err?.message || "Erro ao alterar senha");
+    } finally {
+      setChangingPassword(false);
+    }
+  };
 
   const handleLogout = async () => {
     await supabase.auth.signOut();
@@ -171,7 +207,7 @@ const Configuracoes = () => {
 
   /* ── Conta items ── */
   const contaItems = [
-    { icon: Shield, label: "Segurança", sub: "Alterar senha de acesso", action: true },
+    { icon: Shield, label: "Segurança", sub: "Alterar senha de acesso", action: true, onClick: () => setPasswordModalOpen(true) },
     { icon: Crown, label: "Assinatura", sub: "Gerenciar plano e pagamentos", action: true },
   ];
   const dadosItems = [
@@ -316,6 +352,72 @@ const Configuracoes = () => {
               className="w-full h-11 rounded-xl font-bold"
             >
               {uploadingAvatar ? "Enviando..." : "Salvar"}
+            </Button>
+          </div>
+        </DialogContent>
+      </Dialog>
+
+      {/* ═══ Password Change Modal ═══ */}
+      <Dialog open={passwordModalOpen} onOpenChange={(open) => {
+        if (!changingPassword) {
+          setPasswordModalOpen(open);
+          if (!open) { setCurrentPassword(""); setNewPassword(""); setConfirmPassword(""); }
+        }
+      }}>
+        <DialogContent className="bg-card border-border/30 rounded-2xl max-w-sm mx-auto p-0 overflow-hidden">
+          <div className="p-6 space-y-5">
+            <h3 className="text-lg font-bold text-foreground text-center">Alterar Senha</h3>
+
+            <div className="space-y-2">
+              <label className="text-xs font-semibold text-muted-foreground">Nova senha</label>
+              <div className="relative">
+                <Input
+                  type={showNewPw ? "text" : "password"}
+                  value={newPassword}
+                  onChange={(e) => setNewPassword(e.target.value)}
+                  className="h-11 bg-muted/30 border-border/20 rounded-xl text-sm pr-10"
+                  placeholder="Mínimo 6 caracteres"
+                />
+                <button
+                  type="button"
+                  onClick={() => setShowNewPw(!showNewPw)}
+                  className="absolute right-3 top-1/2 -translate-y-1/2 text-muted-foreground hover:text-foreground"
+                >
+                  {showNewPw ? <EyeOff className="w-4 h-4" /> : <Eye className="w-4 h-4" />}
+                </button>
+              </div>
+            </div>
+
+            <div className="space-y-2">
+              <label className="text-xs font-semibold text-muted-foreground">Confirmar nova senha</label>
+              <div className="relative">
+                <Input
+                  type={showConfirmPw ? "text" : "password"}
+                  value={confirmPassword}
+                  onChange={(e) => setConfirmPassword(e.target.value)}
+                  className="h-11 bg-muted/30 border-border/20 rounded-xl text-sm pr-10"
+                  placeholder="Repita a nova senha"
+                />
+                <button
+                  type="button"
+                  onClick={() => setShowConfirmPw(!showConfirmPw)}
+                  className="absolute right-3 top-1/2 -translate-y-1/2 text-muted-foreground hover:text-foreground"
+                >
+                  {showConfirmPw ? <EyeOff className="w-4 h-4" /> : <Eye className="w-4 h-4" />}
+                </button>
+              </div>
+            </div>
+
+            {newPassword && confirmPassword && newPassword !== confirmPassword && (
+              <p className="text-[11px] text-destructive">As senhas não coincidem</p>
+            )}
+
+            <Button
+              onClick={handleChangePassword}
+              disabled={changingPassword || !newPassword || !confirmPassword || newPassword !== confirmPassword}
+              className="w-full h-11 rounded-xl font-bold"
+            >
+              {changingPassword ? "Alterando..." : "Alterar Senha"}
             </Button>
           </div>
         </DialogContent>
