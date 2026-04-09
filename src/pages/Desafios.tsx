@@ -98,6 +98,10 @@ const SuggestionCard = ({
 
       {/* Body */}
       <div className="p-4 flex flex-col flex-1 gap-3">
+        {/* Personalized hint */}
+        {challenge.personalHint && (
+          <p className="text-[11px] text-primary/80 font-medium leading-snug">{challenge.personalHint}</p>
+        )}
         <div>
           <p className={cn("text-xs text-muted-foreground leading-relaxed", !expanded && "line-clamp-2")}>{challenge.description}</p>
           {challenge.description && challenge.description.length > 80 && (
@@ -109,10 +113,17 @@ const SuggestionCard = ({
 
         <div className="mt-auto space-y-3">
           <div className="bg-primary/[0.06] border border-primary/10 rounded-xl px-3 py-2.5">
-            <p className="text-[9px] uppercase tracking-widest text-muted-foreground font-medium">Economia Potencial</p>
-            <p className="text-base font-bold text-primary">
-              R$ {Number(challenge.potential_savings).toLocaleString("pt-BR", { minimumFractionDigits: 2 })}
+            <p className="text-[9px] uppercase tracking-widest text-muted-foreground font-medium">
+              {challenge.realPotential ? "Seu gasto recente" : "Economia Potencial"}
             </p>
+            <p className="text-base font-bold text-primary">
+              R$ {challenge.realPotential
+                ? challenge.realPotential.toLocaleString("pt-BR", { minimumFractionDigits: 2 })
+                : Number(challenge.potential_savings).toLocaleString("pt-BR", { minimumFractionDigits: 2 })}
+            </p>
+            {challenge.realPotential && (
+              <p className="text-[9px] text-muted-foreground mt-0.5">nos últimos 30 dias</p>
+            )}
           </div>
           <Button
             className="w-full bg-primary/15 text-primary border border-primary/30 hover:bg-primary/25 rounded-xl h-10 font-semibold"
@@ -435,7 +446,7 @@ const Desafios = () => {
       <div className="mb-8">
         <div className="flex items-center justify-between mb-3">
           <h2 className="text-base font-bold text-foreground flex items-center gap-2">
-            <span className="text-primary">✨</span> Sugestões para Você
+            <span className="text-primary">✨</span> Recomendados para Você
           </h2>
           <button onClick={load} className="text-muted-foreground hover:text-foreground transition-colors">
             <RefreshCw className="w-4 h-4" />
