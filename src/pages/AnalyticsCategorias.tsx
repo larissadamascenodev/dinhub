@@ -40,6 +40,7 @@ interface TxRow {
   amount: number; type: string; status: string;
   recurrence_type?: string; installments?: number | null;
   installment_current?: number | null; parent_transaction_id?: string | null;
+  payment_method?: string; credit_card_id?: string | null;
 }
 
 interface CategorySummary {
