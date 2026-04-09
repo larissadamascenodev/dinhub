@@ -79,12 +79,12 @@ const SuggestionCard = ({
         )}
         <div className="absolute inset-0 bg-gradient-to-t from-black/70 via-black/30 to-transparent" />
         
-        <div className="absolute top-2.5 left-3 flex items-center gap-1.5">
+        <div className="absolute top-2.5 left-3 flex items-center gap-1.5 z-10">
           <span className={cn("text-[10px] font-semibold px-2 py-0.5 rounded-full backdrop-blur-sm", DIFFICULTY_COLOR[challenge.difficulty])}>
             {DIFFICULTY_LABEL[challenge.difficulty] ?? challenge.difficulty}
           </span>
         </div>
-        <span className="absolute top-2.5 right-3 text-[10px] font-medium px-2 py-0.5 rounded-full bg-black/30 backdrop-blur-sm text-white/80 border border-white/10">
+        <span className="absolute top-2.5 right-3 text-[10px] font-medium px-2 py-0.5 rounded-full bg-black/30 backdrop-blur-sm text-white/80 border border-white/10 z-10">
           ⏱ {challenge.duration_days} dias
         </span>
         
@@ -168,12 +168,12 @@ const ActiveCard = ({
         )}
         <div className="absolute inset-0 bg-gradient-to-t from-black/60 via-black/20 to-transparent" />
         
-        <span className={cn("absolute top-2.5 left-3 text-[10px] font-semibold px-2 py-0.5 rounded-full backdrop-blur-sm", DIFFICULTY_COLOR[c.difficulty])}>
+        <span className={cn("absolute top-2.5 left-3 text-[10px] font-semibold px-2 py-0.5 rounded-full backdrop-blur-sm z-10", DIFFICULTY_COLOR[c.difficulty])}>
           {DIFFICULTY_LABEL[c.difficulty] ?? c.difficulty}
         </span>
 
         {/* Menu */}
-        <div className="absolute top-2.5 right-3">
+        <div className="absolute top-2.5 right-3 z-10">
           <button onClick={() => setMenuOpen(!menuOpen)} className="p-1.5 rounded-full bg-black/20 backdrop-blur-sm hover:bg-black/40 text-white/80 transition-colors">
             <MoreVertical className="w-3.5 h-3.5" />
           </button>
@@ -196,7 +196,7 @@ const ActiveCard = ({
           </AnimatePresence>
         </div>
 
-        <span className="text-5xl drop-shadow-lg opacity-70">{c.icon}</span>
+        <span className="text-5xl drop-shadow-lg opacity-70 relative z-10">{c.icon}</span>
       </div>
 
       {/* Body */}
