@@ -163,8 +163,10 @@ const ActiveCard = ({
     >
       {/* Cover */}
       <div className={cn("relative h-28 bg-gradient-to-br flex items-center justify-center", gradient)}>
-        {/* Decorative circles */}
-        <div className="absolute top-0 right-0 w-20 h-20 rounded-full bg-white/[0.04] -translate-y-6 translate-x-6" />
+        {c.cover_image && (
+          <img src={c.cover_image} alt={c.name} className="absolute inset-0 w-full h-full object-cover" loading="lazy" />
+        )}
+        <div className="absolute inset-0 bg-gradient-to-t from-black/60 via-black/20 to-transparent" />
         
         <span className={cn("absolute top-2.5 left-3 text-[10px] font-semibold px-2 py-0.5 rounded-full backdrop-blur-sm", DIFFICULTY_COLOR[c.difficulty])}>
           {DIFFICULTY_LABEL[c.difficulty] ?? c.difficulty}
