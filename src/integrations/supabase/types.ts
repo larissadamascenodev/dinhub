@@ -545,6 +545,7 @@ export type Database = {
         Row: {
           bill_due_days_before: number
           bill_due_reminder: boolean
+          challenge_reminder: boolean
           created_at: string
           goal_reminder: boolean
           id: string
@@ -558,6 +559,7 @@ export type Database = {
         Insert: {
           bill_due_days_before?: number
           bill_due_reminder?: boolean
+          challenge_reminder?: boolean
           created_at?: string
           goal_reminder?: boolean
           id?: string
@@ -571,6 +573,7 @@ export type Database = {
         Update: {
           bill_due_days_before?: number
           bill_due_reminder?: boolean
+          challenge_reminder?: boolean
           created_at?: string
           goal_reminder?: boolean
           id?: string

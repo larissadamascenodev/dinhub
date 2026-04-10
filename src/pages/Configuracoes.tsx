@@ -93,6 +93,7 @@ const Configuracoes = () => {
   const [showConfirmPw, setShowConfirmPw] = useState(false);
   const [changingPassword, setChangingPassword] = useState(false);
   const [notifSettingsOpen, setNotifSettingsOpen] = useState(false);
+  const [tabBeforeModal, setTabBeforeModal] = useState<"conta" | "config" | null>(null);
   const passwordStrength = getPasswordStrength(newPassword);
   const [financeSummary, setFinanceSummary] = useState<{ saldo: number; investimentos: number; totalContas: number } | null>(null);
 
@@ -321,7 +322,7 @@ const Configuracoes = () => {
 
   /* ── Config items ── */
   const configItems = [
-    { icon: Bell, label: "Lembretes e Alertas", sub: "Notificações do app", onClick: () => setNotifSettingsOpen(true) },
+    { icon: Bell, label: "Lembretes e Alertas", sub: "Notificações do app", onClick: () => { setTabBeforeModal(activeTab); setNotifSettingsOpen(true); } },
     { icon: Globe, label: "Tipo de Moeda", sub: "Selecione a moeda padrão" },
     { icon: HelpCircle, label: "Central de Ajuda", sub: "Perguntas frequentes" },
     { icon: Headphones, label: "Falar com o Suporte", sub: "Abrir um chamado", onClick: () => navigate("/suporte") },
@@ -888,7 +889,13 @@ const Configuracoes = () => {
           <SectionGroup title="Configurações" items={configItems} />
         </motion.div>
       )}
-      <NotificationSettingsModal open={notifSettingsOpen} onOpenChange={setNotifSettingsOpen} />
+      <NotificationSettingsModal open={notifSettingsOpen} onOpenChange={(v) => {
+        setNotifSettingsOpen(v);
+        if (!v && tabBeforeModal) {
+          setActiveTab(tabBeforeModal);
+          setTabBeforeModal(null);
+        }
+      }} />
     </div>
   );
 };
