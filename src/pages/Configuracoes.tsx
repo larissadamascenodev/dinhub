@@ -733,8 +733,31 @@ const Configuracoes = () => {
             <ChevronRight className="relative z-10 w-3.5 h-3.5 text-muted-foreground group-hover:text-foreground transition-colors shrink-0" />
           </motion.button>
         ))}
-      </div>
+            </div>
 
+            {/* Password strength indicator */}
+            {newPassword && (() => {
+              let score = 0;
+              if (newPassword.length >= 6) score++;
+              if (newPassword.length >= 10) score++;
+              if (/[A-Z]/.test(newPassword)) score++;
+              if (/[0-9]/.test(newPassword)) score++;
+              if (/[^A-Za-z0-9]/.test(newPassword)) score++;
+              const level = score <= 1 ? 0 : score <= 3 ? 1 : 2;
+              const labels = ["Fraca", "Média", "Forte"];
+              const colors = ["bg-destructive", "bg-amber-500", "bg-primary"];
+              const textColors = ["text-destructive", "text-amber-500", "text-primary"];
+              return (
+                <div className="space-y-1.5">
+                  <div className="flex gap-1">
+                    {[0, 1, 2].map((i) => (
+                      <div key={i} className={`h-1 flex-1 rounded-full transition-colors duration-300 ${i <= level ? colors[level] : "bg-muted/30"}`} />
+                    ))}
+                  </div>
+                  <p className={`text-[10px] font-semibold ${textColors[level]}`}>{labels[level]}</p>
+                </div>
+              );
+            })()}
 
       {/* ═══ Tabs: Conta / Configurações ═══ */}
       <div className="relative rounded-xl bg-card/90 backdrop-blur-xl border border-border/30 shadow-lg shadow-black/30 flex overflow-hidden">
