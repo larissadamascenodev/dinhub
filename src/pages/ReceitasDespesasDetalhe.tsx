@@ -410,7 +410,7 @@ const ReceitasDespesasDetalhe = () => {
           {showAll ? (
             <>Recolher <ChevronUp className="w-3.5 h-3.5" /></>
           ) : (
-            <>Ver todas ({transactions.length}) <ChevronDown className="w-3.5 h-3.5" /></>
+            <>Ver todas ({allPending.length + allPaid.length}) <ChevronDown className="w-3.5 h-3.5" /></>
           )}
         </button>
       )}
