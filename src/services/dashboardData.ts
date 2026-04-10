@@ -164,12 +164,19 @@ export async function buildDashboardData(
     name: t.name,
     category: t.category,
     date: new Date(t.date + "T12:00:00").toLocaleDateString("pt-BR", { day: "numeric", month: "short" }),
+    rawDate: t.date,
     amount: Number(t.amount),
     type: t.type as Transaction["type"],
     status: "pago" as const,
   }));
 
-  const transactions: Transaction[] = [...regularTransactions, ...faturasPaid];
+  const transactions: Transaction[] = [...regularTransactions, ...faturasPaid]
+    .sort((a, b) => {
+      const da = a.rawDate || "";
+      const db = b.rawDate || "";
+      if (da !== db) return db.localeCompare(da);
+      return 0;
+    });
 
   const pendingAsEvents: FinanceEvent[] = regularPending.map((t) => ({
     id: t.id,
