@@ -14,6 +14,7 @@ interface ToolItem {
 }
 
 const tools: ToolItem[] = [
+  // Unlocked first
   {
     icon: <Sparkles className="w-5 h-5" />,
     label: "Projeções",
@@ -29,20 +30,6 @@ const tools: ToolItem[] = [
     bgFrom: "hsl(215 30% 14%)",
   },
   {
-    icon: <Radar className="w-5 h-5" />,
-    label: "Radar",
-    disabled: true,
-    color: "hsl(280 60% 60%)",
-    bgFrom: "hsl(280 20% 14%)",
-  },
-  {
-    icon: <HeartPulse className="w-5 h-5" />,
-    label: "Saúde",
-    path: "/bot-finance/saude",
-    color: "hsl(340 70% 55%)",
-    bgFrom: "hsl(340 25% 14%)",
-  },
-  {
     icon: <Target className="w-5 h-5" />,
     label: "Metas",
     path: "/metas",
@@ -55,6 +42,21 @@ const tools: ToolItem[] = [
     path: "/desafios",
     color: "hsl(25 85% 55%)",
     bgFrom: "hsl(25 30% 14%)",
+  },
+  // Disabled / coming soon
+  {
+    icon: <Radar className="w-5 h-5" />,
+    label: "Radar",
+    disabled: true,
+    color: "hsl(280 60% 60%)",
+    bgFrom: "hsl(280 20% 14%)",
+  },
+  {
+    icon: <HeartPulse className="w-5 h-5" />,
+    label: "Saúde",
+    disabled: true,
+    color: "hsl(340 70% 55%)",
+    bgFrom: "hsl(340 25% 14%)",
   },
 ];
 
@@ -71,8 +73,8 @@ const BotFinanceTools = ({ layout = "carousel" }: BotFinanceToolsProps) => {
     <div
       className={
         isCarousel
-          ? "flex gap-5 overflow-x-auto scrollbar-none snap-x snap-mandatory pb-2 -mx-1 px-1"
-          : "flex gap-4 flex-wrap justify-start"
+          ? "flex gap-5 overflow-x-auto overflow-y-visible scrollbar-none snap-x snap-mandatory pb-4 -mx-1 px-1 relative z-10"
+          : "flex gap-4 flex-wrap justify-start overflow-visible pb-2 relative z-10"
       }
       style={isCarousel ? { WebkitOverflowScrolling: "touch" } : undefined}
     >
