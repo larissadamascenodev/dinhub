@@ -94,13 +94,20 @@ const DashboardHeader = memo(({ profile, streak = 0, streakDates = [] }: { profi
     <button
       onClick={handleOpenNotif}
       className={cn(
-        "relative flex items-center justify-center text-muted-foreground hover:text-foreground transition-colors",
-        size === "sm" ? "w-7 h-7 rounded-full" : ""
+        "relative flex items-center justify-center transition-colors",
+        size === "sm"
+          ? "w-7 h-7 rounded-full text-muted-foreground hover:text-foreground"
+          : "w-8 h-8 rounded-xl bg-card/60 border border-border/15 text-muted-foreground hover:text-foreground hover:bg-card/80"
       )}
     >
       <Bell className={size === "sm" ? "h-3.5 w-3.5" : "h-4 w-4"} />
       {unreadCount > 0 && (
-        <span className="absolute -top-1 -right-1 min-w-[16px] h-4 px-1 flex items-center justify-center rounded-full bg-destructive text-destructive-foreground text-[9px] font-bold">
+        <span className={cn(
+          "absolute flex items-center justify-center rounded-full font-bold shadow-lg",
+          size === "sm"
+            ? "-top-1.5 -right-1.5 min-w-[18px] h-[18px] px-1 text-[9px] bg-primary text-primary-foreground ring-2 ring-background"
+            : "-top-1.5 -right-1.5 min-w-[20px] h-[20px] px-1 text-[10px] bg-primary text-primary-foreground ring-2 ring-background"
+        )}>
           {unreadCount > 9 ? "9+" : unreadCount}
         </span>
       )}
