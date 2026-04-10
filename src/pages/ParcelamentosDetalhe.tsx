@@ -14,6 +14,7 @@ import { useSwipeBack } from "@/hooks/useSwipeBack";
 import {
   BarChart, Bar, XAxis, YAxis, Tooltip, ResponsiveContainer, Cell,
   PieChart as RePieChart, Pie,
+  AreaChart, Area,
 } from "recharts";
 
 interface Installment {
