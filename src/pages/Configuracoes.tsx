@@ -20,6 +20,53 @@ import { supabase } from "@/integrations/supabase/client";
 
 /* ═══════════════════════════════════════════════ */
 
+type PasswordStrengthLevel = 0 | 1 | 2;
+
+const PASSWORD_STRENGTH_CONFIG = [
+  {
+    label: "Fraca",
+    hint: "Use pelo menos 8 caracteres.",
+    fillClassName: "bg-destructive",
+    textClassName: "text-destructive",
+  },
+  {
+    label: "Média",
+    hint: "Combine letras, números ou símbolos.",
+    fillClassName: "bg-foreground/60",
+    textClassName: "text-foreground",
+  },
+  {
+    label: "Forte",
+    hint: "10+ caracteres com ótima variedade de caracteres.",
+    fillClassName: "bg-primary",
+    textClassName: "text-primary",
+  },
+] as const;
+
+const getPasswordStrength = (password: string) => {
+  if (!password) return null;
+
+  const hasLowercase = /\p{Ll}/u.test(password);
+  const hasUppercase = /\p{Lu}/u.test(password);
+  const hasNumber = /\d/.test(password);
+  const hasSpecial = /[^\p{L}\d\s]/u.test(password);
+  const varietyCount = [hasLowercase, hasUppercase, hasNumber, hasSpecial].filter(Boolean).length;
+
+  let level: PasswordStrengthLevel = 0;
+
+  if ((password.length >= 10 && varietyCount >= 4) || (password.length >= 12 && varietyCount >= 3)) {
+    level = 2;
+  } else if (password.length >= 8 && varietyCount >= 2) {
+    level = 1;
+  }
+
+  return {
+    level,
+    activeSegments: level + 1,
+    ...PASSWORD_STRENGTH_CONFIG[level],
+  };
+};
+
 const Configuracoes = () => {
   const { user } = useAuth();
   const { profile, updateDisplayName, updateBio, uploadAvatar } = useProfile();
@@ -44,6 +91,7 @@ const Configuracoes = () => {
   const [showNewPw, setShowNewPw] = useState(false);
   const [showConfirmPw, setShowConfirmPw] = useState(false);
   const [changingPassword, setChangingPassword] = useState(false);
+  const passwordStrength = getPasswordStrength(newPassword);
 
   const BIO_SUGGESTIONS = [
     "Focado em controle financeiro e evolução diária 💪",
@@ -439,29 +487,27 @@ const Configuracoes = () => {
                   {showNewPw ? <EyeOff className="w-4 h-4" /> : <Eye className="w-4 h-4" />}
                 </button>
               </div>
-              {/* Password strength indicator */}
-              {newPassword && (() => {
-                let score = 0;
-                if (newPassword.length >= 6) score++;
-                if (newPassword.length >= 10) score++;
-                if (/[A-Z]/.test(newPassword)) score++;
-                if (/[0-9]/.test(newPassword)) score++;
-                if (/[^A-Za-z0-9]/.test(newPassword)) score++;
-                const level = score <= 1 ? 0 : score <= 3 ? 1 : 2;
-                const labels = ["Fraca", "Média", "Forte"];
-                const colors = ["bg-destructive", "bg-amber-500", "bg-primary"];
-                const textColors = ["text-destructive", "text-amber-500", "text-primary"];
-                return (
-                  <div className="space-y-1 mt-2">
-                    <div className="flex gap-1">
-                      {[0, 1, 2].map((i) => (
-                        <div key={i} className={`h-1 flex-1 rounded-full transition-colors duration-300 ${i <= level ? colors[level] : "bg-muted/30"}`} />
-                      ))}
-                    </div>
-                    <p className={`text-[10px] font-semibold ${textColors[level]}`}>{labels[level]}</p>
+              {passwordStrength && (
+                <div className="space-y-1 mt-2">
+                  <div className="flex gap-1">
+                    {[0, 1, 2].map((segment) => (
+                      <div
+                        key={segment}
+                        className={cn(
+                          "h-1 flex-1 rounded-full transition-colors duration-300",
+                          segment < passwordStrength.activeSegments ? passwordStrength.fillClassName : "bg-muted/30",
+                        )}
+                      />
+                    ))}
                   </div>
-                );
-              })()}
+                  <div className="space-y-0.5">
+                    <p className={cn("text-[10px] font-semibold", passwordStrength.textClassName)}>
+                      {passwordStrength.label}
+                    </p>
+                    <p className="text-[10px] text-muted-foreground">{passwordStrength.hint}</p>
+                  </div>
+                </div>
+              )}
             </div>
 
             <div className="space-y-2">
@@ -757,30 +803,6 @@ const Configuracoes = () => {
           </motion.button>
         ))}
             </div>
-
-            {/* Password strength indicator */}
-            {newPassword && (() => {
-              let score = 0;
-              if (newPassword.length >= 6) score++;
-              if (newPassword.length >= 10) score++;
-              if (/[A-Z]/.test(newPassword)) score++;
-              if (/[0-9]/.test(newPassword)) score++;
-              if (/[^A-Za-z0-9]/.test(newPassword)) score++;
-              const level = score <= 1 ? 0 : score <= 3 ? 1 : 2;
-              const labels = ["Fraca", "Média", "Forte"];
-              const colors = ["bg-destructive", "bg-amber-500", "bg-primary"];
-              const textColors = ["text-destructive", "text-amber-500", "text-primary"];
-              return (
-                <div className="space-y-1.5">
-                  <div className="flex gap-1">
-                    {[0, 1, 2].map((i) => (
-                      <div key={i} className={`h-1 flex-1 rounded-full transition-colors duration-300 ${i <= level ? colors[level] : "bg-muted/30"}`} />
-                    ))}
-                  </div>
-                  <p className={`text-[10px] font-semibold ${textColors[level]}`}>{labels[level]}</p>
-                </div>
-              );
-            })()}
 
       {/* ═══ Tabs: Conta / Configurações ═══ */}
       <div className="relative rounded-xl bg-card/90 backdrop-blur-xl border border-border/30 shadow-lg shadow-black/30 flex overflow-hidden">
