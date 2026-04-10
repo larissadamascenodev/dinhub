@@ -1,3 +1,4 @@
+import { useRef } from "react";
 import { useNavigate } from "react-router-dom";
 import { motion } from "framer-motion";
 import {
@@ -14,7 +15,6 @@ interface ToolItem {
 }
 
 const tools: ToolItem[] = [
-  // Unlocked first
   {
     icon: <Wallet className="w-5 h-5" />,
     label: "Carteira",
@@ -50,7 +50,6 @@ const tools: ToolItem[] = [
     color: "hsl(25 85% 55%)",
     bgFrom: "hsl(25 30% 14%)",
   },
-  // Disabled / coming soon
   {
     icon: <Radar className="w-5 h-5" />,
     label: "Radar",
@@ -73,15 +72,39 @@ interface BotFinanceToolsProps {
 
 const BotFinanceTools = ({ layout = "carousel" }: BotFinanceToolsProps) => {
   const navigate = useNavigate();
-
   const isCarousel = layout === "carousel";
+  const containerRef = useRef<HTMLDivElement>(null);
+  const isDragging = useRef(false);
+
+  // Desktop mouse drag for carousel
+  const handleMouseDown = (e: React.MouseEvent) => {
+    if (!isCarousel || !containerRef.current) return;
+    isDragging.current = false;
+    const el = containerRef.current;
+    const startX = e.pageX;
+    const scrollLeft = el.scrollLeft;
+
+    const onMove = (ev: MouseEvent) => {
+      const dx = ev.pageX - startX;
+      if (Math.abs(dx) > 3) isDragging.current = true;
+      el.scrollLeft = scrollLeft - dx;
+    };
+    const onUp = () => {
+      document.removeEventListener("mousemove", onMove);
+      document.removeEventListener("mouseup", onUp);
+    };
+    document.addEventListener("mousemove", onMove);
+    document.addEventListener("mouseup", onUp);
+  };
 
   return (
     <div
+      ref={containerRef}
+      onMouseDown={handleMouseDown}
       className={
         isCarousel
-          ? "flex gap-5 overflow-x-auto overflow-y-visible scrollbar-none snap-x snap-mandatory pb-4 -mx-1 px-1 relative z-10"
-          : "flex gap-4 flex-wrap justify-start overflow-visible pb-2 relative z-10"
+          ? "flex gap-5 overflow-x-auto scrollbar-none snap-x snap-mandatory pb-2 -mx-1 px-1 relative z-20 cursor-grab active:cursor-grabbing select-none"
+          : "flex gap-4 flex-wrap justify-start pb-2 relative z-20 select-none"
       }
       style={isCarousel ? { WebkitOverflowScrolling: "touch" } : undefined}
     >
@@ -93,25 +116,28 @@ const BotFinanceTools = ({ layout = "carousel" }: BotFinanceToolsProps) => {
             initial={{ opacity: 0, scale: 0.8 }}
             animate={{ opacity: 1, scale: 1 }}
             transition={{ delay: i * 0.06, type: "spring", stiffness: 260, damping: 20 }}
-            whileHover={isDisabled ? {} : { scale: 1.08 }}
-            whileTap={isDisabled ? {} : { scale: 0.92 }}
-            onClick={() => !isDisabled && tool.path && navigate(tool.path)}
+            whileHover={isDisabled ? {} : { scale: 1.05, transition: { duration: 0.2 } }}
+            whileTap={isDisabled ? {} : { scale: 0.95 }}
+            onClick={() => {
+              if (isDragging.current) return;
+              if (!isDisabled && tool.path) navigate(tool.path);
+            }}
             disabled={isDisabled}
             className={`flex flex-col items-center gap-2 flex-shrink-0 group ${isCarousel ? "snap-center" : ""}`}
             style={{ opacity: isDisabled ? 0.45 : 1 }}
           >
             <div
-              className="relative w-14 h-14 md:w-16 md:h-16 rounded-full flex items-center justify-center border transition-shadow duration-300"
+              className="relative w-14 h-14 md:w-16 md:h-16 rounded-full flex items-center justify-center border transition-all duration-300"
               style={{
                 background: `radial-gradient(circle at 35% 35%, ${tool.bgFrom}, hsl(220 18% 7%) 90%)`,
-                borderColor: isDisabled ? "hsl(220 10% 18%)" : `${tool.color}33`,
-                boxShadow: isDisabled ? "none" : `0 0 20px ${tool.color}15, inset 0 1px 0 hsl(220 20% 20% / 0.25)`,
+                borderColor: isDisabled ? "hsl(220 10% 18%)" : `${tool.color}30`,
+                boxShadow: isDisabled ? "none" : `0 0 16px ${tool.color}10, inset 0 1px 0 hsl(220 20% 20% / 0.2)`,
               }}
             >
               {!isDisabled && (
                 <div
                   className="absolute inset-0 rounded-full opacity-0 group-hover:opacity-100 transition-opacity duration-300 pointer-events-none"
-                  style={{ background: `radial-gradient(circle, ${tool.color}20, transparent 65%)` }}
+                  style={{ background: `radial-gradient(circle, ${tool.color}18, transparent 65%)` }}
                 />
               )}
               <div style={{ color: isDisabled ? "hsl(220 10% 40%)" : tool.color }}>
