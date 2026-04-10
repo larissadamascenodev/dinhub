@@ -211,7 +211,7 @@ const ReceitasDespesasDetalhe = () => {
   const hasMore = paidTxs.length > 5 || pendingTxs.length > 5;
 
   return (
-    <div className="pb-24 md:pb-8 max-w-2xl mx-auto">
+    <div className="pb-24 md:pb-8 w-full">
       {/* Header */}
       <div className="mb-5">
         <button
@@ -233,29 +233,53 @@ const ReceitasDespesasDetalhe = () => {
         </div>
       </div>
 
-      {/* Summary cards */}
-      <div className="grid grid-cols-3 gap-2 mb-5">
+      {/* Summary card — unified */}
+      <motion.div
+        initial={{ opacity: 0, y: 8 }}
+        animate={{ opacity: 1, y: 0 }}
+        className="rounded-2xl border border-border/20 backdrop-blur-xl overflow-hidden mb-5 relative"
+        style={{
+          background: `linear-gradient(145deg, ${accentHsl.replace(")", " / 0.08)")}, hsl(220 15% 8% / 0.9))`,
+          boxShadow: `0 8px 32px -8px ${accentHsl.replace(")", " / 0.15)")}`,
+        }}
+      >
+        {/* Glow */}
         <div
-          className="rounded-xl border p-3 text-center"
-          style={{
-            borderColor: `${accentHsl.replace(")", " / 0.15)")}`,
-            background: `${accentHsl.replace(")", " / 0.06)")}`,
-          }}
-        >
-          <p className="text-[9px] text-muted-foreground uppercase tracking-wider font-semibold mb-1">Total</p>
-          <p className={`text-sm font-bold tabular-nums text-${accent}`}>{fmt(total)}</p>
+          className="absolute -top-16 -right-16 w-40 h-40 rounded-full blur-3xl pointer-events-none"
+          style={{ background: `${accentHsl.replace(")", " / 0.1)")}` }}
+        />
+        <div className="relative px-5 py-4">
+          {/* Total */}
+          <div className="text-center mb-3">
+            <p className="text-[10px] text-muted-foreground/60 uppercase tracking-widest font-semibold mb-1">
+              Total {isReceita ? "Receitas" : "Despesas"}
+            </p>
+            <p className={`text-2xl md:text-3xl font-bold tabular-nums font-display text-${accent}`}>
+              {fmt(total)}
+            </p>
+          </div>
+          {/* Paid + Pending row */}
+          <div className="flex items-center justify-center gap-6">
+            <div className="flex items-center gap-2">
+              <CheckCircle2 className={`w-3.5 h-3.5 text-${accent} opacity-70`} />
+              <div>
+                <p className="text-[8px] text-muted-foreground/50 uppercase tracking-wider font-semibold">
+                  {isReceita ? "Recebido" : "Pago"}
+                </p>
+                <p className="text-sm font-bold tabular-nums text-foreground">{fmt(paid)}</p>
+              </div>
+            </div>
+            <div className="w-px h-8 bg-border/15" />
+            <div className="flex items-center gap-2">
+              <Clock className="w-3.5 h-3.5 text-yellow-400 opacity-70" />
+              <div>
+                <p className="text-[8px] text-muted-foreground/50 uppercase tracking-wider font-semibold">Pendente</p>
+                <p className="text-sm font-bold tabular-nums text-yellow-400">{fmt(pending)}</p>
+              </div>
+            </div>
+          </div>
         </div>
-        <div className="rounded-xl border border-border/20 bg-card/60 p-3 text-center">
-          <p className="text-[9px] text-muted-foreground uppercase tracking-wider font-semibold mb-1">
-            {isReceita ? "Recebido" : "Pago"}
-          </p>
-          <p className="text-sm font-bold tabular-nums text-foreground">{fmt(paid)}</p>
-        </div>
-        <div className="rounded-xl border border-yellow-500/15 bg-yellow-500/[0.06] p-3 text-center">
-          <p className="text-[9px] text-muted-foreground uppercase tracking-wider font-semibold mb-1">Pendente</p>
-          <p className="text-sm font-bold tabular-nums text-yellow-400">{fmt(pending)}</p>
-        </div>
-      </div>
+      </motion.div>
 
       {/* Evolution chart - LINE */}
       {historyData.length > 0 && (
