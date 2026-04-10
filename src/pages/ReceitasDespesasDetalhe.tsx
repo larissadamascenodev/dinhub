@@ -178,13 +178,25 @@ const ReceitasDespesasDetalhe = () => {
   const paid = isReceita ? data.receitasRecebidas : data.despesasPagas;
   const pending = isReceita ? data.receitasPendentes : data.despesasPendentes;
 
-  // Split transactions by status
-  const paidTxs = useMemo(() => transactions.filter((t) => t.status === "pago"), [transactions]);
-  const pendingTxs = useMemo(() => transactions.filter((t) => t.status !== "pago"), [transactions]);
+  // Unified list item type
+  type ListItem = { kind: "tx"; tx: TxRow } | { kind: "invoice"; inv: InvoiceRow };
 
-  // Merge invoices into the lists
-  const pendingInvoices = useMemo(() => invoices.filter((inv) => !inv.is_paid), [invoices]);
-  const paidInvoices = useMemo(() => invoices.filter((inv) => inv.is_paid), [invoices]);
+  // Merge transactions + invoices into pending/paid lists
+  const allPending = useMemo<ListItem[]>(() => {
+    const items: ListItem[] = transactions.filter((t) => t.status !== "pago").map((tx) => ({ kind: "tx" as const, tx }));
+    if (!isReceita) {
+      invoices.filter((inv) => !inv.is_paid).forEach((inv) => items.push({ kind: "invoice" as const, inv }));
+    }
+    return items;
+  }, [transactions, invoices, isReceita]);
+
+  const allPaid = useMemo<ListItem[]>(() => {
+    const items: ListItem[] = transactions.filter((t) => t.status === "pago").map((tx) => ({ kind: "tx" as const, tx }));
+    if (!isReceita) {
+      invoices.filter((inv) => inv.is_paid).forEach((inv) => items.push({ kind: "invoice" as const, inv }));
+    }
+    return items;
+  }, [transactions, invoices, isReceita]);
 
   const handleTxClick = useCallback(async (tx: TxRow) => {
     try {
@@ -205,10 +217,9 @@ const ReceitasDespesasDetalhe = () => {
   const accentHsl = isReceita ? "hsl(var(--primary))" : "hsl(var(--destructive))";
   const monthLabel = MONTH_NAMES[selectedMonth];
 
-  const displayPaid = showAll ? paidTxs : paidTxs.slice(0, 5);
-  const displayPending = showAll ? pendingTxs : pendingTxs.slice(0, 5);
-  const totalItems = paidTxs.length + pendingTxs.length + invoices.length;
-  const hasMore = paidTxs.length > 5 || pendingTxs.length > 5;
+  const displayPending = showAll ? allPending : allPending.slice(0, 5);
+  const displayPaid = showAll ? allPaid : allPaid.slice(0, 5);
+  const hasMore = allPending.length > 5 || allPaid.length > 5;
 
   return (
     <div className="pb-24 md:pb-8 w-full">
