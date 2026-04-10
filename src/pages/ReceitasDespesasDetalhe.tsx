@@ -333,117 +333,70 @@ const ReceitasDespesasDetalhe = () => {
         </div>
       )}
 
-      {/* Invoices (faturas) for despesas */}
-      {!isReceita && invoices.length > 0 && (
-        <div className="mb-5">
-          <div className="flex items-center gap-2 mb-2.5">
-            <CreditCard className="w-3.5 h-3.5 text-muted-foreground" />
-            <h3 className="text-[11px] font-semibold text-muted-foreground/60 uppercase tracking-widest">
-              Faturas ({invoices.length})
-            </h3>
-          </div>
-          <div className="space-y-1.5">
-            {invoices.map((inv, i) => (
-              <motion.div
-                key={inv.id}
-                initial={{ opacity: 0, y: 6 }}
-                animate={{ opacity: 1, y: 0 }}
-                transition={{ delay: i * 0.03 }}
-                className={`flex items-center gap-2.5 px-3 py-2.5 rounded-xl cursor-pointer transition-colors ${
-                  inv.is_paid
-                    ? "bg-card/95 hover:bg-card"
-                    : "border border-yellow-500/15 bg-yellow-500/[0.06]"
-                }`}
-                onClick={() => navigate(`/fatura/${inv.credit_card_id}`)}
-              >
-                <div
-                  className="w-8 h-8 rounded-full flex items-center justify-center flex-shrink-0"
-                  style={{
-                    background: inv.card_color
-                      ? `${inv.card_color}20`
-                      : "hsl(220 20% 20%)",
-                  }}
-                >
-                  <CreditCard
-                    className="w-4 h-4"
-                    style={{
-                      color: inv.card_color || "hsl(220 10% 60%)",
-                    }}
-                  />
-                </div>
-                <div className="flex-1 min-w-0">
-                  <p className="text-xs font-bold text-foreground truncate">
-                    Fatura {inv.card_name}
-                  </p>
-                  <p className="text-[9px] text-muted-foreground/50 mt-0.5">
-                    {MONTH_SHORT[inv.month - 1]}/{inv.year}
-                  </p>
-                </div>
-                <div className="text-right shrink-0">
-                  <p
-                    className="text-xs font-bold tabular-nums"
-                    style={{
-                      color: inv.is_paid
-                        ? "hsl(var(--destructive))"
-                        : "hsl(40 80% 50%)",
-                    }}
-                  >
-                    −{fmt(inv.total_amount)}
-                  </p>
-                  <span className="block mt-0.5 text-[8px] font-bold uppercase tracking-wide text-muted-foreground/40">
-                    {inv.is_paid ? "Paga" : "Pendente"}
-                  </span>
-                </div>
-              </motion.div>
-            ))}
-          </div>
-        </div>
-      )}
-
-      {/* Pending transactions */}
-      {pendingTxs.length > 0 && (
+      {/* Pending */}
+      {allPending.length > 0 && (
         <div className="mb-5">
           <div className="flex items-center gap-2 mb-2.5">
             <Clock className="w-3.5 h-3.5 text-yellow-400" />
             <h3 className="text-[11px] font-semibold text-muted-foreground/60 uppercase tracking-widest">
-              {isReceita ? "A Receber" : "Pendentes"} ({pendingTxs.length})
+              {isReceita ? "A Receber" : "Pendentes"} ({allPending.length})
             </h3>
           </div>
           <div className="space-y-1.5">
-            {displayPending.map((tx, i) => (
-              <TxRowItem
-                key={tx.id}
-                tx={tx}
-                isReceita={isReceita}
-                customCats={customCats}
-                onClick={() => handleTxClick(tx)}
-                idx={i}
-              />
-            ))}
+            {displayPending.map((item, i) =>
+              item.kind === "tx" ? (
+                <TxRowItem
+                  key={item.tx.id}
+                  tx={item.tx}
+                  isReceita={isReceita}
+                  customCats={customCats}
+                  onClick={() => handleTxClick(item.tx)}
+                  idx={i}
+                />
+              ) : (
+                <InvoiceRowItem
+                  key={item.inv.id}
+                  inv={item.inv}
+                  isPending
+                  onClick={() => navigate(`/fatura/${item.inv.credit_card_id}`)}
+                  idx={i}
+                />
+              )
+            )}
           </div>
         </div>
       )}
 
-      {/* Paid transactions */}
-      {paidTxs.length > 0 && (
+      {/* Paid */}
+      {allPaid.length > 0 && (
         <div className="mb-5">
           <div className="flex items-center gap-2 mb-2.5">
             <CheckCircle2 className={`w-3.5 h-3.5 text-${accent}`} />
             <h3 className="text-[11px] font-semibold text-muted-foreground/60 uppercase tracking-widest">
-              {isReceita ? "Recebidas" : "Pagas"} ({paidTxs.length})
+              {isReceita ? "Recebidas" : "Pagas"} ({allPaid.length})
             </h3>
           </div>
           <div className="space-y-1.5">
-            {displayPaid.map((tx, i) => (
-              <TxRowItem
-                key={tx.id}
-                tx={tx}
-                isReceita={isReceita}
-                customCats={customCats}
-                onClick={() => handleTxClick(tx)}
-                idx={i}
-              />
-            ))}
+            {displayPaid.map((item, i) =>
+              item.kind === "tx" ? (
+                <TxRowItem
+                  key={item.tx.id}
+                  tx={item.tx}
+                  isReceita={isReceita}
+                  customCats={customCats}
+                  onClick={() => handleTxClick(item.tx)}
+                  idx={i}
+                />
+              ) : (
+                <InvoiceRowItem
+                  key={item.inv.id}
+                  inv={item.inv}
+                  isPending={false}
+                  onClick={() => navigate(`/fatura/${item.inv.credit_card_id}`)}
+                  idx={i}
+                />
+              )
+            )}
           </div>
         </div>
       )}
