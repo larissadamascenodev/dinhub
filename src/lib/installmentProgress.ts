@@ -47,6 +47,7 @@ export interface ActiveInstallmentItem {
   payment_method: string;
   date: string;
   credit_card_id: string | null;
+  isOverdue: boolean;
 }
 
 interface InstallmentGroup {
@@ -164,6 +165,12 @@ export const buildActiveInstallmentItems = ({
         payment_method: group.payment_method,
         date: group.date,
         credit_card_id: group.credit_card_id,
+        isOverdue: (() => {
+          const baseDate = new Date(group.date);
+          const expectedDate = new Date(baseDate);
+          expectedDate.setMonth(expectedDate.getMonth() + paidInstallments);
+          return expectedDate < new Date();
+        })(),
       } satisfies ActiveInstallmentItem;
     })
     .filter((item): item is ActiveInstallmentItem => item !== null)

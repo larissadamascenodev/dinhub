@@ -1,7 +1,7 @@
 import { useState, useEffect, useMemo, useCallback } from "react";
 import { useNavigate } from "react-router-dom";
 import { motion, AnimatePresence } from "framer-motion";
-import { CreditCard, Wallet, ChevronDown, CalendarClock, TrendingDown } from "lucide-react";
+import { CreditCard, Wallet, ChevronDown, CalendarClock, TrendingDown, AlertTriangle } from "lucide-react";
 import { supabase } from "@/integrations/supabase/client";
 import { useAuth } from "@/contexts/AuthContext";
 import { getCategoryIcon, getCategoryColor } from "@/lib/categoryUtils";
@@ -153,7 +153,8 @@ const ParcelamentosAtivosCard = () => {
         <AnimatePresence initial={false}>
           {visibleItems.map((item, idx) => {
             const currentInst = item.installment_current;
-            const progress = (currentInst / item.installments) * 100;
+            const paidCount = currentInst - 1;
+            const progress = (paidCount / item.installments) * 100;
             const isCard = item.payment_method === "cartao";
             const IconComp = getCategoryIcon(item.category, customCats);
             const catColor = getCategoryColor(item.category, customCats);
@@ -166,6 +167,7 @@ const ParcelamentosAtivosCard = () => {
                 exit={{ opacity: 0, height: 0 }}
                 transition={{ duration: 0.2 }}
                 className="flex items-center gap-3 rounded-xl bg-muted/20 border border-border/20 px-3 py-2.5"
+                style={item.isOverdue ? { borderColor: "hsl(0 70% 50% / 0.25)", background: "hsl(0 70% 50% / 0.05)" } : undefined}
               >
                 <div
                   className="w-8 h-8 rounded-lg flex items-center justify-center flex-shrink-0"
@@ -184,12 +186,14 @@ const ParcelamentosAtivosCard = () => {
                   <div className="flex items-center gap-2">
                     <Progress value={progress} className="h-1 flex-1" />
                     <div className="flex items-center gap-1 flex-shrink-0">
-                      {isCard ? (
+                      {item.isOverdue ? (
+                        <AlertTriangle className="w-2.5 h-2.5 text-destructive" />
+                      ) : isCard ? (
                         <CreditCard className="w-2.5 h-2.5 text-muted-foreground" />
                       ) : (
                         <Wallet className="w-2.5 h-2.5 text-muted-foreground" />
                       )}
-                      <span className="text-[9px] text-muted-foreground font-medium">
+                      <span className={`text-[9px] font-medium ${item.isOverdue ? "text-destructive" : "text-muted-foreground"}`}>
                         {currentInst}/{item.installments}
                       </span>
                     </div>
