@@ -889,7 +889,13 @@ const Configuracoes = () => {
           <SectionGroup title="Configurações" items={configItems} />
         </motion.div>
       )}
-      <NotificationSettingsModal open={notifSettingsOpen} onOpenChange={setNotifSettingsOpen} />
+      <NotificationSettingsModal open={notifSettingsOpen} onOpenChange={(v) => {
+        setNotifSettingsOpen(v);
+        if (!v && tabBeforeModal) {
+          setActiveTab(tabBeforeModal);
+          setTabBeforeModal(null);
+        }
+      }} />
     </div>
   );
 };
