@@ -135,7 +135,7 @@ const TransacoesRecentes = memo(({ transactions, onDelete }: Props) => {
   const topTx = visible[0];
   const restTx = visible.slice(1);
 
-  const handleTxClick = () => {};
+  const handleTxClick = (_tx: Transaction) => {};
 
   if (!transactions.length) {
     return (
