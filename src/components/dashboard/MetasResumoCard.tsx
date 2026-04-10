@@ -70,6 +70,8 @@ const MetasResumoCard = memo(() => {
 
   if (goals.length === 0) return null;
 
+  if (goals.length === 0) return null;
+
   // Donut segments
   const donutSegments = goals.map((g, i) => ({
     ...g,
