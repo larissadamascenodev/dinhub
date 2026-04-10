@@ -1,6 +1,6 @@
-import { useState, useEffect, useCallback, useRef } from "react";
-import { motion, AnimatePresence, useMotionValue, useTransform, PanInfo } from "framer-motion";
-import { Bell, CheckCheck, AlertTriangle, Info, Target, CreditCard, Wallet, X, Check } from "lucide-react";
+import { useState, useEffect, useCallback } from "react";
+import { motion, AnimatePresence, PanInfo } from "framer-motion";
+import { Bell, CheckCheck, AlertTriangle, Info, Target, CreditCard, Wallet, X, Check, ChevronLeft } from "lucide-react";
 import { useAuth } from "@/contexts/AuthContext";
 import {
   fetchNotifications,
@@ -12,13 +12,16 @@ import {
 } from "@/services/notificationService";
 import { cn } from "@/lib/utils";
 import { supabase } from "@/integrations/supabase/client";
+import { Dialog, DialogContent } from "@/components/ui/dialog";
+import { Drawer, DrawerContent } from "@/components/ui/drawer";
+import { useIsMobile } from "@/hooks/use-mobile";
 
-const CATEGORY_CONFIG: Record<string, { icon: typeof Bell; className: string; accent: string }> = {
-  vencimento: { icon: AlertTriangle, className: "text-warning", accent: "bg-warning/15 border-warning/20" },
-  fatura: { icon: CreditCard, className: "text-destructive", accent: "bg-destructive/10 border-destructive/20" },
-  meta: { icon: Target, className: "text-primary", accent: "bg-primary/10 border-primary/20" },
-  saldo: { icon: Wallet, className: "text-orange-400", accent: "bg-orange-400/10 border-orange-400/20" },
-  geral: { icon: Info, className: "text-muted-foreground", accent: "bg-muted/20 border-border/20" },
+const CATEGORY_CONFIG: Record<string, { icon: typeof Bell; className: string; bg: string }> = {
+  vencimento: { icon: AlertTriangle, className: "text-warning", bg: "bg-warning/10" },
+  fatura: { icon: CreditCard, className: "text-destructive", bg: "bg-destructive/10" },
+  meta: { icon: Target, className: "text-primary", bg: "bg-primary/10" },
+  saldo: { icon: Wallet, className: "text-orange-400", bg: "bg-orange-400/10" },
+  geral: { icon: Info, className: "text-muted-foreground", bg: "bg-muted/15" },
 };
 
 function timeAgo(dateStr: string) {
@@ -29,14 +32,11 @@ function timeAgo(dateStr: string) {
   const hrs = Math.floor(mins / 60);
   if (hrs < 24) return `${hrs}h`;
   const days = Math.floor(hrs / 24);
-  return `${days}d`;
+  if (days < 7) return `${days}d`;
+  return `${Math.floor(days / 7)}sem`;
 }
 
-interface NotificationsPanelProps {
-  open: boolean;
-  onClose: () => void;
-}
-
+// ── Hook ──
 export function useNotifications() {
   const { user } = useAuth();
   const [unreadCount, setUnreadCount] = useState(0);
@@ -54,16 +54,14 @@ export function useNotifications() {
     generateNotifications(user.id).then(() => refresh());
   }, [user, generated, refresh]);
 
-  useEffect(() => {
-    refresh();
-  }, [refresh]);
+  useEffect(() => { refresh(); }, [refresh]);
 
   return { unreadCount, refresh };
 }
 
-// ── Swipeable notification row ──
-function SwipeableNotification({
-  notification,
+// ── Swipeable Row ──
+function NotificationRow({
+  notification: n,
   onMarkRead,
   onDelete,
 }: {
@@ -71,71 +69,191 @@ function SwipeableNotification({
   onMarkRead: (id: string) => void;
   onDelete: (id: string) => void;
 }) {
-  const x = useMotionValue(0);
-  const bg = useTransform(x, [-120, -60, 0], [
-    "hsl(var(--destructive) / 0.2)",
-    "hsl(var(--primary) / 0.15)",
-    "transparent",
-  ]);
-
-  const config = CATEGORY_CONFIG[notification.category] ?? CATEGORY_CONFIG.geral;
+  const config = CATEGORY_CONFIG[n.category] ?? CATEGORY_CONFIG.geral;
   const Icon = config.icon;
 
   const handleDragEnd = (_: any, info: PanInfo) => {
     if (info.offset.x < -100) {
-      onDelete(notification.id);
+      onDelete(n.id);
     } else if (info.offset.x < -50) {
-      onMarkRead(notification.id);
+      onMarkRead(n.id);
     }
   };
 
   return (
     <div className="relative overflow-hidden">
-      {/* Background actions revealed on swipe */}
-      <div className="absolute inset-0 flex items-center justify-end gap-2 pr-4">
-        <div className="flex items-center gap-1 text-[10px] text-primary font-medium">
-          <Check className="w-3 h-3" />
-          Lida
+      {/* Swipe reveal actions */}
+      <div className="absolute inset-0 flex items-center justify-end pr-3 gap-3">
+        <div className="flex flex-col items-center gap-0.5">
+          <div className="w-8 h-8 rounded-xl bg-primary/15 flex items-center justify-center">
+            <Check className="w-3.5 h-3.5 text-primary" />
+          </div>
+          <span className="text-[8px] text-primary font-medium">Lida</span>
         </div>
-        <div className="flex items-center gap-1 text-[10px] text-destructive font-medium ml-3">
-          <X className="w-3 h-3" />
-          Remover
+        <div className="flex flex-col items-center gap-0.5">
+          <div className="w-8 h-8 rounded-xl bg-destructive/15 flex items-center justify-center">
+            <X className="w-3.5 h-3.5 text-destructive" />
+          </div>
+          <span className="text-[8px] text-destructive font-medium">Apagar</span>
         </div>
       </div>
 
       <motion.div
-        style={{ x, backgroundColor: bg }}
         drag="x"
-        dragConstraints={{ left: -120, right: 0 }}
-        dragElastic={0.1}
+        dragConstraints={{ left: -130, right: 0 }}
+        dragElastic={0.08}
         onDragEnd={handleDragEnd}
-        className="relative flex items-start gap-3 px-4 py-3 cursor-grab active:cursor-grabbing"
+        className={cn(
+          "relative flex items-start gap-3 px-4 py-3.5 bg-card transition-colors",
+          !n.is_read && "bg-primary/[0.03]"
+        )}
       >
-        <div className={cn("w-8 h-8 rounded-xl flex items-center justify-center shrink-0 mt-0.5 border", config.accent)}>
-          <Icon className={cn("w-3.5 h-3.5", config.className)} />
+        {/* Unread indicator bar */}
+        {!n.is_read && (
+          <div className="absolute left-0 top-2 bottom-2 w-[3px] rounded-r-full bg-primary" />
+        )}
+
+        <div className={cn("w-9 h-9 rounded-xl flex items-center justify-center shrink-0", config.bg)}>
+          <Icon className={cn("w-4 h-4", config.className)} />
         </div>
+
         <div className="flex-1 min-w-0">
           <div className="flex items-start justify-between gap-2">
             <p className={cn(
-              "text-xs font-semibold leading-tight",
-              notification.is_read ? "text-muted-foreground" : "text-foreground"
+              "text-[13px] font-semibold leading-snug",
+              n.is_read ? "text-muted-foreground" : "text-foreground"
             )}>
-              {notification.title}
+              {n.title}
             </p>
-            <span className="text-[9px] text-muted-foreground/60 shrink-0 mt-0.5">{timeAgo(notification.created_at)}</span>
+            <span className="text-[10px] text-muted-foreground/50 shrink-0 pt-0.5">{timeAgo(n.created_at)}</span>
           </div>
-          <p className="text-[11px] text-muted-foreground/80 mt-0.5 line-clamp-2 leading-relaxed">{notification.message}</p>
+          <p className={cn(
+            "text-[11px] mt-0.5 leading-relaxed line-clamp-2",
+            n.is_read ? "text-muted-foreground/50" : "text-muted-foreground/70"
+          )}>
+            {n.message}
+          </p>
         </div>
-        {!notification.is_read && (
-          <div className="w-2 h-2 rounded-full bg-primary shrink-0 mt-2 ring-2 ring-primary/20" />
-        )}
       </motion.div>
     </div>
   );
 }
 
+// ── Shared content ──
+function NotificationContent({
+  notifications,
+  loading,
+  unreadCount,
+  onMarkAllRead,
+  onMarkRead,
+  onDelete,
+  onClose,
+  showHeader = true,
+}: {
+  notifications: AppNotification[];
+  loading: boolean;
+  unreadCount: number;
+  onMarkAllRead: () => void;
+  onMarkRead: (id: string) => void;
+  onDelete: (id: string) => void;
+  onClose: () => void;
+  showHeader?: boolean;
+}) {
+  return (
+    <div className="flex flex-col h-full max-h-[80vh] md:max-h-[70vh]">
+      {/* Header */}
+      {showHeader && (
+        <div className="flex items-center justify-between px-4 py-3.5 border-b border-border/10 shrink-0">
+          <div className="flex items-center gap-2.5">
+            <button onClick={onClose} className="md:hidden p-1 -ml-1 text-muted-foreground hover:text-foreground">
+              <ChevronLeft className="w-5 h-5" />
+            </button>
+            <div className="flex items-center gap-2">
+              <h3 className="text-base font-bold text-foreground">Notificações</h3>
+              {unreadCount > 0 && (
+                <span className="text-[10px] font-bold text-primary-foreground bg-primary px-2 py-0.5 rounded-full">
+                  {unreadCount}
+                </span>
+              )}
+            </div>
+          </div>
+          <div className="flex items-center gap-2">
+            {unreadCount > 0 && (
+              <button
+                onClick={onMarkAllRead}
+                className="flex items-center gap-1 text-[11px] text-primary hover:text-primary/80 transition-colors font-medium"
+              >
+                <CheckCheck className="w-3.5 h-3.5" />
+                <span className="hidden sm:inline">Marcar todas</span>
+              </button>
+            )}
+            <button onClick={onClose} className="hidden md:block text-muted-foreground hover:text-foreground p-1 rounded-lg hover:bg-muted/20">
+              <X className="w-4 h-4" />
+            </button>
+          </div>
+        </div>
+      )}
+
+      {/* List */}
+      <div className="flex-1 overflow-y-auto overscroll-contain divide-y divide-border/5">
+        {loading ? (
+          <div className="p-10 text-center">
+            <div className="w-10 h-10 rounded-2xl bg-muted/15 flex items-center justify-center mx-auto mb-3 animate-pulse">
+              <Bell className="w-5 h-5 text-muted-foreground/30" />
+            </div>
+            <p className="text-xs text-muted-foreground">Carregando...</p>
+          </div>
+        ) : notifications.length === 0 ? (
+          <div className="p-12 text-center space-y-3">
+            <div className="w-14 h-14 rounded-2xl bg-muted/10 flex items-center justify-center mx-auto">
+              <Bell className="w-7 h-7 text-muted-foreground/20" />
+            </div>
+            <div>
+              <p className="text-sm font-medium text-muted-foreground">Tudo em dia!</p>
+              <p className="text-[11px] text-muted-foreground/50 mt-1">Nenhuma notificação no momento</p>
+            </div>
+          </div>
+        ) : (
+          <AnimatePresence initial={false}>
+            {notifications.map((n) => (
+              <motion.div
+                key={n.id}
+                layout
+                exit={{ opacity: 0, height: 0 }}
+                transition={{ duration: 0.2 }}
+              >
+                <NotificationRow
+                  notification={n}
+                  onMarkRead={onMarkRead}
+                  onDelete={onDelete}
+                />
+              </motion.div>
+            ))}
+          </AnimatePresence>
+        )}
+      </div>
+
+      {/* Footer hint */}
+      {notifications.length > 0 && (
+        <div className="px-4 py-2 border-t border-border/5 shrink-0">
+          <p className="text-[9px] text-muted-foreground/40 text-center select-none">
+            ← Deslize para marcar como lida ou remover
+          </p>
+        </div>
+      )}
+    </div>
+  );
+}
+
+// ── Main Component ──
+interface NotificationsPanelProps {
+  open: boolean;
+  onClose: () => void;
+}
+
 export default function NotificationsPanel({ open, onClose }: NotificationsPanelProps) {
   const { user } = useAuth();
+  const isMobile = useIsMobile();
   const [notifications, setNotifications] = useState<AppNotification[]>([]);
   const [loading, setLoading] = useState(false);
 
@@ -171,94 +289,33 @@ export default function NotificationsPanel({ open, onClose }: NotificationsPanel
 
   const unreadCount = notifications.filter((n) => !n.is_read).length;
 
+  const contentProps = {
+    notifications,
+    loading,
+    unreadCount,
+    onMarkAllRead: handleMarkAllRead,
+    onMarkRead: handleMarkRead,
+    onDelete: handleDelete,
+    onClose,
+  };
+
+  // Mobile: use Drawer (bottom sheet)
+  if (isMobile) {
+    return (
+      <Drawer open={open} onOpenChange={(v) => !v && onClose()}>
+        <DrawerContent className="bg-card border-border/20 max-h-[85vh]">
+          <NotificationContent {...contentProps} />
+        </DrawerContent>
+      </Drawer>
+    );
+  }
+
+  // Desktop: use Dialog
   return (
-    <AnimatePresence>
-      {open && (
-        <>
-          {/* Backdrop */}
-          <motion.div
-            initial={{ opacity: 0 }}
-            animate={{ opacity: 1 }}
-            exit={{ opacity: 0 }}
-            className="fixed inset-0 z-50 bg-black/50 backdrop-blur-sm"
-            onClick={onClose}
-          />
-          <motion.div
-            initial={{ opacity: 0, y: -12, scale: 0.95 }}
-            animate={{ opacity: 1, y: 0, scale: 1 }}
-            exit={{ opacity: 0, y: -12, scale: 0.95 }}
-            transition={{ type: "spring", stiffness: 400, damping: 28 }}
-            className="fixed z-50 left-3 right-3 top-14 max-h-[70vh] bg-card/95 backdrop-blur-2xl border border-border/20 rounded-2xl shadow-2xl overflow-hidden flex flex-col md:left-auto md:right-4 md:top-auto md:absolute md:top-full md:mt-2 md:w-80"
-          >
-            {/* Header */}
-            <div className="flex items-center justify-between px-4 py-3 border-b border-border/10">
-              <div className="flex items-center gap-2">
-                <h3 className="text-sm font-bold text-foreground">Notificações</h3>
-                {unreadCount > 0 && (
-                  <span className="text-[10px] font-bold text-primary bg-primary/10 px-2 py-0.5 rounded-full">
-                    {unreadCount} nova{unreadCount > 1 ? "s" : ""}
-                  </span>
-                )}
-              </div>
-              <div className="flex items-center gap-2">
-                {unreadCount > 0 && (
-                  <button
-                    onClick={handleMarkAllRead}
-                    className="flex items-center gap-1 text-[10px] text-primary hover:text-primary/80 transition-colors font-medium"
-                  >
-                    <CheckCheck className="w-3 h-3" />
-                    Todas lidas
-                  </button>
-                )}
-                <button onClick={onClose} className="text-muted-foreground hover:text-foreground transition-colors p-1 rounded-lg hover:bg-muted/20">
-                  <X className="w-4 h-4" />
-                </button>
-              </div>
-            </div>
-
-            {/* Swipe hint */}
-            {notifications.length > 0 && (
-              <div className="px-4 py-1.5 bg-muted/10 border-b border-border/5">
-                <p className="text-[9px] text-muted-foreground/50 text-center">← Arraste para marcar como lida ou remover</p>
-              </div>
-            )}
-
-            {/* List */}
-            <div className="flex-1 overflow-y-auto divide-y divide-border/5">
-              {loading ? (
-                <div className="p-8 text-center text-xs text-muted-foreground">Carregando...</div>
-              ) : notifications.length === 0 ? (
-                <div className="p-10 text-center space-y-3">
-                  <div className="w-12 h-12 rounded-2xl bg-muted/20 flex items-center justify-center mx-auto">
-                    <Bell className="w-6 h-6 text-muted-foreground/30" />
-                  </div>
-                  <div>
-                    <p className="text-xs font-medium text-muted-foreground">Tudo em dia!</p>
-                    <p className="text-[10px] text-muted-foreground/60 mt-0.5">Nenhuma notificação no momento</p>
-                  </div>
-                </div>
-              ) : (
-                <AnimatePresence initial={false}>
-                  {notifications.map((n) => (
-                    <motion.div
-                      key={n.id}
-                      layout
-                      exit={{ opacity: 0, height: 0, marginTop: 0, marginBottom: 0 }}
-                      transition={{ duration: 0.2 }}
-                    >
-                      <SwipeableNotification
-                        notification={n}
-                        onMarkRead={handleMarkRead}
-                        onDelete={handleDelete}
-                      />
-                    </motion.div>
-                  ))}
-                </AnimatePresence>
-              )}
-            </div>
-          </motion.div>
-        </>
-      )}
-    </AnimatePresence>
+    <Dialog open={open} onOpenChange={(v) => !v && onClose()}>
+      <DialogContent className="bg-card/95 backdrop-blur-2xl border-border/20 rounded-2xl p-0 max-w-sm overflow-hidden">
+        <NotificationContent {...contentProps} />
+      </DialogContent>
+    </Dialog>
   );
 }
