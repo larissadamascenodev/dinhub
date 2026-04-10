@@ -2,7 +2,7 @@ import { useState, useEffect } from "react";
 import { Dialog, DialogContent } from "@/components/ui/dialog";
 import { Switch } from "@/components/ui/switch";
 import { Button } from "@/components/ui/button";
-import { Bell, CreditCard, Target, Wallet, Calendar } from "lucide-react";
+import { Calendar, Target, Flame } from "lucide-react";
 import { useAuth } from "@/contexts/AuthContext";
 import { getOrCreateSettings, updateSettings, type NotificationSettings } from "@/services/notificationService";
 import { toast } from "sonner";
@@ -14,13 +14,10 @@ interface Props {
 }
 
 const PERIOD_OPTIONS = [
-  { value: 0, label: "No dia" },
-  { value: 1, label: "1 dia" },
-  { value: 2, label: "2 dias" },
-  { value: 3, label: "3 dias" },
-  { value: 5, label: "5 dias" },
-  { value: 7, label: "7 dias" },
-];
+  { value: 0, label: "Somente na data" },
+  { value: 1, label: "1 dia antes" },
+  { value: 3, label: "3 dias antes" },
+] as const;
 
 export default function NotificationSettingsModal({ open, onOpenChange }: Props) {
   const { user } = useAuth();
@@ -43,11 +40,12 @@ export default function NotificationSettingsModal({ open, onOpenChange }: Props)
     await updateSettings(settings.id, {
       bill_due_reminder: settings.bill_due_reminder,
       bill_due_days_before: settings.bill_due_days_before,
-      invoice_reminder: settings.invoice_reminder,
+      invoice_reminder: settings.bill_due_reminder,
       goal_reminder: settings.goal_reminder,
-      low_balance_alert: settings.low_balance_alert,
+      challenge_reminder: settings.challenge_reminder,
+      low_balance_alert: false,
       low_balance_threshold: settings.low_balance_threshold,
-      weekly_summary: settings.weekly_summary,
+      weekly_summary: false,
     });
     setSaving(false);
     toast.success("Configurações salvas!");
@@ -59,14 +57,9 @@ export default function NotificationSettingsModal({ open, onOpenChange }: Props)
     setSettings({ ...settings, [key]: !settings[key] });
   };
 
-  const setNum = (key: keyof NotificationSettings, val: number) => {
-    if (!settings) return;
-    setSettings({ ...settings, [key]: val });
-  };
-
   const periodLabel = (days: number) => {
-    if (days === 0) return "Avisar no dia";
-    return `Avisar ${days} dia${days > 1 ? "s" : ""} antes`;
+    if (days === 0) return "Aviso somente no dia";
+    return `Aviso ${days} dia${days > 1 ? "s" : ""} antes`;
   };
 
   const items = settings
@@ -84,12 +77,12 @@ export default function NotificationSettingsModal({ open, onOpenChange }: Props)
                 {PERIOD_OPTIONS.map((opt) => (
                   <button
                     key={opt.value}
-                    onClick={() => setNum("bill_due_days_before", opt.value)}
+                    onClick={() => setSettings({ ...settings, bill_due_days_before: opt.value })}
                     className={cn(
                       "px-2.5 py-1 rounded-lg text-[11px] font-medium transition-all",
                       settings.bill_due_days_before === opt.value
-                        ? "bg-primary text-primary-foreground shadow-sm"
-                        : "bg-muted/20 text-muted-foreground hover:bg-muted/40"
+                        ? "bg-primary/15 text-primary border border-primary/30"
+                        : "bg-muted/20 text-muted-foreground hover:bg-muted/40 border border-transparent"
                     )}
                   >
                     {opt.label}
@@ -100,13 +93,6 @@ export default function NotificationSettingsModal({ open, onOpenChange }: Props)
           ),
         },
         {
-          icon: CreditCard,
-          label: "Faturas de cartão",
-          sub: "Lembrete quando a fatura vencer",
-          enabled: settings.invoice_reminder,
-          toggle: () => toggle("invoice_reminder"),
-        },
-        {
           icon: Target,
           label: "Metas financeiras",
           sub: "Aviso quando prazo se aproxima",
@@ -114,39 +100,11 @@ export default function NotificationSettingsModal({ open, onOpenChange }: Props)
           toggle: () => toggle("goal_reminder"),
         },
         {
-          icon: Wallet,
-          label: "Saldo baixo",
-          sub: `Avisar abaixo de R$ ${settings.low_balance_threshold}`,
-          enabled: settings.low_balance_alert,
-          toggle: () => toggle("low_balance_alert"),
-          extra: settings.low_balance_alert && (
-            <div className="mt-2.5 space-y-1.5">
-              <span className="text-[10px] text-muted-foreground font-medium">Limite mínimo:</span>
-              <div className="flex flex-wrap gap-1.5">
-                {[50, 100, 200, 500, 1000].map((val) => (
-                  <button
-                    key={val}
-                    onClick={() => setNum("low_balance_threshold", val)}
-                    className={cn(
-                      "px-2.5 py-1 rounded-lg text-[11px] font-medium transition-all",
-                      settings.low_balance_threshold === val
-                        ? "bg-primary text-primary-foreground shadow-sm"
-                        : "bg-muted/20 text-muted-foreground hover:bg-muted/40"
-                    )}
-                  >
-                    R$ {val}
-                  </button>
-                ))}
-              </div>
-            </div>
-          ),
-        },
-        {
-          icon: Bell,
-          label: "Resumo semanal",
-          sub: "Receba um resumo das suas finanças",
-          enabled: settings.weekly_summary,
-          toggle: () => toggle("weekly_summary"),
+          icon: Flame,
+          label: "Desafios",
+          sub: "Lembrete de check-in diário",
+          enabled: settings.challenge_reminder,
+          toggle: () => toggle("challenge_reminder"),
         },
       ]
     : [];
@@ -185,7 +143,11 @@ export default function NotificationSettingsModal({ open, onOpenChange }: Props)
             </div>
           )}
 
-          <Button onClick={handleSave} disabled={saving || loading} className="w-full h-11 rounded-xl font-bold">
+          <Button
+            onClick={handleSave}
+            disabled={saving || loading}
+            className="w-full h-11 rounded-xl font-bold bg-primary/15 text-primary hover:bg-primary/25 border border-primary/30"
+          >
             {saving ? "Salvando..." : "Salvar configurações"}
           </Button>
         </div>
