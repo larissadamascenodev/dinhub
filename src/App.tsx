@@ -25,6 +25,7 @@ import AnalyticsCategorias from "./pages/AnalyticsCategorias.tsx";
 import Desafios from "./pages/Desafios.tsx";
 import TermosPrivacidade from "./pages/TermosPrivacidade.tsx";
 import Suporte from "./pages/Suporte.tsx";
+import ReceitasDespesasDetalhe from "./pages/ReceitasDespesasDetalhe.tsx";
 import NotFound from "./pages/NotFound.tsx";
 
 const queryClient = new QueryClient();
@@ -54,6 +55,7 @@ const App = () => (
             <Route element={<ProtectedRoute><DashboardLayout /></ProtectedRoute>}>
               <Route path="/" element={<Index />} />
               <Route path="/transacoes" element={<Transacoes />} />
+              <Route path="/detalhe/:tipo" element={<ReceitasDespesasDetalhe />} />
               <Route path="/gestao" element={<GestaoFinanceira />} />
               <Route path="/fatura/:cardId" element={<FaturaCartao />} />
               <Route path="/conta/:accountId" element={<ContaDetalhe />} />
