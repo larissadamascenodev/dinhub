@@ -155,7 +155,7 @@ function NotificationContent({
   unreadCount: number;
   onMarkAllRead: () => void;
   onMarkRead: (id: string) => void;
-  onDelete: (id: string) => void;
+  
   onClose: () => void;
   showHeader?: boolean;
 }) {
