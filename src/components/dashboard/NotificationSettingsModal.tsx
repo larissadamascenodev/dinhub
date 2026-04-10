@@ -2,7 +2,7 @@ import { useState, useEffect } from "react";
 import { Dialog, DialogContent } from "@/components/ui/dialog";
 import { Switch } from "@/components/ui/switch";
 import { Button } from "@/components/ui/button";
-import { Calendar, Target, Flame } from "lucide-react";
+import { Calendar, Target, Flame, Bot, BarChart3, AlertCircle } from "lucide-react";
 import { useAuth } from "@/contexts/AuthContext";
 import { getOrCreateSettings, updateSettings, type NotificationSettings } from "@/services/notificationService";
 import { toast } from "sonner";
@@ -109,6 +109,24 @@ export default function NotificationSettingsModal({ open, onOpenChange }: Props)
       ]
     : [];
 
+  const comingSoonItems = [
+    {
+      icon: Bot,
+      label: "Notificações da Iara",
+      sub: "Dicas e alertas inteligentes",
+    },
+    {
+      icon: BarChart3,
+      label: "Limite de categoria",
+      sub: "Aviso ao se aproximar do limite",
+    },
+    {
+      icon: AlertCircle,
+      label: "Contas atrasadas",
+      sub: "Alerta quando uma conta vencer sem pagar",
+    },
+  ];
+
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>
       <DialogContent className="bg-card border-border/30 rounded-2xl max-w-sm mx-auto p-0 overflow-hidden">
@@ -137,6 +155,30 @@ export default function NotificationSettingsModal({ open, onOpenChange }: Props)
                       <Switch checked={item.enabled as boolean} onCheckedChange={item.toggle} />
                     </div>
                     {item.extra}
+                  </div>
+                );
+              })}
+            </div>
+
+            {/* Coming soon section */}
+            <div className="space-y-1 pt-2 border-t border-border/10">
+              <p className="text-[10px] font-bold text-muted-foreground uppercase tracking-widest px-3 pb-1">Em breve</p>
+              {comingSoonItems.map((item, i) => {
+                const Icon = item.icon;
+                return (
+                  <div key={i} className="p-3 rounded-xl opacity-50">
+                    <div className="flex items-center gap-3">
+                      <div className="w-9 h-9 rounded-xl bg-muted/15 flex items-center justify-center shrink-0">
+                        <Icon className="w-4 h-4 text-muted-foreground" />
+                      </div>
+                      <div className="flex-1 min-w-0">
+                        <p className="text-sm font-semibold text-foreground">{item.label}</p>
+                        <p className="text-[10px] text-muted-foreground">{item.sub}</p>
+                      </div>
+                      <span className="text-[9px] font-bold text-primary border border-primary/30 bg-primary/10 px-2 py-0.5 rounded-full shrink-0">
+                        BREVE
+                      </span>
+                    </div>
                   </div>
                 );
               })}
