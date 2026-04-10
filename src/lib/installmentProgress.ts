@@ -62,22 +62,14 @@ interface InstallmentGroup {
   payment_method: string;
   date: string;
   credit_card_id: string | null;
-  paidInstallments: Set<number>;
+  unpaidInstallments: Set<number>;
+  unpaidInvoiceInstallments: Map<number, string | null>;
   dueDates: Map<number, string>;
 }
 
 const pickOne = <T,>(value: T | T[] | null | undefined): T | null => {
   if (Array.isArray(value)) return value[0] ?? null;
   return value ?? null;
-};
-
-const getConsecutivePaidInstallments = (paidInstallments: Set<number>, totalInstallments: number) => {
-  let count = 0;
-  for (let installment = 1; installment <= totalInstallments; installment += 1) {
-    if (!paidInstallments.has(installment)) break;
-    count = installment;
-  }
-  return count;
 };
 
 const upsertGroup = (map: Map<string, InstallmentGroup>, group: Omit<InstallmentGroup, "paidInstallments" | "dueDates">) => {
@@ -91,7 +83,8 @@ const upsertGroup = (map: Map<string, InstallmentGroup>, group: Omit<Installment
 
   const created: InstallmentGroup = {
     ...group,
-    paidInstallments: new Set<number>(),
+    unpaidInstallments: new Set<number>(),
+    unpaidInvoiceInstallments: new Map<number, string | null>(),
     dueDates: new Map<number, string>(),
   };
   map.set(group.id, created);
@@ -127,8 +120,8 @@ export const buildActiveInstallmentItems = ({
       credit_card_id: tx.credit_card_id,
     });
 
-    if (tx.status === "pago") {
-      group.paidInstallments.add(installmentNumber);
+    if (tx.status !== "pago") {
+      group.unpaidInstallments.add(installmentNumber);
     }
   });
 
@@ -152,10 +145,6 @@ export const buildActiveInstallmentItems = ({
       credit_card_id: tx.credit_card_id,
     });
 
-    if (invoice.is_paid) {
-      group.paidInstallments.add(item.installment_number);
-    }
-
     if (
       tx.credit_card_id &&
       creditCardDueDays?.[tx.credit_card_id] &&
@@ -166,16 +155,34 @@ export const buildActiveInstallmentItems = ({
       const dueDate = new Date(invoice.year, invoice.month - 1, dueDay, 12, 0, 0);
       group.dueDates.set(item.installment_number, dueDate.toISOString());
     }
+
+    if (!invoice.is_paid) {
+      group.unpaidInvoiceInstallments.set(
+        item.installment_number,
+        group.dueDates.get(item.installment_number) ?? null,
+      );
+    }
   });
 
   return Array.from(groups.values())
     .map((group) => {
-      const paidInstallments = getConsecutivePaidInstallments(group.paidInstallments, group.installments);
-      if (paidInstallments >= group.installments) return null;
+      const today = new Date();
+      today.setHours(0, 0, 0, 0);
 
-      const currentInstallment = paidInstallments + 1;
-      const dueDate = group.dueDates.get(currentInstallment) ?? null;
-      const now = new Date();
+      const cardOpenInstallments = Array.from(group.unpaidInvoiceInstallments.keys()).sort((a, b) => a - b);
+      const accountOpenInstallments = Array.from(group.unpaidInstallments).sort((a, b) => a - b);
+
+      const currentInstallment = group.payment_method === "cartao"
+        ? cardOpenInstallments[0]
+        : accountOpenInstallments[0];
+
+      if (!currentInstallment) return null;
+
+      const dueDate = group.payment_method === "cartao"
+        ? group.unpaidInvoiceInstallments.get(currentInstallment) ?? null
+        : null;
+
+      const paidInstallments = currentInstallment - 1;
 
       return {
         id: group.id,
@@ -187,11 +194,16 @@ export const buildActiveInstallmentItems = ({
         payment_method: group.payment_method,
         date: group.date,
         credit_card_id: group.credit_card_id,
-        isOverdue: dueDate ? new Date(dueDate) < now : (() => {
+        isOverdue: dueDate ? (() => {
+          const parsed = new Date(dueDate);
+          parsed.setHours(0, 0, 0, 0);
+          return parsed < today;
+        })() : (() => {
           const baseDate = new Date(group.date);
           const expectedDate = new Date(baseDate);
           expectedDate.setMonth(expectedDate.getMonth() + paidInstallments);
-          return expectedDate < now;
+          expectedDate.setHours(0, 0, 0, 0);
+          return expectedDate < today;
         })(),
         dueDate,
       } satisfies ActiveInstallmentItem;
