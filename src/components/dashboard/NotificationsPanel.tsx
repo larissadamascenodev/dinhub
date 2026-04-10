@@ -13,7 +13,6 @@ import {
 import { cn } from "@/lib/utils";
 import { supabase } from "@/integrations/supabase/client";
 import { Dialog, DialogContent } from "@/components/ui/dialog";
-import { Drawer, DrawerContent } from "@/components/ui/drawer";
 import { useIsMobile } from "@/hooks/use-mobile";
 
 const CATEGORY_CONFIG: Record<string, { icon: typeof Bell; className: string; bg: string }> = {
