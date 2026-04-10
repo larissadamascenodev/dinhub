@@ -8,10 +8,8 @@ import { getCustomCategories, type CustomCategory } from "@/services/categorySer
 import { getCategoryIcon, getCategoryColor } from "@/lib/categoryUtils";
 import { motion, AnimatePresence } from "framer-motion";
 import type { Transaction } from "@/types/finance";
-import { getTransactionById, getAccounts } from "@/services/transactionService";
 import { useAuth } from "@/contexts/AuthContext";
 import { useMonth } from "@/contexts/MonthContext";
-import TransactionDetailModal from "@/components/dashboard/TransactionDetailModal";
 
 interface Props {
   transactions: Transaction[];
@@ -132,9 +130,6 @@ const TransacoesRecentes = memo(({ transactions, onDelete }: Props) => {
   const [expanded, setExpanded] = useState(false);
   const { user } = useAuth();
   const { selectedMonth, selectedYear } = useMonth();
-  const [detailTx, setDetailTx] = useState<any>(null);
-  const [detailAccountName, setDetailAccountName] = useState("");
-  const [showDetail, setShowDetail] = useState(false);
   const [customCats, setCustomCats] = useState<CustomCategory[]>([]);
 
   useEffect(() => {
@@ -145,22 +140,11 @@ const TransacoesRecentes = memo(({ transactions, onDelete }: Props) => {
   const topTx = visible[0];
   const restTx = visible.slice(1);
 
-  const handleTxClick = async (tx: Transaction) => {
+  const navigate = useNavigate();
+
+  const handleTxClick = (tx: Transaction) => {
     if (tx.isFatura) return;
-    try {
-      const [fullTx, accounts] = await Promise.all([
-        getTransactionById(tx.id),
-        getAccounts(),
-      ]);
-      if (fullTx) {
-        const acct = (accounts as any[]).find((a: any) => a.id === fullTx.account_id);
-        setDetailAccountName(acct?.name || "");
-        setDetailTx(fullTx);
-        setShowDetail(true);
-      }
-    } catch {
-      // silently fail
-    }
+    navigate("/transacoes");
   };
 
   if (!transactions.length) {
@@ -283,17 +267,6 @@ const TransacoesRecentes = memo(({ transactions, onDelete }: Props) => {
         )}
       </AnimatePresence>
 
-      {/* Transaction detail modal */}
-      <TransactionDetailModal
-        open={showDetail}
-        tx={detailTx}
-        accountName={detailAccountName}
-        onClose={() => { setShowDetail(false); setDetailTx(null); }}
-        onRefresh={() => { setShowDetail(false); setDetailTx(null); onDelete?.(); }}
-        userId={user?.id}
-        selectedMonth={selectedMonth}
-        selectedYear={selectedYear}
-      />
     </div>
   );
 });
