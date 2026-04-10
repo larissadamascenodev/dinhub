@@ -139,11 +139,18 @@ const ReceitasDespesasDetalhe = () => {
 
   const trend = useMemo(() => {
     if (historyData.length < 2) return 0;
+    // Only show trend if user existed in the previous month
+    if (user?.created_at) {
+      const created = new Date(user.created_at);
+      const prevMonthDate = new Date(selectedYear, selectedMonth - 1, 1);
+      const createdMonth = new Date(created.getFullYear(), created.getMonth(), 1);
+      if (prevMonthDate < createdMonth) return 0;
+    }
     const prev = historyData[historyData.length - 2]?.value ?? 0;
     const curr = historyData[historyData.length - 1]?.value ?? 0;
     if (prev === 0) return 0;
     return Math.round(((curr - prev) / prev) * 100);
-  }, [historyData]);
+  }, [historyData, user, selectedMonth, selectedYear]);
 
   type ListItem = { kind: "tx"; tx: TxRow } | { kind: "invoice"; inv: InvoiceRow };
 
@@ -269,31 +276,18 @@ const ReceitasDespesasDetalhe = () => {
           {/* Gradient divider */}
           <div className="h-px w-full mb-3" style={{ background: `linear-gradient(90deg, transparent, ${accentHsl.replace(")", " / 0.12)")}, transparent)` }} />
 
-          {/* Paid / Pending sub-cards */}
-          <div className="flex items-center gap-2.5">
-            <div
-              className="flex-1 flex items-center gap-1.5 px-3 py-2 rounded-xl"
-              style={{
-                background: `${accentHsl.replace(")", " / 0.06)")}`,
-                border: `1px solid ${accentHsl.replace(")", " / 0.1)")}`,
-                boxShadow: `inset 0 1px 0 ${accentHsl.replace(")", " / 0.06)")}`,
-              }}
-            >
-              <CheckCircle2 className={`w-3 h-3 text-${accent} flex-shrink-0`} style={{ opacity: 0.65 }} />
-              <span className="text-[8px] text-muted-foreground/40 font-bold uppercase tracking-wider">{isReceita ? "Recebido" : "Pago"}</span>
-              <span className={`text-[11px] font-bold tabular-nums text-${accent} ml-auto`}>{fmt(paid)}</span>
+          {/* Paid / Pending inline indicators */}
+          <div className="flex items-center gap-4">
+            <div className="flex items-center gap-1.5">
+              <CheckCircle2 className={`w-3 h-3 text-${accent}`} style={{ opacity: 0.5 }} />
+              <span className="text-[9px] text-muted-foreground/40 font-semibold">{isReceita ? "Recebido" : "Pago"}</span>
+              <span className={`text-[12px] font-bold tabular-nums text-${accent}`}>{fmt(paid)}</span>
             </div>
-            <div
-              className="flex-1 flex items-center gap-1.5 px-3 py-2 rounded-xl"
-              style={{
-                background: "hsl(45 90% 55% / 0.04)",
-                border: "1px solid hsl(45 90% 55% / 0.1)",
-                boxShadow: "inset 0 1px 0 hsl(45 90% 55% / 0.04)",
-              }}
-            >
-              <Clock className="w-3 h-3 text-yellow-400 flex-shrink-0" style={{ opacity: 0.65 }} />
-              <span className="text-[8px] text-muted-foreground/40 font-bold uppercase tracking-wider">Pendente</span>
-              <span className="text-[11px] font-bold tabular-nums text-yellow-400 ml-auto">{fmt(pending)}</span>
+            <div className="w-px h-3 bg-white/5" />
+            <div className="flex items-center gap-1.5">
+              <Clock className="w-3 h-3 text-yellow-400" style={{ opacity: 0.5 }} />
+              <span className="text-[9px] text-muted-foreground/40 font-semibold">Pendente</span>
+              <span className="text-[12px] font-bold tabular-nums text-yellow-400">{fmt(pending)}</span>
             </div>
           </div>
         </div>
