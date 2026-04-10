@@ -2,7 +2,7 @@ import { useState, useEffect } from "react";
 import { Dialog, DialogContent } from "@/components/ui/dialog";
 import { Switch } from "@/components/ui/switch";
 import { Button } from "@/components/ui/button";
-import { Calendar, Target, Flame, Bot, BarChart3, AlertCircle } from "lucide-react";
+import { Calendar, Target, Flame, Bot, BarChart3 } from "lucide-react";
 import { useAuth } from "@/contexts/AuthContext";
 import { getOrCreateSettings, updateSettings, type NotificationSettings } from "@/services/notificationService";
 import { toast } from "sonner";
