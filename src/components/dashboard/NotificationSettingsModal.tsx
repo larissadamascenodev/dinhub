@@ -1,17 +1,26 @@
 import { useState, useEffect } from "react";
 import { Dialog, DialogContent } from "@/components/ui/dialog";
 import { Switch } from "@/components/ui/switch";
-import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
 import { Bell, CreditCard, Target, Wallet, Calendar } from "lucide-react";
 import { useAuth } from "@/contexts/AuthContext";
 import { getOrCreateSettings, updateSettings, type NotificationSettings } from "@/services/notificationService";
 import { toast } from "sonner";
+import { cn } from "@/lib/utils";
 
 interface Props {
   open: boolean;
   onOpenChange: (v: boolean) => void;
 }
+
+const PERIOD_OPTIONS = [
+  { value: 0, label: "No dia" },
+  { value: 1, label: "1 dia" },
+  { value: 2, label: "2 dias" },
+  { value: 3, label: "3 dias" },
+  { value: 5, label: "5 dias" },
+  { value: 7, label: "7 dias" },
+];
 
 export default function NotificationSettingsModal({ open, onOpenChange }: Props) {
   const { user } = useAuth();
@@ -55,25 +64,38 @@ export default function NotificationSettingsModal({ open, onOpenChange }: Props)
     setSettings({ ...settings, [key]: val });
   };
 
+  const periodLabel = (days: number) => {
+    if (days === 0) return "Avisar no dia";
+    return `Avisar ${days} dia${days > 1 ? "s" : ""} antes`;
+  };
+
   const items = settings
     ? [
         {
           icon: Calendar,
           label: "Contas a vencer",
-          sub: `Avisar ${settings.bill_due_days_before} dias antes`,
+          sub: periodLabel(settings.bill_due_days_before),
           enabled: settings.bill_due_reminder,
           toggle: () => toggle("bill_due_reminder"),
           extra: settings.bill_due_reminder && (
-            <div className="flex items-center gap-2 mt-2">
-              <span className="text-[10px] text-muted-foreground">Dias antes:</span>
-              <Input
-                type="number"
-                min={1}
-                max={15}
-                value={settings.bill_due_days_before}
-                onChange={(e) => setNum("bill_due_days_before", Math.max(1, Math.min(15, parseInt(e.target.value) || 1)))}
-                className="w-16 h-7 text-xs text-center bg-muted/30 border-border/20 rounded-lg"
-              />
+            <div className="mt-2.5 space-y-1.5">
+              <span className="text-[10px] text-muted-foreground font-medium">Período de aviso:</span>
+              <div className="flex flex-wrap gap-1.5">
+                {PERIOD_OPTIONS.map((opt) => (
+                  <button
+                    key={opt.value}
+                    onClick={() => setNum("bill_due_days_before", opt.value)}
+                    className={cn(
+                      "px-2.5 py-1 rounded-lg text-[11px] font-medium transition-all",
+                      settings.bill_due_days_before === opt.value
+                        ? "bg-primary text-primary-foreground shadow-sm"
+                        : "bg-muted/20 text-muted-foreground hover:bg-muted/40"
+                    )}
+                  >
+                    {opt.label}
+                  </button>
+                ))}
+              </div>
             </div>
           ),
         },
@@ -98,15 +120,24 @@ export default function NotificationSettingsModal({ open, onOpenChange }: Props)
           enabled: settings.low_balance_alert,
           toggle: () => toggle("low_balance_alert"),
           extra: settings.low_balance_alert && (
-            <div className="flex items-center gap-2 mt-2">
-              <span className="text-[10px] text-muted-foreground">Limite R$:</span>
-              <Input
-                type="number"
-                min={0}
-                value={settings.low_balance_threshold}
-                onChange={(e) => setNum("low_balance_threshold", Math.max(0, parseFloat(e.target.value) || 0))}
-                className="w-24 h-7 text-xs text-center bg-muted/30 border-border/20 rounded-lg"
-              />
+            <div className="mt-2.5 space-y-1.5">
+              <span className="text-[10px] text-muted-foreground font-medium">Limite mínimo:</span>
+              <div className="flex flex-wrap gap-1.5">
+                {[50, 100, 200, 500, 1000].map((val) => (
+                  <button
+                    key={val}
+                    onClick={() => setNum("low_balance_threshold", val)}
+                    className={cn(
+                      "px-2.5 py-1 rounded-lg text-[11px] font-medium transition-all",
+                      settings.low_balance_threshold === val
+                        ? "bg-primary text-primary-foreground shadow-sm"
+                        : "bg-muted/20 text-muted-foreground hover:bg-muted/40"
+                    )}
+                  >
+                    R$ {val}
+                  </button>
+                ))}
+              </div>
             </div>
           ),
         },
