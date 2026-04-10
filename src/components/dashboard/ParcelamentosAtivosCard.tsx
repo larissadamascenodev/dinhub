@@ -1,70 +1,72 @@
-import { useState, useEffect, useMemo } from "react";
+import { useState, useEffect, useMemo, useCallback } from "react";
 import { useNavigate } from "react-router-dom";
 import { motion, AnimatePresence } from "framer-motion";
 import { CreditCard, Wallet, ChevronDown, CalendarClock, TrendingDown } from "lucide-react";
 import { supabase } from "@/integrations/supabase/client";
 import { useAuth } from "@/contexts/AuthContext";
 import { getCategoryIcon, getCategoryColor } from "@/lib/categoryUtils";
+import { buildActiveInstallmentItems, type ActiveInstallmentItem, type InstallmentInvoiceRow, type InstallmentTransactionRow } from "@/lib/installmentProgress";
 import type { CustomCategory } from "@/services/categoryService";
 import { Progress } from "@/components/ui/progress";
-
-interface Installment {
-  id: string;
-  name: string;
-  category: string;
-  amount: number;
-  installment_current: number;
-  installments: number;
-  payment_method: string;
-  date: string;
-  credit_card_id: string | null;
-}
 
 const ParcelamentosAtivosCard = () => {
   const { user } = useAuth();
   const navigate = useNavigate();
-  const [items, setItems] = useState<Installment[]>([]);
+  const [items, setItems] = useState<ActiveInstallmentItem[]>([]);
   const [customCats, setCustomCats] = useState<CustomCategory[]>([]);
   const [expanded, setExpanded] = useState(false);
   const [loading, setLoading] = useState(true);
 
-  useEffect(() => {
+  const fetchData = useCallback(async () => {
     if (!user) return;
-    const fetch = async () => {
-      // Get parent installment transactions that still have future installments
-      const now = new Date();
-      const { data, error } = await supabase
+
+    setLoading(true);
+
+    const [transactionsRes, invoiceItemsRes, categoriesRes] = await Promise.all([
+      supabase
         .from("transactions")
-        .select("id, name, category, amount, installment_current, installments, payment_method, date, credit_card_id")
+        .select("id, name, category, amount, installment_current, installments, payment_method, date, credit_card_id, parent_transaction_id, status, type")
         .eq("user_id", user.id)
         .eq("recurrence_type", "parcelado")
-        .is("parent_transaction_id", null)
-        .not("installments", "is", null)
-        .order("amount", { ascending: false });
-
-      if (!error && data) {
-        // Filter: only those with remaining installments
-        const active = data.filter((t) => {
-          if (!t.installments || !t.installment_current) return false;
-          // Check if there are still future installments
-          const baseDate = new Date(t.date);
-          const lastInstallmentDate = new Date(baseDate);
-          lastInstallmentDate.setMonth(lastInstallmentDate.getMonth() + (t.installments - 1));
-          return lastInstallmentDate >= new Date(now.getFullYear(), now.getMonth(), 1);
-        });
-        setItems(active as Installment[]);
-      }
-
-      const { data: cats } = await supabase
+        .eq("type", "despesa")
+        .not("installments", "is", null),
+      supabase
+        .from("invoice_items")
+        .select("transaction_id, amount, installment_number, total_installments, invoices!inner(is_paid, user_id), transactions!inner(id, name, category, payment_method, credit_card_id, parent_transaction_id, date, type)")
+        .eq("invoices.user_id", user.id),
+      supabase
         .from("custom_categories")
         .select("*")
-        .eq("user_id", user.id);
-      if (cats) setCustomCats(cats);
+        .eq("user_id", user.id),
+    ]);
 
-      setLoading(false);
-    };
-    fetch();
+    if (!transactionsRes.error && !invoiceItemsRes.error) {
+      setItems(
+        buildActiveInstallmentItems({
+          transactions: (transactionsRes.data ?? []) as InstallmentTransactionRow[],
+          invoiceItems: (invoiceItemsRes.data ?? []) as InstallmentInvoiceRow[],
+        })
+      );
+    }
+
+    if (categoriesRes.data) {
+      setCustomCats(categoriesRes.data);
+    }
+
+    setLoading(false);
   }, [user]);
+
+  useEffect(() => {
+    if (!user) return;
+
+    fetchData();
+    const handleFinanceChange = () => {
+      void fetchData();
+    };
+
+    window.addEventListener("finance-data-changed", handleFinanceChange);
+    return () => window.removeEventListener("finance-data-changed", handleFinanceChange);
+  }, [user, fetchData]);
 
   const stats = useMemo(() => {
     if (items.length === 0) return null;
@@ -75,12 +77,12 @@ const ParcelamentosAtivosCard = () => {
 
     items.forEach((item) => {
       const baseDate = new Date(item.date);
-      const currentInstallment = item.installment_current || 1;
-      const remaining = item.installments - currentInstallment;
+      const currentInstallment = item.installment_current;
+      const unpaidInstallments = item.installments - currentInstallment + 1;
 
-      if (remaining >= 0) {
+      if (unpaidInstallments > 0) {
         totalMensal += item.amount;
-        totalRestante += item.amount * (remaining + 1);
+        totalRestante += item.amount * unpaidInstallments;
       }
 
       const endDate = new Date(baseDate);
@@ -150,7 +152,7 @@ const ParcelamentosAtivosCard = () => {
       <div className="space-y-1.5">
         <AnimatePresence initial={false}>
           {visibleItems.map((item, idx) => {
-            const currentInst = item.installment_current || 1;
+            const currentInst = item.installment_current;
             const progress = (currentInst / item.installments) * 100;
             const isCard = item.payment_method === "cartao";
             const IconComp = getCategoryIcon(item.category, customCats);
