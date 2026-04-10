@@ -188,13 +188,7 @@ export default function NotificationsPanel({ open, onClose }: NotificationsPanel
             animate={{ opacity: 1, y: 0, scale: 1 }}
             exit={{ opacity: 0, y: -12, scale: 0.95 }}
             transition={{ type: "spring", stiffness: 400, damping: 28 }}
-            className={cn(
-              "fixed z-50 bg-card/95 backdrop-blur-2xl border border-border/20 rounded-2xl shadow-2xl overflow-hidden flex flex-col",
-              // Mobile: full-width centered
-              "inset-x-3 top-16 max-h-[75vh]",
-              // Desktop: positioned relative
-              "md:inset-auto md:absolute md:right-0 md:top-full md:mt-2 md:w-80 md:max-h-[70vh]"
-            )}
+            className="fixed z-50 left-3 right-3 top-14 max-h-[70vh] bg-card/95 backdrop-blur-2xl border border-border/20 rounded-2xl shadow-2xl overflow-hidden flex flex-col md:left-auto md:right-4 md:top-auto md:absolute md:top-full md:mt-2 md:w-80"
           >
             {/* Header */}
             <div className="flex items-center justify-between px-4 py-3 border-b border-border/10">
