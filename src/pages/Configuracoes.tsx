@@ -800,38 +800,6 @@ const Configuracoes = () => {
         {/* Bio */}
         <p className="text-xs text-muted-foreground mt-2">{profile?.bio || "Focado em controle financeiro e evolução diária 💪"}</p>
 
-        {/* Financial Summary */}
-        {financeSummary && (
-          <div className="grid grid-cols-3 gap-2 mt-3 pt-3 border-t border-border/10">
-            <div className="text-center space-y-0.5">
-              <div className="flex items-center justify-center gap-1">
-                <Wallet className="w-3 h-3 text-primary" />
-              </div>
-              <p className={`text-xs font-bold ${financeSummary.saldo >= 0 ? "text-primary" : "text-destructive"}`}>
-                {formatCurrency(financeSummary.saldo)}
-              </p>
-              <p className="text-[9px] text-muted-foreground">Saldo</p>
-            </div>
-            <div className="text-center space-y-0.5">
-              <div className="flex items-center justify-center gap-1">
-                <TrendingUp className="w-3 h-3 text-blue-400" />
-              </div>
-              <p className="text-xs font-bold text-foreground">
-                {formatCurrency(financeSummary.investimentos)}
-              </p>
-              <p className="text-[9px] text-muted-foreground">Investido</p>
-            </div>
-            <div className="text-center space-y-0.5">
-              <div className="flex items-center justify-center gap-1">
-                <PiggyBank className="w-3 h-3 text-amber-400" />
-              </div>
-              <p className="text-xs font-bold text-foreground">
-                {formatCurrency(financeSummary.saldo + financeSummary.investimentos)}
-              </p>
-              <p className="text-[9px] text-muted-foreground">Patrimônio</p>
-            </div>
-          </div>
-        )}
 
       </motion.div>
 
