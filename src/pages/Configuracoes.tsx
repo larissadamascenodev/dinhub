@@ -467,7 +467,7 @@ const Configuracoes = () => {
 
             <Button
               onClick={handleChangePassword}
-              disabled={changingPassword || !newPassword || !confirmPassword || newPassword !== confirmPassword}
+              disabled={changingPassword || !currentPassword || !newPassword || !confirmPassword || newPassword !== confirmPassword}
               className="w-full h-11 rounded-xl font-bold"
             >
               {changingPassword ? "Alterando..." : "Alterar Senha"}
