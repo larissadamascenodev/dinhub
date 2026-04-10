@@ -47,7 +47,7 @@ const ProximosEventos = memo(({ events, selectedMonth, selectedYear, onVerTodos,
 
   const sortedEvents = useMemo(() => {
     return [...events]
-      .map((ev) => ({ ...ev, _date: parseDateSafe(ev.date) }))
+      .map((ev) => ({ ...ev, _date: parseDateSafe(ev.rawDate || ev.date) }))
       .sort((a, b) => a._date.getTime() - b._date.getTime());
   }, [events]);
 
