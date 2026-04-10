@@ -1,8 +1,6 @@
 import { memo, useState, useEffect } from "react";
-import { useNavigate } from "react-router-dom";
 import {
-  Layers, ChevronUp, Clock, RefreshCw,
-  CreditCard, Wallet, Sparkles, Landmark,
+  Layers, ChevronUp, CreditCard, Wallet,
 } from "lucide-react";
 import { getCustomCategories, type CustomCategory } from "@/services/categoryService";
 import { getCategoryIcon, getCategoryColor } from "@/lib/categoryUtils";
@@ -38,12 +36,11 @@ const hexToHslString = (hex: string): string => {
 };
 
 const FaturaCard = ({ tx, onClick }: { tx: Transaction; onClick: () => void }) => {
-  const navigate = useNavigate();
   const cardColor = tx.creditCardColor ? hexToHslString(tx.creditCardColor) : "260 70% 60%";
   return (
     <div
       className="group relative flex items-center gap-2.5 px-3 py-2.5 md:gap-3 md:px-4 md:py-3.5 rounded-xl bg-card/95 border border-primary/10 cursor-pointer hover:border-primary/25 transition-colors"
-      onClick={() => navigate(`/fatura/${tx.creditCardId}`)}
+      onClick={onClick}
     >
       <div
         className="w-8 h-8 md:w-10 md:h-10 rounded-full flex items-center justify-center flex-shrink-0"
@@ -128,8 +125,6 @@ const STACK_COUNT = 3;
 
 const TransacoesRecentes = memo(({ transactions, onDelete }: Props) => {
   const [expanded, setExpanded] = useState(false);
-  const { user } = useAuth();
-  const { selectedMonth, selectedYear } = useMonth();
   const [customCats, setCustomCats] = useState<CustomCategory[]>([]);
 
   useEffect(() => {
@@ -140,12 +135,7 @@ const TransacoesRecentes = memo(({ transactions, onDelete }: Props) => {
   const topTx = visible[0];
   const restTx = visible.slice(1);
 
-  const navigate = useNavigate();
-
-  const handleTxClick = (tx: Transaction) => {
-    if (tx.isFatura) return;
-    navigate("/transacoes");
-  };
+  const handleTxClick = () => {};
 
   if (!transactions.length) {
     return (
