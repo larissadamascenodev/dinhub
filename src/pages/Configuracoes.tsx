@@ -4,7 +4,7 @@ import { motion, AnimatePresence } from "framer-motion";
 import {
   User, Pencil, Star, Flame, TrendingUp,
   Shield, Crown, Upload, FileText, Smartphone, MessageCircle, Trash2, LogOut,
-  Bell, Globe, HelpCircle, Headphones, FileCheck, ChevronRight, Wallet, Settings, Camera,
+  Bell, Globe, HelpCircle, Headphones, FileCheck, ChevronRight, Settings, Camera,
   MessageSquare, Shuffle, Eye, EyeOff,
 } from "lucide-react";
 import { Button } from "@/components/ui/button";
@@ -773,29 +773,6 @@ const Configuracoes = () => {
         <p className="text-xs text-muted-foreground mt-2">{profile?.bio || "Focado em controle financeiro e evolução diária 💪"}</p>
 
       </motion.div>
-
-      {/* ═══ Carteira Card ═══ */}
-      <motion.button
-        initial={{ opacity: 0, y: 12 }}
-        animate={{ opacity: 1, y: 0 }}
-        transition={{ delay: 0.05 }}
-        onClick={() => navigate("/gestao")}
-        className="relative overflow-hidden rounded-2xl border border-primary/20 backdrop-blur-xl shadow-2xl shadow-black/40 p-3.5 w-full flex items-center gap-3 hover:border-primary/30 transition-all text-left group"
-        style={{
-          background: "linear-gradient(160deg, hsl(150 100% 45% / 0.08) 0%, hsl(150 100% 45% / 0.03) 100%)",
-        }}
-      >
-        <div className="absolute inset-0 bg-gradient-to-br from-primary/[0.06] via-transparent to-transparent pointer-events-none" />
-        <div className="relative z-10 w-10 h-10 rounded-xl bg-primary/15 flex items-center justify-center shrink-0">
-          <Wallet className="w-5 h-5 text-primary" />
-        </div>
-        <div className="relative z-10 flex-1 min-w-0">
-          <p className="text-sm font-bold text-primary">Carteira</p>
-          <p className="text-[11px] text-primary/60">Contas e Cartões de Crédito</p>
-        </div>
-        <ChevronRight className="relative z-10 w-5 h-5 text-primary/50 group-hover:text-primary transition-colors shrink-0" />
-      </motion.button>
-
 
       {/* ═══ Tabs: Conta / Configurações ═══ */}
       <div className="relative rounded-xl bg-card/90 backdrop-blur-xl border border-border/30 shadow-lg shadow-black/30 flex overflow-hidden">
