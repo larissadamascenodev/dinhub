@@ -195,61 +195,74 @@ const ReceitasDespesasDetalhe = () => {
 
       {/* ═══ Hero Card ═══ */}
       <motion.div
-        initial={{ opacity: 0, y: 12 }}
+        initial={{ opacity: 0, y: 14 }}
         animate={{ opacity: 1, y: 0 }}
-        transition={{ type: "spring", stiffness: 280, damping: 24 }}
+        transition={{ type: "spring", stiffness: 260, damping: 22 }}
         className="rounded-2xl overflow-hidden mb-5 relative"
         style={{
-          background: "linear-gradient(160deg, hsl(220 18% 12%) 0%, hsl(220 20% 7%) 100%)",
-          border: `1px solid ${accentHsl.replace(")", " / 0.15)")}`,
-          boxShadow: `0 16px 48px -16px ${accentHsl.replace(")", " / 0.2)")}, inset 0 1px 0 hsl(220 20% 22% / 0.2)`,
+          background: "linear-gradient(145deg, hsl(220 20% 13%) 0%, hsl(225 22% 9%) 50%, hsl(220 18% 6%) 100%)",
+          border: `1px solid ${accentHsl.replace(")", " / 0.18)")}`,
+          boxShadow: `0 20px 60px -16px ${accentHsl.replace(")", " / 0.25)")}, 0 8px 24px -8px rgba(0,0,0,0.5), inset 0 1px 0 hsl(220 20% 22% / 0.25)`,
         }}
       >
         {/* Glow orbs */}
-        <div className="absolute -top-24 -right-24 w-56 h-56 rounded-full blur-[100px] pointer-events-none" style={{ background: `${accentHsl.replace(")", " / 0.1)")}` }} />
-        <div className="absolute -bottom-20 -left-20 w-40 h-40 rounded-full blur-[80px] pointer-events-none" style={{ background: `${accentHsl.replace(")", " / 0.05)")}` }} />
+        <div className="absolute -top-20 -right-20 w-64 h-64 rounded-full blur-[120px] pointer-events-none" style={{ background: `${accentHsl.replace(")", " / 0.12)")}` }} />
+        <div className="absolute -bottom-16 -left-16 w-48 h-48 rounded-full blur-[90px] pointer-events-none" style={{ background: `${accentHsl.replace(")", " / 0.06)")}` }} />
+        {/* Subtle top-right shimmer */}
+        <div className="absolute top-0 right-0 w-32 h-32 rounded-full blur-[60px] pointer-events-none" style={{ background: "hsl(220 20% 30% / 0.08)" }} />
 
-        <div className="relative px-4 pt-4 pb-4">
+        <div className="relative px-5 pt-5 pb-4">
           {/* Top row: Ring + Total */}
-          <div className="flex items-center gap-3 mb-2">
-            {/* Progress ring */}
+          <div className="flex items-center gap-4 mb-3">
+            {/* Progress ring with glow */}
             <div className="relative flex-shrink-0">
-              <ProgressRing pct={paidPct} color={accentHsl} size={52} stroke={3.5} />
+              <div className="absolute inset-0 rounded-full blur-md" style={{ background: `${accentHsl.replace(")", " / 0.15)")}`, transform: "scale(1.15)" }} />
+              <ProgressRing pct={paidPct} color={accentHsl} size={56} stroke={4} />
               <div className="absolute inset-0 flex items-center justify-center">
-                <HeroIcon className={`w-4 h-4 text-${accent}`} style={{ opacity: 0.8 }} />
+                <HeroIcon className={`w-4.5 h-4.5 text-${accent}`} style={{ opacity: 0.85, filter: `drop-shadow(0 0 4px ${accentHsl.replace(")", " / 0.4)")})` }} />
               </div>
             </div>
 
             <div className="flex-1 min-w-0">
-              <p className="text-[9px] text-muted-foreground/60 uppercase tracking-[0.15em] font-semibold mb-0.5">
+              <p className="text-[9px] text-muted-foreground/55 uppercase tracking-[0.18em] font-bold mb-1">
                 Total {isReceita ? "Receitas" : "Despesas"}
               </p>
-              <p className={`text-xl md:text-3xl font-bold tabular-nums font-display text-${accent} leading-none`}>
+              <p className={`text-xl md:text-3xl font-extrabold tabular-nums font-display text-${accent} leading-none`} style={{ textShadow: `0 0 20px ${accentHsl.replace(")", " / 0.3)")}` }}>
                 {fmt(total)}
               </p>
               {/* Trend */}
               {trend !== 0 && (
-                <div className="flex items-center gap-1 mt-1">
-                  {trendPositive ? <TrendingUp className="w-3 h-3 text-primary" /> : <TrendingDown className="w-3 h-3 text-destructive" />}
-                  <span className={`text-[9px] font-bold ${trendPositive ? "text-primary" : "text-destructive"}`}>
-                    {trend > 0 ? "+" : ""}{trend}% vs mês anterior
-                  </span>
+                <div className="flex items-center gap-1 mt-1.5">
+                  <div className={`flex items-center gap-0.5 px-1.5 py-0.5 rounded-full ${trendPositive ? "bg-primary/10" : "bg-destructive/10"}`}>
+                    {trendPositive ? <TrendingUp className="w-2.5 h-2.5 text-primary" /> : <TrendingDown className="w-2.5 h-2.5 text-destructive" />}
+                    <span className={`text-[8px] font-bold ${trendPositive ? "text-primary" : "text-destructive"}`}>
+                      {trend > 0 ? "+" : ""}{trend}%
+                    </span>
+                  </div>
+                  <span className="text-[8px] text-muted-foreground/40 font-medium">vs mês anterior</span>
                 </div>
               )}
             </div>
           </div>
 
+          {/* Divider */}
+          <div className="h-px w-full mb-3" style={{ background: `linear-gradient(90deg, transparent, ${accentHsl.replace(")", " / 0.12)")}, transparent)` }} />
+
           {/* Paid / Pending inline */}
-          <div className="flex items-center gap-3 pl-0.5">
-            <div className="flex items-center gap-1">
-              <CheckCircle2 className={`w-2.5 h-2.5 text-${accent}`} style={{ opacity: 0.6 }} />
-              <span className="text-[8px] text-muted-foreground/50 font-semibold uppercase tracking-wider">{isReceita ? "Recebido" : "Pago"}</span>
+          <div className="flex items-center gap-4">
+            <div className="flex items-center gap-1.5">
+              <div className={`w-4 h-4 rounded-full bg-${accent}/10 flex items-center justify-center`}>
+                <CheckCircle2 className={`w-2.5 h-2.5 text-${accent}`} />
+              </div>
+              <span className="text-[8px] text-muted-foreground/45 font-bold uppercase tracking-wider">{isReceita ? "Recebido" : "Pago"}</span>
               <span className={`text-[11px] font-bold tabular-nums text-${accent} ml-0.5`}>{fmt(paid)}</span>
             </div>
-            <div className="w-px h-3 bg-border/15" />
-            <div className="flex items-center gap-1">
-              <Clock className="w-2.5 h-2.5 text-yellow-400" style={{ opacity: 0.6 }} />
-              <span className="text-[8px] text-muted-foreground/50 font-semibold uppercase tracking-wider">Pendente</span>
+            <div className="w-px h-4 rounded-full" style={{ background: "hsl(220 15% 20% / 0.5)" }} />
+            <div className="flex items-center gap-1.5">
+              <div className="w-4 h-4 rounded-full bg-yellow-400/10 flex items-center justify-center">
+                <Clock className="w-2.5 h-2.5 text-yellow-400" />
+              </div>
+              <span className="text-[8px] text-muted-foreground/45 font-bold uppercase tracking-wider">Pendente</span>
               <span className="text-[11px] font-bold tabular-nums text-yellow-400 ml-0.5">{fmt(pending)}</span>
             </div>
           </div>
