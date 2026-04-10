@@ -27,6 +27,7 @@ import TermosPrivacidade from "./pages/TermosPrivacidade.tsx";
 import Suporte from "./pages/Suporte.tsx";
 import ReceitasDespesasDetalhe from "./pages/ReceitasDespesasDetalhe.tsx";
 import ParcelamentosDetalhe from "./pages/ParcelamentosDetalhe.tsx";
+import CentralAjuda from "./pages/CentralAjuda.tsx";
 import NotFound from "./pages/NotFound.tsx";
 
 const queryClient = new QueryClient();
@@ -74,6 +75,7 @@ const App = () => (
               <Route path="/parcelamentos" element={<ParcelamentosDetalhe />} />
               <Route path="/termos" element={<TermosPrivacidade />} />
               <Route path="/suporte" element={<Suporte />} />
+              <Route path="/ajuda" element={<CentralAjuda />} />
             </Route>
             <Route path="*" element={<NotFound />} />
           </Routes>

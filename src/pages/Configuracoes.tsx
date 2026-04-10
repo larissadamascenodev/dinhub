@@ -324,7 +324,7 @@ const Configuracoes = () => {
   const configItems = [
     { icon: Bell, label: "Lembretes e Alertas", sub: "Notificações do app", onClick: () => { setTabBeforeModal(activeTab); setNotifSettingsOpen(true); } },
     { icon: Globe, label: "Tipo de Moeda", sub: "Selecione a moeda padrão" },
-    { icon: HelpCircle, label: "Central de Ajuda", sub: "Perguntas frequentes" },
+    { icon: HelpCircle, label: "Central de Ajuda", sub: "Perguntas frequentes", onClick: () => navigate("/ajuda") },
     { icon: Headphones, label: "Falar com o Suporte", sub: "Abrir um chamado", onClick: () => navigate("/suporte") },
     { icon: FileCheck, label: "Termos de Privacidade", sub: "Política e termos", onClick: () => navigate("/termos") },
   ];
