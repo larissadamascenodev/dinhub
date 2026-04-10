@@ -14,6 +14,7 @@ import { useSwipeBack } from "@/hooks/useSwipeBack";
 import {
   BarChart, Bar, XAxis, YAxis, Tooltip, ResponsiveContainer, Cell,
   PieChart as RePieChart, Pie,
+  AreaChart, Area,
 } from "recharts";
 
 interface Installment {
@@ -282,7 +283,13 @@ const ParcelamentosDetalhe = () => {
           </div>
           <div className="h-40">
             <ResponsiveContainer width="100%" height="100%">
-              <BarChart data={projectionData} margin={{ top: 5, right: 5, bottom: 0, left: -20 }}>
+              <AreaChart data={projectionData} margin={{ top: 5, right: 10, bottom: 0, left: -20 }}>
+                <defs>
+                  <linearGradient id="compromissoGrad" x1="0" y1="0" x2="0" y2="1">
+                    <stop offset="0%" stopColor="hsl(25 85% 55%)" stopOpacity={0.3} />
+                    <stop offset="100%" stopColor="hsl(25 85% 55%)" stopOpacity={0.02} />
+                  </linearGradient>
+                </defs>
                 <XAxis dataKey="month" tick={{ fontSize: 9, fill: "hsl(220 15% 55%)" }} axisLine={false} tickLine={false} />
                 <YAxis tick={{ fontSize: 9, fill: "hsl(220 15% 55%)" }} axisLine={false} tickLine={false} tickFormatter={formatShortCurrency} />
                 <Tooltip
@@ -290,12 +297,16 @@ const ParcelamentosDetalhe = () => {
                   labelStyle={{ color: "hsl(220 15% 75%)" }}
                   formatter={(value: number) => [formatCurrency(value), "Compromisso"]}
                 />
-                <Bar dataKey="value" radius={[4, 4, 0, 0]} maxBarSize={32}>
-                  {projectionData.map((_, idx) => (
-                    <Cell key={idx} fill={idx === 0 ? "hsl(25 85% 55%)" : "hsl(25 60% 40% / 0.5)"} />
-                  ))}
-                </Bar>
-              </BarChart>
+                <Area
+                  type="monotone"
+                  dataKey="value"
+                  stroke="hsl(25 85% 55%)"
+                  strokeWidth={2}
+                  fill="url(#compromissoGrad)"
+                  dot={{ r: 3, fill: "hsl(25 85% 55%)", strokeWidth: 0 }}
+                  activeDot={{ r: 5, fill: "hsl(25 85% 55%)", stroke: "hsl(220 18% 12%)", strokeWidth: 2 }}
+                />
+              </AreaChart>
             </ResponsiveContainer>
           </div>
           <div className="flex items-center gap-2 px-1">
