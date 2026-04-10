@@ -1,7 +1,7 @@
 import { useState, useCallback, useEffect } from "react";
 import { useNavigate, useOutletContext } from "react-router-dom";
 import { motion } from "framer-motion";
-import ProjectionCard from "@/components/dashboard/ProjectionCard";
+import BotFinanceTools from "@/components/dashboard/BotFinanceTools";
 import WalletSummaryCard from "@/components/dashboard/WalletSummaryCard";
 import { useGreeting } from "@/components/dashboard/DashboardHeader";
 import SaldoCard from "@/components/dashboard/SaldoCard";
@@ -126,7 +126,7 @@ const Index = () => {
           <div className="space-y-4">
             <WalletSummaryCard />
             {isCurrentMonth && <GastosSemanaisCard />}
-            <ProjectionCard />
+            <BotFinanceTools layout="grid" />
             <ProximosEventos events={data.events} selectedMonth={selectedMonth} selectedYear={selectedYear} onEventClick={handleEventClick} />
             <AssinaturasCard />
             <InvestimentosResumoCard />
@@ -156,7 +156,7 @@ const Index = () => {
           <SaldoWalletCarousel saldoAtual={saldoMes} saldoPrevisto={saldoPrevisto} isFutureMonth={isFutureMonth} isPastMonth={data.isPastMonth} />
           <ReceitasDespesasCards receitas={receitas} receitasRecebidas={data.receitasRecebidas} receitasPendentes={data.receitasPendentes} despesas={despesas} despesasPagas={data.despesasPagas} despesasPendentes={data.despesasPendentes} compact />
           {/* MicroInteracoesCard temporarily disabled */}
-          <ProjectionCard />
+          <BotFinanceTools layout="carousel" />
           {isCurrentMonth && <GastosSemanaisCard />}
           {data.categories.length > 0 && (
             <GastosPorCategoria categories={data.categories} selectedMonth={selectedMonth} onVerAnalise={() => navigate("/transacoes")} />
@@ -193,7 +193,7 @@ const Index = () => {
           </motion.div>
           
           {/* MicroInteracoesCard temporarily disabled */}
-          <ProjectionCard />
+          <BotFinanceTools layout="carousel" />
           {isCurrentMonth && <GastosSemanaisCard />}
           {data.categories.length > 0 && (
             <GastosPorCategoria categories={data.categories} selectedMonth={selectedMonth} onVerAnalise={() => navigate("/transacoes")} />
