@@ -58,17 +58,43 @@ function getMonthRange(month: number, year: number) {
   return { start, end };
 }
 
+// Cache for materialize RPC calls — avoid calling the same month/user twice per session
+const materializedMonths = new Set<string>();
+
+export function clearMaterializedCache() {
+  materializedMonths.clear();
+}
+
+// Cache for intermediate month fetches (used by previousMonthEndingBalance chain)
+const monthTxCache = new Map<string, { txs: RawTransaction[]; timestamp: number }>();
+const MONTH_TX_CACHE_TTL = 300_000; // 5 minutes
+
+function getCachedMonthTxs(key: string): RawTransaction[] | null {
+  const entry = monthTxCache.get(key);
+  if (entry && Date.now() - entry.timestamp < MONTH_TX_CACHE_TTL) return entry.txs;
+  return null;
+}
+
 async function fetchMonthTransactions(month: number, year: number, opts?: { skipMaterialize?: boolean; userId?: string }) {
   const { start, end } = getMonthRange(month, year);
   const dbMonth = month + 1; // DB stores 1-based months
 
+  // Check intermediate cache for skipMaterialize calls (chain calculations)
+  if (opts?.skipMaterialize) {
+    const cacheKey = `mtx-${month}-${year}`;
+    const cached = getCachedMonthTxs(cacheKey);
+    if (cached) return cached;
+  }
+
   // Materialize recurring CC subscription items into invoices for this month
-  const materializePromise = (!opts?.skipMaterialize && opts?.userId)
+  const matKey = `${opts?.userId}-${dbMonth}-${year}`;
+  const shouldMaterialize = !opts?.skipMaterialize && opts?.userId && !materializedMonths.has(matKey);
+  const materializePromise = shouldMaterialize
     ? supabase.rpc("materialize_recurring_invoice_items", {
-        p_user_id: opts.userId,
+        p_user_id: opts!.userId!,
         p_month: dbMonth,
         p_year: year,
-      }).then(() => {})
+      }).then(() => { materializedMonths.add(matKey); })
     : Promise.resolve();
 
   // Fetch ALL exclusions for this month upfront (in parallel with everything else)
@@ -127,7 +153,14 @@ async function fetchMonthTransactions(month: number, year: number, opts?: { skip
     _isRecurringMaterialized: true,
   })) as RawTransaction[];
 
-  return [...baseTxs, ...materializedRecurring];
+  const result = [...baseTxs, ...materializedRecurring];
+
+  // Cache intermediate results for chain calculations
+  if (opts?.skipMaterialize) {
+    monthTxCache.set(`mtx-${month}-${year}`, { txs: result, timestamp: Date.now() });
+  }
+
+  return result;
 }
 
 async function fetchMonthEvents(month: number, year: number) {
@@ -196,8 +229,15 @@ function aggregate(transactions: RawTransaction[]) {
   return { income, expense, paidIncome, paidExpense, balance: paidIncome - paidExpense };
 }
 
+// Cache for invoice totals
+const invoiceTotalsCache = new Map<string, { data: { invoiceExpense: number; invoicePaidExpense: number }; timestamp: number }>();
+
 /** Fetch invoice totals for a given month and return expense/paidExpense from invoices */
 async function fetchInvoiceTotalsForMonth(month: number, year: number) {
+  const cacheKey = `inv-${month}-${year}`;
+  const cached = invoiceTotalsCache.get(cacheKey);
+  if (cached && Date.now() - cached.timestamp < MONTH_TX_CACHE_TTL) return cached.data;
+
   const dbMonth = month + 1;
   const { data } = await supabase
     .from("invoices")
@@ -211,13 +251,13 @@ async function fetchInvoiceTotalsForMonth(month: number, year: number) {
     const total = Number(inv.total_amount);
     if (total <= 0) continue;
     invoiceExpense += total;
-    // Partial payments are cash advances only — invoice expense is only
-    // considered "paid" when the invoice is fully settled (is_paid = true).
     if (inv.is_paid) {
       invoicePaidExpense += total;
     }
   }
-  return { invoiceExpense, invoicePaidExpense };
+  const result = { invoiceExpense, invoicePaidExpense };
+  invoiceTotalsCache.set(cacheKey, { data: result, timestamp: Date.now() });
+  return result;
 }
 
 export async function fetchHistoricalAverages(
@@ -302,7 +342,23 @@ export async function getFinancialSummary(
       .from("invoices")
       .select("credit_card_id, total_amount, is_paid, paid_amount")
       .eq("month", dbMonth)
-      .eq("year", year),
+      .eq("year", year)
+      .then(({ data }) => {
+        // Pre-populate invoiceTotals cache from this detailed query
+        let invoiceExpense = 0;
+        let invoicePaidExpense = 0;
+        for (const inv of data ?? []) {
+          const total = Number(inv.total_amount);
+          if (total <= 0) continue;
+          invoiceExpense += total;
+          if (inv.is_paid) invoicePaidExpense += total;
+        }
+        invoiceTotalsCache.set(`inv-${month}-${year}`, {
+          data: { invoiceExpense, invoicePaidExpense },
+          timestamp: Date.now(),
+        });
+        return { data };
+      }),
   ]);
 
   const agg = aggregate(transactions);

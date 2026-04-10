@@ -37,6 +37,13 @@ export interface TransactionFilters {
 
 function notifyFinanceDataChanged() {
   clearFinanceQueryCache();
+  // Import dynamically to avoid circular deps
+  import("@/services/dashboardData").then(({ clearDashboardCache }) => {
+    clearDashboardCache(true); // selective invalidation — mark stale, don't delete
+  });
+  import("@/lib/financeEngine").then(({ clearMaterializedCache }) => {
+    clearMaterializedCache();
+  }).catch(() => {});
   if (typeof window === "undefined") return;
   window.dispatchEvent(new CustomEvent("finance-data-changed"));
 }

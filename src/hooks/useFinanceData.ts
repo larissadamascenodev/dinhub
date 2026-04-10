@@ -44,11 +44,12 @@ export function useFinanceData(selectedMonth: number, selectedYear: number, opti
       return () => { cancelled = true; };
     }
 
-    // Try to hydrate from cache immediately
+    // Stale-while-revalidate: show cached data immediately, refresh in background
     const cached = getCachedDashboardData(cacheKey);
     if (cached) {
       setData(cached);
       setLoading(false);
+      // Still refresh in background but don't show loading
     } else {
       setLoading(true);
     }
