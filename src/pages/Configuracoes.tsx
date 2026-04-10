@@ -2,7 +2,7 @@ import { useState, useRef } from "react";
 import { useLoginStreak } from "@/hooks/useLoginStreak";
 import { motion, AnimatePresence } from "framer-motion";
 import {
-  User, Pencil, Star, Flame, Target, TrendingUp, Swords, Trophy,
+  User, Pencil, Star, Flame, TrendingUp,
   Shield, Crown, Upload, FileText, Smartphone, MessageCircle, Trash2, LogOut,
   Bell, Globe, HelpCircle, Headphones, FileCheck, ChevronRight, Wallet, Settings, Camera,
   MessageSquare, Shuffle, Eye, EyeOff,
