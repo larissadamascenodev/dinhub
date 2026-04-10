@@ -255,7 +255,7 @@ const Configuracoes = () => {
     { icon: Globe, label: "Tipo de Moeda", sub: "Selecione a moeda padrão" },
     { icon: HelpCircle, label: "Central de Ajuda", sub: "Perguntas frequentes" },
     { icon: Headphones, label: "Falar com o Suporte", sub: "Abrir um chamado" },
-    { icon: FileCheck, label: "Termos de Privacidade", sub: "Política e termos" },
+    { icon: FileCheck, label: "Termos de Privacidade", sub: "Política e termos", onClick: () => navigate("/termos") },
   ];
 
   const SettingsRow = ({ icon: Icon, label, sub, badge, danger, action, onClick }: any) => (
