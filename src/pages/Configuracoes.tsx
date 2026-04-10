@@ -302,7 +302,7 @@ const Configuracoes = () => {
     { icon: Bell, label: "Lembretes e Alertas", sub: "Notificações do app" },
     { icon: Globe, label: "Tipo de Moeda", sub: "Selecione a moeda padrão" },
     { icon: HelpCircle, label: "Central de Ajuda", sub: "Perguntas frequentes" },
-    { icon: Headphones, label: "Falar com o Suporte", sub: "Abrir um chamado" },
+    { icon: Headphones, label: "Falar com o Suporte", sub: "Abrir um chamado", onClick: () => navigate("/suporte") },
     { icon: FileCheck, label: "Termos de Privacidade", sub: "Política e termos", onClick: () => navigate("/termos") },
   ];
 
