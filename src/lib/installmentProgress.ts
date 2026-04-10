@@ -15,6 +15,8 @@ export interface InstallmentTransactionRow {
 
 interface InvoiceRow {
   is_paid: boolean;
+  month?: number;
+  year?: number;
 }
 
 interface InvoiceTransactionRow {
@@ -48,6 +50,7 @@ export interface ActiveInstallmentItem {
   date: string;
   credit_card_id: string | null;
   isOverdue: boolean;
+  dueDate: string | null;
 }
 
 interface InstallmentGroup {
@@ -60,6 +63,7 @@ interface InstallmentGroup {
   date: string;
   credit_card_id: string | null;
   paidInstallments: Set<number>;
+  dueDates: Map<number, string>;
 }
 
 const pickOne = <T,>(value: T | T[] | null | undefined): T | null => {
@@ -76,7 +80,7 @@ const getConsecutivePaidInstallments = (paidInstallments: Set<number>, totalInst
   return count;
 };
 
-const upsertGroup = (map: Map<string, InstallmentGroup>, group: Omit<InstallmentGroup, "paidInstallments">) => {
+const upsertGroup = (map: Map<string, InstallmentGroup>, group: Omit<InstallmentGroup, "paidInstallments" | "dueDates">) => {
   const existing = map.get(group.id);
 
   if (existing) {
@@ -88,6 +92,7 @@ const upsertGroup = (map: Map<string, InstallmentGroup>, group: Omit<Installment
   const created: InstallmentGroup = {
     ...group,
     paidInstallments: new Set<number>(),
+    dueDates: new Map<number, string>(),
   };
   map.set(group.id, created);
   return created;
@@ -96,9 +101,11 @@ const upsertGroup = (map: Map<string, InstallmentGroup>, group: Omit<Installment
 export const buildActiveInstallmentItems = ({
   transactions,
   invoiceItems,
+  creditCardDueDays,
 }: {
   transactions: InstallmentTransactionRow[];
   invoiceItems: InstallmentInvoiceRow[];
+  creditCardDueDays?: Record<string, number>;
 }): ActiveInstallmentItem[] => {
   const groups = new Map<string, InstallmentGroup>();
 
@@ -148,6 +155,17 @@ export const buildActiveInstallmentItems = ({
     if (invoice.is_paid) {
       group.paidInstallments.add(item.installment_number);
     }
+
+    if (
+      tx.credit_card_id &&
+      creditCardDueDays?.[tx.credit_card_id] &&
+      invoice.month &&
+      invoice.year
+    ) {
+      const dueDay = creditCardDueDays[tx.credit_card_id];
+      const dueDate = new Date(invoice.year, invoice.month - 1, dueDay, 12, 0, 0);
+      group.dueDates.set(item.installment_number, dueDate.toISOString());
+    }
   });
 
   return Array.from(groups.values())
@@ -155,22 +173,27 @@ export const buildActiveInstallmentItems = ({
       const paidInstallments = getConsecutivePaidInstallments(group.paidInstallments, group.installments);
       if (paidInstallments >= group.installments) return null;
 
+      const currentInstallment = paidInstallments + 1;
+      const dueDate = group.dueDates.get(currentInstallment) ?? null;
+      const now = new Date();
+
       return {
         id: group.id,
         name: group.name,
         category: group.category,
         amount: group.amount,
-        installment_current: paidInstallments + 1,
+        installment_current: currentInstallment,
         installments: group.installments,
         payment_method: group.payment_method,
         date: group.date,
         credit_card_id: group.credit_card_id,
-        isOverdue: (() => {
+        isOverdue: dueDate ? new Date(dueDate) < now : (() => {
           const baseDate = new Date(group.date);
           const expectedDate = new Date(baseDate);
           expectedDate.setMonth(expectedDate.getMonth() + paidInstallments);
-          return expectedDate < new Date();
+          return expectedDate < now;
         })(),
+        dueDate,
       } satisfies ActiveInstallmentItem;
     })
     .filter((item): item is ActiveInstallmentItem => item !== null)
