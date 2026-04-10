@@ -69,19 +69,13 @@ const ParcelamentosAtivosCard = () => {
   const stats = useMemo(() => {
     if (items.length === 0) return null;
 
-    const now = new Date();
-    const currentMonth = now.getMonth();
-    const currentYear = now.getFullYear();
-
     let totalMensal = 0;
     let totalRestante = 0;
     let lastEndDate = new Date();
 
     items.forEach((item) => {
       const baseDate = new Date(item.date);
-      // Calculate which installment we're currently on based on date
-      const monthsDiff = (currentYear - baseDate.getFullYear()) * 12 + (currentMonth - baseDate.getMonth());
-      const currentInstallment = Math.min(Math.max(monthsDiff + 1, 1), item.installments);
+      const currentInstallment = item.installment_current || 1;
       const remaining = item.installments - currentInstallment;
 
       if (remaining >= 0) {
@@ -90,10 +84,13 @@ const ParcelamentosAtivosCard = () => {
       }
 
       const endDate = new Date(baseDate);
-      endDate.setMonth(endDate.getMonth() + (item.installments - 1));
+      endDate.setMonth(endDate.getMonth() + (item.installments - currentInstallment));
       if (endDate > lastEndDate) lastEndDate = endDate;
     });
 
+    const now = new Date();
+    const currentYear = now.getFullYear();
+    const currentMonth = now.getMonth();
     const monthsUntilFree = (lastEndDate.getFullYear() - currentYear) * 12 + (lastEndDate.getMonth() - currentMonth);
 
     return { totalMensal, totalRestante, monthsUntilFree: Math.max(monthsUntilFree, 0), lastEndDate };
@@ -153,10 +150,7 @@ const ParcelamentosAtivosCard = () => {
       <div className="space-y-1.5">
         <AnimatePresence initial={false}>
           {visibleItems.map((item, idx) => {
-            const now = new Date();
-            const baseDate = new Date(item.date);
-            const monthsDiff = (now.getFullYear() - baseDate.getFullYear()) * 12 + (now.getMonth() - baseDate.getMonth());
-            const currentInst = Math.min(Math.max(monthsDiff + 1, 1), item.installments);
+            const currentInst = item.installment_current || 1;
             const progress = (currentInst / item.installments) * 100;
             const isCard = item.payment_method === "cartao";
             const IconComp = getCategoryIcon(item.category, customCats);
