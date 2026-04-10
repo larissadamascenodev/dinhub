@@ -209,27 +209,27 @@ const ReceitasDespesasDetalhe = () => {
         <div className="absolute -top-24 -right-24 w-56 h-56 rounded-full blur-[100px] pointer-events-none" style={{ background: `${accentHsl.replace(")", " / 0.1)")}` }} />
         <div className="absolute -bottom-20 -left-20 w-40 h-40 rounded-full blur-[80px] pointer-events-none" style={{ background: `${accentHsl.replace(")", " / 0.05)")}` }} />
 
-        <div className="relative px-5 pt-5 pb-5">
+        <div className="relative px-4 pt-4 pb-4">
           {/* Top row: Ring + Total */}
-          <div className="flex items-center gap-4 mb-3">
+          <div className="flex items-center gap-3 mb-2">
             {/* Progress ring */}
             <div className="relative flex-shrink-0">
-              <ProgressRing pct={paidPct} color={accentHsl} size={60} stroke={4} />
+              <ProgressRing pct={paidPct} color={accentHsl} size={52} stroke={3.5} />
               <div className="absolute inset-0 flex items-center justify-center">
-                <HeroIcon className={`w-5 h-5 text-${accent}`} style={{ opacity: 0.8 }} />
+                <HeroIcon className={`w-4 h-4 text-${accent}`} style={{ opacity: 0.8 }} />
               </div>
             </div>
 
             <div className="flex-1 min-w-0">
-              <p className="text-[10px] text-muted-foreground/60 uppercase tracking-[0.15em] font-semibold mb-0.5">
+              <p className="text-[9px] text-muted-foreground/60 uppercase tracking-[0.15em] font-semibold mb-0.5">
                 Total {isReceita ? "Receitas" : "Despesas"}
               </p>
-              <p className={`text-2xl md:text-3xl font-bold tabular-nums font-display text-${accent} leading-none`}>
+              <p className={`text-xl md:text-3xl font-bold tabular-nums font-display text-${accent} leading-none`}>
                 {fmt(total)}
               </p>
               {/* Trend */}
               {trend !== 0 && (
-                <div className="flex items-center gap-1 mt-1.5">
+                <div className="flex items-center gap-1 mt-1">
                   {trendPositive ? <TrendingUp className="w-3 h-3 text-primary" /> : <TrendingDown className="w-3 h-3 text-destructive" />}
                   <span className={`text-[9px] font-bold ${trendPositive ? "text-primary" : "text-destructive"}`}>
                     {trend > 0 ? "+" : ""}{trend}% vs mês anterior
@@ -240,17 +240,17 @@ const ReceitasDespesasDetalhe = () => {
           </div>
 
           {/* Paid / Pending inline */}
-          <div className="flex items-center gap-4 pl-1">
-            <div className="flex items-center gap-1.5">
-              <CheckCircle2 className={`w-3 h-3 text-${accent}`} style={{ opacity: 0.6 }} />
-              <span className="text-[9px] text-muted-foreground/50 font-semibold uppercase tracking-wider">{isReceita ? "Recebido" : "Pago"}</span>
-              <span className={`text-xs font-bold tabular-nums text-${accent} ml-0.5`}>{fmt(paid)}</span>
+          <div className="flex items-center gap-3 pl-0.5">
+            <div className="flex items-center gap-1">
+              <CheckCircle2 className={`w-2.5 h-2.5 text-${accent}`} style={{ opacity: 0.6 }} />
+              <span className="text-[8px] text-muted-foreground/50 font-semibold uppercase tracking-wider">{isReceita ? "Recebido" : "Pago"}</span>
+              <span className={`text-[11px] font-bold tabular-nums text-${accent} ml-0.5`}>{fmt(paid)}</span>
             </div>
             <div className="w-px h-3 bg-border/15" />
-            <div className="flex items-center gap-1.5">
-              <Clock className="w-3 h-3 text-yellow-400" style={{ opacity: 0.6 }} />
-              <span className="text-[9px] text-muted-foreground/50 font-semibold uppercase tracking-wider">Pendente</span>
-              <span className="text-xs font-bold tabular-nums text-yellow-400 ml-0.5">{fmt(pending)}</span>
+            <div className="flex items-center gap-1">
+              <Clock className="w-2.5 h-2.5 text-yellow-400" style={{ opacity: 0.6 }} />
+              <span className="text-[8px] text-muted-foreground/50 font-semibold uppercase tracking-wider">Pendente</span>
+              <span className="text-[11px] font-bold tabular-nums text-yellow-400 ml-0.5">{fmt(pending)}</span>
             </div>
           </div>
         </div>
