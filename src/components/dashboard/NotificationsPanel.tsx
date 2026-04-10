@@ -13,7 +13,6 @@ import {
 import { cn } from "@/lib/utils";
 import { supabase } from "@/integrations/supabase/client";
 import { Dialog, DialogContent } from "@/components/ui/dialog";
-import { Drawer, DrawerContent } from "@/components/ui/drawer";
 import { useIsMobile } from "@/hooks/use-mobile";
 
 const CATEGORY_CONFIG: Record<string, { icon: typeof Bell; className: string; bg: string }> = {
@@ -171,7 +170,7 @@ function NotificationContent({
             <div className="flex items-center gap-2">
               <h3 className="text-base font-bold text-foreground">Notificações</h3>
               {unreadCount > 0 && (
-                <span className="text-[10px] font-bold text-primary-foreground bg-primary px-2 py-0.5 rounded-full">
+                <span className="text-[10px] font-bold text-emerald-400 bg-emerald-500/20 px-2 py-0.5 rounded-full">
                   {unreadCount}
                 </span>
               )}
@@ -294,11 +293,33 @@ export default function NotificationsPanel({ open, onClose }: NotificationsPanel
   // Mobile: use Drawer (bottom sheet)
   if (isMobile) {
     return (
-      <Drawer open={open} onOpenChange={(v) => !v && onClose()}>
-        <DrawerContent className="bg-card border-border/20 max-h-[85vh]">
-          <NotificationContent {...contentProps} />
-        </DrawerContent>
-      </Drawer>
+      <AnimatePresence>
+        {open && (
+          <>
+            {/* Overlay */}
+            <motion.div
+              key="notif-overlay"
+              initial={{ opacity: 0 }}
+              animate={{ opacity: 1 }}
+              exit={{ opacity: 0 }}
+              transition={{ duration: 0.2 }}
+              className="fixed inset-0 z-50 bg-black/60"
+              onClick={onClose}
+            />
+            {/* Panel sliding from top */}
+            <motion.div
+              key="notif-panel"
+              initial={{ y: "-100%" }}
+              animate={{ y: 0 }}
+              exit={{ y: "-100%" }}
+              transition={{ type: "spring", damping: 28, stiffness: 300 }}
+              className="fixed top-0 left-0 right-0 z-50 bg-card border-b border-border/20 rounded-b-2xl max-h-[85vh] overflow-hidden shadow-2xl"
+            >
+              <NotificationContent {...contentProps} />
+            </motion.div>
+          </>
+        )}
+      </AnimatePresence>
     );
   }
 
