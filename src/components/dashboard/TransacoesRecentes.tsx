@@ -145,22 +145,11 @@ const TransacoesRecentes = memo(({ transactions, onDelete }: Props) => {
   const topTx = visible[0];
   const restTx = visible.slice(1);
 
-  const handleTxClick = async (tx: Transaction) => {
+  const navigate = useNavigate();
+
+  const handleTxClick = (tx: Transaction) => {
     if (tx.isFatura) return;
-    try {
-      const [fullTx, accounts] = await Promise.all([
-        getTransactionById(tx.id),
-        getAccounts(),
-      ]);
-      if (fullTx) {
-        const acct = (accounts as any[]).find((a: any) => a.id === fullTx.account_id);
-        setDetailAccountName(acct?.name || "");
-        setDetailTx(fullTx);
-        setShowDetail(true);
-      }
-    } catch {
-      // silently fail
-    }
+    navigate("/transacoes");
   };
 
   if (!transactions.length) {
