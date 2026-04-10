@@ -24,6 +24,7 @@ import MetaDetalhe from "./pages/MetaDetalhe.tsx";
 import AnalyticsCategorias from "./pages/AnalyticsCategorias.tsx";
 import Desafios from "./pages/Desafios.tsx";
 import TermosPrivacidade from "./pages/TermosPrivacidade.tsx";
+import Suporte from "./pages/Suporte.tsx";
 import NotFound from "./pages/NotFound.tsx";
 
 const queryClient = new QueryClient();
