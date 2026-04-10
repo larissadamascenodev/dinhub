@@ -1,16 +1,14 @@
 import { useState, useMemo } from "react";
 import { useNavigate } from "react-router-dom";
 import { motion, AnimatePresence } from "framer-motion";
-import { ArrowLeft, Search, BarChart3, Sparkles, Target, Swords, Radar, HeartPulse, ScanLine, CreditCard, Wallet, Tags, CalendarClock, Bot, ChevronDown } from "lucide-react";
+import { ArrowLeft, Search, BarChart3, Sparkles, Target, Swords, Radar, HeartPulse, ScanLine, CreditCard, Wallet, Tags, CalendarClock, Bot, ChevronRight } from "lucide-react";
 import { Input } from "@/components/ui/input";
 import { Badge } from "@/components/ui/badge";
 import { Accordion, AccordionContent, AccordionItem, AccordionTrigger } from "@/components/ui/accordion";
 
-/* ── helpers ── */
 const normalize = (s: string) =>
   s.normalize("NFD").replace(/[\u0300-\u036f]/g, "").toLowerCase();
 
-/* ── feature data ── */
 interface Feature {
   icon: React.ReactNode;
   label: string;
@@ -109,7 +107,6 @@ const features: Feature[] = [
   },
 ];
 
-/* ── FAQ data ── */
 interface FaqItem {
   question: string;
   answer: string;
@@ -193,11 +190,10 @@ const faqItems: FaqItem[] = [
   },
 ];
 
-/* ── component ── */
 const CentralAjuda = () => {
   const navigate = useNavigate();
   const [search, setSearch] = useState("");
-  const [expandedFeature, setExpandedFeature] = useState<string | null>(null);
+  const [openFeature, setOpenFeature] = useState<string | null>(null);
 
   const query = normalize(search.trim());
 
@@ -252,64 +248,66 @@ const CentralAjuda = () => {
         />
       </div>
 
-      {/* features */}
+      {/* features - vertical list */}
       {filteredFeatures.length > 0 && (
         <section className="mb-6">
-          <h2 className="text-sm font-semibold text-muted-foreground mb-3 uppercase tracking-wider">
+          <h2 className="text-xs font-semibold text-muted-foreground mb-3 uppercase tracking-wider">
             Funcionalidades
           </h2>
-          <div className="grid grid-cols-2 gap-3">
+          <div className="space-y-2">
             {filteredFeatures.map((f, i) => {
-              const isOpen = expandedFeature === f.label;
+              const isOpen = openFeature === f.label;
               return (
-                <motion.button
+                <motion.div
                   key={f.label}
-                  initial={{ opacity: 0, y: 12 }}
+                  initial={{ opacity: 0, y: 8 }}
                   animate={{ opacity: 1, y: 0 }}
-                  transition={{ delay: i * 0.03 }}
-                  onClick={() => setExpandedFeature(isOpen ? null : f.label)}
-                  className={`relative text-left rounded-2xl p-4 border transition-all duration-200 ${
-                    isOpen
-                      ? "col-span-2 bg-card/80 backdrop-blur border-primary/30"
-                      : "bg-card/60 backdrop-blur border-border/40"
-                  }`}
-                  style={{ opacity: f.soon ? 0.6 : 1 }}
-                  layout
+                  transition={{ delay: i * 0.025 }}
                 >
-                  <div className="flex items-center gap-2.5 mb-1">
-                    <div
-                      className="w-8 h-8 rounded-lg flex items-center justify-center flex-shrink-0"
-                      style={{ background: `${f.color}18`, color: f.color }}
-                    >
-                      {f.icon}
-                    </div>
-                    <span className="text-sm font-semibold text-foreground leading-tight">
-                      {f.label}
-                    </span>
-                    {f.soon && (
-                      <Badge variant="secondary" className="text-[9px] px-1.5 py-0 h-4 ml-auto">
-                        Em breve
-                      </Badge>
-                    )}
-                  </div>
-                  <AnimatePresence>
-                    {isOpen && (
-                      <motion.p
-                        initial={{ opacity: 0, height: 0 }}
-                        animate={{ opacity: 1, height: "auto" }}
-                        exit={{ opacity: 0, height: 0 }}
-                        className="text-xs text-muted-foreground leading-relaxed mt-3"
-                      >
-                        {f.description}
-                      </motion.p>
-                    )}
-                  </AnimatePresence>
-                  <ChevronDown
-                    className={`absolute top-4 right-3 w-3.5 h-3.5 text-muted-foreground transition-transform duration-200 ${
-                      isOpen ? "rotate-180" : ""
+                  <button
+                    onClick={() => setOpenFeature(isOpen ? null : f.label)}
+                    className={`w-full text-left rounded-xl px-4 py-3 border transition-colors duration-150 ${
+                      isOpen
+                        ? "bg-card/90 border-primary/30"
+                        : "bg-card/60 border-border/40"
                     }`}
-                  />
-                </motion.button>
+                    style={{ opacity: f.soon ? 0.55 : 1 }}
+                  >
+                    <div className="flex items-center gap-3">
+                      <div
+                        className="w-9 h-9 rounded-lg flex items-center justify-center flex-shrink-0"
+                        style={{ background: `${f.color}18`, color: f.color }}
+                      >
+                        {f.icon}
+                      </div>
+                      <span className="text-sm font-semibold text-foreground flex-1">
+                        {f.label}
+                      </span>
+                      {f.soon && (
+                        <Badge variant="secondary" className="text-[9px] px-1.5 py-0 h-4">
+                          Em breve
+                        </Badge>
+                      )}
+                      <ChevronRight
+                        className={`w-4 h-4 text-muted-foreground transition-transform duration-200 flex-shrink-0 ${
+                          isOpen ? "rotate-90" : ""
+                        }`}
+                      />
+                    </div>
+                    <AnimatePresence>
+                      {isOpen && (
+                        <motion.p
+                          initial={{ opacity: 0, height: 0, marginTop: 0 }}
+                          animate={{ opacity: 1, height: "auto", marginTop: 12 }}
+                          exit={{ opacity: 0, height: 0, marginTop: 0 }}
+                          className="text-xs text-muted-foreground leading-relaxed pl-12 overflow-hidden"
+                        >
+                          {f.description}
+                        </motion.p>
+                      )}
+                    </AnimatePresence>
+                  </button>
+                </motion.div>
               );
             })}
           </div>
@@ -319,10 +317,10 @@ const CentralAjuda = () => {
       {/* FAQ */}
       {filteredFaq.length > 0 && (
         <section>
-          <h2 className="text-sm font-semibold text-muted-foreground mb-3 uppercase tracking-wider">
+          <h2 className="text-xs font-semibold text-muted-foreground mb-3 uppercase tracking-wider">
             Perguntas Frequentes
           </h2>
-          <div className="bg-card/60 backdrop-blur rounded-2xl border border-border/40 overflow-hidden">
+          <div className="bg-card/60 backdrop-blur rounded-xl border border-border/40 overflow-hidden">
             <Accordion type="single" collapsible>
               {filteredFaq.map((item, i) => (
                 <AccordionItem key={i} value={`faq-${i}`} className="border-border/30 last:border-b-0">
