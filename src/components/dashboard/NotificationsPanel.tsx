@@ -146,7 +146,7 @@ function NotificationContent({
   unreadCount,
   onMarkAllRead,
   onMarkRead,
-  onDelete,
+  
   onClose,
   showHeader = true,
 }: {
@@ -225,7 +225,7 @@ function NotificationContent({
                 <NotificationRow
                   notification={n}
                   onMarkRead={onMarkRead}
-                  onDelete={onDelete}
+                  
                 />
               </motion.div>
             ))}
@@ -237,7 +237,7 @@ function NotificationContent({
       {notifications.length > 0 && (
         <div className="px-4 py-2 border-t border-border/5 shrink-0">
           <p className="text-[9px] text-muted-foreground/40 text-center select-none">
-            ← Deslize para a esquerda para apagar · para a direita para marcar como lida →
+            ← Deslize para a esquerda para marcar como lida
           </p>
         </div>
       )}
@@ -277,13 +277,6 @@ export default function NotificationsPanel({ open, onClose }: NotificationsPanel
 
   const handleMarkRead = async (id: string) => {
     await markAsRead(id);
-    setNotifications((prev) =>
-      prev.map((item) => (item.id === id ? { ...item, is_read: true } : item))
-    );
-  };
-
-  const handleDelete = async (id: string) => {
-    await supabase.from("notifications").delete().eq("id", id);
     setNotifications((prev) => prev.filter((item) => item.id !== id));
   };
 
@@ -295,7 +288,6 @@ export default function NotificationsPanel({ open, onClose }: NotificationsPanel
     unreadCount,
     onMarkAllRead: handleMarkAllRead,
     onMarkRead: handleMarkRead,
-    onDelete: handleDelete,
     onClose,
   };
 
