@@ -87,10 +87,15 @@ const ProximosEventos = memo(({ events, selectedMonth, selectedYear, onVerTodos,
           </div>
         </div>
 
-        {/* Amount */}
-        <p className="text-[12px] font-bold tabular-nums shrink-0" style={{ color: `hsl(${a})` }}>
-          {fmt(ev.amount)}
-        </p>
+        {/* Amount + date */}
+        <div className="text-right shrink-0">
+          <p className="text-[12px] font-bold tabular-nums" style={{ color: `hsl(${a})` }}>
+            {fmt(ev.amount)}
+          </p>
+          <p className="text-[9px] text-muted-foreground/50 mt-0.5">
+            {fmtDate(ev._date)}
+          </p>
+        </div>
       </motion.div>
     );
   };
