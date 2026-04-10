@@ -1,4 +1,5 @@
 import { useState, useRef, useEffect } from "react";
+import NotificationSettingsModal from "@/components/dashboard/NotificationSettingsModal";
 import { useLoginStreak } from "@/hooks/useLoginStreak";
 import { motion, AnimatePresence } from "framer-motion";
 import {
@@ -91,6 +92,7 @@ const Configuracoes = () => {
   const [showNewPw, setShowNewPw] = useState(false);
   const [showConfirmPw, setShowConfirmPw] = useState(false);
   const [changingPassword, setChangingPassword] = useState(false);
+  const [notifSettingsOpen, setNotifSettingsOpen] = useState(false);
   const passwordStrength = getPasswordStrength(newPassword);
   const [financeSummary, setFinanceSummary] = useState<{ saldo: number; investimentos: number; totalContas: number } | null>(null);
 
@@ -319,7 +321,7 @@ const Configuracoes = () => {
 
   /* ── Config items ── */
   const configItems = [
-    { icon: Bell, label: "Lembretes e Alertas", sub: "Notificações do app" },
+    { icon: Bell, label: "Lembretes e Alertas", sub: "Notificações do app", onClick: () => setNotifSettingsOpen(true) },
     { icon: Globe, label: "Tipo de Moeda", sub: "Selecione a moeda padrão" },
     { icon: HelpCircle, label: "Central de Ajuda", sub: "Perguntas frequentes" },
     { icon: Headphones, label: "Falar com o Suporte", sub: "Abrir um chamado", onClick: () => navigate("/suporte") },
@@ -886,6 +888,7 @@ const Configuracoes = () => {
           <SectionGroup title="Configurações" items={configItems} />
         </motion.div>
       )}
+      <NotificationSettingsModal open={notifSettingsOpen} onOpenChange={setNotifSettingsOpen} />
     </div>
   );
 };
