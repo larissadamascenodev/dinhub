@@ -37,7 +37,7 @@ const ParcelamentosDetalhe = () => {
     if (!user) return;
     setLoading(true);
 
-    const [transactionsRes, invoiceItemsRes, categoriesRes] = await Promise.all([
+    const [transactionsRes, invoiceItemsRes, categoriesRes, creditCardsRes] = await Promise.all([
       supabase
         .from("transactions")
         .select("id, name, category, amount, installment_current, installments, payment_method, date, credit_card_id, parent_transaction_id, status, type")
@@ -53,13 +53,19 @@ const ParcelamentosDetalhe = () => {
         .from("custom_categories")
         .select("*")
         .eq("user_id", user.id),
+      supabase
+        .from("credit_cards")
+        .select("id, due_day")
+        .eq("user_id", user.id),
     ]);
 
     if (!transactionsRes.error && !invoiceItemsRes.error) {
+      const creditCardDueDays = Object.fromEntries((creditCardsRes.data ?? []).map((card) => [card.id, card.due_day]));
       setItems(
         buildActiveInstallmentItems({
           transactions: (transactionsRes.data ?? []) as InstallmentTransactionRow[],
           invoiceItems: (invoiceItemsRes.data ?? []) as InstallmentInvoiceRow[],
+          creditCardDueDays,
         })
       );
     }

@@ -173,30 +173,28 @@ export const buildActiveInstallmentItems = ({
       const paidInstallments = getConsecutivePaidInstallments(group.paidInstallments, group.installments);
       if (paidInstallments >= group.installments) return null;
 
-      return {
-        const currentInstallment = paidInstallments + 1;
-        const dueDate = group.dueDates.get(currentInstallment) ?? null;
-        const now = new Date();
+      const currentInstallment = paidInstallments + 1;
+      const dueDate = group.dueDates.get(currentInstallment) ?? null;
+      const now = new Date();
 
-        return {
+      return {
         id: group.id,
         name: group.name,
         category: group.category,
         amount: group.amount,
-          installment_current: currentInstallment,
+        installment_current: currentInstallment,
         installments: group.installments,
         payment_method: group.payment_method,
         date: group.date,
         credit_card_id: group.credit_card_id,
-          isOverdue: dueDate ? new Date(dueDate) < now : (() => {
-            const baseDate = new Date(group.date);
-            const expectedDate = new Date(baseDate);
-            expectedDate.setMonth(expectedDate.getMonth() + paidInstallments);
-            return expectedDate < now;
-          })(),
-          dueDate,
-        } satisfies ActiveInstallmentItem;
-      }
+        isOverdue: dueDate ? new Date(dueDate) < now : (() => {
+          const baseDate = new Date(group.date);
+          const expectedDate = new Date(baseDate);
+          expectedDate.setMonth(expectedDate.getMonth() + paidInstallments);
+          return expectedDate < now;
+        })(),
+        dueDate,
+      } satisfies ActiveInstallmentItem;
     })
     .filter((item): item is ActiveInstallmentItem => item !== null)
     .sort((a, b) => b.amount - a.amount);
