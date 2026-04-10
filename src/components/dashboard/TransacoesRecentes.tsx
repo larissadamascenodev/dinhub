@@ -8,10 +8,8 @@ import { getCustomCategories, type CustomCategory } from "@/services/categorySer
 import { getCategoryIcon, getCategoryColor } from "@/lib/categoryUtils";
 import { motion, AnimatePresence } from "framer-motion";
 import type { Transaction } from "@/types/finance";
-import { getTransactionById, getAccounts } from "@/services/transactionService";
 import { useAuth } from "@/contexts/AuthContext";
 import { useMonth } from "@/contexts/MonthContext";
-import TransactionDetailModal from "@/components/dashboard/TransactionDetailModal";
 
 interface Props {
   transactions: Transaction[];
@@ -132,9 +130,6 @@ const TransacoesRecentes = memo(({ transactions, onDelete }: Props) => {
   const [expanded, setExpanded] = useState(false);
   const { user } = useAuth();
   const { selectedMonth, selectedYear } = useMonth();
-  const [detailTx, setDetailTx] = useState<any>(null);
-  const [detailAccountName, setDetailAccountName] = useState("");
-  const [showDetail, setShowDetail] = useState(false);
   const [customCats, setCustomCats] = useState<CustomCategory[]>([]);
 
   useEffect(() => {
