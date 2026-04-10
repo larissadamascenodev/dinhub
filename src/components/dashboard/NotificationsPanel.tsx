@@ -150,6 +150,7 @@ function NotificationRow({
         )}
       </motion.div>
     </div>
+  );
 }
 
 
