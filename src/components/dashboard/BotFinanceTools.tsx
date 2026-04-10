@@ -1,7 +1,7 @@
 import { useNavigate } from "react-router-dom";
 import { motion } from "framer-motion";
 import {
-  Sparkles, BarChart3, Radar, HeartPulse, Target, Swords, Lock,
+  Sparkles, BarChart3, Radar, HeartPulse, Target, Swords, Lock, Wallet,
 } from "lucide-react";
 
 interface ToolItem {
@@ -16,9 +16,9 @@ interface ToolItem {
 const tools: ToolItem[] = [
   // Unlocked first
   {
-    icon: <Sparkles className="w-5 h-5" />,
-    label: "Projeções",
-    path: "/bot-finance/projecoes",
+    icon: <Wallet className="w-5 h-5" />,
+    label: "Carteira",
+    path: "/gestao",
     color: "hsl(var(--primary))",
     bgFrom: "hsl(150 40% 14%)",
   },
@@ -28,6 +28,13 @@ const tools: ToolItem[] = [
     path: "/bot-finance/balanco",
     color: "hsl(215 80% 60%)",
     bgFrom: "hsl(215 30% 14%)",
+  },
+  {
+    icon: <Sparkles className="w-5 h-5" />,
+    label: "Projeções",
+    path: "/bot-finance/projecoes",
+    color: "hsl(270 70% 65%)",
+    bgFrom: "hsl(270 25% 14%)",
   },
   {
     icon: <Target className="w-5 h-5" />,
