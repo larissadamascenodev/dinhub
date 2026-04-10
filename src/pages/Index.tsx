@@ -156,8 +156,8 @@ const Index = () => {
           <SaldoWalletCarousel saldoAtual={saldoMes} saldoPrevisto={saldoPrevisto} isFutureMonth={isFutureMonth} isPastMonth={data.isPastMonth} />
           <ReceitasDespesasCards receitas={receitas} receitasRecebidas={data.receitasRecebidas} receitasPendentes={data.receitasPendentes} despesas={despesas} despesasPagas={data.despesasPagas} despesasPendentes={data.despesasPendentes} compact />
           {/* MicroInteracoesCard temporarily disabled */}
-          <BotFinanceTools layout="carousel" />
           {isCurrentMonth && <GastosSemanaisCard />}
+          <BotFinanceTools layout="carousel" />
           {data.categories.length > 0 && (
             <GastosPorCategoria categories={data.categories} selectedMonth={selectedMonth} onVerAnalise={() => navigate("/transacoes")} />
           )}
@@ -193,8 +193,8 @@ const Index = () => {
           </motion.div>
           
           {/* MicroInteracoesCard temporarily disabled */}
-          <BotFinanceTools layout="carousel" />
           {isCurrentMonth && <GastosSemanaisCard />}
+          <BotFinanceTools layout="carousel" />
           {data.categories.length > 0 && (
             <GastosPorCategoria categories={data.categories} selectedMonth={selectedMonth} onVerAnalise={() => navigate("/transacoes")} />
           )}
