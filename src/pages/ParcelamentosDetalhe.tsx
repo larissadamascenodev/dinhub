@@ -103,8 +103,8 @@ const ParcelamentosDetalhe = () => {
         totalRestante += item.amount * unpaidCount;
       }
 
-      const endDate = new Date(baseDate);
       const baseDate = new Date(item.date);
+      const endDate = new Date(baseDate);
       endDate.setMonth(baseDate.getMonth() + (item.installments - 1));
       endDate.setFullYear(baseDate.getFullYear());
       if (endDate > lastEndDate) lastEndDate = endDate;
