@@ -1,33 +1,21 @@
-import { useState, useEffect, useMemo } from "react";
+import { useState, useEffect, useMemo, useCallback } from "react";
 import { useNavigate } from "react-router-dom";
 import { motion } from "framer-motion";
 import {
-  ArrowLeft, CalendarClock, CreditCard, Wallet, TrendingDown,
-  BarChart3, PieChart,
+  ArrowLeft, CalendarClock, CreditCard, Wallet, TrendingDown, AlertTriangle,
+  BarChart3, PieChart as PieChartIcon,
 } from "lucide-react";
 import { supabase } from "@/integrations/supabase/client";
 import { useAuth } from "@/contexts/AuthContext";
 import { getCategoryIcon, getCategoryColor } from "@/lib/categoryUtils";
+import { buildActiveInstallmentItems, type ActiveInstallmentItem, type InstallmentInvoiceRow, type InstallmentTransactionRow } from "@/lib/installmentProgress";
 import type { CustomCategory } from "@/services/categoryService";
 import { Progress } from "@/components/ui/progress";
 import { useSwipeBack } from "@/hooks/useSwipeBack";
 import {
-  BarChart, Bar, XAxis, YAxis, Tooltip, ResponsiveContainer, Cell,
-  PieChart as RePieChart, Pie,
+  XAxis, YAxis, Tooltip, ResponsiveContainer,
   AreaChart, Area,
 } from "recharts";
-
-interface Installment {
-  id: string;
-  name: string;
-  category: string;
-  amount: number;
-  installment_current: number;
-  installments: number;
-  payment_method: string;
-  date: string;
-  credit_card_id: string | null;
-}
 
 const formatCurrency = (v: number) =>
   v.toLocaleString("pt-BR", { style: "currency", currency: "BRL" });
@@ -41,43 +29,51 @@ const ParcelamentosDetalhe = () => {
   const { user } = useAuth();
   const navigate = useNavigate();
   useSwipeBack(true);
-  const [items, setItems] = useState<Installment[]>([]);
+  const [items, setItems] = useState<ActiveInstallmentItem[]>([]);
   const [customCats, setCustomCats] = useState<CustomCategory[]>([]);
   const [loading, setLoading] = useState(true);
 
-  useEffect(() => {
+  const fetchData = useCallback(async () => {
     if (!user) return;
-    const fetchData = async () => {
-      const now = new Date();
-      const { data, error } = await supabase
+    setLoading(true);
+
+    const [transactionsRes, invoiceItemsRes, categoriesRes] = await Promise.all([
+      supabase
         .from("transactions")
-        .select("id, name, category, amount, installment_current, installments, payment_method, date, credit_card_id")
+        .select("id, name, category, amount, installment_current, installments, payment_method, date, credit_card_id, parent_transaction_id, status, type")
         .eq("user_id", user.id)
         .eq("recurrence_type", "parcelado")
-        .is("parent_transaction_id", null)
-        .not("installments", "is", null)
-        .order("amount", { ascending: false });
-
-      if (!error && data) {
-        const active = data.filter((t) => {
-          if (!t.installments || !t.installment_current) return false;
-          const baseDate = new Date(t.date);
-          const lastInstallmentDate = new Date(baseDate);
-          lastInstallmentDate.setMonth(lastInstallmentDate.getMonth() + (t.installments - 1));
-          return lastInstallmentDate >= new Date(now.getFullYear(), now.getMonth(), 1);
-        });
-        setItems(active as Installment[]);
-      }
-
-      const { data: cats } = await supabase
+        .eq("type", "despesa")
+        .not("installments", "is", null),
+      supabase
+        .from("invoice_items")
+        .select("transaction_id, amount, installment_number, total_installments, invoices!inner(is_paid, user_id), transactions!inner(id, name, category, payment_method, credit_card_id, parent_transaction_id, date, type)")
+        .eq("invoices.user_id", user.id),
+      supabase
         .from("custom_categories")
         .select("*")
-        .eq("user_id", user.id);
-      if (cats) setCustomCats(cats);
-      setLoading(false);
-    };
-    fetchData();
+        .eq("user_id", user.id),
+    ]);
+
+    if (!transactionsRes.error && !invoiceItemsRes.error) {
+      setItems(
+        buildActiveInstallmentItems({
+          transactions: (transactionsRes.data ?? []) as InstallmentTransactionRow[],
+          invoiceItems: (invoiceItemsRes.data ?? []) as InstallmentInvoiceRow[],
+        })
+      );
+    }
+    if (categoriesRes.data) setCustomCats(categoriesRes.data);
+    setLoading(false);
   }, [user]);
+
+  useEffect(() => {
+    if (!user) return;
+    fetchData();
+    const handler = () => { void fetchData(); };
+    window.addEventListener("finance-data-changed", handler);
+    return () => window.removeEventListener("finance-data-changed", handler);
+  }, [user, fetchData]);
 
   const now = new Date();
   const currentMonth = now.getMonth();
@@ -96,21 +92,21 @@ const ParcelamentosDetalhe = () => {
     let accountCount = 0;
 
     items.forEach((item) => {
-      const baseDate = new Date(item.date);
-      const monthsDiff = (currentYear - baseDate.getFullYear()) * 12 + (currentMonth - baseDate.getMonth());
-      const currentInst = Math.min(Math.max(monthsDiff + 1, 1), item.installments);
-      const remaining = item.installments - currentInst;
+      const paidCount = item.installment_current - 1;
+      const unpaidCount = item.installments - paidCount;
 
       totalGeral += item.amount * item.installments;
-      totalJaPago += item.amount * currentInst;
+      totalJaPago += item.amount * paidCount;
 
-      if (remaining >= 0) {
+      if (unpaidCount > 0) {
         totalMensal += item.amount;
-        totalRestante += item.amount * (remaining + 1);
+        totalRestante += item.amount * unpaidCount;
       }
 
+      const baseDate = new Date(item.date);
       const endDate = new Date(baseDate);
-      endDate.setMonth(endDate.getMonth() + (item.installments - 1));
+      endDate.setMonth(baseDate.getMonth() + (item.installments - 1));
+      endDate.setFullYear(baseDate.getFullYear());
       if (endDate > lastEndDate) lastEndDate = endDate;
 
       if (item.payment_method === "cartao") cardCount++;
@@ -140,10 +136,14 @@ const ParcelamentosDetalhe = () => {
       let monthTotal = 0;
       items.forEach((item) => {
         const baseDate = new Date(item.date);
-        const itemStartMonth = baseDate.getMonth();
-        const itemStartYear = baseDate.getFullYear();
-        const monthsDiff = (y - itemStartYear) * 12 + (m - itemStartMonth);
-        if (monthsDiff >= 0 && monthsDiff < item.installments) {
+        const paidCount = item.installment_current - 1;
+        const firstUnpaidOffset = paidCount;
+        const itemStartMonth = baseDate.getMonth() + firstUnpaidOffset;
+        const itemStartYear = baseDate.getFullYear() + Math.floor(itemStartMonth / 12);
+        const normalizedStartMonth = itemStartMonth % 12;
+        const monthsDiff = (y - itemStartYear) * 12 + (m - normalizedStartMonth);
+        const remainingInstallments = item.installments - paidCount;
+        if (monthsDiff >= 0 && monthsDiff < remainingInstallments) {
           monthTotal += item.amount;
         }
       });
@@ -322,7 +322,7 @@ const ParcelamentosDetalhe = () => {
       {categoryData.length > 0 && (
         <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} transition={{ delay: 0.25 }} className="glass-card p-4 space-y-3">
           <div className="flex items-center gap-2">
-            <PieChart className="w-4 h-4 text-muted-foreground" />
+            <PieChartIcon className="w-4 h-4 text-muted-foreground" />
             <h3 className="text-sm font-semibold text-foreground">Por categoria</h3>
           </div>
           <div className="space-y-2">
@@ -364,20 +364,26 @@ const ParcelamentosDetalhe = () => {
         <h3 className="text-sm font-semibold text-foreground">Todos os parcelamentos</h3>
         <div className="space-y-2">
           {items.map((item) => {
-            const baseDate = new Date(item.date);
-            const monthsDiff = (currentYear - baseDate.getFullYear()) * 12 + (currentMonth - baseDate.getMonth());
-            const currentInst = Math.min(Math.max(monthsDiff + 1, 1), item.installments);
-            const remaining = item.installments - currentInst;
-            const progress = (currentInst / item.installments) * 100;
+            const paidCount = item.installment_current - 1;
+            const remaining = item.installments - item.installment_current + 1;
+            const progress = (paidCount / item.installments) * 100;
             const isCard = item.payment_method === "cartao";
             const IconComp = getCategoryIcon(item.category, customCats);
             const catColor = getCategoryColor(item.category, customCats);
 
+            const baseDate = new Date(item.date);
             const endDate = new Date(baseDate);
             endDate.setMonth(endDate.getMonth() + (item.installments - 1));
 
             return (
-              <div key={item.id} className="rounded-xl bg-muted/20 border border-border/20 p-3 space-y-2">
+              <div
+                key={item.id}
+                className="rounded-xl p-3 space-y-2"
+                style={item.isOverdue
+                  ? { background: "hsl(0 70% 50% / 0.05)", border: "1px solid hsl(0 70% 50% / 0.25)" }
+                  : { background: "hsl(var(--muted) / 0.2)", border: "1px solid hsl(var(--border) / 0.2)" }
+                }
+              >
                 <div className="flex items-center gap-3">
                   <div
                     className="w-9 h-9 rounded-lg flex items-center justify-center flex-shrink-0"
@@ -393,13 +399,15 @@ const ParcelamentosDetalhe = () => {
                       </span>
                     </div>
                     <div className="flex items-center gap-2 mt-0.5">
-                      {isCard ? (
+                      {item.isOverdue ? (
+                        <AlertTriangle className="w-2.5 h-2.5 text-destructive" />
+                      ) : isCard ? (
                         <CreditCard className="w-2.5 h-2.5 text-muted-foreground" />
                       ) : (
                         <Wallet className="w-2.5 h-2.5 text-muted-foreground" />
                       )}
-                      <span className="text-[9px] text-muted-foreground">
-                        {item.category} · Termina em {endDate.toLocaleDateString("pt-BR", { month: "short", year: "numeric" })}
+                      <span className={`text-[9px] ${item.isOverdue ? "text-destructive" : "text-muted-foreground"}`}>
+                        {item.isOverdue ? "Em atraso · " : ""}{item.category} · Termina em {endDate.toLocaleDateString("pt-BR", { month: "short", year: "numeric" })}
                       </span>
                     </div>
                   </div>
@@ -407,11 +415,11 @@ const ParcelamentosDetalhe = () => {
                 <div className="flex items-center gap-2">
                   <Progress value={progress} className="h-1.5 flex-1" />
                   <span className="text-[10px] font-medium text-muted-foreground">
-                    {currentInst}/{item.installments}
+                    {item.installment_current}/{item.installments}
                   </span>
                 </div>
                 <div className="flex justify-between text-[9px] text-muted-foreground">
-                  <span>Pago: {formatCurrency(item.amount * currentInst)}</span>
+                  <span>Pago: {formatCurrency(item.amount * paidCount)}</span>
                   <span>Restante: {formatCurrency(item.amount * remaining)}</span>
                 </div>
               </div>
