@@ -92,6 +92,31 @@ const Configuracoes = () => {
   const [showConfirmPw, setShowConfirmPw] = useState(false);
   const [changingPassword, setChangingPassword] = useState(false);
   const passwordStrength = getPasswordStrength(newPassword);
+  const [financeSummary, setFinanceSummary] = useState<{ saldo: number; investimentos: number; totalContas: number } | null>(null);
+
+  useEffect(() => {
+    if (!user) return;
+    const fetchSummary = async () => {
+      const { data: accounts } = await supabase
+        .from("accounts")
+        .select("current_balance, type, is_active")
+        .eq("user_id", user.id)
+        .eq("is_active", true);
+      if (accounts) {
+        let saldo = 0;
+        let investimentos = 0;
+        accounts.forEach((a) => {
+          if (a.type === "investimento") investimentos += a.current_balance;
+          else saldo += a.current_balance;
+        });
+        setFinanceSummary({ saldo, investimentos, totalContas: accounts.length });
+      }
+    };
+    fetchSummary();
+  }, [user]);
+
+  const formatCurrency = (v: number) =>
+    v.toLocaleString("pt-BR", { style: "currency", currency: "BRL" });
 
   const BIO_SUGGESTIONS = [
     "Focado em controle financeiro e evolução diária 💪",
