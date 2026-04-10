@@ -160,8 +160,6 @@ const BotFinanceTools = ({ layout = "carousel" }: BotFinanceToolsProps) => {
               >
                 {tool.label}
               </span>
-                {tool.label}
-              </span>
             </motion.button>
           );
         })}
