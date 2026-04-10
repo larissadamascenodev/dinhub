@@ -1,4 +1,5 @@
 import { memo } from "react";
+import { useNavigate } from "react-router-dom";
 import { ArrowUpRight, ArrowDownRight } from "lucide-react";
 import { useFormattedCounter } from "@/hooks/useAnimatedCounter";
 
@@ -18,13 +19,15 @@ const ReceitasDespesasCards = memo(({
   despesas, despesasPagas, despesasPendentes,
   mobile, compact,
 }: Props) => {
+  const navigate = useNavigate();
   const animatedReceitas = useFormattedCounter(receitas);
   const animatedDespesas = useFormattedCounter(despesas);
 
   return (
     <div className={`grid ${mobile ? "grid-cols-2 gap-2" : "grid-rows-2 gap-3"} w-full`}>
       <button
-        className={`relative rounded-xl border border-primary/15 transition-all text-left overflow-hidden backdrop-blur-sm bg-primary/[0.06] ${mobile ? "px-2.5 py-2" : "px-3 py-3"}`}
+        onClick={() => navigate("/detalhe/receitas")}
+        className={`relative rounded-xl border border-primary/15 transition-all text-left overflow-hidden backdrop-blur-sm bg-primary/[0.06] ${mobile ? "px-2.5 py-2" : "px-3 py-3"} active:scale-[0.97]`}
         style={{
           boxShadow: "0 2px 8px -2px rgba(0,0,0,0.4), inset 0 1px 0 0 hsl(150 100% 45% / 0.08)",
         }}
@@ -39,7 +42,8 @@ const ReceitasDespesasCards = memo(({
       </button>
 
       <button
-        className={`relative rounded-xl border border-destructive/15 transition-all text-left overflow-hidden backdrop-blur-sm bg-destructive/[0.06] ${mobile ? "px-2.5 py-2" : "px-3 py-3"}`}
+        onClick={() => navigate("/detalhe/despesas")}
+        className={`relative rounded-xl border border-destructive/15 transition-all text-left overflow-hidden backdrop-blur-sm bg-destructive/[0.06] ${mobile ? "px-2.5 py-2" : "px-3 py-3"} active:scale-[0.97]`}
         style={{
           boxShadow: "0 2px 8px -2px rgba(0,0,0,0.4), inset 0 1px 0 0 hsl(0 60% 50% / 0.08)",
         }}
