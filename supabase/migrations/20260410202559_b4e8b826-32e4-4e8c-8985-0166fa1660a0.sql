@@ -1,0 +1,1 @@
+ALTER TABLE public.notification_settings ADD COLUMN category_limit_alert boolean NOT NULL DEFAULT true;

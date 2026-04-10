@@ -2,7 +2,7 @@ import { useState, useEffect } from "react";
 import { Dialog, DialogContent } from "@/components/ui/dialog";
 import { Switch } from "@/components/ui/switch";
 import { Button } from "@/components/ui/button";
-import { Calendar, Target, Flame, Bot, BarChart3, AlertCircle } from "lucide-react";
+import { Calendar, Target, Flame, Bot, BarChart3 } from "lucide-react";
 import { useAuth } from "@/contexts/AuthContext";
 import { getOrCreateSettings, updateSettings, type NotificationSettings } from "@/services/notificationService";
 import { toast } from "sonner";
@@ -43,6 +43,7 @@ export default function NotificationSettingsModal({ open, onOpenChange }: Props)
       invoice_reminder: settings.bill_due_reminder,
       goal_reminder: settings.goal_reminder,
       challenge_reminder: settings.challenge_reminder,
+      category_limit_alert: settings.category_limit_alert,
       low_balance_alert: false,
       low_balance_threshold: settings.low_balance_threshold,
       weekly_summary: false,
@@ -106,24 +107,21 @@ export default function NotificationSettingsModal({ open, onOpenChange }: Props)
           enabled: settings.challenge_reminder,
           toggle: () => toggle("challenge_reminder"),
         },
+        {
+          icon: BarChart3,
+          label: "Limite de categoria",
+          sub: "Aviso ao se aproximar do limite",
+          enabled: settings.category_limit_alert,
+          toggle: () => toggle("category_limit_alert"),
+        },
       ]
     : [];
 
   const comingSoonItems = [
     {
       icon: Bot,
-      label: "Notificações da Iara",
+      label: "Notificações do BotHub",
       sub: "Dicas e alertas inteligentes",
-    },
-    {
-      icon: BarChart3,
-      label: "Limite de categoria",
-      sub: "Aviso ao se aproximar do limite",
-    },
-    {
-      icon: AlertCircle,
-      label: "Contas atrasadas",
-      sub: "Alerta quando uma conta vencer sem pagar",
     },
   ];
 
