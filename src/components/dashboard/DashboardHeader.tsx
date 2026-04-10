@@ -295,12 +295,6 @@ const DashboardHeader = memo(({ profile, streak = 0, streakDates = [] }: { profi
             </span>
           </div>
           <div className="flex items-center gap-1 bg-card/60 backdrop-blur-xl border border-border/20 rounded-full px-1.5 py-1">
-            <button
-              onClick={() => navigate("/gestao")}
-              className="w-7 h-7 rounded-full flex items-center justify-center text-muted-foreground hover:text-foreground transition-colors"
-            >
-              <Wallet className="h-3.5 w-3.5" />
-            </button>
             <button className="w-7 h-7 rounded-full flex items-center justify-center text-muted-foreground">
               <Bell className="h-3.5 w-3.5" />
             </button>
