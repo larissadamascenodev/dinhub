@@ -4,7 +4,7 @@ import { motion, AnimatePresence } from "framer-motion";
 import {
   User, Pencil, Star, Flame, TrendingUp,
   Shield, Crown, Upload, FileText, Smartphone, MessageCircle, Trash2, LogOut,
-  Bell, Globe, HelpCircle, Headphones, FileCheck, ChevronRight, Wallet, Settings, Camera,
+  Bell, Globe, HelpCircle, Headphones, FileCheck, ChevronRight, Settings, Camera,
   MessageSquare, Shuffle, Eye, EyeOff,
 } from "lucide-react";
 import { Button } from "@/components/ui/button";
