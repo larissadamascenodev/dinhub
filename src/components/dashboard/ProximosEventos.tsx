@@ -34,6 +34,9 @@ const getStatusLabel = (status: string, type?: string) => {
 const fmt = (v: number) =>
   v.toLocaleString("pt-BR", { style: "currency", currency: "BRL" });
 
+const fmtDate = (d: Date) =>
+  d.toLocaleDateString("pt-BR", { day: "2-digit", month: "short" }).replace(".", "");
+
 const parseDateSafe = (dateStr: string): Date => {
   if (dateStr.includes("T")) return new Date(dateStr);
   return new Date(dateStr + "T12:00:00");
@@ -84,10 +87,15 @@ const ProximosEventos = memo(({ events, selectedMonth, selectedYear, onVerTodos,
           </div>
         </div>
 
-        {/* Amount */}
-        <p className="text-[12px] font-bold tabular-nums shrink-0" style={{ color: `hsl(${a})` }}>
-          {fmt(ev.amount)}
-        </p>
+        {/* Amount + date */}
+        <div className="text-right shrink-0">
+          <p className="text-[12px] font-bold tabular-nums" style={{ color: `hsl(${a})` }}>
+            {fmt(ev.amount)}
+          </p>
+          <p className="text-[9px] text-muted-foreground/50 mt-0.5">
+            {fmtDate(ev._date)}
+          </p>
+        </div>
       </motion.div>
     );
   };
