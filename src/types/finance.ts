@@ -3,6 +3,7 @@ export interface Transaction {
   name: string;
   category: string;
   date: string;
+  rawDate?: string;
   amount: number;
   type: "receita" | "despesa";
   status?: "pago" | "pendente";

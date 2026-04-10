@@ -134,12 +134,14 @@ export async function buildDashboardData(
         (t) => t.payment_method === "cartao" && t.credit_card_id === cardId
       ).length;
 
+      const rawDate = `${year}-${String(month + 1).padStart(2, "0")}-${String(dueDay).padStart(2, "0")}`;
       const outstanding = Math.max(0, inv.total - inv.paidAmount);
       const entry: Transaction = {
         id: `fatura-${cardId}-${month}-${year}`,
         name: `Fatura ${cardName}`,
         category: "Cartão de Crédito",
         date: new Date(year, month, dueDay).toLocaleDateString("pt-BR", { day: "numeric", month: "short" }),
+        rawDate,
         amount: outstanding > 0 ? outstanding : inv.total,
         type: "despesa" as const,
         status: inv.isPaid ? "pago" : "pendente",
@@ -164,12 +166,19 @@ export async function buildDashboardData(
     name: t.name,
     category: t.category,
     date: new Date(t.date + "T12:00:00").toLocaleDateString("pt-BR", { day: "numeric", month: "short" }),
+    rawDate: t.date,
     amount: Number(t.amount),
     type: t.type as Transaction["type"],
     status: "pago" as const,
   }));
 
-  const transactions: Transaction[] = [...regularTransactions, ...faturasPaid];
+  const transactions: Transaction[] = [...regularTransactions, ...faturasPaid]
+    .sort((a, b) => {
+      const da = a.rawDate || "";
+      const db = b.rawDate || "";
+      if (da !== db) return db.localeCompare(da);
+      return 0;
+    });
 
   const pendingAsEvents: FinanceEvent[] = regularPending.map((t) => ({
     id: t.id,
