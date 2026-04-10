@@ -71,68 +71,86 @@ function NotificationRow({
 }) {
   const config = CATEGORY_CONFIG[n.category] ?? CATEGORY_CONFIG.geral;
   const Icon = config.icon;
+  const [dismissed, setDismissed] = useState(false);
 
   const handleDragEnd = (_: any, info: PanInfo) => {
-    if (info.offset.x < -100) {
-      onDelete(n.id);
-    } else if (info.offset.x < -50) {
+    // Swipe RIGHT → mark as read
+    if (info.offset.x > 80) {
       onMarkRead(n.id);
+    }
+    // Swipe LEFT → delete
+    if (info.offset.x < -80) {
+      setDismissed(true);
+      setTimeout(() => onDelete(n.id), 250);
     }
   };
 
   return (
-    <div className="relative overflow-hidden">
-      {/* Swipe reveal actions */}
-      <div className="absolute inset-0 flex items-center justify-end pr-3 gap-3">
+    <div className={cn("relative overflow-hidden rounded-xl", dismissed && "opacity-0 scale-95 transition-all duration-200")}>
+      {/* Left action (swipe right = mark read) */}
+      <div className="absolute inset-y-0 left-0 w-24 flex items-center justify-center bg-primary/15 rounded-l-xl">
         <div className="flex flex-col items-center gap-0.5">
-          <div className="w-8 h-8 rounded-xl bg-primary/15 flex items-center justify-center">
-            <Check className="w-3.5 h-3.5 text-primary" />
-          </div>
-          <span className="text-[8px] text-primary font-medium">Lida</span>
+          <Check className="w-5 h-5 text-primary" />
+          <span className="text-[8px] text-primary font-bold">Lida</span>
         </div>
+      </div>
+      {/* Right action (swipe left = delete) */}
+      <div className="absolute inset-y-0 right-0 w-24 flex items-center justify-center bg-destructive/15 rounded-r-xl">
         <div className="flex flex-col items-center gap-0.5">
-          <div className="w-8 h-8 rounded-xl bg-destructive/15 flex items-center justify-center">
-            <X className="w-3.5 h-3.5 text-destructive" />
-          </div>
-          <span className="text-[8px] text-destructive font-medium">Apagar</span>
+          <Trash2 className="w-5 h-5 text-destructive" />
+          <span className="text-[8px] text-destructive font-bold">Apagar</span>
         </div>
       </div>
 
       <motion.div
         drag="x"
-        dragConstraints={{ left: -130, right: 0 }}
-        dragElastic={0.08}
+        dragConstraints={{ left: -100, right: 100 }}
+        dragElastic={0.15}
         onDragEnd={handleDragEnd}
+        whileDrag={{ scale: 0.98 }}
         className={cn(
-          "relative flex items-start gap-3 px-4 py-3.5 bg-card transition-colors",
-          !n.is_read && "bg-primary/[0.03]"
+          "relative flex items-center gap-3 p-3.5 rounded-xl border select-none cursor-grab active:cursor-grabbing",
+          n.is_read
+            ? "bg-card/60 border-border/10"
+            : "bg-card border-border/15 shadow-sm shadow-black/5"
         )}
       >
-        {/* Unread indicator bar */}
-        {!n.is_read && (
-          <div className="absolute left-0 top-2 bottom-2 w-[3px] rounded-r-full bg-primary" />
-        )}
-
-        <div className={cn("w-9 h-9 rounded-xl flex items-center justify-center shrink-0", config.bg)}>
-          <Icon className={cn("w-4 h-4", config.className)} />
+        {/* Category icon */}
+        <div className={cn(
+          "w-10 h-10 rounded-xl flex items-center justify-center shrink-0",
+          config.bg,
+          !n.is_read && "ring-1 ring-inset",
+          !n.is_read && (n.category === "vencimento" ? "ring-warning/20" : n.category === "fatura" ? "ring-destructive/20" : "ring-primary/20")
+        )}>
+          <Icon className={cn("w-4.5 h-4.5", config.className)} />
         </div>
 
+        {/* Content */}
         <div className="flex-1 min-w-0">
-          <div className="flex items-start justify-between gap-2">
+          <div className="flex items-center justify-between gap-2">
             <p className={cn(
-              "text-[13px] font-semibold leading-snug",
-              n.is_read ? "text-muted-foreground" : "text-foreground"
+              "text-[13px] font-semibold leading-snug truncate",
+              n.is_read ? "text-muted-foreground/60" : "text-foreground"
             )}>
               {n.title}
             </p>
-            <span className="text-[10px] text-muted-foreground/50 shrink-0 pt-0.5">{timeAgo(n.created_at)}</span>
+            <span className="text-[9px] text-muted-foreground/40 shrink-0">{timeAgo(n.created_at)}</span>
           </div>
           <p className={cn(
-            "text-[11px] mt-0.5 leading-relaxed line-clamp-2",
-            n.is_read ? "text-muted-foreground/50" : "text-muted-foreground/70"
+            "text-[11px] mt-0.5 leading-relaxed line-clamp-1",
+            n.is_read ? "text-muted-foreground/40" : "text-muted-foreground/70"
           )}>
             {n.message}
           </p>
+        </div>
+
+        {/* Unread dot */}
+        {!n.is_read && (
+          <div className="w-2.5 h-2.5 rounded-full bg-primary shrink-0 ring-[3px] ring-primary/15" />
+        )}
+      </motion.div>
+    </div>
+  );
         </div>
       </motion.div>
     </div>
