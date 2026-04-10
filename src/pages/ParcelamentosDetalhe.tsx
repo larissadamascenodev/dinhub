@@ -47,7 +47,7 @@ const ParcelamentosDetalhe = () => {
         .not("installments", "is", null),
       supabase
         .from("invoice_items")
-        .select("transaction_id, amount, installment_number, total_installments, invoices!inner(is_paid, user_id), transactions!inner(id, name, category, payment_method, credit_card_id, parent_transaction_id, date, type)")
+        .select("transaction_id, amount, installment_number, total_installments, invoices!inner(is_paid, user_id, month, year), transactions!inner(id, name, category, payment_method, credit_card_id, parent_transaction_id, date, type)")
         .eq("invoices.user_id", user.id),
       supabase
         .from("custom_categories")

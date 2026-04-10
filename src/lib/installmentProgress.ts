@@ -72,7 +72,7 @@ const pickOne = <T,>(value: T | T[] | null | undefined): T | null => {
   return value ?? null;
 };
 
-const upsertGroup = (map: Map<string, InstallmentGroup>, group: Omit<InstallmentGroup, "paidInstallments" | "dueDates">) => {
+const upsertGroup = (map: Map<string, InstallmentGroup>, group: Omit<InstallmentGroup, "unpaidInstallments" | "unpaidInvoiceInstallments" | "dueDates">) => {
   const existing = map.get(group.id);
 
   if (existing) {
