@@ -103,8 +103,8 @@ const BotFinanceTools = ({ layout = "carousel" }: BotFinanceToolsProps) => {
       onMouseDown={handleMouseDown}
       className={
         isCarousel
-          ? "flex gap-5 overflow-x-auto scrollbar-none snap-x snap-mandatory pb-2 -mx-1 px-1 relative z-20 cursor-grab active:cursor-grabbing select-none"
-          : "flex gap-4 flex-wrap justify-start pb-2 relative z-20 select-none"
+          ? "flex gap-3 overflow-x-auto scrollbar-none snap-x snap-mandatory pb-2 -mx-1 px-1 relative z-20 cursor-grab active:cursor-grabbing select-none"
+          : "flex gap-3 flex-wrap justify-start pb-2 relative z-20 select-none"
       }
       style={isCarousel ? { WebkitOverflowScrolling: "touch" } : undefined}
     >
