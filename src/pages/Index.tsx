@@ -123,6 +123,7 @@ const Index = () => {
               />
             )}
             <TransacoesRecentes transactions={data.transactions} onDelete={refetch} />
+            <ParcelamentosAtivosCard />
           </div>
           <div className="space-y-4">
             <WalletSummaryCard />
@@ -130,7 +131,6 @@ const Index = () => {
             <BotFinanceTools layout="grid" />
             <ProximosEventos events={data.events} selectedMonth={selectedMonth} selectedYear={selectedYear} onEventClick={handleEventClick} />
             <AssinaturasCard />
-            <ParcelamentosAtivosCard />
             <InvestimentosResumoCard />
             <MetasResumoCard />
           </div>
