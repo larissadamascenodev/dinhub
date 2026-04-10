@@ -167,6 +167,7 @@ export async function buildDashboardData(
     category: t.category,
     date: new Date(t.date + "T12:00:00").toLocaleDateString("pt-BR", { day: "numeric", month: "short" }),
     rawDate: t.date,
+    paidAt: t.updated_at,
     amount: Number(t.amount),
     type: t.type as Transaction["type"],
     status: "pago" as const,
@@ -174,10 +175,10 @@ export async function buildDashboardData(
 
   const transactions: Transaction[] = [...regularTransactions, ...faturasPaid]
     .sort((a, b) => {
-      const da = a.rawDate || "";
-      const db = b.rawDate || "";
-      if (da !== db) return db.localeCompare(da);
-      return 0;
+      // Sort by paidAt (most recent payment first), fallback to rawDate
+      const da = a.paidAt || a.rawDate || "";
+      const db = b.paidAt || b.rawDate || "";
+      return db.localeCompare(da);
     });
 
   const pendingAsEvents: FinanceEvent[] = regularPending.map((t) => ({
