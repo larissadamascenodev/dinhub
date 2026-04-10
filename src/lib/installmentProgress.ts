@@ -80,7 +80,7 @@ const getConsecutivePaidInstallments = (paidInstallments: Set<number>, totalInst
   return count;
 };
 
-const upsertGroup = (map: Map<string, InstallmentGroup>, group: Omit<InstallmentGroup, "paidInstallments">) => {
+const upsertGroup = (map: Map<string, InstallmentGroup>, group: Omit<InstallmentGroup, "paidInstallments" | "dueDates">) => {
   const existing = map.get(group.id);
 
   if (existing) {
