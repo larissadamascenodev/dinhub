@@ -176,7 +176,7 @@ const GastosSemanaisCard = memo(() => {
                       </div>
                     </TooltipTrigger>
                     <TooltipContent side="top" collisionPadding={16} className="text-xs font-medium whitespace-nowrap z-50">
-                      <span>{day.label}: {fmt(day.amount)}</span>
+                      <span>{day.label}: {fmt(day.amount)} {total > 0 && day.amount > 0 ? `· ${Math.round((day.amount / total) * 100)}%` : ""}</span>
                     </TooltipContent>
                   </Tooltip>
                 );
