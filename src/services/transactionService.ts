@@ -4,7 +4,8 @@ const ACCOUNTS_CACHE_KEY = "accounts-active";
 const ACCOUNTS_WITH_INACTIVE_CACHE_KEY = "accounts-all";
 const CREDIT_CARDS_CACHE_KEY = "credit-cards";
 
-const queryCache = new Map<string, any[]>();
+const queryCache = new Map<string, { data: any[]; timestamp: number }>();
+const QUERY_CACHE_TTL = 300_000; // 5 minutes
 const inflightCache = new Map<string, Promise<any[]>>();
 
 export function clearFinanceQueryCache() {
@@ -50,14 +51,14 @@ function notifyFinanceDataChanged() {
 
 function getCachedList<T>(key: string, loader: () => Promise<T[]>): Promise<T[]> {
   const cached = queryCache.get(key);
-  if (cached) return Promise.resolve(cached as T[]);
+  if (cached && Date.now() - cached.timestamp < QUERY_CACHE_TTL) return Promise.resolve(cached.data as T[]);
 
   const inflight = inflightCache.get(key);
   if (inflight) return inflight as Promise<T[]>;
 
   const request = loader()
     .then((result) => {
-      queryCache.set(key, result as any[]);
+      queryCache.set(key, { data: result as any[], timestamp: Date.now() });
       return result;
     })
     .finally(() => {

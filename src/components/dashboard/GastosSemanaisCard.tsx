@@ -16,11 +16,18 @@ interface DayData {
   amount: number;
 }
 
+// Module-level cache to avoid refetching on remount
+let weekDataCache: { data: DayData[]; prevTotal: number; timestamp: number; userId: string } | null = null;
+const WEEK_CACHE_TTL = 300_000;
+
 const GastosSemanaisCard = memo(() => {
   const { user } = useAuth();
-  const [weekData, setWeekData] = useState<DayData[]>([]);
-  const [prevWeekTotal, setPrevWeekTotal] = useState(0);
-  const [loading, setLoading] = useState(true);
+  const [weekData, setWeekData] = useState<DayData[]>(() => {
+    if (weekDataCache && user && weekDataCache.userId === user.id && Date.now() - weekDataCache.timestamp < WEEK_CACHE_TTL) return weekDataCache.data;
+    return [];
+  });
+  const [prevWeekTotal, setPrevWeekTotal] = useState(() => weekDataCache?.prevTotal ?? 0);
+  const [loading, setLoading] = useState(() => !(weekDataCache && user && weekDataCache.userId === user.id && Date.now() - weekDataCache.timestamp < WEEK_CACHE_TTL));
 
   useEffect(() => {
     if (!user) return;
@@ -86,19 +93,22 @@ const GastosSemanaisCard = memo(() => {
         amount: dayMap.get(idx) || 0,
       }));
 
+      const pt = prevTxs?.reduce((s, t) => s + Number(t.amount), 0) || 0;
+      weekDataCache = { data: days, prevTotal: pt, timestamp: Date.now(), userId: user.id };
       setWeekData(days);
-      setPrevWeekTotal(prevTxs?.reduce((s, t) => s + Number(t.amount), 0) || 0);
+      setPrevWeekTotal(pt);
       setLoading(false);
     };
 
-    fetchWeekData();
+    // Only fetch if cache is stale
+    if (!weekDataCache || weekDataCache.userId !== user.id || Date.now() - weekDataCache.timestamp >= WEEK_CACHE_TTL) {
+      fetchWeekData();
+    }
 
-    const handler = () => fetchWeekData();
+    const handler = () => { weekDataCache = null; fetchWeekData(); };
     window.addEventListener("finance-data-changed", handler);
-    window.addEventListener("transaction-created", handler);
     return () => {
       window.removeEventListener("finance-data-changed", handler);
-      window.removeEventListener("transaction-created", handler);
     };
   }, [user]);
 
