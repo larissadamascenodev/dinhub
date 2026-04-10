@@ -273,11 +273,6 @@ const Configuracoes = () => {
     }
   };
 
-  /* ── Feature cards ── */
-  const featureCards = [
-    { icon: Target, label: "Metas", sub: "Objetivos", path: "/metas" },
-    { icon: Swords, label: "Desafios", sub: "Competições", path: "/desafios" },
-  ];
 
   /* ── Conta items ── */
   const contaItems = [
@@ -801,32 +796,6 @@ const Configuracoes = () => {
         <ChevronRight className="relative z-10 w-5 h-5 text-primary/50 group-hover:text-primary transition-colors shrink-0" />
       </motion.button>
 
-      {/* ═══ Feature Cards Grid ═══ */}
-      <div className="grid grid-cols-2 gap-2">
-        {featureCards.map((fc, idx) => (
-          <motion.button
-            key={fc.label}
-            initial={{ opacity: 0, y: 12 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ delay: 0.05 * (idx + 1) }}
-            onClick={() => fc.path && navigate(fc.path)}
-            className="relative overflow-hidden rounded-xl border border-white/[0.08] backdrop-blur-xl shadow-lg shadow-black/30 px-2.5 py-2.5 flex items-center gap-2 hover:border-white/[0.12] transition-all text-left group"
-            style={{
-              background: "linear-gradient(160deg, hsl(220 18% 9% / 0.85) 0%, hsl(220 20% 5% / 0.9) 100%)",
-            }}
-          >
-            <div className="absolute inset-0 bg-gradient-to-br from-white/[0.06] via-transparent to-transparent pointer-events-none" />
-            <div className="relative z-10 w-8 h-8 rounded-lg bg-primary/10 flex items-center justify-center shrink-0">
-              <fc.icon className="w-4 h-4 text-primary" />
-            </div>
-            <div className="relative z-10 flex-1 min-w-0">
-              <p className="text-xs font-bold text-foreground whitespace-nowrap">{fc.label}</p>
-              <p className="text-[10px] text-muted-foreground whitespace-nowrap">{fc.sub}</p>
-            </div>
-            <ChevronRight className="relative z-10 w-3.5 h-3.5 text-muted-foreground group-hover:text-foreground transition-colors shrink-0" />
-          </motion.button>
-        ))}
-            </div>
 
       {/* ═══ Tabs: Conta / Configurações ═══ */}
       <div className="relative rounded-xl bg-card/90 backdrop-blur-xl border border-border/30 shadow-lg shadow-black/30 flex overflow-hidden">
