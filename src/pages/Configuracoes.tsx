@@ -395,6 +395,33 @@ const Configuracoes = () => {
             <h3 className="text-lg font-bold text-foreground text-center">Alterar Senha</h3>
 
             <div className="space-y-2">
+              <label className="text-xs font-semibold text-muted-foreground">Senha atual</label>
+              <div className="relative">
+                <Input
+                  type={showCurrentPw ? "text" : "password"}
+                  value={currentPassword}
+                  onChange={(e) => setCurrentPassword(e.target.value)}
+                  className="h-11 bg-muted/30 border-border/20 rounded-xl text-sm pr-10"
+                  placeholder="Digite sua senha atual"
+                />
+                <button
+                  type="button"
+                  onClick={() => setShowCurrentPw(!showCurrentPw)}
+                  className="absolute right-3 top-1/2 -translate-y-1/2 text-muted-foreground hover:text-foreground"
+                >
+                  {showCurrentPw ? <EyeOff className="w-4 h-4" /> : <Eye className="w-4 h-4" />}
+                </button>
+              </div>
+              <button
+                type="button"
+                onClick={handleForgotPassword}
+                className="text-[11px] text-primary hover:text-primary/80 transition-colors"
+              >
+                Esqueceu a senha?
+              </button>
+            </div>
+
+            <div className="space-y-2">
               <label className="text-xs font-semibold text-muted-foreground">Nova senha</label>
               <div className="relative">
                 <Input
