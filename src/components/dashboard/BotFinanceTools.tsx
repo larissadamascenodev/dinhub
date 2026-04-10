@@ -12,6 +12,7 @@ interface ToolItem {
   disabled?: boolean;
   color: string;
   bgFrom: string;
+  borderColor?: string;
 }
 
 const tools: ToolItem[] = [
@@ -21,6 +22,7 @@ const tools: ToolItem[] = [
     path: "/gestao",
     color: "hsl(var(--primary))",
     bgFrom: "hsl(150 40% 14%)",
+    borderColor: "hsl(var(--primary) / 0.18)",
   },
   {
     icon: <BarChart3 className="w-5 h-5" />,
