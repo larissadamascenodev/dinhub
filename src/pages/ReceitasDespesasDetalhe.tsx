@@ -195,75 +195,77 @@ const ReceitasDespesasDetalhe = () => {
 
       {/* ═══ Hero Card ═══ */}
       <motion.div
-        initial={{ opacity: 0, y: 14 }}
-        animate={{ opacity: 1, y: 0 }}
-        transition={{ type: "spring", stiffness: 260, damping: 22 }}
-        className="rounded-2xl overflow-hidden mb-5 relative"
+        initial={{ opacity: 0, scale: 0.97 }}
+        animate={{ opacity: 1, scale: 1 }}
+        transition={{ type: "spring", stiffness: 240, damping: 20 }}
+        className="rounded-2xl overflow-hidden mb-5 relative group"
         style={{
-          background: "linear-gradient(145deg, hsl(220 20% 13%) 0%, hsl(225 22% 9%) 50%, hsl(220 18% 6%) 100%)",
-          border: `1px solid ${accentHsl.replace(")", " / 0.18)")}`,
-          boxShadow: `0 20px 60px -16px ${accentHsl.replace(")", " / 0.25)")}, 0 8px 24px -8px rgba(0,0,0,0.5), inset 0 1px 0 hsl(220 20% 22% / 0.25)`,
+          background: `linear-gradient(155deg, hsl(220 22% 14%) 0%, hsl(222 24% 10%) 40%, hsl(220 20% 7%) 100%)`,
+          border: `1px solid ${accentHsl.replace(")", " / 0.2)")}`,
+          boxShadow: `0 24px 64px -16px ${accentHsl.replace(")", " / 0.22)")}, 0 8px 20px -8px rgba(0,0,0,0.55), inset 0 1px 0 hsl(220 25% 25% / 0.3), inset 0 -1px 0 hsl(220 20% 5% / 0.4)`,
         }}
       >
-        {/* Glow orbs */}
-        <div className="absolute -top-20 -right-20 w-64 h-64 rounded-full blur-[120px] pointer-events-none" style={{ background: `${accentHsl.replace(")", " / 0.12)")}` }} />
-        <div className="absolute -bottom-16 -left-16 w-48 h-48 rounded-full blur-[90px] pointer-events-none" style={{ background: `${accentHsl.replace(")", " / 0.06)")}` }} />
-        {/* Subtle top-right shimmer */}
-        <div className="absolute top-0 right-0 w-32 h-32 rounded-full blur-[60px] pointer-events-none" style={{ background: "hsl(220 20% 30% / 0.08)" }} />
+        {/* Ambient glow orbs */}
+        <div className="absolute -top-16 -right-16 w-56 h-56 rounded-full pointer-events-none" style={{ background: `radial-gradient(circle, ${accentHsl.replace(")", " / 0.14)")}, transparent 70%)`, filter: "blur(50px)" }} />
+        <div className="absolute -bottom-12 -left-12 w-40 h-40 rounded-full pointer-events-none" style={{ background: `radial-gradient(circle, ${accentHsl.replace(")", " / 0.08)")}, transparent 70%)`, filter: "blur(40px)" }} />
+        {/* Edge highlight */}
+        <div className="absolute inset-x-0 top-0 h-px" style={{ background: `linear-gradient(90deg, transparent 10%, hsl(220 30% 35% / 0.35) 50%, transparent 90%)` }} />
 
         <div className="relative px-5 pt-5 pb-4">
           {/* Top row: Ring + Total */}
           <div className="flex items-center gap-4 mb-3">
-            {/* Progress ring with glow */}
+            {/* Progress ring with ambient glow */}
             <div className="relative flex-shrink-0">
-              <div className="absolute inset-0 rounded-full blur-md" style={{ background: `${accentHsl.replace(")", " / 0.15)")}`, transform: "scale(1.15)" }} />
+              <motion.div
+                className="absolute inset-0 rounded-full"
+                style={{ background: `radial-gradient(circle, ${accentHsl.replace(")", " / 0.2)")}, transparent 65%)`, transform: "scale(1.4)" }}
+                animate={{ opacity: [0.6, 1, 0.6] }}
+                transition={{ duration: 3, repeat: Infinity, ease: "easeInOut" }}
+              />
               <ProgressRing pct={paidPct} color={accentHsl} size={56} stroke={4} />
               <div className="absolute inset-0 flex items-center justify-center">
-                <HeroIcon className={`w-4.5 h-4.5 text-${accent}`} style={{ opacity: 0.85, filter: `drop-shadow(0 0 4px ${accentHsl.replace(")", " / 0.4)")})` }} />
+                <HeroIcon className={`w-4.5 h-4.5 text-${accent}`} style={{ opacity: 0.9, filter: `drop-shadow(0 0 6px ${accentHsl.replace(")", " / 0.5)")})` }} />
               </div>
             </div>
 
             <div className="flex-1 min-w-0">
-              <p className="text-[9px] text-muted-foreground/55 uppercase tracking-[0.18em] font-bold mb-1">
+              <p className="text-[9px] text-muted-foreground/50 uppercase tracking-[0.2em] font-bold mb-1">
                 Total {isReceita ? "Receitas" : "Despesas"}
               </p>
-              <p className={`text-xl md:text-3xl font-extrabold tabular-nums font-display text-${accent} leading-none`} style={{ textShadow: `0 0 20px ${accentHsl.replace(")", " / 0.3)")}` }}>
+              <p
+                className={`text-[22px] md:text-3xl font-extrabold tabular-nums font-display text-${accent} leading-none`}
+                style={{ textShadow: `0 0 24px ${accentHsl.replace(")", " / 0.35)")}, 0 2px 8px ${accentHsl.replace(")", " / 0.15)")}` }}
+              >
                 {fmt(total)}
               </p>
-              {/* Trend */}
               {trend !== 0 && (
-                <div className="flex items-center gap-1 mt-1.5">
-                  <div className={`flex items-center gap-0.5 px-1.5 py-0.5 rounded-full ${trendPositive ? "bg-primary/10" : "bg-destructive/10"}`}>
+                <div className="flex items-center gap-1.5 mt-1.5">
+                  <div className={`flex items-center gap-0.5 px-1.5 py-0.5 rounded-full backdrop-blur-sm ${trendPositive ? "bg-primary/12 border border-primary/15" : "bg-destructive/12 border border-destructive/15"}`}>
                     {trendPositive ? <TrendingUp className="w-2.5 h-2.5 text-primary" /> : <TrendingDown className="w-2.5 h-2.5 text-destructive" />}
                     <span className={`text-[8px] font-bold ${trendPositive ? "text-primary" : "text-destructive"}`}>
                       {trend > 0 ? "+" : ""}{trend}%
                     </span>
                   </div>
-                  <span className="text-[8px] text-muted-foreground/40 font-medium">vs mês anterior</span>
+                  <span className="text-[8px] text-muted-foreground/35 font-medium">vs mês anterior</span>
                 </div>
               )}
             </div>
           </div>
 
-          {/* Divider */}
-          <div className="h-px w-full mb-3" style={{ background: `linear-gradient(90deg, transparent, ${accentHsl.replace(")", " / 0.12)")}, transparent)` }} />
+          {/* Gradient divider */}
+          <div className="h-px w-full mb-3 rounded-full" style={{ background: `linear-gradient(90deg, transparent 5%, ${accentHsl.replace(")", " / 0.15)")} 30%, ${accentHsl.replace(")", " / 0.15)")} 70%, transparent 95%)` }} />
 
           {/* Paid / Pending inline */}
-          <div className="flex items-center gap-4">
-            <div className="flex items-center gap-1.5">
-              <div className={`w-4 h-4 rounded-full bg-${accent}/10 flex items-center justify-center`}>
-                <CheckCircle2 className={`w-2.5 h-2.5 text-${accent}`} />
-              </div>
+          <div className="flex items-center gap-3">
+            <div className="flex-1 flex items-center gap-1.5 px-2.5 py-1.5 rounded-lg" style={{ background: `${accentHsl.replace(")", " / 0.06)")}`, border: `1px solid ${accentHsl.replace(")", " / 0.08)")}` }}>
+              <CheckCircle2 className={`w-3 h-3 text-${accent}`} style={{ opacity: 0.7 }} />
               <span className="text-[8px] text-muted-foreground/45 font-bold uppercase tracking-wider">{isReceita ? "Recebido" : "Pago"}</span>
-              <span className={`text-[11px] font-bold tabular-nums text-${accent} ml-0.5`}>{fmt(paid)}</span>
+              <span className={`text-[11px] font-bold tabular-nums text-${accent} ml-auto`}>{fmt(paid)}</span>
             </div>
-            <div className="w-px h-4 rounded-full" style={{ background: "hsl(220 15% 20% / 0.5)" }} />
-            <div className="flex items-center gap-1.5">
-              <div className="w-4 h-4 rounded-full bg-yellow-400/10 flex items-center justify-center">
-                <Clock className="w-2.5 h-2.5 text-yellow-400" />
-              </div>
+            <div className="flex-1 flex items-center gap-1.5 px-2.5 py-1.5 rounded-lg" style={{ background: "hsl(45 90% 55% / 0.05)", border: "1px solid hsl(45 90% 55% / 0.08)" }}>
+              <Clock className="w-3 h-3 text-yellow-400" style={{ opacity: 0.7 }} />
               <span className="text-[8px] text-muted-foreground/45 font-bold uppercase tracking-wider">Pendente</span>
-              <span className="text-[11px] font-bold tabular-nums text-yellow-400 ml-0.5">{fmt(pending)}</span>
+              <span className="text-[11px] font-bold tabular-nums text-yellow-400 ml-auto">{fmt(pending)}</span>
             </div>
           </div>
         </div>
