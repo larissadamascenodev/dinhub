@@ -132,30 +132,29 @@ const sections: PolicySection[] = [
   },
 ];
 
-/* ─── Accordion item ─── */
-const SectionCard = ({ section, index }: { section: PolicySection; index: number }) => {
+/* ─── Inline section (no card) ─── */
+const InlineSection = ({ section, index }: { section: PolicySection; index: number }) => {
   const isWarning = !!section.highlight;
 
   return (
     <motion.div
-      initial={{ opacity: 0, y: 16 }}
+      initial={{ opacity: 0, y: 12 }}
       animate={{ opacity: 1, y: 0 }}
       transition={{ delay: 0.06 + index * 0.035, ease: "easeOut" }}
-      className={cn(
-        "rounded-xl backdrop-blur-xl border p-4 space-y-2.5",
-        isWarning ? "border-warning/20 bg-warning/[0.03]" : "border-border/10 bg-card/60",
-      )}
+      className="space-y-2"
     >
-      <div className="flex items-center gap-3">
+      <div className="flex items-center gap-2.5">
         <div
           className={cn(
-            "w-9 h-9 rounded-xl flex items-center justify-center shrink-0",
+            "w-7 h-7 rounded-lg flex items-center justify-center shrink-0",
             isWarning ? "bg-warning/10" : "bg-primary/10",
           )}
         >
-          <section.icon className={cn("w-[18px] h-[18px]", isWarning ? "text-warning" : "text-primary")} />
+          <section.icon className={cn("w-[15px] h-[15px]", isWarning ? "text-warning" : "text-primary")} />
         </div>
-        <span className="text-[13px] font-bold text-foreground">{section.title}</span>
+        <span className={cn("text-[13px] font-bold", isWarning ? "text-warning" : "text-foreground")}>
+          {section.title}
+        </span>
       </div>
 
       {section.paragraphs?.map((p, i) => (
@@ -175,7 +174,7 @@ const SectionCard = ({ section, index }: { section: PolicySection; index: number
         </ul>
       )}
       {section.note && (
-        <p className="text-[11px] text-muted-foreground/50 italic pt-1">{section.note}</p>
+        <p className="text-[11px] text-muted-foreground/50 italic">{section.note}</p>
       )}
     </motion.div>
   );
@@ -197,7 +196,7 @@ const TermosPrivacidade = () => {
         <ArrowLeft className="w-4 h-4 text-muted-foreground" />
       </motion.button>
 
-      {/* ── Hero ── */}
+      {/* ── Hero card ── */}
       <motion.div
         initial={{ opacity: 0, y: 20 }}
         animate={{ opacity: 1, y: 0 }}
@@ -207,7 +206,6 @@ const TermosPrivacidade = () => {
           background: "linear-gradient(145deg, hsl(var(--card) / 0.9) 0%, hsl(var(--background)) 100%)",
         }}
       >
-        {/* glow */}
         <div className="absolute -top-20 -right-20 w-52 h-52 rounded-full bg-primary/8 blur-3xl pointer-events-none" />
         <div className="absolute -bottom-16 -left-16 w-40 h-40 rounded-full bg-primary/5 blur-3xl pointer-events-none" />
 
@@ -225,7 +223,6 @@ const TermosPrivacidade = () => {
             </p>
           </div>
 
-          {/* pills */}
           <div className="flex flex-wrap gap-2 pt-1">
             {HERO_PILLS.map((pill) => (
               <span
@@ -240,10 +237,15 @@ const TermosPrivacidade = () => {
         </div>
       </motion.div>
 
-      {/* ── Sections accordion ── */}
-      <div className="space-y-2">
+      {/* ── Sections – flat list with dividers ── */}
+      <div className="space-y-5 px-1">
         {sections.map((section, i) => (
-          <SectionCard key={section.id} section={section} index={i} />
+          <div key={section.id}>
+            <InlineSection section={section} index={i} />
+            {i < sections.length - 1 && (
+              <div className="mt-5 border-t border-border/10" />
+            )}
+          </div>
         ))}
       </div>
 
