@@ -72,6 +72,8 @@ export async function createCustomCategory(
   invalidateCustomCategoryCache();
   return data as unknown as CustomCategory;
 }
+
+export async function updateCustomCategory(
   id: string,
   updates: { name?: string; icon?: string; color?: string }
 ) {
@@ -96,6 +98,8 @@ export async function deleteCustomCategory(id: string) {
   if (error) throw error;
   invalidateCustomCategoryCache();
 }
+
+export async function hideDefaultCategory(
   userId: string,
   name: string,
   type: string
