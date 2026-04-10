@@ -210,7 +210,7 @@ function NotificationContent({
       )}
 
       {/* List */}
-      <div className="flex-1 overflow-y-auto overscroll-contain divide-y divide-border/5">
+      <div className="flex-1 overflow-y-auto overscroll-contain p-3 space-y-2">
         {loading ? (
           <div className="p-10 text-center">
             <div className="w-10 h-10 rounded-2xl bg-muted/15 flex items-center justify-center mx-auto mb-3 animate-pulse">
@@ -219,7 +219,7 @@ function NotificationContent({
             <p className="text-xs text-muted-foreground">Carregando...</p>
           </div>
         ) : notifications.length === 0 ? (
-          <div className="p-12 text-center space-y-3">
+          <div className="p-10 text-center space-y-3">
             <div className="w-14 h-14 rounded-2xl bg-muted/10 flex items-center justify-center mx-auto">
               <Bell className="w-7 h-7 text-muted-foreground/20" />
             </div>
@@ -234,7 +234,7 @@ function NotificationContent({
               <motion.div
                 key={n.id}
                 layout
-                exit={{ opacity: 0, height: 0 }}
+                exit={{ opacity: 0, height: 0, marginBottom: 0 }}
                 transition={{ duration: 0.2 }}
               >
                 <NotificationRow
@@ -252,7 +252,7 @@ function NotificationContent({
       {notifications.length > 0 && (
         <div className="px-4 py-2 border-t border-border/5 shrink-0">
           <p className="text-[9px] text-muted-foreground/40 text-center select-none">
-            ← Deslize para marcar como lida ou remover
+            ← Deslize para a esquerda para apagar · para a direita para marcar como lida →
           </p>
         </div>
       )}
