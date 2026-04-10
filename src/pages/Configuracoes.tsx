@@ -888,6 +888,7 @@ const Configuracoes = () => {
           <SectionGroup title="Configurações" items={configItems} />
         </motion.div>
       )}
+      <NotificationSettingsModal open={notifSettingsOpen} onOpenChange={setNotifSettingsOpen} />
     </div>
   );
 };
