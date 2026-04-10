@@ -204,46 +204,48 @@ const ParcelamentosDetalhe = () => {
         </p>
       </motion.div>
 
-      {/* Summary Stats */}
+      {/* Summary Card */}
       {stats && (
-        <motion.div initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.05 }} className="grid grid-cols-2 gap-2">
-          <div className="glass-card p-3.5 space-y-1">
-            <p className="text-[10px] text-muted-foreground">Comprometido/mês</p>
-            <p className="text-base font-bold" style={{ color: "hsl(25 85% 55%)" }}>{formatCurrency(stats.totalMensal)}</p>
-          </div>
-          <div className="glass-card p-3.5 space-y-1">
-            <p className="text-[10px] text-muted-foreground">Total restante</p>
-            <p className="text-base font-bold text-foreground">{formatCurrency(stats.totalRestante)}</p>
-          </div>
-          <div className="glass-card p-3.5 space-y-1">
-            <p className="text-[10px] text-muted-foreground">Já pago</p>
-            <p className="text-base font-bold text-primary">{formatCurrency(stats.totalJaPago)}</p>
-          </div>
-          <div className="glass-card p-3.5 space-y-1">
-            <p className="text-[10px] text-muted-foreground">Livre em</p>
-            <p className="text-base font-bold text-foreground">
-              {stats.monthsUntilFree} {stats.monthsUntilFree === 1 ? "mês" : "meses"}
-            </p>
-            <p className="text-[9px] text-muted-foreground">
-              {stats.lastEndDate.toLocaleDateString("pt-BR", { month: "long", year: "numeric" })}
-            </p>
-          </div>
-        </motion.div>
-      )}
-
-      {/* Progress overall */}
-      {stats && (
-        <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} transition={{ delay: 0.1 }} className="glass-card p-4 space-y-2">
+        <motion.div initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.05 }} className="glass-card p-4 space-y-4">
+          {/* Main value */}
           <div className="flex items-center justify-between">
-            <span className="text-xs font-medium text-muted-foreground">Progresso geral</span>
-            <span className="text-xs font-bold text-foreground">
-              {Math.round((stats.totalJaPago / stats.totalGeral) * 100)}%
-            </span>
+            <div>
+              <p className="text-[10px] text-muted-foreground uppercase tracking-wider">Comprometido/mês</p>
+              <p className="text-xl font-bold mt-0.5" style={{ color: "hsl(25 85% 55%)" }}>{formatCurrency(stats.totalMensal)}</p>
+            </div>
+            <div className="text-right">
+              <p className="text-[10px] text-muted-foreground uppercase tracking-wider">Livre em</p>
+              <p className="text-lg font-bold text-foreground mt-0.5">
+                {stats.monthsUntilFree} {stats.monthsUntilFree === 1 ? "mês" : "meses"}
+              </p>
+              <p className="text-[9px] text-muted-foreground">
+                {stats.lastEndDate.toLocaleDateString("pt-BR", { month: "short", year: "numeric" })}
+              </p>
+            </div>
           </div>
-          <Progress value={(stats.totalJaPago / stats.totalGeral) * 100} className="h-2" />
-          <div className="flex justify-between text-[9px] text-muted-foreground">
-            <span>Pago: {formatCurrency(stats.totalJaPago)}</span>
-            <span>Total: {formatCurrency(stats.totalGeral)}</span>
+
+          {/* Progress */}
+          <div className="space-y-1.5">
+            <div className="flex items-center justify-between">
+              <span className="text-[10px] text-muted-foreground">Progresso geral</span>
+              <span className="text-[10px] font-bold text-foreground">
+                {Math.round((stats.totalJaPago / stats.totalGeral) * 100)}%
+              </span>
+            </div>
+            <Progress value={(stats.totalJaPago / stats.totalGeral) * 100} className="h-1.5" />
+          </div>
+
+          {/* Bottom row */}
+          <div className="flex items-center justify-between pt-1 border-t border-border/10">
+            <div className="space-y-0.5">
+              <p className="text-[9px] text-muted-foreground">Já pago</p>
+              <p className="text-xs font-bold text-primary">{formatCurrency(stats.totalJaPago)}</p>
+            </div>
+            <div className="w-px h-6 bg-border/20" />
+            <div className="space-y-0.5 text-right">
+              <p className="text-[9px] text-muted-foreground">Restante</p>
+              <p className="text-xs font-bold text-foreground">{formatCurrency(stats.totalRestante)}</p>
+            </div>
           </div>
         </motion.div>
       )}
