@@ -497,23 +497,25 @@ const Configuracoes = () => {
                     className="overflow-hidden mt-2"
                   >
                     <div className="space-y-1">
-                      <div className="flex gap-1">
-                        {[0, 1, 2].map((segment) => (
-                          <motion.div
-                            key={segment}
-                            className={cn(
-                              "h-1 flex-1 rounded-full",
-                              segment < passwordStrength.activeSegments ? passwordStrength.fillClassName : "bg-muted/30",
-                            )}
-                            initial={false}
-                            animate={{
-                              scaleX: segment < passwordStrength.activeSegments ? 1 : 1,
-                              opacity: segment < passwordStrength.activeSegments ? 1 : 0.35,
-                            }}
-                            transition={{ duration: 0.35, ease: [0.4, 0, 0.2, 1] }}
-                          />
-                        ))}
-                      </div>
+                    <div className="flex gap-1">
+                        {[0, 1, 2].map((segment) => {
+                          const isActive = segment < passwordStrength.activeSegments;
+                          return (
+                            <div key={segment} className="flex-1 h-1.5 rounded-full bg-muted/20 overflow-hidden">
+                              <motion.div
+                                className={cn("h-full rounded-full", isActive ? passwordStrength.fillClassName : "bg-muted/30")}
+                                initial={{ width: "0%" }}
+                                animate={{ width: isActive ? "100%" : "0%" }}
+                                transition={{
+                                  duration: 0.4,
+                                  delay: isActive ? segment * 0.1 : 0,
+                                  ease: [0.4, 0, 0.2, 1],
+                                }}
+                              />
+                            </div>
+                          );
+                        })}
+                    </div>
                       <motion.div
                         key={passwordStrength.level}
                         initial={{ opacity: 0, y: 4 }}
