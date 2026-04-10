@@ -42,20 +42,30 @@ const parseDateSafe = (dateStr: string): Date => {
   return new Date(dateStr + "T12:00:00");
 };
 
+const MIN_VISIBLE = 3;
+
 const ProximosEventos = memo(({ events, selectedMonth, selectedYear, onVerTodos, onEventClick }: Props) => {
   const [expanded, setExpanded] = useState(false);
 
+  // Sort: pendente/atrasado first, then pago/recebido; within each group sort by date
   const sortedEvents = useMemo(() => {
-    return [...events]
-      .map((ev) => ({ ...ev, _date: parseDateSafe(ev.rawDate || ev.date) }))
-      .sort((a, b) => a._date.getTime() - b._date.getTime());
+    const mapped = [...events].map((ev) => ({ ...ev, _date: parseDateSafe(ev.rawDate || ev.date) }));
+    const statusOrder = (s: string) => (s === "pago" || s === "recebido" ? 1 : 0);
+    return mapped.sort((a, b) => {
+      const so = statusOrder(a.status) - statusOrder(b.status);
+      if (so !== 0) return so;
+      return a._date.getTime() - b._date.getTime();
+    });
   }, [events]);
 
-  const displayEvents = expanded ? sortedEvents : sortedEvents.slice(0, 3);
-  const hasMore = sortedEvents.length > 3;
+  // Always show at least MIN_VISIBLE, expand shows all
+  const visibleCount = Math.max(MIN_VISIBLE, 0);
+  const displayEvents = expanded ? sortedEvents : sortedEvents.slice(0, visibleCount);
+  const hasMore = sortedEvents.length > visibleCount;
 
   const renderEvent = (ev: typeof sortedEvents[0], idx: number) => {
-    const cfg = STATUS_CONFIG[ev.status];
+    const isPaid = ev.status === "pago" || ev.status === "recebido";
+    const cfg = STATUS_CONFIG[ev.status] ?? STATUS_CONFIG.pendente;
     const a = cfg.accent;
     const StatusIcon = cfg.Icon;
     const isClickable = ev.isTransaction && ev.status === "pendente";
@@ -63,14 +73,15 @@ const ProximosEventos = memo(({ events, selectedMonth, selectedYear, onVerTodos,
     return (
       <motion.div
         key={ev.id}
+        layout
         initial={{ opacity: 0, y: 6 }}
         animate={{ opacity: 1, y: 0 }}
         exit={{ opacity: 0, y: -4 }}
         transition={{ delay: idx * 0.03, type: "spring", stiffness: 500, damping: 35 }}
         className={`flex items-center gap-3 px-3 py-2.5 rounded-xl border transition-all ${isClickable ? "cursor-pointer hover:scale-[1.01] active:scale-[0.99]" : ""}`}
         style={{
-          background: `hsl(${a} / 0.05)`,
-          borderColor: `hsl(${a} / 0.12)`,
+          background: isPaid ? `hsl(150 100% 45% / 0.06)` : `hsl(${a} / 0.05)`,
+          borderColor: isPaid ? `hsl(150 100% 45% / 0.15)` : `hsl(${a} / 0.12)`,
         }}
         onClick={() => {
           if (isClickable && onEventClick) onEventClick(ev);
@@ -78,7 +89,9 @@ const ProximosEventos = memo(({ events, selectedMonth, selectedYear, onVerTodos,
       >
         {/* Content */}
         <div className="flex-1 min-w-0">
-          <p className="text-[12px] font-semibold text-foreground/90 truncate">{ev.name}</p>
+          <p className={`text-[12px] font-semibold truncate ${isPaid ? "text-foreground/50" : "text-foreground/90"}`}>
+            {ev.name}
+          </p>
           <div className="flex items-center gap-1.5 mt-0.5">
             <StatusIcon className="w-2.5 h-2.5" style={{ color: `hsl(${a})` }} />
             <span className="text-[9px] font-medium" style={{ color: `hsl(${a} / 0.7)` }}>
@@ -89,7 +102,7 @@ const ProximosEventos = memo(({ events, selectedMonth, selectedYear, onVerTodos,
 
         {/* Amount + date */}
         <div className="text-right shrink-0">
-          <p className="text-[12px] font-bold tabular-nums" style={{ color: `hsl(${a})` }}>
+          <p className={`text-[12px] font-bold tabular-nums`} style={{ color: `hsl(${a})` }}>
             {fmt(ev.amount)}
           </p>
           <p className="text-[9px] text-muted-foreground/50 mt-0.5">
