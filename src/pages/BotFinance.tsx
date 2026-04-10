@@ -13,7 +13,7 @@ const BotFinance = () => {
       >
         <div className="flex items-center gap-2">
           <Brain className="w-6 h-6 text-primary" />
-          <h1 className="font-display text-xl font-bold">Bot Finance</h1>
+          <h1 className="font-display text-xl font-bold">BotHub</h1>
         </div>
         <p className="text-sm text-muted-foreground">
           Seu assistente financeiro pessoal
