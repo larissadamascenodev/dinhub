@@ -119,14 +119,13 @@ const BotFinanceTools = ({ layout = "carousel" }: BotFinanceToolsProps) => {
               initial={{ opacity: 0, scale: 0.8 }}
               animate={{ opacity: 1, scale: 1 }}
               transition={{ delay: i * 0.06, type: "spring", stiffness: 260, damping: 20 }}
-              whileHover={isDisabled ? {} : { y: -3, scale: 1.03, transition: { duration: 0.2 } }}
-              whileTap={isDisabled ? {} : { scale: 0.95 }}
+              whileTap={isDisabled ? {} : { scale: 0.97 }}
               onClick={() => {
                 if (isDragging.current) return;
                 if (!isDisabled && tool.path) navigate(tool.path);
               }}
               disabled={isDisabled}
-              className={`relative z-0 hover:z-20 flex flex-col items-center gap-2 flex-shrink-0 group ${isCarousel ? "snap-center" : ""}`}
+              className={`relative z-0 flex flex-col items-center gap-2 flex-shrink-0 group ${isCarousel ? "snap-center" : ""}`}
               style={{ opacity: isDisabled ? 0.45 : 1 }}
             >
               <div
@@ -143,7 +142,10 @@ const BotFinanceTools = ({ layout = "carousel" }: BotFinanceToolsProps) => {
                     style={{ background: `radial-gradient(circle, ${tool.color}18, transparent 65%)` }}
                   />
                 )}
-                <div style={{ color: isDisabled ? "hsl(220 10% 40%)" : tool.color }}>
+                <div
+                  className="transition-transform duration-300 group-hover:scale-110"
+                  style={{ color: isDisabled ? "hsl(220 10% 40%)" : tool.color }}
+                >
                   {tool.icon}
                 </div>
                 {isDisabled && (
@@ -156,6 +158,8 @@ const BotFinanceTools = ({ layout = "carousel" }: BotFinanceToolsProps) => {
                 className="text-[10px] font-semibold leading-tight text-center max-w-[64px]"
                 style={{ color: isDisabled ? "hsl(220 10% 40%)" : "hsl(220 15% 75%)" }}
               >
+                {tool.label}
+              </span>
                 {tool.label}
               </span>
             </motion.button>
