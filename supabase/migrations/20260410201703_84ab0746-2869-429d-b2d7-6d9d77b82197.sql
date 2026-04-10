@@ -1,0 +1,1 @@
+ALTER TABLE public.notification_settings ADD COLUMN challenge_reminder boolean NOT NULL DEFAULT true;
