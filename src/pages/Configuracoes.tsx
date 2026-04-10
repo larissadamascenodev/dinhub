@@ -93,6 +93,7 @@ const Configuracoes = () => {
   const [showConfirmPw, setShowConfirmPw] = useState(false);
   const [changingPassword, setChangingPassword] = useState(false);
   const [notifSettingsOpen, setNotifSettingsOpen] = useState(false);
+  const [tabBeforeModal, setTabBeforeModal] = useState<"conta" | "config" | null>(null);
   const passwordStrength = getPasswordStrength(newPassword);
   const [financeSummary, setFinanceSummary] = useState<{ saldo: number; investimentos: number; totalContas: number } | null>(null);
 
