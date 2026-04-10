@@ -541,6 +541,84 @@ export type Database = {
         }
         Relationships: []
       }
+      notification_settings: {
+        Row: {
+          bill_due_days_before: number
+          bill_due_reminder: boolean
+          created_at: string
+          goal_reminder: boolean
+          id: string
+          invoice_reminder: boolean
+          low_balance_alert: boolean
+          low_balance_threshold: number
+          updated_at: string
+          user_id: string
+          weekly_summary: boolean
+        }
+        Insert: {
+          bill_due_days_before?: number
+          bill_due_reminder?: boolean
+          created_at?: string
+          goal_reminder?: boolean
+          id?: string
+          invoice_reminder?: boolean
+          low_balance_alert?: boolean
+          low_balance_threshold?: number
+          updated_at?: string
+          user_id: string
+          weekly_summary?: boolean
+        }
+        Update: {
+          bill_due_days_before?: number
+          bill_due_reminder?: boolean
+          created_at?: string
+          goal_reminder?: boolean
+          id?: string
+          invoice_reminder?: boolean
+          low_balance_alert?: boolean
+          low_balance_threshold?: number
+          updated_at?: string
+          user_id?: string
+          weekly_summary?: boolean
+        }
+        Relationships: []
+      }
+      notifications: {
+        Row: {
+          category: string
+          created_at: string
+          id: string
+          is_read: boolean
+          message: string
+          related_id: string | null
+          title: string
+          type: string
+          user_id: string
+        }
+        Insert: {
+          category?: string
+          created_at?: string
+          id?: string
+          is_read?: boolean
+          message: string
+          related_id?: string | null
+          title: string
+          type?: string
+          user_id: string
+        }
+        Update: {
+          category?: string
+          created_at?: string
+          id?: string
+          is_read?: boolean
+          message?: string
+          related_id?: string | null
+          title?: string
+          type?: string
+          user_id?: string
+        }
+        Relationships: []
+      }
       profiles: {
         Row: {
           avatar_url: string | null
