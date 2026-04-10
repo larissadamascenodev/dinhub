@@ -267,17 +267,6 @@ const TransacoesRecentes = memo(({ transactions, onDelete }: Props) => {
         )}
       </AnimatePresence>
 
-      {/* Transaction detail modal */}
-      <TransactionDetailModal
-        open={showDetail}
-        tx={detailTx}
-        accountName={detailAccountName}
-        onClose={() => { setShowDetail(false); setDetailTx(null); }}
-        onRefresh={() => { setShowDetail(false); setDetailTx(null); onDelete?.(); }}
-        userId={user?.id}
-        selectedMonth={selectedMonth}
-        selectedYear={selectedYear}
-      />
     </div>
   );
 });
