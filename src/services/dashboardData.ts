@@ -45,7 +45,7 @@ type CacheEntry = {
   timestamp: number;
 };
 
-const CACHE_TTL = 60_000;
+const CACHE_TTL = 300_000; // 5 minutes
 const dashboardCache: Record<string, CacheEntry> = {};
 const historicalCacheKeys = new Set<string>();
 const inflightPrefetches = new Map<string, Promise<DashboardData>>();
@@ -79,9 +79,23 @@ export function setCachedDashboardData(
   }
 }
 
-export function clearDashboardCache() {
-  Object.keys(dashboardCache).forEach((key) => delete dashboardCache[key]);
-  historicalCacheKeys.clear();
+export function clearDashboardCache(selective?: boolean) {
+  if (selective) {
+    // Only clear stale entries — keep fresh ones for instant navigation
+    const now = Date.now();
+    for (const key of Object.keys(dashboardCache)) {
+      if (now - dashboardCache[key].timestamp > CACHE_TTL) {
+        delete dashboardCache[key];
+        historicalCacheKeys.delete(key);
+      } else {
+        // Mark as stale so next access triggers background refresh
+        dashboardCache[key].timestamp = 0;
+      }
+    }
+  } else {
+    Object.keys(dashboardCache).forEach((key) => delete dashboardCache[key]);
+    historicalCacheKeys.clear();
+  }
   inflightPrefetches.clear();
 }
 
