@@ -322,7 +322,7 @@ const Configuracoes = () => {
 
   /* ── Config items ── */
   const configItems = [
-    { icon: Bell, label: "Lembretes e Alertas", sub: "Notificações do app", onClick: () => setNotifSettingsOpen(true) },
+    { icon: Bell, label: "Lembretes e Alertas", sub: "Notificações do app", onClick: () => { setTabBeforeModal(activeTab); setNotifSettingsOpen(true); } },
     { icon: Globe, label: "Tipo de Moeda", sub: "Selecione a moeda padrão" },
     { icon: HelpCircle, label: "Central de Ajuda", sub: "Perguntas frequentes" },
     { icon: Headphones, label: "Falar com o Suporte", sub: "Abrir um chamado", onClick: () => navigate("/suporte") },
