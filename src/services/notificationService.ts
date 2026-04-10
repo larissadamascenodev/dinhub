@@ -22,6 +22,7 @@ export interface NotificationSettings {
   low_balance_alert: boolean;
   low_balance_threshold: number;
   weekly_summary: boolean;
+  challenge_reminder: boolean;
 }
 
 const DEFAULT_SETTINGS: Omit<NotificationSettings, "id" | "user_id"> = {
