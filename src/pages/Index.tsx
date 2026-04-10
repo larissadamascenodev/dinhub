@@ -127,7 +127,6 @@ const Index = () => {
             <WalletSummaryCard />
             {isCurrentMonth && <GastosSemanaisCard />}
             <ProjectionCard />
-            <BalancoMensalCard />
             <ProximosEventos events={data.events} selectedMonth={selectedMonth} selectedYear={selectedYear} onEventClick={handleEventClick} />
             <AssinaturasCard />
             <InvestimentosResumoCard />
@@ -158,7 +157,6 @@ const Index = () => {
           <ReceitasDespesasCards receitas={receitas} receitasRecebidas={data.receitasRecebidas} receitasPendentes={data.receitasPendentes} despesas={despesas} despesasPagas={data.despesasPagas} despesasPendentes={data.despesasPendentes} compact />
           {/* MicroInteracoesCard temporarily disabled */}
           <ProjectionCard />
-          <BalancoMensalCard />
           {isCurrentMonth && <GastosSemanaisCard />}
           {data.categories.length > 0 && (
             <GastosPorCategoria categories={data.categories} selectedMonth={selectedMonth} onVerAnalise={() => navigate("/transacoes")} />
@@ -196,7 +194,6 @@ const Index = () => {
           
           {/* MicroInteracoesCard temporarily disabled */}
           <ProjectionCard />
-          <BalancoMensalCard />
           {isCurrentMonth && <GastosSemanaisCard />}
           {data.categories.length > 0 && (
             <GastosPorCategoria categories={data.categories} selectedMonth={selectedMonth} onVerAnalise={() => navigate("/transacoes")} />
