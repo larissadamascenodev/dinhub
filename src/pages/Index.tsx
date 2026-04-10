@@ -14,6 +14,7 @@ import GastosPorCategoria from "@/components/dashboard/GastosPorCategoria";
 import GastosSemanaisCard from "@/components/dashboard/GastosSemanaisCard";
 import InvestimentosResumoCard from "@/components/dashboard/InvestimentosResumoCard";
 import MetasResumoCard from "@/components/dashboard/MetasResumoCard";
+import ParcelamentosAtivosCard from "@/components/dashboard/ParcelamentosAtivosCard";
 import MonthSelector from "@/components/dashboard/MonthSelector";
 import PagarEditarModal from "@/components/dashboard/PagarEditarModal";
 import OnboardingCard from "@/components/dashboard/OnboardingCard";
