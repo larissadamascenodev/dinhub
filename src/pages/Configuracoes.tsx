@@ -487,27 +487,49 @@ const Configuracoes = () => {
                   {showNewPw ? <EyeOff className="w-4 h-4" /> : <Eye className="w-4 h-4" />}
                 </button>
               </div>
-              {passwordStrength && (
-                <div className="space-y-1 mt-2">
-                  <div className="flex gap-1">
-                    {[0, 1, 2].map((segment) => (
-                      <div
-                        key={segment}
-                        className={cn(
-                          "h-1 flex-1 rounded-full transition-colors duration-300",
-                          segment < passwordStrength.activeSegments ? passwordStrength.fillClassName : "bg-muted/30",
-                        )}
-                      />
-                    ))}
-                  </div>
-                  <div className="space-y-0.5">
-                    <p className={cn("text-[10px] font-semibold", passwordStrength.textClassName)}>
-                      {passwordStrength.label}
-                    </p>
-                    <p className="text-[10px] text-muted-foreground">{passwordStrength.hint}</p>
-                  </div>
-                </div>
-              )}
+              <AnimatePresence>
+                {passwordStrength && (
+                  <motion.div
+                    initial={{ opacity: 0, height: 0 }}
+                    animate={{ opacity: 1, height: "auto" }}
+                    exit={{ opacity: 0, height: 0 }}
+                    transition={{ duration: 0.25, ease: "easeOut" }}
+                    className="overflow-hidden mt-2"
+                  >
+                    <div className="space-y-1">
+                      <div className="flex gap-1">
+                        {[0, 1, 2].map((segment) => (
+                          <motion.div
+                            key={segment}
+                            className={cn(
+                              "h-1 flex-1 rounded-full",
+                              segment < passwordStrength.activeSegments ? passwordStrength.fillClassName : "bg-muted/30",
+                            )}
+                            initial={false}
+                            animate={{
+                              scaleX: segment < passwordStrength.activeSegments ? 1 : 1,
+                              opacity: segment < passwordStrength.activeSegments ? 1 : 0.35,
+                            }}
+                            transition={{ duration: 0.35, ease: [0.4, 0, 0.2, 1] }}
+                          />
+                        ))}
+                      </div>
+                      <motion.div
+                        key={passwordStrength.level}
+                        initial={{ opacity: 0, y: 4 }}
+                        animate={{ opacity: 1, y: 0 }}
+                        transition={{ duration: 0.2, delay: 0.1 }}
+                        className="space-y-0.5"
+                      >
+                        <p className={cn("text-[10px] font-semibold", passwordStrength.textClassName)}>
+                          {passwordStrength.label}
+                        </p>
+                        <p className="text-[10px] text-muted-foreground">{passwordStrength.hint}</p>
+                      </motion.div>
+                    </div>
+                  </motion.div>
+                )}
+              </AnimatePresence>
             </div>
 
             <div className="space-y-2">
