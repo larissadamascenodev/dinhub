@@ -508,4 +508,64 @@ const TxRowItem = ({
   );
 };
 
+// Invoice row component
+const InvoiceRowItem = ({
+  inv,
+  isPending,
+  onClick,
+  idx,
+}: {
+  inv: InvoiceRow;
+  isPending: boolean;
+  onClick: () => void;
+  idx: number;
+}) => {
+  return (
+    <motion.div
+      initial={{ opacity: 0, y: 6 }}
+      animate={{ opacity: 1, y: 0 }}
+      transition={{ delay: idx * 0.03 }}
+      className={`flex items-center gap-2.5 px-3 py-2.5 rounded-xl cursor-pointer transition-colors ${
+        isPending
+          ? "border border-yellow-500/15 bg-yellow-500/[0.06]"
+          : "bg-card/95 hover:bg-card"
+      }`}
+      onClick={onClick}
+    >
+      <div
+        className="w-8 h-8 rounded-full flex items-center justify-center flex-shrink-0"
+        style={{
+          background: inv.card_color ? `${inv.card_color}20` : "hsl(220 20% 20%)",
+        }}
+      >
+        <CreditCard
+          className="w-4 h-4"
+          style={{ color: inv.card_color || "hsl(220 10% 60%)" }}
+        />
+      </div>
+      <div className="flex-1 min-w-0">
+        <p className="text-xs font-bold text-foreground truncate">
+          Fatura {inv.card_name}
+        </p>
+        <p className="text-[9px] text-muted-foreground/50 mt-0.5">
+          {MONTH_SHORT[inv.month - 1]}/{inv.year}
+        </p>
+      </div>
+      <div className="text-right shrink-0">
+        <p
+          className="text-xs font-bold tabular-nums"
+          style={{
+            color: isPending ? "hsl(40 80% 50%)" : "hsl(var(--destructive))",
+          }}
+        >
+          −{fmt(inv.total_amount)}
+        </p>
+        <span className="block mt-0.5 text-[8px] font-bold uppercase tracking-wide text-muted-foreground/40">
+          {isPending ? "Pendente" : "Paga"}
+        </span>
+      </div>
+    </motion.div>
+  );
+};
+
 export default ReceitasDespesasDetalhe;
