@@ -1,9 +1,9 @@
 import { useState, useEffect, useMemo, useCallback } from "react";
 import { useNavigate, useParams } from "react-router-dom";
-import { motion, AnimatePresence } from "framer-motion";
+import { motion } from "framer-motion";
 import {
   ArrowLeft, ArrowUpRight, ArrowDownRight, CheckCircle2, Clock,
-  ChevronDown, ChevronUp,
+  ChevronDown, ChevronUp, CreditCard,
 } from "lucide-react";
 import { useMonth } from "@/contexts/MonthContext";
 import { useAuth } from "@/contexts/AuthContext";
@@ -15,7 +15,7 @@ import { getCustomCategories, type CustomCategory } from "@/services/categorySer
 import { getTransactionById, getAccounts } from "@/services/transactionService";
 import TransactionDetailModal from "@/components/dashboard/TransactionDetailModal";
 import {
-  BarChart, Bar, XAxis, YAxis, Tooltip as RechartsTooltip, ResponsiveContainer, CartesianGrid,
+  LineChart, Line, XAxis, YAxis, Tooltip as RechartsTooltip, ResponsiveContainer, CartesianGrid, Area, AreaChart,
 } from "recharts";
 
 const fmt = (v: number) =>
@@ -42,6 +42,17 @@ interface TxRow {
   credit_card_id: string | null;
 }
 
+interface InvoiceRow {
+  id: string;
+  credit_card_id: string;
+  total_amount: number;
+  is_paid: boolean;
+  month: number;
+  year: number;
+  card_name?: string;
+  card_color?: string;
+}
+
 const ReceitasDespesasDetalhe = () => {
   const { tipo } = useParams<{ tipo: string }>();
   const isReceita = tipo === "receitas";
@@ -53,6 +64,7 @@ const ReceitasDespesasDetalhe = () => {
   useSwipeBack();
 
   const [transactions, setTransactions] = useState<TxRow[]>([]);
+  const [invoices, setInvoices] = useState<InvoiceRow[]>([]);
   const [loading, setLoading] = useState(true);
   const [customCats, setCustomCats] = useState<CustomCategory[]>([]);
   const [historyData, setHistoryData] = useState<{ month: string; value: number }[]>([]);
@@ -63,7 +75,7 @@ const ReceitasDespesasDetalhe = () => {
   const [detailAccountName, setDetailAccountName] = useState("");
   const [showDetail, setShowDetail] = useState(false);
 
-  // Fetch transactions for current month
+  // Fetch transactions (excluding credit card ones for despesas) + invoices
   useEffect(() => {
     if (!user) return;
     const start = new Date(selectedYear, selectedMonth, 1).toISOString().split("T")[0];
@@ -71,24 +83,67 @@ const ReceitasDespesasDetalhe = () => {
 
     const fetchAll = async () => {
       setLoading(true);
+
+      // Base transaction query
+      let txQuery = supabase
+        .from("transactions")
+        .select("id, name, category, date, amount, status, type, payment_method, recurrence_type, created_at, updated_at, credit_card_id")
+        .eq("user_id", user.id)
+        .eq("type", typeFilter)
+        .gte("date", start)
+        .lte("date", end)
+        .order("date", { ascending: false })
+        .order("created_at", { ascending: true });
+
+      // For despesas, exclude credit card transactions (they'll show as invoices)
+      if (!isReceita) {
+        txQuery = txQuery.is("credit_card_id", null);
+      }
+
       const [{ data: txs }, cats] = await Promise.all([
-        supabase
-          .from("transactions")
-          .select("id, name, category, date, amount, status, type, payment_method, recurrence_type, created_at, updated_at, credit_card_id")
-          .eq("user_id", user.id)
-          .eq("type", typeFilter)
-          .gte("date", start)
-          .lte("date", end)
-          .order("date", { ascending: false })
-          .order("created_at", { ascending: true }),
+        txQuery,
         getCustomCategories(),
       ]);
       setTransactions((txs as TxRow[]) ?? []);
       setCustomCats(cats);
+
+      // For despesas, also fetch invoices for this month
+      if (!isReceita) {
+        const { data: invData } = await supabase
+          .from("invoices")
+          .select("id, credit_card_id, total_amount, is_paid, month, year")
+          .eq("user_id", user.id)
+          .eq("month", selectedMonth + 1)
+          .eq("year", selectedYear)
+          .gt("total_amount", 0);
+
+        if (invData && invData.length > 0) {
+          // Fetch card names
+          const cardIds = [...new Set(invData.map((inv) => inv.credit_card_id))];
+          const { data: cards } = await supabase
+            .from("credit_cards")
+            .select("id, name, color")
+            .in("id", cardIds);
+
+          const cardMap = new Map((cards ?? []).map((c) => [c.id, c]));
+          const enriched: InvoiceRow[] = invData.map((inv) => {
+            const card = cardMap.get(inv.credit_card_id);
+            return {
+              ...inv,
+              card_name: card?.name ?? "Cartão",
+              card_color: card?.color ?? null,
+            };
+          });
+          setInvoices(enriched);
+        } else {
+          setInvoices([]);
+        }
+      }
+
       setLoading(false);
     };
     fetchAll();
-  }, [user, selectedMonth, selectedYear, typeFilter]);
+  }, [user, selectedMonth, selectedYear, typeFilter, isReceita]);
 
   // Fetch 6-month history
   useEffect(() => {
@@ -127,16 +182,9 @@ const ReceitasDespesasDetalhe = () => {
   const paidTxs = useMemo(() => transactions.filter((t) => t.status === "pago"), [transactions]);
   const pendingTxs = useMemo(() => transactions.filter((t) => t.status !== "pago"), [transactions]);
 
-  // Category breakdown
-  const categoryBreakdown = useMemo(() => {
-    const map = new Map<string, number>();
-    transactions.forEach((t) => {
-      map.set(t.category, (map.get(t.category) ?? 0) + Number(t.amount));
-    });
-    return Array.from(map.entries())
-      .map(([name, amount]) => ({ name, amount }))
-      .sort((a, b) => b.amount - a.amount);
-  }, [transactions]);
+  // Merge invoices into the lists
+  const pendingInvoices = useMemo(() => invoices.filter((inv) => !inv.is_paid), [invoices]);
+  const paidInvoices = useMemo(() => invoices.filter((inv) => inv.is_paid), [invoices]);
 
   const handleTxClick = useCallback(async (tx: TxRow) => {
     try {
@@ -159,6 +207,7 @@ const ReceitasDespesasDetalhe = () => {
 
   const displayPaid = showAll ? paidTxs : paidTxs.slice(0, 5);
   const displayPending = showAll ? pendingTxs : pendingTxs.slice(0, 5);
+  const totalItems = paidTxs.length + pendingTxs.length + invoices.length;
   const hasMore = paidTxs.length > 5 || pendingTxs.length > 5;
 
   return (
@@ -208,7 +257,7 @@ const ReceitasDespesasDetalhe = () => {
         </div>
       </div>
 
-      {/* Evolution chart */}
+      {/* Evolution chart - LINE */}
       {historyData.length > 0 && (
         <div
           className="rounded-2xl border border-border/20 bg-card/60 backdrop-blur-xl p-4 mb-5"
@@ -216,7 +265,13 @@ const ReceitasDespesasDetalhe = () => {
         >
           <p className="text-[11px] text-muted-foreground/60 font-medium mb-3">Evolução mensal</p>
           <ResponsiveContainer width="100%" height={140}>
-            <BarChart data={historyData} barSize={20}>
+            <AreaChart data={historyData}>
+              <defs>
+                <linearGradient id="areaFill" x1="0" y1="0" x2="0" y2="1">
+                  <stop offset="0%" stopColor={accentHsl} stopOpacity={0.25} />
+                  <stop offset="100%" stopColor={accentHsl} stopOpacity={0} />
+                </linearGradient>
+              </defs>
               <CartesianGrid strokeDasharray="3 3" stroke="hsl(220 10% 20%)" vertical={false} />
               <XAxis dataKey="month" tick={{ fill: "hsl(220 10% 50%)", fontSize: 10 }} axisLine={false} tickLine={false} />
               <YAxis hide />
@@ -229,53 +284,83 @@ const ReceitasDespesasDetalhe = () => {
                 }}
                 formatter={(value: number) => [fmt(value), isReceita ? "Receitas" : "Despesas"]}
               />
-              <Bar
+              <Area
+                type="monotone"
                 dataKey="value"
-                fill={accentHsl}
-                radius={[4, 4, 0, 0]}
-                opacity={0.85}
+                stroke={accentHsl}
+                strokeWidth={2.5}
+                fill="url(#areaFill)"
+                dot={{ fill: accentHsl, r: 3, strokeWidth: 0 }}
+                activeDot={{ r: 5, fill: accentHsl }}
               />
-            </BarChart>
+            </AreaChart>
           </ResponsiveContainer>
         </div>
       )}
 
-      {/* Category breakdown */}
-      {categoryBreakdown.length > 0 && (
-        <div
-          className="rounded-2xl border border-border/20 bg-card/60 backdrop-blur-xl p-4 mb-5"
-          style={{ boxShadow: "0 4px 24px -4px rgba(0,0,0,0.3)" }}
-        >
-          <p className="text-[11px] text-muted-foreground/60 font-medium mb-3">Por categoria</p>
-          <div className="space-y-2.5">
-            {categoryBreakdown.map((cat) => {
-              const pct = total > 0 ? Math.round((cat.amount / total) * 100) : 0;
-              const color = getCategoryColor(cat.name, customCats);
-              const IconComponent = getCategoryIcon(cat.name, customCats);
-              return (
-                <div key={cat.name} className="flex items-center gap-3">
-                  <div className="w-5 h-5 flex items-center justify-center shrink-0">
-                    <IconComponent className="w-4 h-4" style={{ color: `hsl(${color})` }} />
-                  </div>
-                  <div className="flex-1 min-w-0">
-                    <p className="text-xs font-semibold text-foreground truncate">{cat.name}</p>
-                    <div className="w-full h-1.5 bg-border/20 rounded-full mt-1">
-                      <motion.div
-                        initial={{ width: 0 }}
-                        animate={{ width: `${pct}%` }}
-                        transition={{ duration: 0.5, ease: "easeOut" }}
-                        className="h-full rounded-full"
-                        style={{ backgroundColor: `hsl(${color})` }}
-                      />
-                    </div>
-                  </div>
-                  <div className="text-right shrink-0">
-                    <p className="text-xs font-bold text-foreground tabular-nums">{fmt(cat.amount)}</p>
-                    <p className="text-[9px] text-muted-foreground/50">{pct}%</p>
-                  </div>
+      {/* Invoices (faturas) for despesas */}
+      {!isReceita && invoices.length > 0 && (
+        <div className="mb-5">
+          <div className="flex items-center gap-2 mb-2.5">
+            <CreditCard className="w-3.5 h-3.5 text-muted-foreground" />
+            <h3 className="text-[11px] font-semibold text-muted-foreground/60 uppercase tracking-widest">
+              Faturas ({invoices.length})
+            </h3>
+          </div>
+          <div className="space-y-1.5">
+            {invoices.map((inv, i) => (
+              <motion.div
+                key={inv.id}
+                initial={{ opacity: 0, y: 6 }}
+                animate={{ opacity: 1, y: 0 }}
+                transition={{ delay: i * 0.03 }}
+                className={`flex items-center gap-2.5 px-3 py-2.5 rounded-xl cursor-pointer transition-colors ${
+                  inv.is_paid
+                    ? "bg-card/95 hover:bg-card"
+                    : "border border-yellow-500/15 bg-yellow-500/[0.06]"
+                }`}
+                onClick={() => navigate(`/fatura/${inv.credit_card_id}`)}
+              >
+                <div
+                  className="w-8 h-8 rounded-full flex items-center justify-center flex-shrink-0"
+                  style={{
+                    background: inv.card_color
+                      ? `${inv.card_color}20`
+                      : "hsl(220 20% 20%)",
+                  }}
+                >
+                  <CreditCard
+                    className="w-4 h-4"
+                    style={{
+                      color: inv.card_color || "hsl(220 10% 60%)",
+                    }}
+                  />
                 </div>
-              );
-            })}
+                <div className="flex-1 min-w-0">
+                  <p className="text-xs font-bold text-foreground truncate">
+                    Fatura {inv.card_name}
+                  </p>
+                  <p className="text-[9px] text-muted-foreground/50 mt-0.5">
+                    {MONTH_SHORT[inv.month - 1]}/{inv.year}
+                  </p>
+                </div>
+                <div className="text-right shrink-0">
+                  <p
+                    className="text-xs font-bold tabular-nums"
+                    style={{
+                      color: inv.is_paid
+                        ? "hsl(var(--destructive))"
+                        : "hsl(40 80% 50%)",
+                    }}
+                  >
+                    −{fmt(inv.total_amount)}
+                  </p>
+                  <span className="block mt-0.5 text-[8px] font-bold uppercase tracking-wide text-muted-foreground/40">
+                    {inv.is_paid ? "Paga" : "Pendente"}
+                  </span>
+                </div>
+              </motion.div>
+            ))}
           </div>
         </div>
       )}
@@ -291,7 +376,7 @@ const ReceitasDespesasDetalhe = () => {
           </div>
           <div className="space-y-1.5">
             {displayPending.map((tx, i) => (
-              <TxRow
+              <TxRowItem
                 key={tx.id}
                 tx={tx}
                 isReceita={isReceita}
@@ -315,7 +400,7 @@ const ReceitasDespesasDetalhe = () => {
           </div>
           <div className="space-y-1.5">
             {displayPaid.map((tx, i) => (
-              <TxRow
+              <TxRowItem
                 key={tx.id}
                 tx={tx}
                 isReceita={isReceita}
@@ -363,7 +448,7 @@ const ReceitasDespesasDetalhe = () => {
 };
 
 // Transaction row component
-const TxRow = ({
+const TxRowItem = ({
   tx,
   isReceita,
   customCats,
