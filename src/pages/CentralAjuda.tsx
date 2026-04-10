@@ -114,49 +114,9 @@ interface FaqItem {
 
 const faqItems: FaqItem[] = [
   {
-    question: "Como adicionar uma nova transação?",
-    answer:
-      "Na tela inicial, toque no botão '+' na barra inferior. Escolha entre receita, despesa ou transferência, preencha os dados e confirme. Você também pode usar o Scanner para registrar via comprovante.",
-  },
-  {
-    question: "Como criar uma meta financeira?",
-    answer:
-      "Acesse 'Metas' no menu. Toque em 'Nova Meta', defina o nome, valor alvo, prazo e contribuição mensal desejada. Depois, faça depósitos sempre que quiser para ir acumulando.",
-  },
-  {
     question: "Posso ter mais de uma conta bancária?",
     answer:
       "Sim! Vá em 'Carteira' e adicione quantas contas quiser — corrente, poupança, carteiras digitais e investimentos. O saldo consolidado aparece na tela inicial.",
-  },
-  {
-    question: "Como funciona o Scanner de comprovantes?",
-    answer:
-      "Ao criar uma transação, escolha a opção 'Scanner'. Tire uma foto do comprovante ou envie um print da galeria. O sistema extrai automaticamente valor, data e sugere a categoria.",
-  },
-  {
-    question: "Como acompanhar a fatura do cartão de crédito?",
-    answer:
-      "Cadastre seus cartões em 'Carteira'. Cada compra no cartão é automaticamente vinculada à fatura do mês correto. Acesse a fatura para ver todos os itens, parcelas e registrar o pagamento.",
-  },
-  {
-    question: "O que são transações recorrentes?",
-    answer:
-      "São receitas ou despesas que se repetem automaticamente — como salário, aluguel ou assinaturas. Ao criar uma transação, marque como 'Mensal', 'Semanal' etc. e ela será lançada em todos os meses futuros.",
-  },
-  {
-    question: "Como definir limites por categoria?",
-    answer:
-      "Vá em 'Categorias' e selecione a categoria desejada. Defina um valor limite mensal. Você receberá alertas quando estiver próximo de ultrapassar.",
-  },
-  {
-    question: "Como funcionam os desafios?",
-    answer:
-      "Acesse a seção 'Desafios', escolha um que se encaixe no seu objetivo e aceite. Faça check-in diário para registrar que está cumprindo. Ao completar, veja quanto economizou!",
-  },
-  {
-    question: "Posso fazer transferência entre minhas contas?",
-    answer:
-      "Sim! Ao criar uma transação, escolha 'Transferência'. Selecione a conta de origem e a conta de destino. O saldo é ajustado automaticamente em ambas.",
   },
   {
     question: "Como alterar ou excluir uma transação?",
@@ -164,14 +124,14 @@ const faqItems: FaqItem[] = [
       "Na lista de transações, toque na transação desejada para abrir os detalhes. Lá você pode editar os dados ou excluir a transação. Para recorrentes, você pode excluir apenas aquela ocorrência ou todas.",
   },
   {
-    question: "O que é o Balanço Mensal?",
+    question: "Posso fazer transferência entre minhas contas?",
     answer:
-      "É um resumo que compara suas receitas e despesas dentro de um mês específico. Ele mostra o saldo líquido e ajuda a identificar se você está gastando mais do que ganha.",
+      "Sim! Ao criar uma transação, escolha 'Transferência'. Selecione a conta de origem e a conta de destino. O saldo é ajustado automaticamente em ambas.",
   },
   {
-    question: "Como funcionam as Projeções Inteligentes?",
+    question: "Como funcionam os desafios?",
     answer:
-      "As projeções usam seus dados históricos de receitas e despesas para simular cenários futuros. Você pode ver uma estimativa do seu saldo nos próximos meses e simular mudanças.",
+      "Acesse a seção 'Desafios', escolha um que se encaixe no seu objetivo e aceite. Faça check-in diário para registrar que está cumprindo. Ao completar, veja quanto economizou!",
   },
   {
     question: "Meus dados estão seguros?",
@@ -187,6 +147,21 @@ const faqItems: FaqItem[] = [
     question: "Como entrar em contato com o suporte?",
     answer:
       "Vá em 'Configurações' e toque em 'Falar com o Suporte'. Você será direcionado para nossa página de atendimento onde pode abrir um chamado.",
+  },
+  {
+    question: "Qual plano estou usando?",
+    answer:
+      "Acesse 'Configurações' e veja a seção 'Assinatura'. Lá você encontra o plano atual, os recursos incluídos e opções para fazer upgrade ou cancelar.",
+  },
+  {
+    question: "Posso mudar de plano a qualquer momento?",
+    answer:
+      "Sim! Você pode fazer upgrade ou downgrade do seu plano a qualquer momento nas Configurações. As mudanças são aplicadas no próximo ciclo de cobrança.",
+  },
+  {
+    question: "Como cancelar minha assinatura?",
+    answer:
+      "Acesse 'Configurações' > 'Assinatura' e toque em 'Cancelar Plano'. Você continuará tendo acesso até o fim do período já pago.",
   },
 ];
 
