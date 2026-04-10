@@ -1,7 +1,7 @@
 import { useNavigate } from "react-router-dom";
 import { motion } from "framer-motion";
 import {
-  Sparkles, BarChart3, Radar, HeartPulse, PieChart, Lock,
+  Sparkles, BarChart3, Radar, HeartPulse, Target, Swords, Lock,
 } from "lucide-react";
 
 interface ToolItem {
@@ -43,11 +43,18 @@ const tools: ToolItem[] = [
     bgFrom: "hsl(340 25% 14%)",
   },
   {
-    icon: <PieChart className="w-5 h-5" />,
-    label: "Categorias",
-    disabled: true,
+    icon: <Target className="w-5 h-5" />,
+    label: "Metas",
+    path: "/metas",
     color: "hsl(40 80% 55%)",
     bgFrom: "hsl(40 25% 14%)",
+  },
+  {
+    icon: <Swords className="w-5 h-5" />,
+    label: "Desafios",
+    path: "/desafios",
+    color: "hsl(25 85% 55%)",
+    bgFrom: "hsl(25 30% 14%)",
   },
 ];
 
