@@ -272,7 +272,7 @@ export default function NotificationsPanel({ open, onClose }: NotificationsPanel
   const handleMarkAllRead = async () => {
     if (!user) return;
     await markAllAsRead(user.id);
-    setNotifications((prev) => prev.map((n) => ({ ...n, is_read: true })));
+    setNotifications([]);
   };
 
   const handleMarkRead = async (id: string) => {
