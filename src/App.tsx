@@ -26,6 +26,7 @@ import Desafios from "./pages/Desafios.tsx";
 import TermosPrivacidade from "./pages/TermosPrivacidade.tsx";
 import Suporte from "./pages/Suporte.tsx";
 import ReceitasDespesasDetalhe from "./pages/ReceitasDespesasDetalhe.tsx";
+import ParcelamentosDetalhe from "./pages/ParcelamentosDetalhe.tsx";
 import NotFound from "./pages/NotFound.tsx";
 
 const queryClient = new QueryClient();
@@ -70,6 +71,7 @@ const App = () => (
               <Route path="/metas/:goalId" element={<MetaDetalhe />} />
               <Route path="/analytics/categorias" element={<AnalyticsCategorias />} />
               <Route path="/desafios" element={<Desafios />} />
+              <Route path="/parcelamentos" element={<ParcelamentosDetalhe />} />
               <Route path="/termos" element={<TermosPrivacidade />} />
               <Route path="/suporte" element={<Suporte />} />
             </Route>

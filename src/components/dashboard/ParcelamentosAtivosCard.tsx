@@ -112,7 +112,7 @@ const ParcelamentosAtivosCard = () => {
   return (
     <div className="glass-card p-4 space-y-3 select-none">
       {/* Header */}
-      <div className="flex items-center justify-between">
+      <button onClick={() => navigate("/parcelamentos")} className="flex items-center justify-between w-full">
         <div className="flex items-center gap-2">
           <div className="w-7 h-7 rounded-lg bg-orange-500/15 flex items-center justify-center">
             <CalendarClock className="w-3.5 h-3.5 text-orange-400" />
@@ -122,7 +122,7 @@ const ParcelamentosAtivosCard = () => {
         <span className="text-[10px] font-medium text-muted-foreground bg-muted/50 px-2 py-0.5 rounded-full">
           {items.length} {items.length === 1 ? "item" : "itens"}
         </span>
-      </div>
+      </button>
 
       {/* Summary Cards */}
       {stats && (
