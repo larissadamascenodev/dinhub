@@ -1,6 +1,6 @@
 import { useState, useEffect, useCallback } from "react";
 import { motion, AnimatePresence, PanInfo } from "framer-motion";
-import { Bell, CheckCheck, AlertTriangle, Info, Target, CreditCard, Wallet, X, Check, ChevronLeft, Trash2 } from "lucide-react";
+import { Bell, CheckCheck, AlertTriangle, Info, Target, CreditCard, Wallet, X, Check, ChevronLeft } from "lucide-react";
 import { useAuth } from "@/contexts/AuthContext";
 import {
   fetchNotifications,
