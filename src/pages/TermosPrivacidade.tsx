@@ -244,7 +244,7 @@ const TermosPrivacidade = () => {
       {/* ── Sections accordion ── */}
       <div className="space-y-2">
         {sections.map((section, i) => (
-          <AccordionItem key={section.id} section={section} index={i} />
+          <SectionCard key={section.id} section={section} index={i} />
         ))}
       </div>
 
