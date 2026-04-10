@@ -205,52 +205,34 @@ const ReceitasDespesasDetalhe = () => {
         initial={{ opacity: 0, scale: 0.96 }}
         animate={{ opacity: 1, scale: 1 }}
         transition={{ type: "spring", stiffness: 220, damping: 18 }}
-        className="rounded-2xl overflow-hidden mb-5 relative"
+        className="rounded-xl overflow-hidden mb-5 relative border border-border/10 shadow-[0_4px_12px_-4px_rgba(0,0,0,0.5)] backdrop-blur-sm"
         style={{
-          background: `linear-gradient(160deg, hsl(220 24% 15%) 0%, hsl(224 26% 10%) 45%, hsl(220 22% 6%) 100%)`,
-          border: `1px solid ${accentHsl.replace(")", " / 0.22)")}`,
-          boxShadow: `0 28px 72px -20px ${accentHsl.replace(")", " / 0.2)")}, 0 4px 16px -4px rgba(0,0,0,0.6), inset 0 1px 0 hsl(220 30% 28% / 0.25)`,
+          background: "linear-gradient(160deg, hsl(220 15% 14% / 0.6) 0%, hsl(220 18% 8% / 0.75) 50%, hsl(220 20% 4% / 0.9) 100%)",
         }}
       >
-        {/* Ambient glow */}
-        <div className="absolute -top-20 -right-20 w-60 h-60 rounded-full pointer-events-none" style={{ background: `radial-gradient(circle, ${accentHsl.replace(")", " / 0.12)")}, transparent 65%)`, filter: "blur(60px)" }} />
-        <div className="absolute -bottom-16 -left-16 w-44 h-44 rounded-full pointer-events-none" style={{ background: `radial-gradient(circle, ${accentHsl.replace(")", " / 0.07)")}, transparent 65%)`, filter: "blur(45px)" }} />
-        {/* Top edge highlight */}
-        <div className="absolute inset-x-0 top-0 h-px" style={{ background: `linear-gradient(90deg, transparent 8%, hsl(220 30% 40% / 0.3) 50%, transparent 92%)` }} />
+        {/* Subtle ambient glow */}
+        <div className="absolute -top-16 -right-16 w-40 h-40 rounded-full pointer-events-none" style={{ background: `radial-gradient(circle, ${accentHsl.replace(")", " / 0.08)")}, transparent 65%)`, filter: "blur(40px)" }} />
 
         <div className="relative px-5 pt-5 pb-4">
           {/* Top row: Ring + Total */}
           <div className="flex items-center gap-4 mb-3">
-            {/* Progress ring with icon background */}
             <div className="relative flex-shrink-0">
-              <motion.div
-                className="absolute inset-0 rounded-full"
-                style={{ background: `radial-gradient(circle, ${accentHsl.replace(")", " / 0.18)")}, transparent 60%)`, transform: "scale(1.5)" }}
-                animate={{ opacity: [0.5, 0.9, 0.5] }}
-                transition={{ duration: 3.5, repeat: Infinity, ease: "easeInOut" }}
-              />
-              <ProgressRing pct={paidPct} color={accentHsl} size={56} stroke={4} />
+              <ProgressRing pct={paidPct} color={accentHsl} size={52} stroke={3.5} />
               <div className="absolute inset-0 flex items-center justify-center">
                 <div
-                  className="w-7 h-7 rounded-lg flex items-center justify-center"
-                  style={{
-                    background: `${accentHsl.replace(")", " / 0.12)")}`,
-                    boxShadow: `0 0 12px ${accentHsl.replace(")", " / 0.2)")}`,
-                  }}
+                  className="w-6 h-6 rounded-lg flex items-center justify-center"
+                  style={{ background: `${accentHsl.replace(")", " / 0.12)")}` }}
                 >
-                  <HeroIcon className={`w-3.5 h-3.5 text-${accent}`} style={{ filter: `drop-shadow(0 0 4px ${accentHsl.replace(")", " / 0.5)")})` }} />
+                  <HeroIcon className={`w-3 h-3 text-${accent}`} />
                 </div>
               </div>
             </div>
 
             <div className="flex-1 min-w-0">
-              <p className="text-[9px] text-muted-foreground/50 uppercase tracking-[0.2em] font-bold mb-1">
+              <p className="text-[9px] text-muted-foreground uppercase tracking-[0.15em] font-semibold mb-0.5">
                 Total {isReceita ? "Receitas" : "Despesas"}
               </p>
-              <p
-                className={`text-[22px] md:text-3xl font-extrabold tabular-nums font-display text-${accent} leading-none`}
-                style={{ textShadow: `0 0 28px ${accentHsl.replace(")", " / 0.3)")}, 0 2px 8px ${accentHsl.replace(")", " / 0.12)")}` }}
-              >
+              <p className={`text-[22px] md:text-3xl font-bold tabular-nums font-display text-${accent} leading-none`}>
                 {fmt(total)}
               </p>
               {trend !== 0 && (
@@ -273,19 +255,19 @@ const ReceitasDespesasDetalhe = () => {
             </div>
           </div>
 
-          {/* Gradient divider */}
-          <div className="h-px w-full mb-3" style={{ background: `linear-gradient(90deg, transparent, ${accentHsl.replace(")", " / 0.12)")}, transparent)` }} />
+          {/* Subtle divider */}
+          <div className="h-px w-full mb-3 bg-border/10" />
 
           {/* Paid / Pending inline indicators */}
           <div className="flex items-center gap-4">
             <div className="flex items-center gap-1.5">
-              <CheckCircle2 className={`w-3 h-3 text-${accent}`} style={{ opacity: 0.5 }} />
+              <CheckCircle2 className={`w-3 h-3 text-${accent}/50`} />
               <span className="text-[9px] text-muted-foreground/40 font-semibold">{isReceita ? "Recebido" : "Pago"}</span>
               <span className={`text-[12px] font-bold tabular-nums text-${accent}`}>{fmt(paid)}</span>
             </div>
-            <div className="w-px h-3 bg-white/5" />
+            <div className="w-px h-3 bg-border/10" />
             <div className="flex items-center gap-1.5">
-              <Clock className="w-3 h-3 text-yellow-400" style={{ opacity: 0.5 }} />
+              <Clock className="w-3 h-3 text-yellow-400/50" />
               <span className="text-[9px] text-muted-foreground/40 font-semibold">Pendente</span>
               <span className="text-[12px] font-bold tabular-nums text-yellow-400">{fmt(pending)}</span>
             </div>
