@@ -1,6 +1,6 @@
 import { memo } from "react";
 import { useNavigate } from "react-router-dom";
-import { ArrowUpRight } from "lucide-react";
+import { ChevronRight } from "lucide-react";
 import { motion } from "framer-motion";
 
 const BalancoMensalCard = memo(() => {
@@ -12,38 +12,38 @@ const BalancoMensalCard = memo(() => {
       animate={{ opacity: 1, y: 0 }}
       transition={{ delay: 0.14 }}
       onClick={() => navigate("/bot-finance/balanco")}
-      className="cursor-pointer rounded-xl overflow-hidden relative group"
+      className="cursor-pointer rounded-xl overflow-hidden relative group active:scale-[0.98] transition-transform"
     >
       <div
         className="absolute inset-0"
         style={{
-          background: "linear-gradient(145deg, hsl(200 50% 18% / 0.35) 0%, hsl(200 40% 10% / 0.2) 50%, hsl(220 20% 6% / 0.9) 100%)",
+          background: "linear-gradient(160deg, hsl(220 15% 14% / 0.6) 0%, hsl(220 18% 8% / 0.75) 50%, hsl(220 20% 4% / 0.9) 100%)",
         }}
       />
-      <div className="absolute inset-0 border border-blue-400/10 rounded-xl group-hover:border-blue-400/25 transition-colors" />
+      <div className="absolute inset-0 border border-border/10 rounded-xl group-hover:border-blue-400/20 transition-colors" />
 
       <div className="relative flex items-center justify-between px-4 py-3.5">
-        <div className="flex items-center gap-3">
-          <svg width="28" height="20" viewBox="0 0 28 20" fill="none" className="flex-shrink-0">
-            <rect x="1" y="14" width="5" height="6" rx="1" fill="hsl(200 80% 55%)" opacity="0.5" />
-            <rect x="8" y="8" width="5" height="12" rx="1" fill="hsl(200 80% 55%)" opacity="0.7" />
-            <rect x="15" y="4" width="5" height="16" rx="1" fill="hsl(200 80% 55%)" opacity="0.85" />
-            <rect x="22" y="1" width="5" height="19" rx="1" fill="hsl(200 80% 55%)" />
-          </svg>
+        <div className="flex items-center gap-3 min-w-0">
+          <div className="flex-shrink-0">
+            <svg width="32" height="22" viewBox="0 0 32 22" fill="none">
+              <rect x="1" y="15" width="5" height="7" rx="1.5" fill="hsl(200 80% 55%)" opacity="0.35" />
+              <rect x="9" y="10" width="5" height="12" rx="1.5" fill="hsl(200 80% 55%)" opacity="0.55" />
+              <rect x="17" y="5" width="5" height="17" rx="1.5" fill="hsl(200 80% 55%)" opacity="0.75" />
+              <rect x="25" y="1" width="5" height="21" rx="1.5" fill="hsl(200 80% 55%)" />
+            </svg>
+          </div>
 
-          <div>
+          <div className="min-w-0">
             <p className="text-[11px] font-semibold font-display text-foreground leading-tight">
               Balanço Mensal
             </p>
-            <p className="text-[9px] text-muted-foreground leading-tight mt-px">
+            <p className="text-[9px] text-muted-foreground/60 leading-tight mt-0.5">
               Receitas vs Despesas por mês
             </p>
           </div>
         </div>
 
-        <div className="w-7 h-7 rounded-lg bg-blue-400/10 flex items-center justify-center flex-shrink-0 group-hover:bg-blue-400/20 transition-colors">
-          <ArrowUpRight className="w-3.5 h-3.5 text-blue-400" />
-        </div>
+        <ChevronRight className="w-4 h-4 text-muted-foreground/40 flex-shrink-0 group-hover:text-blue-400/60 transition-colors" />
       </div>
     </motion.div>
   );
