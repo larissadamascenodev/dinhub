@@ -298,24 +298,29 @@ const ReceitasDespesasDetalhe = () => {
           className="rounded-2xl border border-border/20 bg-card/60 backdrop-blur-xl p-4 mb-5"
           style={{ boxShadow: "0 4px 24px -4px rgba(0,0,0,0.3)" }}
         >
-          <p className="text-[11px] text-muted-foreground/60 font-medium mb-3">Evolução mensal</p>
+          <p className="text-[11px] text-foreground/70 font-semibold mb-3">Evolução mensal</p>
           <ResponsiveContainer width="100%" height={140}>
             <AreaChart data={historyData}>
               <defs>
                 <linearGradient id="areaFill" x1="0" y1="0" x2="0" y2="1">
-                  <stop offset="0%" stopColor={accentHsl} stopOpacity={0.25} />
-                  <stop offset="100%" stopColor={accentHsl} stopOpacity={0} />
+                  <stop offset="0%" stopColor={accentHsl} stopOpacity={0.3} />
+                  <stop offset="100%" stopColor={accentHsl} stopOpacity={0.02} />
                 </linearGradient>
               </defs>
-              <CartesianGrid strokeDasharray="3 3" stroke="hsl(220 10% 20%)" vertical={false} />
-              <XAxis dataKey="month" tick={{ fill: "hsl(220 10% 50%)", fontSize: 10 }} axisLine={false} tickLine={false} />
+              <XAxis
+                dataKey="month"
+                tick={{ fill: "hsl(220 15% 65%)", fontSize: 10, fontWeight: 500 }}
+                axisLine={false}
+                tickLine={false}
+              />
               <YAxis hide />
               <RechartsTooltip
                 contentStyle={{
-                  background: "hsl(220 15% 12%)",
-                  border: "1px solid hsl(220 10% 20%)",
-                  borderRadius: "8px",
+                  background: "hsl(220 18% 10%)",
+                  border: `1px solid ${accentHsl.replace(")", " / 0.2)")}`,
+                  borderRadius: "10px",
                   fontSize: "11px",
+                  color: "hsl(220 15% 85%)",
                 }}
                 formatter={(value: number) => [fmt(value), isReceita ? "Receitas" : "Despesas"]}
               />
@@ -325,8 +330,8 @@ const ReceitasDespesasDetalhe = () => {
                 stroke={accentHsl}
                 strokeWidth={2.5}
                 fill="url(#areaFill)"
-                dot={{ fill: accentHsl, r: 3, strokeWidth: 0 }}
-                activeDot={{ r: 5, fill: accentHsl }}
+                dot={{ fill: accentHsl, r: 4, strokeWidth: 2, stroke: "hsl(220 18% 10%)" }}
+                activeDot={{ r: 6, fill: accentHsl, stroke: "hsl(220 18% 10%)", strokeWidth: 2 }}
               />
             </AreaChart>
           </ResponsiveContainer>
