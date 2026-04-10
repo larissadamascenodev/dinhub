@@ -129,7 +129,7 @@ const GastosSemanaisCard = memo(() => {
   return (
     <TooltipProvider delayDuration={0}>
       <div
-        className="rounded-2xl border border-border/20 bg-card/60 backdrop-blur-xl overflow-hidden"
+        className="rounded-2xl border border-border/20 bg-card/60 backdrop-blur-xl overflow-visible"
         style={{ boxShadow: "0 4px 24px -4px rgba(0,0,0,0.3)" }}
       >
         <div className="flex items-start justify-between px-4 pt-3 pb-0">
@@ -175,7 +175,7 @@ const GastosSemanaisCard = memo(() => {
                         )}
                       </div>
                     </TooltipTrigger>
-                    <TooltipContent side="top" className="text-xs font-medium whitespace-nowrap z-50">
+                    <TooltipContent side="top" collisionPadding={16} className="text-xs font-medium whitespace-nowrap z-50">
                       <span>{day.label}: {fmt(day.amount)}</span>
                     </TooltipContent>
                   </Tooltip>
