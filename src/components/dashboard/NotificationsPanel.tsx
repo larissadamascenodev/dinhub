@@ -150,12 +150,8 @@ function NotificationRow({
         )}
       </motion.div>
     </div>
-  );
-        </div>
-      </motion.div>
-    </div>
-  );
 }
+
 
 // ── Shared content ──
 function NotificationContent({
