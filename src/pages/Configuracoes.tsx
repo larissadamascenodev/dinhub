@@ -99,6 +99,10 @@ const Configuracoes = () => {
   };
 
   const handleChangePassword = async () => {
+    if (!currentPassword) {
+      toast.error("Digite sua senha atual");
+      return;
+    }
     if (!newPassword || !confirmPassword) {
       toast.error("Preencha todos os campos");
       return;
@@ -113,6 +117,15 @@ const Configuracoes = () => {
     }
     setChangingPassword(true);
     try {
+      // Verify current password by re-signing in
+      const { error: signInError } = await supabase.auth.signInWithPassword({
+        email: user?.email ?? "",
+        password: currentPassword,
+      });
+      if (signInError) {
+        toast.error("Senha atual incorreta");
+        return;
+      }
       const { error } = await supabase.auth.updateUser({ password: newPassword });
       if (error) throw error;
       toast.success("Senha alterada com sucesso!");
@@ -124,6 +137,19 @@ const Configuracoes = () => {
       toast.error(err?.message || "Erro ao alterar senha");
     } finally {
       setChangingPassword(false);
+    }
+  };
+
+  const handleForgotPassword = async () => {
+    if (!user?.email) return;
+    try {
+      await supabase.auth.resetPasswordForEmail(user.email, {
+        redirectTo: `${window.location.origin}/reset-password`,
+      });
+      toast.success("E-mail de recuperação enviado! Verifique sua caixa de entrada.");
+      setPasswordModalOpen(false);
+    } catch {
+      toast.error("Erro ao enviar e-mail de recuperação");
     }
   };
 
