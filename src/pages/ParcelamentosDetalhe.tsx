@@ -39,7 +39,7 @@ const formatShortCurrency = (v: number) => {
 const ParcelamentosDetalhe = () => {
   const { user } = useAuth();
   const navigate = useNavigate();
-  const swipeHandlers = useSwipeBack(() => navigate(-1));
+  useSwipeBack(true);
   const [items, setItems] = useState<Installment[]>([]);
   const [customCats, setCustomCats] = useState<CustomCategory[]>([]);
   const [loading, setLoading] = useState(true);
@@ -178,7 +178,7 @@ const ParcelamentosDetalhe = () => {
 
   if (items.length === 0) {
     return (
-      <div className="space-y-4" {...swipeHandlers}>
+      <div className="space-y-4" >
         <button onClick={() => navigate(-1)} className="flex items-center gap-1 text-muted-foreground hover:text-foreground transition-colors">
           <ArrowLeft className="w-5 h-5" />
         </button>
@@ -192,7 +192,7 @@ const ParcelamentosDetalhe = () => {
   }
 
   return (
-    <div className="space-y-4 select-none" {...swipeHandlers}>
+    <div className="space-y-4 select-none" >
       {/* Header */}
       <button onClick={() => navigate(-1)} className="flex items-center gap-1 text-muted-foreground hover:text-foreground transition-colors">
         <ArrowLeft className="w-5 h-5" />
