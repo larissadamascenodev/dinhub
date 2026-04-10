@@ -120,11 +120,12 @@ export async function generateNotifications(userId: string) {
 
     const { data: pendingBills } = await supabase
       .from("transactions")
-      .select("id, name, date, amount, payment_method")
+      .select("id, name, date, amount, payment_method, credit_card_id")
       .eq("user_id", userId)
       .eq("status", "pendente")
       .eq("type", "despesa")
       .neq("payment_method", "cartao")
+      .is("credit_card_id", null)
       .gte("date", todayStr)
       .lte("date", futureDateStr)
       .limit(20);
