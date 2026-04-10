@@ -211,7 +211,7 @@ const ReceitasDespesasDetalhe = () => {
 
         <div className="relative px-5 pt-5 pb-5">
           {/* Top row: Ring + Total */}
-          <div className="flex items-center gap-4 mb-4">
+          <div className="flex items-center gap-4 mb-3">
             {/* Progress ring */}
             <div className="relative flex-shrink-0">
               <ProgressRing pct={paidPct} color={accentHsl} size={60} stroke={4} />
@@ -239,40 +239,18 @@ const ReceitasDespesasDetalhe = () => {
             </div>
           </div>
 
-          {/* Progress bar full width */}
-          <div className="mb-4">
-            <div className="w-full h-1 bg-border/8 rounded-full overflow-hidden">
-              <motion.div
-                initial={{ width: 0 }}
-                animate={{ width: `${paidPct}%` }}
-                transition={{ duration: 1, ease: "easeOut", delay: 0.3 }}
-                className="h-full rounded-full"
-                style={{ background: accentHsl, opacity: 0.7 }}
-              />
+          {/* Paid / Pending inline */}
+          <div className="flex items-center gap-4 pl-1">
+            <div className="flex items-center gap-1.5">
+              <CheckCircle2 className={`w-3 h-3 text-${accent}`} style={{ opacity: 0.6 }} />
+              <span className="text-[9px] text-muted-foreground/50 font-semibold uppercase tracking-wider">{isReceita ? "Recebido" : "Pago"}</span>
+              <span className={`text-xs font-bold tabular-nums text-${accent} ml-0.5`}>{fmt(paid)}</span>
             </div>
-            <div className="flex justify-between mt-1">
-              <span className="text-[8px] text-muted-foreground/35 tabular-nums">{paidPct}% {isReceita ? "recebido" : "pago"}</span>
-              <span className="text-[8px] text-muted-foreground/35 tabular-nums">{100 - paidPct}% pendente</span>
-            </div>
-          </div>
-
-          {/* Paid / Pending sub-cards */}
-          <div className="grid grid-cols-2 gap-2.5">
-            <div className="rounded-xl px-3.5 py-3 relative overflow-hidden" style={{ background: `${accentHsl.replace(")", " / 0.07)")}` }}>
-              <div className="absolute top-0 left-0 w-[3px] h-full rounded-r-full" style={{ background: accentHsl, opacity: 0.6 }} />
-              <div className="flex items-center gap-1.5 mb-1">
-                <CheckCircle2 className={`w-3 h-3 text-${accent}`} style={{ opacity: 0.6 }} />
-                <p className="text-[9px] text-foreground/45 font-semibold uppercase tracking-wider">{isReceita ? "Recebido" : "Pago"}</p>
-              </div>
-              <p className={`text-[15px] font-bold tabular-nums text-${accent}`}>{fmt(paid)}</p>
-            </div>
-            <div className="rounded-xl px-3.5 py-3 relative overflow-hidden" style={{ background: "hsl(40 80% 50% / 0.07)" }}>
-              <div className="absolute top-0 left-0 w-[3px] h-full rounded-r-full" style={{ background: "hsl(40 80% 50%)", opacity: 0.6 }} />
-              <div className="flex items-center gap-1.5 mb-1">
-                <Clock className="w-3 h-3 text-yellow-400" style={{ opacity: 0.6 }} />
-                <p className="text-[9px] text-foreground/45 font-semibold uppercase tracking-wider">Pendente</p>
-              </div>
-              <p className="text-[15px] font-bold tabular-nums text-yellow-400">{fmt(pending)}</p>
+            <div className="w-px h-3 bg-border/15" />
+            <div className="flex items-center gap-1.5">
+              <Clock className="w-3 h-3 text-yellow-400" style={{ opacity: 0.6 }} />
+              <span className="text-[9px] text-muted-foreground/50 font-semibold uppercase tracking-wider">Pendente</span>
+              <span className="text-xs font-bold tabular-nums text-yellow-400 ml-0.5">{fmt(pending)}</span>
             </div>
           </div>
         </div>
