@@ -69,10 +69,9 @@ export async function createCustomCategory(
     .single();
 
   if (error) throw error;
+  invalidateCustomCategoryCache();
   return data as unknown as CustomCategory;
 }
-
-export async function updateCustomCategory(
   id: string,
   updates: { name?: string; icon?: string; color?: string }
 ) {
@@ -84,6 +83,7 @@ export async function updateCustomCategory(
     .single();
 
   if (error) throw error;
+  invalidateCustomCategoryCache();
   return data as unknown as CustomCategory;
 }
 
@@ -94,9 +94,8 @@ export async function deleteCustomCategory(id: string) {
     .eq("id", id);
 
   if (error) throw error;
+  invalidateCustomCategoryCache();
 }
-
-export async function hideDefaultCategory(
   userId: string,
   name: string,
   type: string
