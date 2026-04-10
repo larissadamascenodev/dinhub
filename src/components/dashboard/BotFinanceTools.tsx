@@ -12,6 +12,7 @@ interface ToolItem {
   disabled?: boolean;
   color: string;
   bgFrom: string;
+  borderColor?: string;
 }
 
 const tools: ToolItem[] = [
@@ -21,6 +22,7 @@ const tools: ToolItem[] = [
     path: "/gestao",
     color: "hsl(var(--primary))",
     bgFrom: "hsl(150 40% 14%)",
+    borderColor: "hsl(var(--primary) / 0.18)",
   },
   {
     icon: <BarChart3 className="w-5 h-5" />,
@@ -116,7 +118,7 @@ const BotFinanceTools = ({ layout = "carousel" }: BotFinanceToolsProps) => {
             initial={{ opacity: 0, scale: 0.8 }}
             animate={{ opacity: 1, scale: 1 }}
             transition={{ delay: i * 0.06, type: "spring", stiffness: 260, damping: 20 }}
-            whileHover={isDisabled ? {} : { scale: 1.05, transition: { duration: 0.2 } }}
+            whileHover={isDisabled ? {} : { y: -2, transition: { duration: 0.2 } }}
             whileTap={isDisabled ? {} : { scale: 0.95 }}
             onClick={() => {
               if (isDragging.current) return;
@@ -130,8 +132,8 @@ const BotFinanceTools = ({ layout = "carousel" }: BotFinanceToolsProps) => {
               className="relative w-14 h-14 md:w-16 md:h-16 rounded-full flex items-center justify-center border transition-all duration-300"
               style={{
                 background: `radial-gradient(circle at 35% 35%, ${tool.bgFrom}, hsl(220 18% 7%) 90%)`,
-                borderColor: isDisabled ? "hsl(220 10% 18%)" : `${tool.color}30`,
-                boxShadow: isDisabled ? "none" : `0 0 16px ${tool.color}10, inset 0 1px 0 hsl(220 20% 20% / 0.2)`,
+                borderColor: isDisabled ? "hsl(220 10% 18%)" : (tool.borderColor || `${tool.color}30`),
+                boxShadow: isDisabled ? "none" : `0 0 12px ${tool.color}08, inset 0 1px 0 hsl(220 20% 20% / 0.15)`,
               }}
             >
               {!isDisabled && (
