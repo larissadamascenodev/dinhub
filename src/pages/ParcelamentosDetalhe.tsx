@@ -248,9 +248,32 @@ const ParcelamentosDetalhe = () => {
         </motion.div>
       )}
 
+      {/* Payment method split */}
+      {stats && (
+        <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} transition={{ delay: 0.15 }} className="glass-card p-4">
+          <h3 className="text-sm font-semibold text-foreground mb-3">Meio de pagamento</h3>
+          <div className="grid grid-cols-2 gap-3">
+            <div className="flex items-center gap-2.5 rounded-xl bg-muted/20 border border-border/20 p-3">
+              <CreditCard className="w-4 h-4 text-muted-foreground" />
+              <div>
+                <p className="text-xs font-bold text-foreground">{stats.cardCount}</p>
+                <p className="text-[9px] text-muted-foreground">Cartão</p>
+              </div>
+            </div>
+            <div className="flex items-center gap-2.5 rounded-xl bg-muted/20 border border-border/20 p-3">
+              <Wallet className="w-4 h-4 text-muted-foreground" />
+              <div>
+                <p className="text-xs font-bold text-foreground">{stats.accountCount}</p>
+                <p className="text-[9px] text-muted-foreground">Conta</p>
+              </div>
+            </div>
+          </div>
+        </motion.div>
+      )}
+
       {/* Projection Chart */}
       {projectionData.length > 1 && (
-        <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} transition={{ delay: 0.15 }} className="glass-card p-4 space-y-3">
+        <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} transition={{ delay: 0.2 }} className="glass-card p-4 space-y-3">
           <div className="flex items-center gap-2">
             <BarChart3 className="w-4 h-4 text-muted-foreground" />
             <h3 className="text-sm font-semibold text-foreground">Compromisso mensal</h3>
@@ -284,7 +307,7 @@ const ParcelamentosDetalhe = () => {
 
       {/* Category Breakdown */}
       {categoryData.length > 0 && (
-        <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} transition={{ delay: 0.2 }} className="glass-card p-4 space-y-3">
+        <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} transition={{ delay: 0.25 }} className="glass-card p-4 space-y-3">
           <div className="flex items-center gap-2">
             <PieChart className="w-4 h-4 text-muted-foreground" />
             <h3 className="text-sm font-semibold text-foreground">Por categoria</h3>
@@ -319,29 +342,6 @@ const ParcelamentosDetalhe = () => {
                 </div>
               );
             })}
-          </div>
-        </motion.div>
-      )}
-
-      {/* Payment method split */}
-      {stats && (
-        <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} transition={{ delay: 0.25 }} className="glass-card p-4">
-          <h3 className="text-sm font-semibold text-foreground mb-3">Meio de pagamento</h3>
-          <div className="grid grid-cols-2 gap-3">
-            <div className="flex items-center gap-2.5 rounded-xl bg-muted/20 border border-border/20 p-3">
-              <CreditCard className="w-4 h-4 text-muted-foreground" />
-              <div>
-                <p className="text-xs font-bold text-foreground">{stats.cardCount}</p>
-                <p className="text-[9px] text-muted-foreground">Cartão</p>
-              </div>
-            </div>
-            <div className="flex items-center gap-2.5 rounded-xl bg-muted/20 border border-border/20 p-3">
-              <Wallet className="w-4 h-4 text-muted-foreground" />
-              <div>
-                <p className="text-xs font-bold text-foreground">{stats.accountCount}</p>
-                <p className="text-[9px] text-muted-foreground">Conta</p>
-              </div>
-            </div>
           </div>
         </motion.div>
       )}
