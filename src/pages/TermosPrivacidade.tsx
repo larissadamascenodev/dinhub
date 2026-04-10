@@ -134,9 +134,7 @@ const sections: PolicySection[] = [
 ];
 
 /* ─── Accordion item ─── */
-const AccordionItem = ({ section, index }: { section: PolicySection; index: number }) => {
-  const [open, setOpen] = useState(false);
-
+const SectionCard = ({ section, index }: { section: PolicySection; index: number }) => {
   const isWarning = !!section.highlight;
 
   return (
@@ -144,68 +142,42 @@ const AccordionItem = ({ section, index }: { section: PolicySection; index: numb
       initial={{ opacity: 0, y: 16 }}
       animate={{ opacity: 1, y: 0 }}
       transition={{ delay: 0.06 + index * 0.035, ease: "easeOut" }}
+      className={cn(
+        "rounded-xl backdrop-blur-xl border p-4 space-y-2.5",
+        isWarning ? "border-warning/20 bg-warning/[0.03]" : "border-border/10 bg-card/60",
+      )}
     >
-      <button
-        onClick={() => setOpen((v) => !v)}
-        className={cn(
-          "w-full flex items-center gap-3 px-4 py-3.5 rounded-xl transition-all duration-200",
-          "backdrop-blur-xl border",
-          open ? "border-primary/20 bg-card/80" : "border-border/10 bg-card/50 hover:bg-card/70",
-          isWarning && "border-warning/20 bg-warning/[0.03]",
-        )}
-      >
+      <div className="flex items-center gap-3">
         <div
           className={cn(
-            "w-9 h-9 rounded-xl flex items-center justify-center shrink-0 transition-colors",
+            "w-9 h-9 rounded-xl flex items-center justify-center shrink-0",
             isWarning ? "bg-warning/10" : "bg-primary/10",
           )}
         >
           <section.icon className={cn("w-[18px] h-[18px]", isWarning ? "text-warning" : "text-primary")} />
         </div>
+        <span className="text-[13px] font-bold text-foreground">{section.title}</span>
+      </div>
 
-        <span className="flex-1 text-left text-[13px] font-bold text-foreground">{section.title}</span>
-
-        <motion.div
-          animate={{ rotate: open ? 180 : 0 }}
-          transition={{ duration: 0.25 }}
-        >
-          <ChevronDown className="w-4 h-4 text-muted-foreground" />
-        </motion.div>
-      </button>
-
-      <AnimatePresence initial={false}>
-        {open && (
-          <motion.div
-            initial={{ height: 0, opacity: 0 }}
-            animate={{ height: "auto", opacity: 1 }}
-            exit={{ height: 0, opacity: 0 }}
-            transition={{ duration: 0.3, ease: [0.4, 0, 0.2, 1] }}
-            className="overflow-hidden"
-          >
-            <div className="px-4 pt-3 pb-1 space-y-2.5">
-              {section.paragraphs?.map((p, i) => (
-                <p key={i} className="text-[13px] text-muted-foreground leading-relaxed">{p}</p>
-              ))}
-              {section.bullets && (
-                <ul className="space-y-1.5 pl-1">
-                  {section.bullets.map((b, i) => (
-                    <li key={i} className="flex items-start gap-2.5 text-[13px] text-muted-foreground leading-relaxed">
-                      <span className={cn(
-                        "mt-[7px] w-1 h-1 rounded-full shrink-0",
-                        isWarning ? "bg-warning/70" : "bg-primary/60",
-                      )} />
-                      {b}
-                    </li>
-                  ))}
-                </ul>
-              )}
-              {section.note && (
-                <p className="text-[11px] text-muted-foreground/50 italic pt-1">{section.note}</p>
-              )}
-            </div>
-          </motion.div>
-        )}
-      </AnimatePresence>
+      {section.paragraphs?.map((p, i) => (
+        <p key={i} className="text-[13px] text-muted-foreground leading-relaxed">{p}</p>
+      ))}
+      {section.bullets && (
+        <ul className="space-y-1.5 pl-1">
+          {section.bullets.map((b, i) => (
+            <li key={i} className="flex items-start gap-2.5 text-[13px] text-muted-foreground leading-relaxed">
+              <span className={cn(
+                "mt-[7px] w-1 h-1 rounded-full shrink-0",
+                isWarning ? "bg-warning/70" : "bg-primary/60",
+              )} />
+              {b}
+            </li>
+          ))}
+        </ul>
+      )}
+      {section.note && (
+        <p className="text-[11px] text-muted-foreground/50 italic pt-1">{section.note}</p>
+      )}
     </motion.div>
   );
 };
