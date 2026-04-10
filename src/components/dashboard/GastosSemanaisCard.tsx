@@ -156,22 +156,21 @@ const GastosSemanaisCard = memo(() => {
 
             <div className="flex items-end justify-between gap-1.5 pr-14" style={{ height: "60px" }}>
               {weekData.map((day, idx) => {
-                const heightPct = day.amount > 0 ? Math.max((day.amount / yMax) * 100, 12) : 0;
+                const barH = day.amount > 0 ? Math.max((day.amount / yMax) * 60, 4) : 0;
                 const isEmpty = day.amount === 0;
 
                 return (
                   <Tooltip key={idx}>
                     <TooltipTrigger asChild>
-                      <div className="flex-1 flex flex-col items-center cursor-default">
+                      <div className="flex-1 flex flex-col items-center justify-end cursor-default" style={{ height: "60px" }}>
                         {isEmpty ? (
-                          <div className="w-2.5 h-2.5 rounded-full border-2 border-muted-foreground/20 mt-auto" />
+                          <div className="w-2.5 h-2.5 rounded-full border-2 border-muted-foreground/20" />
                         ) : (
                           <motion.div
                             initial={{ height: 0 }}
-                            animate={{ height: `${heightPct}%` }}
+                            animate={{ height: barH }}
                             transition={{ delay: idx * 0.06, duration: 0.4, ease: "easeOut" }}
-                            className="w-full max-w-[14px] rounded-t-md bg-primary mt-auto hover:opacity-80 transition-opacity"
-                            style={{ minHeight: "4px" }}
+                            className="w-full max-w-[14px] rounded-t-md bg-primary hover:opacity-80 transition-opacity"
                           />
                         )}
                       </div>
