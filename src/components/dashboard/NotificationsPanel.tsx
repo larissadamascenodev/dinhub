@@ -1,6 +1,6 @@
 import { useState, useEffect, useCallback } from "react";
 import { motion, AnimatePresence, PanInfo } from "framer-motion";
-import { Bell, CheckCheck, AlertTriangle, Info, Target, CreditCard, Wallet, X, Check, ChevronLeft, Trash2 } from "lucide-react";
+import { Bell, CheckCheck, AlertTriangle, Info, Target, CreditCard, Wallet, X, Check, ChevronLeft } from "lucide-react";
 import { useAuth } from "@/contexts/AuthContext";
 import {
   fetchNotifications,
@@ -63,48 +63,33 @@ export function useNotifications() {
 function NotificationRow({
   notification: n,
   onMarkRead,
-  onDelete,
 }: {
   notification: AppNotification;
   onMarkRead: (id: string) => void;
-  onDelete: (id: string) => void;
 }) {
   const config = CATEGORY_CONFIG[n.category] ?? CATEGORY_CONFIG.geral;
   const Icon = config.icon;
-  const [dismissed, setDismissed] = useState(false);
 
   const handleDragEnd = (_: any, info: PanInfo) => {
-    // Swipe RIGHT → mark as read
-    if (info.offset.x > 80) {
-      onMarkRead(n.id);
-    }
-    // Swipe LEFT → delete
+    // Swipe LEFT → mark as read & remove
     if (info.offset.x < -80) {
-      setDismissed(true);
-      setTimeout(() => onDelete(n.id), 250);
+      onMarkRead(n.id);
     }
   };
 
   return (
-    <div className={cn("relative overflow-hidden rounded-xl", dismissed && "opacity-0 scale-95 transition-all duration-200")}>
-      {/* Left action (swipe right = mark read) */}
-      <div className="absolute inset-y-0 left-0 w-24 flex items-center justify-center bg-primary/15 rounded-l-xl">
+    <div className="relative overflow-hidden rounded-xl">
+      {/* Right action revealed on swipe left */}
+      <div className="absolute inset-y-0 right-0 w-24 flex items-center justify-center bg-primary/15 rounded-r-xl">
         <div className="flex flex-col items-center gap-0.5">
           <Check className="w-5 h-5 text-primary" />
           <span className="text-[8px] text-primary font-bold">Lida</span>
         </div>
       </div>
-      {/* Right action (swipe left = delete) */}
-      <div className="absolute inset-y-0 right-0 w-24 flex items-center justify-center bg-destructive/15 rounded-r-xl">
-        <div className="flex flex-col items-center gap-0.5">
-          <Trash2 className="w-5 h-5 text-destructive" />
-          <span className="text-[8px] text-destructive font-bold">Apagar</span>
-        </div>
-      </div>
 
       <motion.div
         drag="x"
-        dragConstraints={{ left: -100, right: 100 }}
+        dragConstraints={{ left: -100, right: 0 }}
         dragElastic={0.15}
         onDragEnd={handleDragEnd}
         whileDrag={{ scale: 0.98 }}
@@ -161,7 +146,7 @@ function NotificationContent({
   unreadCount,
   onMarkAllRead,
   onMarkRead,
-  onDelete,
+  
   onClose,
   showHeader = true,
 }: {
@@ -170,7 +155,7 @@ function NotificationContent({
   unreadCount: number;
   onMarkAllRead: () => void;
   onMarkRead: (id: string) => void;
-  onDelete: (id: string) => void;
+  
   onClose: () => void;
   showHeader?: boolean;
 }) {
@@ -240,7 +225,7 @@ function NotificationContent({
                 <NotificationRow
                   notification={n}
                   onMarkRead={onMarkRead}
-                  onDelete={onDelete}
+                  
                 />
               </motion.div>
             ))}
@@ -252,7 +237,7 @@ function NotificationContent({
       {notifications.length > 0 && (
         <div className="px-4 py-2 border-t border-border/5 shrink-0">
           <p className="text-[9px] text-muted-foreground/40 text-center select-none">
-            ← Deslize para a esquerda para apagar · para a direita para marcar como lida →
+            ← Deslize para a esquerda para marcar como lida
           </p>
         </div>
       )}
@@ -287,18 +272,11 @@ export default function NotificationsPanel({ open, onClose }: NotificationsPanel
   const handleMarkAllRead = async () => {
     if (!user) return;
     await markAllAsRead(user.id);
-    setNotifications((prev) => prev.map((n) => ({ ...n, is_read: true })));
+    setNotifications([]);
   };
 
   const handleMarkRead = async (id: string) => {
     await markAsRead(id);
-    setNotifications((prev) =>
-      prev.map((item) => (item.id === id ? { ...item, is_read: true } : item))
-    );
-  };
-
-  const handleDelete = async (id: string) => {
-    await supabase.from("notifications").delete().eq("id", id);
     setNotifications((prev) => prev.filter((item) => item.id !== id));
   };
 
@@ -310,7 +288,6 @@ export default function NotificationsPanel({ open, onClose }: NotificationsPanel
     unreadCount,
     onMarkAllRead: handleMarkAllRead,
     onMarkRead: handleMarkRead,
-    onDelete: handleDelete,
     onClose,
   };
 
