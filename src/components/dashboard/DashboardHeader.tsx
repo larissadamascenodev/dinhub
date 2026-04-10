@@ -4,6 +4,7 @@ import { useAuth } from "@/contexts/AuthContext";
 import { useNavigate, useLocation } from "react-router-dom";
 import { motion, AnimatePresence } from "framer-motion";
 import { cn } from "@/lib/utils";
+import NotificationsPanel, { useNotifications } from "./NotificationsPanel";
 
 export const useGreeting = () => {
   return useMemo(() => {
@@ -37,9 +38,13 @@ const DashboardHeader = memo(({ profile, streak = 0, streakDates = [] }: { profi
   const [menuOpen, setMenuOpen] = useState(false);
   const [transacaoMenuOpen, setTransacaoMenuOpen] = useState(false);
   const [streakOpen, setStreakOpen] = useState(false);
+  const [notifOpen, setNotifOpen] = useState(false);
   const menuRef = useRef<HTMLDivElement>(null);
   const transacaoRef = useRef<HTMLDivElement>(null);
   const streakRef = useRef<HTMLDivElement>(null);
+  const notifRef = useRef<HTMLDivElement>(null);
+
+  const { unreadCount, refresh: refreshNotifs } = useNotifications();
 
   useEffect(() => {
     const handler = (e: MouseEvent) => {
@@ -60,6 +65,17 @@ const DashboardHeader = memo(({ profile, streak = 0, streakDates = [] }: { profi
     }
   };
 
+  const handleOpenNotif = () => {
+    setNotifOpen((v) => !v);
+    setStreakOpen(false);
+    setMenuOpen(false);
+  };
+
+  const handleCloseNotif = () => {
+    setNotifOpen(false);
+    refreshNotifs();
+  };
+
   const streakMessage = streak >= 7
     ? "🏆 Incrível! Você está arrasando!"
     : streak >= 3
@@ -73,6 +89,23 @@ const DashboardHeader = memo(({ profile, streak = 0, streakDates = [] }: { profi
     const date = new Date(Number(y), Number(m) - 1, Number(d));
     return date.toLocaleDateString("pt-BR", { weekday: "short", day: "numeric", month: "short" });
   };
+
+  const BellButton = ({ size = "md" }: { size?: "sm" | "md" }) => (
+    <button
+      onClick={handleOpenNotif}
+      className={cn(
+        "relative flex items-center justify-center text-muted-foreground hover:text-foreground transition-colors",
+        size === "sm" ? "w-7 h-7 rounded-full" : ""
+      )}
+    >
+      <Bell className={size === "sm" ? "h-3.5 w-3.5" : "h-4 w-4"} />
+      {unreadCount > 0 && (
+        <span className="absolute -top-1 -right-1 min-w-[16px] h-4 px-1 flex items-center justify-center rounded-full bg-destructive text-destructive-foreground text-[9px] font-bold">
+          {unreadCount > 9 ? "9+" : unreadCount}
+        </span>
+      )}
+    </button>
+  );
 
   const renderStreakPopover = () => (
     <AnimatePresence>
@@ -162,7 +195,6 @@ const DashboardHeader = memo(({ profile, streak = 0, streakDates = [] }: { profi
                     <span>{item.label}</span>
                   </button>
 
-                  {/* Dropdown - vertical card style */}
                   <AnimatePresence>
                     {transacaoMenuOpen && (
                       <motion.div
@@ -172,27 +204,16 @@ const DashboardHeader = memo(({ profile, streak = 0, streakDates = [] }: { profi
                         transition={{ type: "spring", stiffness: 400, damping: 25 }}
                         className="absolute left-1/2 -translate-x-1/2 top-full mt-3 z-50 p-1.5 rounded-xl bg-card/95 backdrop-blur-2xl border border-border/15 shadow-2xl shadow-black/40 flex flex-row text-left my-px py-[6px] gap-[6px]"
                       >
-                        {/* Arrow indicator */}
                         <div className="absolute -top-1.5 left-1/2 -translate-x-1/2 w-3 h-3 rotate-45 bg-card/95 border-l border-t border-border/15" />
-
-                        <button
-                          onClick={() => handleTransacaoOption("receita")}
-                          className="relative flex items-center gap-1.5 px-3 py-2 rounded-lg hover:bg-primary/10 transition-colors"
-                        >
+                        <button onClick={() => handleTransacaoOption("receita")} className="relative flex items-center gap-1.5 px-3 py-2 rounded-lg hover:bg-primary/10 transition-colors">
                           <TrendingUp className="w-3.5 h-3.5 text-primary" />
                           <span className="text-[11px] font-medium text-foreground whitespace-nowrap">Receita</span>
                         </button>
-                        <button
-                          onClick={() => handleTransacaoOption("despesa")}
-                          className="relative flex items-center gap-1.5 px-3 py-2 rounded-lg hover:bg-destructive/10 transition-colors"
-                        >
+                        <button onClick={() => handleTransacaoOption("despesa")} className="relative flex items-center gap-1.5 px-3 py-2 rounded-lg hover:bg-destructive/10 transition-colors">
                           <TrendingDown className="w-3.5 h-3.5 text-destructive" />
                           <span className="text-[11px] font-medium text-foreground whitespace-nowrap">Despesa</span>
                         </button>
-                        <button
-                          onClick={() => handleTransacaoOption("scanner")}
-                          className="relative flex items-center gap-1.5 px-3 py-2 rounded-lg hover:bg-blue-500/10 transition-colors"
-                        >
+                        <button onClick={() => handleTransacaoOption("scanner")} className="relative flex items-center gap-1.5 px-3 py-2 rounded-lg hover:bg-blue-500/10 transition-colors">
                           <Camera className="w-3.5 h-3.5 text-blue-400" />
                           <span className="text-[11px] font-medium text-foreground whitespace-nowrap">Scanner</span>
                         </button>
@@ -208,9 +229,7 @@ const DashboardHeader = memo(({ profile, streak = 0, streakDates = [] }: { profi
                 key={item.label}
                 onClick={() => navigate(item.path)}
                 className={`relative flex items-center gap-1.5 px-4 py-2 rounded-xl text-xs font-medium transition-all duration-300 ${
-                  isActive
-                    ? "text-primary"
-                    : "text-muted-foreground hover:text-foreground"
+                  isActive ? "text-primary" : "text-muted-foreground hover:text-foreground"
                 }`}
               >
                 <Icon className="w-3.5 h-3.5" />
@@ -232,9 +251,10 @@ const DashboardHeader = memo(({ profile, streak = 0, streakDates = [] }: { profi
             </button>
             {renderStreakPopover()}
           </div>
-          <button className="text-muted-foreground hover:text-foreground transition-colors">
-            <Bell className="h-4 w-4" />
-          </button>
+          <div className="relative" ref={notifRef}>
+            <BellButton />
+            <NotificationsPanel open={notifOpen} onClose={handleCloseNotif} />
+          </div>
           {/* Profile chip + dropdown */}
           <div className="relative" ref={menuRef}>
             <button
@@ -288,16 +308,17 @@ const DashboardHeader = memo(({ profile, streak = 0, streakDates = [] }: { profi
       <header className="sticky top-0 z-40 bg-background/80 backdrop-blur-xl px-4 py-3 md:hidden -mx-4 mb-2">
         <div className="flex items-center justify-between">
           <div className="flex items-center gap-1.5">
-             <PiggyBank className="w-7 h-7 text-primary" />
+            <PiggyBank className="w-7 h-7 text-primary" />
             <span className="font-display font-bold text-xl">
               <span className="text-foreground">Din</span>
               <span className="text-primary">Hub</span>
             </span>
           </div>
           <div className="flex items-center gap-1 bg-card/60 backdrop-blur-xl border border-border/20 rounded-full px-1.5 py-1">
-            <button className="w-7 h-7 rounded-full flex items-center justify-center text-muted-foreground">
-              <Bell className="h-3.5 w-3.5" />
-            </button>
+            <div className="relative" ref={notifRef}>
+              <BellButton size="sm" />
+              <NotificationsPanel open={notifOpen} onClose={handleCloseNotif} />
+            </div>
             <div className="relative" ref={streakRef}>
               <button
                 onClick={() => setStreakOpen((v) => !v)}
@@ -311,8 +332,6 @@ const DashboardHeader = memo(({ profile, streak = 0, streakDates = [] }: { profi
           </div>
         </div>
       </header>
-
-      
     </>
   );
 });
