@@ -326,7 +326,8 @@ const Configuracoes = () => {
     { icon: Globe, label: "Tipo de Moeda", sub: "Selecione a moeda padrão" },
     { icon: HelpCircle, label: "Central de Ajuda", sub: "Perguntas frequentes", onClick: () => navigate("/ajuda") },
     { icon: Headphones, label: "Falar com o Suporte", sub: "Abrir um chamado", onClick: () => navigate("/suporte") },
-    { icon: FileCheck, label: "Termos de Privacidade", sub: "Política e termos", onClick: () => navigate("/termos") },
+    { icon: FileCheck, label: "Termos de Uso", sub: "Condições e assinatura", onClick: () => navigate("/termos-de-uso") },
+    { icon: Shield, label: "Política de Privacidade", sub: "Como protegemos seus dados", onClick: () => navigate("/politica-privacidade") },
   ];
 
   const SettingsRow = ({ icon: Icon, label, sub, badge, danger, action, onClick }: any) => (

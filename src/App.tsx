@@ -23,7 +23,8 @@ import Metas from "./pages/Metas.tsx";
 import MetaDetalhe from "./pages/MetaDetalhe.tsx";
 import AnalyticsCategorias from "./pages/AnalyticsCategorias.tsx";
 import Desafios from "./pages/Desafios.tsx";
-import TermosPrivacidade from "./pages/TermosPrivacidade.tsx";
+import TermosDeUso from "./pages/TermosDeUso.tsx";
+import PoliticaPrivacidade from "./pages/PoliticaPrivacidade.tsx";
 import Suporte from "./pages/Suporte.tsx";
 import ReceitasDespesasDetalhe from "./pages/ReceitasDespesasDetalhe.tsx";
 import ParcelamentosDetalhe from "./pages/ParcelamentosDetalhe.tsx";
@@ -73,7 +74,8 @@ const App = () => (
               <Route path="/analytics/categorias" element={<AnalyticsCategorias />} />
               <Route path="/desafios" element={<Desafios />} />
               <Route path="/parcelamentos" element={<ParcelamentosDetalhe />} />
-              <Route path="/termos" element={<TermosPrivacidade />} />
+              <Route path="/termos-de-uso" element={<TermosDeUso />} />
+              <Route path="/politica-privacidade" element={<PoliticaPrivacidade />} />
               <Route path="/suporte" element={<Suporte />} />
               <Route path="/ajuda" element={<CentralAjuda />} />
             </Route>
