@@ -12,7 +12,6 @@ import {
   type AppNotification,
 } from "@/services/notificationService";
 import { cn } from "@/lib/utils";
-import { supabase } from "@/integrations/supabase/client";
 import { Dialog, DialogContent } from "@/components/ui/dialog";
 import { useIsMobile } from "@/hooks/use-mobile";
 
@@ -23,6 +22,10 @@ const CATEGORY_CONFIG: Record<string, { icon: typeof Bell; className: string; bg
   saldo: { icon: Wallet, className: "text-orange-400", bg: "bg-orange-400/10" },
   geral: { icon: Info, className: "text-muted-foreground", bg: "bg-muted/15" },
 };
+
+const NOTIFICATION_LIMIT = 30;
+const notificationCache = new Map<string, AppNotification[]>();
+const notificationRequests = new Map<string, Promise<AppNotification[]>>();
 
 function timeAgo(dateStr: string) {
   const diff = Date.now() - new Date(dateStr).getTime();
@@ -36,30 +39,100 @@ function timeAgo(dateStr: string) {
   return `${Math.floor(days / 7)}sem`;
 }
 
-// ── Hook ──
+function getUnreadTotal(items: AppNotification[]) {
+  return items.filter((item) => !item.is_read).length;
+}
+
+function updateNotificationCache(userId: string, items: AppNotification[]) {
+  notificationCache.set(userId, items);
+}
+
+function clearNotificationCache(userId: string) {
+  notificationCache.delete(userId);
+  notificationRequests.delete(userId);
+}
+
+async function ensureNotificationsLoaded(userId: string, force = false) {
+  if (!force) {
+    const cached = notificationCache.get(userId);
+    if (cached) return cached;
+  }
+
+  const inFlight = notificationRequests.get(userId);
+  if (inFlight) return inFlight;
+
+  const request = fetchNotifications(userId, NOTIFICATION_LIMIT)
+    .then((data) => {
+      updateNotificationCache(userId, data);
+      return data;
+    })
+    .finally(() => {
+      notificationRequests.delete(userId);
+    });
+
+  notificationRequests.set(userId, request);
+  return request;
+}
+
 export function useNotifications() {
   const { user } = useAuth();
   const [unreadCount, setUnreadCount] = useState(0);
   const [generated, setGenerated] = useState(false);
 
-  const refresh = useCallback(async () => {
+  const refresh = useCallback(async (force = false) => {
     if (!user) return;
+
+    if (!force) {
+      const cached = notificationCache.get(user.id);
+      if (cached) {
+        setUnreadCount(getUnreadTotal(cached));
+        return;
+      }
+    }
+
     const count = await countUnread(user.id);
     setUnreadCount(count);
   }, [user]);
 
   useEffect(() => {
-    if (!user || generated) return;
-    setGenerated(true);
-    generateNotifications(user.id).then(() => refresh());
-  }, [user, generated, refresh]);
+    if (!user) {
+      setGenerated(false);
+      setUnreadCount(0);
+      return;
+    }
 
-  useEffect(() => { refresh(); }, [refresh]);
+    setGenerated(false);
+
+    const cached = notificationCache.get(user.id);
+    if (cached) {
+      setUnreadCount(getUnreadTotal(cached));
+    }
+
+    void ensureNotificationsLoaded(user.id)
+      .then((data) => setUnreadCount(getUnreadTotal(data)))
+      .catch(() => {
+        void refresh(true);
+      });
+  }, [user, refresh]);
+
+  useEffect(() => {
+    if (!user || generated) return;
+
+    setGenerated(true);
+    void generateNotifications(user.id)
+      .then(async () => {
+        clearNotificationCache(user.id);
+        const data = await ensureNotificationsLoaded(user.id, true);
+        setUnreadCount(getUnreadTotal(data));
+      })
+      .catch(() => {
+        void refresh(true);
+      });
+  }, [user, generated, refresh]);
 
   return { unreadCount, refresh };
 }
 
-// ── Swipeable Row ──
 function NotificationRow({
   notification: n,
   onMarkRead,
@@ -70,8 +143,7 @@ function NotificationRow({
   const config = CATEGORY_CONFIG[n.category] ?? CATEGORY_CONFIG.geral;
   const Icon = config.icon;
 
-  const handleDragEnd = (_: any, info: PanInfo) => {
-    // Swipe LEFT → mark as read & remove
+  const handleDragEnd = (_: unknown, info: PanInfo) => {
     if (info.offset.x < -80) {
       onMarkRead(n.id);
     }
@@ -79,11 +151,10 @@ function NotificationRow({
 
   return (
     <div className="relative overflow-hidden rounded-xl">
-      {/* Right action revealed on swipe left */}
-      <div className="absolute inset-y-0 right-0 w-24 flex items-center justify-center bg-primary/15 rounded-r-xl">
+      <div className="absolute inset-y-0 right-0 flex w-24 items-center justify-center rounded-r-xl bg-primary/15">
         <div className="flex flex-col items-center gap-0.5">
-          <Check className="w-5 h-5 text-primary" />
-          <span className="text-[8px] text-primary font-bold">Lida</span>
+          <Check className="h-5 w-5 text-primary" />
+          <span className="text-[8px] font-bold text-primary">Lida</span>
         </div>
       </div>
 
@@ -94,59 +165,57 @@ function NotificationRow({
         onDragEnd={handleDragEnd}
         whileDrag={{ scale: 0.98 }}
         className={cn(
-          "relative flex items-center gap-3 p-3.5 rounded-xl border select-none cursor-grab active:cursor-grabbing",
+          "relative flex cursor-grab select-none items-center gap-3 rounded-xl border p-3.5 active:cursor-grabbing",
           n.is_read
-            ? "bg-card/60 border-border/10"
-            : "bg-card border-border/15 shadow-sm shadow-black/5"
+            ? "border-border/10 bg-card/60"
+            : "border-border/15 bg-card shadow-sm shadow-black/5"
         )}
       >
-        {/* Category icon */}
-        <div className={cn(
-          "w-10 h-10 rounded-xl flex items-center justify-center shrink-0",
-          config.bg,
-          !n.is_read && "ring-1 ring-inset",
-          !n.is_read && (n.category === "vencimento" ? "ring-warning/20" : n.category === "fatura" ? "ring-destructive/20" : "ring-primary/20")
-        )}>
-          <Icon className={cn("w-4.5 h-4.5", config.className)} />
+        <div
+          className={cn(
+            "flex h-10 w-10 shrink-0 items-center justify-center rounded-xl",
+            config.bg,
+            !n.is_read && "ring-1 ring-inset",
+            !n.is_read && (n.category === "vencimento" ? "ring-warning/20" : n.category === "fatura" ? "ring-destructive/20" : "ring-primary/20")
+          )}
+        >
+          <Icon className={cn("h-4.5 w-4.5", config.className)} />
         </div>
 
-        {/* Content */}
-        <div className="flex-1 min-w-0">
+        <div className="min-w-0 flex-1">
           <div className="flex items-center justify-between gap-2">
-            <p className={cn(
-              "text-[13px] font-semibold leading-snug truncate",
-              n.is_read ? "text-muted-foreground/60" : "text-foreground"
-            )}>
+            <p
+              className={cn(
+                "truncate text-[13px] font-semibold leading-snug",
+                n.is_read ? "text-muted-foreground/60" : "text-foreground"
+              )}
+            >
               {n.title}
             </p>
-            <span className="text-[9px] text-muted-foreground/40 shrink-0">{timeAgo(n.created_at)}</span>
+            <span className="shrink-0 text-[9px] text-muted-foreground/40">{timeAgo(n.created_at)}</span>
           </div>
-          <p className={cn(
-            "text-[11px] mt-0.5 leading-relaxed line-clamp-1",
-            n.is_read ? "text-muted-foreground/40" : "text-muted-foreground/70"
-          )}>
+          <p
+            className={cn(
+              "mt-0.5 line-clamp-1 text-[11px] leading-relaxed",
+              n.is_read ? "text-muted-foreground/40" : "text-muted-foreground/70"
+            )}
+          >
             {n.message}
           </p>
         </div>
 
-        {/* Unread dot */}
-        {!n.is_read && (
-          <div className="w-2.5 h-2.5 rounded-full bg-primary shrink-0 ring-[3px] ring-primary/15" />
-        )}
+        {!n.is_read && <div className="h-2.5 w-2.5 shrink-0 rounded-full bg-primary ring-[3px] ring-primary/15" />}
       </motion.div>
     </div>
   );
 }
 
-
-// ── Shared content ──
 function NotificationContent({
   notifications,
   loading,
   unreadCount,
   onMarkAllRead,
   onMarkRead,
-  
   onClose,
   showHeader = true,
 }: {
@@ -155,23 +224,21 @@ function NotificationContent({
   unreadCount: number;
   onMarkAllRead: () => void;
   onMarkRead: (id: string) => void;
-  
   onClose: () => void;
   showHeader?: boolean;
 }) {
   return (
-    <div className="flex flex-col h-full max-h-[80vh] md:max-h-[70vh]">
-      {/* Header */}
+    <div className="flex h-full max-h-[80vh] flex-col md:max-h-[70vh]">
       {showHeader && (
-        <div className="flex items-center justify-between px-4 py-3.5 border-b border-border/10 shrink-0">
+        <div className="flex shrink-0 items-center justify-between border-b border-border/10 px-4 py-3.5">
           <div className="flex items-center gap-2.5">
-            <button onClick={onClose} className="md:hidden p-1 -ml-1 text-muted-foreground hover:text-foreground">
-              <ChevronLeft className="w-5 h-5" />
+            <button onClick={onClose} className="p-1 -ml-1 text-muted-foreground hover:text-foreground md:hidden">
+              <ChevronLeft className="h-5 w-5" />
             </button>
             <div className="flex items-center gap-2">
               <h3 className="text-base font-bold text-foreground">Notificações</h3>
               {unreadCount > 0 && (
-                <span className="text-[10px] font-bold text-emerald-400 bg-emerald-500/20 px-2 py-0.5 rounded-full">
+                <span className="rounded-full bg-primary/15 px-2 py-0.5 text-[10px] font-bold text-primary">
                   {unreadCount}
                 </span>
               )}
@@ -181,36 +248,35 @@ function NotificationContent({
             {unreadCount > 0 && (
               <button
                 onClick={onMarkAllRead}
-                className="flex items-center gap-1 text-[11px] text-primary hover:text-primary/80 transition-colors font-medium"
+                className="flex items-center gap-1 text-[11px] font-medium text-primary transition-colors hover:text-primary/80"
               >
-                <CheckCheck className="w-3.5 h-3.5" />
+                <CheckCheck className="h-3.5 w-3.5" />
                 <span className="hidden sm:inline">Marcar todas</span>
               </button>
             )}
-            <button onClick={onClose} className="hidden md:block text-muted-foreground hover:text-foreground p-1 rounded-lg hover:bg-muted/20">
-              <X className="w-4 h-4" />
+            <button onClick={onClose} className="hidden rounded-lg p-1 text-muted-foreground hover:bg-muted/20 hover:text-foreground md:block">
+              <X className="h-4 w-4" />
             </button>
           </div>
         </div>
       )}
 
-      {/* List */}
-      <div className="flex-1 overflow-y-auto overscroll-contain p-3 space-y-2">
+      <div className="flex-1 space-y-2 overflow-y-auto overscroll-contain p-3">
         {loading ? (
           <div className="p-10 text-center">
-            <div className="w-10 h-10 rounded-2xl bg-muted/15 flex items-center justify-center mx-auto mb-3 animate-pulse">
-              <Bell className="w-5 h-5 text-muted-foreground/30" />
+            <div className="mx-auto mb-3 flex h-10 w-10 animate-pulse items-center justify-center rounded-2xl bg-muted/15">
+              <Bell className="h-5 w-5 text-muted-foreground/30" />
             </div>
             <p className="text-xs text-muted-foreground">Carregando...</p>
           </div>
         ) : notifications.length === 0 ? (
-          <div className="p-10 text-center space-y-3">
-            <div className="w-14 h-14 rounded-2xl bg-muted/10 flex items-center justify-center mx-auto">
-              <Bell className="w-7 h-7 text-muted-foreground/20" />
+          <div className="space-y-3 p-10 text-center">
+            <div className="mx-auto flex h-14 w-14 items-center justify-center rounded-2xl bg-muted/10">
+              <Bell className="h-7 w-7 text-muted-foreground/20" />
             </div>
             <div>
               <p className="text-sm font-medium text-muted-foreground">Tudo em dia!</p>
-              <p className="text-[11px] text-muted-foreground/50 mt-1">Nenhuma notificação no momento</p>
+              <p className="mt-1 text-[11px] text-muted-foreground/50">Nenhuma notificação no momento</p>
             </div>
           </div>
         ) : (
@@ -222,30 +288,22 @@ function NotificationContent({
                 exit={{ opacity: 0, height: 0, marginBottom: 0 }}
                 transition={{ duration: 0.2 }}
               >
-                <NotificationRow
-                  notification={n}
-                  onMarkRead={onMarkRead}
-                  
-                />
+                <NotificationRow notification={n} onMarkRead={onMarkRead} />
               </motion.div>
             ))}
           </AnimatePresence>
         )}
       </div>
 
-      {/* Footer hint */}
       {notifications.length > 0 && (
-        <div className="px-4 py-2 border-t border-border/5 shrink-0">
-          <p className="text-[9px] text-muted-foreground/40 text-center select-none">
-            ← Deslize para a esquerda para marcar como lida
-          </p>
+        <div className="shrink-0 border-t border-border/5 px-4 py-2">
+          <p className="select-none text-center text-[9px] text-muted-foreground/40">← Deslize para a esquerda para marcar como lida</p>
         </div>
       )}
     </div>
   );
 }
 
-// ── Main Component ──
 interface NotificationsPanelProps {
   open: boolean;
   onClose: () => void;
@@ -257,30 +315,72 @@ export default function NotificationsPanel({ open, onClose }: NotificationsPanel
   const [notifications, setNotifications] = useState<AppNotification[]>([]);
   const [loading, setLoading] = useState(false);
 
-  const load = useCallback(async () => {
+  const load = useCallback(async (force = false) => {
     if (!user) return;
-    setLoading(true);
-    const data = await fetchNotifications(user.id);
-    setNotifications(data);
-    setLoading(false);
+
+    const cached = notificationCache.get(user.id);
+    if (cached) {
+      setNotifications(cached);
+      setLoading(false);
+      if (!force) return;
+    } else {
+      setLoading(true);
+    }
+
+    try {
+      const data = await ensureNotificationsLoaded(user.id, force);
+      setNotifications(data);
+    } finally {
+      setLoading(false);
+    }
   }, [user]);
 
   useEffect(() => {
-    if (open) load();
-  }, [open, load]);
+    if (!user) {
+      setNotifications([]);
+      setLoading(false);
+      return;
+    }
+
+    const cached = notificationCache.get(user.id);
+    if (cached) {
+      setNotifications(cached);
+    }
+  }, [user]);
+
+  useEffect(() => {
+    if (!open || !user) return;
+
+    const cached = notificationCache.get(user.id);
+    if (cached) {
+      setNotifications(cached);
+      setLoading(false);
+      void load(true);
+      return;
+    }
+
+    void load(true);
+  }, [open, load, user]);
 
   const handleMarkAllRead = async () => {
     if (!user) return;
     await markAllAsRead(user.id);
+    updateNotificationCache(user.id, []);
     setNotifications([]);
   };
 
   const handleMarkRead = async (id: string) => {
     await markAsRead(id);
-    setNotifications((prev) => prev.filter((item) => item.id !== id));
+    setNotifications((prev) => {
+      const next = prev.filter((item) => item.id !== id);
+      if (user) {
+        updateNotificationCache(user.id, next);
+      }
+      return next;
+    });
   };
 
-  const unreadCount = notifications.filter((n) => !n.is_read).length;
+  const unreadCount = getUnreadTotal(notifications);
 
   const contentProps = {
     notifications,
@@ -291,9 +391,8 @@ export default function NotificationsPanel({ open, onClose }: NotificationsPanel
     onClose,
   };
 
-  // Mobile: use Drawer (bottom sheet)
   if (isMobile) {
-    return createPortal(
+    const mobilePanel = (
       <AnimatePresence>
         {open && (
           <>
@@ -303,30 +402,32 @@ export default function NotificationsPanel({ open, onClose }: NotificationsPanel
               animate={{ opacity: 1 }}
               exit={{ opacity: 0 }}
               transition={{ duration: 0.2 }}
-              className="fixed inset-0 z-[9999] bg-black/60"
+              className="fixed inset-0 z-[9998] bg-black/60 backdrop-blur-sm"
               onClick={onClose}
             />
-            <motion.div
-              key="notif-panel"
-              initial={{ y: "-100%" }}
-              animate={{ y: 0 }}
-              exit={{ y: "-100%" }}
-              transition={{ type: "spring", damping: 28, stiffness: 300 }}
-              className="fixed top-0 left-0 right-0 z-[9999] bg-card border-b border-border/20 rounded-b-2xl max-h-[85vh] overflow-hidden shadow-2xl"
-            >
-              <NotificationContent {...contentProps} />
-            </motion.div>
+            <div className="pointer-events-none fixed inset-0 z-[9999] flex items-center justify-center p-3">
+              <motion.div
+                key="notif-panel"
+                initial={{ opacity: 0, y: 64, scale: 0.96 }}
+                animate={{ opacity: 1, y: 0, scale: 1 }}
+                exit={{ opacity: 0, y: 40, scale: 0.96 }}
+                transition={{ type: "spring", damping: 28, stiffness: 280 }}
+                className="pointer-events-auto w-full max-w-sm overflow-hidden rounded-2xl border border-border/20 bg-card/95 shadow-2xl backdrop-blur-2xl"
+              >
+                <NotificationContent {...contentProps} />
+              </motion.div>
+            </div>
           </>
         )}
-      </AnimatePresence>,
-      document.body
+      </AnimatePresence>
     );
+
+    return typeof document !== "undefined" ? createPortal(mobilePanel, document.body) : null;
   }
 
-  // Desktop: use Dialog
   return (
     <Dialog open={open} onOpenChange={(v) => !v && onClose()}>
-      <DialogContent className="bg-card/95 backdrop-blur-2xl border-border/20 rounded-2xl p-0 max-w-sm overflow-hidden">
+      <DialogContent className="max-w-sm overflow-hidden rounded-2xl border-border/20 bg-card/95 p-0 backdrop-blur-2xl">
         <NotificationContent {...contentProps} />
       </DialogContent>
     </Dialog>
