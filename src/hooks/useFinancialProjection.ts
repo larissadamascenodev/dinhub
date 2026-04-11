@@ -26,17 +26,21 @@ export function useFinancialProjection() {
   const [incomeBoost, setIncomeBoost] = useState(0);
   const [savingsGoal, setSavingsGoal] = useState(0);
 
-  // Per-month data for future months
+  // Per-month data for future months — streamed progressively
   const [monthDataMap, setMonthDataMap] = useState<Map<string, DashboardData>>(new Map());
-  const [futureLoading, setFutureLoading] = useState(false);
   const loadingRef = useRef(false);
+  const batchKeyRef = useRef("");
 
-  // Load real data for future months (1..11 months ahead)
+  // Load real data for future months progressively (no blocking)
   useEffect(() => {
     if (!user || loading) return;
-    if (loadingRef.current) return;
+    const batchKey = `${user.id}-${selectedMonth}-${selectedYear}`;
+    if (loadingRef.current && batchKeyRef.current === batchKey) return;
     loadingRef.current = true;
-    setFutureLoading(true);
+    batchKeyRef.current = batchKey;
+
+    // Reset map for new month selection
+    setMonthDataMap(new Map());
 
     const months: { m: number; y: number }[] = [];
     for (let i = 1; i < 12; i++) {
@@ -44,20 +48,27 @@ export function useFinancialProjection() {
       months.push({ m: d.getMonth(), y: d.getFullYear() });
     }
 
-    Promise.all(
+    // Stream results as they arrive — each month updates the map immediately
+    for (const { m, y } of months) {
+      buildDashboardData(m, y, { includeHistorical: false, userId: user.id })
+        .then((result) => {
+          if (batchKeyRef.current !== batchKey) return;
+          setMonthDataMap((prev) => {
+            const next = new Map(prev);
+            next.set(`${m}-${y}`, result);
+            return next;
+          });
+        })
+        .catch(() => {});
+    }
+
+    // Mark loading done after all settle
+    Promise.allSettled(
       months.map(({ m, y }) =>
         buildDashboardData(m, y, { includeHistorical: false, userId: user.id })
-          .then((result) => ({ key: `${m}-${y}`, data: result }))
-          .catch(() => ({ key: `${m}-${y}`, data: null }))
       )
-    ).then((results) => {
-      const map = new Map<string, DashboardData>();
-      for (const r of results) {
-        if (r.data) map.set(r.key, r.data);
-      }
-      setMonthDataMap(map);
-      setFutureLoading(false);
-      loadingRef.current = false;
+    ).then(() => {
+      if (batchKeyRef.current === batchKey) loadingRef.current = false;
     });
   }, [user, loading, selectedMonth, selectedYear]);
 
@@ -104,7 +115,7 @@ export function useFinancialProjection() {
 
   return {
     data,
-    loading: loading || futureLoading,
+    loading,
     projections,
     dailyLimit,
     simulation,
