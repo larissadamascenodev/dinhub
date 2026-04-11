@@ -1,110 +1,175 @@
 import { motion } from "framer-motion";
 import {
-  Shield, Lock, Brain, Phone, ArrowLeft, Fingerprint,
-  Sparkles, Heart,
+  Shield, Lock, Brain, BarChart3, Users, Cookie, Megaphone,
+  ShieldCheck, UserCheck, Clock, RefreshCw, Mail, ArrowLeft,
+  Fingerprint, Sparkles, Heart, Eye, Settings2, Database,
 } from "lucide-react";
 import { useNavigate } from "react-router-dom";
-import { cn } from "@/lib/utils";
 
+/* ─── types ─── */
 interface Section {
-  id: string;
   icon: React.ElementType;
   title: string;
-  bullets?: string[];
-  paragraphs?: string[];
-  note?: string;
+  content: string[];
+  warning?: string;
 }
 
-const HERO_PILLS = [
-  { icon: Shield, label: "Privacidade" },
-  { icon: Lock, label: "Segurança" },
-  { icon: Brain, label: "IA Ética" },
-];
-
+/* ─── content ─── */
 const sections: Section[] = [
   {
-    id: "privacidade",
-    icon: Shield,
-    title: "Privacidade",
-    paragraphs: [
-      "Sua privacidade é prioridade no DinHub. Coletamos apenas as informações estritamente necessárias para o funcionamento do aplicativo.",
+    icon: Database,
+    title: "Quais dados coletamos",
+    content: [
+      "**Dados de cadastro** — nome, e-mail e senha.",
+      "**Dados financeiros** — receitas, despesas, metas e contas que **você mesmo insere**.",
+      "**Dados de uso** — como navegação, frequência de acesso e funcionalidades utilizadas.",
     ],
-    bullets: [
-      "Dados de transações (receitas e despesas)",
-      "Informações de contas e cartões cadastrados",
-      "Dados básicos de uso do app",
-      "Organizar sua vida financeira",
-      "Gerar análises e insights inteligentes",
-      "Melhorar sua experiência dentro do aplicativo",
+    warning: "O DinHub não acessa contas bancárias nem dados externos automaticamente.",
+  },
+  {
+    icon: BarChart3,
+    title: "Como usamos seus dados",
+    content: [
+      "**Funcionamento do app** — para exibir seus registros e gerar relatórios.",
+      "**Personalização** — adaptar a experiência ao seu perfil financeiro.",
+      "**Insights e análises** — gerar gráficos, projeções e alertas inteligentes.",
+      "**Comunicação** — enviar notificações relevantes e avisos importantes.",
     ],
   },
   {
-    id: "seguranca",
-    icon: Lock,
-    title: "Segurança dos Dados",
-    paragraphs: [
-      "Seus dados são protegidos com criptografia e boas práticas de segurança. Eles nunca são vendidos para terceiros.",
-    ],
-  },
-  {
-    id: "ia",
     icon: Brain,
-    title: "Inteligência Artificial",
-    paragraphs: [
-      "Utilizamos IA para potencializar sua experiência financeira de forma transparente e automática.",
+    title: "Uso de Inteligência Artificial",
+    content: [
+      "Utilizamos IA para analisar **padrões de gastos** e gerar insights personalizados.",
+      "Todas as análises são **automáticas e informativas** — nunca tomamos decisões por você.",
+      "Seus dados alimentam apenas a **sua própria experiência**, não modelos compartilhados.",
     ],
-    bullets: [
-      "Análise de padrões de gasto",
-      "Recomendações e insights personalizados",
-      "Sugestões de melhorias no controle financeiro",
-    ],
-    note: "As análises são automáticas e visam apenas melhorar sua experiência.",
   },
   {
-    id: "suporte",
-    icon: Phone,
-    title: "Suporte",
-    paragraphs: [
-      "Precisa de ajuda? Entre em contato com nosso suporte diretamente pelo aplicativo.",
+    icon: Users,
+    title: "Compartilhamento de dados",
+    content: [
+      "**Pagamentos** — processadores de pagamento para assinaturas.",
+      "**Infraestrutura** — servidores seguros para armazenamento e funcionamento.",
+      "**Comunicação** — serviços de e-mail para notificações essenciais.",
+    ],
+    warning: "Nunca vendemos seus dados. Ponto final.",
+  },
+  {
+    icon: Cookie,
+    title: "Cookies e tecnologias",
+    content: [
+      "Usamos cookies e tecnologias semelhantes para **melhorar sua experiência**.",
+      "Ferramentas de analytics nos ajudam a entender como o app é utilizado.",
+      "Você pode gerenciar cookies nas **configurações do seu navegador**.",
+    ],
+  },
+  {
+    icon: Megaphone,
+    title: "Marketing e comunicação",
+    content: [
+      "Podemos enviar comunicações sobre **novidades e melhorias** do DinHub.",
+      "Toda comunicação é baseada em dados de uso para ser **relevante** a você.",
+      "Você pode **desativar notificações** a qualquer momento nas configurações.",
+    ],
+  },
+  {
+    icon: ShieldCheck,
+    title: "Segurança",
+    content: [
+      "**Criptografia** — seus dados são protegidos em trânsito e em repouso.",
+      "**Controle de acesso** — apenas sistemas autorizados acessam informações.",
+      "**Monitoramento** — detectamos e respondemos a atividades suspeitas.",
+    ],
+  },
+  {
+    icon: UserCheck,
+    title: "Seus direitos (LGPD)",
+    content: [
+      "**Acessar** — consultar quais dados armazenamos sobre você.",
+      "**Corrigir** — atualizar informações incorretas ou incompletas.",
+      "**Excluir** — solicitar a remoção dos seus dados pessoais.",
+      "**Revogar consentimento** — retirar permissões a qualquer momento.",
+    ],
+  },
+  {
+    icon: Clock,
+    title: "Retenção de dados",
+    content: [
+      "Seus dados são mantidos **enquanto sua conta estiver ativa**.",
+      "Após cancelamento, os dados são retidos por até **90 dias** para eventual recuperação e depois **removidos permanentemente**.",
+    ],
+  },
+  {
+    icon: RefreshCw,
+    title: "Alterações nesta política",
+    content: [
+      "Podemos atualizar esta política periodicamente.",
+      "Alterações relevantes serão comunicadas **dentro do app** ou por e-mail.",
+    ],
+  },
+  {
+    icon: Mail,
+    title: "Contato",
+    content: [
+      "Dúvidas sobre privacidade? Fale conosco pelo **suporte dentro do app**.",
+      "Estamos sempre prontos para esclarecer qualquer questão.",
     ],
   },
 ];
 
-const InlineSection = ({ section, index }: { section: Section; index: number }) => (
+/* ─── helpers ─── */
+const renderBold = (text: string) => {
+  const parts = text.split(/(\*\*[^*]+\*\*)/g);
+  return parts.map((part, i) =>
+    part.startsWith("**") && part.endsWith("**") ? (
+      <span key={i} className="font-semibold text-foreground">{part.slice(2, -2)}</span>
+    ) : (
+      <span key={i}>{part}</span>
+    ),
+  );
+};
+
+/* ─── section block ─── */
+const SectionBlock = ({ section, index }: { section: Section; index: number }) => (
   <motion.div
-    initial={{ opacity: 0, y: 12 }}
+    initial={{ opacity: 0, y: 14 }}
     animate={{ opacity: 1, y: 0 }}
-    transition={{ delay: 0.06 + index * 0.035, ease: "easeOut" }}
-    className="space-y-2"
+    transition={{ delay: 0.08 + index * 0.03, ease: "easeOut" }}
+    className="space-y-2.5"
   >
     <div className="flex items-center gap-2.5">
-      <div className="w-7 h-7 rounded-lg flex items-center justify-center shrink-0 bg-primary/10">
+      <div className="w-7 h-7 rounded-lg bg-primary/10 flex items-center justify-center shrink-0">
         <section.icon className="w-[15px] h-[15px] text-primary" />
       </div>
       <span className="text-[13px] font-bold text-foreground">{section.title}</span>
     </div>
-    {section.paragraphs?.map((p, i) => (
-      <p key={i} className="text-[13px] text-muted-foreground leading-relaxed">{p}</p>
-    ))}
-    {section.bullets && (
-      <ul className="space-y-1.5 pl-1">
-        {section.bullets.map((b, i) => (
-          <li key={i} className="flex items-start gap-2.5 text-[13px] text-muted-foreground leading-relaxed">
-            <span className="mt-[7px] w-1 h-1 rounded-full shrink-0 bg-primary/60" />
-            {b}
-          </li>
-        ))}
-      </ul>
+
+    <div className="space-y-1.5 pl-[38px]">
+      {section.content.map((line, i) => (
+        <p key={i} className="text-[13px] text-muted-foreground leading-relaxed">
+          {renderBold(line)}
+        </p>
+      ))}
+    </div>
+
+    {section.warning && (
+      <div className="ml-[38px] mt-2 rounded-lg bg-warning/[0.06] border border-warning/15 px-3 py-2">
+        <p className="text-[12px] text-warning font-medium leading-relaxed">
+          ⚠️ {section.warning}
+        </p>
+      </div>
     )}
-    {section.note && <p className="text-[11px] text-muted-foreground/50 italic">{section.note}</p>}
   </motion.div>
 );
 
+/* ─── page ─── */
 const PoliticaPrivacidade = () => {
   const navigate = useNavigate();
 
   return (
     <div className="pt-1 pb-12 space-y-5">
+      {/* Back */}
       <motion.button
         initial={{ opacity: 0, x: -8 }}
         animate={{ opacity: 1, x: 0 }}
@@ -120,48 +185,118 @@ const PoliticaPrivacidade = () => {
         animate={{ opacity: 1, y: 0 }}
         transition={{ duration: 0.5 }}
         className="relative overflow-hidden rounded-2xl border border-border/10 backdrop-blur-2xl p-6"
-        style={{ background: "linear-gradient(145deg, hsl(var(--card) / 0.9) 0%, hsl(var(--background)) 100%)" }}
+        style={{
+          background: "linear-gradient(145deg, hsl(var(--card) / 0.9) 0%, hsl(var(--background)) 100%)",
+        }}
       >
         <div className="absolute -top-20 -right-20 w-52 h-52 rounded-full bg-primary/8 blur-3xl pointer-events-none" />
         <div className="absolute -bottom-16 -left-16 w-40 h-40 rounded-full bg-primary/5 blur-3xl pointer-events-none" />
+
         <div className="relative space-y-4">
-          <div className="w-12 h-12 rounded-2xl bg-primary/10 border border-primary/20 flex items-center justify-center">
-            <Fingerprint className="w-6 h-6 text-primary" />
+          <div className="flex items-center gap-2">
+            <div className="w-12 h-12 rounded-2xl bg-primary/10 border border-primary/20 flex items-center justify-center">
+              <Fingerprint className="w-6 h-6 text-primary" />
+            </div>
+            <div className="flex -space-x-1.5">
+              {[Shield, Lock, Eye].map((Icon, i) => (
+                <div
+                  key={i}
+                  className="w-7 h-7 rounded-full bg-primary/[0.08] border border-primary/15 flex items-center justify-center"
+                >
+                  <Icon className="w-3.5 h-3.5 text-primary/70" />
+                </div>
+              ))}
+            </div>
           </div>
+
           <div className="space-y-1.5">
-            <h1 className="text-xl font-extrabold text-foreground tracking-tight">Política de Privacidade</h1>
+            <h1 className="text-xl font-extrabold text-foreground tracking-tight">
+              Política de Privacidade
+            </h1>
             <p className="text-[13px] text-muted-foreground leading-relaxed max-w-xs">
-              Transparência total sobre como o DinHub cuida dos seus dados.
+              Como cuidamos dos seus dados
             </p>
           </div>
-          <div className="flex flex-wrap gap-2 pt-1">
-            {HERO_PILLS.map((pill) => (
-              <span key={pill.label} className="flex items-center gap-1.5 text-[11px] font-semibold text-primary/80 bg-primary/[0.08] border border-primary/15 rounded-full px-3 py-1">
-                <pill.icon className="w-3 h-3" />
-                {pill.label}
-              </span>
-            ))}
+
+          <div className="rounded-xl bg-primary/[0.06] border border-primary/10 p-3.5 space-y-1">
+            <p className="text-[13px] font-semibold text-foreground">
+              Seus dados são seus. E a gente leva isso a sério.
+            </p>
+            <p className="text-[12px] text-muted-foreground leading-relaxed">
+              Tudo o que você registra no DinHub é protegido e usado apenas para melhorar sua experiência.
+            </p>
           </div>
         </div>
+      </motion.div>
+
+      {/* Quick summary */}
+      <motion.div
+        initial={{ opacity: 0, y: 14 }}
+        animate={{ opacity: 1, y: 0 }}
+        transition={{ delay: 0.15 }}
+        className="rounded-2xl border border-border/10 bg-card/60 backdrop-blur-xl p-5 space-y-3"
+      >
+        <p className="text-[11px] font-bold text-muted-foreground uppercase tracking-widest">
+          Resumo rápido
+        </p>
+        {[
+          { icon: Lock, text: "Não vendemos seus dados" },
+          { icon: BarChart3, text: "Usamos dados apenas para melhorar o app" },
+          { icon: Settings2, text: "Você pode controlar suas informações" },
+        ].map((item, i) => (
+          <div key={i} className="flex items-center gap-3">
+            <div className="w-8 h-8 rounded-lg bg-primary/10 flex items-center justify-center shrink-0">
+              <item.icon className="w-4 h-4 text-primary" />
+            </div>
+            <p className="text-[13px] font-medium text-foreground">{item.text}</p>
+          </div>
+        ))}
       </motion.div>
 
       {/* Sections */}
       <div className="space-y-5 px-1">
         {sections.map((section, i) => (
-          <div key={section.id}>
-            <InlineSection section={section} index={i} />
-            {i < sections.length - 1 && <div className="mt-5 border-t border-border/10" />}
+          <div key={i}>
+            <SectionBlock section={section} index={i} />
+            {i < sections.length - 1 && (
+              <div className="mt-5 border-t border-border/10" />
+            )}
           </div>
         ))}
       </div>
+
+      {/* Transparency block */}
+      <motion.div
+        initial={{ opacity: 0, scale: 0.96 }}
+        animate={{ opacity: 1, scale: 1 }}
+        transition={{ delay: 0.5 }}
+        className="relative overflow-hidden rounded-2xl border border-primary/15 p-5"
+        style={{
+          background: "linear-gradient(160deg, hsl(var(--primary) / 0.06) 0%, hsl(var(--card) / 0.8) 100%)",
+        }}
+      >
+        <div className="flex items-center gap-3">
+          <div className="w-10 h-10 rounded-xl bg-primary/10 flex items-center justify-center shrink-0">
+            <Brain className="w-5 h-5 text-primary" />
+          </div>
+          <div>
+            <p className="text-[13px] font-bold text-foreground">Transparência total</p>
+            <p className="text-[12px] text-muted-foreground leading-relaxed">
+              Você sempre terá controle sobre seus dados dentro do DinHub.
+            </p>
+          </div>
+        </div>
+      </motion.div>
 
       {/* Commitment */}
       <motion.div
         initial={{ opacity: 0, scale: 0.96 }}
         animate={{ opacity: 1, scale: 1 }}
-        transition={{ delay: 0.5 }}
+        transition={{ delay: 0.55 }}
         className="relative overflow-hidden rounded-2xl border border-primary/15 p-6 text-center"
-        style={{ background: "linear-gradient(160deg, hsl(var(--primary) / 0.06) 0%, hsl(var(--card) / 0.8) 100%)" }}
+        style={{
+          background: "linear-gradient(160deg, hsl(var(--primary) / 0.06) 0%, hsl(var(--card) / 0.8) 100%)",
+        }}
       >
         <div className="relative space-y-3">
           <div className="w-10 h-10 rounded-xl bg-primary/10 flex items-center justify-center mx-auto">
@@ -174,12 +309,20 @@ const PoliticaPrivacidade = () => {
           </div>
           <div className="flex items-center justify-center gap-1.5 pt-1">
             <Heart className="w-3.5 h-3.5 text-primary/60" />
-            <span className="text-[11px] text-muted-foreground/60">Feito com carinho pela equipe DinHub</span>
+            <span className="text-[11px] text-muted-foreground/60">
+              Feito com carinho pela equipe DinHub
+            </span>
           </div>
         </div>
       </motion.div>
 
-      <motion.p initial={{ opacity: 0 }} animate={{ opacity: 1 }} transition={{ delay: 0.6 }} className="text-center text-[11px] text-muted-foreground/40 pt-2">
+      {/* Footer */}
+      <motion.p
+        initial={{ opacity: 0 }}
+        animate={{ opacity: 1 }}
+        transition={{ delay: 0.6 }}
+        className="text-center text-[11px] text-muted-foreground/40 pt-2"
+      >
         Última atualização: Abril 2026
       </motion.p>
     </div>
