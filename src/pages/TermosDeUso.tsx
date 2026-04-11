@@ -19,8 +19,8 @@ const sections: Section[] = [
     icon: CheckCircle2,
     title: "Aceitação dos Termos",
     content: [
-      "Ao acessar ou utilizar o DinHub, você concorda com estes Termos de Uso.",
-      "Caso não concorde, recomendamos que **não utilize** o aplicativo.",
+      "Ao utilizar o DinHub, você concorda com estes Termos de Uso.",
+      "Nosso objetivo é garantir uma **experiência segura e transparente** para você.",
     ],
   },
   {
