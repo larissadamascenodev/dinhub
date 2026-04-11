@@ -151,7 +151,7 @@ const TermosDeUso = () => {
   const navigate = useNavigate();
 
   return (
-    <div className="pt-1 pb-12 space-y-5">
+    <div className="pt-1 pb-12 space-y-5 max-w-2xl mx-auto">
       {/* Back */}
       <motion.button
         initial={{ opacity: 0, x: -8 }}
