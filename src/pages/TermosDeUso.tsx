@@ -28,7 +28,7 @@ const sections: Section[] = [
     title: "Sobre o DinHub",
     content: [
       "O DinHub é uma **ferramenta de organização financeira pessoal**.",
-      "Permite registrar receitas, despesas, metas e investimentos — tudo em um só lugar.",
+      "Permite registrar receitas, despesas, metas e investimentos, tudo em um só lugar.",
       "O app **não realiza movimentações bancárias** nem substitui consultoria financeira profissional.",
     ],
   },
@@ -62,7 +62,7 @@ const sections: Section[] = [
     icon: XCircle,
     title: "Cancelamento",
     content: [
-      "Cancele a qualquer momento — sem burocracia.",
+      "Cancele a qualquer momento, sem burocracia.",
       "Após o cancelamento, o plano permanece ativo até o **fim do período pago**.",
       "Não há cobranças futuras após a confirmação.",
     ],
