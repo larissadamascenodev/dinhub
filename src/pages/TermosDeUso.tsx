@@ -43,28 +43,36 @@ const sections: Section[] = [
   },
   {
     icon: CreditCard,
-    title: "Planos e Pagamentos",
+    title: "Planos e Acesso",
     content: [
-      "O DinHub pode oferecer planos **gratuitos e pagos** (mensal ou anual).",
-      "A cobrança é **recorrente** e processada pela plataforma da loja (App Store ou Google Play).",
-      "O acesso a funcionalidades premium depende de uma **assinatura ativa**.",
+      "O DinHub oferece um **período de teste gratuito** por tempo limitado, permitindo que você explore as funcionalidades da plataforma antes de contratar um plano.",
+      "Após o término do período de teste, o acesso completo às funcionalidades depende de uma **assinatura ativa**.",
     ],
   },
   {
-    icon: RotateCcw,
-    title: "Reembolso",
+    icon: RefreshCw,
+    title: "Cobrança e Renovação",
     content: [
-      "Você pode solicitar reembolso em até **7 dias** após a compra.",
-      "Após esse período, o reembolso segue as **políticas da plataforma** utilizada.",
+      "Após o período gratuito, a assinatura será iniciada automaticamente, conforme as condições informadas no momento da contratação, caso não haja cancelamento prévio.",
+      "A cobrança é **recorrente**, conforme o plano escolhido no momento da contratação.",
+      "Ao contratar um plano, você concorda com as condições de cobrança, valores e **renovação automática**.",
     ],
   },
   {
     icon: XCircle,
     title: "Cancelamento",
     content: [
-      "Cancele a qualquer momento, sem burocracia.",
-      "Após o cancelamento, o plano permanece ativo até o **fim do período pago**.",
-      "Não há cobranças futuras após a confirmação.",
+      "Você pode cancelar sua assinatura a qualquer momento diretamente pela plataforma.",
+      "Após o cancelamento, o acesso permanecerá ativo até o **final do período já pago**.",
+      "O não uso do serviço não implica cancelamento automático da assinatura.",
+    ],
+  },
+  {
+    icon: RotateCcw,
+    title: "Reembolso",
+    content: [
+      "Você pode solicitar reembolso integral no prazo de até **7 dias corridos** após a contratação, conforme previsto no Código de Defesa do Consumidor.",
+      "Após esse prazo, não haverá reembolso de valores já pagos.",
     ],
   },
   {
