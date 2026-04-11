@@ -182,7 +182,9 @@ export async function generateNotifications(userId: string) {
       : noDataResult,
   ]);
 
-  const cardsById = new Map((creditCardsResult.data ?? []).map((card) => [card.id, card]));
+  const cardsById = new Map<string, { id: string; due_day: number; name: string }>(
+    ((creditCardsResult.data ?? []) as Array<{ id: string; due_day: number; name: string }>).map((card) => [card.id, card])
+  );
   const notifications: Array<{
     user_id: string;
     title: string;

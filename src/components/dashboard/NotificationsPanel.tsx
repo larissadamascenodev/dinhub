@@ -238,7 +238,7 @@ function NotificationContent({
             <div className="flex items-center gap-2">
               <h3 className="text-base font-bold text-foreground">Notificações</h3>
               {unreadCount > 0 && (
-                <span className="rounded-full bg-emerald-500/20 px-2 py-0.5 text-[10px] font-bold text-emerald-400">
+                <span className="rounded-full bg-primary/15 px-2 py-0.5 text-[10px] font-bold text-primary">
                   {unreadCount}
                 </span>
               )}
