@@ -127,16 +127,16 @@ const SectionBlock = ({ section, index }: { section: Section; index: number }) =
     initial={{ opacity: 0, y: 14 }}
     animate={{ opacity: 1, y: 0 }}
     transition={{ delay: 0.08 + index * 0.03, ease: "easeOut" }}
-    className="space-y-2.5"
+    className="space-y-2"
   >
-    <div className="flex items-center gap-2.5">
-      <div className="w-7 h-7 rounded-lg bg-primary/10 flex items-center justify-center shrink-0">
-        <section.icon className="w-[15px] h-[15px] text-primary" />
+    <div className="flex items-center gap-2">
+      <div className="w-6 h-6 rounded-md bg-primary/10 flex items-center justify-center shrink-0">
+        <section.icon className="w-3.5 h-3.5 text-primary" />
       </div>
       <span className="text-[13px] font-bold text-foreground">{section.title}</span>
     </div>
 
-    <div className="space-y-1.5 pl-[38px]">
+    <div className="space-y-1.5">
       {section.content.map((line, i) => (
         <p key={i} className="text-[13px] text-muted-foreground leading-relaxed">
           {renderBold(line)}
