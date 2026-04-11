@@ -150,6 +150,10 @@ export default function BotFinanceBalanco() {
           Array.from({ length: 6 }).map((_, i) => (
             <div key={i} className="animate-pulse h-16 rounded-xl bg-muted/10" />
           ))
+        ) : futureProjs.length === 0 ? (
+          Array.from({ length: 4 }).map((_, i) => (
+            <div key={i} className="animate-pulse h-16 rounded-xl bg-muted/10" />
+          ))
         ) : (
           futureProjs.map((proj, idx) => {
             const isPos = proj.delta >= 0;
