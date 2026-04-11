@@ -94,19 +94,95 @@ export async function generateNotifications(userId: string) {
   const settings = await getOrCreateSettings(userId);
   const today = new Date();
   const todayStr = today.toISOString().split("T")[0];
+  const startOfToday = `${todayStr}T00:00:00`;
+  const noDataResult = Promise.resolve({ data: null } as const);
 
-  // Helper: check if notification already exists for this related_id today
-  const exists = async (relatedId: string, category: string) => {
-    const { count } = await supabase
+  const billFutureDate = new Date(today);
+  billFutureDate.setDate(billFutureDate.getDate() + settings.bill_due_days_before);
+  const billFutureDateStr = billFutureDate.toISOString().split("T")[0];
+
+  const goalFutureDate = new Date(today);
+  goalFutureDate.setDate(goalFutureDate.getDate() + 7);
+  const goalFutureDateStr = goalFutureDate.toISOString().split("T")[0];
+
+  const [pendingBillsResult, invoicesResult, goalsResult, accountsResult] = await Promise.all([
+    settings.bill_due_reminder
+      ? supabase
+          .from("transactions")
+          .select("id, name, date, amount")
+          .eq("user_id", userId)
+          .eq("status", "pendente")
+          .eq("type", "despesa")
+          .neq("payment_method", "cartao")
+          .is("credit_card_id", null)
+          .gte("date", todayStr)
+          .lte("date", billFutureDateStr)
+          .limit(20)
+      : noDataResult,
+    settings.invoice_reminder
+      ? supabase
+          .from("invoices")
+          .select("id, month, year, total_amount, credit_card_id")
+          .eq("user_id", userId)
+          .eq("is_paid", false)
+          .eq("month", today.getMonth() + 1)
+          .eq("year", today.getFullYear())
+          .gt("total_amount", 0)
+          .limit(10)
+      : noDataResult,
+    settings.goal_reminder
+      ? supabase
+          .from("goals")
+          .select("id, name, deadline, current_amount, target_amount")
+          .eq("user_id", userId)
+          .not("deadline", "is", null)
+          .gte("deadline", todayStr)
+          .lte("deadline", goalFutureDateStr)
+          .limit(10)
+      : noDataResult,
+    settings.low_balance_alert
+      ? supabase
+          .from("accounts")
+          .select("id, name, current_balance")
+          .eq("user_id", userId)
+          .eq("is_active", true)
+          .neq("type", "investimento")
+          .lt("current_balance", settings.low_balance_threshold)
+      : noDataResult,
+  ]);
+
+  const pendingBills = pendingBillsResult.data ?? [];
+  const invoices = invoicesResult.data ?? [];
+  const goals = goalsResult.data ?? [];
+  const accounts = accountsResult.data ?? [];
+
+  const fetchExistingRelatedIds = async (relatedIds: string[], category: string) => {
+    if (relatedIds.length === 0) return new Set<string>();
+
+    const { data } = await supabase
       .from("notifications")
-      .select("*", { count: "exact", head: true })
+      .select("related_id")
       .eq("user_id", userId)
-      .eq("related_id", relatedId)
       .eq("category", category)
-      .gte("created_at", `${todayStr}T00:00:00`);
-    return (count ?? 0) > 0;
+      .in("related_id", relatedIds)
+      .gte("created_at", startOfToday);
+
+    return new Set((data ?? []).map((item) => item.related_id).filter(Boolean) as string[]);
   };
 
+  const creditCardIds = [...new Set(invoices.map((invoice) => invoice.credit_card_id).filter(Boolean))] as string[];
+
+  const [existingBillIds, existingInvoiceIds, existingGoalIds, existingBalanceIds, creditCardsResult] = await Promise.all([
+    fetchExistingRelatedIds(pendingBills.map((bill) => bill.id), "vencimento"),
+    fetchExistingRelatedIds(invoices.map((invoice) => invoice.id), "fatura"),
+    fetchExistingRelatedIds(goals.map((goal) => goal.id), "meta"),
+    fetchExistingRelatedIds(accounts.map((account) => account.id), "saldo"),
+    creditCardIds.length
+      ? supabase.from("credit_cards").select("id, due_day, name").in("id", creditCardIds)
+      : noDataResult,
+  ]);
+
+  const cardsById = new Map((creditCardsResult.data ?? []).map((card) => [card.id, card]));
   const notifications: Array<{
     user_id: string;
     title: string;
@@ -116,143 +192,68 @@ export async function generateNotifications(userId: string) {
     related_id: string;
   }> = [];
 
-  // 1. Bill due reminders (transactions with status=pendente and date near)
-  if (settings.bill_due_reminder) {
-    const futureDate = new Date(today);
-    futureDate.setDate(futureDate.getDate() + settings.bill_due_days_before);
-    const futureDateStr = futureDate.toISOString().split("T")[0];
+  for (const bill of pendingBills) {
+    if (existingBillIds.has(bill.id)) continue;
 
-    const { data: pendingBills } = await supabase
-      .from("transactions")
-      .select("id, name, date, amount, payment_method, credit_card_id")
-      .eq("user_id", userId)
-      .eq("status", "pendente")
-      .eq("type", "despesa")
-      .neq("payment_method", "cartao")
-      .is("credit_card_id", null)
-      .gte("date", todayStr)
-      .lte("date", futureDateStr)
-      .limit(20);
-
-    if (pendingBills) {
-      for (const bill of pendingBills) {
-        if (!(await exists(bill.id, "vencimento"))) {
-          const daysUntil = Math.ceil((new Date(bill.date).getTime() - today.getTime()) / 86400000);
-          notifications.push({
-            user_id: userId,
-            title: daysUntil === 0 ? "Conta vence hoje!" : `Conta vence em ${daysUntil} dia${daysUntil > 1 ? "s" : ""}`,
-            message: `${bill.name} — R$ ${Number(bill.amount).toFixed(2).replace(".", ",")}`,
-            type: daysUntil === 0 ? "alert" : "warning",
-            category: "vencimento",
-            related_id: bill.id,
-          });
-        }
-      }
-    }
+    const daysUntil = Math.ceil((new Date(bill.date).getTime() - today.getTime()) / 86400000);
+    notifications.push({
+      user_id: userId,
+      title: daysUntil === 0 ? "Conta vence hoje!" : `Conta vence em ${daysUntil} dia${daysUntil > 1 ? "s" : ""}`,
+      message: `${bill.name} — R$ ${Number(bill.amount).toFixed(2).replace(".", ",")}`,
+      type: daysUntil === 0 ? "alert" : "warning",
+      category: "vencimento",
+      related_id: bill.id,
+    });
   }
 
-  // 2. Invoice reminders (unpaid invoices for current month)
-  if (settings.invoice_reminder) {
-    const { data: invoices } = await supabase
-      .from("invoices")
-      .select("id, month, year, total_amount, credit_card_id")
-      .eq("user_id", userId)
-      .eq("is_paid", false)
-      .eq("month", today.getMonth() + 1)
-      .eq("year", today.getFullYear())
-      .gt("total_amount", 0)
-      .limit(10);
+  for (const invoice of invoices) {
+    if (existingInvoiceIds.has(invoice.id)) continue;
 
-    if (invoices) {
-      for (const inv of invoices) {
-        // Get due_day from credit card
-        const { data: card } = await supabase
-          .from("credit_cards")
-          .select("due_day, name")
-          .eq("id", inv.credit_card_id)
-          .single();
+    const card = cardsById.get(invoice.credit_card_id);
+    if (!card) continue;
 
-        if (card) {
-          const dueDate = new Date(inv.year, inv.month - 1, card.due_day);
-          const daysUntil = Math.ceil((dueDate.getTime() - today.getTime()) / 86400000);
+    const dueDate = new Date(invoice.year, invoice.month - 1, card.due_day);
+    const daysUntil = Math.ceil((dueDate.getTime() - today.getTime()) / 86400000);
+    if (daysUntil < 0 || daysUntil > settings.bill_due_days_before) continue;
 
-          if (daysUntil >= 0 && daysUntil <= settings.bill_due_days_before) {
-            if (!(await exists(inv.id, "fatura"))) {
-              notifications.push({
-                user_id: userId,
-                title: daysUntil === 0 ? "Fatura vence hoje!" : `Fatura vence em ${daysUntil} dia${daysUntil > 1 ? "s" : ""}`,
-                message: `${card.name} — R$ ${Number(inv.total_amount).toFixed(2).replace(".", ",")}`,
-                type: daysUntil <= 1 ? "alert" : "warning",
-                category: "fatura",
-                related_id: inv.id,
-              });
-            }
-          }
-        }
-      }
-    }
+    notifications.push({
+      user_id: userId,
+      title: daysUntil === 0 ? "Fatura vence hoje!" : `Fatura vence em ${daysUntil} dia${daysUntil > 1 ? "s" : ""}`,
+      message: `${card.name} — R$ ${Number(invoice.total_amount).toFixed(2).replace(".", ",")}`,
+      type: daysUntil <= 1 ? "alert" : "warning",
+      category: "fatura",
+      related_id: invoice.id,
+    });
   }
 
-  // 3. Goal deadline reminders
-  if (settings.goal_reminder) {
-    const futureDate = new Date(today);
-    futureDate.setDate(futureDate.getDate() + 7);
-    const futureDateStr = futureDate.toISOString().split("T")[0];
+  for (const goal of goals) {
+    if (existingGoalIds.has(goal.id) || goal.current_amount >= goal.target_amount || !goal.deadline) continue;
 
-    const { data: goals } = await supabase
-      .from("goals")
-      .select("id, name, deadline, current_amount, target_amount")
-      .eq("user_id", userId)
-      .not("deadline", "is", null)
-      .gte("deadline", todayStr)
-      .lte("deadline", futureDateStr)
-      .limit(10);
-
-    if (goals) {
-      for (const goal of goals) {
-        if (goal.current_amount < goal.target_amount && !(await exists(goal.id, "meta"))) {
-          const daysLeft = Math.ceil((new Date(goal.deadline!).getTime() - today.getTime()) / 86400000);
-          const pct = Math.round((goal.current_amount / goal.target_amount) * 100);
-          notifications.push({
-            user_id: userId,
-            title: `Meta "${goal.name}" vence em ${daysLeft} dias`,
-            message: `Progresso: ${pct}% — faltam R$ ${(goal.target_amount - goal.current_amount).toFixed(2).replace(".", ",")}`,
-            type: "info",
-            category: "meta",
-            related_id: goal.id,
-          });
-        }
-      }
-    }
+    const daysLeft = Math.ceil((new Date(goal.deadline).getTime() - today.getTime()) / 86400000);
+    const pct = Math.round((goal.current_amount / goal.target_amount) * 100);
+    notifications.push({
+      user_id: userId,
+      title: `Meta "${goal.name}" vence em ${daysLeft} dias`,
+      message: `Progresso: ${pct}% — faltam R$ ${(goal.target_amount - goal.current_amount).toFixed(2).replace(".", ",")}`,
+      type: "info",
+      category: "meta",
+      related_id: goal.id,
+    });
   }
 
-  // 4. Low balance alert
-  if (settings.low_balance_alert) {
-    const { data: accounts } = await supabase
-      .from("accounts")
-      .select("id, name, current_balance, type")
-      .eq("user_id", userId)
-      .eq("is_active", true)
-      .neq("type", "investimento")
-      .lt("current_balance", settings.low_balance_threshold);
+  for (const account of accounts) {
+    if (existingBalanceIds.has(account.id)) continue;
 
-    if (accounts) {
-      for (const acc of accounts) {
-        if (!(await exists(acc.id, "saldo"))) {
-          notifications.push({
-            user_id: userId,
-            title: "Saldo baixo",
-            message: `${acc.name} está com R$ ${Number(acc.current_balance).toFixed(2).replace(".", ",")}`,
-            type: "warning",
-            category: "saldo",
-            related_id: acc.id,
-          });
-        }
-      }
-    }
+    notifications.push({
+      user_id: userId,
+      title: "Saldo baixo",
+      message: `${account.name} está com R$ ${Number(account.current_balance).toFixed(2).replace(".", ",")}`,
+      type: "warning",
+      category: "saldo",
+      related_id: account.id,
+    });
   }
 
-  // Insert all new notifications
   if (notifications.length > 0) {
     await supabase.from("notifications").insert(notifications as any);
   }
