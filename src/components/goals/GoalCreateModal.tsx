@@ -15,14 +15,14 @@ interface GoalCreateModalProps {
 }
 
 const GOAL_PRESETS = [
-  { id: "casa", name: "Casa Própria", emoji: "🏠", subtitle: "Conquistar o lar dos seus sonhos", gradient: "from-sky-900/80 to-slate-900/90" },
-  { id: "carro", name: "Carro Novo", emoji: "🚗", subtitle: "Dirigir o carro que você sempre quis", gradient: "from-zinc-800/80 to-neutral-900/90" },
-  { id: "viagem", name: "Viagem dos Sonhos", emoji: "✈️", subtitle: "Conhecer o mundo e criar memórias", gradient: "from-cyan-800/70 to-teal-900/90" },
-  { id: "liberdade", name: "Liberdade Financeira", emoji: "💰", subtitle: "Viver sem depender de salário", gradient: "from-emerald-900/70 to-green-950/90" },
-  { id: "educacao", name: "Educação", emoji: "🎓", subtitle: "Investir no seu futuro profissional", gradient: "from-indigo-900/80 to-violet-950/90" },
-  { id: "aposentadoria", name: "Aposentadoria Tranquila", emoji: "🌅", subtitle: "Curtir a vida com tranquilidade", gradient: "from-orange-900/70 to-amber-950/90" },
-  { id: "emergencia", name: "Reserva de Emergência", emoji: "🛡️", subtitle: "Proteção para imprevistos da vida", gradient: "from-blue-900/80 to-slate-900/90" },
-  { id: "negocio", name: "Negócio Próprio", emoji: "🚀", subtitle: "Empreender e ser dono do seu tempo", gradient: "from-rose-900/70 to-pink-950/90" },
+  { id: "casa", name: "Casa Própria", emoji: "🏠", subtitle: "Conquistar o lar dos seus sonhos", coverUrl: "https://images.unsplash.com/photo-1600596542815-ffad4c1539a9?w=600&q=80" },
+  { id: "carro", name: "Carro Novo", emoji: "🚗", subtitle: "Dirigir o carro que você sempre quis", coverUrl: "https://images.unsplash.com/photo-1494976388531-d1058494cdd8?w=600&q=80" },
+  { id: "viagem", name: "Viagem dos Sonhos", emoji: "✈️", subtitle: "Conhecer o mundo e criar memórias", coverUrl: "https://images.unsplash.com/photo-1507525428034-b723cf961d3e?w=600&q=80" },
+  { id: "liberdade", name: "Liberdade Financeira", emoji: "💰", subtitle: "Viver sem depender de salário", coverUrl: "https://images.unsplash.com/photo-1579621970563-ebec7560ff3e?w=600&q=80" },
+  { id: "educacao", name: "Educação", emoji: "🎓", subtitle: "Investir no seu futuro profissional", coverUrl: "https://images.unsplash.com/photo-1523050854058-8df90110c476?w=600&q=80" },
+  { id: "aposentadoria", name: "Aposentadoria Tranquila", emoji: "🌅", subtitle: "Curtir a vida com tranquilidade", coverUrl: "https://images.unsplash.com/photo-1506784983877-45594efa4cbe?w=600&q=80" },
+  { id: "emergencia", name: "Reserva de Emergência", emoji: "🛡️", subtitle: "Proteção para imprevistos da vida", coverUrl: "https://images.unsplash.com/photo-1554224155-6726b3ff858f?w=600&q=80" },
+  { id: "negocio", name: "Negócio Próprio", emoji: "🚀", subtitle: "Empreender e ser dono do seu tempo", coverUrl: "https://images.unsplash.com/photo-1497366216548-37526070297c?w=600&q=80" },
 ];
 
 const AMOUNT_CHIPS = [
@@ -72,13 +72,12 @@ const GoalCreateModal = ({ open, onClose, onSubmit }: GoalCreateModalProps) => {
   const goalName = isCustom ? customName.trim() : (preset?.name ?? "");
   const goalEmoji = isCustom ? "✨" : (preset?.emoji ?? "🎯");
   const goalSubtitle = isCustom ? "Sua meta personalizada" : (preset?.subtitle ?? "");
+  const goalCover = preset?.coverUrl ?? null;
 
   const handleSelectPreset = (id: string) => {
     setSelectedPreset(id);
     if (id !== "custom") {
       setStep(1);
-    } else {
-      // custom — stay on step 0 but show name input
     }
   };
 
@@ -182,17 +181,22 @@ const GoalCreateModal = ({ open, onClose, onSubmit }: GoalCreateModalProps) => {
                           <motion.button
                             key={p.id}
                             whileTap={{ scale: 0.96 }}
+                            whileHover={{ scale: 1.02 }}
                             onClick={() => handleSelectPreset(p.id)}
-                            className={`relative rounded-2xl overflow-hidden text-left transition-all h-28 group ${
+                            className={`relative rounded-2xl overflow-hidden text-left transition-all h-32 group ${
                               isSelected ? "ring-2 ring-primary ring-offset-1 ring-offset-card" : ""
                             }`}
                           >
-                            <div className={`absolute inset-0 bg-gradient-to-br ${p.gradient}`} />
-                            <div className="absolute inset-0 bg-gradient-to-t from-black/60 via-transparent to-transparent" />
-                            <div className="relative h-full flex flex-col justify-end p-3">
-                              <span className="text-xl mb-1">{p.emoji}</span>
-                              <p className="text-[13px] font-bold text-white leading-tight">{p.name}</p>
-                              <p className="text-[9px] text-white/50 leading-tight mt-0.5 line-clamp-1">{p.subtitle}</p>
+                            <img
+                              src={p.coverUrl}
+                              alt={p.name}
+                              className="absolute inset-0 w-full h-full object-cover transition-transform duration-500 group-hover:scale-110"
+                            />
+                            <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-black/30 to-black/10" />
+                            <div className="relative h-full flex flex-col justify-end p-3.5">
+                              <span className="text-xl mb-1 drop-shadow-lg">{p.emoji}</span>
+                              <p className="text-[13px] font-bold text-white leading-tight drop-shadow-md">{p.name}</p>
+                              <p className="text-[9px] text-white/60 leading-tight mt-0.5 line-clamp-1">{p.subtitle}</p>
                             </div>
                           </motion.button>
                         );
@@ -202,18 +206,18 @@ const GoalCreateModal = ({ open, onClose, onSubmit }: GoalCreateModalProps) => {
                       <motion.button
                         whileTap={{ scale: 0.96 }}
                         onClick={() => handleSelectPreset("custom")}
-                        className={`relative rounded-2xl overflow-hidden text-left transition-all h-28 col-span-2 ${
+                        className={`relative rounded-2xl overflow-hidden text-left transition-all h-32 col-span-2 ${
                           isCustom ? "ring-2 ring-primary ring-offset-1 ring-offset-card" : ""
                         }`}
                       >
                         <div className="absolute inset-0 bg-gradient-to-r from-primary/10 via-primary/5 to-card border border-primary/15 rounded-2xl" />
-                        <div className="relative h-full flex items-center gap-4 px-4">
-                          <div className="w-12 h-12 rounded-xl bg-primary/15 border border-primary/20 flex items-center justify-center flex-shrink-0">
-                            <Pencil className="w-5 h-5 text-primary" />
+                        <div className="relative h-full flex items-center gap-4 px-5">
+                          <div className="w-14 h-14 rounded-2xl bg-primary/15 border border-primary/20 flex items-center justify-center flex-shrink-0">
+                            <Pencil className="w-6 h-6 text-primary" />
                           </div>
                           <div>
-                            <p className="text-[13px] font-bold text-foreground">Personalizar</p>
-                            <p className="text-[10px] text-muted-foreground/60">Crie uma meta com o nome que quiser</p>
+                            <p className="text-sm font-bold text-foreground">Personalizar</p>
+                            <p className="text-[11px] text-muted-foreground/60">Crie uma meta com o nome que quiser</p>
                           </div>
                         </div>
                       </motion.button>
@@ -256,14 +260,30 @@ const GoalCreateModal = ({ open, onClose, onSubmit }: GoalCreateModalProps) => {
                     transition={{ duration: 0.25 }}
                     className="space-y-5"
                   >
-                    {/* Mini header with selected goal */}
-                    <div className="flex items-center gap-3">
-                      <span className="text-2xl">{goalEmoji}</span>
-                      <div>
-                        <p className="text-base font-bold text-foreground">{goalName}</p>
-                        <p className="text-[10px] text-muted-foreground/50">{goalSubtitle}</p>
+                    {/* Banner image */}
+                    {goalCover && (
+                      <div className="relative rounded-2xl overflow-hidden h-36 -mx-1">
+                        <img src={goalCover} alt={goalName} className="w-full h-full object-cover" />
+                        <div className="absolute inset-0 bg-gradient-to-t from-card via-card/40 to-transparent" />
+                        <div className="absolute bottom-3 left-4 flex items-center gap-2.5">
+                          <span className="text-2xl drop-shadow-lg">{goalEmoji}</span>
+                          <div>
+                            <p className="text-base font-bold text-white drop-shadow-md">{goalName}</p>
+                            <p className="text-[10px] text-white/60 drop-shadow-sm">{goalSubtitle}</p>
+                          </div>
+                        </div>
                       </div>
-                    </div>
+                    )}
+
+                    {!goalCover && (
+                      <div className="flex items-center gap-3">
+                        <span className="text-2xl">{goalEmoji}</span>
+                        <div>
+                          <p className="text-base font-bold text-foreground">{goalName}</p>
+                          <p className="text-[10px] text-muted-foreground/50">{goalSubtitle}</p>
+                        </div>
+                      </div>
+                    )}
 
                     <div>
                       <h2 className="text-lg font-bold text-foreground">Quanto quer juntar?</h2>
@@ -318,16 +338,27 @@ const GoalCreateModal = ({ open, onClose, onSubmit }: GoalCreateModalProps) => {
                     transition={{ duration: 0.25 }}
                     className="space-y-5"
                   >
-                    {/* Hero */}
-                    <div className="text-center space-y-2 py-2">
-                      <span className="text-4xl">{goalEmoji}</span>
-                      <div>
-                        <p className="text-[9px] font-bold uppercase tracking-[0.2em] text-primary/70">Sua Meta Financeira</p>
-                        <h2 className="text-xl font-bold text-foreground mt-1">{goalName}</h2>
-                        <div className="inline-flex items-center gap-1.5 mt-2 px-3 py-1.5 rounded-full bg-primary/10 border border-primary/15">
-                          <TrendingUp className="w-3 h-3 text-primary" />
-                          <span className="text-sm font-bold text-primary tabular-nums">{fmt(targetAmount)}</span>
+                    {/* Banner image or gradient hero */}
+                    {goalCover ? (
+                      <div className="relative rounded-2xl overflow-hidden h-40 -mx-1">
+                        <img src={goalCover} alt={goalName} className="w-full h-full object-cover" />
+                        <div className="absolute inset-0 bg-gradient-to-t from-card via-card/50 to-transparent" />
+                        <div className="absolute bottom-4 left-0 right-0 text-center">
+                          <span className="text-4xl drop-shadow-lg">{goalEmoji}</span>
                         </div>
+                      </div>
+                    ) : (
+                      <div className="text-center py-3">
+                        <span className="text-4xl">{goalEmoji}</span>
+                      </div>
+                    )}
+
+                    <div className="text-center space-y-2">
+                      <p className="text-[9px] font-bold uppercase tracking-[0.2em] text-primary/70">Sua Meta Financeira</p>
+                      <h2 className="text-xl font-bold text-foreground">{goalName}</h2>
+                      <div className="inline-flex items-center gap-1.5 px-4 py-2 rounded-full bg-primary/10 border border-primary/15">
+                        <TrendingUp className="w-3.5 h-3.5 text-primary" />
+                        <span className="text-sm font-bold text-primary tabular-nums">{fmt(targetAmount)}</span>
                       </div>
                     </div>
 
