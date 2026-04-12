@@ -1,7 +1,7 @@
 import { useState, useEffect, useCallback } from "react";
 import useEmblaCarousel from "embla-carousel-react";
 import { motion, AnimatePresence } from "framer-motion";
-import { CreditCard, Plus, X, Landmark, Banknote, PiggyBank, TrendingUp, ChevronRight, Briefcase, ArrowDownLeft, CalendarIcon } from "lucide-react";
+import { CreditCard, Plus, X, Landmark, Banknote, PiggyBank, TrendingUp, ChevronRight, Briefcase, ArrowDownLeft, CalendarIcon, Wallet, Target, ArrowRightLeft, Info, Shield } from "lucide-react";
 import { useNavigate } from "react-router-dom";
 import { format } from "date-fns";
 import { ptBR } from "date-fns/locale";
@@ -17,6 +17,7 @@ import { useAuth } from "@/contexts/AuthContext";
 import { getAccounts, createAccount, getCreditCards, createCreditCard } from "@/services/transactionService";
 import { supabase } from "@/integrations/supabase/client";
 import { cn } from "@/lib/utils";
+import { fetchGoals, type Goal } from "@/services/goalService";
 
 interface Account {
   id: string;
@@ -90,11 +91,6 @@ const COLOR_OPTIONS = [
   { value: "lime", label: "Lima", bg: "from-lime-700/80 to-lime-950/90", accent: "bg-lime-500" },
 ];
 
-function getGradient(color: string | null): string {
-  const found = COLOR_OPTIONS.find((c) => c.value === color);
-  return found?.bg ?? COLOR_OPTIONS[0].bg;
-}
-
 const ACCENT_MAP: Record<string, { border: string; iconBg: string; dot: string }> = {
   violet: { border: "border-violet-500/25", iconBg: "bg-violet-500/15", dot: "bg-violet-400" },
   emerald: { border: "border-emerald-500/25", iconBg: "bg-emerald-500/15", dot: "bg-emerald-400" },
@@ -114,6 +110,15 @@ function formatCurrency(value: number) {
   return value.toLocaleString("pt-BR", { style: "currency", currency: "BRL" });
 }
 
+const GOAL_COLORS = [
+  "hsl(40 90% 55%)",
+  "hsl(150 100% 45%)",
+  "hsl(210 80% 55%)",
+  "hsl(330 80% 55%)",
+  "hsl(270 70% 60%)",
+  "hsl(180 70% 50%)",
+];
+
 /* ══════════════════════════════════════════════
    Modal overlay shared by account & card forms
    ══════════════════════════════════════════════ */
@@ -126,7 +131,6 @@ const ModalOverlay = ({ open, onClose, children }: { open: boolean; onClose: () 
         exit={{ opacity: 0 }}
         className="fixed inset-0 z-50 flex items-center justify-center px-4"
       >
-        {/* backdrop */}
         <motion.div
           initial={{ opacity: 0 }}
           animate={{ opacity: 1 }}
@@ -134,7 +138,6 @@ const ModalOverlay = ({ open, onClose, children }: { open: boolean; onClose: () 
           className="absolute inset-0 bg-black/60 backdrop-blur-sm"
           onClick={onClose}
         />
-        {/* content */}
         <motion.div
           initial={{ opacity: 0, scale: 0.95, y: 16 }}
           animate={{ opacity: 1, scale: 1, y: 0 }}
@@ -156,6 +159,7 @@ const GestaoFinanceira = () => {
   const [accounts, setAccounts] = useState<Account[]>([]);
   const [creditCards, setCreditCards] = useState<CreditCardItem[]>([]);
   const [openInvoices, setOpenInvoices] = useState<Record<string, number>>({});
+  const [goals, setGoals] = useState<Goal[]>([]);
   const [loading, setLoading] = useState(() => !warmDashboardData);
 
   const [accountsRef] = useEmblaCarousel({ loop: false, align: "start", dragFree: true, containScroll: "trimSnaps" });
@@ -191,12 +195,20 @@ const GestaoFinanceira = () => {
   const [aporteCents, setAporteCents] = useState(0);
   const [aporteSubmitting, setAporteSubmitting] = useState(false);
 
+  // Add menu state
+  const [showAddMenu, setShowAddMenu] = useState(false);
+
   const fetchData = async () => {
     if (!user) return;
     try {
-      const [accs, cards] = await Promise.all([getAccounts(), getCreditCards()]);
+      const [accs, cards, goalsData] = await Promise.all([
+        getAccounts(),
+        getCreditCards(),
+        fetchGoals(),
+      ]);
       setAccounts(accs as unknown as Account[]);
       setCreditCards(cards as unknown as CreditCardItem[]);
+      setGoals(goalsData);
       setLoading(false);
 
       // Fetch open invoices for current month
@@ -233,6 +245,7 @@ const GestaoFinanceira = () => {
       .on("postgres_changes", { event: "*", schema: "public", table: "credit_cards", filter: `user_id=eq.${user.id}` }, () => fetchData())
       .on("postgres_changes", { event: "*", schema: "public", table: "invoices", filter: `user_id=eq.${user.id}` }, () => fetchData())
       .on("postgres_changes", { event: "*", schema: "public", table: "accounts", filter: `user_id=eq.${user.id}` }, () => fetchData())
+      .on("postgres_changes", { event: "*", schema: "public", table: "goals", filter: `user_id=eq.${user.id}` }, () => fetchData())
       .subscribe();
 
     return () => {
@@ -278,7 +291,6 @@ const GestaoFinanceira = () => {
         accPayload.rate_type = "fixed_monthly";
         if (newAnnualRate) {
           const raw = parseFloat(newAnnualRate);
-          // Always store as monthly rate
           accPayload.annual_rate = newRatePeriod === "annual"
             ? Number(((Math.pow(1 + raw / 100, 1 / 12) - 1) * 100).toFixed(6))
             : raw;
@@ -362,21 +374,143 @@ const GestaoFinanceira = () => {
     }
   };
 
+  // ═══════ Computed values ═══════
+  const bankAccounts = accounts.filter(a => a.type !== "investment");
+  const investmentAccounts = accounts.filter(a => a.type === "investment");
+
+  const saldoDisponivel = bankAccounts.reduce((s, a) => s + Number(a.current_balance), 0);
+  const totalMetas = goals.reduce((s, g) => s + g.current_amount, 0);
+  const totalInvestido = investmentAccounts.reduce((s, a) => s + Number(a.current_balance), 0);
+  const patrimonioTotal = saldoDisponivel + totalMetas + totalInvestido;
+
   return (
-    <div className="pt-2 pb-8 space-y-8">
-      {/* Page Header */}
-      <div>
-        <h1 className="text-xl font-bold text-foreground">Carteira</h1>
-        <p className="text-sm text-muted-foreground mt-0.5">Gerencie suas contas, cartões e assinaturas</p>
+    <div className="pt-2 pb-8 space-y-6">
+      {/* ═══════ Page Header ═══════ */}
+      <div className="flex items-center justify-between">
+        <div className="flex items-center gap-2.5">
+          <div className="w-9 h-9 rounded-xl bg-primary/10 flex items-center justify-center">
+            <Wallet className="w-5 h-5 text-primary" />
+          </div>
+          <div>
+            <h1 className="text-xl font-bold text-foreground">Carteira</h1>
+            <p className="text-[10px] text-muted-foreground mt-0.5">Organize seu dinheiro de forma inteligente</p>
+          </div>
+        </div>
+        <div className="relative">
+          <motion.button
+            whileTap={{ scale: 0.95 }}
+            onClick={() => setShowAddMenu(!showAddMenu)}
+            className="w-8 h-8 rounded-xl bg-primary/15 border border-primary/20 flex items-center justify-center hover:bg-primary/20 transition-colors"
+          >
+            <Plus className="w-4 h-4 text-primary" />
+          </motion.button>
+          <AnimatePresence>
+            {showAddMenu && (
+              <>
+                <motion.div
+                  initial={{ opacity: 0 }}
+                  animate={{ opacity: 1 }}
+                  exit={{ opacity: 0 }}
+                  className="fixed inset-0 z-40"
+                  onClick={() => setShowAddMenu(false)}
+                />
+                <motion.div
+                  initial={{ opacity: 0, scale: 0.9, y: -4 }}
+                  animate={{ opacity: 1, scale: 1, y: 0 }}
+                  exit={{ opacity: 0, scale: 0.9, y: -4 }}
+                  className="absolute right-0 mt-1 w-48 rounded-xl bg-card border border-border/30 shadow-2xl overflow-hidden z-50"
+                >
+                  <button onClick={() => { setShowAddMenu(false); setShowAddAccount(true); }} className="w-full flex items-center gap-2.5 px-4 py-3 text-xs font-semibold text-foreground hover:bg-muted/10 transition-colors">
+                    <Landmark className="w-4 h-4 text-primary" /> Nova Conta
+                  </button>
+                  <button onClick={() => { setShowAddMenu(false); setShowAddCard(true); }} className="w-full flex items-center gap-2.5 px-4 py-3 text-xs font-semibold text-foreground hover:bg-muted/10 transition-colors">
+                    <CreditCard className="w-4 h-4 text-primary" /> Novo Cartão
+                  </button>
+                  <button onClick={() => { setShowAddMenu(false); setNewAccType("investment" as any); setShowAddAccount(true); }} className="w-full flex items-center gap-2.5 px-4 py-3 text-xs font-semibold text-foreground hover:bg-muted/10 transition-colors">
+                    <Briefcase className="w-4 h-4 text-primary" /> Novo Investimento
+                  </button>
+                </motion.div>
+              </>
+            )}
+          </AnimatePresence>
+        </div>
       </div>
 
-      {/* ═══════ Contas Bancárias ═══════ */}
+      {/* ═══════ RESUMO FINANCEIRO ═══════ */}
+      <motion.div
+        initial={{ opacity: 0, y: 12 }}
+        animate={{ opacity: 1, y: 0 }}
+        className="rounded-2xl overflow-hidden relative"
+        style={{ boxShadow: "0 4px 32px -8px rgba(0,0,0,0.4)" }}
+      >
+        <div className="absolute inset-0" style={{ background: "linear-gradient(160deg, hsl(220 15% 14% / 0.7) 0%, hsl(220 18% 8% / 0.85) 50%, hsl(220 20% 4% / 0.95) 100%)" }} />
+        <div className="absolute inset-0 border border-border/10 rounded-2xl" />
+        <div className="relative px-5 py-5 space-y-4">
+          {/* Saldo Disponível */}
+          <div>
+            <div className="flex items-center gap-1.5 mb-1">
+              <div className={cn("w-2 h-2 rounded-full", saldoDisponivel >= 0 ? "bg-primary" : "bg-destructive")} />
+              <p className="text-[9px] text-muted-foreground uppercase tracking-[0.15em] font-semibold">💵 Saldo disponível</p>
+            </div>
+            <p className={cn("text-3xl font-extrabold tabular-nums tracking-tight", saldoDisponivel >= 0 ? "text-foreground" : "text-destructive")}>
+              {formatCurrency(saldoDisponivel)}
+            </p>
+            <p className="text-[10px] text-muted-foreground/50 mt-0.5">Dinheiro disponível para uso</p>
+          </div>
+
+          <div className="h-px bg-border/10" />
+
+          {/* Patrimônio Total */}
+          <div>
+            <div className="flex items-center gap-1.5 mb-1">
+              <div className="w-2 h-2 rounded-full bg-primary/50" />
+              <p className="text-[9px] text-muted-foreground uppercase tracking-[0.15em] font-semibold">🧾 Patrimônio total</p>
+            </div>
+            <p className="text-xl font-bold tabular-nums text-foreground/80">
+              {formatCurrency(patrimonioTotal)}
+            </p>
+            <p className="text-[10px] text-muted-foreground/50 mt-0.5">Inclui valores em metas e investimentos</p>
+          </div>
+
+          {/* Breakdown chips */}
+          <div className="flex flex-wrap gap-2 pt-1">
+            {totalMetas > 0 && (
+              <span className="inline-flex items-center gap-1 px-2.5 py-1 rounded-lg bg-amber-500/10 border border-amber-500/20 text-[10px] font-semibold text-amber-400">
+                <Shield className="w-3 h-3" /> Reservado: {formatCurrency(totalMetas)}
+              </span>
+            )}
+            {totalInvestido > 0 && (
+              <span className="inline-flex items-center gap-1 px-2.5 py-1 rounded-lg bg-primary/10 border border-primary/20 text-[10px] font-semibold text-primary">
+                <TrendingUp className="w-3 h-3" /> Investido: {formatCurrency(totalInvestido)}
+              </span>
+            )}
+          </div>
+        </div>
+      </motion.div>
+
+      {/* Info tip */}
+      <motion.div
+        initial={{ opacity: 0 }}
+        animate={{ opacity: 1 }}
+        transition={{ delay: 0.2 }}
+        className="flex items-start gap-2.5 px-3.5 py-2.5 rounded-xl bg-primary/[0.04] border border-primary/10"
+      >
+        <Info className="w-3.5 h-3.5 text-primary/60 mt-0.5 shrink-0" />
+        <p className="text-[10px] text-muted-foreground/70 leading-relaxed">
+          Nem todo o seu dinheiro está disponível — parte dele pode estar reservado em metas ou investido para crescer.
+        </p>
+      </motion.div>
+
+      {/* ═══════ Contas ═══════ */}
       <section>
         <div className="flex items-center justify-between mb-4">
-          <h2 className="text-base font-bold text-foreground flex items-center gap-2">
-            <Landmark className="w-4 h-4 text-primary" />
-            Contas Bancárias
-          </h2>
+          <div>
+            <h2 className="text-base font-bold text-foreground flex items-center gap-2">
+              <Landmark className="w-4 h-4 text-primary" />
+              Contas
+            </h2>
+            <p className="text-[10px] text-muted-foreground/60 mt-0.5 ml-6">Saldo disponível para uso</p>
+          </div>
           <button
             onClick={() => setShowAddAccount(true)}
             className="w-7 h-7 rounded-lg bg-primary/10 flex items-center justify-center hover:bg-primary/20 transition-colors"
@@ -391,7 +525,7 @@ const GestaoFinanceira = () => {
               <div key={i} className="h-44 rounded-2xl bg-card animate-pulse" />
             ))}
           </div>
-        ) : accounts.length === 0 ? (
+        ) : bankAccounts.length === 0 ? (
           <div className="rounded-2xl bg-card/60 backdrop-blur-sm border border-border/20 p-8 text-center">
             <Landmark className="w-10 h-10 text-muted-foreground mx-auto mb-3" />
             <p className="text-sm text-muted-foreground mb-1">Nenhuma conta cadastrada</p>
@@ -409,13 +543,10 @@ const GestaoFinanceira = () => {
             {/* Mobile carousel */}
             <div className="overflow-hidden sm:hidden" ref={accountsRef}>
               <div className="flex gap-3 px-4">
-              {accounts.filter((a) => a.type !== "investment").map((acc, idx) => {
+              {bankAccounts.map((acc, idx) => {
                 const typeInfo = ACCOUNT_TYPE_LABELS[acc.type] ?? ACCOUNT_TYPE_LABELS.checking;
                 const Icon = typeInfo.icon;
-                const gradient = getGradient(acc.color);
                 const balance = Number(acc.current_balance);
-                const isPositive = balance >= 0;
-
                 const accent = getAccent(acc.color);
 
                 return (
@@ -429,13 +560,9 @@ const GestaoFinanceira = () => {
                     style={{ background: "linear-gradient(135deg, hsl(var(--card)) 0%, hsl(var(--background)) 100%)" }}
                   >
                     <div className="p-4 space-y-4">
-                      {/* Row 1: Bank info */}
                       <div className="flex items-center justify-between">
                         <div className="flex items-center gap-3">
-                          <div className={cn(
-                            "w-8 h-8 rounded-xl flex items-center justify-center",
-                            accent.iconBg
-                          )}>
+                          <div className={cn("w-8 h-8 rounded-xl flex items-center justify-center", accent.iconBg)}>
                             <Icon className={cn("w-4 h-4", accent.dot.replace("bg-", "text-"))} />
                           </div>
                           <div>
@@ -451,11 +578,7 @@ const GestaoFinanceira = () => {
                           <ChevronRight className="w-4 h-4 text-muted-foreground/25 group-hover:text-primary transition-colors" />
                         )}
                       </div>
-
-                      {/* Divider */}
                       <div className="h-px bg-border/10" />
-
-                      {/* Row 2: Balance */}
                       <div>
                         <div className="flex items-center gap-1.5 mb-1.5">
                           <div className={cn("w-1.5 h-1.5 rounded-full", balance >= 0 ? "bg-primary" : "bg-destructive")} />
@@ -485,7 +608,7 @@ const GestaoFinanceira = () => {
 
             {/* Desktop grid */}
             <div className="hidden sm:grid sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-3">
-              {accounts.filter((a) => a.type !== "investment").map((acc, idx) => {
+              {bankAccounts.map((acc, idx) => {
                 const typeInfo = ACCOUNT_TYPE_LABELS[acc.type] ?? ACCOUNT_TYPE_LABELS.checking;
                 const Icon = typeInfo.icon;
                 const balance = Number(acc.current_balance);
@@ -504,10 +627,7 @@ const GestaoFinanceira = () => {
                     <div className="p-4 space-y-4">
                       <div className="flex items-center justify-between">
                         <div className="flex items-center gap-3">
-                          <div className={cn(
-                            "w-8 h-8 rounded-xl flex items-center justify-center",
-                            accent.iconBg
-                          )}>
+                          <div className={cn("w-8 h-8 rounded-xl flex items-center justify-center", accent.iconBg)}>
                             <Icon className={cn("w-4 h-4", accent.dot.replace("bg-", "text-"))} />
                           </div>
                           <div>
@@ -540,7 +660,7 @@ const GestaoFinanceira = () => {
               <motion.button
                 initial={{ opacity: 0, y: 16 }}
                 animate={{ opacity: 1, y: 0 }}
-                transition={{ delay: accounts.length * 0.05 }}
+                transition={{ delay: bankAccounts.length * 0.05 }}
                 onClick={() => setShowAddAccount(true)}
                 className="rounded-2xl p-4 min-h-[148px] flex flex-col items-center justify-center gap-2 border-2 border-dashed border-primary/20 hover:border-primary/40 bg-primary/[0.03] hover:bg-primary/[0.06] transition-all duration-300 cursor-pointer"
               >
@@ -610,7 +730,6 @@ const GestaoFinanceira = () => {
                     style={{ background: "linear-gradient(135deg, hsl(var(--card)) 0%, hsl(var(--background)) 100%)" }}
                   >
                     <div className="p-4 space-y-4">
-                      {/* Row 1: Card info */}
                       <div className="flex items-center justify-between">
                         <div className="flex items-center gap-3">
                           <div className={cn("w-8 h-8 rounded-xl flex items-center justify-center", accent.iconBg)}>
@@ -627,11 +746,7 @@ const GestaoFinanceira = () => {
                         </div>
                         <ChevronRight className="w-4 h-4 text-muted-foreground/25 group-hover:text-primary transition-colors" />
                       </div>
-
-                      {/* Divider */}
                       <div className="h-px bg-border/10" />
-
-                      {/* Row 2: Available + Used + Invoice */}
                       <div>
                         <div className="grid grid-cols-2 gap-3 items-end mb-3">
                           <div>
@@ -734,7 +849,6 @@ const GestaoFinanceira = () => {
                             ) : (
                               <p className="text-[10px] text-muted-foreground mt-0.5">Cartão de crédito</p>
                             )}
-                            
                           </div>
                         </div>
                         <ChevronRight className="w-4 h-4 text-muted-foreground/25 group-hover:text-primary transition-colors" />
@@ -814,13 +928,116 @@ const GestaoFinanceira = () => {
         )}
       </section>
 
-      {/* ═══════ Carteira de Investimentos ═══════ */}
+      {/* ═══════ Metas (Dinheiro Reservado) ═══════ */}
+      <section>
+        <div className="flex items-center justify-between mb-3">
+          <div>
+            <h2 className="text-base font-bold text-foreground flex items-center gap-2">
+              <Target className="w-4 h-4 text-primary" />
+              Metas
+            </h2>
+            <p className="text-[10px] text-muted-foreground/60 mt-0.5 ml-6">Dinheiro reservado para objetivos</p>
+          </div>
+          <button
+            onClick={() => navigate("/metas")}
+            className="flex items-center gap-1 text-xs text-primary/70 font-medium hover:text-primary transition-colors"
+          >
+            Ver todas <ChevronRight className="w-3.5 h-3.5" />
+          </button>
+        </div>
+
+        {loading ? (
+          <div className="space-y-2">
+            {[1, 2].map(i => <div key={i} className="h-16 rounded-xl bg-card animate-pulse" />)}
+          </div>
+        ) : goals.length === 0 ? (
+          <div className="rounded-2xl bg-card/60 backdrop-blur-sm border border-border/20 p-6 text-center">
+            <Target className="w-8 h-8 text-muted-foreground mx-auto mb-2" />
+            <p className="text-sm text-muted-foreground mb-1">Nenhuma meta criada</p>
+            <p className="text-xs text-muted-foreground/60 mb-3">Crie metas para reservar dinheiro</p>
+            <Button
+              onClick={() => navigate("/metas")}
+              size="sm"
+              className="rounded-xl bg-primary/15 text-primary hover:bg-primary/25 border-0"
+            >
+              <Plus className="w-4 h-4 mr-1" /> Criar Meta
+            </Button>
+          </div>
+        ) : (
+          <div className="space-y-2">
+            {goals.slice(0, 4).map((goal, idx) => {
+              const progress = Math.min(1, goal.current_amount / goal.target_amount);
+              const pct = Math.round(progress * 100);
+              const isComplete = progress >= 1;
+              const color = GOAL_COLORS[idx % GOAL_COLORS.length];
+
+              return (
+                <motion.div
+                  key={goal.id}
+                  initial={{ opacity: 0, x: -8 }}
+                  animate={{ opacity: 1, x: 0 }}
+                  transition={{ delay: idx * 0.05 }}
+                  onClick={() => navigate(`/metas/${goal.id}`)}
+                  className="flex items-center gap-3 p-3.5 rounded-xl border border-border/10 hover:border-primary/20 cursor-pointer transition-all active:scale-[0.99]"
+                  style={{ background: "linear-gradient(135deg, hsl(var(--card)) 0%, hsl(var(--background)) 100%)" }}
+                >
+                  <div className="w-10 h-10 rounded-xl flex items-center justify-center shrink-0" style={{ backgroundColor: `${color}15` }}>
+                    <Target className="w-5 h-5" style={{ color }} />
+                  </div>
+                  <div className="flex-1 min-w-0">
+                    <p className="text-sm font-bold text-foreground truncate">{goal.name}</p>
+                    <div className="flex items-center gap-2 mt-1">
+                      <div className="flex-1 h-1.5 rounded-full bg-muted/30 overflow-hidden">
+                        <motion.div
+                          initial={{ width: 0 }}
+                          animate={{ width: `${pct}%` }}
+                          transition={{ duration: 0.8, ease: "easeOut" }}
+                          className="h-full rounded-full"
+                          style={{ backgroundColor: color }}
+                        />
+                      </div>
+                      <span className={cn("text-[10px] font-bold tabular-nums shrink-0", isComplete ? "text-primary" : "text-foreground/60")}>
+                        {pct}%
+                      </span>
+                    </div>
+                    <p className="text-[10px] text-muted-foreground/60 mt-0.5 tabular-nums">
+                      {formatCurrency(goal.current_amount)} de {formatCurrency(goal.target_amount)}
+                    </p>
+                  </div>
+                  <ChevronRight className="w-4 h-4 text-muted-foreground/20 shrink-0" />
+                </motion.div>
+              );
+            })}
+            {goals.length > 4 && (
+              <button
+                onClick={() => navigate("/metas")}
+                className="w-full text-center py-2 text-xs text-primary/70 font-medium hover:text-primary transition-colors"
+              >
+                +{goals.length - 4} meta{goals.length - 4 > 1 ? "s" : ""} · Ver todas
+              </button>
+            )}
+
+            {/* Info text */}
+            <div className="flex items-start gap-2 px-1 pt-1">
+              <Shield className="w-3 h-3 text-amber-500/50 mt-0.5 shrink-0" />
+              <p className="text-[10px] text-muted-foreground/50 leading-relaxed">
+                Valores reservados para objetivos. Não fazem parte do saldo disponível.
+              </p>
+            </div>
+          </div>
+        )}
+      </section>
+
+      {/* ═══════ Investimentos (Dinheiro Aplicado) ═══════ */}
       <section>
         <div className="flex items-center justify-between mb-4">
-          <h2 className="text-base font-bold text-foreground flex items-center gap-2">
-            <Briefcase className="w-4 h-4 text-primary" />
-            Investimentos
-          </h2>
+          <div>
+            <h2 className="text-base font-bold text-foreground flex items-center gap-2">
+              <Briefcase className="w-4 h-4 text-primary" />
+              Investimentos
+            </h2>
+            <p className="text-[10px] text-muted-foreground/60 mt-0.5 ml-6">Dinheiro aplicado para crescimento</p>
+          </div>
           <button
             onClick={() => {
               setNewAccType("investment" as any);
@@ -833,9 +1050,6 @@ const GestaoFinanceira = () => {
         </div>
 
         {(() => {
-          const investmentAccounts = accounts.filter((a) => a.type === "investment");
-          const totalInvested = investmentAccounts.reduce((s, a) => s + Number(a.current_balance), 0);
-
           if (loading) {
             return (
               <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-3">
@@ -873,7 +1087,7 @@ const GestaoFinanceira = () => {
               >
                 <div>
                   <p className="text-[9px] text-muted-foreground uppercase tracking-widest font-medium">Total investido</p>
-                  <p className="text-xl font-extrabold text-foreground tabular-nums">{formatCurrency(totalInvested)}</p>
+                  <p className="text-xl font-extrabold text-foreground tabular-nums">{formatCurrency(totalInvestido)}</p>
                 </div>
                 <div className="w-8 h-8 rounded-xl bg-primary/15 flex items-center justify-center">
                   <TrendingUp className="w-4 h-4 text-primary" />
@@ -928,10 +1142,33 @@ const GestaoFinanceira = () => {
                   );
                 })}
               </div>
+
+              {/* Info text */}
+              <div className="flex items-start gap-2 px-1 pt-1">
+                <TrendingUp className="w-3 h-3 text-primary/50 mt-0.5 shrink-0" />
+                <p className="text-[10px] text-muted-foreground/50 leading-relaxed">
+                  Valores aplicados e destinados ao crescimento do seu patrimônio.
+                </p>
+              </div>
             </div>
           );
         })()}
       </section>
+
+      {/* ═══════ Microcopy educativo ═══════ */}
+      <motion.div
+        initial={{ opacity: 0 }}
+        animate={{ opacity: 1 }}
+        transition={{ delay: 0.4 }}
+        className="rounded-xl p-4 border border-border/5 text-center"
+        style={{ background: "linear-gradient(135deg, hsl(var(--card) / 0.3) 0%, transparent 100%)" }}
+      >
+        <p className="text-[11px] text-muted-foreground/50 italic">
+          "Separe o que é gasto do que é construção de patrimônio"
+        </p>
+      </motion.div>
+
+      {/* ═══════ MODALS ═══════ */}
       <ModalOverlay open={showAddAccount} onClose={resetAddAccount}>
         <div className="space-y-4">
           <div className="flex items-center justify-between">
@@ -1228,7 +1465,7 @@ const GestaoFinanceira = () => {
               <SelectValue placeholder="Conta de origem" />
             </SelectTrigger>
             <SelectContent>
-              {accounts.filter(a => a.type !== "investment").map(a => (
+              {bankAccounts.map(a => (
                 <SelectItem key={a.id} value={a.id}>
                   {a.name} · {formatCurrency(Number(a.current_balance))}
                 </SelectItem>
