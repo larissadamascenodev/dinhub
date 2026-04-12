@@ -240,7 +240,7 @@ export async function deleteGoalDepositWithRefund(
  */
 export async function generateGoalCoverImage(goalName: string): Promise<string | null> {
   try {
-    const prompt = `A beautiful, cinematic, slightly dark and moody photograph representing the concept of "${goalName}" as a financial savings goal. No text. Photorealistic, wide angle, atmospheric lighting.`;
+    const prompt = `Generate a beautiful, cinematic, slightly dark and moody photograph representing the concept of "${goalName}" as a financial savings goal. No text. Photorealistic, wide angle, atmospheric lighting.`;
     
     const response = await fetch("https://ai.gateway.lovable.dev/v1/chat/completions", {
       method: "POST",
@@ -249,15 +249,51 @@ export async function generateGoalCoverImage(goalName: string): Promise<string |
         "Content-Type": "application/json",
       },
       body: JSON.stringify({
-        model: "google/gemini-2.5-flash-image",
+        model: "google/gemini-3.1-flash-image-preview",
         messages: [{ role: "user", content: prompt }],
         modalities: ["image", "text"],
       }),
     });
 
+    if (!response.ok) {
+      console.error("Cover image generation failed:", response.status);
+      return null;
+    }
+
     const data = await response.json();
-    const imageUrl = data.choices?.[0]?.message?.images?.[0]?.image_url?.url;
-    return imageUrl ?? null;
+    console.log("Cover image response keys:", JSON.stringify(Object.keys(data)));
+    
+    // Try multiple response formats
+    const choice = data.choices?.[0]?.message;
+    
+    // Format 1: images array
+    const imageUrl = choice?.images?.[0]?.image_url?.url;
+    if (imageUrl) return imageUrl;
+    
+    // Format 2: content parts with image_url
+    if (Array.isArray(choice?.content)) {
+      for (const part of choice.content) {
+        if (part.type === "image_url" && part.image_url?.url) {
+          return part.image_url.url;
+        }
+        if (part.type === "image" && part.image_url?.url) {
+          return part.image_url.url;
+        }
+      }
+    }
+
+    // Format 3: inline_data in parts
+    if (Array.isArray(choice?.content)) {
+      for (const part of choice.content) {
+        if (part.inline_data?.data) {
+          const mime = part.inline_data.mime_type || "image/png";
+          return `data:${mime};base64,${part.inline_data.data}`;
+        }
+      }
+    }
+
+    console.error("No image found in response:", JSON.stringify(data).slice(0, 500));
+    return null;
   } catch (err) {
     console.error("Failed to generate cover image:", err);
     return null;
