@@ -210,19 +210,19 @@ const PoliticaPrivacidade = () => {
           </div>
 
           <div className="space-y-1.5">
-            <h1 className="text-xl font-extrabold text-foreground tracking-tight">
+            <h1 className="text-xl md:text-2xl font-extrabold text-foreground tracking-tight">
               Política de Privacidade
             </h1>
-            <p className="text-[13px] text-muted-foreground leading-relaxed max-w-xs">
+            <p className="text-[13px] md:text-sm text-muted-foreground leading-relaxed max-w-xs md:max-w-md">
               Como cuidamos dos seus dados
             </p>
           </div>
 
           <div className="rounded-xl bg-primary/[0.06] border border-primary/10 p-3.5 space-y-1">
-            <p className="text-[13px] font-semibold text-foreground">
+            <p className="text-[13px] md:text-sm font-semibold text-foreground">
               Seus dados são seus. E a gente leva isso a sério.
             </p>
-            <p className="text-[12px] text-muted-foreground leading-relaxed">
+            <p className="text-[12px] md:text-[13px] text-muted-foreground leading-relaxed">
               Tudo o que você registra no DinHub é protegido e usado apenas para melhorar sua experiência.
             </p>
           </div>
