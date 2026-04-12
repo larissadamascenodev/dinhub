@@ -186,17 +186,17 @@ const TermosDeUso = () => {
 
         <div className="relative space-y-4">
           {/* Icon cluster */}
-          <div className="flex items-center gap-2">
-            <div className="w-12 h-12 rounded-2xl bg-primary/10 border border-primary/20 flex items-center justify-center">
-              <FileText className="w-6 h-6 text-primary" />
+          <div className="flex items-center gap-1.5">
+            <div className="w-9 h-9 rounded-xl bg-primary/10 border border-primary/20 flex items-center justify-center">
+              <FileText className="w-4.5 h-4.5 text-primary" />
             </div>
-            <div className="flex -space-x-1.5">
+            <div className="flex -space-x-1">
               {[ShieldCheck, Lock, Brain].map((Icon, i) => (
                 <div
                   key={i}
-                  className="w-7 h-7 rounded-full bg-primary/[0.08] border border-primary/15 flex items-center justify-center"
+                  className="w-5.5 h-5.5 rounded-full bg-primary/[0.08] border border-primary/15 flex items-center justify-center"
                 >
-                  <Icon className="w-3.5 h-3.5 text-primary/70" />
+                  <Icon className="w-3 h-3 text-primary/70" />
                 </div>
               ))}
             </div>
