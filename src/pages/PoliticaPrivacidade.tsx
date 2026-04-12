@@ -147,7 +147,7 @@ const SectionBlock = ({ section, index }: { section: Section; index: number }) =
 
     <div className="space-y-1.5 md:space-y-2">
       {section.content.map((line, i) => (
-        <p key={i} className="text-[13px] md:text-sm text-muted-foreground leading-relaxed md:leading-7">
+        <p key={i} className="text-[13px] md:text-sm text-muted-foreground leading-relaxed md:leading-7 text-justify">
           {renderBold(line)}
         </p>
       ))}
