@@ -136,18 +136,18 @@ const SectionBlock = ({ section, index }: { section: Section; index: number }) =
     initial={{ opacity: 0, y: 14 }}
     animate={{ opacity: 1, y: 0 }}
     transition={{ delay: 0.08 + index * 0.03, ease: "easeOut" }}
-    className="space-y-2"
+    className="space-y-2 md:space-y-3"
   >
     <div className="flex items-center gap-2">
-      <div className="w-6 h-6 rounded-md bg-primary/10 flex items-center justify-center shrink-0">
-        <section.icon className="w-3.5 h-3.5 text-primary" />
+      <div className="w-6 h-6 md:w-8 md:h-8 rounded-md bg-primary/10 flex items-center justify-center shrink-0">
+        <section.icon className="w-3.5 h-3.5 md:w-4 md:h-4 text-primary" />
       </div>
-      <span className="text-[13px] font-bold text-foreground">{section.title}</span>
+      <span className="text-[13px] md:text-[15px] font-bold text-foreground">{section.title}</span>
     </div>
 
-    <div className="space-y-1.5">
+    <div className="space-y-1.5 md:space-y-2">
       {section.content.map((line, i) => (
-        <p key={i} className="text-[13px] text-muted-foreground leading-relaxed">
+        <p key={i} className="text-[13px] md:text-sm text-muted-foreground leading-relaxed md:leading-7">
           {renderBold(line)}
         </p>
       ))}
@@ -168,7 +168,7 @@ const PoliticaPrivacidade = () => {
   const navigate = useNavigate();
 
   return (
-    <div className="pt-1 pb-12 space-y-5 max-w-2xl mx-auto">
+    <div className="pt-1 pb-12 space-y-5 w-full max-w-6xl mx-auto px-4 md:px-8">
       {/* Back */}
       <motion.button
         initial={{ opacity: 0, x: -8 }}
