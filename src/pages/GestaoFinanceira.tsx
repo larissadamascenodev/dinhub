@@ -436,69 +436,87 @@ const GestaoFinanceira = () => {
         </div>
       </div>
 
-      {/* ═══════ RESUMO FINANCEIRO ═══════ */}
+      {/* ═══════ RESUMO FINANCEIRO — Card Compacto ═══════ */}
       <motion.div
         initial={{ opacity: 0, y: 12 }}
         animate={{ opacity: 1, y: 0 }}
         className="rounded-2xl overflow-hidden relative"
         style={{ boxShadow: "0 4px 32px -8px rgba(0,0,0,0.4)" }}
       >
-        <div className="absolute inset-0" style={{ background: "linear-gradient(160deg, hsl(220 15% 14% / 0.7) 0%, hsl(220 18% 8% / 0.85) 50%, hsl(220 20% 4% / 0.95) 100%)" }} />
-        <div className="absolute inset-0 border border-border/10 rounded-2xl" />
-        <div className="relative px-5 py-5 space-y-4">
-          {/* Saldo Disponível */}
-          <div>
-            <div className="flex items-center gap-1.5 mb-1">
-              <div className={cn("w-2 h-2 rounded-full", saldoDisponivel >= 0 ? "bg-primary" : "bg-destructive")} />
-              <p className="text-[9px] text-muted-foreground uppercase tracking-[0.15em] font-semibold">💵 Saldo disponível</p>
+        <div className="absolute inset-0" style={{ background: "linear-gradient(160deg, hsl(150 30% 12% / 0.6) 0%, hsl(220 18% 8% / 0.9) 50%, hsl(220 20% 5% / 0.95) 100%)" }} />
+        <div className="absolute inset-0 border border-primary/10 rounded-2xl" />
+        <div className="relative px-5 pt-4 pb-4 space-y-4">
+          {/* Header row */}
+          <div className="flex items-center justify-between">
+            <div className="flex items-center gap-2.5">
+              <div className="w-9 h-9 rounded-xl bg-primary/15 border border-primary/20 flex items-center justify-center">
+                <Wallet className="w-4.5 h-4.5 text-primary" />
+              </div>
+              <span className="text-sm font-bold text-primary">Minha Carteira</span>
             </div>
-            <p className={cn("text-3xl font-extrabold tabular-nums tracking-tight", saldoDisponivel >= 0 ? "text-foreground" : "text-destructive")}>
-              {formatCurrency(saldoDisponivel)}
-            </p>
-            <p className="text-[10px] text-muted-foreground/50 mt-0.5">Dinheiro disponível para uso</p>
+            <ChevronRight className="w-4 h-4 text-muted-foreground/40" />
           </div>
-
-          <div className="h-px bg-border/10" />
 
           {/* Patrimônio Total */}
-          <div>
-            <div className="flex items-center gap-1.5 mb-1">
-              <div className="w-2 h-2 rounded-full bg-primary/50" />
-              <p className="text-[9px] text-muted-foreground uppercase tracking-[0.15em] font-semibold">🧾 Patrimônio total</p>
-            </div>
-            <p className="text-xl font-bold tabular-nums text-foreground/80">
+          <div className="text-center pt-1">
+            <p className="text-[9px] text-muted-foreground/60 uppercase tracking-[0.18em] font-semibold mb-1">Patrimônio Total</p>
+            <p className="text-3xl font-extrabold tabular-nums tracking-tight text-primary">
               {formatCurrency(patrimonioTotal)}
             </p>
-            <p className="text-[10px] text-muted-foreground/50 mt-0.5">Inclui valores em metas e investimentos</p>
           </div>
 
-          {/* Breakdown chips */}
-          <div className="flex flex-wrap gap-2 pt-1">
-            {totalMetas > 0 && (
-              <span className="inline-flex items-center gap-1 px-2.5 py-1 rounded-lg bg-amber-500/10 border border-amber-500/20 text-[10px] font-semibold text-amber-400">
-                <Shield className="w-3 h-3" /> Reservado: {formatCurrency(totalMetas)}
-              </span>
-            )}
-            {totalInvestido > 0 && (
-              <span className="inline-flex items-center gap-1 px-2.5 py-1 rounded-lg bg-primary/10 border border-primary/20 text-[10px] font-semibold text-primary">
-                <TrendingUp className="w-3 h-3" /> Investido: {formatCurrency(totalInvestido)}
-              </span>
-            )}
+          {/* Breakdown: Contas / Crédito / Investimentos */}
+          <div className="grid grid-cols-3 gap-3 pt-1">
+            <div className="text-center">
+              <div className="flex justify-center mb-1.5">
+                <div className="w-7 h-7 rounded-lg bg-primary/10 flex items-center justify-center">
+                  <Landmark className="w-3.5 h-3.5 text-primary/70" />
+                </div>
+              </div>
+              <p className="text-[9px] text-muted-foreground/50 mb-0.5">Contas</p>
+              <p className="text-xs font-bold text-primary tabular-nums">{formatCurrency(saldoDisponivel)}</p>
+            </div>
+            <div className="text-center">
+              <div className="flex justify-center mb-1.5">
+                <div className="w-7 h-7 rounded-lg bg-primary/10 flex items-center justify-center">
+                  <CreditCard className="w-3.5 h-3.5 text-primary/70" />
+                </div>
+              </div>
+              <p className="text-[9px] text-muted-foreground/50 mb-0.5">Crédito</p>
+              <p className="text-xs font-bold text-primary tabular-nums">{formatCurrency(creditCards.reduce((s, c) => s + Number(c.used_limit), 0))}</p>
+            </div>
+            <div className="text-center">
+              <div className="flex justify-center mb-1.5">
+                <div className="w-7 h-7 rounded-lg bg-primary/10 flex items-center justify-center">
+                  <TrendingUp className="w-3.5 h-3.5 text-primary/70" />
+                </div>
+              </div>
+              <p className="text-[9px] text-muted-foreground/50 mb-0.5">Investimentos</p>
+              <p className="text-xs font-bold text-primary tabular-nums">{formatCurrency(totalInvestido)}</p>
+            </div>
+          </div>
+
+          {/* Divider */}
+          <div className="h-px bg-border/10" />
+
+          {/* Action buttons */}
+          <div className="flex items-center justify-center gap-6">
+            <button
+              onClick={() => navigate("/gestao-financeira")}
+              className="flex items-center gap-1.5 text-[11px] font-semibold text-muted-foreground/70 hover:text-primary transition-colors"
+            >
+              <ArrowRightLeft className="w-3.5 h-3.5" />
+              Transferir
+            </button>
+            <span className="w-px h-4 bg-border/15" />
+            <button
+              onClick={() => {}}
+              className="flex items-center gap-1.5 text-[11px] font-semibold text-muted-foreground/70 hover:text-primary transition-colors"
+            >
+              Gerenciar carteira
+            </button>
           </div>
         </div>
-      </motion.div>
-
-      {/* Info tip */}
-      <motion.div
-        initial={{ opacity: 0 }}
-        animate={{ opacity: 1 }}
-        transition={{ delay: 0.2 }}
-        className="flex items-start gap-2.5 px-3.5 py-2.5 rounded-xl bg-primary/[0.04] border border-primary/10"
-      >
-        <Info className="w-3.5 h-3.5 text-primary/60 mt-0.5 shrink-0" />
-        <p className="text-[10px] text-muted-foreground/70 leading-relaxed">
-          Nem todo o seu dinheiro está disponível — parte dele pode estar reservado em metas ou investido para crescer.
-        </p>
       </motion.div>
 
       {/* ═══════ Contas ═══════ */}
