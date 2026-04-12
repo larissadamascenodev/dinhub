@@ -273,8 +273,10 @@ const TermosDeUso = () => {
           </div>
           <div className="space-y-1">
             <p className="text-[13px] md:text-sm text-muted-foreground">Nosso compromisso</p>
-            <p className="text-base md:text-lg font-bold text-foreground">Transparência e respeito</p>
-            <p className="text-base md:text-lg font-bold text-primary">em cada interação</p>
+            <p className="text-base md:text-lg font-bold">
+              <span className="text-foreground">Transparência e respeito </span>
+              <span className="text-primary">em cada interação</span>
+            </p>
           </div>
           <div className="flex items-center justify-center gap-1.5 pt-1">
             <Heart className="w-3.5 h-3.5 text-primary/60" />
