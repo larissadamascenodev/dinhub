@@ -135,18 +135,18 @@ const SectionBlock = ({ section, index }: { section: Section; index: number }) =
     initial={{ opacity: 0, y: 14 }}
     animate={{ opacity: 1, y: 0 }}
     transition={{ delay: 0.08 + index * 0.03, ease: "easeOut" }}
-    className="space-y-2"
+    className="space-y-2 md:space-y-3"
   >
     <div className="flex items-center gap-2">
-      <div className="w-6 h-6 rounded-md bg-primary/10 flex items-center justify-center shrink-0">
-        <section.icon className="w-3.5 h-3.5 text-primary" />
+      <div className="w-6 h-6 md:w-8 md:h-8 rounded-md bg-primary/10 flex items-center justify-center shrink-0">
+        <section.icon className="w-3.5 h-3.5 md:w-4 md:h-4 text-primary" />
       </div>
-      <span className="text-[13px] font-bold text-foreground">{section.title}</span>
+      <span className="text-[13px] md:text-[15px] font-bold text-foreground">{section.title}</span>
     </div>
 
-    <div className="space-y-1.5">
+    <div className="space-y-1.5 md:space-y-2">
       {section.content.map((line, i) => (
-        <p key={i} className="text-[13px] text-muted-foreground leading-relaxed">
+        <p key={i} className="text-[13px] md:text-sm text-muted-foreground leading-relaxed md:leading-7">
           {renderBold(line)}
         </p>
       ))}
@@ -203,19 +203,19 @@ const TermosDeUso = () => {
           </div>
 
           <div className="space-y-1.5">
-            <h1 className="text-xl font-extrabold text-foreground tracking-tight">
+            <h1 className="text-xl md:text-2xl font-extrabold text-foreground tracking-tight">
               Termos de Uso
             </h1>
-            <p className="text-[13px] text-muted-foreground leading-relaxed max-w-xs">
+            <p className="text-[13px] md:text-sm text-muted-foreground leading-relaxed max-w-xs md:max-w-md">
               Como funciona o uso do DinHub
             </p>
           </div>
 
           <div className="rounded-xl bg-primary/[0.06] border border-primary/10 p-3.5 space-y-1">
-            <p className="text-[13px] font-semibold text-foreground">
+            <p className="text-[13px] md:text-sm font-semibold text-foreground">
               Transparência acima de tudo.
             </p>
-            <p className="text-[12px] text-muted-foreground leading-relaxed">
+            <p className="text-[12px] md:text-[13px] text-muted-foreground leading-relaxed">
               Esses termos explicam como você pode usar o DinHub com segurança.
             </p>
           </div>
@@ -249,7 +249,7 @@ const TermosDeUso = () => {
           <div className="w-10 h-10 rounded-xl bg-primary/10 flex items-center justify-center shrink-0">
             <Lock className="w-5 h-5 text-primary" />
           </div>
-          <p className="text-[13px] text-muted-foreground leading-relaxed">
+          <p className="text-[13px] md:text-sm text-muted-foreground leading-relaxed">
             <span className="font-semibold text-foreground">Seus dados e sua experiência</span> são
             prioridade no DinHub.
           </p>
@@ -272,9 +272,9 @@ const TermosDeUso = () => {
             <Sparkles className="w-5 h-5 text-primary" />
           </div>
           <div className="space-y-1">
-            <p className="text-[13px] text-muted-foreground">Nosso compromisso</p>
-            <p className="text-base font-bold text-foreground">Transparência e respeito</p>
-            <p className="text-base font-bold text-primary">em cada interação</p>
+            <p className="text-[13px] md:text-sm text-muted-foreground">Nosso compromisso</p>
+            <p className="text-base md:text-lg font-bold text-foreground">Transparência e respeito</p>
+            <p className="text-base md:text-lg font-bold text-primary">em cada interação</p>
           </div>
           <div className="flex items-center justify-center gap-1.5 pt-1">
             <Heart className="w-3.5 h-3.5 text-primary/60" />
