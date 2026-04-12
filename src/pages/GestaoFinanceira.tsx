@@ -450,25 +450,20 @@ const GestaoFinanceira = () => {
         <div className="absolute bottom-0 left-0 w-32 h-32 rounded-full bg-primary/[0.03] blur-2xl" />
         <div className="absolute inset-0 border border-primary/[0.08] rounded-2xl" />
 
-        <div className="relative px-5 pt-5 pb-4 space-y-5">
-          {/* Header row with wallet icon */}
+        <div className="relative px-4 pt-3.5 pb-3 space-y-3">
+          {/* Header + Patrimônio inline */}
           <div className="flex items-center justify-between">
-            <div className="flex items-center gap-3">
-              <div className="w-10 h-10 rounded-2xl bg-primary/10 border border-primary/15 flex items-center justify-center backdrop-blur-sm">
-                <Wallet className="w-5 h-5 text-primary" />
+            <div className="flex items-center gap-2.5">
+              <div className="w-8 h-8 rounded-xl bg-primary/10 border border-primary/15 flex items-center justify-center">
+                <Wallet className="w-4 h-4 text-primary" />
               </div>
               <div>
-                <span className="text-sm font-bold text-foreground">Minha Carteira</span>
-                <p className="text-[9px] text-muted-foreground/50 mt-0.5">Visão geral do patrimônio</p>
+                <span className="text-xs font-bold text-foreground leading-none">Minha Carteira</span>
+                <p className="text-[8px] text-muted-foreground/50 mt-0.5">Patrimônio Total</p>
               </div>
             </div>
-          </div>
-
-          {/* Patrimônio Total — hero value */}
-          <div className="text-center py-2">
-            <p className="text-[10px] text-muted-foreground/50 uppercase tracking-[0.2em] font-semibold mb-2">Patrimônio Total</p>
             <p className={cn(
-              "text-[2rem] font-extrabold tabular-nums tracking-tight leading-none",
+              "text-lg font-extrabold tabular-nums tracking-tight",
               patrimonioTotal >= 0 ? "text-primary" : "text-destructive"
             )}>
               {formatCurrency(patrimonioTotal)}
@@ -476,57 +471,45 @@ const GestaoFinanceira = () => {
           </div>
 
           {/* Breakdown cards */}
-          <div className="grid grid-cols-3 gap-2">
-            {/* Contas */}
-            <div className="rounded-xl bg-primary/[0.04] border border-primary/[0.06] p-3 text-center backdrop-blur-sm">
-              <div className="w-8 h-8 rounded-xl bg-primary/10 flex items-center justify-center mx-auto mb-2">
-                <Landmark className="w-4 h-4 text-primary/80" />
-              </div>
-              <p className="text-[9px] text-muted-foreground/50 font-medium mb-1">Contas</p>
-              <p className={cn("text-[11px] font-bold tabular-nums", saldoDisponivel >= 0 ? "text-primary" : "text-destructive")}>
+          <div className="grid grid-cols-3 gap-1.5">
+            <div className="rounded-lg bg-primary/[0.04] border border-primary/[0.06] p-2 text-center">
+              <Landmark className="w-3 h-3 text-primary/70 mx-auto mb-0.5" />
+              <p className="text-[8px] text-muted-foreground/50 font-medium leading-tight">Contas</p>
+              <p className={cn("text-[10px] font-bold tabular-nums mt-0.5", saldoDisponivel >= 0 ? "text-primary" : "text-destructive")}>
                 {formatCurrency(saldoDisponivel)}
               </p>
             </div>
-            {/* Crédito Usado */}
-            <div className="rounded-xl bg-primary/[0.04] border border-primary/[0.06] p-3 text-center backdrop-blur-sm">
-              <div className="w-8 h-8 rounded-xl bg-primary/10 flex items-center justify-center mx-auto mb-2">
-                <CreditCard className="w-4 h-4 text-primary/80" />
-              </div>
-              <p className="text-[9px] text-muted-foreground/50 font-medium mb-1">Crédito</p>
-              <p className="text-[11px] font-bold tabular-nums text-foreground">
+            <div className="rounded-lg bg-primary/[0.04] border border-primary/[0.06] p-2 text-center">
+              <CreditCard className="w-3 h-3 text-primary/70 mx-auto mb-0.5" />
+              <p className="text-[8px] text-muted-foreground/50 font-medium leading-tight">Crédito</p>
+              <p className="text-[10px] font-bold tabular-nums text-foreground mt-0.5">
                 {formatCurrency(creditCards.reduce((s, c) => s + Number(c.used_limit), 0))}
               </p>
             </div>
-            {/* Investimentos */}
-            <div className="rounded-xl bg-primary/[0.04] border border-primary/[0.06] p-3 text-center backdrop-blur-sm">
-              <div className="w-8 h-8 rounded-xl bg-primary/10 flex items-center justify-center mx-auto mb-2">
-                <TrendingUp className="w-4 h-4 text-primary/80" />
-              </div>
-              <p className="text-[9px] text-muted-foreground/50 font-medium mb-1">Investimentos</p>
-              <p className={cn("text-[11px] font-bold tabular-nums", totalInvestido > 0 ? "text-foreground" : "text-muted-foreground/40")}>
+            <div className="rounded-lg bg-primary/[0.04] border border-primary/[0.06] p-2 text-center">
+              <TrendingUp className="w-3 h-3 text-primary/70 mx-auto mb-0.5" />
+              <p className="text-[8px] text-muted-foreground/50 font-medium leading-tight">Investimentos</p>
+              <p className={cn("text-[10px] font-bold tabular-nums mt-0.5", totalInvestido > 0 ? "text-foreground" : "text-muted-foreground/40")}>
                 {formatCurrency(totalInvestido)}
               </p>
             </div>
           </div>
 
-          {/* Separator */}
-          <div className="h-px bg-gradient-to-r from-transparent via-primary/10 to-transparent" />
-
           {/* Quick actions */}
-          <div className="flex items-center justify-center gap-5">
+          <div className="flex items-center justify-center gap-4 pt-0.5">
             <button
               onClick={() => navigate("/gestao-financeira")}
-              className="flex items-center gap-1.5 text-[11px] font-semibold text-muted-foreground/60 hover:text-primary transition-all duration-200"
+              className="flex items-center gap-1 text-[10px] font-semibold text-muted-foreground/60 hover:text-primary transition-colors"
             >
-              <ArrowRightLeft className="w-3.5 h-3.5" />
+              <ArrowRightLeft className="w-3 h-3" />
               Transferir
             </button>
-            <span className="w-px h-4 bg-border/10" />
+            <span className="w-px h-3 bg-border/10" />
             <button
               onClick={() => {}}
-              className="flex items-center gap-1.5 text-[11px] font-semibold text-muted-foreground/60 hover:text-primary transition-all duration-200"
+              className="flex items-center gap-1 text-[10px] font-semibold text-muted-foreground/60 hover:text-primary transition-colors"
             >
-              <Shield className="w-3.5 h-3.5" />
+              <Shield className="w-3 h-3" />
               Gerenciar
             </button>
           </div>
