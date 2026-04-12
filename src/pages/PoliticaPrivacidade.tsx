@@ -303,9 +303,11 @@ const PoliticaPrivacidade = () => {
             <Sparkles className="w-5 h-5 text-primary" />
           </div>
           <div className="space-y-1">
-            <p className="text-[13px] text-muted-foreground">Nosso compromisso</p>
-            <p className="text-base font-bold text-foreground">Seus dados protegidos</p>
-            <p className="text-base font-bold text-primary">com total transparência</p>
+            <p className="text-[13px] md:text-sm text-muted-foreground">Nosso compromisso</p>
+            <p className="text-base md:text-lg font-bold">
+              <span className="text-foreground">Seus dados protegidos </span>
+              <span className="text-primary">com total transparência</span>
+            </p>
           </div>
           <div className="flex items-center justify-center gap-1.5 pt-1">
             <Heart className="w-3.5 h-3.5 text-primary/60" />
