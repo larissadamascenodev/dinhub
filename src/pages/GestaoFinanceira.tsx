@@ -234,19 +234,54 @@ const GestaoFinanceira = () => {
       setGoals(goalsData);
       setLoading(false);
 
-      // Fetch open invoices for current month
+      // Fetch invoices for current and next month to show next when current is paid
       const now = new Date();
+      const curMonth = now.getMonth() + 1;
+      const curYear = now.getFullYear();
+      const nextMonth = curMonth === 12 ? 1 : curMonth + 1;
+      const nextYear = curMonth === 12 ? curYear + 1 : curYear;
+
       const { data: invoices } = await supabase
         .from("invoices")
         .select("credit_card_id, total_amount, paid_amount, is_paid, month, year")
-        .eq("is_paid", false)
-        .eq("month", now.getMonth() + 1)
-        .eq("year", now.getFullYear());
+        .or(`and(month.eq.${curMonth},year.eq.${curYear}),and(month.eq.${nextMonth},year.eq.${nextYear})`);
 
-      const invoiceMap: Record<string, number> = {};
+      const invoiceMap: Record<string, OpenInvoiceInfo> = {};
       if (invoices) {
-        for (const inv of invoices as unknown as (InvoiceData & { paid_amount?: number })[]) {
-          invoiceMap[inv.credit_card_id] = Math.max(0, Number(inv.total_amount) - Number(inv.paid_amount ?? 0));
+        // Group by card, prefer current month unpaid; if paid, show next month
+        const byCard = new Map<string, InvoiceData[]>();
+        for (const inv of invoices as unknown as InvoiceData[]) {
+          const arr = byCard.get(inv.credit_card_id) || [];
+          arr.push(inv);
+          byCard.set(inv.credit_card_id, arr);
+        }
+        for (const [cardId, invs] of byCard.entries()) {
+          const currentInv = invs.find(i => i.month === curMonth && i.year === curYear);
+          const nextInv = invs.find(i => i.month === nextMonth && i.year === nextYear);
+
+          if (currentInv && !currentInv.is_paid) {
+            invoiceMap[cardId] = {
+              amount: Math.max(0, Number(currentInv.total_amount) - Number(currentInv.paid_amount ?? 0)),
+              month: curMonth,
+              year: curYear,
+              isPaid: false,
+            };
+          } else if (nextInv) {
+            invoiceMap[cardId] = {
+              amount: Math.max(0, Number(nextInv.total_amount) - Number(nextInv.paid_amount ?? 0)),
+              month: nextMonth,
+              year: nextYear,
+              isPaid: nextInv.is_paid,
+            };
+          } else {
+            // Current is paid and no next invoice yet — show next month with 0
+            invoiceMap[cardId] = {
+              amount: 0,
+              month: nextMonth,
+              year: nextYear,
+              isPaid: false,
+            };
+          }
         }
       }
       setOpenInvoices(invoiceMap);
@@ -804,8 +839,9 @@ const GestaoFinanceira = () => {
                             </p>
                           </div>
                           {(() => {
-                              const invoiceAmount = openInvoices[card.id] || 0;
-                              const status = getInvoiceStatusLabel(card);
+                              const invoiceInfo = openInvoices[card.id];
+                              const invoiceAmount = invoiceInfo?.amount || 0;
+                              const status = getInvoiceStatusLabel(card, invoiceInfo);
                               return (
                                 <div className="text-right">
                                   <div className="flex items-center justify-end gap-1.5 mb-1.5">
@@ -836,7 +872,7 @@ const GestaoFinanceira = () => {
                         <div className="flex items-center justify-between">
                           <span className="text-[10px] font-medium text-muted-foreground">{usedPct.toFixed(0)}% usado</span>
                           {(() => {
-                            const status = getInvoiceStatusLabel(card);
+                            const status = getInvoiceStatusLabel(card, openInvoices[card.id]);
                             return (
                               <span className={cn("text-[10px] font-medium", status.isClosed ? "text-primary" : "text-muted-foreground/60")}>
                                 {status.label}
