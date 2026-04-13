@@ -28,6 +28,7 @@ export interface RawTransaction {
   name: string;
   category: string;
   date: string;
+  time?: string | null;
   amount: number;
   type: string;
   status: string;
