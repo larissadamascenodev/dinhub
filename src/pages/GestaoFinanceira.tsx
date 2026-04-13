@@ -48,10 +48,29 @@ interface InvoiceData {
   is_paid: boolean;
   month: number;
   year: number;
+  paid_amount?: number;
 }
 
-function getInvoiceStatusLabel(card: CreditCardItem): { label: string; isClosed: boolean } {
+interface OpenInvoiceInfo {
+  amount: number;
+  month: number;
+  year: number;
+  isPaid: boolean;
+}
+
+function getInvoiceStatusLabel(card: CreditCardItem, invoiceInfo?: OpenInvoiceInfo): { label: string; isClosed: boolean } {
   const now = new Date();
+  const currentMonth = now.getMonth() + 1;
+  const currentYear = now.getFullYear();
+
+  // If the invoice shown is for a future month (current month already paid), show closing date
+  if (invoiceInfo && (invoiceInfo.month > currentMonth || invoiceInfo.year > currentYear || invoiceInfo.isPaid)) {
+    const closingDay = card.closing_day;
+    const monthNames = ["Jan", "Fev", "Mar", "Abr", "Mai", "Jun", "Jul", "Ago", "Set", "Out", "Nov", "Dez"];
+    const monthLabel = monthNames[(invoiceInfo.month - 1) % 12];
+    return { label: `Fecha dia ${closingDay} de ${monthLabel}`, isClosed: false };
+  }
+
   const today = now.getDate();
   const closingDay = card.closing_day;
   const dueDay = card.due_day;
