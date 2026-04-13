@@ -55,11 +55,11 @@ const DashboardLayout = () => {
     const parsed = new Date(`${rawDate}T12:00:00`);
     if (Number.isNaN(parsed.getTime())) return fallback;
 
-    const isOlderMonth =
-      parsed.getFullYear() < today.getFullYear() ||
-      (parsed.getFullYear() === today.getFullYear() && parsed.getMonth() < today.getMonth());
+    // Allow dates from the past (receipts/invoices may be from previous months)
+    // Only reject dates in the future
+    if (parsed > today) return fallback;
 
-    return isOlderMonth ? fallback : rawDate;
+    return rawDate;
   }, []);
 
   const handleScanFileInput = useCallback((e: React.ChangeEvent<HTMLInputElement>) => {
