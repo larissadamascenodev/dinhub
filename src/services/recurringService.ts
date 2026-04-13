@@ -255,4 +255,5 @@ export async function excludeRecurringFromMonthOnward(
     .upsert(exclusions, { onConflict: "transaction_id,month,year" });
 
   if (error) throw error;
+  notifyRecurringChanged();
 }
