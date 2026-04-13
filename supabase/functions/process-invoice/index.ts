@@ -43,19 +43,48 @@ const TRANSACTION_PROMPT = `Você é um assistente especializado em extrair tran
 
 Analise o conteúdo fornecido (pode ser um comprovante de pagamento, recibo, nota fiscal, extrato bancário, print de transferência PIX, boleto, etc.) e extraia TODAS as transações/lançamentos encontrados.
 
+REGRA CRÍTICA DE DESCRIÇÃO — SIMPLIFIQUE NOMES:
+- Nunca retorne razões sociais, CNPJs ou nomes jurídicos completos
+- Simplifique para o nome popular/comercial que o usuário reconhece:
+  * "IFOOD COM AGENCIA DE RESTAURANTES ONLINE S.A." → "iFood"
+  * "UBER DO BRASIL TECNOLOGIA LTDA" → "Uber"
+  * "NETFLIX INTERNATIONAL B.V." → "Netflix"
+  * "PAG*JoseDaSilva" → "José da Silva"
+  * "MERCADOPAGO*LOJA123" → "MercadoPago - Loja 123"
+  * "PIX ENVIADO - CP 123.456.789-00" → manter o nome do favorecido se visível, senão "PIX Enviado"
+- Se identificar o nome do estabelecimento final (ex: McDonald's via iFood), use: "iFood - McDonald's"
+- Mantenha o nome curto, limpo e reconhecível
+
 Para cada item extraído, retorne:
-- description: nome/descrição da transação (nome do favorecido, estabelecimento ou descrição do pagamento)
+- description: nome SIMPLIFICADO da transação (ver regras acima)
 - amount: valor em reais (número decimal, sem R$). Busque padrões: "R$ X.XXX,XX", "X.XXX,XX", "R$X,XX". Pegue o valor principal da transação.
 - date: data da transação no formato YYYY-MM-DD. Detecte: DD/MM/YYYY, DD/MM/YY, DD/MM HH:mm. Se não tiver ano, use ${new Date().getFullYear()}.
 - installment_current: número da parcela atual se parcelado, senão null
 - installment_total: total de parcelas se parcelado, senão null
-- category: categoria sugerida baseada em palavras-chave:
-  * ifood, restaurante, lanchonete, padaria, mercado, supermercado → alimentação
-  * uber, 99, táxi, ônibus, metrô, combustível, estacionamento → transporte
-  * farmácia, drogaria, hospital, clínica, médico → saúde
-  * netflix, spotify, amazon prime, disney → assinatura
-  * escola, curso, faculdade, livro → educação
-  * aluguel, condomínio, luz, água, gás, internet → moradia
+- category: categoria sugerida baseada em palavras-chave. CATEGORIAS DISPONÍVEIS:
+  * Alimentação — compras em supermercado, mercado, açougue, hortifruti, padaria (compras essenciais de alimentos)
+  * Delivery — iFood, Rappi, Uber Eats, 99Food, Zé Delivery, Aiqfome, qualquer app de entrega de comida/bebida
+  * Fast Food — McDonald's, Burger King, Subway, Bob's (quando compra presencial, não delivery)
+  * Cafeteria — Starbucks, cafeterias, padarias para consumo no local
+  * Supermercado — redes de supermercado (Extra, Pão de Açúcar, Carrefour, Atacadão)
+  * Transporte — uber, 99, táxi, ônibus, metrô, combustível, estacionamento, pedágio
+  * Saúde — farmácia, drogaria, hospital, clínica, médico, plano de saúde
+  * Assinaturas — netflix, spotify, amazon prime, disney+, youtube premium, serviços recorrentes
+  * Educação — escola, curso, faculdade, livro, Udemy, Coursera
+  * Moradia — aluguel, condomínio, IPTU, manutenção da casa
+  * Conta de Luz — energia elétrica
+  * Conta de Água — água e esgoto
+  * Conta de Gás — gás encanado ou botijão
+  * Lazer — cinema, shows, eventos, jogos, streaming de jogos
+  * Vestuário — roupas, calçados, acessórios
+  * Tecnologia — eletrônicos, gadgets, acessórios tech
+  * Beleza — salão, barbearia, cosméticos
+  * Pets — petshop, veterinário, ração
+  * Presentes — presentes para terceiros
+  * Viagem — passagens, hospedagem, turismo
+  * Impostos — tributos, taxas governamentais
+  * Bebidas — bar, distribuidora de bebidas, adega
+  * Academia — academia, crossfit, natação, atividades físicas
   * Se não identificar com confiança → outros
 - type: "despesa" para gastos/pagamentos ou "receita" para recebimentos/depósitos/transferências recebidas
   * Palavras que indicam RECEITA: "recebido", "pix recebido", "entrada", "depósito", "crédito", "salário", "transferência recebida"
