@@ -301,12 +301,6 @@ const GestaoFinanceira = () => {
     setNewAccType("checking");
     setNewAccBalance("");
     setNewAccColor("violet");
-    setNewInvestmentType("cdb");
-    setNewRateType("percent_cdi");
-    setNewAnnualRate("");
-    setNewRatePeriod("monthly");
-    setNewStartDate(new Date());
-    setNewMaturityDate(undefined);
   };
 
   const resetAddCard = () => {
@@ -328,17 +322,6 @@ const GestaoFinanceira = () => {
         initial_balance: newAccBalance ? parseFloat(newAccBalance) : 0,
         color: newAccColor,
       };
-      if (newAccType === "investment") {
-        accPayload.rate_type = "fixed_monthly";
-        if (newAnnualRate) {
-          const raw = parseFloat(newAnnualRate);
-          accPayload.annual_rate = newRatePeriod === "annual"
-            ? Number(((Math.pow(1 + raw / 100, 1 / 12) - 1) * 100).toFixed(6))
-            : raw;
-        } else {
-          accPayload.annual_rate = null;
-        }
-      }
       await createAccount(user.id, accPayload);
       toast.success("Conta criada!");
       resetAddAccount();
@@ -370,50 +353,6 @@ const GestaoFinanceira = () => {
     }
   };
 
-  const openAporte = (accId: string, accName: string) => {
-    setAporteTargetId(accId);
-    setAporteTargetName(accName);
-    setAporteCents(0);
-    const bankAccs = accounts.filter(a => a.type !== "investment");
-    const defaultAcc = bankAccs.find(a => a.is_default) || bankAccs[0];
-    setAporteFromId(defaultAcc?.id || "");
-    setShowAporteModal(true);
-  };
-
-  const handleAporte = async () => {
-    if (!user || !aporteFromId || !aporteTargetId || aporteCents === 0) return;
-    setAporteSubmitting(true);
-    try {
-      const fromAcc = accounts.find(a => a.id === aporteFromId);
-      const realAmount = aporteCents / 100;
-      if (fromAcc && realAmount > Number(fromAcc.current_balance)) {
-        toast.error("Saldo insuficiente na conta de origem");
-        setAporteSubmitting(false);
-        return;
-      }
-      const { error } = await supabase.from("transactions").insert({
-        user_id: user.id,
-        name: `Depósito: ${fromAcc?.name} → ${aporteTargetName}`,
-        type: "investimento",
-        amount: realAmount,
-        category: "Investimentos",
-        date: new Date().toISOString().split("T")[0],
-        status: "pago",
-        account_id: aporteFromId,
-        to_account_id: aporteTargetId,
-        payment_method: "conta",
-        recurrence_type: "unica",
-      } as any);
-      if (error) throw error;
-      toast.success("Depósito realizado! 💰");
-      setShowAporteModal(false);
-      fetchData();
-    } catch (err: any) {
-      toast.error(err.message || "Erro ao realizar aporte");
-    } finally {
-      setAporteSubmitting(false);
-    }
-  };
 
   // ═══════ Computed values ═══════
   const bankAccounts = accounts.filter(a => a.type !== "investment");
