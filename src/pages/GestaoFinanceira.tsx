@@ -1,7 +1,7 @@
 import { useState, useEffect, useCallback } from "react";
 import useEmblaCarousel from "embla-carousel-react";
 import { motion, AnimatePresence } from "framer-motion";
-import { CreditCard, Plus, X, Landmark, Banknote, PiggyBank, TrendingUp, ChevronRight, Briefcase, ArrowDownLeft, CalendarIcon, Wallet, Target, ArrowRightLeft, Info, Shield } from "lucide-react";
+import { CreditCard, Plus, X, Landmark, Banknote, PiggyBank, TrendingUp, ChevronRight, Briefcase, ArrowDownLeft, CalendarIcon, Wallet, Target, ArrowRightLeft, Info, Shield, Brain } from "lucide-react";
 import { useNavigate } from "react-router-dom";
 import { format } from "date-fns";
 import { ptBR } from "date-fns/locale";
@@ -19,6 +19,7 @@ import { supabase } from "@/integrations/supabase/client";
 import { cn } from "@/lib/utils";
 import { fetchGoals, type Goal } from "@/services/goalService";
 import InvestmentCreateModal from "@/components/investments/InvestmentCreateModal";
+import AIFinancialWizardModal from "@/components/shared/AIFinancialWizardModal";
 
 interface Account {
   id: string;
@@ -199,6 +200,7 @@ const GestaoFinanceira = () => {
   // Add menu state
   const [showAddMenu, setShowAddMenu] = useState(false);
   const [showInvestWizard, setShowInvestWizard] = useState(false);
+  const [showAIWizard, setShowAIWizard] = useState<"investimento" | "meta" | null>(null);
 
   const fetchData = async () => {
     if (!user) return;
@@ -430,6 +432,13 @@ const GestaoFinanceira = () => {
                   </button>
                   <button onClick={() => { setShowAddMenu(false); setShowInvestWizard(true); }} className="w-full flex items-center gap-2.5 px-4 py-3 text-xs font-semibold text-foreground hover:bg-muted/10 transition-colors">
                     <Briefcase className="w-4 h-4 text-primary" /> Novo Investimento
+                  </button>
+                  <div className="h-px bg-border/10 mx-3" />
+                  <button onClick={() => { setShowAddMenu(false); setShowAIWizard("investimento"); }} className="w-full flex items-center gap-2.5 px-4 py-3 text-xs font-semibold text-foreground hover:bg-muted/10 transition-colors">
+                    <Brain className="w-4 h-4 text-primary" /> Investir com IA
+                  </button>
+                  <button onClick={() => { setShowAddMenu(false); setShowAIWizard("meta"); }} className="w-full flex items-center gap-2.5 px-4 py-3 text-xs font-semibold text-foreground hover:bg-muted/10 transition-colors">
+                    <Brain className="w-4 h-4 text-primary" /> Meta com IA
                   </button>
                 </motion.div>
               </>
@@ -1440,6 +1449,38 @@ const GestaoFinanceira = () => {
             fetchData();
           } catch {
             toast.error("Erro ao criar carteira");
+          }
+        }}
+      />
+
+      {/* AI Financial Wizard */}
+      <AIFinancialWizardModal
+        open={!!showAIWizard}
+        onClose={() => setShowAIWizard(null)}
+        type={showAIWizard || "meta"}
+        onConfirm={async (plan, objective) => {
+          if (!user) return;
+          try {
+            if (showAIWizard === "investimento") {
+              await createAccount(user.id, {
+                name: objective,
+                type: "investment",
+                initial_balance: 0,
+                color: "emerald",
+              });
+              toast.success("Carteira de investimento criada com IA! 🤖📈");
+            } else {
+              const { createGoal } = await import("@/services/goalService");
+              await createGoal({
+                name: objective,
+                target_amount: plan.monthly_contribution * plan.estimated_months,
+                monthly_contribution: plan.monthly_contribution,
+              }, user.id);
+              toast.success("Meta criada com IA! 🤖🎯");
+            }
+            fetchData();
+          } catch {
+            toast.error("Erro ao criar com IA");
           }
         }}
       />
