@@ -183,10 +183,10 @@ const InvestmentCreateModal = ({ open, onClose, onSubmit }: InvestmentCreateModa
                     transition={{ duration: 0.25 }}
                     className="space-y-4"
                   >
-                    <div>
-                      <h2 className="text-lg font-bold text-foreground">Onde quer investir?</h2>
-                      <p className="text-xs text-muted-foreground/60 mt-0.5">Escolha o tipo da sua carteira</p>
-                    </div>
+                     <div>
+                       <h2 className="text-lg font-bold text-foreground">Qual é o seu objetivo?</h2>
+                       <p className="text-xs text-muted-foreground/60 mt-0.5">Escolha o que te motiva a investir</p>
+                     </div>
 
                     <div className="grid grid-cols-2 gap-2.5">
                       {INVESTMENT_PRESETS.map((p) => {
