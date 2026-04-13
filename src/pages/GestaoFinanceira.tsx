@@ -899,126 +899,6 @@ const GestaoFinanceira = () => {
         )}
       </section>
 
-      {/* ═══════ Investimentos (Dinheiro Aplicado) ═══════ */}
-      <section>
-        <div className="flex items-center justify-between mb-4">
-          <div>
-            <h2 className="text-base font-bold text-foreground flex items-center gap-2">
-              <Briefcase className="w-4 h-4 text-primary" />
-              Investimentos
-            </h2>
-            <p className="text-[10px] text-muted-foreground/60 mt-0.5 ml-6">Dinheiro aplicado para crescimento</p>
-          </div>
-          <button
-            onClick={() => setShowInvestWizard(true)}
-            className="w-7 h-7 rounded-lg bg-primary/10 flex items-center justify-center hover:bg-primary/20 transition-colors"
-          >
-            <Plus className="w-4 h-4 text-primary" />
-          </button>
-        </div>
-
-        {(() => {
-          if (loading) {
-            return (
-              <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-3">
-                <div className="h-44 rounded-2xl bg-card animate-pulse" />
-              </div>
-            );
-          }
-
-          if (investmentAccounts.length === 0) {
-            return (
-              <div className="rounded-2xl bg-card/60 backdrop-blur-sm border border-border/20 p-8 text-center">
-                <Briefcase className="w-10 h-10 text-muted-foreground mx-auto mb-3" />
-                <p className="text-sm text-muted-foreground mb-1">Nenhuma carteira de investimento</p>
-                <p className="text-xs text-muted-foreground/60 mb-4">Crie uma carteira para organizar seus investimentos</p>
-                <Button
-                  onClick={() => setShowInvestWizard(true)}
-                  size="sm"
-                  className="rounded-xl bg-primary/15 text-primary hover:bg-primary/25 border-0"
-                >
-                  <Plus className="w-4 h-4 mr-1" /> Criar Carteira
-                </Button>
-              </div>
-            );
-          }
-
-          return (
-            <div className="space-y-3">
-              {/* Total invested summary */}
-              <div
-                className="rounded-2xl border border-border/10 p-4 flex items-center justify-between"
-                style={{ background: "linear-gradient(135deg, hsl(var(--card)) 0%, hsl(var(--background)) 100%)" }}
-              >
-                <div>
-                  <p className="text-[9px] text-muted-foreground uppercase tracking-widest font-medium">Total investido</p>
-                  <p className="text-xl font-extrabold text-foreground tabular-nums">{formatCurrency(totalInvestido)}</p>
-                </div>
-                <div className="w-8 h-8 rounded-xl bg-primary/15 flex items-center justify-center">
-                  <TrendingUp className="w-4 h-4 text-primary" />
-                </div>
-              </div>
-
-              <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-3">
-                {investmentAccounts.map((acc, idx) => {
-                  const accent = getAccent(acc.color);
-                  const balance = Number(acc.current_balance);
-
-                  return (
-                    <motion.div
-                      key={acc.id}
-                      initial={{ opacity: 0, y: 12 }}
-                      animate={{ opacity: 1, y: 0 }}
-                      transition={{ delay: idx * 0.06 }}
-                      onClick={() => navigate(`/investimento/${acc.id}`)}
-                      className="relative rounded-2xl overflow-hidden cursor-pointer group border border-border/10 hover:border-primary/30 transition-all duration-300 active:scale-[0.98]"
-                      style={{ background: "linear-gradient(135deg, hsl(var(--card)) 0%, hsl(var(--background)) 100%)" }}
-                    >
-                      <div className="p-4 space-y-4">
-                        <div className="flex items-center justify-between">
-                          <div className="flex items-center gap-3">
-                            <div className={cn("w-8 h-8 rounded-xl flex items-center justify-center", accent.iconBg)}>
-                              <Briefcase className={cn("w-4 h-4", accent.dot.replace("bg-", "text-"))} />
-                            </div>
-                            <p className="text-sm font-bold text-foreground leading-tight truncate">{acc.name}</p>
-                          </div>
-                          <ChevronRight className="w-4 h-4 text-muted-foreground/25 group-hover:text-primary transition-colors" />
-                        </div>
-                        <div className="h-px bg-border/10" />
-                        <div>
-                          <div className="flex items-center gap-1.5 mb-1.5">
-                            <div className="w-1.5 h-1.5 rounded-full bg-primary" />
-                            <p className="text-[9px] text-muted-foreground uppercase tracking-widest font-medium">Saldo</p>
-                          </div>
-                          <p className="text-2xl font-extrabold tabular-nums tracking-tight text-foreground">
-                            {formatCurrency(balance)}
-                          </p>
-                        </div>
-                        {/* Depósito button */}
-                        <button
-                          onClick={(e) => { e.stopPropagation(); openAporte(acc.id, acc.name); }}
-                          className="flex items-center justify-center gap-1.5 w-full py-2 rounded-xl bg-primary/10 text-primary text-[11px] font-semibold hover:bg-primary/20 transition-colors border border-primary/20"
-                        >
-                          <ArrowDownLeft className="w-3.5 h-3.5" />
-                          Depósito
-                        </button>
-                      </div>
-                    </motion.div>
-                  );
-                })}
-              </div>
-
-              {/* Info text */}
-              <div className="flex items-start gap-2 px-1 pt-1">
-                <TrendingUp className="w-3 h-3 text-primary/50 mt-0.5 shrink-0" />
-                <p className="text-[10px] text-muted-foreground/50 leading-relaxed">
-                  Valores aplicados e destinados ao crescimento do seu patrimônio.
-                </p>
-              </div>
-            </div>
-          );
-        })()}
-      </section>
 
       {/* ═══════ Microcopy educativo ═══════ */}
       <motion.div
@@ -1037,8 +917,7 @@ const GestaoFinanceira = () => {
       <ModalOverlay open={showAddAccount} onClose={resetAddAccount}>
         <div className="space-y-4">
           <div className="flex items-center justify-between">
-            <p className="text-base font-bold text-foreground">
-              {newAccType === "investment" ? "Nova Carteira de Investimento" : "Nova Conta"}
+             <p className="text-base font-bold text-foreground">Nova Conta</p>
             </p>
             <button onClick={resetAddAccount} className="w-8 h-8 rounded-lg bg-muted/50 flex items-center justify-center hover:bg-muted transition-colors">
               <X className="w-4 h-4 text-muted-foreground" />
@@ -1047,13 +926,12 @@ const GestaoFinanceira = () => {
           <div className="space-y-1.5">
             <label className="text-sm font-medium text-foreground">Nome da conta</label>
             <Input
-              placeholder={newAccType === "investment" ? "Ex: Tesouro Selic, CDB Banco X..." : "Ex: Nubank, Itaú, Bradesco..."}
+              placeholder="Ex: Nubank, Itaú, Bradesco..."
               value={newAccName}
               onChange={(e) => setNewAccName(e.target.value)}
               className="bg-muted/30 border-border/20 h-11 rounded-xl"
             />
           </div>
-          {newAccType !== "investment" && (
             <Select value={newAccType} onValueChange={(v) => setNewAccType(v as any)}>
               <SelectTrigger className="bg-muted/30 border-border/20 h-11 rounded-xl">
                 <SelectValue placeholder="Tipo de conta" />
@@ -1064,113 +942,6 @@ const GestaoFinanceira = () => {
                 <SelectItem value="cash">Dinheiro</SelectItem>
               </SelectContent>
             </Select>
-          )}
-          {newAccType === "investment" && (
-            <>
-              <div className="space-y-1.5">
-                <label className="text-sm font-medium text-foreground">Taxa de rendimento</label>
-                <div className="flex items-center gap-2 mb-1.5">
-                  <button
-                    type="button"
-                    onClick={() => setNewRatePeriod("monthly")}
-                    className={`px-3 py-1 rounded-lg text-xs font-medium transition-colors ${
-                      newRatePeriod === "monthly"
-                        ? "bg-primary/15 text-primary border border-primary/30"
-                        : "bg-muted/20 text-muted-foreground border border-transparent"
-                    }`}
-                  >
-                    % a.m.
-                  </button>
-                  <button
-                    type="button"
-                    onClick={() => setNewRatePeriod("annual")}
-                    className={`px-3 py-1 rounded-lg text-xs font-medium transition-colors ${
-                      newRatePeriod === "annual"
-                        ? "bg-primary/15 text-primary border border-primary/30"
-                        : "bg-muted/20 text-muted-foreground border border-transparent"
-                    }`}
-                  >
-                    % a.a.
-                  </button>
-                </div>
-                <div className="relative">
-                  <Input
-                    placeholder={newRatePeriod === "monthly" ? "0,50" : "6,00"}
-                    type="number"
-                    value={newAnnualRate}
-                    onChange={(e) => setNewAnnualRate(e.target.value)}
-                    className="bg-muted/30 border-border/20 h-11 rounded-xl pr-20"
-                  />
-                  <span className="absolute right-3 top-1/2 -translate-y-1/2 text-sm text-muted-foreground pointer-events-none">
-                    {newRatePeriod === "monthly" ? "% a.m." : "% a.a."}
-                  </span>
-                </div>
-                <p className="text-[11px] text-muted-foreground/70">
-                  {newRatePeriod === "monthly"
-                    ? "Ex: 0,5 para 0,5% ao mês (juros compostos)"
-                    : "Ex: 6 para 6% ao ano (será convertido para taxa mensal)"}
-                </p>
-              </div>
-              <div className="grid grid-cols-2 gap-3">
-                <div className="space-y-1.5">
-                  <label className="text-sm font-medium text-foreground">Data de início</label>
-                  <Popover>
-                    <PopoverTrigger asChild>
-                      <Button
-                        variant="outline"
-                        className="w-full justify-start text-left font-normal bg-muted/30 border-border/20 h-11 rounded-xl text-xs"
-                      >
-                        <CalendarIcon className="mr-1.5 h-3.5 w-3.5 text-muted-foreground" />
-                        {format(newStartDate, "d 'de' MMM. yyyy", { locale: ptBR })}
-                      </Button>
-                    </PopoverTrigger>
-                    <PopoverContent className="w-auto p-0" align="start">
-                      <Calendar
-                        mode="single"
-                        selected={newStartDate}
-                        onSelect={(d) => {
-                          if (d) setNewStartDate(d);
-                          document.dispatchEvent(new KeyboardEvent("keydown", { key: "Escape" }));
-                        }}
-                        initialFocus
-                        className="p-2 pointer-events-auto text-xs [&_table]:text-xs [&_button]:h-7 [&_button]:w-7 [&_th]:w-7 [&_.rdp-caption]:text-sm"
-                      />
-                    </PopoverContent>
-                  </Popover>
-                </div>
-                <div className="space-y-1.5">
-                  <label className="text-sm font-medium text-foreground">Vencimento <span className="text-muted-foreground font-normal">(opcional)</span></label>
-                  <Popover>
-                    <PopoverTrigger asChild>
-                      <Button
-                        variant="outline"
-                        className={cn(
-                          "w-full justify-start text-left font-normal bg-muted/30 border-border/20 h-11 rounded-xl text-xs",
-                          !newMaturityDate && "text-muted-foreground"
-                        )}
-                      >
-                        <CalendarIcon className="mr-1.5 h-3.5 w-3.5 text-muted-foreground" />
-                        {newMaturityDate ? format(newMaturityDate, "d 'de' MMM. yyyy", { locale: ptBR }) : "dd/mm/aaaa"}
-                      </Button>
-                    </PopoverTrigger>
-                    <PopoverContent className="w-auto p-0" align="start">
-                      <Calendar
-                        mode="single"
-                        selected={newMaturityDate}
-                        onSelect={(d) => {
-                          setNewMaturityDate(d);
-                          document.dispatchEvent(new KeyboardEvent("keydown", { key: "Escape" }));
-                        }}
-                        initialFocus
-                        className="p-2 pointer-events-auto text-xs [&_table]:text-xs [&_button]:h-7 [&_button]:w-7 [&_th]:w-7 [&_.rdp-caption]:text-sm"
-                      />
-                    </PopoverContent>
-                  </Popover>
-                  <p className="text-[10px] leading-tight text-muted-foreground/60">Calcula valor estimado no vencimento</p>
-                </div>
-              </div>
-            </>
-          )}
           <div>
             <Label className="text-xs text-muted-foreground mb-1.5 block">
               {newAccType === "investment" ? "Valor investido (opcional)" : "Saldo inicial (opcional)"}
