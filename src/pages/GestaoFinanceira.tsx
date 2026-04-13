@@ -18,6 +18,7 @@ import { getAccounts, createAccount, getCreditCards, createCreditCard } from "@/
 import { supabase } from "@/integrations/supabase/client";
 import { cn } from "@/lib/utils";
 import { fetchGoals, type Goal } from "@/services/goalService";
+import InvestmentCreateModal from "@/components/investments/InvestmentCreateModal";
 
 interface Account {
   id: string;
@@ -197,6 +198,7 @@ const GestaoFinanceira = () => {
 
   // Add menu state
   const [showAddMenu, setShowAddMenu] = useState(false);
+  const [showInvestWizard, setShowInvestWizard] = useState(false);
 
   const fetchData = async () => {
     if (!user) return;
@@ -426,7 +428,7 @@ const GestaoFinanceira = () => {
                   <button onClick={() => { setShowAddMenu(false); setShowAddCard(true); }} className="w-full flex items-center gap-2.5 px-4 py-3 text-xs font-semibold text-foreground hover:bg-muted/10 transition-colors">
                     <CreditCard className="w-4 h-4 text-primary" /> Novo Cartão
                   </button>
-                  <button onClick={() => { setShowAddMenu(false); setNewAccType("investment" as any); setShowAddAccount(true); }} className="w-full flex items-center gap-2.5 px-4 py-3 text-xs font-semibold text-foreground hover:bg-muted/10 transition-colors">
+                  <button onClick={() => { setShowAddMenu(false); setShowInvestWizard(true); }} className="w-full flex items-center gap-2.5 px-4 py-3 text-xs font-semibold text-foreground hover:bg-muted/10 transition-colors">
                     <Briefcase className="w-4 h-4 text-primary" /> Novo Investimento
                   </button>
                 </motion.div>
@@ -1444,6 +1446,27 @@ const GestaoFinanceira = () => {
           </Button>
         </div>
       </ModalOverlay>
+
+      {/* Investment Wizard */}
+      <InvestmentCreateModal
+        open={showInvestWizard}
+        onClose={() => setShowInvestWizard(false)}
+        onSubmit={async (data) => {
+          if (!user) return;
+          try {
+            await createAccount(user.id, {
+              name: data.name,
+              type: "investment",
+              initial_balance: data.initial_balance,
+              color: data.color,
+            });
+            toast.success("Carteira criada! 🎉");
+            fetchData();
+          } catch {
+            toast.error("Erro ao criar carteira");
+          }
+        }}
+      />
     </div>
   );
 };
