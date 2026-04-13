@@ -463,8 +463,8 @@ const GestaoFinanceira = () => {
           <div className="bg-background/40 backdrop-blur-sm rounded-lg md:rounded-xl p-1.5 md:p-2 text-center border border-border/10">
             <PiggyBank className="w-3 h-3 text-primary/60 mx-auto mb-0.5" />
             <p className="text-[8px] text-muted-foreground leading-tight">Reservado</p>
-            <p className={cn("text-[10px] md:text-[11px] font-bold tabular-nums mt-0.5", (totalMetas + totalInvestido) > 0 ? "text-foreground" : "text-muted-foreground")}>
-              {(totalMetas + totalInvestido) > 0 ? formatCurrency(totalMetas + totalInvestido) : "R$ 0,00"}
+            <p className={cn("text-[10px] md:text-[11px] font-bold tabular-nums mt-0.5", totalMetas > 0 ? "text-foreground" : "text-muted-foreground")}>
+              {totalMetas > 0 ? formatCurrency(totalMetas) : "R$ 0,00"}
             </p>
           </div>
         </div>
