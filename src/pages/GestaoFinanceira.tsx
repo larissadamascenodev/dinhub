@@ -947,8 +947,9 @@ const GestaoFinanceira = () => {
                             </p>
                           </div>
                           {(() => {
-                              const invoiceAmount = openInvoices[card.id] || 0;
-                              const status = getInvoiceStatusLabel(card);
+                              const invoiceInfo = openInvoices[card.id];
+                              const invoiceAmount = invoiceInfo?.amount || 0;
+                              const status = getInvoiceStatusLabel(card, invoiceInfo);
                               return (
                                 <div className="text-right">
                                   <div className="flex items-center justify-end gap-1.5 mb-1.5">
@@ -979,7 +980,7 @@ const GestaoFinanceira = () => {
                         <div className="flex items-center justify-between">
                           <span className="text-[10px] font-medium text-muted-foreground">{usedPct.toFixed(0)}% usado</span>
                           {(() => {
-                            const status = getInvoiceStatusLabel(card);
+                            const status = getInvoiceStatusLabel(card, openInvoices[card.id]);
                             return (
                               <span className={cn("text-[10px] font-medium", status.isClosed ? "text-primary" : "text-muted-foreground/60")}>
                                 {status.label}
