@@ -44,7 +44,7 @@ const DashboardLayout = () => {
 
   const scanCameraRef = useRef<HTMLInputElement>(null);
   const scanGalleryRef = useRef<HTMLInputElement>(null);
-  const scanFileRef = useRef<HTMLInputElement>(null);
+  
 
   const getSafeTransactionDate = useCallback((rawDate: string | null | undefined) => {
     const today = new Date();
