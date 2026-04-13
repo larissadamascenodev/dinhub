@@ -111,7 +111,7 @@ export async function buildDashboardData(
   const invoiceByCard = new Map(
     (invoicesForMonth as any[]).map((inv: any) => [
       inv.credit_card_id,
-      { total: Number(inv.total_amount), isPaid: inv.is_paid, paidAmount: Number(inv.paid_amount ?? 0) },
+      { total: Number(inv.total_amount), isPaid: inv.is_paid, paidAmount: Number(inv.paid_amount ?? 0), paidAt: inv.paid_at as string | null },
     ])
   );
 
@@ -148,14 +148,25 @@ export async function buildDashboardData(
         (t) => t.payment_method === "cartao" && t.credit_card_id === cardId
       ).length;
 
-      const rawDate = `${year}-${String(month + 1).padStart(2, "0")}-${String(dueDay).padStart(2, "0")}`;
+      const dueRawDate = `${year}-${String(month + 1).padStart(2, "0")}-${String(dueDay).padStart(2, "0")}`;
+
+      // For paid invoices, use the actual payment date instead of the due date
+      let displayRawDate = dueRawDate;
+      let paidAtValue: string | undefined;
+      if (inv.isPaid && inv.paidAt) {
+        const paidDate = new Date(inv.paidAt);
+        displayRawDate = paidDate.toISOString().split("T")[0];
+        paidAtValue = inv.paidAt;
+      }
+
       const outstanding = Math.max(0, inv.total - inv.paidAmount);
       const entry: Transaction = {
         id: `fatura-${cardId}-${month}-${year}`,
         name: `Fatura ${cardName}`,
         category: "Cartão de Crédito",
-        date: new Date(year, month, dueDay).toLocaleDateString("pt-BR", { day: "numeric", month: "short" }),
-        rawDate,
+        date: new Date(displayRawDate + "T12:00:00").toLocaleDateString("pt-BR", { day: "numeric", month: "short" }),
+        rawDate: displayRawDate,
+        paidAt: paidAtValue,
         amount: outstanding > 0 ? outstanding : inv.total,
         type: "despesa" as const,
         status: inv.isPaid ? "pago" : "pendente",

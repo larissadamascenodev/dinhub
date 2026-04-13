@@ -37,6 +37,7 @@ const hexToHslString = (hex: string): string => {
 
 const FaturaCard = ({ tx, onClick }: { tx: Transaction; onClick: () => void }) => {
   const cardColor = tx.creditCardColor ? hexToHslString(tx.creditCardColor) : "260 70% 60%";
+  const isPaid = tx.status === "pago";
   return (
     <div
       className="group relative flex items-center gap-2.5 px-3 py-2.5 md:gap-3 md:px-4 md:py-3.5 rounded-xl bg-card/95 border border-primary/10 cursor-pointer hover:border-primary/25 transition-colors"
@@ -51,15 +52,15 @@ const FaturaCard = ({ tx, onClick }: { tx: Transaction; onClick: () => void }) =
       <div className="flex-1 min-w-0">
         <p className="text-xs md:text-[13px] font-bold text-foreground truncate">{tx.name}</p>
         <p className="text-[9px] md:text-[10px] mt-0.5 text-muted-foreground/50">
-          {tx.faturaItemCount} lançamento{tx.faturaItemCount !== 1 ? "s" : ""} · {tx.date}
+          {tx.faturaItemCount} lançamento{tx.faturaItemCount !== 1 ? "s" : ""} · Fatura
         </p>
       </div>
       <div className="text-right shrink-0">
         <p className="text-xs md:text-sm font-bold tabular-nums text-destructive">
           −{fmt(tx.amount)}
         </p>
-        <span className="block mt-0.5 text-[8px] md:text-[9px] font-bold uppercase tracking-wide text-primary/60">
-          Fatura
+        <span className={`block mt-0.5 text-[8px] md:text-[9px] font-bold uppercase tracking-wide ${isPaid ? "text-emerald-400" : "text-primary/60"}`}>
+          {isPaid ? "Pago" : "Fatura"}
         </span>
       </div>
     </div>

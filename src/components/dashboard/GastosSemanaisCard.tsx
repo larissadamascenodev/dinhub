@@ -55,13 +55,14 @@ const GastosSemanaisCard = memo(() => {
       const prevMondayStr = prevMonday.toISOString().split("T")[0];
       const prevSundayStr = prevSunday.toISOString().split("T")[0];
 
-      const [{ data: txs }, { data: prevTxs }] = await Promise.all([
+      const [{ data: txs }, { data: prevTxs }, { data: invoicePayments }, { data: prevInvoicePayments }] = await Promise.all([
         supabase
           .from("transactions")
           .select("date, amount")
           .eq("user_id", user.id)
           .eq("type", "despesa")
           .eq("status", "pago")
+          .neq("payment_method", "cartao")
           .gte("date", mondayStr)
           .lte("date", sundayStr),
         supabase
@@ -70,8 +71,21 @@ const GastosSemanaisCard = memo(() => {
           .eq("user_id", user.id)
           .eq("type", "despesa")
           .eq("status", "pago")
+          .neq("payment_method", "cartao")
           .gte("date", prevMondayStr)
           .lte("date", prevSundayStr),
+        supabase
+          .from("invoice_payments")
+          .select("paid_at, amount")
+          .eq("user_id", user.id)
+          .gte("paid_at", monday.toISOString())
+          .lte("paid_at", sunday.toISOString()),
+        supabase
+          .from("invoice_payments")
+          .select("amount")
+          .eq("user_id", user.id)
+          .gte("paid_at", prevMonday.toISOString())
+          .lte("paid_at", prevSunday.toISOString()),
       ]);
 
       const dayMap = new Map<number, number>();
@@ -88,12 +102,23 @@ const GastosSemanaisCard = memo(() => {
         }
       }
 
+      // Add invoice payments by their actual payment date
+      if (invoicePayments) {
+        for (const ip of invoicePayments) {
+          const d = new Date(ip.paid_at);
+          const dow = d.getDay();
+          const idx = dow === 0 ? 6 : dow - 1;
+          dayMap.set(idx, (dayMap.get(idx) || 0) + Number(ip.amount));
+        }
+      }
+
       const days: DayData[] = DAYS.map((label, idx) => ({
         label,
         amount: dayMap.get(idx) || 0,
       }));
 
-      const pt = prevTxs?.reduce((s, t) => s + Number(t.amount), 0) || 0;
+      const pt = (prevTxs?.reduce((s, t) => s + Number(t.amount), 0) || 0)
+        + (prevInvoicePayments?.reduce((s, t) => s + Number(t.amount), 0) || 0);
       weekDataCache = { data: days, prevTotal: pt, timestamp: Date.now(), userId: user.id };
       setWeekData(days);
       setPrevWeekTotal(pt);
