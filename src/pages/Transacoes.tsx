@@ -233,8 +233,8 @@ const SwipeableItem = ({
           <p className="text-[9px] md:text-[10px] text-muted-foreground/40 mt-0.5">
             {tx.category}
             {tx.installments && tx.installment_current ? ` · ${tx.installment_current}/${tx.installments}x` : ""}
-            {" · "}
-            {accountName}
+            {accountName ? ` · ${accountName}` : ""}
+            {tx.time ? ` · ${tx.time}` : ""}
           </p>
         </div>
 
@@ -554,20 +554,17 @@ const Transacoes = () => {
       if (!groups[tx.date]) groups[tx.date] = [];
       groups[tx.date].push(tx);
     });
-    // Sort pendentes first, then by time ascending (earliest first), fallback to created_at
+
     for (const date in groups) {
       groups[date].sort((a, b) => {
-        if (a.status === "pendente" && b.status !== "pendente") return -1;
-        if (a.status !== "pendente" && b.status === "pendente") return 1;
-        // Within same status, sort by time (earliest first), then created_at
-        const timeA = a.time ?? "";
-        const timeB = b.time ?? "";
-        if (timeA && timeB) return timeA.localeCompare(timeB);
-        if (timeA) return -1;
-        if (timeB) return 1;
-        return (a.created_at ?? "").localeCompare(b.created_at ?? "");
+        const timeA = a.time || "00:00";
+        const timeB = b.time || "00:00";
+        const timeCompare = timeB.localeCompare(timeA);
+        if (timeCompare !== 0) return timeCompare;
+        return (b.created_at ?? "").localeCompare(a.created_at ?? "");
       });
     }
+
     return Object.entries(groups).sort(([a], [b]) => b.localeCompare(a));
   }, [filtered]);
 
