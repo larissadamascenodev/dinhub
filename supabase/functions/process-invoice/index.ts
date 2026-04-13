@@ -74,6 +74,49 @@ Também retorne "merchant" quando identificar o nome do destinatário/origem:
 IMPORTANTE: Retorne APENAS o JSON, sem markdown, sem explicação.
 Formato: { "items": [...] }`;
 
+function arrayBufferToBase64(buffer: Uint8Array): string {
+  let binary = "";
+  const chunkSize = 8192;
+  for (let i = 0; i < buffer.length; i += chunkSize) {
+    const chunk = buffer.subarray(i, Math.min(i + chunkSize, buffer.length));
+    for (let j = 0; j < chunk.length; j++) {
+      binary += String.fromCharCode(chunk[j]);
+    }
+  }
+  return btoa(binary);
+}
+
+async function callAI(
+  apiKey: string,
+  model: string,
+  systemPrompt: string,
+  userContent: any[]
+): Promise<{ ok: boolean; data?: any; status?: number; errorText?: string }> {
+  const aiResponse = await fetch("https://ai.gateway.lovable.dev/v1/chat/completions", {
+    method: "POST",
+    headers: {
+      Authorization: `Bearer ${apiKey}`,
+      "Content-Type": "application/json",
+    },
+    body: JSON.stringify({
+      model,
+      messages: [
+        { role: "system", content: systemPrompt },
+        { role: "user", content: userContent },
+      ],
+      temperature: 0.1,
+    }),
+  });
+
+  if (!aiResponse.ok) {
+    const errText = await aiResponse.text();
+    return { ok: false, status: aiResponse.status, errorText: errText };
+  }
+
+  const data = await aiResponse.json();
+  return { ok: true, data };
+}
+
 serve(async (req) => {
   if (req.method === "OPTIONS") {
     return new Response(null, { headers: corsHeaders });
@@ -104,12 +147,26 @@ serve(async (req) => {
         csvText = await file.text();
       } else {
         const buffer = new Uint8Array(await file.arrayBuffer());
-        let binary = "";
-        for (let i = 0; i < buffer.length; i++) {
-          binary += String.fromCharCode(buffer[i]);
+        imageBase64 = arrayBufferToBase64(buffer);
+
+        // Detect mime type properly
+        if (fileType && fileType.startsWith("image/")) {
+          mimeType = fileType;
+        } else if (fileType === "application/pdf" || fileName.endsWith(".pdf")) {
+          mimeType = "application/pdf";
+        } else if (fileName.endsWith(".jpg") || fileName.endsWith(".jpeg")) {
+          mimeType = "image/jpeg";
+        } else if (fileName.endsWith(".png")) {
+          mimeType = "image/png";
+        } else if (fileName.endsWith(".webp")) {
+          mimeType = "image/webp";
+        } else if (fileName.endsWith(".heic") || fileName.endsWith(".heif")) {
+          mimeType = "image/heic";
+        } else {
+          mimeType = fileType || "image/png";
         }
-        imageBase64 = btoa(binary);
-        mimeType = fileType || (fileName.endsWith(".pdf") ? "application/pdf" : "image/png");
+
+        console.log(`Processing file: ${file.name}, type: ${mimeType}, size: ${buffer.length} bytes, base64 length: ${imageBase64.length}`);
       }
     } else {
       const body = await req.json();
@@ -151,41 +208,43 @@ serve(async (req) => {
       ];
     }
 
-    const aiResponse = await fetch("https://ai.gateway.lovable.dev/v1/chat/completions", {
-      method: "POST",
-      headers: {
-        Authorization: `Bearer ${LOVABLE_API_KEY}`,
-        "Content-Type": "application/json",
-      },
-      body: JSON.stringify({
-        model: "google/gemini-2.5-flash",
-        messages: [
-          { role: "system", content: systemPrompt },
-          { role: "user", content: userContent },
-        ],
-        temperature: 0.1,
-      }),
-    });
+    // Try primary model, then fallback
+    const models = ["google/gemini-2.5-flash", "google/gemini-2.5-pro"];
+    let aiData: any = null;
+    let lastError = "";
 
-    if (!aiResponse.ok) {
-      if (aiResponse.status === 429) {
+    for (const model of models) {
+      console.log(`Trying model: ${model}`);
+      const result = await callAI(LOVABLE_API_KEY, model, systemPrompt, userContent);
+
+      if (result.ok) {
+        aiData = result.data;
+        console.log(`Success with model: ${model}`);
+        break;
+      }
+
+      console.error(`Model ${model} failed: status=${result.status}, error=${result.errorText?.substring(0, 200)}`);
+      lastError = result.errorText || "";
+
+      if (result.status === 429) {
         return new Response(JSON.stringify({ error: "Rate limit exceeded. Tente novamente em alguns segundos." }), {
           status: 429,
           headers: { ...corsHeaders, "Content-Type": "application/json" },
         });
       }
-      if (aiResponse.status === 402) {
+      if (result.status === 402) {
         return new Response(JSON.stringify({ error: "Créditos insuficientes. Adicione créditos ao workspace." }), {
           status: 402,
           headers: { ...corsHeaders, "Content-Type": "application/json" },
         });
       }
-      const errText = await aiResponse.text();
-      console.error("AI gateway error:", aiResponse.status, errText);
-      throw new Error("Falha ao processar com IA");
     }
 
-    const aiData = await aiResponse.json();
+    if (!aiData) {
+      console.error("All models failed. Last error:", lastError.substring(0, 300));
+      throw new Error("Não foi possível processar a imagem. Tente com uma foto mais nítida ou em formato diferente (JPG/PNG).");
+    }
+
     let rawContent = aiData.choices?.[0]?.message?.content || "";
 
     rawContent = rawContent.replace(/```json\s*/g, "").replace(/```\s*/g, "").trim();
@@ -194,7 +253,7 @@ serve(async (req) => {
     try {
       parsed = JSON.parse(rawContent);
     } catch {
-      console.error("Failed to parse AI response:", rawContent);
+      console.error("Failed to parse AI response:", rawContent.substring(0, 500));
       throw new Error("Não foi possível interpretar o documento. Tente com uma imagem mais nítida.");
     }
 
@@ -203,8 +262,8 @@ serve(async (req) => {
     }
 
     const cleanedItems: ExtractedItem[] = parsed.items
-      .filter((item) => item.description && item.amount > 0)
-      .map((item) => ({
+      .filter((item: any) => item.description && item.amount > 0)
+      .map((item: any) => ({
         description: String(item.description).trim(),
         amount: Math.round(Number(item.amount) * 100) / 100,
         date: item.date || null,
