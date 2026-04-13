@@ -41,6 +41,7 @@ interface TransactionRow {
   name: string;
   category: string;
   date: string;
+  time?: string | null;
   amount: number;
   type: string;
   status: string;
@@ -474,7 +475,14 @@ const TransactionDetailModal = ({ open, tx, accountName, onClose, onRefresh, use
                 <p className="text-[11px] text-muted-foreground/60 flex items-center gap-1 mb-1">
                   <CalendarDays className="w-3 h-3" /> Data
                 </p>
-                <p className="text-[13px] font-semibold text-foreground">{formatFullDate(tx.date)}</p>
+                <p className="text-[13px] font-semibold text-foreground">
+                  {formatFullDate(tx.date)}
+                  {tx.time && (
+                    <span className="text-muted-foreground font-medium ml-2 text-[12px]">
+                      <Clock className="w-3 h-3 inline mr-0.5 -mt-0.5" />{tx.time}
+                    </span>
+                  )}
+                </p>
               </div>
               <div>
                 <p className="text-[11px] text-muted-foreground/60 flex items-center gap-1 mb-1">
