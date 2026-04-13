@@ -277,6 +277,7 @@ serve(async (req) => {
         type: item.type || "despesa",
         confidence: typeof item.confidence === "number" ? Math.min(1, Math.max(0, item.confidence)) : 0.5,
         merchant: item.merchant || null,
+        time: item.time || null,
       }));
 
     const hasInstallments = cleanedItems.some((i) => i.installment_total && i.installment_total > 1);
