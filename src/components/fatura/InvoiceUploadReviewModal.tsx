@@ -2,12 +2,13 @@ import { useState, useEffect } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import {
   X, Check, Loader2, Sparkles, ShieldCheck, ShieldAlert, AlertTriangle,
-  Edit3, ChevronDown, RefreshCw, ArrowDownCircle, ArrowUpCircle
+  Edit3, ChevronDown, ArrowDownCircle, ArrowUpCircle, Clock
 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Switch } from "@/components/ui/switch";
 import { cn } from "@/lib/utils";
+import { DEFAULT_CATEGORY_ICONS, DEFAULT_CATEGORY_COLORS } from "@/lib/categoryIcons";
 
 export interface ExtractedItem {
   description: string;
@@ -21,6 +22,7 @@ export interface ExtractedItem {
   merchant?: string | null;
   selected: boolean;
   is_recurring?: boolean;
+  time?: string | null;
 }
 
 interface Props {
@@ -34,10 +36,7 @@ interface Props {
   onFallback?: (item: ExtractedItem) => void;
 }
 
-const CATEGORIES = [
-  "alimentação", "transporte", "compras", "saúde", "educação",
-  "lazer", "moradia", "serviços", "assinatura", "outros"
-];
+const CATEGORIES = Object.keys(DEFAULT_CATEGORY_ICONS);
 
 function ConfidenceBadge({ confidence }: { confidence: number }) {
   const pct = Math.round(confidence * 100);
@@ -65,18 +64,92 @@ function ConfidenceBadge({ confidence }: { confidence: number }) {
   );
 }
 
+function CategoryPickerSheet({
+  open,
+  selected,
+  onSelect,
+  onClose,
+}: {
+  open: boolean;
+  selected: string;
+  onSelect: (cat: string) => void;
+  onClose: () => void;
+}) {
+  if (!open) return null;
+
+  return (
+    <AnimatePresence>
+      <motion.div
+        initial={{ opacity: 0 }}
+        animate={{ opacity: 1 }}
+        exit={{ opacity: 0 }}
+        className="fixed inset-0 z-[70] bg-black/40 backdrop-blur-sm flex items-end sm:items-center justify-center"
+        onClick={onClose}
+      >
+        <motion.div
+          initial={{ y: "100%" }}
+          animate={{ y: 0 }}
+          exit={{ y: "100%" }}
+          transition={{ type: "spring", damping: 28, stiffness: 300 }}
+          onClick={(e) => e.stopPropagation()}
+          className="w-full sm:max-w-sm rounded-t-2xl sm:rounded-2xl bg-card border border-border/20 shadow-2xl max-h-[60vh] flex flex-col"
+        >
+          <div className="p-4 pb-2 flex items-center justify-between shrink-0 border-b border-border/10">
+            <h3 className="text-sm font-bold text-foreground">Selecionar Categoria</h3>
+            <button onClick={onClose} className="w-7 h-7 rounded-lg bg-muted/30 flex items-center justify-center text-muted-foreground">
+              <X className="w-3.5 h-3.5" />
+            </button>
+          </div>
+          <div className="flex-1 overflow-y-auto p-3 space-y-1 scrollbar-none overscroll-contain">
+            {CATEGORIES.map((cat) => {
+              const Icon = DEFAULT_CATEGORY_ICONS[cat];
+              const colorHsl = DEFAULT_CATEGORY_COLORS[cat] || "0 0% 60%";
+              const isSelected = cat.toLowerCase() === selected.toLowerCase();
+
+              return (
+                <button
+                  key={cat}
+                  onClick={() => { onSelect(cat.toLowerCase()); onClose(); }}
+                  className={cn(
+                    "w-full flex items-center gap-3 px-3 py-2.5 rounded-xl transition-colors",
+                    isSelected ? "bg-primary/10 border border-primary/20" : "hover:bg-muted/15"
+                  )}
+                >
+                  {Icon && (
+                    <div
+                      className="w-8 h-8 rounded-lg flex items-center justify-center shrink-0"
+                      style={{ backgroundColor: `hsl(${colorHsl} / 0.15)` }}
+                    >
+                      <Icon className="w-4 h-4" style={{ color: `hsl(${colorHsl})` }} />
+                    </div>
+                  )}
+                  <span className={cn(
+                    "text-[13px] font-medium",
+                    isSelected ? "text-primary font-bold" : "text-foreground"
+                  )}>
+                    {cat}
+                  </span>
+                  {isSelected && <Check className="w-4 h-4 text-primary ml-auto" />}
+                </button>
+              );
+            })}
+          </div>
+        </motion.div>
+      </motion.div>
+    </AnimatePresence>
+  );
+}
+
 function SingleItemReview({
   item,
   onUpdate,
   onConfirm,
   confirming,
-  avgConfidence,
 }: {
   item: ExtractedItem;
   onUpdate: (field: keyof ExtractedItem, value: any) => void;
   onConfirm: () => void;
   confirming: boolean;
-  avgConfidence?: number;
 }) {
   const [editing, setEditing] = useState(false);
   const [isRecurring, setIsRecurring] = useState(false);
@@ -97,6 +170,11 @@ function SingleItemReview({
       year: "numeric",
     });
   };
+
+  // Find category icon for display
+  const matchedCat = CATEGORIES.find((c) => c.toLowerCase() === (item.category || "").toLowerCase());
+  const CatIcon = matchedCat ? DEFAULT_CATEGORY_ICONS[matchedCat] : null;
+  const catColor = matchedCat ? DEFAULT_CATEGORY_COLORS[matchedCat] : "0 0% 60%";
 
   return (
     <div className="space-y-4">
@@ -126,14 +204,17 @@ function SingleItemReview({
         </div>
 
         {editing ? (
-          <div className="flex items-center justify-center gap-1">
-            <span className="text-lg text-muted-foreground">R$</span>
+          <div className="flex items-center justify-center gap-2">
+            <span className="text-2xl text-muted-foreground font-light">R$</span>
             <Input
               type="number"
               step="0.01"
               value={item.amount}
               onChange={(e) => onUpdate("amount", parseFloat(e.target.value) || 0)}
-              className="h-10 w-32 text-2xl font-bold text-center bg-transparent border-b border-border/30 border-t-0 border-l-0 border-r-0 rounded-none focus-visible:ring-0 px-1"
+              className={cn(
+                "h-auto w-40 text-3xl font-bold text-center bg-transparent border-b-2 border-t-0 border-l-0 border-r-0 rounded-none focus-visible:ring-0 px-1 py-0",
+                isExpense ? "text-destructive border-destructive/30" : "text-primary border-primary/30"
+              )}
             />
           </div>
         ) : (
@@ -149,24 +230,33 @@ function SingleItemReview({
       {/* Details card */}
       <div className="bg-muted/10 border border-border/15 rounded-xl divide-y divide-border/10">
         {/* Description */}
-        <div className="flex items-center justify-between px-4 py-3">
-          <span className="text-[11px] text-muted-foreground uppercase tracking-wide">Descrição</span>
+        <div className="flex items-center justify-between px-4 py-3 gap-3">
+          <span className="text-[11px] text-muted-foreground uppercase tracking-wide shrink-0">Descrição</span>
           {editing ? (
             <Input
               value={item.description}
               onChange={(e) => onUpdate("description", e.target.value)}
-              className="h-7 w-48 text-[13px] font-semibold text-right bg-transparent border-none focus-visible:ring-0 px-0"
+              className="h-7 flex-1 text-[13px] font-semibold text-right bg-transparent border-none focus-visible:ring-0 px-0"
             />
           ) : (
-            <span className="text-[13px] font-semibold text-foreground">{item.description}</span>
+            <span className="text-[13px] font-semibold text-foreground truncate text-right">{item.description}</span>
           )}
         </div>
 
         {/* Merchant */}
-        {item.merchant && (
-          <div className="flex items-center justify-between px-4 py-3">
-            <span className="text-[11px] text-muted-foreground uppercase tracking-wide">Estabelecimento</span>
-            <span className="text-[13px] text-foreground">{item.merchant}</span>
+        {(item.merchant || editing) && (
+          <div className="flex items-center justify-between px-4 py-3 gap-3">
+            <span className="text-[11px] text-muted-foreground uppercase tracking-wide shrink-0">Estabelecimento</span>
+            {editing ? (
+              <Input
+                value={item.merchant || ""}
+                onChange={(e) => onUpdate("merchant", e.target.value)}
+                placeholder="Nome do local"
+                className="h-7 flex-1 text-[13px] text-right bg-transparent border-none focus-visible:ring-0 px-0"
+              />
+            ) : (
+              <span className="text-[13px] text-foreground truncate text-right">{item.merchant}</span>
+            )}
           </div>
         )}
 
@@ -178,45 +268,50 @@ function SingleItemReview({
               type="date"
               value={item.date || ""}
               onChange={(e) => onUpdate("date", e.target.value)}
-              className="h-7 w-40 text-[13px] text-right bg-transparent border-none focus-visible:ring-0 px-0"
+              className="h-7 w-[150px] text-[13px] text-right bg-transparent border-none focus-visible:ring-0 px-0 [color-scheme:dark]"
             />
           ) : (
             <span className="text-[13px] text-foreground capitalize">{formatDate(item.date)}</span>
           )}
         </div>
 
-        {/* Category */}
-        <div className="flex items-center justify-between px-4 py-3 relative">
-          <span className="text-[11px] text-muted-foreground uppercase tracking-wide">Categoria</span>
-          <button
-            onClick={() => editing && setShowCategoryPicker(!showCategoryPicker)}
-            className={cn(
-              "flex items-center gap-1 text-[13px] font-medium capitalize",
-              editing ? "text-primary cursor-pointer" : "text-foreground"
-            )}
-          >
-            {item.category}
-            {editing && <ChevronDown className="w-3 h-3" />}
-          </button>
-          {showCategoryPicker && (
-            <div className="absolute right-4 top-full mt-1 z-10 bg-card border border-border/20 rounded-xl shadow-xl p-2 min-w-[160px] max-h-48 overflow-y-auto">
-              {CATEGORIES.map((cat) => (
-                <button
-                  key={cat}
-                  onClick={() => { onUpdate("category", cat); setShowCategoryPicker(false); }}
-                  className={cn(
-                    "w-full text-left px-3 py-2 rounded-lg text-[12px] capitalize transition-colors",
-                    cat === item.category
-                      ? "bg-primary/10 text-primary font-bold"
-                      : "text-foreground hover:bg-muted/20"
-                  )}
-                >
-                  {cat}
-                </button>
-              ))}
-            </div>
+        {/* Time */}
+        <div className="flex items-center justify-between px-4 py-3">
+          <div className="flex items-center gap-1.5">
+            <Clock className="w-3 h-3 text-muted-foreground" />
+            <span className="text-[11px] text-muted-foreground uppercase tracking-wide">Horário</span>
+          </div>
+          {editing ? (
+            <Input
+              type="time"
+              value={item.time || ""}
+              onChange={(e) => onUpdate("time", e.target.value)}
+              className="h-7 w-[100px] text-[13px] text-right bg-transparent border-none focus-visible:ring-0 px-0 [color-scheme:dark]"
+            />
+          ) : (
+            <span className="text-[13px] text-foreground">{item.time || "—"}</span>
           )}
         </div>
+
+        {/* Category */}
+        <button
+          onClick={() => setShowCategoryPicker(true)}
+          className="w-full flex items-center justify-between px-4 py-3"
+        >
+          <span className="text-[11px] text-muted-foreground uppercase tracking-wide">Categoria</span>
+          <div className="flex items-center gap-2">
+            {CatIcon && (
+              <div
+                className="w-6 h-6 rounded-md flex items-center justify-center"
+                style={{ backgroundColor: `hsl(${catColor} / 0.15)` }}
+              >
+                <CatIcon className="w-3 h-3" style={{ color: `hsl(${catColor})` }} />
+              </div>
+            )}
+            <span className="text-[13px] font-medium text-foreground capitalize">{item.category}</span>
+            <ChevronDown className="w-3.5 h-3.5 text-muted-foreground" />
+          </div>
+        </button>
 
         {/* Type toggle */}
         {editing && (
@@ -261,6 +356,14 @@ function SingleItemReview({
           />
         </div>
       </div>
+
+      {/* Category picker sheet */}
+      <CategoryPickerSheet
+        open={showCategoryPicker}
+        selected={item.category}
+        onSelect={(cat) => onUpdate("category", cat)}
+        onClose={() => setShowCategoryPicker(false)}
+      />
 
       {/* Edit toggle */}
       <button
@@ -347,9 +450,13 @@ function MultiItemReview({
       </div>
 
       {/* Items list */}
-      <div className="flex-1 overflow-y-auto px-5 space-y-2 pb-3 min-h-0">
+      <div className="flex-1 overflow-y-auto px-5 space-y-2 pb-3 min-h-0 scrollbar-none overscroll-contain">
         {items.map((item, idx) => {
           const conf = item.confidence || 0.5;
+          const matchedCat = CATEGORIES.find((c) => c.toLowerCase() === (item.category || "").toLowerCase());
+          const CatIcon = matchedCat ? DEFAULT_CATEGORY_ICONS[matchedCat] : null;
+          const catColor = matchedCat ? DEFAULT_CATEGORY_COLORS[matchedCat] : "0 0% 60%";
+
           return (
             <motion.div
               key={idx}
@@ -395,7 +502,12 @@ function MultiItemReview({
                     )}>
                       {item.type === "receita" ? "Receita" : "Despesa"}
                     </span>
-                    <span className="text-[10px] text-muted-foreground bg-muted/30 px-2 py-0.5 rounded-full capitalize">{item.category}</span>
+                    {CatIcon && (
+                      <div className="flex items-center gap-1 px-2 py-0.5 rounded-full" style={{ backgroundColor: `hsl(${catColor} / 0.1)` }}>
+                        <CatIcon className="w-3 h-3" style={{ color: `hsl(${catColor})` }} />
+                        <span className="text-[10px] capitalize" style={{ color: `hsl(${catColor})` }}>{item.category}</span>
+                      </div>
+                    )}
                     <ConfidenceBadge confidence={conf} />
                   </div>
                 </div>
@@ -502,7 +614,6 @@ export default function InvoiceUploadReviewModal({
                 onUpdate={handleSingleUpdate}
                 onConfirm={handleSingleConfirm}
                 confirming={confirming}
-                avgConfidence={avgConfidence}
               />
             </div>
           ) : (
