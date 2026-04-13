@@ -1,4 +1,5 @@
 import { useState } from "react";
+import { useNavigate } from "react-router-dom";
 import { motion, AnimatePresence } from "framer-motion";
 import { X, Check, Pencil, Trash2 } from "lucide-react";
 import { Button } from "@/components/ui/button";
@@ -6,7 +7,9 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { toast } from "sonner";
-import { updateTransactionStatus, updateTransaction, deleteTransaction } from "@/services/transactionService";
+import { createTransaction, deleteTransaction, getTransactionById, updateTransaction, updateTransactionStatus } from "@/services/transactionService";
+import { excludeRecurringForMonth } from "@/services/recurringService";
+import { useAuth } from "@/contexts/AuthContext";
 import type { FinanceEvent } from "@/types/finance";
 
 interface Props {
@@ -24,11 +27,20 @@ const CATEGORIES = [
 const fmt = (v: number) =>
   v.toLocaleString("pt-BR", { style: "currency", currency: "BRL" });
 
+const extractCardIdFromInvoiceEventId = (eventId: string) => {
+  const match = eventId.match(/^fatura-(.+)-(\d{1,2})-(\d{4})$/);
+  return match?.[1] ?? null;
+};
+
 const PagarEditarModal = ({ open, event, onClose, onSuccess }: Props) => {
+  const navigate = useNavigate();
+  const { user } = useAuth();
   const [mode, setMode] = useState<"view" | "edit">("view");
   const [name, setName] = useState("");
   const [category, setCategory] = useState("");
   const [submitting, setSubmitting] = useState(false);
+
+  const isInvoiceEvent = !!event && event.id.startsWith("fatura-");
 
   const resetEdit = () => {
     if (event) {
@@ -39,14 +51,56 @@ const PagarEditarModal = ({ open, event, onClose, onSuccess }: Props) => {
 
   const handlePay = async () => {
     if (!event?.isTransaction) return;
+
+    if (isInvoiceEvent) {
+      const cardId = extractCardIdFromInvoiceEventId(event.id);
+      if (!cardId) {
+        toast.error("Não foi possível abrir esta fatura");
+        return;
+      }
+
+      onClose();
+      navigate(`/fatura/${cardId}`);
+      return;
+    }
+
     setSubmitting(true);
     try {
-      await updateTransactionStatus(event.id, "pago");
+      const tx = await getTransactionById(event.id);
+      const targetDate = event.rawDate || tx.date;
+      const isRecurringCurrentOccurrence = tx.recurrence_type === "fixa" && tx.date !== targetDate;
+
+      if (isRecurringCurrentOccurrence) {
+        if (!user) throw new Error("Usuário não autenticado");
+
+        const [year, month] = targetDate.split("-").map(Number);
+
+        await excludeRecurringForMonth(tx.id, month - 1, year, user.id);
+        await createTransaction(
+          {
+            name: tx.name,
+            type: tx.type,
+            amount: Number(tx.amount),
+            category: tx.category,
+            date: targetDate,
+            status: "pago",
+            account_id: tx.payment_method === "cartao" ? null : tx.account_id,
+            payment_method: tx.payment_method,
+            recurrence_type: "unica",
+            observation: tx.observation,
+            credit_card_id: tx.payment_method === "cartao" ? tx.credit_card_id : null,
+          },
+          user.id
+        );
+      } else {
+        await updateTransactionStatus(event.id, "pago");
+      }
+
       toast.success("Transação marcada como paga ✅");
       onSuccess();
       onClose();
-    } catch {
-      toast.error("Erro ao marcar como paga");
+    } catch (error: any) {
+      toast.error(error?.message || "Erro ao marcar como paga");
     } finally {
       setSubmitting(false);
     }
@@ -107,7 +161,7 @@ const PagarEditarModal = ({ open, event, onClose, onSuccess }: Props) => {
             {/* Header */}
             <div className="flex items-center justify-between px-5 pt-5 pb-3">
               <h2 className="text-base font-display font-bold text-foreground">
-                {mode === "edit" ? "Editar transação" : "Transação agendada"}
+                {mode === "edit" ? "Editar transação" : isInvoiceEvent ? "Fatura pendente" : "Transação agendada"}
               </h2>
               <button onClick={() => { onClose(); setMode("view"); }} className="text-muted-foreground hover:text-foreground transition-colors">
                 <X className="w-5 h-5" />
@@ -140,7 +194,7 @@ const PagarEditarModal = ({ open, event, onClose, onSuccess }: Props) => {
                     className="w-full h-11 font-semibold text-sm"
                   >
                     <Check className="w-4 h-4 mr-1.5" />
-                    Marcar como pago
+                    {isInvoiceEvent ? "Abrir fatura" : "Marcar como pago"}
                   </Button>
                 )}
               </div>
