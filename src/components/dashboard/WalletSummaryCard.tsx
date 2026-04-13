@@ -1,9 +1,10 @@
 import { useState, useEffect } from "react";
 import { motion } from "framer-motion";
-import { Wallet, ChevronRight, Landmark, CreditCard, ArrowRightLeft, TrendingUp, Briefcase } from "lucide-react";
+import { Wallet, ChevronRight, Landmark, ArrowRightLeft, PiggyBank } from "lucide-react";
 import { useNavigate } from "react-router-dom";
 import { useAuth } from "@/contexts/AuthContext";
-import { getAccounts, getCreditCards } from "@/services/transactionService";
+import { getAccounts } from "@/services/transactionService";
+import { fetchGoals } from "@/services/goalService";
 import { supabase } from "@/integrations/supabase/client";
 import { cn } from "@/lib/utils";
 
@@ -32,24 +33,23 @@ const WalletSummaryCard = () => {
   const navigate = useNavigate();
   const { user } = useAuth();
   const [accounts, setAccounts] = useState<Account[]>([]);
-  const [cards, setCards] = useState<CreditCardItem[]>([]);
+  const [totalMetas, setTotalMetas] = useState(0);
 
   useEffect(() => {
     if (!user) return;
-    const load = () => Promise.all([getAccounts(), getCreditCards()]).then(([accs, cds]) => {
+    const load = () => Promise.all([getAccounts(), fetchGoals()]).then(([accs, goals]) => {
       setAccounts(accs as unknown as Account[]);
-      setCards(cds as unknown as CreditCardItem[]);
+      setTotalMetas(goals.reduce((s, g) => s + g.current_amount, 0));
     });
     load();
     const onChange = () => load();
     window.addEventListener("finance-data-changed", onChange);
 
-    // Realtime subscription to catch DB-level updates (e.g. recalc_credit_card_used_limit)
     const channel = supabase
-      .channel("wallet-cc-realtime")
-      .on("postgres_changes", { event: "*", schema: "public", table: "credit_cards", filter: `user_id=eq.${user.id}` }, () => load())
-      .on("postgres_changes", { event: "*", schema: "public", table: "invoices", filter: `user_id=eq.${user.id}` }, () => load())
+      .channel("wallet-summary-realtime")
       .on("postgres_changes", { event: "*", schema: "public", table: "accounts", filter: `user_id=eq.${user.id}` }, () => load())
+      .on("postgres_changes", { event: "*", schema: "public", table: "goals", filter: `user_id=eq.${user.id}` }, () => load())
+      .on("postgres_changes", { event: "*", schema: "public", table: "goal_transactions", filter: `user_id=eq.${user.id}` }, () => load())
       .subscribe();
 
     return () => {
@@ -62,10 +62,8 @@ const WalletSummaryCard = () => {
   const investmentAccounts = accounts.filter(a => a.type === "investment");
   const totalBalance = bankAccounts.reduce((s, a) => s + Number(a.current_balance), 0);
   const totalInvested = investmentAccounts.reduce((s, a) => s + Number(a.current_balance), 0);
-  const totalCreditLimit = cards.reduce((s, c) => s + Number(c.limit), 0);
-  const totalCreditUsed = cards.reduce((s, c) => s + Number(c.used_limit), 0);
-  const totalAvailable = totalCreditLimit - totalCreditUsed;
-  const patrimonio = totalBalance + totalInvested;
+  const totalReservado = totalInvested + totalMetas;
+  const patrimonio = totalBalance + totalReservado;
 
   return (
     <motion.div
@@ -107,7 +105,7 @@ const WalletSummaryCard = () => {
       </div>
 
       {/* Stats row */}
-      <div className="relative grid grid-cols-3 gap-1">
+      <div className="relative grid grid-cols-2 gap-1">
         <div className="bg-background/40 backdrop-blur-sm rounded-lg md:rounded-xl p-1.5 md:p-2 text-center border border-border/10">
           <Landmark className="w-3 h-3 text-primary/60 mx-auto mb-0.5" />
           <p className="text-[8px] text-muted-foreground leading-tight">Contas</p>
@@ -116,17 +114,10 @@ const WalletSummaryCard = () => {
           </p>
         </div>
         <div className="bg-background/40 backdrop-blur-sm rounded-lg md:rounded-xl p-1.5 md:p-2 text-center border border-border/10">
-          <CreditCard className="w-3 h-3 text-primary/60 mx-auto mb-0.5" />
-          <p className="text-[8px] text-muted-foreground leading-tight">Crédito</p>
-          <p className="text-[10px] md:text-[11px] font-bold tabular-nums text-foreground mt-0.5">
-            {formatCurrency(totalAvailable)}
-          </p>
-        </div>
-        <div className="bg-background/40 backdrop-blur-sm rounded-lg md:rounded-xl p-1.5 md:p-2 text-center border border-border/10">
-          <Briefcase className="w-3 h-3 text-primary/60 mx-auto mb-0.5" />
-          <p className="text-[8px] text-muted-foreground leading-tight">Investimentos</p>
-          <p className={cn("text-[10px] md:text-[11px] font-bold tabular-nums mt-0.5", totalInvested > 0 ? "text-foreground" : "text-muted-foreground")}>
-            {totalInvested > 0 ? formatCurrency(totalInvested) : "R$ 0,00"}
+          <PiggyBank className="w-3 h-3 text-primary/60 mx-auto mb-0.5" />
+          <p className="text-[8px] text-muted-foreground leading-tight">Reservado</p>
+          <p className={cn("text-[10px] md:text-[11px] font-bold tabular-nums mt-0.5", totalReservado > 0 ? "text-foreground" : "text-muted-foreground")}>
+            {totalReservado > 0 ? formatCurrency(totalReservado) : "R$ 0,00"}
           </p>
         </div>
       </div>

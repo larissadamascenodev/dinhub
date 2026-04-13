@@ -538,7 +538,7 @@ const GestaoFinanceira = () => {
           }} />
 
           {/* Breakdown */}
-          <div className="grid grid-cols-3 gap-1.5">
+          <div className="grid grid-cols-2 gap-2">
             {/* Contas */}
             <div className="flex items-center gap-1.5 min-w-0">
               <div className="w-5 h-5 rounded-md bg-primary/10 flex items-center justify-center shrink-0">
@@ -552,28 +552,15 @@ const GestaoFinanceira = () => {
               </div>
             </div>
 
-            {/* Crédito */}
+            {/* Reservado (Metas + Investimentos) */}
             <div className="flex items-center gap-1.5 min-w-0">
               <div className="w-5 h-5 rounded-md bg-primary/10 flex items-center justify-center shrink-0">
-                <CreditCard className="w-2.5 h-2.5 text-primary/70" />
+                <PiggyBank className="w-2.5 h-2.5 text-primary/70" />
               </div>
               <div className="min-w-0 overflow-hidden">
-                <p className="text-[7px] text-muted-foreground/45 font-semibold uppercase tracking-[0.08em] leading-none">Crédito</p>
-                <p className="text-[11px] font-bold tabular-nums text-foreground leading-tight mt-0.5 truncate">
-                  {formatCurrency(creditCards.reduce((s, c) => s + Number(c.used_limit), 0))}
-                </p>
-              </div>
-            </div>
-
-            {/* Investido */}
-            <div className="flex items-center gap-1.5 min-w-0">
-              <div className="w-5 h-5 rounded-md bg-primary/10 flex items-center justify-center shrink-0">
-                <TrendingUp className="w-2.5 h-2.5 text-primary/70" />
-              </div>
-              <div className="min-w-0 overflow-hidden">
-                <p className="text-[7px] text-muted-foreground/45 font-semibold uppercase tracking-[0.08em] leading-none">Investido</p>
-                <p className={cn("text-[11px] font-bold tabular-nums leading-tight mt-0.5 truncate", totalInvestido > 0 ? "text-foreground" : "text-muted-foreground/40")}>
-                  {formatCurrency(totalInvestido)}
+                <p className="text-[7px] text-muted-foreground/45 font-semibold uppercase tracking-[0.08em] leading-none">Reservado</p>
+                <p className={cn("text-[11px] font-bold tabular-nums leading-tight mt-0.5 truncate", (totalMetas + totalInvestido) > 0 ? "text-foreground" : "text-muted-foreground/40")}>
+                  {formatCurrency(totalMetas + totalInvestido)}
                 </p>
               </div>
             </div>
