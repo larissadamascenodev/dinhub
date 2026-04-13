@@ -18,6 +18,7 @@ interface Subscription {
   category: string;
   source: "conta" | "cartao";
   txType: RecurringType;
+  isPaidThisMonth: boolean;
 }
 
 const fmt = (v: number) =>
@@ -178,11 +179,26 @@ const AssinaturasCard = memo(() => {
 
     const { data: txs } = await supabase
       .from("transactions")
-      .select("id, name, amount, date, category, payment_method, credit_card_id, type")
+      .select("id, name, amount, date, category, payment_method, credit_card_id, type, status, recurrence_type")
       .eq("user_id", user.id)
       .eq("recurrence_type", "fixa");
 
     if (!txs) { setLoading(false); return; }
+
+    // Check which recurring items have been paid this month
+    const now = new Date();
+    const currentMonth = now.getMonth();
+    const currentYear = now.getFullYear();
+    const monthStart = `${currentYear}-${String(currentMonth + 1).padStart(2, "0")}-01`;
+    const monthEnd = new Date(currentYear, currentMonth + 1, 0).toISOString().split("T")[0];
+
+    // Build a set of paid recurring names for this month
+    const paidThisMonth = new Set<string>();
+    for (const tx of txs) {
+      if (tx.date >= monthStart && tx.date <= monthEnd && tx.status === "pago") {
+        paidThisMonth.add(`${tx.type}-${tx.name.toLowerCase().trim()}`);
+      }
+    }
 
     const seen = new Map<string, typeof txs[0]>();
     for (const tx of txs) {
@@ -200,9 +216,14 @@ const AssinaturasCard = memo(() => {
       category: tx.category,
       source: tx.payment_method === "cartao" ? "cartao" as const : "conta" as const,
       txType: tx.type as RecurringType,
+      isPaidThisMonth: paidThisMonth.has(`${tx.type}-${tx.name.toLowerCase().trim()}`),
     }));
 
-    subs.sort((a, b) => getDaysUntil(a.dueDay) - getDaysUntil(b.dueDay));
+    // Sort: pending first (by days until due), paid at the end
+    subs.sort((a, b) => {
+      if (a.isPaidThisMonth !== b.isPaidThisMonth) return a.isPaidThisMonth ? 1 : -1;
+      return getDaysUntil(a.dueDay) - getDaysUntil(b.dueDay);
+    });
     setSubscriptions(subs);
     setLoading(false);
   }, [user]);
@@ -340,11 +361,17 @@ const AssinaturasCard = memo(() => {
                   transition={{ delay: idx * 0.04, type: "spring", stiffness: 400, damping: 30 }}
                   className="relative rounded-xl border border-white/[0.06] overflow-hidden cursor-pointer hover:scale-[1.01] active:scale-[0.99] transition-transform"
                   style={{
-                    background: "linear-gradient(135deg, hsl(var(--card) / 0.95), hsl(var(--card) / 0.7))",
+                    background: sub.isPaidThisMonth
+                      ? "linear-gradient(135deg, hsl(142 70% 20% / 0.3), hsl(142 70% 15% / 0.15))"
+                      : "linear-gradient(135deg, hsl(var(--card) / 0.95), hsl(var(--card) / 0.7))",
                     backdropFilter: "blur(16px)",
                   }}
                   onClick={() => { setSelectedSub(sub); setShowActions(true); }}
                 >
+
+                  {sub.isPaidThisMonth && (
+                    <div className="absolute inset-0 border border-emerald-500/20 rounded-xl pointer-events-none" />
+                  )}
 
                   <div className="relative flex items-center gap-3 px-3 py-3">
                     <BrandIcon name={sub.name} category={sub.category} brand={brand} customCategories={customCats} />
@@ -352,12 +379,15 @@ const AssinaturasCard = memo(() => {
                     <div className="flex-1 min-w-0">
                       <p className="text-[12px] font-semibold text-foreground/90 truncate">{sub.name}</p>
                       <p className="text-[10px] text-muted-foreground/50 mt-0.5">
-                        Dia {sub.dueDay} · {days === 0 ? "Hoje" : days === 1 ? "Amanhã" : `Em ${days} dias`}
+                        {sub.isPaidThisMonth
+                          ? "✓ Já pago"
+                          : `Dia ${sub.dueDay} · ${days === 0 ? "Hoje" : days === 1 ? "Amanhã" : `Em ${days} dias`}`
+                        }
                       </p>
                     </div>
 
                     <div className="text-right shrink-0">
-                      <p className="text-[13px] font-bold text-foreground tabular-nums">{fmt(sub.amount)}</p>
+                      <p className={`text-[13px] font-bold tabular-nums ${sub.isPaidThisMonth ? "text-emerald-400" : "text-foreground"}`}>{fmt(sub.amount)}</p>
                     </div>
                   </div>
                 </motion.div>
