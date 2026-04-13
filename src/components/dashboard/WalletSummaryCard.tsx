@@ -59,7 +59,7 @@ const WalletSummaryCard = () => {
       initial={{ opacity: 0, y: 10 }}
       animate={{ opacity: 1, y: 0 }}
       transition={{ delay: 0.1 }}
-      className="relative overflow-hidden rounded-2xl border border-primary/10 bg-primary/[0.04] backdrop-blur-xl p-2.5 md:p-3 space-y-1 md:space-y-1.5 group cursor-pointer"
+      className="relative overflow-hidden rounded-2xl border border-primary/10 bg-primary/[0.04] backdrop-blur-xl p-4 md:p-5 space-y-3 md:space-y-4 group cursor-pointer"
       onClick={() => navigate("/gestao")}
     >
       {/* Glassmorphism decorative elements */}
@@ -68,17 +68,17 @@ const WalletSummaryCard = () => {
 
       {/* Header + Patrimônio inline on mobile */}
       <div className="relative flex items-center justify-between">
-        <div className="flex items-center gap-2">
-          <div className="w-7 h-7 md:w-8 md:h-8 rounded-xl bg-primary/15 flex items-center justify-center backdrop-blur-sm">
-            <Wallet className="w-3.5 h-3.5 md:w-4 md:h-4 text-primary" />
+        <div className="flex items-center gap-2.5">
+          <div className="w-9 h-9 md:w-10 md:h-10 rounded-xl bg-primary/15 flex items-center justify-center backdrop-blur-sm">
+            <Wallet className="w-4.5 h-4.5 md:w-5 md:h-5 text-primary" />
           </div>
           <div>
-            <h3 className="text-xs font-semibold font-display text-primary leading-none">Minha Carteira</h3>
-            <p className="text-[9px] text-muted-foreground uppercase tracking-wider mt-0.5 md:hidden">Patrimônio Total</p>
+            <h3 className="text-sm font-semibold font-display text-primary leading-none">Minha Carteira</h3>
+            <p className="text-[10px] text-muted-foreground uppercase tracking-wider mt-1 md:hidden">Patrimônio Total</p>
           </div>
         </div>
         <div className="flex items-center gap-2">
-          <p className={cn("text-base font-bold tabular-nums md:hidden", patrimonio >= 0 ? "text-primary" : "text-destructive")}>
+          <p className={cn("text-lg font-bold tabular-nums md:hidden", patrimonio >= 0 ? "text-primary" : "text-destructive")}>
             {formatCurrency(patrimonio)}
           </p>
           <ChevronRight className="w-4 h-4 text-primary/30 group-hover:text-primary transition-colors" />
@@ -86,45 +86,45 @@ const WalletSummaryCard = () => {
       </div>
 
       {/* Patrimônio total - desktop only */}
-      <div className="relative text-center py-1 hidden md:block">
-        <p className="text-[9px] text-muted-foreground uppercase tracking-widest mb-0.5">Patrimônio Total</p>
-        <p className={cn("text-lg font-bold tabular-nums", patrimonio >= 0 ? "text-primary" : "text-destructive")}>
+      <div className="relative text-center py-2 hidden md:block">
+        <p className="text-[10px] text-muted-foreground uppercase tracking-widest mb-1">Patrimônio Total</p>
+        <p className={cn("text-xl font-bold tabular-nums", patrimonio >= 0 ? "text-primary" : "text-destructive")}>
           {formatCurrency(patrimonio)}
         </p>
       </div>
 
       {/* Stats row */}
-      <div className="relative grid grid-cols-2 gap-1">
-        <div className="bg-background/40 backdrop-blur-sm rounded-lg md:rounded-xl p-1.5 md:p-2 text-center border border-border/10">
-          <Landmark className="w-3 h-3 text-primary/60 mx-auto mb-0.5" />
-          <p className="text-[8px] text-muted-foreground leading-tight">Contas</p>
-          <p className={cn("text-[10px] md:text-[11px] font-bold tabular-nums mt-0.5", totalBalance >= 0 ? "text-primary" : "text-destructive")}>
+      <div className="relative grid grid-cols-2 gap-2">
+        <div className="bg-background/40 backdrop-blur-sm rounded-xl p-3 text-center border border-border/10">
+          <Landmark className="w-4 h-4 text-primary/60 mx-auto mb-1" />
+          <p className="text-[10px] text-muted-foreground leading-tight">Contas</p>
+          <p className={cn("text-xs md:text-sm font-bold tabular-nums mt-1", totalBalance >= 0 ? "text-primary" : "text-destructive")}>
             {formatCurrency(totalBalance)}
           </p>
         </div>
-        <div className="bg-background/40 backdrop-blur-sm rounded-lg md:rounded-xl p-1.5 md:p-2 text-center border border-border/10">
-          <PiggyBank className="w-3 h-3 text-primary/60 mx-auto mb-0.5" />
-          <p className="text-[8px] text-muted-foreground leading-tight">Reservado</p>
-          <p className={cn("text-[10px] md:text-[11px] font-bold tabular-nums mt-0.5", totalReservado > 0 ? "text-foreground" : "text-muted-foreground")}>
+        <div className="bg-background/40 backdrop-blur-sm rounded-xl p-3 text-center border border-border/10">
+          <PiggyBank className="w-4 h-4 text-primary/60 mx-auto mb-1" />
+          <p className="text-[10px] text-muted-foreground leading-tight">Reservado</p>
+          <p className={cn("text-xs md:text-sm font-bold tabular-nums mt-1", totalReservado > 0 ? "text-foreground" : "text-muted-foreground")}>
             {totalReservado > 0 ? formatCurrency(totalReservado) : "R$ 0,00"}
           </p>
         </div>
       </div>
 
       {/* Quick actions */}
-      <div className="relative flex items-center justify-center gap-3 pt-0 md:pt-0.5">
+      <div className="relative flex items-center justify-center gap-4 pt-0.5">
         <button
           onClick={(e) => {
             e.stopPropagation();
             navigate("/gestao");
           }}
-          className="flex items-center gap-1 text-[10px] text-primary/70 hover:text-primary transition-colors"
+          className="flex items-center gap-1.5 text-xs text-primary/70 hover:text-primary transition-colors"
         >
-          <ArrowRightLeft className="w-3 h-3" />
+          <ArrowRightLeft className="w-3.5 h-3.5" />
           <span>Transferir</span>
         </button>
-        <span className="w-px h-3 bg-primary/10" />
-        <span className="text-[10px] text-muted-foreground group-hover:text-primary transition-colors">
+        <span className="w-px h-4 bg-primary/10" />
+        <span className="text-xs text-muted-foreground group-hover:text-primary transition-colors">
           Gerenciar carteira
         </span>
       </div>
