@@ -70,7 +70,23 @@ function getCachedList<T>(key: string, loader: () => Promise<T[]>): Promise<T[]>
   return request;
 }
 
+async function resolveTransactionAccountId(input: CreateTransactionInput) {
+  const paymentMethod = input.payment_method ?? "conta";
+
+  if (paymentMethod === "cartao") return null;
+  if (input.account_id) return input.account_id;
+
+  const accounts = await getAccounts();
+  const eligibleAccounts = accounts.filter((account: any) => account.type !== "investment" && account.is_active !== false);
+  const preferredAccount = eligibleAccounts.find((account: any) => account.is_default) ?? eligibleAccounts[0];
+
+  return preferredAccount?.id ?? null;
+}
+
 export async function createTransaction(input: CreateTransactionInput, userId: string) {
+  const paymentMethod = input.payment_method ?? "conta";
+  const resolvedAccountId = await resolveTransactionAccountId(input);
+
   const { data, error } = await supabase
     .from("transactions")
     .insert({
@@ -81,13 +97,13 @@ export async function createTransaction(input: CreateTransactionInput, userId: s
       category: input.category,
       date: input.date,
       status: input.status ?? "pago",
-      account_id: input.payment_method === "cartao" ? null : (input.account_id ?? null),
-      payment_method: input.payment_method ?? "conta",
+      account_id: paymentMethod === "cartao" ? null : resolvedAccountId,
+      payment_method: paymentMethod,
       recurrence_type: input.recurrence_type ?? "unica",
       installments: input.installments ?? null,
       installment_current: input.installment_current ?? null,
       observation: input.observation ?? null,
-      credit_card_id: input.payment_method === "cartao" ? (input.credit_card_id ?? null) : null,
+      credit_card_id: paymentMethod === "cartao" ? (input.credit_card_id ?? null) : null,
       parent_transaction_id: input.parent_transaction_id ?? null,
     } as any)
     .select()
