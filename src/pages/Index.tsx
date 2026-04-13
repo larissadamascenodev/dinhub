@@ -131,7 +131,6 @@ const Index = () => {
             <BotFinanceTools layout="grid" />
             <ProximosEventos events={data.events} selectedMonth={selectedMonth} selectedYear={selectedYear} onEventClick={handleEventClick} />
             <AssinaturasCard />
-            <InvestimentosResumoCard />
             <MetasResumoCard />
           </div>
         </div>
@@ -167,7 +166,6 @@ const Index = () => {
           <ProximosEventos events={data.events} selectedMonth={selectedMonth} selectedYear={selectedYear} onEventClick={handleEventClick} />
           <AssinaturasCard />
            <ParcelamentosAtivosCard />
-           <InvestimentosResumoCard />
            <MetasResumoCard />
         </div>
 
@@ -207,7 +205,7 @@ const Index = () => {
           </div>
           <AssinaturasCard />
           <ParcelamentosAtivosCard />
-          <InvestimentosResumoCard />
+          
           <MetasResumoCard />
         </div>
       <PagarEditarModal
