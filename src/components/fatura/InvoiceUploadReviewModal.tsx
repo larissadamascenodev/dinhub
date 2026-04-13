@@ -188,45 +188,32 @@ function SingleItemReview({
       </div>
 
       {/* Type indicator + Amount */}
-      <div className="text-center space-y-2 py-2">
-        <div className="flex items-center justify-center gap-2">
-          {isExpense ? (
-            <ArrowUpCircle className="w-5 h-5 text-destructive" />
-          ) : (
-            <ArrowDownCircle className="w-5 h-5 text-primary" />
-          )}
-          <span className={cn(
-            "text-xs font-bold uppercase tracking-wide",
-            isExpense ? "text-destructive" : "text-primary"
-          )}>
-            {item.type === "receita" ? "Receita" : "Despesa"}
-          </span>
-        </div>
+      <div className="text-center space-y-1 py-2">
+        <span className="text-[11px] text-muted-foreground uppercase tracking-wide">Valor</span>
 
         {editing ? (
           <div className="flex items-center justify-center gap-1">
-            <span className={cn("text-3xl font-bold", isExpense ? "text-destructive" : "text-primary")}>
-              {isExpense ? "− R$" : "+ R$"}
+            <span className={cn("text-lg font-bold", isExpense ? "text-destructive" : "text-primary")}>
+              R$
             </span>
             <input
               type="number"
               step="0.01"
-              value={item.amount}
+              value={item.amount.toFixed(2)}
               onChange={(e) => onUpdate("amount", parseFloat(e.target.value) || 0)}
-              className={cn(
-                "w-32 text-3xl font-bold bg-transparent border-none outline-none focus:ring-0 px-0 py-0 appearance-none [&::-webkit-inner-spin-button]:appearance-none [&::-webkit-outer-spin-button]:appearance-none",
-                isExpense ? "text-destructive" : "text-primary"
-              )}
+              className="w-36 text-3xl font-bold bg-transparent border-none outline-none focus:ring-0 px-0 py-0 appearance-none [&::-webkit-inner-spin-button]:appearance-none [&::-webkit-outer-spin-button]:appearance-none text-foreground"
               style={{ fontSize: '1.875rem', lineHeight: '2.25rem' }}
             />
           </div>
         ) : (
-          <p className={cn(
-            "text-3xl font-bold",
-            isExpense ? "text-destructive" : "text-primary"
-          )}>
-            {isExpense ? "−" : "+"}{formatCurrency(item.amount)}
-          </p>
+          <div className="flex items-center justify-center gap-1.5">
+            <span className={cn("text-lg font-bold", isExpense ? "text-destructive" : "text-primary")}>
+              R$
+            </span>
+            <span className="text-3xl font-bold text-foreground">
+              {item.amount.toLocaleString("pt-BR", { minimumFractionDigits: 2, maximumFractionDigits: 2 })}
+            </span>
+          </div>
         )}
       </div>
 
