@@ -19,6 +19,7 @@ export interface CreateTransactionInput {
   amount: number;
   category: string;
   date: string;
+  time?: string | null;
   status?: "pago" | "pendente";
   account_id?: string | null;
   payment_method?: "conta" | "cartao";
@@ -87,6 +88,9 @@ export async function createTransaction(input: CreateTransactionInput, userId: s
   const paymentMethod = input.payment_method ?? "conta";
   const resolvedAccountId = await resolveTransactionAccountId(input);
 
+  // For manual transactions (no time provided), use current time
+  const transactionTime = input.time ?? new Date().toLocaleTimeString("pt-BR", { hour: "2-digit", minute: "2-digit", hour12: false });
+
   const { data, error } = await supabase
     .from("transactions")
     .insert({
@@ -96,6 +100,7 @@ export async function createTransaction(input: CreateTransactionInput, userId: s
       amount: input.amount,
       category: input.category,
       date: input.date,
+      time: transactionTime,
       status: input.status ?? "pago",
       account_id: paymentMethod === "cartao" ? null : resolvedAccountId,
       payment_method: paymentMethod,
