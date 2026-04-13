@@ -2,14 +2,20 @@ import { useState, useEffect } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import {
   X, Check, Loader2, Sparkles, ShieldCheck, ShieldAlert, AlertTriangle,
-  Edit3, ChevronDown, ArrowDownCircle, ArrowUpCircle, Clock, Wallet
+  Edit3, ChevronDown, ArrowDownCircle, ArrowUpCircle, Clock, Wallet,
+  Search, Plus, Settings, Tag,
 } from "lucide-react";
+import { useNavigate } from "react-router-dom";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { Switch } from "@/components/ui/switch";
 import { cn } from "@/lib/utils";
-import { DEFAULT_CATEGORY_ICONS, DEFAULT_CATEGORY_COLORS } from "@/lib/categoryIcons";
+import { DEFAULT_CATEGORY_ICONS, DEFAULT_CATEGORY_COLORS, DEFAULT_EXPENSE_CATEGORIES, DEFAULT_INCOME_CATEGORIES, getDefaultCategoryIcon } from "@/lib/categoryIcons";
+import { getCustomCategories, createCustomCategory, type CustomCategory } from "@/services/categoryService";
+import { getCategoryHexColor } from "@/lib/categoryUtils";
+import CategoryCreateModal, { getIconComponent } from "@/components/dashboard/CategoryCreateModal";
+import { useAuth } from "@/contexts/AuthContext";
 
 export interface ExtractedItem {
   description: string;
@@ -79,13 +85,29 @@ function CategoryPickerSheet({
   selected,
   onSelect,
   onClose,
+  customCategories,
+  onCreateCategory,
 }: {
   open: boolean;
   selected: string;
   onSelect: (cat: string) => void;
   onClose: () => void;
+  customCategories: CustomCategory[];
+  onCreateCategory: () => void;
 }) {
+  const [search, setSearch] = useState("");
+  const navigate = useNavigate();
+
   if (!open) return null;
+
+  const allCats = [
+    ...customCategories.filter(c => c.type === "despesa" && !c.is_hidden_default).map(c => c.name),
+    ...DEFAULT_EXPENSE_CATEGORIES,
+  ];
+  const uniqueCats = [...new Set(allCats)];
+  const filtered = search
+    ? uniqueCats.filter(c => c.toLowerCase().includes(search.toLowerCase()))
+    : uniqueCats;
 
   return (
     <AnimatePresence>
@@ -93,63 +115,118 @@ function CategoryPickerSheet({
         initial={{ opacity: 0 }}
         animate={{ opacity: 1 }}
         exit={{ opacity: 0 }}
-        className="fixed inset-0 z-[70] bg-black/40 backdrop-blur-sm flex items-end sm:items-center justify-center"
+        className="fixed inset-0 z-[70] flex items-center justify-center bg-black/50"
         onClick={onClose}
       >
         <motion.div
-          initial={{ y: "100%" }}
-          animate={{ y: 0 }}
-          exit={{ y: "100%" }}
-          transition={{ type: "spring", damping: 28, stiffness: 300 }}
+          initial={{ opacity: 0, scale: 0.95, y: 20 }}
+          animate={{ opacity: 1, scale: 1, y: 0 }}
+          exit={{ opacity: 0, scale: 0.95, y: 20 }}
+          transition={{ type: "spring", damping: 25, stiffness: 350 }}
           onClick={(e) => e.stopPropagation()}
-          className="w-full sm:max-w-sm rounded-t-2xl sm:rounded-2xl bg-card border border-border/20 shadow-2xl max-h-[60vh] flex flex-col"
+          className="w-[90%] max-w-sm rounded-2xl bg-card border border-border/30 shadow-2xl p-5"
         >
-          <div className="p-4 pb-2 flex items-center justify-between shrink-0 border-b border-border/10">
-            <h3 className="text-sm font-bold text-foreground">Selecionar Categoria</h3>
-            <button onClick={onClose} className="w-7 h-7 rounded-lg bg-muted/30 flex items-center justify-center text-muted-foreground">
+          <div className="flex items-center justify-between mb-4">
+            <h3 className="text-base font-bold text-foreground">Categoria</h3>
+            <button
+              onClick={onClose}
+              className="w-7 h-7 rounded-full border border-primary/40 flex items-center justify-center text-primary hover:bg-primary/10 transition-colors"
+            >
               <X className="w-3.5 h-3.5" />
             </button>
           </div>
-          <div className="flex-1 overflow-y-auto p-3 space-y-1 scrollbar-none overscroll-contain">
-            {CATEGORIES.map((cat) => {
-              const Icon = DEFAULT_CATEGORY_ICONS[cat];
-              const colorHsl = DEFAULT_CATEGORY_COLORS[cat] || "0 0% 60%";
-              const isSelected = cat.toLowerCase() === selected.toLowerCase();
 
-              return (
-                <button
-                  key={cat}
-                  onClick={() => { onSelect(cat.toLowerCase()); onClose(); }}
-                  className={cn(
-                    "w-full flex items-center gap-3 px-3 py-2.5 rounded-xl transition-colors",
-                    isSelected ? "bg-primary/10 border border-primary/20" : "hover:bg-muted/15"
-                  )}
-                >
-                  {Icon && (
-                    <div
-                      className="w-8 h-8 rounded-lg flex items-center justify-center shrink-0"
-                      style={{ backgroundColor: `hsl(${colorHsl} / 0.15)` }}
-                    >
-                      <Icon className="w-4 h-4" style={{ color: `hsl(${colorHsl})` }} />
-                    </div>
-                  )}
-                  <span className={cn(
-                    "text-[13px] font-medium",
-                    isSelected ? "text-primary font-bold" : "text-foreground"
-                  )}>
+          {/* Search */}
+          <div className="relative mb-3">
+            <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-muted-foreground" />
+            <Input
+              placeholder="Buscar categoria"
+              value={search}
+              onChange={(e) => setSearch(e.target.value)}
+              className="pl-9 bg-muted/30 border-border/20 h-10 rounded-xl"
+            />
+          </div>
+
+          {/* Category list */}
+          <div className="max-h-48 overflow-y-auto space-y-1 mb-3 scrollbar-none">
+            {filtered.length > 0 ? (
+              filtered.map((cat) => {
+                const customCat = customCategories.find((c) => c.name === cat && c.type === "despesa");
+                const catHex = getCategoryHexColor(cat, customCategories);
+                const isSelected = cat.toLowerCase() === selected.toLowerCase();
+
+                return (
+                  <button
+                    key={cat}
+                    onClick={() => { onSelect(cat); onClose(); }}
+                    className={cn(
+                      "w-full flex items-center gap-2.5 text-left px-3 py-2 rounded-xl text-sm transition-colors",
+                      isSelected
+                        ? "bg-primary/15 text-primary font-semibold"
+                        : "text-foreground hover:bg-muted/50"
+                    )}
+                  >
+                    {(() => {
+                      if (customCat) {
+                        const CatIcon = getIconComponent(customCat.icon);
+                        return (
+                          <span
+                            className="w-7 h-7 rounded-lg flex items-center justify-center shrink-0"
+                            style={{ backgroundColor: `${catHex}20`, border: `1px solid ${catHex}30` }}
+                          >
+                            <CatIcon className="w-3.5 h-3.5" style={{ color: catHex }} />
+                          </span>
+                        );
+                      }
+                      const DefaultIcon = getDefaultCategoryIcon(cat);
+                      return (
+                        <span
+                          className="w-7 h-7 rounded-lg flex items-center justify-center shrink-0"
+                          style={{ backgroundColor: `${catHex}20`, border: `1px solid ${catHex}30` }}
+                        >
+                          <DefaultIcon className="w-3.5 h-3.5" style={{ color: catHex }} />
+                        </span>
+                      );
+                    })()}
                     {cat}
-                  </span>
-                  {isSelected && <Check className="w-4 h-4 text-primary ml-auto" />}
-                </button>
-              );
-            })}
+                    {isSelected && <Check className="w-4 h-4 text-primary ml-auto" />}
+                  </button>
+                );
+              })
+            ) : (
+              <p className="text-center text-sm text-muted-foreground py-4">
+                Nenhuma categoria encontrada
+              </p>
+            )}
+          </div>
+
+          {/* Footer */}
+          <div className="flex items-center justify-between pt-2 border-t border-border/20">
+            <button
+              type="button"
+              onClick={onCreateCategory}
+              className="flex items-center gap-1 text-xs text-primary font-medium hover:opacity-80"
+            >
+              <Plus className="w-3.5 h-3.5" />
+              Criar categoria
+            </button>
+            <button
+              type="button"
+              onClick={() => {
+                onClose();
+                navigate("/categorias");
+              }}
+              className="flex items-center gap-1 text-xs text-muted-foreground font-medium hover:text-foreground"
+            >
+              <Settings className="w-3.5 h-3.5" />
+              Gerenciar
+            </button>
           </div>
         </motion.div>
       </motion.div>
     </AnimatePresence>
   );
 }
-
 function SingleItemReview({
   item,
   onUpdate,
