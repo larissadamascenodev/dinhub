@@ -204,17 +204,20 @@ function SingleItemReview({
         </div>
 
         {editing ? (
-          <div className="flex items-center justify-center gap-2">
-            <span className="text-2xl text-muted-foreground font-light">R$</span>
-            <Input
+          <div className="flex items-center justify-center gap-1">
+            <span className={cn("text-3xl font-bold", isExpense ? "text-destructive" : "text-primary")}>
+              {isExpense ? "− R$" : "+ R$"}
+            </span>
+            <input
               type="number"
               step="0.01"
               value={item.amount}
               onChange={(e) => onUpdate("amount", parseFloat(e.target.value) || 0)}
               className={cn(
-                "h-auto w-40 text-3xl font-bold text-center bg-transparent border-b-2 border-t-0 border-l-0 border-r-0 rounded-none focus-visible:ring-0 px-1 py-0",
-                isExpense ? "text-destructive border-destructive/30" : "text-primary border-primary/30"
+                "w-32 text-3xl font-bold bg-transparent border-none outline-none focus:ring-0 px-0 py-0 appearance-none [&::-webkit-inner-spin-button]:appearance-none [&::-webkit-outer-spin-button]:appearance-none",
+                isExpense ? "text-destructive" : "text-primary"
               )}
+              style={{ fontSize: '1.875rem', lineHeight: '2.25rem' }}
             />
           </div>
         ) : (
