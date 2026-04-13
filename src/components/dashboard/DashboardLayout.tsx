@@ -1,7 +1,7 @@
 import { useState, useCallback, useEffect, useRef } from "react";
 import { Outlet } from "react-router-dom";
 import { motion, AnimatePresence } from "framer-motion";
-import { Camera, ImageIcon, FileUp } from "lucide-react";
+import { Camera, ImageIcon } from "lucide-react";
 import DashboardHeader from "@/components/dashboard/DashboardHeader";
 import MobileBottomNav from "@/components/dashboard/MobileBottomNav";
 import { useProfile } from "@/hooks/useProfile";
@@ -44,7 +44,7 @@ const DashboardLayout = () => {
 
   const scanCameraRef = useRef<HTMLInputElement>(null);
   const scanGalleryRef = useRef<HTMLInputElement>(null);
-  const scanFileRef = useRef<HTMLInputElement>(null);
+  
 
   const getSafeTransactionDate = useCallback((rawDate: string | null | undefined) => {
     const today = new Date();
@@ -286,19 +286,6 @@ const DashboardLayout = () => {
                       <p className="text-[11px] text-muted-foreground">Selecionar foto da galeria</p>
                     </div>
                   </motion.button>
-                  <motion.button
-                    whileTap={{ scale: 0.98 }}
-                    onClick={() => { setShowScanChooser(false); scanFileRef.current?.click(); }}
-                    className="w-full flex items-center gap-3 rounded-xl border border-border/15 bg-muted/10 hover:bg-muted/20 px-4 py-3.5 text-left transition-colors"
-                  >
-                    <div className="w-10 h-10 rounded-lg bg-accent/30 border border-accent/20 flex items-center justify-center shrink-0">
-                      <FileUp className="w-5 h-5 text-muted-foreground" />
-                    </div>
-                    <div>
-                      <p className="text-[13px] font-bold text-foreground">Importar arquivo</p>
-                      <p className="text-[11px] text-muted-foreground">PDF, planilha CSV ou Excel</p>
-                    </div>
-                  </motion.button>
                 </div>
               </motion.div>
             </motion.div>
@@ -306,7 +293,6 @@ const DashboardLayout = () => {
         </AnimatePresence>
         <input ref={scanCameraRef} type="file" accept="image/*" capture="environment" className="hidden" onChange={handleScanFileInput} />
         <input ref={scanGalleryRef} type="file" accept="image/*" className="hidden" onChange={handleScanFileInput} />
-        <input ref={scanFileRef} type="file" accept=".pdf,.csv,.xls,.xlsx" className="hidden" onChange={handleScanFileInput} />
         
         {/* Processing overlay */}
         <AnimatePresence>
