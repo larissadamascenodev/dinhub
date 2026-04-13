@@ -256,7 +256,7 @@ function SingleItemReview({
             checked={isRecurring}
             onCheckedChange={(checked) => {
               setIsRecurring(checked);
-              // Update the item type to fixa if recurring
+              onUpdate("is_recurring", checked);
             }}
           />
         </div>
