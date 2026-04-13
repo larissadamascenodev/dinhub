@@ -370,44 +370,6 @@ const GestaoFinanceira = () => {
             <p className="text-[10px] text-muted-foreground mt-0.5">Organize seu dinheiro de forma inteligente</p>
           </div>
         </div>
-        <div className="relative">
-          <motion.button
-            whileTap={{ scale: 0.95 }}
-            onClick={() => setShowAddMenu(!showAddMenu)}
-            className="w-8 h-8 rounded-xl bg-primary/15 border border-primary/20 flex items-center justify-center hover:bg-primary/20 transition-colors"
-          >
-            <Plus className="w-4 h-4 text-primary" />
-          </motion.button>
-          <AnimatePresence>
-            {showAddMenu && (
-              <>
-                <motion.div
-                  initial={{ opacity: 0 }}
-                  animate={{ opacity: 1 }}
-                  exit={{ opacity: 0 }}
-                  className="fixed inset-0 z-40"
-                  onClick={() => setShowAddMenu(false)}
-                />
-                <motion.div
-                  initial={{ opacity: 0, scale: 0.9, y: -4 }}
-                  animate={{ opacity: 1, scale: 1, y: 0 }}
-                  exit={{ opacity: 0, scale: 0.9, y: -4 }}
-                  className="absolute right-0 mt-1 w-48 rounded-xl bg-card border border-border/30 shadow-2xl overflow-hidden z-50"
-                >
-                  <button onClick={() => { setShowAddMenu(false); setShowAddAccount(true); }} className="w-full flex items-center gap-2.5 px-4 py-3 text-xs font-semibold text-foreground hover:bg-muted/10 transition-colors">
-                    <Landmark className="w-4 h-4 text-primary" /> Nova Conta
-                  </button>
-                  <button onClick={() => { setShowAddMenu(false); setShowAddCard(true); }} className="w-full flex items-center gap-2.5 px-4 py-3 text-xs font-semibold text-foreground hover:bg-muted/10 transition-colors">
-                    <CreditCard className="w-4 h-4 text-primary" /> Novo Cartão
-                  </button>
-                  <button onClick={() => { setShowAddMenu(false); setShowAIWizard("meta"); }} className="w-full flex items-center gap-2.5 px-4 py-3 text-xs font-semibold text-foreground hover:bg-muted/10 transition-colors">
-                    <Brain className="w-4 h-4 text-primary" /> Meta com IA
-                  </button>
-                </motion.div>
-              </>
-            )}
-          </AnimatePresence>
-        </div>
       </div>
 
 
