@@ -16,14 +16,6 @@ interface Account {
   color: string | null;
 }
 
-interface CreditCardItem {
-  id: string;
-  name: string;
-  limit: number;
-  used_limit: number;
-  color: string | null;
-  last_four_digits: string | null;
-}
 
 function formatCurrency(value: number) {
   return value.toLocaleString("pt-BR", { style: "currency", currency: "BRL" });
