@@ -243,6 +243,7 @@ function SingleItemReview({
   showAccountSelector?: boolean;
 }) {
   const { user } = useAuth();
+  const [editing, setEditing] = useState(false);
   const [isRecurring, setIsRecurring] = useState(false);
   const [showCategoryPicker, setShowCategoryPicker] = useState(false);
   const [showCategoryCreate, setShowCategoryCreate] = useState(false);
@@ -269,12 +270,7 @@ function SingleItemReview({
   const formatDate = (d: string | null) => {
     if (!d) return "—";
     const date = new Date(d + "T12:00:00");
-    return date.toLocaleDateString("pt-BR", {
-      weekday: "long",
-      day: "2-digit",
-      month: "2-digit",
-      year: "numeric",
-    });
+    return date.toLocaleDateString("pt-BR", { day: "2-digit", month: "long", year: "numeric" });
   };
 
   const catHex = getCategoryHexColor(item.category || "", customCategories);
@@ -283,9 +279,10 @@ function SingleItemReview({
     ? getIconComponent(customCat.icon)
     : getDefaultCategoryIcon(item.category || "");
 
-  const valueToneClass = isExpense ? "bg-destructive/5" : "bg-primary/5";
   const valueAccentClass = isExpense ? "text-destructive" : "text-primary";
   const accountColors = ["#8b5cf6", "#f97316", "#00e676", "#3b82f6", "#ec4899"];
+
+  const selectedAccountName = accounts.find(a => a.id === item.account_id)?.name || "Sem conta";
 
   const handleAmountChange = (value: string) => {
     const digits = value.replace(/\D/g, "");
@@ -318,175 +315,207 @@ function SingleItemReview({
         <ConfidenceBadge confidence={conf} />
       </div>
 
-      {/* Amount */}
-      <div className={cn("rounded-xl p-5 text-center border border-border/10", valueToneClass)}>
-        <span className="text-[10px] text-muted-foreground uppercase tracking-widest">Valor</span>
-        <div className="mt-2 flex items-baseline justify-center gap-2">
-          <span className={cn("text-xl font-bold", valueAccentClass)}>R$</span>
-          <input
-            type="text"
-            inputMode="numeric"
-            value={amountInput}
-            onChange={(e) => handleAmountChange(e.target.value)}
-            className="min-w-[172px] bg-transparent border-none px-0 py-0 text-center font-display text-4xl font-bold tabular-nums tracking-tight text-foreground/80 outline-none focus:ring-0"
-          />
-        </div>
+      {/* Type badge */}
+      <div className="flex items-center gap-2">
+        <span className={cn(
+          "px-3 py-1 rounded-full text-[11px] font-bold uppercase tracking-wide",
+          isExpense ? "bg-destructive/15 text-destructive" : "bg-primary/15 text-primary"
+        )}>
+          {isExpense ? "Despesa" : "Receita"}
+        </span>
       </div>
 
-      {/* Account selector - prominent, below value */}
-      {showAccountSelector && (
-        <div className="space-y-2">
-          <div className="flex items-center gap-2 text-sm font-medium text-foreground">
-            <Wallet className="w-4 h-4 text-muted-foreground" />
-            Conta
-          </div>
-          {accounts.length > 0 ? (
-            <Select
-              value={item.account_id ?? undefined}
-              onValueChange={(value) => onUpdate("account_id", value)}
-            >
-              <SelectTrigger className="bg-muted/30 border-border/20 h-11 rounded-xl">
-                <SelectValue placeholder="Selecionar conta" />
-              </SelectTrigger>
-              <SelectContent className="z-[80]">
-                {accounts.map((account, idx) => (
-                  <SelectItem key={account.id} value={account.id}>
-                    <div className="flex items-center gap-2">
-                      <div
-                        className="w-2.5 h-2.5 rounded-full"
-                        style={{ backgroundColor: accountColors[idx % accountColors.length] }}
-                      />
-                      {account.name} {account.is_default ? "(padrão)" : ""}
-                    </div>
-                  </SelectItem>
-                ))}
-              </SelectContent>
-            </Select>
+      {/* Amount - clean, no colored border */}
+      <div className="text-left">
+        <div className="flex items-baseline gap-1">
+          <span className={cn("text-2xl font-bold", valueAccentClass)}>R$</span>
+          {editing ? (
+            <input
+              type="text"
+              inputMode="numeric"
+              value={amountInput}
+              onChange={(e) => handleAmountChange(e.target.value)}
+              className="bg-transparent border-none px-0 py-0 font-display text-[42px] font-bold tabular-nums tracking-tight text-foreground outline-none focus:ring-0 w-full"
+            />
           ) : (
-            <div className="rounded-xl border border-primary/20 bg-primary/5 p-3 text-center">
-              <Wallet className="w-5 h-5 text-primary mx-auto mb-1" />
-              <p className="text-xs text-muted-foreground">Cadastre uma conta primeiro</p>
-            </div>
+            <span className="font-display text-[42px] font-bold tabular-nums tracking-tight text-foreground">
+              {formatAmount(item.amount)}
+            </span>
           )}
         </div>
-      )}
+      </div>
 
-      {/* Details - always editable with visible fields */}
-      <div className="space-y-4">
-        {/* Description */}
-        <div className="space-y-1.5">
-          <div className="flex items-center gap-2 text-sm font-medium text-foreground">
-            <Edit3 className="w-4 h-4 text-muted-foreground" />
-            Descrição
+      {editing ? (
+        /* ── EDIT MODE ── */
+        <div className="space-y-4">
+          {/* Account selector */}
+          {showAccountSelector && (
+            <div className="space-y-1.5">
+              <div className="flex items-center gap-2 text-sm font-medium text-foreground">
+                <Wallet className="w-4 h-4 text-muted-foreground" />
+                Conta
+              </div>
+              {accounts.length > 0 ? (
+                <Select
+                  value={item.account_id ?? undefined}
+                  onValueChange={(value) => onUpdate("account_id", value)}
+                >
+                  <SelectTrigger className="bg-muted/30 border-border/20 h-11 rounded-xl">
+                    <SelectValue placeholder="Selecionar conta" />
+                  </SelectTrigger>
+                  <SelectContent className="z-[80]">
+                    {accounts.map((account, idx) => (
+                      <SelectItem key={account.id} value={account.id}>
+                        <div className="flex items-center gap-2">
+                          <div className="w-2.5 h-2.5 rounded-full" style={{ backgroundColor: accountColors[idx % accountColors.length] }} />
+                          {account.name} {account.is_default ? "(padrão)" : ""}
+                        </div>
+                      </SelectItem>
+                    ))}
+                  </SelectContent>
+                </Select>
+              ) : (
+                <div className="rounded-xl border border-primary/20 bg-primary/5 p-3 text-center">
+                  <p className="text-xs text-muted-foreground">Cadastre uma conta primeiro</p>
+                </div>
+              )}
+            </div>
+          )}
+
+          {/* Description */}
+          <div className="space-y-1.5">
+            <div className="flex items-center gap-2 text-sm font-medium text-foreground">
+              <Edit3 className="w-4 h-4 text-muted-foreground" /> Descrição
+            </div>
+            <Input
+              value={item.description}
+              onChange={(e) => onUpdate("description", e.target.value)}
+              className="bg-muted/30 border-border/20 h-11 rounded-xl"
+              placeholder="Nome da transação"
+            />
           </div>
-          <Input
-            value={item.description}
-            onChange={(e) => onUpdate("description", e.target.value)}
-            className="bg-muted/30 border-border/20 h-11 rounded-xl"
-            placeholder="Nome da transação"
-          />
+
+          {/* Merchant */}
+          <div className="space-y-1.5">
+            <div className="flex items-center gap-2 text-sm font-medium text-foreground">
+              <Sparkles className="w-4 h-4 text-muted-foreground" /> Estabelecimento
+            </div>
+            <Input
+              value={item.merchant || ""}
+              onChange={(e) => onUpdate("merchant", e.target.value)}
+              placeholder="Nome do local"
+              className="bg-muted/30 border-border/20 h-11 rounded-xl"
+            />
+          </div>
+
+          {/* Date */}
+          <div className="space-y-1.5">
+            <div className="flex items-center gap-2 text-sm font-medium text-foreground">
+              <Clock className="w-4 h-4 text-muted-foreground" />
+              Data {item.time && <span className="text-xs text-muted-foreground">· {item.time}</span>}
+            </div>
+            <Input
+              type="date"
+              value={item.date || ""}
+              onChange={(e) => onUpdate("date", e.target.value)}
+              className="bg-muted/30 border-border/20 h-11 rounded-xl [color-scheme:dark]"
+            />
+          </div>
+
+          {/* Category */}
+          <div className="space-y-1.5">
+            <div className="flex items-center gap-2 text-sm font-medium text-foreground">
+              <Tag className="w-4 h-4 text-muted-foreground" /> Categoria
+            </div>
+            <button
+              type="button"
+              onClick={() => setShowCategoryPicker(true)}
+              className="w-full flex items-center justify-between px-3 h-11 rounded-xl text-sm border bg-muted/30 border-border/20 text-foreground transition-colors"
+            >
+              <div className="flex items-center gap-2">
+                <span className="w-6 h-6 rounded-md flex items-center justify-center shrink-0" style={{ backgroundColor: `${catHex}20`, border: `1px solid ${catHex}30` }}>
+                  <CatIconResolved className="w-3 h-3" style={{ color: catHex }} />
+                </span>
+                <span className="capitalize">{item.category || "Selecionar categoria"}</span>
+              </div>
+              <Tag className="w-3.5 h-3.5 text-muted-foreground" />
+            </button>
+          </div>
+
+          {/* Type toggle */}
+          <div className="space-y-1.5">
+            <div className="text-sm font-medium text-foreground">Tipo</div>
+            <div className="flex gap-2">
+              <button onClick={() => onUpdate("type", "despesa")} className={cn("flex-1 py-2.5 rounded-xl text-xs font-bold transition-all border", item.type === "despesa" ? "bg-destructive/15 text-destructive border-destructive/25" : "bg-muted/30 text-muted-foreground border-transparent hover:bg-muted/50")}>Despesa</button>
+              <button onClick={() => onUpdate("type", "receita")} className={cn("flex-1 py-2.5 rounded-xl text-xs font-bold transition-all border", item.type === "receita" ? "bg-primary/15 text-primary border-primary/25" : "bg-muted/30 text-muted-foreground border-transparent hover:bg-muted/50")}>Receita</button>
+            </div>
+          </div>
+
+          {/* Recurrence toggle */}
+          <div className="flex items-center justify-between rounded-xl bg-muted/30 border border-border/20 px-4 py-3">
+            <span className="text-sm font-medium text-foreground">Recorrente</span>
+            <Switch checked={isRecurring} onCheckedChange={(checked) => { setIsRecurring(checked); onUpdate("is_recurring", checked); }} />
+          </div>
         </div>
+      ) : (
+        /* ── DETAIL MODE (read-only summary) ── */
+        <div className="bg-muted/10 border border-border/15 rounded-xl divide-y divide-border/10">
+          {/* Account */}
+          {showAccountSelector && (
+            <div className="flex items-center justify-between px-4 py-3">
+              <div className="flex items-center gap-1.5">
+                <Wallet className="w-3.5 h-3.5 text-muted-foreground" />
+                <span className="text-[11px] text-muted-foreground uppercase tracking-wide">Conta</span>
+              </div>
+              <span className="text-[13px] font-semibold text-foreground">{selectedAccountName}</span>
+            </div>
+          )}
 
-        {/* Merchant */}
-        <div className="space-y-1.5">
-          <div className="flex items-center gap-2 text-sm font-medium text-foreground">
-            <Sparkles className="w-4 h-4 text-muted-foreground" />
-            Estabelecimento
+          {/* Description */}
+          <div className="flex items-center justify-between px-4 py-3">
+            <span className="text-[11px] text-muted-foreground uppercase tracking-wide">Descrição</span>
+            <span className="text-[13px] font-semibold text-foreground truncate max-w-[60%] text-right">{item.description}</span>
           </div>
-          <Input
-            value={item.merchant || ""}
-            onChange={(e) => onUpdate("merchant", e.target.value)}
-            placeholder="Nome do local"
-            className="bg-muted/30 border-border/20 h-11 rounded-xl"
-          />
-        </div>
 
-        {/* Date */}
-        <div className="space-y-1.5">
-          <div className="flex items-center gap-2 text-sm font-medium text-foreground">
-            <Clock className="w-4 h-4 text-muted-foreground" />
-            Data {item.time && <span className="text-xs text-muted-foreground">· {item.time}</span>}
-          </div>
-          <Input
-            type="date"
-            value={item.date || ""}
-            onChange={(e) => onUpdate("date", e.target.value)}
-            className="bg-muted/30 border-border/20 h-11 rounded-xl [color-scheme:dark]"
-          />
-        </div>
+          {/* Merchant */}
+          {item.merchant && (
+            <div className="flex items-center justify-between px-4 py-3">
+              <span className="text-[11px] text-muted-foreground uppercase tracking-wide">Estabelecimento</span>
+              <span className="text-[13px] text-foreground truncate max-w-[60%] text-right">{item.merchant}</span>
+            </div>
+          )}
 
-        {/* Category */}
-        <div className="space-y-1.5">
-          <div className="flex items-center gap-2 text-sm font-medium text-foreground">
-            <Tag className="w-4 h-4 text-muted-foreground" />
-            Categoria
+          {/* Date + time */}
+          <div className="flex items-center justify-between px-4 py-3">
+            <div className="flex items-center gap-1.5">
+              <Clock className="w-3.5 h-3.5 text-muted-foreground" />
+              <span className="text-[11px] text-muted-foreground uppercase tracking-wide">Data</span>
+            </div>
+            <div className="text-right">
+              <span className="text-[13px] font-semibold text-foreground capitalize">{formatDate(item.date)}</span>
+              {item.time && (
+                <p className="text-[11px] text-muted-foreground mt-0.5 flex items-center justify-end gap-1">
+                  <Clock className="w-3 h-3" /> {item.time}
+                </p>
+              )}
+            </div>
           </div>
-          <button
-            type="button"
-            onClick={() => setShowCategoryPicker(true)}
-            className={cn(
-              "w-full flex items-center justify-between px-3 h-11 rounded-xl text-sm border transition-colors",
-              item.category
-                ? "bg-muted/30 border-border/20 text-foreground"
-                : "bg-muted/30 border-border/20 text-muted-foreground"
-            )}
-          >
+
+          {/* Category */}
+          <div className="flex items-center justify-between px-4 py-3">
+            <div className="flex items-center gap-1.5">
+              <Tag className="w-3.5 h-3.5 text-muted-foreground" />
+              <span className="text-[11px] text-muted-foreground uppercase tracking-wide">Categoria</span>
+            </div>
             <div className="flex items-center gap-2">
-              <span
-                className="w-6 h-6 rounded-md flex items-center justify-center shrink-0"
-                style={{ backgroundColor: `${catHex}20`, border: `1px solid ${catHex}30` }}
-              >
+              <span className="w-6 h-6 rounded-md flex items-center justify-center" style={{ backgroundColor: `${catHex}20` }}>
                 <CatIconResolved className="w-3 h-3" style={{ color: catHex }} />
               </span>
-              <span className="capitalize">{item.category || "Selecionar categoria"}</span>
+              <span className="text-[13px] font-medium text-foreground capitalize">{item.category}</span>
             </div>
-            <Tag className="w-3.5 h-3.5 text-muted-foreground" />
-          </button>
-        </div>
-
-        {/* Type toggle */}
-        <div className="space-y-1.5">
-          <div className="flex items-center gap-2 text-sm font-medium text-foreground">
-            Tipo
-          </div>
-          <div className="flex gap-2">
-            <button
-              onClick={() => onUpdate("type", "despesa")}
-              className={cn(
-                "flex-1 py-2.5 rounded-xl text-xs font-bold transition-all border",
-                item.type === "despesa"
-                  ? "bg-destructive/15 text-destructive border-destructive/25"
-                  : "bg-muted/30 text-muted-foreground border-transparent hover:bg-muted/50"
-              )}
-            >
-              Despesa
-            </button>
-            <button
-              onClick={() => onUpdate("type", "receita")}
-              className={cn(
-                "flex-1 py-2.5 rounded-xl text-xs font-bold transition-all border",
-                item.type === "receita"
-                  ? "bg-primary/15 text-primary border-primary/25"
-                  : "bg-muted/30 text-muted-foreground border-transparent hover:bg-muted/50"
-              )}
-            >
-              Receita
-            </button>
           </div>
         </div>
-
-        {/* Recurrence toggle */}
-        <div className="flex items-center justify-between rounded-xl bg-muted/30 border border-border/20 px-4 py-3">
-          <span className="text-sm font-medium text-foreground">Recorrente</span>
-          <Switch
-            checked={isRecurring}
-            onCheckedChange={(checked) => {
-              setIsRecurring(checked);
-              onUpdate("is_recurring", checked);
-            }}
-          />
-        </div>
-      </div>
+      )}
 
       {/* Category picker */}
       <CategoryPickerSheet
@@ -498,13 +527,21 @@ function SingleItemReview({
         onCreateCategory={() => { setShowCategoryPicker(false); setShowCategoryCreate(true); }}
       />
 
-      {/* Category Create Modal */}
       <CategoryCreateModal
         open={showCategoryCreate}
         onClose={() => setShowCategoryCreate(false)}
         onSave={handleCreateCategoryFromModal}
         title="Nova Categoria"
       />
+
+      {/* Edit toggle */}
+      <button
+        onClick={() => setEditing(!editing)}
+        className="flex items-center gap-2 mx-auto text-xs text-primary hover:text-primary/80 transition-colors"
+      >
+        <Edit3 className="w-3.5 h-3.5" />
+        {editing ? "Fechar edição" : "Editar informações"}
+      </button>
 
       {/* Confirm button */}
       <Button
@@ -527,149 +564,6 @@ function SingleItemReview({
     </div>
   );
 }
-function MultiItemReview({
-  items,
-  setItems,
-  onConfirm,
-  confirming,
-  avgConfidence,
-  message,
-  onFallback,
-}: {
-  items: ExtractedItem[];
-  setItems: React.Dispatch<React.SetStateAction<ExtractedItem[]>>;
-  onConfirm: (items: ExtractedItem[]) => void;
-  confirming: boolean;
-  avgConfidence?: number;
-  message: string;
-  onFallback?: (item: ExtractedItem) => void;
-}) {
-  const toggleItem = (idx: number) => {
-    setItems((prev) =>
-      prev.map((item, i) => (i === idx ? { ...item, selected: !item.selected } : item))
-    );
-  };
-
-  const removeItem = (idx: number) => {
-    setItems((prev) => prev.filter((_, i) => i !== idx));
-  };
-
-  const selectedItems = items.filter((i) => i.selected);
-  const totalSelected = selectedItems.reduce((sum, i) => sum + i.amount, 0);
-
-  const formatCurrency = (v: number) =>
-    v.toLocaleString("pt-BR", { style: "currency", currency: "BRL" });
-
-  return (
-    <div className="flex flex-col max-h-[75vh]">
-      {/* AI Message */}
-      <div className="px-5 pb-3 shrink-0 space-y-2">
-        <div className="bg-primary/10 border border-primary/20 rounded-xl px-3.5 py-2.5">
-          <p className="text-[12px] text-primary font-medium">{message}</p>
-        </div>
-        {avgConfidence !== undefined && (
-          <div className={cn(
-            "flex items-center gap-2 rounded-lg px-3 py-2 text-[11px] font-medium",
-            avgConfidence >= 0.8
-              ? "bg-primary/5 text-primary border border-primary/10"
-              : "bg-amber-500/5 text-amber-400 border border-amber-500/10"
-          )}>
-            {avgConfidence >= 0.8 ? <ShieldCheck className="w-3.5 h-3.5" /> : <AlertTriangle className="w-3.5 h-3.5" />}
-            <span>Confiança geral: {Math.round(avgConfidence * 100)}%</span>
-          </div>
-        )}
-      </div>
-
-      {/* Items list */}
-      <div className="flex-1 overflow-y-auto px-5 space-y-2 pb-3 min-h-0 scrollbar-none overscroll-contain">
-        {items.map((item, idx) => {
-          const conf = item.confidence || 0.5;
-          const matchedCat = CATEGORIES.find((c) => c.toLowerCase() === (item.category || "").toLowerCase());
-          const CatIcon = matchedCat ? DEFAULT_CATEGORY_ICONS[matchedCat] : null;
-          const catColor = matchedCat ? DEFAULT_CATEGORY_COLORS[matchedCat] : "0 0% 60%";
-
-          return (
-            <motion.div
-              key={idx}
-              initial={{ opacity: 0, x: -8 }}
-              animate={{ opacity: 1, x: 0 }}
-              transition={{ delay: idx * 0.03 }}
-              className={cn(
-                "rounded-xl border p-3 transition-colors",
-                item.selected ? "border-primary/30 bg-primary/5" : "border-border/15 bg-muted/10 opacity-50"
-              )}
-            >
-              <div className="flex items-start gap-2.5">
-                <button
-                  onClick={() => toggleItem(idx)}
-                  className={cn(
-                    "mt-0.5 w-5 h-5 rounded-md border-2 flex items-center justify-center shrink-0 transition-colors",
-                    item.selected ? "bg-primary border-primary text-primary-foreground" : "border-muted-foreground/30"
-                  )}
-                >
-                  {item.selected && <Check className="w-3 h-3" />}
-                </button>
-                <div className="flex-1 min-w-0 space-y-1.5">
-                  <div className="flex items-center justify-between gap-2">
-                    <p className="text-[12px] font-semibold text-foreground truncate">{item.description}</p>
-                    <div className="flex items-center gap-1 shrink-0">
-                      {onFallback && (
-                        <button onClick={() => onFallback(item)} className="text-primary/60 hover:text-primary transition-colors" title="Editar">
-                          <Edit3 className="w-3.5 h-3.5" />
-                        </button>
-                      )}
-                      <button onClick={() => removeItem(idx)} className="text-muted-foreground/40 hover:text-destructive transition-colors">
-                        <X className="w-3.5 h-3.5" />
-                      </button>
-                    </div>
-                  </div>
-                  <div className="flex items-center gap-2 flex-wrap">
-                    <span className="text-[12px] font-bold text-foreground">
-                      {formatCurrency(item.amount)}
-                    </span>
-                    <span className={cn(
-                      "text-[10px] font-bold px-2 py-0.5 rounded-full",
-                      item.type === "receita" ? "text-primary bg-primary/10" : "text-destructive bg-destructive/10"
-                    )}>
-                      {item.type === "receita" ? "Receita" : "Despesa"}
-                    </span>
-                    {CatIcon && (
-                      <div className="flex items-center gap-1 px-2 py-0.5 rounded-full" style={{ backgroundColor: `hsl(${catColor} / 0.1)` }}>
-                        <CatIcon className="w-3 h-3" style={{ color: `hsl(${catColor})` }} />
-                        <span className="text-[10px] capitalize" style={{ color: `hsl(${catColor})` }}>{item.category}</span>
-                      </div>
-                    )}
-                    <ConfidenceBadge confidence={conf} />
-                  </div>
-                </div>
-              </div>
-            </motion.div>
-          );
-        })}
-      </div>
-
-      {/* Footer */}
-      <div className="p-5 pt-3 border-t border-border/10 shrink-0 space-y-3 pb-24 sm:pb-5">
-        <div className="flex items-center justify-between text-[12px]">
-          <span className="text-muted-foreground">{selectedItems.length} de {items.length} selecionados</span>
-          <span className="font-bold text-foreground">{formatCurrency(totalSelected)}</span>
-        </div>
-        <Button
-          onClick={() => onConfirm(selectedItems)}
-          disabled={selectedItems.length === 0 || confirming}
-          className="w-full h-11 rounded-xl text-xs font-bold"
-        >
-          {confirming ? (
-            <><Loader2 className="w-3.5 h-3.5 mr-1.5 animate-spin" />Importando...</>
-          ) : (
-            <><Check className="w-3.5 h-3.5 mr-1.5" />Importar {selectedItems.length} lançamento{selectedItems.length !== 1 ? "s" : ""}</>
-          )}
-        </Button>
-      </div>
-    </div>
-  );
-}
-
 export default function InvoiceUploadReviewModal({
   open,
   onClose,
