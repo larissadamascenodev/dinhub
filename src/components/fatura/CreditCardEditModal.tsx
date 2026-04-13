@@ -49,6 +49,26 @@ export default function CreditCardEditModal({ open, onClose, card, onUpdated, on
     if (parsedClosing < 1 || parsedClosing > 31) { toast.error("Dia de fechamento inválido"); return; }
     if (parsedDue < 1 || parsedDue > 31) { toast.error("Dia de vencimento inválido"); return; }
 
+    // Validate limit decrease: new limit must be >= used_limit
+    if (parsedLimit < card.limit) {
+      // Fetch current used_limit
+      const { data: cardData } = await supabase
+        .from("credit_cards")
+        .select("used_limit")
+        .eq("id", card.id)
+        .single();
+
+      const usedLimit = (cardData as any)?.used_limit ?? 0;
+      if (parsedLimit < usedLimit) {
+        toast.error(
+          `Não é possível diminuir o limite para R$ ${parsedLimit.toLocaleString("pt-BR", { minimumFractionDigits: 2 })}. ` +
+          `O limite utilizado atualmente é R$ ${usedLimit.toLocaleString("pt-BR", { minimumFractionDigits: 2 })}. ` +
+          `Pague as faturas em aberto para liberar limite antes de diminuí-lo.`
+        );
+        return;
+      }
+    }
+
     setSaving(true);
     try {
       const { error } = await supabase
@@ -63,7 +83,11 @@ export default function CreditCardEditModal({ open, onClose, card, onUpdated, on
 
       if (error) throw error;
 
-      toast.success("Cartão atualizado! As mudanças nas datas valem a partir da próxima fatura.");
+      const messages: string[] = ["Cartão atualizado!"];
+      if (parsedClosing !== card.closing_day || parsedDue !== card.due_day) {
+        messages.push("As mudanças nas datas valem a partir da próxima fatura.");
+      }
+      toast.success(messages.join(" "));
       onUpdated();
       onClose();
     } catch (err: any) {
