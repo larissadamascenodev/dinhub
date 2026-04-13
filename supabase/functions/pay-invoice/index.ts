@@ -103,19 +103,6 @@ Deno.serve(async (req) => {
       debitAmount = entry;
     }
 
-    const newBalance = Number(account.current_balance) - debitAmount;
-    const { error: balError } = await adminClient
-      .from("accounts")
-      .update({ current_balance: newBalance })
-      .eq("id", account_id);
-
-    if (balError) {
-      return new Response(JSON.stringify({ error: "Failed to update account balance" }), {
-        status: 500,
-        headers: { ...corsHeaders, "Content-Type": "application/json" },
-      });
-    }
-
     const newPaidAmount = alreadyPaid + debitAmount;
     const isFullyPaid = mode === "total" || newPaidAmount >= totalAmount;
 
@@ -130,25 +117,27 @@ Deno.serve(async (req) => {
       .eq("id", invoice_id);
 
     if (payError) {
-      await adminClient
-        .from("accounts")
-        .update({ current_balance: account.current_balance })
-        .eq("id", account_id);
-
       return new Response(JSON.stringify({ error: "Failed to mark invoice as paid" }), {
         status: 500,
         headers: { ...corsHeaders, "Content-Type": "application/json" },
       });
     }
 
-    // Record individual payment entry
-    await adminClient.from("invoice_payments").insert({
+    // Record individual payment entry — this triggers account balance recalculation
+    const { error: paymentInsertError } = await adminClient.from("invoice_payments").insert({
       invoice_id,
       user_id: user.id,
       account_id,
       amount: debitAmount,
       paid_at: new Date().toISOString(),
     });
+
+    if (paymentInsertError) {
+      return new Response(JSON.stringify({ error: "Failed to record payment" }), {
+        status: 500,
+        headers: { ...corsHeaders, "Content-Type": "application/json" },
+      });
+    }
 
     // For "minimo" mode, the remainder stays on the current invoice (no transfer to next month)
 
@@ -195,13 +184,19 @@ Deno.serve(async (req) => {
       p_credit_card_id: invoice.credit_card_id,
     });
 
+    const { data: updatedAccount } = await adminClient
+      .from("accounts")
+      .select("current_balance")
+      .eq("id", account_id)
+      .single();
+
     return new Response(
       JSON.stringify({
         success: true,
         invoice_id,
         mode,
         amount_debited: debitAmount,
-        new_balance: newBalance,
+        new_balance: updatedAccount?.current_balance ?? null,
         remainder: remainderToNextInvoice,
         outstanding_after: outstanding - debitAmount,
       }),
