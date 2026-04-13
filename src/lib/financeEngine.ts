@@ -331,7 +331,10 @@ export async function getFinancialSummary(
   const userId = options?.userId;
   const dbMonth = month + 1;
 
-  const [transactions, events, accountBalance, invoiceTotals, historical, { data: creditCardsData }, { data: invoicesDetailData }] = await Promise.all([
+  // Fetch initial balances from accounts created in this month (they count as income)
+  const { start: monthStart, end: monthEnd } = getMonthRange(month, year);
+
+  const [transactions, events, accountBalance, invoiceTotals, historical, { data: creditCardsData }, { data: invoicesDetailData }, { data: accountsCreatedThisMonth }] = await Promise.all([
     fetchMonthTransactions(month, year, { userId }),
     fetchMonthEvents(month, year),
     fetchTotalAccountBalance(month, year),
@@ -361,12 +364,25 @@ export async function getFinancialSummary(
         });
         return { data };
       }),
+    // Accounts created in this month with initial_balance > 0 → treated as income
+    supabase
+      .from("accounts")
+      .select("initial_balance, created_at")
+      .gte("created_at", monthStart + "T00:00:00")
+      .lte("created_at", monthEnd + "T23:59:59")
+      .neq("type", "investment"),
   ]);
 
+  // Sum initial balances from accounts created this month — this is "money the user already had"
+  const initialBalanceIncome = (accountsCreatedThisMonth ?? []).reduce(
+    (sum, acc) => sum + Math.max(0, Number(acc.initial_balance ?? 0)),
+    0
+  );
+
   const agg = aggregate(transactions);
-  const income = agg.income;
+  const income = agg.income + initialBalanceIncome;
   const expense = agg.expense + invoiceTotals.invoiceExpense;
-  const paidIncome = agg.paidIncome;
+  const paidIncome = agg.paidIncome + initialBalanceIncome;
   const paidExpense = agg.paidExpense + invoiceTotals.invoicePaidExpense;
   const balance = paidIncome - paidExpense;
 
