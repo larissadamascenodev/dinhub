@@ -728,12 +728,12 @@ const TransactionDetailModal = ({ open, tx, accountName, onClose, onRefresh, use
               >
                 <p className="text-[10px] text-muted-foreground uppercase tracking-widest mb-2">Valor</p>
                 <div className="flex items-baseline justify-center gap-2">
-                  <span className="text-xl font-bold" style={{ color: accentHsl }}>R$</span>
+                  <span className="text-xl font-bold text-muted-foreground">R$</span>
                   <motion.span
                     key={editAmountCents}
                     initial={{ scale: 1.05 }}
                     animate={{ scale: 1 }}
-                    className="font-display text-4xl font-bold tabular-nums tracking-tight text-foreground/80"
+                    className="font-display text-4xl font-bold tabular-nums tracking-tight text-foreground"
                   >
                     {formatCurrency(editAmountCents)}
                   </motion.span>
