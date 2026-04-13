@@ -1,5 +1,18 @@
 import { supabase } from "@/integrations/supabase/client";
+import { clearFinanceQueryCache } from "@/services/transactionService";
 
+function notifyRecurringChanged() {
+  clearFinanceQueryCache();
+  import("@/services/dashboardData").then(({ clearDashboardCache }) => {
+    clearDashboardCache();
+  });
+  import("@/lib/financeEngine").then(({ clearMaterializedCache }) => {
+    clearMaterializedCache();
+  }).catch(() => {});
+  if (typeof window !== "undefined") {
+    window.dispatchEvent(new CustomEvent("finance-data-changed"));
+  }
+}
 interface RecurringTransactionRow {
   id: string;
   user_id: string;
@@ -207,6 +220,7 @@ export async function excludeRecurringForMonth(
     }, { onConflict: "transaction_id,month,year" });
 
   if (error) throw error;
+  notifyRecurringChanged();
 }
 
 /**
@@ -241,4 +255,5 @@ export async function excludeRecurringFromMonthOnward(
     .upsert(exclusions, { onConflict: "transaction_id,month,year" });
 
   if (error) throw error;
+  notifyRecurringChanged();
 }

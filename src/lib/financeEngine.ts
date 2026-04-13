@@ -63,6 +63,8 @@ const materializedMonths = new Set<string>();
 
 export function clearMaterializedCache() {
   materializedMonths.clear();
+  monthTxCache.clear();
+  invoiceTotalsCache.clear();
 }
 
 // Cache for intermediate month fetches (used by previousMonthEndingBalance chain)

@@ -41,7 +41,7 @@ function notifyFinanceDataChanged() {
   clearFinanceQueryCache();
   // Import dynamically to avoid circular deps
   import("@/services/dashboardData").then(({ clearDashboardCache }) => {
-    clearDashboardCache(true); // selective invalidation — mark stale, don't delete
+    clearDashboardCache(); // full cache clear — ensures fresh data on next read
   });
   import("@/lib/financeEngine").then(({ clearMaterializedCache }) => {
     clearMaterializedCache();
