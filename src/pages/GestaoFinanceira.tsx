@@ -1,16 +1,12 @@
 import { useState, useEffect, useCallback } from "react";
 import useEmblaCarousel from "embla-carousel-react";
 import { motion, AnimatePresence } from "framer-motion";
-import { CreditCard, Plus, X, Landmark, Banknote, PiggyBank, TrendingUp, ChevronRight, Briefcase, ArrowDownLeft, CalendarIcon, Wallet, Target, ArrowRightLeft, Info, Shield, Brain } from "lucide-react";
+import { CreditCard, Plus, X, Landmark, Banknote, PiggyBank, ChevronRight, Wallet, Brain } from "lucide-react";
 import { useNavigate } from "react-router-dom";
-import { format } from "date-fns";
-import { ptBR } from "date-fns/locale";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
-import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover";
-import { Calendar } from "@/components/ui/calendar";
 import { getCachedDashboardData, buildDashboardCacheKey } from "@/services/dashboardData";
 import { toast } from "sonner";
 import { useAuth } from "@/contexts/AuthContext";
@@ -18,7 +14,6 @@ import { getAccounts, createAccount, getCreditCards, createCreditCard } from "@/
 import { supabase } from "@/integrations/supabase/client";
 import { cn } from "@/lib/utils";
 import { fetchGoals, type Goal } from "@/services/goalService";
-import InvestmentCreateModal from "@/components/investments/InvestmentCreateModal";
 import AIFinancialWizardModal from "@/components/shared/AIFinancialWizardModal";
 
 interface Account {
@@ -98,7 +93,6 @@ const ACCOUNT_TYPE_LABELS: Record<string, { label: string; icon: typeof Landmark
   cash: { label: "Dinheiro", icon: Banknote },
   checking: { label: "Conta corrente", icon: Landmark },
   savings: { label: "Poupança", icon: PiggyBank },
-  investment: { label: "Investimento", icon: Briefcase },
 };
 
 const COLOR_OPTIONS = [
@@ -189,15 +183,9 @@ const GestaoFinanceira = () => {
   // Add account state
   const [showAddAccount, setShowAddAccount] = useState(false);
   const [newAccName, setNewAccName] = useState("");
-  const [newAccType, setNewAccType] = useState<"checking" | "cash" | "savings" | "investment">("checking");
+  const [newAccType, setNewAccType] = useState<"checking" | "cash" | "savings">("checking");
   const [newAccBalance, setNewAccBalance] = useState("");
   const [newAccColor, setNewAccColor] = useState("violet");
-  const [newInvestmentType, setNewInvestmentType] = useState("cdb");
-  const [newRateType, setNewRateType] = useState("percent_cdi");
-  const [newAnnualRate, setNewAnnualRate] = useState("");
-  const [newRatePeriod, setNewRatePeriod] = useState<"monthly" | "annual">("monthly");
-  const [newStartDate, setNewStartDate] = useState<Date>(new Date());
-  const [newMaturityDate, setNewMaturityDate] = useState<Date | undefined>(undefined);
 
   // Add card state
   const [showAddCard, setShowAddCard] = useState(false);
@@ -208,18 +196,9 @@ const GestaoFinanceira = () => {
   const [newCardColor, setNewCardColor] = useState("emerald");
   const [newCardDigits, setNewCardDigits] = useState("");
 
-  // Aporte state
-  const [showAporteModal, setShowAporteModal] = useState(false);
-  const [aporteTargetId, setAporteTargetId] = useState("");
-  const [aporteTargetName, setAporteTargetName] = useState("");
-  const [aporteFromId, setAporteFromId] = useState("");
-  const [aporteCents, setAporteCents] = useState(0);
-  const [aporteSubmitting, setAporteSubmitting] = useState(false);
-
   // Add menu state
   const [showAddMenu, setShowAddMenu] = useState(false);
-  const [showInvestWizard, setShowInvestWizard] = useState(false);
-  const [showAIWizard, setShowAIWizard] = useState<"investimento" | "meta" | null>(null);
+  const [showAIWizard, setShowAIWizard] = useState<"meta" | null>(null);
 
   const fetchData = async () => {
     if (!user) return;
@@ -318,12 +297,6 @@ const GestaoFinanceira = () => {
     setNewAccType("checking");
     setNewAccBalance("");
     setNewAccColor("violet");
-    setNewInvestmentType("cdb");
-    setNewRateType("percent_cdi");
-    setNewAnnualRate("");
-    setNewRatePeriod("monthly");
-    setNewStartDate(new Date());
-    setNewMaturityDate(undefined);
   };
 
   const resetAddCard = () => {
@@ -345,17 +318,6 @@ const GestaoFinanceira = () => {
         initial_balance: newAccBalance ? parseFloat(newAccBalance) : 0,
         color: newAccColor,
       };
-      if (newAccType === "investment") {
-        accPayload.rate_type = "fixed_monthly";
-        if (newAnnualRate) {
-          const raw = parseFloat(newAnnualRate);
-          accPayload.annual_rate = newRatePeriod === "annual"
-            ? Number(((Math.pow(1 + raw / 100, 1 / 12) - 1) * 100).toFixed(6))
-            : raw;
-        } else {
-          accPayload.annual_rate = null;
-        }
-      }
       await createAccount(user.id, accPayload);
       toast.success("Conta criada!");
       resetAddAccount();
@@ -387,59 +349,13 @@ const GestaoFinanceira = () => {
     }
   };
 
-  const openAporte = (accId: string, accName: string) => {
-    setAporteTargetId(accId);
-    setAporteTargetName(accName);
-    setAporteCents(0);
-    const bankAccs = accounts.filter(a => a.type !== "investment");
-    const defaultAcc = bankAccs.find(a => a.is_default) || bankAccs[0];
-    setAporteFromId(defaultAcc?.id || "");
-    setShowAporteModal(true);
-  };
-
-  const handleAporte = async () => {
-    if (!user || !aporteFromId || !aporteTargetId || aporteCents === 0) return;
-    setAporteSubmitting(true);
-    try {
-      const fromAcc = accounts.find(a => a.id === aporteFromId);
-      const realAmount = aporteCents / 100;
-      if (fromAcc && realAmount > Number(fromAcc.current_balance)) {
-        toast.error("Saldo insuficiente na conta de origem");
-        setAporteSubmitting(false);
-        return;
-      }
-      const { error } = await supabase.from("transactions").insert({
-        user_id: user.id,
-        name: `Depósito: ${fromAcc?.name} → ${aporteTargetName}`,
-        type: "investimento",
-        amount: realAmount,
-        category: "Investimentos",
-        date: new Date().toISOString().split("T")[0],
-        status: "pago",
-        account_id: aporteFromId,
-        to_account_id: aporteTargetId,
-        payment_method: "conta",
-        recurrence_type: "unica",
-      } as any);
-      if (error) throw error;
-      toast.success("Depósito realizado! 💰");
-      setShowAporteModal(false);
-      fetchData();
-    } catch (err: any) {
-      toast.error(err.message || "Erro ao realizar aporte");
-    } finally {
-      setAporteSubmitting(false);
-    }
-  };
 
   // ═══════ Computed values ═══════
   const bankAccounts = accounts.filter(a => a.type !== "investment");
-  const investmentAccounts = accounts.filter(a => a.type === "investment");
 
   const saldoDisponivel = bankAccounts.reduce((s, a) => s + Number(a.current_balance), 0);
   const totalMetas = goals.reduce((s, g) => s + g.current_amount, 0);
-  const totalInvestido = investmentAccounts.reduce((s, a) => s + Number(a.current_balance), 0);
-  const patrimonioTotal = saldoDisponivel + totalMetas + totalInvestido;
+  const patrimonioTotal = saldoDisponivel + totalMetas;
 
   return (
     <div className="pt-2 pb-8 space-y-6">
@@ -483,13 +399,6 @@ const GestaoFinanceira = () => {
                   </button>
                   <button onClick={() => { setShowAddMenu(false); setShowAddCard(true); }} className="w-full flex items-center gap-2.5 px-4 py-3 text-xs font-semibold text-foreground hover:bg-muted/10 transition-colors">
                     <CreditCard className="w-4 h-4 text-primary" /> Novo Cartão
-                  </button>
-                  <button onClick={() => { setShowAddMenu(false); setShowInvestWizard(true); }} className="w-full flex items-center gap-2.5 px-4 py-3 text-xs font-semibold text-foreground hover:bg-muted/10 transition-colors">
-                    <Briefcase className="w-4 h-4 text-primary" /> Novo Investimento
-                  </button>
-                  <div className="h-px bg-border/10 mx-3" />
-                  <button onClick={() => { setShowAddMenu(false); setShowAIWizard("investimento"); }} className="w-full flex items-center gap-2.5 px-4 py-3 text-xs font-semibold text-foreground hover:bg-muted/10 transition-colors">
-                    <Brain className="w-4 h-4 text-primary" /> Investir com IA
                   </button>
                   <button onClick={() => { setShowAddMenu(false); setShowAIWizard("meta"); }} className="w-full flex items-center gap-2.5 px-4 py-3 text-xs font-semibold text-foreground hover:bg-muted/10 transition-colors">
                     <Brain className="w-4 h-4 text-primary" /> Meta com IA
@@ -550,8 +459,8 @@ const GestaoFinanceira = () => {
           <div className="bg-background/40 backdrop-blur-sm rounded-lg md:rounded-xl p-1.5 md:p-2 text-center border border-border/10">
             <PiggyBank className="w-3 h-3 text-primary/60 mx-auto mb-0.5" />
             <p className="text-[8px] text-muted-foreground leading-tight">Reservado</p>
-            <p className={cn("text-[10px] md:text-[11px] font-bold tabular-nums mt-0.5", (totalMetas + totalInvestido) > 0 ? "text-foreground" : "text-muted-foreground")}>
-              {(totalMetas + totalInvestido) > 0 ? formatCurrency(totalMetas + totalInvestido) : "R$ 0,00"}
+            <p className={cn("text-[10px] md:text-[11px] font-bold tabular-nums mt-0.5", totalMetas > 0 ? "text-foreground" : "text-muted-foreground")}>
+              {totalMetas > 0 ? formatCurrency(totalMetas) : "R$ 0,00"}
             </p>
           </div>
         </div>
@@ -986,126 +895,6 @@ const GestaoFinanceira = () => {
         )}
       </section>
 
-      {/* ═══════ Investimentos (Dinheiro Aplicado) ═══════ */}
-      <section>
-        <div className="flex items-center justify-between mb-4">
-          <div>
-            <h2 className="text-base font-bold text-foreground flex items-center gap-2">
-              <Briefcase className="w-4 h-4 text-primary" />
-              Investimentos
-            </h2>
-            <p className="text-[10px] text-muted-foreground/60 mt-0.5 ml-6">Dinheiro aplicado para crescimento</p>
-          </div>
-          <button
-            onClick={() => setShowInvestWizard(true)}
-            className="w-7 h-7 rounded-lg bg-primary/10 flex items-center justify-center hover:bg-primary/20 transition-colors"
-          >
-            <Plus className="w-4 h-4 text-primary" />
-          </button>
-        </div>
-
-        {(() => {
-          if (loading) {
-            return (
-              <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-3">
-                <div className="h-44 rounded-2xl bg-card animate-pulse" />
-              </div>
-            );
-          }
-
-          if (investmentAccounts.length === 0) {
-            return (
-              <div className="rounded-2xl bg-card/60 backdrop-blur-sm border border-border/20 p-8 text-center">
-                <Briefcase className="w-10 h-10 text-muted-foreground mx-auto mb-3" />
-                <p className="text-sm text-muted-foreground mb-1">Nenhuma carteira de investimento</p>
-                <p className="text-xs text-muted-foreground/60 mb-4">Crie uma carteira para organizar seus investimentos</p>
-                <Button
-                  onClick={() => setShowInvestWizard(true)}
-                  size="sm"
-                  className="rounded-xl bg-primary/15 text-primary hover:bg-primary/25 border-0"
-                >
-                  <Plus className="w-4 h-4 mr-1" /> Criar Carteira
-                </Button>
-              </div>
-            );
-          }
-
-          return (
-            <div className="space-y-3">
-              {/* Total invested summary */}
-              <div
-                className="rounded-2xl border border-border/10 p-4 flex items-center justify-between"
-                style={{ background: "linear-gradient(135deg, hsl(var(--card)) 0%, hsl(var(--background)) 100%)" }}
-              >
-                <div>
-                  <p className="text-[9px] text-muted-foreground uppercase tracking-widest font-medium">Total investido</p>
-                  <p className="text-xl font-extrabold text-foreground tabular-nums">{formatCurrency(totalInvestido)}</p>
-                </div>
-                <div className="w-8 h-8 rounded-xl bg-primary/15 flex items-center justify-center">
-                  <TrendingUp className="w-4 h-4 text-primary" />
-                </div>
-              </div>
-
-              <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-3">
-                {investmentAccounts.map((acc, idx) => {
-                  const accent = getAccent(acc.color);
-                  const balance = Number(acc.current_balance);
-
-                  return (
-                    <motion.div
-                      key={acc.id}
-                      initial={{ opacity: 0, y: 12 }}
-                      animate={{ opacity: 1, y: 0 }}
-                      transition={{ delay: idx * 0.06 }}
-                      onClick={() => navigate(`/investimento/${acc.id}`)}
-                      className="relative rounded-2xl overflow-hidden cursor-pointer group border border-border/10 hover:border-primary/30 transition-all duration-300 active:scale-[0.98]"
-                      style={{ background: "linear-gradient(135deg, hsl(var(--card)) 0%, hsl(var(--background)) 100%)" }}
-                    >
-                      <div className="p-4 space-y-4">
-                        <div className="flex items-center justify-between">
-                          <div className="flex items-center gap-3">
-                            <div className={cn("w-8 h-8 rounded-xl flex items-center justify-center", accent.iconBg)}>
-                              <Briefcase className={cn("w-4 h-4", accent.dot.replace("bg-", "text-"))} />
-                            </div>
-                            <p className="text-sm font-bold text-foreground leading-tight truncate">{acc.name}</p>
-                          </div>
-                          <ChevronRight className="w-4 h-4 text-muted-foreground/25 group-hover:text-primary transition-colors" />
-                        </div>
-                        <div className="h-px bg-border/10" />
-                        <div>
-                          <div className="flex items-center gap-1.5 mb-1.5">
-                            <div className="w-1.5 h-1.5 rounded-full bg-primary" />
-                            <p className="text-[9px] text-muted-foreground uppercase tracking-widest font-medium">Saldo</p>
-                          </div>
-                          <p className="text-2xl font-extrabold tabular-nums tracking-tight text-foreground">
-                            {formatCurrency(balance)}
-                          </p>
-                        </div>
-                        {/* Depósito button */}
-                        <button
-                          onClick={(e) => { e.stopPropagation(); openAporte(acc.id, acc.name); }}
-                          className="flex items-center justify-center gap-1.5 w-full py-2 rounded-xl bg-primary/10 text-primary text-[11px] font-semibold hover:bg-primary/20 transition-colors border border-primary/20"
-                        >
-                          <ArrowDownLeft className="w-3.5 h-3.5" />
-                          Depósito
-                        </button>
-                      </div>
-                    </motion.div>
-                  );
-                })}
-              </div>
-
-              {/* Info text */}
-              <div className="flex items-start gap-2 px-1 pt-1">
-                <TrendingUp className="w-3 h-3 text-primary/50 mt-0.5 shrink-0" />
-                <p className="text-[10px] text-muted-foreground/50 leading-relaxed">
-                  Valores aplicados e destinados ao crescimento do seu patrimônio.
-                </p>
-              </div>
-            </div>
-          );
-        })()}
-      </section>
 
       {/* ═══════ Microcopy educativo ═══════ */}
       <motion.div
@@ -1124,9 +913,7 @@ const GestaoFinanceira = () => {
       <ModalOverlay open={showAddAccount} onClose={resetAddAccount}>
         <div className="space-y-4">
           <div className="flex items-center justify-between">
-            <p className="text-base font-bold text-foreground">
-              {newAccType === "investment" ? "Nova Carteira de Investimento" : "Nova Conta"}
-            </p>
+            <p className="text-base font-bold text-foreground">Nova Conta</p>
             <button onClick={resetAddAccount} className="w-8 h-8 rounded-lg bg-muted/50 flex items-center justify-center hover:bg-muted transition-colors">
               <X className="w-4 h-4 text-muted-foreground" />
             </button>
@@ -1134,13 +921,12 @@ const GestaoFinanceira = () => {
           <div className="space-y-1.5">
             <label className="text-sm font-medium text-foreground">Nome da conta</label>
             <Input
-              placeholder={newAccType === "investment" ? "Ex: Tesouro Selic, CDB Banco X..." : "Ex: Nubank, Itaú, Bradesco..."}
+              placeholder="Ex: Nubank, Itaú, Bradesco..."
               value={newAccName}
               onChange={(e) => setNewAccName(e.target.value)}
               className="bg-muted/30 border-border/20 h-11 rounded-xl"
             />
           </div>
-          {newAccType !== "investment" && (
             <Select value={newAccType} onValueChange={(v) => setNewAccType(v as any)}>
               <SelectTrigger className="bg-muted/30 border-border/20 h-11 rounded-xl">
                 <SelectValue placeholder="Tipo de conta" />
@@ -1151,117 +937,8 @@ const GestaoFinanceira = () => {
                 <SelectItem value="cash">Dinheiro</SelectItem>
               </SelectContent>
             </Select>
-          )}
-          {newAccType === "investment" && (
-            <>
-              <div className="space-y-1.5">
-                <label className="text-sm font-medium text-foreground">Taxa de rendimento</label>
-                <div className="flex items-center gap-2 mb-1.5">
-                  <button
-                    type="button"
-                    onClick={() => setNewRatePeriod("monthly")}
-                    className={`px-3 py-1 rounded-lg text-xs font-medium transition-colors ${
-                      newRatePeriod === "monthly"
-                        ? "bg-primary/15 text-primary border border-primary/30"
-                        : "bg-muted/20 text-muted-foreground border border-transparent"
-                    }`}
-                  >
-                    % a.m.
-                  </button>
-                  <button
-                    type="button"
-                    onClick={() => setNewRatePeriod("annual")}
-                    className={`px-3 py-1 rounded-lg text-xs font-medium transition-colors ${
-                      newRatePeriod === "annual"
-                        ? "bg-primary/15 text-primary border border-primary/30"
-                        : "bg-muted/20 text-muted-foreground border border-transparent"
-                    }`}
-                  >
-                    % a.a.
-                  </button>
-                </div>
-                <div className="relative">
-                  <Input
-                    placeholder={newRatePeriod === "monthly" ? "0,50" : "6,00"}
-                    type="number"
-                    value={newAnnualRate}
-                    onChange={(e) => setNewAnnualRate(e.target.value)}
-                    className="bg-muted/30 border-border/20 h-11 rounded-xl pr-20"
-                  />
-                  <span className="absolute right-3 top-1/2 -translate-y-1/2 text-sm text-muted-foreground pointer-events-none">
-                    {newRatePeriod === "monthly" ? "% a.m." : "% a.a."}
-                  </span>
-                </div>
-                <p className="text-[11px] text-muted-foreground/70">
-                  {newRatePeriod === "monthly"
-                    ? "Ex: 0,5 para 0,5% ao mês (juros compostos)"
-                    : "Ex: 6 para 6% ao ano (será convertido para taxa mensal)"}
-                </p>
-              </div>
-              <div className="grid grid-cols-2 gap-3">
-                <div className="space-y-1.5">
-                  <label className="text-sm font-medium text-foreground">Data de início</label>
-                  <Popover>
-                    <PopoverTrigger asChild>
-                      <Button
-                        variant="outline"
-                        className="w-full justify-start text-left font-normal bg-muted/30 border-border/20 h-11 rounded-xl text-xs"
-                      >
-                        <CalendarIcon className="mr-1.5 h-3.5 w-3.5 text-muted-foreground" />
-                        {format(newStartDate, "d 'de' MMM. yyyy", { locale: ptBR })}
-                      </Button>
-                    </PopoverTrigger>
-                    <PopoverContent className="w-auto p-0" align="start">
-                      <Calendar
-                        mode="single"
-                        selected={newStartDate}
-                        onSelect={(d) => {
-                          if (d) setNewStartDate(d);
-                          document.dispatchEvent(new KeyboardEvent("keydown", { key: "Escape" }));
-                        }}
-                        initialFocus
-                        className="p-2 pointer-events-auto text-xs [&_table]:text-xs [&_button]:h-7 [&_button]:w-7 [&_th]:w-7 [&_.rdp-caption]:text-sm"
-                      />
-                    </PopoverContent>
-                  </Popover>
-                </div>
-                <div className="space-y-1.5">
-                  <label className="text-sm font-medium text-foreground">Vencimento <span className="text-muted-foreground font-normal">(opcional)</span></label>
-                  <Popover>
-                    <PopoverTrigger asChild>
-                      <Button
-                        variant="outline"
-                        className={cn(
-                          "w-full justify-start text-left font-normal bg-muted/30 border-border/20 h-11 rounded-xl text-xs",
-                          !newMaturityDate && "text-muted-foreground"
-                        )}
-                      >
-                        <CalendarIcon className="mr-1.5 h-3.5 w-3.5 text-muted-foreground" />
-                        {newMaturityDate ? format(newMaturityDate, "d 'de' MMM. yyyy", { locale: ptBR }) : "dd/mm/aaaa"}
-                      </Button>
-                    </PopoverTrigger>
-                    <PopoverContent className="w-auto p-0" align="start">
-                      <Calendar
-                        mode="single"
-                        selected={newMaturityDate}
-                        onSelect={(d) => {
-                          setNewMaturityDate(d);
-                          document.dispatchEvent(new KeyboardEvent("keydown", { key: "Escape" }));
-                        }}
-                        initialFocus
-                        className="p-2 pointer-events-auto text-xs [&_table]:text-xs [&_button]:h-7 [&_button]:w-7 [&_th]:w-7 [&_.rdp-caption]:text-sm"
-                      />
-                    </PopoverContent>
-                  </Popover>
-                  <p className="text-[10px] leading-tight text-muted-foreground/60">Calcula valor estimado no vencimento</p>
-                </div>
-              </div>
-            </>
-          )}
           <div>
-            <Label className="text-xs text-muted-foreground mb-1.5 block">
-              {newAccType === "investment" ? "Valor investido (opcional)" : "Saldo inicial (opcional)"}
-            </Label>
+            <Label className="text-xs text-muted-foreground mb-1.5 block">Saldo inicial (opcional)</Label>
             <Input
               placeholder="0,00"
               type="number"
@@ -1310,7 +987,7 @@ const GestaoFinanceira = () => {
             disabled={!newAccName.trim()}
             className="w-full h-11 rounded-xl text-sm font-semibold bg-primary/15 text-primary hover:bg-primary/25 border-0"
           >
-            {newAccType === "investment" ? "Criar Carteira" : "Criar Conta"}
+            Criar Conta
           </Button>
         </div>
       </ModalOverlay>
@@ -1402,111 +1079,21 @@ const GestaoFinanceira = () => {
         </div>
       </ModalOverlay>
 
-      {/* ═══════ MODAL: Aporte ═══════ */}
-      <ModalOverlay open={showAporteModal} onClose={() => setShowAporteModal(false)}>
-        <div className="space-y-4">
-          <div className="flex items-center justify-between">
-            <p className="text-base font-bold text-foreground">Depósito em {aporteTargetName}</p>
-            <button onClick={() => setShowAporteModal(false)} className="w-8 h-8 rounded-lg bg-muted/50 flex items-center justify-center hover:bg-muted transition-colors">
-              <X className="w-4 h-4 text-muted-foreground" />
-            </button>
-          </div>
-
-          <Select value={aporteFromId} onValueChange={setAporteFromId}>
-            <SelectTrigger className="bg-muted/30 border-border/20 h-11 rounded-xl">
-              <SelectValue placeholder="Conta de origem" />
-            </SelectTrigger>
-            <SelectContent>
-              {bankAccounts.map(a => (
-                <SelectItem key={a.id} value={a.id}>
-                  {a.name} · {formatCurrency(Number(a.current_balance))}
-                </SelectItem>
-              ))}
-            </SelectContent>
-          </Select>
-
-          <div>
-            <Label className="text-xs text-muted-foreground mb-1.5 block">Valor do depósito</Label>
-            <Input
-              placeholder="0,00"
-              inputMode="numeric"
-              value={aporteCents > 0 ? (aporteCents / 100).toLocaleString("pt-BR", { minimumFractionDigits: 2, maximumFractionDigits: 2 }) : ""}
-              onKeyDown={(e) => {
-                if (e.key === "Backspace") {
-                  e.preventDefault();
-                  setAporteCents(prev => Math.floor(prev / 10));
-                } else if (e.key >= "0" && e.key <= "9") {
-                  e.preventDefault();
-                  setAporteCents(prev => {
-                    const next = prev * 10 + parseInt(e.key);
-                    return next > 99999999 ? prev : next;
-                  });
-                }
-              }}
-              readOnly
-              className="bg-muted/30 border-border/20 h-11 rounded-xl text-lg font-bold text-center"
-            />
-          </div>
-
-          <Button
-            onClick={handleAporte}
-            disabled={aporteCents === 0 || !aporteFromId || aporteSubmitting}
-            className="w-full h-11 rounded-xl text-sm font-semibold bg-primary/15 text-primary hover:bg-primary/25 border border-primary/30"
-          >
-            {aporteSubmitting ? "Processando..." : `Depositar R$ ${(aporteCents / 100).toLocaleString("pt-BR", { minimumFractionDigits: 2 })}`}
-          </Button>
-        </div>
-      </ModalOverlay>
-
-      {/* Investment Wizard */}
-      <InvestmentCreateModal
-        open={showInvestWizard}
-        onClose={() => setShowInvestWizard(false)}
-        onSubmit={async (data) => {
-          if (!user) return;
-          try {
-            const accPayload: any = {
-              name: data.name,
-              type: "investment",
-              initial_balance: data.initial_balance,
-              color: data.color,
-              rate_type: data.rate_type || "fixed_monthly",
-              annual_rate: data.annual_rate ?? null,
-            };
-            await createAccount(user.id, accPayload);
-            toast.success("Carteira criada! 🎉");
-            fetchData();
-          } catch {
-            toast.error("Erro ao criar carteira");
-          }
-        }}
-      />
-
       {/* AI Financial Wizard */}
       <AIFinancialWizardModal
         open={!!showAIWizard}
         onClose={() => setShowAIWizard(null)}
-        type={showAIWizard || "meta"}
+        type="meta"
         onConfirm={async (plan, objective) => {
           if (!user) return;
           try {
-            if (showAIWizard === "investimento") {
-              await createAccount(user.id, {
-                name: objective,
-                type: "investment",
-                initial_balance: 0,
-                color: "emerald",
-              });
-              toast.success("Carteira de investimento criada com IA! 🤖📈");
-            } else {
-              const { createGoal } = await import("@/services/goalService");
-              await createGoal({
-                name: objective,
-                target_amount: plan.monthly_contribution * plan.estimated_months,
-                monthly_contribution: plan.monthly_contribution,
-              }, user.id);
-              toast.success("Meta criada com IA! 🤖🎯");
-            }
+            const { createGoal } = await import("@/services/goalService");
+            await createGoal({
+              name: objective,
+              target_amount: plan.monthly_contribution * plan.estimated_months,
+              monthly_contribution: plan.monthly_contribution,
+            }, user.id);
+            toast.success("Meta criada com IA! 🤖🎯");
             fetchData();
           } catch {
             toast.error("Erro ao criar com IA");

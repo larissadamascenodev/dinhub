@@ -12,7 +12,7 @@ import ProximosEventos from "@/components/dashboard/ProximosEventos";
 import AssinaturasCard from "@/components/dashboard/AssinaturasCard";
 import GastosPorCategoria from "@/components/dashboard/GastosPorCategoria";
 import GastosSemanaisCard from "@/components/dashboard/GastosSemanaisCard";
-import InvestimentosResumoCard from "@/components/dashboard/InvestimentosResumoCard";
+
 import MetasResumoCard from "@/components/dashboard/MetasResumoCard";
 import ParcelamentosAtivosCard from "@/components/dashboard/ParcelamentosAtivosCard";
 import MonthSelector from "@/components/dashboard/MonthSelector";
@@ -131,7 +131,6 @@ const Index = () => {
             <BotFinanceTools layout="grid" />
             <ProximosEventos events={data.events} selectedMonth={selectedMonth} selectedYear={selectedYear} onEventClick={handleEventClick} />
             <AssinaturasCard />
-            <InvestimentosResumoCard />
             <MetasResumoCard />
           </div>
         </div>
@@ -167,7 +166,6 @@ const Index = () => {
           <ProximosEventos events={data.events} selectedMonth={selectedMonth} selectedYear={selectedYear} onEventClick={handleEventClick} />
           <AssinaturasCard />
            <ParcelamentosAtivosCard />
-           <InvestimentosResumoCard />
            <MetasResumoCard />
         </div>
 
@@ -207,7 +205,7 @@ const Index = () => {
           </div>
           <AssinaturasCard />
           <ParcelamentosAtivosCard />
-          <InvestimentosResumoCard />
+          
           <MetasResumoCard />
         </div>
       <PagarEditarModal

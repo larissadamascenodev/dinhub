@@ -13,7 +13,7 @@ import FaturaCartao from "./pages/FaturaCartao.tsx";
 import Configuracoes from "./pages/Configuracoes.tsx";
 import Transacoes from "./pages/Transacoes.tsx";
 import ContaDetalhe from "./pages/ContaDetalhe.tsx";
-import InvestimentoDetalhe from "./pages/InvestimentoDetalhe.tsx";
+
 import BotFinance from "./pages/BotFinance.tsx";
 import BotFinanceProjecoes from "./pages/BotFinanceProjecoes.tsx";
 import BotFinanceSaude from "./pages/BotFinanceSaude.tsx";
@@ -62,7 +62,7 @@ const App = () => (
               <Route path="/gestao" element={<GestaoFinanceira />} />
               <Route path="/fatura/:cardId" element={<FaturaCartao />} />
               <Route path="/conta/:accountId" element={<ContaDetalhe />} />
-              <Route path="/investimento/:accountId" element={<InvestimentoDetalhe />} />
+              
               <Route path="/bot-finance" element={<BotFinance />} />
               <Route path="/bot-finance/projecoes" element={<BotFinanceProjecoes />} />
               <Route path="/bot-finance/saude" element={<BotFinanceSaude />} />
