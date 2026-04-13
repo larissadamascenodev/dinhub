@@ -1,7 +1,7 @@
 import { useState, useEffect, useCallback } from "react";
 import useEmblaCarousel from "embla-carousel-react";
 import { motion, AnimatePresence } from "framer-motion";
-import { CreditCard, Plus, X, Landmark, Banknote, PiggyBank, TrendingUp, ChevronRight, Briefcase, ArrowDownLeft, CalendarIcon, Wallet, Target, ArrowRightLeft, Info, Shield, Brain } from "lucide-react";
+import { CreditCard, Plus, X, Landmark, Banknote, PiggyBank, ChevronRight, ArrowRightLeft, Wallet, Target, Brain } from "lucide-react";
 import { useNavigate } from "react-router-dom";
 import { format } from "date-fns";
 import { ptBR } from "date-fns/locale";
@@ -18,7 +18,6 @@ import { getAccounts, createAccount, getCreditCards, createCreditCard } from "@/
 import { supabase } from "@/integrations/supabase/client";
 import { cn } from "@/lib/utils";
 import { fetchGoals, type Goal } from "@/services/goalService";
-import InvestmentCreateModal from "@/components/investments/InvestmentCreateModal";
 import AIFinancialWizardModal from "@/components/shared/AIFinancialWizardModal";
 
 interface Account {
