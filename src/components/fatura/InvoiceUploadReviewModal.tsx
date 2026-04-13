@@ -66,6 +66,12 @@ export default function InvoiceUploadReviewModal({
 }: Props) {
   const [items, setItems] = useState<ExtractedItem[]>(initialItems);
 
+  useEffect(() => {
+    if (initialItems && initialItems.length > 0) {
+      setItems(initialItems);
+    }
+  }, [initialItems]);
+
   if (!open) return null;
 
   const toggleItem = (idx: number) => {
