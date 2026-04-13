@@ -1489,12 +1489,15 @@ const GestaoFinanceira = () => {
         onSubmit={async (data) => {
           if (!user) return;
           try {
-            await createAccount(user.id, {
+            const accPayload: any = {
               name: data.name,
               type: "investment",
               initial_balance: data.initial_balance,
               color: data.color,
-            });
+              rate_type: data.rate_type || "fixed_monthly",
+              annual_rate: data.annual_rate ?? null,
+            };
+            await createAccount(user.id, accPayload);
             toast.success("Carteira criada! 🎉");
             fetchData();
           } catch {
