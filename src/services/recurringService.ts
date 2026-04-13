@@ -220,6 +220,7 @@ export async function excludeRecurringForMonth(
     }, { onConflict: "transaction_id,month,year" });
 
   if (error) throw error;
+  notifyRecurringChanged();
 }
 
 /**
