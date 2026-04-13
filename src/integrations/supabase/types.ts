@@ -713,6 +713,7 @@ export type Database = {
           payment_method: string
           recurrence_type: string
           status: string
+          time: string | null
           to_account_id: string | null
           type: string
           updated_at: string
@@ -734,6 +735,7 @@ export type Database = {
           payment_method?: string
           recurrence_type?: string
           status?: string
+          time?: string | null
           to_account_id?: string | null
           type: string
           updated_at?: string
@@ -755,6 +757,7 @@ export type Database = {
           payment_method?: string
           recurrence_type?: string
           status?: string
+          time?: string | null
           to_account_id?: string | null
           type?: string
           updated_at?: string
