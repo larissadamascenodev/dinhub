@@ -79,13 +79,13 @@ const PagarEditarModal = ({ open, event, onClose, onSuccess }: Props) => {
         await createTransaction(
           {
             name: tx.name,
-            type: tx.type,
+            type: tx.type as "receita" | "despesa",
             amount: Number(tx.amount),
             category: tx.category,
             date: targetDate,
             status: "pago",
             account_id: tx.payment_method === "cartao" ? null : tx.account_id,
-            payment_method: tx.payment_method,
+            payment_method: tx.payment_method as "conta" | "cartao",
             recurrence_type: "unica",
             observation: tx.observation,
             credit_card_id: tx.payment_method === "cartao" ? tx.credit_card_id : null,
