@@ -20,6 +20,7 @@ export interface ExtractedItem {
   confidence?: number;
   merchant?: string | null;
   selected: boolean;
+  is_recurring?: boolean;
 }
 
 interface Props {
