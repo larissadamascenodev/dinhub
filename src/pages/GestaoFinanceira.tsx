@@ -501,69 +501,58 @@ const GestaoFinanceira = () => {
         </div>
       </div>
 
-      {/* ═══════ RESUMO FINANCEIRO — Card Premium ═══════ */}
+      {/* ═══════ RESUMO FINANCEIRO — Same style as dashboard WalletSummaryCard ═══════ */}
       <motion.div
-        initial={{ opacity: 0, y: 12 }}
+        initial={{ opacity: 0, y: 10 }}
         animate={{ opacity: 1, y: 0 }}
-        transition={{ duration: 0.5, ease: [0.22, 1, 0.36, 1] }}
-        className="rounded-xl overflow-hidden relative select-none border border-border/10"
-        style={{
-          background: "linear-gradient(160deg, hsl(220 15% 14% / 0.6) 0%, hsl(220 18% 8% / 0.75) 50%, hsl(220 20% 4% / 0.9) 100%)",
-          boxShadow: "0 4px 12px -4px rgba(0,0,0,0.5)",
-        }}
+        transition={{ delay: 0.1 }}
+        className="relative overflow-hidden rounded-2xl border border-primary/10 bg-primary/[0.04] backdrop-blur-xl p-2.5 md:p-3 space-y-1 md:space-y-1.5 select-none"
       >
-        <div className="relative px-4 py-4 space-y-3">
-          {/* Header: Patrimônio Total */}
-          <div className="flex items-center justify-between">
-            <div className="flex items-center gap-2.5">
-              <div className="w-8 h-8 rounded-xl bg-gradient-to-br from-primary/20 to-primary/5 border border-primary/15 flex items-center justify-center">
-                <Wallet className="w-4 h-4 text-primary" />
-              </div>
-              <div>
-                <p className="text-[9px] text-primary uppercase tracking-[0.15em] font-semibold leading-none">Patrimônio Total</p>
-                <p className={cn(
-                  "text-xl font-extrabold tabular-nums tracking-tight leading-tight mt-0.5",
-                  patrimonioTotal >= 0 ? "text-primary" : "text-destructive"
-                )}>
-                  {formatCurrency(patrimonioTotal)}
-                </p>
-              </div>
+        {/* Glassmorphism decorative elements */}
+        <div className="absolute -right-8 -top-8 w-24 h-24 rounded-full bg-primary/[0.06] blur-xl" />
+        <div className="absolute -left-4 -bottom-4 w-16 h-16 rounded-full bg-primary/[0.04] blur-lg" />
+
+        {/* Header + Patrimônio inline on mobile */}
+        <div className="relative flex items-center justify-between">
+          <div className="flex items-center gap-2">
+            <div className="w-7 h-7 md:w-8 md:h-8 rounded-xl bg-primary/15 flex items-center justify-center backdrop-blur-sm">
+              <Wallet className="w-3.5 h-3.5 md:w-4 md:h-4 text-primary" />
             </div>
-            <ChevronRight className="w-4 h-4 text-primary/20" />
+            <div>
+              <h3 className="text-xs font-semibold font-display text-primary leading-none">Minha Carteira</h3>
+              <p className="text-[9px] text-muted-foreground uppercase tracking-wider mt-0.5 md:hidden">Patrimônio Total</p>
+            </div>
           </div>
+          <div className="flex items-center gap-2">
+            <p className={cn("text-base font-bold tabular-nums md:hidden", patrimonioTotal >= 0 ? "text-primary" : "text-destructive")}>
+              {formatCurrency(patrimonioTotal)}
+            </p>
+          </div>
+        </div>
 
-          {/* Gradient separator */}
-          <div className="h-px" style={{
-            background: "linear-gradient(90deg, transparent 0%, hsl(var(--primary) / 0.15) 30%, hsl(var(--primary) / 0.15) 70%, transparent 100%)"
-          }} />
+        {/* Patrimônio total - desktop only */}
+        <div className="relative text-center py-1 hidden md:block">
+          <p className="text-[9px] text-muted-foreground uppercase tracking-widest mb-0.5">Patrimônio Total</p>
+          <p className={cn("text-lg font-bold tabular-nums", patrimonioTotal >= 0 ? "text-primary" : "text-destructive")}>
+            {formatCurrency(patrimonioTotal)}
+          </p>
+        </div>
 
-          {/* Breakdown */}
-          <div className="grid grid-cols-2 gap-2">
-            {/* Contas */}
-            <div className="flex items-center gap-1.5 min-w-0">
-              <div className="w-5 h-5 rounded-md bg-primary/10 flex items-center justify-center shrink-0">
-                <Landmark className="w-2.5 h-2.5 text-primary/70" />
-              </div>
-              <div className="min-w-0 overflow-hidden">
-                <p className="text-[7px] text-muted-foreground/45 font-semibold uppercase tracking-[0.08em] leading-none">Contas</p>
-                <p className={cn("text-[11px] font-bold tabular-nums leading-tight mt-0.5 truncate", saldoDisponivel >= 0 ? "text-foreground" : "text-destructive")}>
-                  {formatCurrency(saldoDisponivel)}
-                </p>
-              </div>
-            </div>
-
-            {/* Reservado (Metas + Investimentos) */}
-            <div className="flex items-center gap-1.5 min-w-0">
-              <div className="w-5 h-5 rounded-md bg-primary/10 flex items-center justify-center shrink-0">
-                <PiggyBank className="w-2.5 h-2.5 text-primary/70" />
-              </div>
-              <div className="min-w-0 overflow-hidden">
-                <p className="text-[7px] text-muted-foreground/45 font-semibold uppercase tracking-[0.08em] leading-none">Reservado</p>
-                <p className={cn("text-[11px] font-bold tabular-nums leading-tight mt-0.5 truncate", (totalMetas + totalInvestido) > 0 ? "text-foreground" : "text-muted-foreground/40")}>
-                  {formatCurrency(totalMetas + totalInvestido)}
-                </p>
-              </div>
-            </div>
+        {/* Stats row */}
+        <div className="relative grid grid-cols-2 gap-1">
+          <div className="bg-background/40 backdrop-blur-sm rounded-lg md:rounded-xl p-1.5 md:p-2 text-center border border-border/10">
+            <Landmark className="w-3 h-3 text-primary/60 mx-auto mb-0.5" />
+            <p className="text-[8px] text-muted-foreground leading-tight">Contas</p>
+            <p className={cn("text-[10px] md:text-[11px] font-bold tabular-nums mt-0.5", saldoDisponivel >= 0 ? "text-primary" : "text-destructive")}>
+              {formatCurrency(saldoDisponivel)}
+            </p>
+          </div>
+          <div className="bg-background/40 backdrop-blur-sm rounded-lg md:rounded-xl p-1.5 md:p-2 text-center border border-border/10">
+            <PiggyBank className="w-3 h-3 text-primary/60 mx-auto mb-0.5" />
+            <p className="text-[8px] text-muted-foreground leading-tight">Reservado</p>
+            <p className={cn("text-[10px] md:text-[11px] font-bold tabular-nums mt-0.5", (totalMetas + totalInvestido) > 0 ? "text-foreground" : "text-muted-foreground")}>
+              {(totalMetas + totalInvestido) > 0 ? formatCurrency(totalMetas + totalInvestido) : "R$ 0,00"}
+            </p>
           </div>
         </div>
       </motion.div>
