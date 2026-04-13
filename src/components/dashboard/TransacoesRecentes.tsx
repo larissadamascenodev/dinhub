@@ -99,7 +99,9 @@ const TxCard = ({ tx, onClick, customCategories }: { tx: Transaction; onClick: (
       <div className="flex-1 min-w-0">
         <p className="text-xs md:text-[13px] font-bold text-foreground truncate">{tx.name}</p>
         <p className="text-[9px] md:text-[10px] mt-0.5 text-muted-foreground/50">
-          {tx.category} · {tx.date}
+          {tx.category}
+          {tx.time ? ` · ${tx.time}` : ""}
+          {` · ${tx.date}`}
         </p>
       </div>
 

@@ -4,6 +4,7 @@ export interface Transaction {
   category: string;
   date: string;
   rawDate?: string;
+  time?: string | null;
   paidAt?: string;
   amount: number;
   type: "receita" | "despesa";
