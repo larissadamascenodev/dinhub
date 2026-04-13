@@ -443,39 +443,21 @@ const GestaoFinanceira = () => {
         initial={{ opacity: 0, y: 12 }}
         animate={{ opacity: 1, y: 0 }}
         transition={{ duration: 0.5, ease: [0.22, 1, 0.36, 1] }}
-        className="rounded-2xl overflow-hidden relative select-none"
-        style={{ boxShadow: "0 8px 40px -12px hsl(var(--primary) / 0.18), 0 2px 20px -8px rgba(0,0,0,0.5)" }}
+        className="rounded-xl overflow-hidden relative select-none border border-border/10"
+        style={{
+          background: "linear-gradient(160deg, hsl(220 15% 14% / 0.6) 0%, hsl(220 18% 8% / 0.75) 50%, hsl(220 20% 4% / 0.9) 100%)",
+          boxShadow: "0 4px 12px -4px rgba(0,0,0,0.5)",
+        }}
       >
-        {/* Multi-layer gradient background */}
-        <div className="absolute inset-0" style={{
-          background: "linear-gradient(160deg, hsl(var(--primary) / 0.12) 0%, hsl(220 20% 6% / 0.97) 35%, hsl(220 30% 3% / 0.99) 70%, hsl(var(--primary) / 0.06) 100%)"
-        }} />
-        <div className="absolute inset-0" style={{
-          background: "radial-gradient(ellipse 80% 60% at 85% 15%, hsl(var(--primary) / 0.08) 0%, transparent 60%)"
-        }} />
-        <div className="absolute inset-0" style={{
-          background: "radial-gradient(ellipse 60% 80% at 10% 90%, hsl(var(--primary) / 0.05) 0%, transparent 50%)"
-        }} />
-        {/* Glow orbs */}
-        <div className="absolute -top-12 -right-12 w-40 h-40 rounded-full bg-primary/[0.07] blur-[60px]" />
-        <div className="absolute -bottom-10 -left-10 w-32 h-32 rounded-full bg-primary/[0.04] blur-[40px]" />
-        {/* Border overlay */}
-        <div className="absolute inset-0 rounded-2xl border border-primary/[0.1]" />
-        <div className="absolute inset-0 rounded-2xl" style={{
-          background: "linear-gradient(180deg, hsl(var(--primary) / 0.06) 0%, transparent 40%)",
-          maskImage: "linear-gradient(180deg, black 0%, transparent 100%)",
-          WebkitMaskImage: "linear-gradient(180deg, black 0%, transparent 100%)"
-        }} />
-
         <div className="relative px-4 py-4 space-y-3">
-          {/* Header: Patrimônio Total prominently labeled */}
+          {/* Header: Patrimônio Total */}
           <div className="flex items-center justify-between">
             <div className="flex items-center gap-2.5">
-              <div className="w-8 h-8 rounded-xl bg-gradient-to-br from-primary/20 to-primary/5 border border-primary/15 flex items-center justify-center backdrop-blur-sm">
+              <div className="w-8 h-8 rounded-xl bg-gradient-to-br from-primary/20 to-primary/5 border border-primary/15 flex items-center justify-center">
                 <Wallet className="w-4 h-4 text-primary" />
               </div>
               <div>
-                <p className="text-[8px] text-muted-foreground/50 uppercase tracking-[0.12em] font-semibold leading-none">Patrimônio Total</p>
+                <p className="text-[9px] text-primary uppercase tracking-[0.15em] font-semibold leading-none">Patrimônio Total</p>
                 <p className={cn(
                   "text-xl font-extrabold tabular-nums tracking-tight leading-tight mt-0.5",
                   patrimonioTotal >= 0 ? "text-primary" : "text-destructive"
@@ -492,48 +474,42 @@ const GestaoFinanceira = () => {
             background: "linear-gradient(90deg, transparent 0%, hsl(var(--primary) / 0.15) 30%, hsl(var(--primary) / 0.15) 70%, transparent 100%)"
           }} />
 
-          {/* Breakdown — clean inline items, no extra card wrapper */}
-          <div className="flex items-stretch gap-2">
+          {/* Breakdown */}
+          <div className="grid grid-cols-3 gap-1.5">
             {/* Contas */}
-            <div className="flex-1 flex items-center gap-2 px-2 py-1.5">
-              <div className="w-6 h-6 rounded-lg bg-gradient-to-br from-primary/15 to-primary/5 flex items-center justify-center shrink-0">
-                <Landmark className="w-3 h-3 text-primary/70" />
+            <div className="flex items-center gap-1.5 min-w-0">
+              <div className="w-5 h-5 rounded-md bg-primary/10 flex items-center justify-center shrink-0">
+                <Landmark className="w-2.5 h-2.5 text-primary/70" />
               </div>
-              <div className="min-w-0">
-                <p className="text-[7px] text-muted-foreground/45 font-semibold uppercase tracking-[0.1em] leading-none">Contas</p>
-                <p className={cn("text-[11px] font-bold tabular-nums leading-tight mt-0.5", saldoDisponivel >= 0 ? "text-foreground" : "text-destructive")}>
+              <div className="min-w-0 overflow-hidden">
+                <p className="text-[7px] text-muted-foreground/45 font-semibold uppercase tracking-[0.08em] leading-none">Contas</p>
+                <p className={cn("text-[11px] font-bold tabular-nums leading-tight mt-0.5 truncate", saldoDisponivel >= 0 ? "text-foreground" : "text-destructive")}>
                   {formatCurrency(saldoDisponivel)}
                 </p>
               </div>
             </div>
 
-            {/* Vertical divider */}
-            <div className="w-px self-stretch my-1" style={{ background: "linear-gradient(180deg, transparent, hsl(var(--primary) / 0.12), transparent)" }} />
-
             {/* Crédito */}
-            <div className="flex-1 flex items-center gap-2 px-2 py-1.5">
-              <div className="w-6 h-6 rounded-lg bg-gradient-to-br from-primary/15 to-primary/5 flex items-center justify-center shrink-0">
-                <CreditCard className="w-3 h-3 text-primary/70" />
+            <div className="flex items-center gap-1.5 min-w-0">
+              <div className="w-5 h-5 rounded-md bg-primary/10 flex items-center justify-center shrink-0">
+                <CreditCard className="w-2.5 h-2.5 text-primary/70" />
               </div>
-              <div className="min-w-0">
-                <p className="text-[7px] text-muted-foreground/45 font-semibold uppercase tracking-[0.1em] leading-none">Crédito</p>
-                <p className="text-[11px] font-bold tabular-nums text-foreground leading-tight mt-0.5">
+              <div className="min-w-0 overflow-hidden">
+                <p className="text-[7px] text-muted-foreground/45 font-semibold uppercase tracking-[0.08em] leading-none">Crédito</p>
+                <p className="text-[11px] font-bold tabular-nums text-foreground leading-tight mt-0.5 truncate">
                   {formatCurrency(creditCards.reduce((s, c) => s + Number(c.used_limit), 0))}
                 </p>
               </div>
             </div>
 
-            {/* Vertical divider */}
-            <div className="w-px self-stretch my-1" style={{ background: "linear-gradient(180deg, transparent, hsl(var(--primary) / 0.12), transparent)" }} />
-
             {/* Investido */}
-            <div className="flex-1 flex items-center gap-2 px-2 py-1.5">
-              <div className="w-6 h-6 rounded-lg bg-gradient-to-br from-primary/15 to-primary/5 flex items-center justify-center shrink-0">
-                <TrendingUp className="w-3 h-3 text-primary/70" />
+            <div className="flex items-center gap-1.5 min-w-0">
+              <div className="w-5 h-5 rounded-md bg-primary/10 flex items-center justify-center shrink-0">
+                <TrendingUp className="w-2.5 h-2.5 text-primary/70" />
               </div>
-              <div className="min-w-0">
-                <p className="text-[7px] text-muted-foreground/45 font-semibold uppercase tracking-[0.1em] leading-none">Investido</p>
-                <p className={cn("text-[11px] font-bold tabular-nums leading-tight mt-0.5", totalInvestido > 0 ? "text-foreground" : "text-muted-foreground/40")}>
+              <div className="min-w-0 overflow-hidden">
+                <p className="text-[7px] text-muted-foreground/45 font-semibold uppercase tracking-[0.08em] leading-none">Investido</p>
+                <p className={cn("text-[11px] font-bold tabular-nums leading-tight mt-0.5 truncate", totalInvestido > 0 ? "text-foreground" : "text-muted-foreground/40")}>
                   {formatCurrency(totalInvestido)}
                 </p>
               </div>
