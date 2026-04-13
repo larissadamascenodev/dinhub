@@ -166,6 +166,9 @@ export async function buildDashboardData(
         category: "Cartão de Crédito",
         date: new Date(displayRawDate + "T12:00:00").toLocaleDateString("pt-BR", { day: "numeric", month: "short" }),
         rawDate: displayRawDate,
+        time: inv.isPaid && inv.paidAt
+          ? new Date(inv.paidAt).toLocaleTimeString("pt-BR", { hour: "2-digit", minute: "2-digit", hour12: false })
+          : null,
         paidAt: paidAtValue,
         amount: outstanding > 0 ? outstanding : inv.total,
         type: "despesa" as const,
@@ -192,6 +195,7 @@ export async function buildDashboardData(
     category: t.category,
     date: new Date(t.date + "T12:00:00").toLocaleDateString("pt-BR", { day: "numeric", month: "short" }),
     rawDate: t.date,
+    time: t.time ?? null,
     paidAt: t.updated_at,
     amount: Number(t.amount),
     type: t.type as Transaction["type"],
@@ -200,10 +204,12 @@ export async function buildDashboardData(
 
   const transactions: Transaction[] = [...regularTransactions, ...faturasPaid]
     .sort((a, b) => {
-      // Sort by paidAt (most recent payment first), fallback to rawDate
-      const da = a.paidAt || a.rawDate || "";
-      const db = b.paidAt || b.rawDate || "";
-      return db.localeCompare(da);
+      const dateCompare = (b.rawDate || "").localeCompare(a.rawDate || "");
+      if (dateCompare !== 0) return dateCompare;
+
+      const timeA = a.time || "99:99";
+      const timeB = b.time || "99:99";
+      return timeB.localeCompare(timeA);
     });
 
   const pendingAsEvents: FinanceEvent[] = regularPending.map((t) => ({
