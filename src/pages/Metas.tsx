@@ -1,7 +1,7 @@
 import { useState, useCallback, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import { motion, AnimatePresence } from "framer-motion";
-import { Target, Plus, Wallet, Clock, MoreVertical, Sparkles, Edit2, Trash2 } from "lucide-react";
+import { Target, Plus, Wallet, Clock, MoreVertical, Sparkles, Edit2, Trash2, Brain } from "lucide-react";
 import { toast } from "sonner";
 import { useAuth } from "@/contexts/AuthContext";
 import { fetchGoals, createGoal, createGoalDeposit, deleteGoal, generateGoalCoverImage, updateGoal, type Goal } from "@/services/goalService";
@@ -9,6 +9,7 @@ import GoalCreateModal from "@/components/goals/GoalCreateModal";
 import GoalDepositModal from "@/components/goals/GoalDepositModal";
 import GoalEditModal from "@/components/goals/GoalEditModal";
 import GoalConfirmModal from "@/components/goals/GoalConfirmModal";
+import AIFinancialWizardModal from "@/components/shared/AIFinancialWizardModal";
 
 const fmt = (v: number) =>
   v.toLocaleString("pt-BR", { style: "currency", currency: "BRL" });
