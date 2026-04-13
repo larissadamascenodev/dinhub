@@ -198,6 +198,7 @@ const DashboardLayout = () => {
             amount: item.amount,
             category: item.category || "outros",
             date: getSafeTransactionDate(item.date),
+            time: item.time || null,
             status: "pago",
             payment_method: "conta",
             recurrence_type: item.is_recurring ? "fixa" : (item.installment_total && item.installment_total > 1 ? "parcelado" : "unica"),
