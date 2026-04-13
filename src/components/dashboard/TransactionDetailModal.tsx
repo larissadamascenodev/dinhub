@@ -6,7 +6,7 @@ import {
 } from "lucide-react";
 import { toast } from "sonner";
 import { cn } from "@/lib/utils";
-import { updateTransactionStatus, updateTransaction, deleteTransaction, getAccounts, createTransaction } from "@/services/transactionService";
+import { updateTransactionStatus, updateTransaction, deleteTransaction, getAccounts, createTransaction, getTransactionById } from "@/services/transactionService";
 import { excludeRecurringForMonth, excludeRecurringFromMonthOnward } from "@/services/recurringService";
 import { useAuth } from "@/contexts/AuthContext";
 import { supabase } from "@/integrations/supabase/client";
@@ -167,12 +167,40 @@ const TransactionDetailModal = ({ open, tx, accountName, onClose, onRefresh, use
   const handlePay = async () => {
     setLoading(true);
     try {
-      await updateTransactionStatus(tx.id, "pago");
+      const dbTx = await getTransactionById(tx.id);
+      const isRecurringCurrentOccurrence = tx.recurrence_type === "fixa" && dbTx.date !== tx.date;
+
+      if (isRecurringCurrentOccurrence) {
+        if (!user?.id) throw new Error("Usuário não autenticado");
+
+        const [year, month] = tx.date.split("-").map(Number);
+
+        await excludeRecurringForMonth(tx.id, month - 1, year, user.id);
+        await createTransaction(
+          {
+            name: dbTx.name,
+            type: dbTx.type as "receita" | "despesa",
+            amount: Number(dbTx.amount),
+            category: dbTx.category,
+            date: tx.date,
+            status: "pago",
+            payment_method: dbTx.payment_method as "conta" | "cartao",
+            recurrence_type: "unica",
+            account_id: dbTx.payment_method === "cartao" ? null : dbTx.account_id,
+            credit_card_id: dbTx.payment_method === "cartao" ? dbTx.credit_card_id : null,
+            observation: dbTx.observation,
+          },
+          user.id
+        );
+      } else {
+        await updateTransactionStatus(tx.id, "pago");
+      }
+
       toast.success(isReceita ? "Receita marcada como recebida" : "Transação marcada como paga");
       onRefresh();
       handleClose();
-    } catch {
-      toast.error("Erro ao pagar");
+    } catch (error: any) {
+      toast.error(error?.message || "Erro ao pagar");
     } finally {
       setLoading(false);
     }
