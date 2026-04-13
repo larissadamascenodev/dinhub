@@ -1,17 +1,19 @@
 import { memo, useEffect, useState, useMemo, useCallback } from "react";
 import { ChevronRight, ChevronUp, Pencil, Trash2, X } from "lucide-react";
 import { motion, AnimatePresence } from "framer-motion";
-import { supabase } from "@/integrations/supabase/client";
 import { useAuth } from "@/contexts/AuthContext";
+import { useMonth } from "@/contexts/MonthContext";
 import { getCategoryIcon } from "@/lib/categoryUtils";
 import { getCustomCategories, type CustomCategory } from "@/services/categoryService";
 import { deleteTransaction, getTransactionById } from "@/services/transactionService";
+import { getRecurringSourceId, getRecurringTransactionsForMonth } from "@/services/recurringService";
 import { toast } from "sonner";
 
 type RecurringType = "despesa" | "receita";
 
 interface Subscription {
   id: string;
+  sourceId: string;
   name: string;
   amount: number;
   dueDay: number;
@@ -161,13 +163,13 @@ const BrandIcon = ({ name, category, brand, customCategories }: { name: string; 
 
 const AssinaturasCard = memo(() => {
   const { user } = useAuth();
+  const { selectedMonth, selectedYear } = useMonth();
   const [subscriptions, setSubscriptions] = useState<Subscription[]>([]);
   const [customCats, setCustomCats] = useState<CustomCategory[]>([]);
   const [loading, setLoading] = useState(true);
   const [expanded, setExpanded] = useState(false);
   const [activeTab, setActiveTab] = useState<RecurringType>("despesa");
 
-  // Action sheet state
   const [selectedSub, setSelectedSub] = useState<Subscription | null>(null);
   const [showActions, setShowActions] = useState(false);
   const [showDeleteConfirm, setShowDeleteConfirm] = useState(false);
@@ -177,60 +179,47 @@ const AssinaturasCard = memo(() => {
     if (!user) return;
     setLoading(true);
 
-    const { data: txs } = await supabase
-      .from("transactions")
-      .select("id, name, amount, date, category, payment_method, credit_card_id, type, status, recurrence_type")
-      .eq("user_id", user.id)
-      .eq("recurrence_type", "fixa");
+    try {
+      const txs = await getRecurringTransactionsForMonth(selectedMonth, selectedYear, user.id);
 
-    if (!txs) { setLoading(false); return; }
-
-    // Check which recurring items have been paid this month
-    const now = new Date();
-    const currentMonth = now.getMonth();
-    const currentYear = now.getFullYear();
-    const monthStart = `${currentYear}-${String(currentMonth + 1).padStart(2, "0")}-01`;
-    const monthEnd = new Date(currentYear, currentMonth + 1, 0).toISOString().split("T")[0];
-
-    // Build a set of paid recurring names for this month
-    const paidThisMonth = new Set<string>();
-    for (const tx of txs) {
-      if (tx.date >= monthStart && tx.date <= monthEnd && tx.status === "pago") {
-        paidThisMonth.add(`${tx.type}-${tx.name.toLowerCase().trim()}`);
+      const seen = new Map<string, typeof txs[number]>();
+      for (const tx of txs) {
+        const key = `${tx.type}-${getRecurringSourceId(tx)}`;
+        if (!seen.has(key)) {
+          seen.set(key, tx);
+        }
       }
+
+      const subs: Subscription[] = Array.from(seen.values()).map((tx) => ({
+        id: tx.id,
+        sourceId: getRecurringSourceId(tx),
+        name: tx.name,
+        amount: Number(tx.amount),
+        dueDay: new Date(tx.date + "T12:00:00").getDate(),
+        category: tx.category,
+        source: tx.payment_method === "cartao" ? "cartao" as const : "conta" as const,
+        txType: tx.type as RecurringType,
+        isPaidThisMonth: tx.status === "pago",
+      }));
+
+      subs.sort((a, b) => {
+        if (a.isPaidThisMonth !== b.isPaidThisMonth) return a.isPaidThisMonth ? 1 : -1;
+        return getDaysUntil(a.dueDay) - getDaysUntil(b.dueDay);
+      });
+
+      setSubscriptions(subs);
+    } catch {
+      setSubscriptions([]);
+    } finally {
+      setLoading(false);
     }
+  }, [user, selectedMonth, selectedYear]);
 
-    const seen = new Map<string, typeof txs[0]>();
-    for (const tx of txs) {
-      const key = `${tx.type}-${tx.name.toLowerCase().trim()}`;
-      if (!seen.has(key) || tx.date < seen.get(key)!.date) {
-        seen.set(key, tx);
-      }
-    }
+  useEffect(() => {
+    fetchSubs();
+    getCustomCategories().then(setCustomCats).catch(() => {});
+  }, [fetchSubs]);
 
-    const subs: Subscription[] = Array.from(seen.values()).map((tx) => ({
-      id: tx.id,
-      name: tx.name,
-      amount: Number(tx.amount),
-      dueDay: new Date(tx.date + "T12:00:00").getDate(),
-      category: tx.category,
-      source: tx.payment_method === "cartao" ? "cartao" as const : "conta" as const,
-      txType: tx.type as RecurringType,
-      isPaidThisMonth: paidThisMonth.has(`${tx.type}-${tx.name.toLowerCase().trim()}`),
-    }));
-
-    // Sort: pending first (by days until due), paid at the end
-    subs.sort((a, b) => {
-      if (a.isPaidThisMonth !== b.isPaidThisMonth) return a.isPaidThisMonth ? 1 : -1;
-      return getDaysUntil(a.dueDay) - getDaysUntil(b.dueDay);
-    });
-    setSubscriptions(subs);
-    setLoading(false);
-  }, [user]);
-
-  useEffect(() => { fetchSubs(); getCustomCategories().then(setCustomCats).catch(() => {}); }, [fetchSubs]);
-
-  // Listen for finance changes to refresh
   useEffect(() => {
     const handler = () => fetchSubs();
     window.addEventListener("finance-data-changed", handler);
@@ -244,7 +233,7 @@ const AssinaturasCard = memo(() => {
   const handleEdit = useCallback(async (sub: Subscription) => {
     setShowActions(false);
     try {
-      const tx = await getTransactionById(sub.id);
+      const tx = await getTransactionById(sub.sourceId);
       window.dispatchEvent(new CustomEvent("edit-transaction", {
         detail: {
           id: tx.id,
@@ -272,7 +261,7 @@ const AssinaturasCard = memo(() => {
     if (!selectedSub) return;
     setDeleting(true);
     try {
-      await deleteTransaction(selectedSub.id);
+      await deleteTransaction(selectedSub.sourceId);
       toast.success(`"${selectedSub.name}" removida com sucesso`);
       setShowDeleteConfirm(false);
       setShowActions(false);

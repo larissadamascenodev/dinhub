@@ -27,6 +27,7 @@ export interface CreateTransactionInput {
   installment_current?: number | null;
   observation?: string | null;
   credit_card_id?: string | null;
+  parent_transaction_id?: string | null;
 }
 
 export interface TransactionFilters {
@@ -87,6 +88,7 @@ export async function createTransaction(input: CreateTransactionInput, userId: s
       installment_current: input.installment_current ?? null,
       observation: input.observation ?? null,
       credit_card_id: input.payment_method === "cartao" ? (input.credit_card_id ?? null) : null,
+      parent_transaction_id: input.parent_transaction_id ?? null,
     } as any)
     .select()
     .single();
