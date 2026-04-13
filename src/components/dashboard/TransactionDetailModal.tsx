@@ -433,6 +433,12 @@ const TransactionDetailModal = ({ open, tx, accountName, onClose, onRefresh, use
 
             {/* Amount */}
             <div className="mt-5 mb-4">
+              <span className={cn(
+                "inline-block px-2.5 py-0.5 rounded-md text-[10px] font-bold uppercase tracking-wider mb-2",
+                isReceita ? "bg-primary/15 text-primary" : "bg-destructive/15 text-destructive"
+              )}>
+                {isReceita ? "Receita" : "Despesa"}
+              </span>
               <p className="text-3xl font-extrabold tabular-nums tracking-tight text-foreground">
                 {fmt(tx.amount)}
               </p>
