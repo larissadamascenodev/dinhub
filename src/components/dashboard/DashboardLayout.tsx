@@ -46,6 +46,22 @@ const DashboardLayout = () => {
   const scanGalleryRef = useRef<HTMLInputElement>(null);
   const scanFileRef = useRef<HTMLInputElement>(null);
 
+  const getSafeTransactionDate = useCallback((rawDate: string | null | undefined) => {
+    const today = new Date();
+    const fallback = today.toISOString().split("T")[0];
+
+    if (!rawDate) return fallback;
+
+    const parsed = new Date(`${rawDate}T12:00:00`);
+    if (Number.isNaN(parsed.getTime())) return fallback;
+
+    const isOlderMonth =
+      parsed.getFullYear() < today.getFullYear() ||
+      (parsed.getFullYear() === today.getFullYear() && parsed.getMonth() < today.getMonth());
+
+    return isOlderMonth ? fallback : rawDate;
+  }, []);
+
   const handleScanFileInput = useCallback((e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0];
     if (file) handleScanFile(file);
@@ -116,6 +132,7 @@ const DashboardLayout = () => {
 
       const items: ExtractedItem[] = (data.items || []).map((item: any) => ({
         ...item,
+        date: getSafeTransactionDate(item.date),
         selected: true,
       }));
 
@@ -131,7 +148,7 @@ const DashboardLayout = () => {
           type: (item.type as "receita" | "despesa") || "despesa",
           amount: item.amount || 0,
           category: item.category || "",
-          date: item.date || new Date().toISOString().split("T")[0],
+          date: getSafeTransactionDate(item.date),
           recurrence_type: item.installment_total && item.installment_total > 1 ? "parcelado" : "unica",
           installments: item.installment_total || null,
         });
@@ -150,7 +167,7 @@ const DashboardLayout = () => {
     } finally {
       setScanProcessing(false);
     }
-  }, []);
+  }, [getSafeTransactionDate]);
 
   // Handle fallback from review modal: open NovaTransacaoModal pre-filled
   const handleFallbackItem = useCallback((item: ExtractedItem) => {
@@ -160,13 +177,13 @@ const DashboardLayout = () => {
       type: (item.type as "receita" | "despesa") || "despesa",
       amount: item.amount || 0,
       category: item.category || "",
-      date: item.date || new Date().toISOString().split("T")[0],
+      date: getSafeTransactionDate(item.date),
       recurrence_type: item.installment_total && item.installment_total > 1 ? "parcelado" : "unica",
       installments: item.installment_total || null,
     });
     setModalType((item.type as "receita" | "despesa") || "despesa");
     setShowModal(true);
-  }, []);
+  }, [getSafeTransactionDate]);
 
   // Confirm import of scanned transactions
   const handleConfirmScanImport = useCallback(async (selectedItems: ExtractedItem[]) => {
@@ -180,7 +197,7 @@ const DashboardLayout = () => {
             type: (item.type as "receita" | "despesa") || "despesa",
             amount: item.amount,
             category: item.category || "outros",
-            date: item.date || new Date().toISOString().split("T")[0],
+            date: getSafeTransactionDate(item.date),
             status: "pago",
             payment_method: "conta",
             recurrence_type: item.is_recurring ? "fixa" : (item.installment_total && item.installment_total > 1 ? "parcelado" : "unica"),
@@ -200,7 +217,7 @@ const DashboardLayout = () => {
     } finally {
       setConfirmingImport(false);
     }
-  }, [user, handleSuccess]);
+  }, [user, handleSuccess, getSafeTransactionDate]);
 
   const handleModalClose = useCallback(() => {
     setShowModal(false);
