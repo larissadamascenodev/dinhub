@@ -71,6 +71,10 @@ Também retorne "merchant" quando identificar o nome do destinatário/origem:
 - Procure após "para", "de", "favorecido", "destinatário", "pagador", "beneficiário"
 - Nome em destaque no comprovante
 
+Também retorne "time" no formato HH:mm (24h) quando identificar o horário da transação:
+- Procure após "horário", "hora", "às", ou no formato HH:mm, HHhMM, HH:MM:SS
+- Se não encontrar horário, retorne null
+
 IMPORTANTE: Retorne APENAS o JSON, sem markdown, sem explicação.
 Formato: { "items": [...] }`;
 
@@ -273,6 +277,7 @@ serve(async (req) => {
         type: item.type || "despesa",
         confidence: typeof item.confidence === "number" ? Math.min(1, Math.max(0, item.confidence)) : 0.5,
         merchant: item.merchant || null,
+        time: item.time || null,
       }));
 
     const hasInstallments = cleanedItems.some((i) => i.installment_total && i.installment_total > 1);
