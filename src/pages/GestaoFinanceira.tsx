@@ -356,12 +356,10 @@ const GestaoFinanceira = () => {
 
   // ═══════ Computed values ═══════
   const bankAccounts = accounts.filter(a => a.type !== "investment");
-  const investmentAccounts = accounts.filter(a => a.type === "investment");
 
   const saldoDisponivel = bankAccounts.reduce((s, a) => s + Number(a.current_balance), 0);
   const totalMetas = goals.reduce((s, g) => s + g.current_amount, 0);
-  const totalInvestido = investmentAccounts.reduce((s, a) => s + Number(a.current_balance), 0);
-  const patrimonioTotal = saldoDisponivel + totalMetas + totalInvestido;
+  const patrimonioTotal = saldoDisponivel + totalMetas;
 
   return (
     <div className="pt-2 pb-8 space-y-6">
@@ -405,13 +403,6 @@ const GestaoFinanceira = () => {
                   </button>
                   <button onClick={() => { setShowAddMenu(false); setShowAddCard(true); }} className="w-full flex items-center gap-2.5 px-4 py-3 text-xs font-semibold text-foreground hover:bg-muted/10 transition-colors">
                     <CreditCard className="w-4 h-4 text-primary" /> Novo Cartão
-                  </button>
-                  <button onClick={() => { setShowAddMenu(false); setShowInvestWizard(true); }} className="w-full flex items-center gap-2.5 px-4 py-3 text-xs font-semibold text-foreground hover:bg-muted/10 transition-colors">
-                    <Briefcase className="w-4 h-4 text-primary" /> Novo Investimento
-                  </button>
-                  <div className="h-px bg-border/10 mx-3" />
-                  <button onClick={() => { setShowAddMenu(false); setShowAIWizard("investimento"); }} className="w-full flex items-center gap-2.5 px-4 py-3 text-xs font-semibold text-foreground hover:bg-muted/10 transition-colors">
-                    <Brain className="w-4 h-4 text-primary" /> Investir com IA
                   </button>
                   <button onClick={() => { setShowAddMenu(false); setShowAIWizard("meta"); }} className="w-full flex items-center gap-2.5 px-4 py-3 text-xs font-semibold text-foreground hover:bg-muted/10 transition-colors">
                     <Brain className="w-4 h-4 text-primary" /> Meta com IA
