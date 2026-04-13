@@ -433,11 +433,14 @@ const TransactionDetailModal = ({ open, tx, accountName, onClose, onRefresh, use
 
             {/* Amount */}
             <div className="mt-5 mb-4">
-              <p className={cn(
-                "text-3xl font-extrabold tabular-nums tracking-tight",
-                isReceita ? "text-primary" : "text-destructive"
+              <span className={cn(
+                "inline-block px-2.5 py-0.5 rounded-md text-[10px] font-bold uppercase tracking-wider mb-2",
+                isReceita ? "bg-primary/15 text-primary" : "bg-destructive/15 text-destructive"
               )}>
-                {isReceita ? "+" : "−"}{fmt(tx.amount)}
+                {isReceita ? "Receita" : "Despesa"}
+              </span>
+              <p className="text-3xl font-extrabold tabular-nums tracking-tight text-foreground">
+                {fmt(tx.amount)}
               </p>
               {/* Tags row */}
               <div className="flex items-center gap-2 mt-2.5">
@@ -814,12 +817,14 @@ const TransactionDetailModal = ({ open, tx, accountName, onClose, onRefresh, use
                         exit={{ height: 0, opacity: 0 }}
                         className="overflow-hidden"
                       >
-                        <Calendar
-                          mode="single"
-                          selected={editDate}
-                          onSelect={(d) => d && setEditDate(d)}
-                          className="p-3 pointer-events-auto rounded-xl border border-border/20"
-                        />
+                        <div className="rounded-xl border border-border/20 bg-card p-1">
+                          <Calendar
+                            mode="single"
+                            selected={editDate}
+                            onSelect={(d) => d && setEditDate(d)}
+                            className="p-2 pointer-events-auto"
+                          />
+                        </div>
                       </motion.div>
                     )}
                   </AnimatePresence>
@@ -890,27 +895,24 @@ const TransactionDetailModal = ({ open, tx, accountName, onClose, onRefresh, use
                 </div>
 
                 {/* Account */}
-                {editAccounts.length > 0 && (
-                  <div className="space-y-2">
-                    <div className="flex items-center gap-2 text-sm font-medium text-foreground">
-                      <Wallet className="w-4 h-4 text-muted-foreground" />
-                      Conta
-                      <span className="text-destructive text-xs">*</span>
-                    </div>
-                    <div className="relative">
-                      <select
-                        value={editAccountId}
-                        onChange={(e) => setEditAccountId(e.target.value)}
-                        className="w-full h-11 px-3 rounded-xl bg-muted/30 border border-border/20 text-sm text-foreground focus:outline-none focus:ring-1 focus:ring-primary/30 appearance-none"
-                      >
-                        <option value="">Sem conta</option>
-                        {editAccounts.map((a) => (
-                          <option key={a.id} value={a.id}>{a.name}</option>
-                        ))}
-                      </select>
-                    </div>
+                <div className="space-y-2">
+                  <div className="flex items-center gap-2 text-sm font-medium text-foreground">
+                    <Wallet className="w-4 h-4 text-muted-foreground" />
+                    Conta
                   </div>
-                )}
+                  <div className="relative">
+                    <select
+                      value={editAccountId}
+                      onChange={(e) => setEditAccountId(e.target.value)}
+                      className="w-full h-11 px-3 rounded-xl bg-muted/30 border border-border/20 text-sm text-foreground focus:outline-none focus:ring-1 focus:ring-primary/30 appearance-none"
+                    >
+                      <option value="">Sem conta</option>
+                      {editAccounts.map((a) => (
+                        <option key={a.id} value={a.id}>{a.name}</option>
+                      ))}
+                    </select>
+                  </div>
+                </div>
 
                 {/* Observation */}
                 <div className="space-y-2">
