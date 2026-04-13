@@ -97,7 +97,6 @@ const ACCOUNT_TYPE_LABELS: Record<string, { label: string; icon: typeof Landmark
   cash: { label: "Dinheiro", icon: Banknote },
   checking: { label: "Conta corrente", icon: Landmark },
   savings: { label: "Poupança", icon: PiggyBank },
-  investment: { label: "Investimento", icon: Briefcase },
 };
 
 const COLOR_OPTIONS = [
@@ -188,15 +187,9 @@ const GestaoFinanceira = () => {
   // Add account state
   const [showAddAccount, setShowAddAccount] = useState(false);
   const [newAccName, setNewAccName] = useState("");
-  const [newAccType, setNewAccType] = useState<"checking" | "cash" | "savings" | "investment">("checking");
+  const [newAccType, setNewAccType] = useState<"checking" | "cash" | "savings">("checking");
   const [newAccBalance, setNewAccBalance] = useState("");
   const [newAccColor, setNewAccColor] = useState("violet");
-  const [newInvestmentType, setNewInvestmentType] = useState("cdb");
-  const [newRateType, setNewRateType] = useState("percent_cdi");
-  const [newAnnualRate, setNewAnnualRate] = useState("");
-  const [newRatePeriod, setNewRatePeriod] = useState<"monthly" | "annual">("monthly");
-  const [newStartDate, setNewStartDate] = useState<Date>(new Date());
-  const [newMaturityDate, setNewMaturityDate] = useState<Date | undefined>(undefined);
 
   // Add card state
   const [showAddCard, setShowAddCard] = useState(false);
@@ -207,18 +200,9 @@ const GestaoFinanceira = () => {
   const [newCardColor, setNewCardColor] = useState("emerald");
   const [newCardDigits, setNewCardDigits] = useState("");
 
-  // Aporte state
-  const [showAporteModal, setShowAporteModal] = useState(false);
-  const [aporteTargetId, setAporteTargetId] = useState("");
-  const [aporteTargetName, setAporteTargetName] = useState("");
-  const [aporteFromId, setAporteFromId] = useState("");
-  const [aporteCents, setAporteCents] = useState(0);
-  const [aporteSubmitting, setAporteSubmitting] = useState(false);
-
   // Add menu state
   const [showAddMenu, setShowAddMenu] = useState(false);
-  const [showInvestWizard, setShowInvestWizard] = useState(false);
-  const [showAIWizard, setShowAIWizard] = useState<"investimento" | "meta" | null>(null);
+  const [showAIWizard, setShowAIWizard] = useState<"meta" | null>(null);
 
   const fetchData = async () => {
     if (!user) return;
