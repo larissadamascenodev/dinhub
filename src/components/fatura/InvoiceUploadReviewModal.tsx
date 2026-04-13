@@ -564,6 +564,144 @@ function SingleItemReview({
     </div>
   );
 }
+function MultiItemReview({
+  items,
+  setItems,
+  onConfirm,
+  confirming,
+  avgConfidence,
+  message,
+  onFallback,
+}: {
+  items: ExtractedItem[];
+  setItems: React.Dispatch<React.SetStateAction<ExtractedItem[]>>;
+  onConfirm: (items: ExtractedItem[]) => void;
+  confirming: boolean;
+  avgConfidence?: number;
+  message: string;
+  onFallback?: (item: ExtractedItem) => void;
+}) {
+  const toggleItem = (idx: number) => {
+    setItems((prev) =>
+      prev.map((item, i) => (i === idx ? { ...item, selected: !item.selected } : item))
+    );
+  };
+
+  const removeItem = (idx: number) => {
+    setItems((prev) => prev.filter((_, i) => i !== idx));
+  };
+
+  const selectedItems = items.filter((i) => i.selected);
+  const totalSelected = selectedItems.reduce((sum, i) => sum + i.amount, 0);
+
+  const formatCurrency = (v: number) =>
+    v.toLocaleString("pt-BR", { style: "currency", currency: "BRL" });
+
+  return (
+    <div className="flex flex-col max-h-[75vh]">
+      <div className="px-5 pb-3 shrink-0 space-y-2">
+        <div className="bg-primary/10 border border-primary/20 rounded-xl px-3.5 py-2.5">
+          <p className="text-[12px] text-primary font-medium">{message}</p>
+        </div>
+        {avgConfidence !== undefined && (
+          <div className={cn(
+            "flex items-center gap-2 rounded-lg px-3 py-2 text-[11px] font-medium",
+            avgConfidence >= 0.8
+              ? "bg-primary/5 text-primary border border-primary/10"
+              : "bg-amber-500/5 text-amber-400 border border-amber-500/10"
+          )}>
+            {avgConfidence >= 0.8 ? <ShieldCheck className="w-3.5 h-3.5" /> : <AlertTriangle className="w-3.5 h-3.5" />}
+            <span>Confiança geral: {Math.round(avgConfidence * 100)}%</span>
+          </div>
+        )}
+      </div>
+
+      <div className="flex-1 overflow-y-auto px-5 space-y-2 pb-3 min-h-0 scrollbar-none overscroll-contain">
+        {items.map((item, idx) => {
+          const conf = item.confidence || 0.5;
+          const matchedCat = CATEGORIES.find((c) => c.toLowerCase() === (item.category || "").toLowerCase());
+          const CatIcon = matchedCat ? DEFAULT_CATEGORY_ICONS[matchedCat] : null;
+          const catColor = matchedCat ? DEFAULT_CATEGORY_COLORS[matchedCat] : "0 0% 60%";
+
+          return (
+            <motion.div
+              key={idx}
+              initial={{ opacity: 0, x: -8 }}
+              animate={{ opacity: 1, x: 0 }}
+              transition={{ delay: idx * 0.03 }}
+              className={cn(
+                "rounded-xl border p-3 transition-colors",
+                item.selected ? "border-primary/30 bg-primary/5" : "border-border/15 bg-muted/10 opacity-50"
+              )}
+            >
+              <div className="flex items-start gap-2.5">
+                <button
+                  onClick={() => toggleItem(idx)}
+                  className={cn(
+                    "mt-0.5 w-5 h-5 rounded-md border-2 flex items-center justify-center shrink-0 transition-colors",
+                    item.selected ? "bg-primary border-primary text-primary-foreground" : "border-muted-foreground/30"
+                  )}
+                >
+                  {item.selected && <Check className="w-3 h-3" />}
+                </button>
+                <div className="flex-1 min-w-0 space-y-1.5">
+                  <div className="flex items-center justify-between gap-2">
+                    <p className="text-[12px] font-semibold text-foreground truncate">{item.description}</p>
+                    <div className="flex items-center gap-1 shrink-0">
+                      {onFallback && (
+                        <button onClick={() => onFallback(item)} className="text-primary/60 hover:text-primary transition-colors" title="Editar">
+                          <Edit3 className="w-3.5 h-3.5" />
+                        </button>
+                      )}
+                      <button onClick={() => removeItem(idx)} className="text-muted-foreground/40 hover:text-destructive transition-colors">
+                        <X className="w-3.5 h-3.5" />
+                      </button>
+                    </div>
+                  </div>
+                  <div className="flex items-center gap-2 flex-wrap">
+                    <span className="text-[12px] font-bold text-foreground">{formatCurrency(item.amount)}</span>
+                    <span className={cn(
+                      "text-[10px] font-bold px-2 py-0.5 rounded-full",
+                      item.type === "receita" ? "text-primary bg-primary/10" : "text-destructive bg-destructive/10"
+                    )}>
+                      {item.type === "receita" ? "Receita" : "Despesa"}
+                    </span>
+                    {CatIcon && (
+                      <div className="flex items-center gap-1 px-2 py-0.5 rounded-full" style={{ backgroundColor: `hsl(${catColor} / 0.1)` }}>
+                        <CatIcon className="w-3 h-3" style={{ color: `hsl(${catColor})` }} />
+                        <span className="text-[10px] capitalize" style={{ color: `hsl(${catColor})` }}>{item.category}</span>
+                      </div>
+                    )}
+                    <ConfidenceBadge confidence={conf} />
+                  </div>
+                </div>
+              </div>
+            </motion.div>
+          );
+        })}
+      </div>
+
+      <div className="p-5 pt-3 border-t border-border/10 shrink-0 space-y-3 pb-24 sm:pb-5">
+        <div className="flex items-center justify-between text-[12px]">
+          <span className="text-muted-foreground">{selectedItems.length} de {items.length} selecionados</span>
+          <span className="font-bold text-foreground">{formatCurrency(totalSelected)}</span>
+        </div>
+        <Button
+          onClick={() => onConfirm(selectedItems)}
+          disabled={selectedItems.length === 0 || confirming}
+          className="w-full h-11 rounded-xl text-xs font-bold"
+        >
+          {confirming ? (
+            <><Loader2 className="w-3.5 h-3.5 mr-1.5 animate-spin" />Importando...</>
+          ) : (
+            <><Check className="w-3.5 h-3.5 mr-1.5" />Importar {selectedItems.length} lançamento{selectedItems.length !== 1 ? "s" : ""}</>
+          )}
+        </Button>
+      </div>
+    </div>
+  );
+}
+
 export default function InvoiceUploadReviewModal({
   open,
   onClose,
