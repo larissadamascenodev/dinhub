@@ -917,8 +917,7 @@ const GestaoFinanceira = () => {
       <ModalOverlay open={showAddAccount} onClose={resetAddAccount}>
         <div className="space-y-4">
           <div className="flex items-center justify-between">
-             <p className="text-base font-bold text-foreground">Nova Conta</p>
-            </p>
+            <p className="text-base font-bold text-foreground">Nova Conta</p>
             <button onClick={resetAddAccount} className="w-8 h-8 rounded-lg bg-muted/50 flex items-center justify-center hover:bg-muted transition-colors">
               <X className="w-4 h-4 text-muted-foreground" />
             </button>
@@ -943,9 +942,7 @@ const GestaoFinanceira = () => {
               </SelectContent>
             </Select>
           <div>
-            <Label className="text-xs text-muted-foreground mb-1.5 block">
-              {newAccType === "investment" ? "Valor investido (opcional)" : "Saldo inicial (opcional)"}
-            </Label>
+            <Label className="text-xs text-muted-foreground mb-1.5 block">Saldo inicial (opcional)</Label>
             <Input
               placeholder="0,00"
               type="number"
@@ -994,7 +991,7 @@ const GestaoFinanceira = () => {
             disabled={!newAccName.trim()}
             className="w-full h-11 rounded-xl text-sm font-semibold bg-primary/15 text-primary hover:bg-primary/25 border-0"
           >
-            {newAccType === "investment" ? "Criar Carteira" : "Criar Conta"}
+            Criar Conta
           </Button>
         </div>
       </ModalOverlay>
@@ -1086,111 +1083,21 @@ const GestaoFinanceira = () => {
         </div>
       </ModalOverlay>
 
-      {/* ═══════ MODAL: Aporte ═══════ */}
-      <ModalOverlay open={showAporteModal} onClose={() => setShowAporteModal(false)}>
-        <div className="space-y-4">
-          <div className="flex items-center justify-between">
-            <p className="text-base font-bold text-foreground">Depósito em {aporteTargetName}</p>
-            <button onClick={() => setShowAporteModal(false)} className="w-8 h-8 rounded-lg bg-muted/50 flex items-center justify-center hover:bg-muted transition-colors">
-              <X className="w-4 h-4 text-muted-foreground" />
-            </button>
-          </div>
-
-          <Select value={aporteFromId} onValueChange={setAporteFromId}>
-            <SelectTrigger className="bg-muted/30 border-border/20 h-11 rounded-xl">
-              <SelectValue placeholder="Conta de origem" />
-            </SelectTrigger>
-            <SelectContent>
-              {bankAccounts.map(a => (
-                <SelectItem key={a.id} value={a.id}>
-                  {a.name} · {formatCurrency(Number(a.current_balance))}
-                </SelectItem>
-              ))}
-            </SelectContent>
-          </Select>
-
-          <div>
-            <Label className="text-xs text-muted-foreground mb-1.5 block">Valor do depósito</Label>
-            <Input
-              placeholder="0,00"
-              inputMode="numeric"
-              value={aporteCents > 0 ? (aporteCents / 100).toLocaleString("pt-BR", { minimumFractionDigits: 2, maximumFractionDigits: 2 }) : ""}
-              onKeyDown={(e) => {
-                if (e.key === "Backspace") {
-                  e.preventDefault();
-                  setAporteCents(prev => Math.floor(prev / 10));
-                } else if (e.key >= "0" && e.key <= "9") {
-                  e.preventDefault();
-                  setAporteCents(prev => {
-                    const next = prev * 10 + parseInt(e.key);
-                    return next > 99999999 ? prev : next;
-                  });
-                }
-              }}
-              readOnly
-              className="bg-muted/30 border-border/20 h-11 rounded-xl text-lg font-bold text-center"
-            />
-          </div>
-
-          <Button
-            onClick={handleAporte}
-            disabled={aporteCents === 0 || !aporteFromId || aporteSubmitting}
-            className="w-full h-11 rounded-xl text-sm font-semibold bg-primary/15 text-primary hover:bg-primary/25 border border-primary/30"
-          >
-            {aporteSubmitting ? "Processando..." : `Depositar R$ ${(aporteCents / 100).toLocaleString("pt-BR", { minimumFractionDigits: 2 })}`}
-          </Button>
-        </div>
-      </ModalOverlay>
-
-      {/* Investment Wizard */}
-      <InvestmentCreateModal
-        open={showInvestWizard}
-        onClose={() => setShowInvestWizard(false)}
-        onSubmit={async (data) => {
-          if (!user) return;
-          try {
-            const accPayload: any = {
-              name: data.name,
-              type: "investment",
-              initial_balance: data.initial_balance,
-              color: data.color,
-              rate_type: data.rate_type || "fixed_monthly",
-              annual_rate: data.annual_rate ?? null,
-            };
-            await createAccount(user.id, accPayload);
-            toast.success("Carteira criada! 🎉");
-            fetchData();
-          } catch {
-            toast.error("Erro ao criar carteira");
-          }
-        }}
-      />
-
       {/* AI Financial Wizard */}
       <AIFinancialWizardModal
         open={!!showAIWizard}
         onClose={() => setShowAIWizard(null)}
-        type={showAIWizard || "meta"}
+        type="meta"
         onConfirm={async (plan, objective) => {
           if (!user) return;
           try {
-            if (showAIWizard === "investimento") {
-              await createAccount(user.id, {
-                name: objective,
-                type: "investment",
-                initial_balance: 0,
-                color: "emerald",
-              });
-              toast.success("Carteira de investimento criada com IA! 🤖📈");
-            } else {
-              const { createGoal } = await import("@/services/goalService");
-              await createGoal({
-                name: objective,
-                target_amount: plan.monthly_contribution * plan.estimated_months,
-                monthly_contribution: plan.monthly_contribution,
-              }, user.id);
-              toast.success("Meta criada com IA! 🤖🎯");
-            }
+            const { createGoal } = await import("@/services/goalService");
+            await createGoal({
+              name: objective,
+              target_amount: plan.monthly_contribution * plan.estimated_months,
+              monthly_contribution: plan.monthly_contribution,
+            }, user.id);
+            toast.success("Meta criada com IA! 🤖🎯");
             fetchData();
           } catch {
             toast.error("Erro ao criar com IA");
