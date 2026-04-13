@@ -50,11 +50,8 @@ const WalletSummaryCard = () => {
     };
   }, [user]);
 
-  const bankAccounts = accounts.filter(a => a.type !== "investment");
-  const investmentAccounts = accounts.filter(a => a.type === "investment");
-  const totalBalance = bankAccounts.reduce((s, a) => s + Number(a.current_balance), 0);
-  const totalInvested = investmentAccounts.reduce((s, a) => s + Number(a.current_balance), 0);
-  const totalReservado = totalInvested + totalMetas;
+  const totalBalance = accounts.reduce((s, a) => s + Number(a.current_balance), 0);
+  const totalReservado = totalMetas;
   const patrimonio = totalBalance + totalReservado;
 
   return (
