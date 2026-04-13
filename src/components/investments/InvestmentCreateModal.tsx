@@ -14,12 +14,12 @@ interface InvestmentCreateModalProps {
 }
 
 const INVESTMENT_PRESETS = [
-  { id: "cdb", name: "CDB / Renda Fixa", emoji: "🏦", subtitle: "Segurança e rendimento previsível", coverUrl: "https://images.unsplash.com/photo-1554224155-6726b3ff858f?w=600&q=80" },
-  { id: "acoes", name: "Ações / Bolsa", emoji: "📈", subtitle: "Potencial de alto retorno", coverUrl: "https://images.unsplash.com/photo-1611974789855-9c2a0a7236a3?w=600&q=80" },
-  { id: "cripto", name: "Criptomoedas", emoji: "₿", subtitle: "O futuro das finanças digitais", coverUrl: "https://images.unsplash.com/photo-1639762681485-074b7f938ba0?w=600&q=80" },
-  { id: "fii", name: "Fundos Imobiliários", emoji: "🏢", subtitle: "Renda passiva com imóveis", coverUrl: "https://images.unsplash.com/photo-1486406146926-c627a92ad1ab?w=600&q=80" },
-  { id: "tesouro", name: "Tesouro Direto", emoji: "🇧🇷", subtitle: "O investimento mais seguro do país", coverUrl: "https://images.unsplash.com/photo-1526304640581-d334cdbbf45e?w=600&q=80" },
-  { id: "poupanca", name: "Poupança / Cofre", emoji: "🐷", subtitle: "Guardar dinheiro com facilidade", coverUrl: "https://images.unsplash.com/photo-1579621970563-ebec7560ff3e?w=600&q=80" },
+  { id: "patrimonio", name: "Crescer Patrimônio", emoji: "📈", subtitle: "Fazer seu dinheiro render e multiplicar", coverUrl: "https://images.unsplash.com/photo-1611974789855-9c2a0a7236a3?w=600&q=80" },
+  { id: "renda_passiva", name: "Renda Passiva", emoji: "💸", subtitle: "Ganhar dinheiro sem trabalhar ativamente", coverUrl: "https://images.unsplash.com/photo-1486406146926-c627a92ad1ab?w=600&q=80" },
+  { id: "aposentadoria", name: "Aposentadoria", emoji: "🌅", subtitle: "Garantir um futuro tranquilo e seguro", coverUrl: "https://images.unsplash.com/photo-1506784983877-45594efa4cbe?w=600&q=80" },
+  { id: "reserva", name: "Reserva Segura", emoji: "🛡️", subtitle: "Proteger seu dinheiro com segurança", coverUrl: "https://images.unsplash.com/photo-1554224155-6726b3ff858f?w=600&q=80" },
+  { id: "liberdade", name: "Liberdade Financeira", emoji: "🚀", subtitle: "Conquistar independência financeira", coverUrl: "https://images.unsplash.com/photo-1579621970563-ebec7560ff3e?w=600&q=80" },
+  { id: "educacao", name: "Educação / Filhos", emoji: "🎓", subtitle: "Investir no futuro da família", coverUrl: "https://images.unsplash.com/photo-1523050854058-8df90110c476?w=600&q=80" },
 ];
 
 const COLOR_OPTIONS = [
@@ -183,10 +183,10 @@ const InvestmentCreateModal = ({ open, onClose, onSubmit }: InvestmentCreateModa
                     transition={{ duration: 0.25 }}
                     className="space-y-4"
                   >
-                    <div>
-                      <h2 className="text-lg font-bold text-foreground">Onde quer investir?</h2>
-                      <p className="text-xs text-muted-foreground/60 mt-0.5">Escolha o tipo da sua carteira</p>
-                    </div>
+                     <div>
+                       <h2 className="text-lg font-bold text-foreground">Qual é o seu objetivo?</h2>
+                       <p className="text-xs text-muted-foreground/60 mt-0.5">Escolha o que te motiva a investir</p>
+                     </div>
 
                     <div className="grid grid-cols-2 gap-2.5">
                       {INVESTMENT_PRESETS.map((p) => {
