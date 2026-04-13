@@ -179,7 +179,7 @@ const GestaoFinanceira = () => {
   const warmDashboardData = getCachedDashboardData(buildDashboardCacheKey(user?.id, new Date().getMonth(), new Date().getFullYear()));
   const [accounts, setAccounts] = useState<Account[]>([]);
   const [creditCards, setCreditCards] = useState<CreditCardItem[]>([]);
-  const [openInvoices, setOpenInvoices] = useState<Record<string, number>>({});
+  const [openInvoices, setOpenInvoices] = useState<Record<string, OpenInvoiceInfo>>({});
   const [goals, setGoals] = useState<Goal[]>([]);
   const [loading, setLoading] = useState(() => !warmDashboardData);
 
