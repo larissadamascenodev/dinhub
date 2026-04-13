@@ -1021,10 +1021,7 @@ const GestaoFinanceira = () => {
             <p className="text-[10px] text-muted-foreground/60 mt-0.5 ml-6">Dinheiro aplicado para crescimento</p>
           </div>
           <button
-            onClick={() => {
-              setNewAccType("investment" as any);
-              setShowAddAccount(true);
-            }}
+            onClick={() => setShowInvestWizard(true)}
             className="w-7 h-7 rounded-lg bg-primary/10 flex items-center justify-center hover:bg-primary/20 transition-colors"
           >
             <Plus className="w-4 h-4 text-primary" />
@@ -1047,10 +1044,7 @@ const GestaoFinanceira = () => {
                 <p className="text-sm text-muted-foreground mb-1">Nenhuma carteira de investimento</p>
                 <p className="text-xs text-muted-foreground/60 mb-4">Crie uma carteira para organizar seus investimentos</p>
                 <Button
-                  onClick={() => {
-                    setNewAccType("investment" as any);
-                    setShowAddAccount(true);
-                  }}
+                  onClick={() => setShowInvestWizard(true)}
                   size="sm"
                   className="rounded-xl bg-primary/15 text-primary hover:bg-primary/25 border-0"
                 >
@@ -1495,12 +1489,15 @@ const GestaoFinanceira = () => {
         onSubmit={async (data) => {
           if (!user) return;
           try {
-            await createAccount(user.id, {
+            const accPayload: any = {
               name: data.name,
               type: "investment",
               initial_balance: data.initial_balance,
               color: data.color,
-            });
+              rate_type: data.rate_type || "fixed_monthly",
+              annual_rate: data.annual_rate ?? null,
+            };
+            await createAccount(user.id, accPayload);
             toast.success("Carteira criada! 🎉");
             fetchData();
           } catch {
