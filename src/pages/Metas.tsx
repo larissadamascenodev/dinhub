@@ -1,7 +1,7 @@
 import { useState, useCallback, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import { motion, AnimatePresence } from "framer-motion";
-import { Target, Plus, Wallet, Clock, MoreVertical, Sparkles, Edit2, Trash2 } from "lucide-react";
+import { Target, Plus, Wallet, Clock, MoreVertical, Sparkles, Edit2, Trash2, Brain } from "lucide-react";
 import { toast } from "sonner";
 import { useAuth } from "@/contexts/AuthContext";
 import { fetchGoals, createGoal, createGoalDeposit, deleteGoal, generateGoalCoverImage, updateGoal, type Goal } from "@/services/goalService";
@@ -9,6 +9,7 @@ import GoalCreateModal from "@/components/goals/GoalCreateModal";
 import GoalDepositModal from "@/components/goals/GoalDepositModal";
 import GoalEditModal from "@/components/goals/GoalEditModal";
 import GoalConfirmModal from "@/components/goals/GoalConfirmModal";
+import AIFinancialWizardModal from "@/components/shared/AIFinancialWizardModal";
 
 const fmt = (v: number) =>
   v.toLocaleString("pt-BR", { style: "currency", currency: "BRL" });
@@ -63,6 +64,7 @@ const Metas = () => {
   const [goals, setGoals] = useState<Goal[]>([]);
   const [loading, setLoading] = useState(true);
   const [showCreateModal, setShowCreateModal] = useState(false);
+  const [showAIWizard, setShowAIWizard] = useState(false);
   const [depositGoal, setDepositGoal] = useState<Goal | null>(null);
   const [editGoal, setEditGoal] = useState<Goal | null>(null);
   const [menuGoalId, setMenuGoalId] = useState<string | null>(null);
@@ -161,13 +163,23 @@ const Metas = () => {
           <h1 className="text-lg font-bold font-display text-foreground">Suas Metas</h1>
           <p className="text-[10px] text-muted-foreground mt-0.5">Acompanhe seu progresso financeiro</p>
         </div>
-        <motion.button
-          whileTap={{ scale: 0.95 }}
-          onClick={() => setShowCreateModal(true)}
-          className="w-8 h-8 rounded-xl bg-primary/15 border border-primary/20 flex items-center justify-center hover:bg-primary/20 transition-colors"
-        >
-          <Plus className="w-4 h-4 text-primary" />
-        </motion.button>
+        <div className="flex items-center gap-2">
+          <motion.button
+            whileTap={{ scale: 0.95 }}
+            onClick={() => setShowAIWizard(true)}
+            className="w-8 h-8 rounded-xl bg-primary/15 border border-primary/20 flex items-center justify-center hover:bg-primary/20 transition-colors"
+            title="Criar com IA"
+          >
+            <Brain className="w-4 h-4 text-primary" />
+          </motion.button>
+          <motion.button
+            whileTap={{ scale: 0.95 }}
+            onClick={() => setShowCreateModal(true)}
+            className="w-8 h-8 rounded-xl bg-primary/15 border border-primary/20 flex items-center justify-center hover:bg-primary/20 transition-colors"
+          >
+            <Plus className="w-4 h-4 text-primary" />
+          </motion.button>
+        </div>
       </div>
 
       {/* Summary card with donut */}
@@ -381,6 +393,27 @@ const Metas = () => {
         description="Tem certeza que deseja excluir esta meta? Esta ação não pode ser desfeita."
         confirmLabel="Excluir"
         loading={deletingGoal}
+      />
+
+      <AIFinancialWizardModal
+        open={showAIWizard}
+        onClose={() => setShowAIWizard(false)}
+        type="meta"
+        onConfirm={async (plan, objective) => {
+          if (!user) return;
+          try {
+            const { createGoal: createGoalFn } = await import("@/services/goalService");
+            await createGoalFn({
+              name: objective,
+              target_amount: plan.monthly_contribution * plan.estimated_months,
+              monthly_contribution: plan.monthly_contribution,
+            }, user.id);
+            toast.success("Meta criada com IA! 🤖🎯");
+            loadGoals();
+          } catch {
+            toast.error("Erro ao criar meta");
+          }
+        }}
       />
     </div>
   );
