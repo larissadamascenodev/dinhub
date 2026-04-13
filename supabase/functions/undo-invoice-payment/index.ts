@@ -67,22 +67,11 @@ Deno.serve(async (req) => {
       });
     }
 
-    // Restore account balance
-    if (invoice.paid_from_account_id) {
-      const { data: account } = await adminClient
-        .from("accounts")
-        .select("current_balance")
-        .eq("id", invoice.paid_from_account_id)
-        .single();
-
-      if (account) {
-        const restoredBalance = Number(account.current_balance) + paidAmount;
-        await adminClient
-          .from("accounts")
-          .update({ current_balance: restoredBalance })
-          .eq("id", invoice.paid_from_account_id);
-      }
-    }
+    // Delete all individual payment records first — triggers account balance recalculation
+    await adminClient
+      .from("invoice_payments")
+      .delete()
+      .eq("invoice_id", invoice_id);
 
     // Reset invoice payment fields
     await adminClient
@@ -94,12 +83,6 @@ Deno.serve(async (req) => {
         paid_from_account_id: null,
       })
       .eq("id", invoice_id);
-
-    // Delete all individual payment records
-    await adminClient
-      .from("invoice_payments")
-      .delete()
-      .eq("invoice_id", invoice_id);
 
     // Recalculate credit card used limit
     await adminClient.rpc("recalc_credit_card_used_limit", {
