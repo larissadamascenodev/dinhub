@@ -13,10 +13,17 @@ import TransferModal from "@/components/dashboard/TransferModal";
 import InvoiceUploadReviewModal, { type ExtractedItem } from "@/components/fatura/InvoiceUploadReviewModal";
 import ScanProcessingOverlay from "@/components/dashboard/ScanProcessingOverlay";
 import { supabase } from "@/integrations/supabase/client";
-import { createTransaction } from "@/services/transactionService";
+import { createTransaction, getAccounts } from "@/services/transactionService";
 import { useAuth } from "@/contexts/AuthContext";
 import { toast } from "sonner";
 import { useSwipeBack } from "@/hooks/useSwipeBack";
+
+interface ScanAccountOption {
+  id: string;
+  name: string;
+  type: string;
+  is_default: boolean;
+}
 
 const DashboardLayout = () => {
   useSwipeBack();
@@ -37,6 +44,7 @@ const DashboardLayout = () => {
   const [showReviewModal, setShowReviewModal] = useState(false);
   const [confirmingImport, setConfirmingImport] = useState(false);
   const [showScanChooser, setShowScanChooser] = useState(false);
+  const [scanAccounts, setScanAccounts] = useState<ScanAccountOption[]>([]);
 
   // Fallback pre-fill for low confidence items
   const [prefillData, setPrefillData] = useState<PrefillData | null>(null);
@@ -113,6 +121,19 @@ const DashboardLayout = () => {
   const handleSuccess = useCallback(() => {
     window.dispatchEvent(new CustomEvent("transaction-created"));
   }, []);
+
+  useEffect(() => {
+    if (!showReviewModal || !user) return;
+
+    getAccounts()
+      .then((accounts) => {
+        const filteredAccounts = (accounts as ScanAccountOption[]).filter((account) => account.type !== "investment");
+        setScanAccounts(filteredAccounts);
+      })
+      .catch(() => {
+        toast.error("Erro ao carregar contas");
+      });
+  }, [showReviewModal, user]);
 
   // OCR scan handler
   const handleScanFile = useCallback(async (file: File) => {
@@ -200,6 +221,7 @@ const DashboardLayout = () => {
             date: getSafeTransactionDate(item.date),
             time: item.time || null,
             status: "pago",
+            account_id: item.account_id || null,
             payment_method: "conta",
             recurrence_type: item.is_recurring ? "fixa" : (item.installment_total && item.installment_total > 1 ? "parcelado" : "unica"),
             installments: item.installment_total || null,
@@ -317,6 +339,8 @@ const DashboardLayout = () => {
           confirming={confirmingImport}
           avgConfidence={avgConfidence}
           onFallback={handleFallbackItem}
+          accounts={scanAccounts}
+          showAccountSelector
         />
       </div>
     </MonthProvider>
