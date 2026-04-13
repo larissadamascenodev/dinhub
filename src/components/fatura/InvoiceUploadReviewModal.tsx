@@ -275,23 +275,16 @@ function SingleItemReview({
           )}
         </div>
 
-        {/* Time */}
-        <div className="flex items-center justify-between px-4 py-3">
-          <div className="flex items-center gap-1.5">
-            <Clock className="w-3 h-3 text-muted-foreground" />
-            <span className="text-[11px] text-muted-foreground uppercase tracking-wide">Horário</span>
+        {/* Time (read-only, detected from receipt) */}
+        {item.time && (
+          <div className="flex items-center justify-between px-4 py-3">
+            <div className="flex items-center gap-1.5">
+              <Clock className="w-3 h-3 text-muted-foreground" />
+              <span className="text-[11px] text-muted-foreground uppercase tracking-wide">Horário</span>
+            </div>
+            <span className="text-[13px] text-foreground">{item.time}</span>
           </div>
-          {editing ? (
-            <Input
-              type="time"
-              value={item.time || ""}
-              onChange={(e) => onUpdate("time", e.target.value)}
-              className="h-7 w-[100px] text-[13px] text-right bg-transparent border-none focus-visible:ring-0 px-0 [color-scheme:dark]"
-            />
-          ) : (
-            <span className="text-[13px] text-foreground">{item.time || "—"}</span>
-          )}
-        </div>
+        )}
 
         {/* Category */}
         <button
