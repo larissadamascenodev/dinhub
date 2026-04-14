@@ -122,15 +122,15 @@ const Auth = () => {
 
   /* ── Reusable sub-sections ── */
 
-  const SocialProofBadge = ({ className = "" }: { className?: string }) => (
-    <span className={`inline-flex items-center gap-2 bg-primary/10 text-primary text-[10px] font-medium px-3 py-1.5 rounded-full border border-primary/15 backdrop-blur-sm ${className}`}>
+  const SocialProofBadge = ({ className = "", mobile = false }: { className?: string; mobile?: boolean }) => (
+    <span className={`inline-flex items-center gap-1.5 bg-primary/10 text-primary font-medium rounded-full border border-primary/15 backdrop-blur-sm ${mobile ? "text-[8px] px-2.5 py-1 mx-auto" : "text-[10px] px-3 py-1.5"} ${className}`}>
       <span className="flex -space-x-1.5">
         {AVATAR_URLS.map((url, i) => (
           <img
             key={i}
             src={url}
             alt=""
-            className="w-4 h-4 rounded-full border border-background object-cover"
+            className={`rounded-full border border-background object-cover ${mobile ? "w-3.5 h-3.5" : "w-4 h-4"}`}
           />
         ))}
       </span>
@@ -157,14 +157,14 @@ const Auth = () => {
   );
 
   const InputMethodsPill = ({ mobile = false }: { mobile?: boolean }) => (
-    <div className={`inline-flex items-center gap-1.5 bg-gradient-to-r from-primary/10 via-card/50 to-primary/5 border border-primary/15 rounded-full px-3 py-1.5 text-[10px] text-muted-foreground backdrop-blur-sm ${mobile ? "mx-auto" : ""}`}>
+    <div className={`inline-flex items-center gap-1 bg-gradient-to-r from-primary/10 via-card/50 to-primary/5 border border-primary/15 rounded-full text-muted-foreground backdrop-blur-sm ${mobile ? "mx-auto text-[8px] px-2.5 py-1" : "text-[10px] px-3 py-1.5 gap-1.5"}`}>
       <span className="text-foreground/70 font-medium">Registre via</span>
-      <span className="flex items-center gap-0.5 text-primary font-semibold"><MessageCircle className="w-2.5 h-2.5" /> texto</span>
+      <span className="flex items-center gap-0.5 text-primary font-semibold"><MessageCircle className={mobile ? "w-2 h-2" : "w-2.5 h-2.5"} /> texto</span>
       <span className="text-primary/30">|</span>
-      <span className="flex items-center gap-0.5 text-primary/80"><Mic className="w-2.5 h-2.5" /> áudio</span>
+      <span className="flex items-center gap-0.5 text-primary/80"><Mic className={mobile ? "w-2 h-2" : "w-2.5 h-2.5"} /> áudio</span>
       <span className="text-primary/30">|</span>
-      <span className="flex items-center gap-0.5 text-primary/80"><Image className="w-2.5 h-2.5" /> foto</span>
-      <Zap className="w-2.5 h-2.5 text-primary ml-0.5" />
+      <span className="flex items-center gap-0.5 text-primary/80"><Image className={mobile ? "w-2 h-2" : "w-2.5 h-2.5"} /> foto</span>
+      <Zap className={`${mobile ? "w-2 h-2" : "w-2.5 h-2.5"} text-primary ml-0.5`} />
     </div>
   );
 
@@ -376,8 +376,8 @@ const Auth = () => {
     <div className="dark min-h-screen bg-background flex flex-col relative overflow-hidden">
       {/* Promo banner */}
       <div className="w-full bg-gradient-to-r from-primary/90 via-primary to-emerald-400/90 text-center py-2 px-4 relative z-20">
-        <p className="text-xs font-semibold text-primary-foreground flex items-center justify-center gap-2">
-          <Zap className="w-3.5 h-3.5" />
+        <p className="text-[10px] sm:text-xs font-semibold text-background flex items-center justify-center gap-1.5 sm:gap-2 whitespace-nowrap">
+          <Zap className="w-3 h-3 sm:w-3.5 sm:h-3.5" />
           Oferta de Lançamento: <span className="font-bold underline underline-offset-2">TESTE GRATUITAMENTE</span> — sem compromisso!
         </p>
       </div>
@@ -429,24 +429,24 @@ const Auth = () => {
         {/* Right — Form */}
         <div className="w-full max-w-[400px] flex flex-col justify-center">
           <AuthFormCard />
-          <motion.div
-            initial={{ opacity: 0 }}
-            animate={{ opacity: 1 }}
-            transition={{ delay: 0.6 }}
-            className="flex items-center justify-between mt-6 pt-4 border-t border-border/10 text-xs text-muted-foreground/50"
-          >
-            <span className="flex items-center gap-2">
-              <PiggyBank className="w-4 h-4 text-primary/60" />
-              <span>DinHub © {new Date().getFullYear()}</span>
-            </span>
-            <span className="flex items-center gap-4">
-              <button onClick={() => setLegalModal("terms")} className="hover:text-primary transition-colors">Termos de Uso</button>
-              <button onClick={() => setLegalModal("privacy")} className="hover:text-primary transition-colors">Política de Privacidade</button>
-              <button onClick={() => setShowContact(true)} className="hover:text-primary transition-colors">Contato</button>
-            </span>
-          </motion.div>
         </div>
       </div>
+
+      {/* Desktop footer — bottom of page */}
+      <motion.div
+        initial={{ opacity: 0 }}
+        animate={{ opacity: 1 }}
+        transition={{ delay: 0.6 }}
+        className="hidden lg:flex items-center justify-center gap-6 py-4 border-t border-border/10 text-xs text-muted-foreground/50 relative z-10"
+      >
+        <span className="flex items-center gap-2">
+          <PiggyBank className="w-4 h-4 text-primary/60" />
+          <span>DinHub © {new Date().getFullYear()}</span>
+        </span>
+        <button onClick={() => setLegalModal("terms")} className="hover:text-primary transition-colors">Termos de Uso</button>
+        <button onClick={() => setLegalModal("privacy")} className="hover:text-primary transition-colors">Política de Privacidade</button>
+        <button onClick={() => setShowContact(true)} className="hover:text-primary transition-colors">Contato</button>
+      </motion.div>
 
       {/* ════════ MOBILE LAYOUT ════════ */}
       <div className="flex lg:hidden flex-1 flex-col px-5 py-5 relative z-10 overflow-y-auto gap-4">
@@ -464,12 +464,12 @@ const Auth = () => {
         </motion.div>
 
         {/* Social proof badge */}
-        <motion.div custom={0} variants={fadeUp} initial="hidden" animate="visible">
-          <SocialProofBadge className="text-[10px]" />
+        <motion.div custom={0} variants={fadeUp} initial="hidden" animate="visible" className="flex justify-center">
+          <SocialProofBadge mobile />
         </motion.div>
 
         {/* Headline + input methods (above form) */}
-        <motion.div custom={1} variants={fadeUp} initial="hidden" animate="visible" className="space-y-2.5">
+        <motion.div custom={1} variants={fadeUp} initial="hidden" animate="visible" className="space-y-2 flex flex-col items-center">
           <HeadlineSection mobile />
           <InputMethodsPill mobile />
         </motion.div>
@@ -488,17 +488,15 @@ const Auth = () => {
           initial={{ opacity: 0 }}
           animate={{ opacity: 1 }}
           transition={{ delay: 0.6 }}
-          className="flex items-center justify-between pt-3 border-t border-border/10 text-[10px] text-muted-foreground/50 pb-2"
+          className="flex items-center justify-center gap-3 flex-wrap pt-3 border-t border-border/10 text-[9px] text-muted-foreground/50 pb-2"
         >
-          <span className="flex items-center gap-1.5">
-            <PiggyBank className="w-3.5 h-3.5 text-primary/60" />
+          <span className="flex items-center gap-1">
+            <PiggyBank className="w-3 h-3 text-primary/60" />
             <span>DinHub © {new Date().getFullYear()}</span>
           </span>
-          <span className="flex items-center gap-3">
-            <button onClick={() => setLegalModal("terms")} className="hover:text-primary transition-colors">Termos de Uso</button>
-            <button onClick={() => setLegalModal("privacy")} className="hover:text-primary transition-colors">Política de Privacidade</button>
-            <button onClick={() => setShowContact(true)} className="hover:text-primary transition-colors">Contato</button>
-          </span>
+          <button onClick={() => setLegalModal("terms")} className="hover:text-primary transition-colors">Termos de Uso</button>
+          <button onClick={() => setLegalModal("privacy")} className="hover:text-primary transition-colors">Política de Privacidade</button>
+          <button onClick={() => setShowContact(true)} className="hover:text-primary transition-colors">Contato</button>
         </motion.div>
       </div>
       <ContactModal open={showContact} onClose={() => setShowContact(false)} />
