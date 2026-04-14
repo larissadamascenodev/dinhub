@@ -9,8 +9,9 @@ import { useAuth } from "@/contexts/AuthContext";
 import { motion, AnimatePresence } from "framer-motion";
 import {
   Eye, EyeOff, ArrowRight, Mail, Lock, TrendingUp, Target, Star,
-  PiggyBank, MessageCircle, Mic, Image, Zap, Shield, User
+  PiggyBank, MessageCircle, Mic, Image, Zap, Shield, User, Check
 } from "lucide-react";
+import { Link } from "react-router-dom";
 
 const fadeUp = {
   hidden: { opacity: 0, y: 20 },
@@ -37,6 +38,7 @@ const Auth = () => {
   const [password, setPassword] = useState("");
   const [showPassword, setShowPassword] = useState(false);
   const [submitting, setSubmitting] = useState(false);
+  const [acceptedTerms, setAcceptedTerms] = useState(false);
 
   if (loading) {
     return (
@@ -217,10 +219,14 @@ const Auth = () => {
         </motion.div>
       </AnimatePresence>
 
-      {/* Google OAuth only */}
+      {/* Google OAuth only — signup requires terms */}
       <button
         type="button"
         onClick={async () => {
+          if (!isLogin && !acceptedTerms) {
+            toast.error("Você precisa aceitar os termos para continuar");
+            return;
+          }
           const { error } = await lovable.auth.signInWithOAuth("google", {
             redirect_uri: window.location.origin,
           });
