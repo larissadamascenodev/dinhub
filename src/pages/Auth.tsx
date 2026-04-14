@@ -151,8 +151,8 @@ const Auth = () => {
         </span>
       </h1>
       {!mobile && (
-        <p className="mt-5 text-muted-foreground text-base leading-relaxed max-w-md">
-          O DinHub reúne seus gastos, metas e investimentos em um único painel inteligente — para você ter clareza total das suas finanças.
+        <p className="mt-5 text-muted-foreground text-base leading-relaxed max-w-2xl">
+          Organize suas finanças, entenda para onde seu dinheiro vai e acompanhe a evolução do seu patrimônio em tempo real.
         </p>
       )}
     </div>
@@ -446,7 +446,7 @@ const Auth = () => {
       <div className="w-full text-center py-2.5 px-4 relative z-20 border-b border-border/30" style={{ background: "linear-gradient(90deg, hsl(220 20% 8%) 0%, hsl(220 18% 12%) 50%, hsl(220 20% 8%) 100%)" }}>
         <p className="text-[10px] sm:text-xs font-semibold text-foreground flex items-center justify-center gap-1.5 sm:gap-2 whitespace-nowrap">
           <Zap className="w-3 h-3 sm:w-3.5 sm:h-3.5 text-primary" />
-          Oferta de Lançamento: <span className="font-extrabold tracking-wide text-primary">TESTE GRATUITAMENTE</span> <span className="text-muted-foreground">— sem compromisso!</span>
+          Oferta de Lançamento: <span className="font-extrabold tracking-wide text-primary">TESTE GRATUITAMENTE</span>
         </p>
       </div>
 
@@ -474,9 +474,9 @@ const Auth = () => {
       </motion.header>
 
       {/* ════════ DESKTOP LAYOUT ════════ */}
-      <div className="hidden lg:flex flex-1 items-stretch px-10 xl:px-16 pb-8 gap-16 relative z-10">
+      <div className="hidden lg:flex flex-1 items-stretch px-10 xl:px-16 pb-8 gap-12 relative z-10">
         {/* Left — Marketing */}
-        <div className="flex flex-col justify-center flex-1 max-w-xl space-y-7">
+        <div className="flex flex-col justify-center flex-1 max-w-2xl space-y-7">
           <motion.div custom={0} variants={fadeUp} initial="hidden" animate="visible">
             <SocialProofBadge />
           </motion.div>
@@ -495,7 +495,7 @@ const Auth = () => {
         </div>
 
         {/* Right — Form */}
-        <div className="w-full max-w-[480px] flex flex-col justify-center">
+        <div className="w-full max-w-[420px] flex flex-col">
           <AuthFormCard />
         </div>
       </div>
