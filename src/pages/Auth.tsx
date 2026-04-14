@@ -331,13 +331,13 @@ const Auth = () => {
             </button>
             <span className="text-[10px] text-muted-foreground leading-relaxed">
               Li e concordo com os{" "}
-              <Link to="/termos-de-uso" target="_blank" className="text-primary hover:underline underline-offset-2">
+              <button type="button" onClick={() => setLegalModal("terms")} className="text-primary hover:underline underline-offset-2">
                 Termos de Uso
-              </Link>{" "}
+              </button>{" "}
               e a{" "}
-              <Link to="/politica-de-privacidade" target="_blank" className="text-primary hover:underline underline-offset-2">
+              <button type="button" onClick={() => setLegalModal("privacy")} className="text-primary hover:underline underline-offset-2">
                 Política de Privacidade
-              </Link>
+              </button>
             </span>
           </label>
         )}
@@ -378,7 +378,7 @@ const Auth = () => {
       <div className="w-full bg-gradient-to-r from-primary/90 via-primary to-emerald-400/90 text-center py-2 px-4 relative z-20">
         <p className="text-[10px] sm:text-xs font-semibold text-background flex items-center justify-center gap-1.5 sm:gap-2 whitespace-nowrap">
           <Zap className="w-3 h-3 sm:w-3.5 sm:h-3.5" />
-          Oferta de Lançamento: <span className="font-bold underline underline-offset-2">TESTE GRATUITAMENTE</span> — sem compromisso!
+          Oferta de Lançamento: <span className="font-extrabold tracking-wide">TESTE GRATUITAMENTE</span> — sem compromisso!
         </p>
       </div>
 
