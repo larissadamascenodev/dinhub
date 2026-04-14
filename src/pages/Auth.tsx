@@ -22,10 +22,10 @@ const fadeUp = {
 };
 
 const features = [
-  { icon: <Wallet className="w-4 h-4" />, title: "Controle total", desc: "Receitas, despesas e cartões em um só lugar" },
-  { icon: <BarChart3 className="w-4 h-4" />, title: "Projeções IA", desc: "Saiba como seu saldo vai estar nos próximos meses" },
-  { icon: <Bell className="w-4 h-4" />, title: "Alertas inteligentes", desc: "Nunca mais esqueça uma conta ou ultrapasse limites" },
-  { icon: <Brain className="w-4 h-4" />, title: "Assistente financeiro", desc: "A Iara analisa seus hábitos e sugere melhorias" },
+  { icon: <Wallet className="w-4 h-4" />, title: "Controle total", desc: "Receitas, despesas e cartões reunidos em um só lugar" },
+  { icon: <Brain className="w-4 h-4" />, title: "Assistente financeiro", desc: "Analisa seus hábitos e sugere melhorias personalizadas" },
+  { icon: <BarChart3 className="w-4 h-4" />, title: "Projeções inteligentes", desc: "Acompanhe projeções do seu dinheiro para o futuro" },
+  { icon: <Shield className="w-4 h-4" />, title: "Radar financeiro", desc: "Alertas e insights para proteger seu orçamento" },
 ];
 
 const AVATAR_URLS = [
