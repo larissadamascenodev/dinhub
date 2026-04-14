@@ -183,24 +183,86 @@ const Auth = () => {
     </div>
   );
 
-  const TestimonialCard = ({ mobile = false }: { mobile?: boolean }) => (
-    <div className={`bg-card/40 border border-border/60 rounded-xl ${mobile ? "p-3.5" : "p-5"} space-y-2 backdrop-blur-sm`}>
-      <div className="flex items-center gap-2.5">
-        <img
-          src="https://images.unsplash.com/photo-1472099645785-5658abf4ff4e?w=80&h=80&fit=crop&crop=face"
-          alt=""
-          className="w-8 h-8 rounded-full object-cover border border-primary/20"
-        />
-        <div>
-          <p className="text-xs font-semibold text-foreground">Rafael M.</p>
-          <div className="flex gap-0.5 text-yellow-400 text-[10px]">★★★★★</div>
+  const testimonials = [
+    {
+      name: "Rafael M.",
+      photo: "https://images.unsplash.com/photo-1472099645785-5658abf4ff4e?w=80&h=80&fit=crop&crop=face",
+      text: "Finalmente consigo enxergar para onde meu dinheiro vai. O DinHub me deu o controle que eu precisava para organizar minha vida financeira.",
+    },
+    {
+      name: "Camila S.",
+      photo: "https://images.unsplash.com/photo-1494790108377-be9c29b29330?w=80&h=80&fit=crop&crop=face",
+      text: "Nunca fui de anotar gastos, mas com o DinHub virou hábito. Em 2 meses já consegui juntar minha primeira reserva de emergência!",
+    },
+    {
+      name: "Lucas P.",
+      photo: "https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?w=80&h=80&fit=crop&crop=face",
+      text: "O melhor app financeiro que já usei. As projeções inteligentes me ajudaram a planejar uma viagem sem apertar o orçamento.",
+    },
+    {
+      name: "Fernanda R.",
+      photo: "https://images.unsplash.com/photo-1438761681033-6461ffad8d80?w=80&h=80&fit=crop&crop=face",
+      text: "Uso todos os dias! As metas visuais me motivam demais. Já alcancei 3 objetivos financeiros em menos de 6 meses.",
+    },
+    {
+      name: "João V.",
+      photo: "https://images.unsplash.com/photo-1500648767791-00dcc994a43e?w=80&h=80&fit=crop&crop=face",
+      text: "Simples, bonito e funcional. Recomendo para qualquer pessoa que quer ter mais controle sobre as finanças pessoais.",
+    },
+  ];
+
+  const TestimonialCard = ({ mobile = false }: { mobile?: boolean }) => {
+    const [activeIdx, setActiveIdx] = React.useState(0);
+
+    React.useEffect(() => {
+      const interval = setInterval(() => {
+        setActiveIdx((prev) => (prev + 1) % testimonials.length);
+      }, 5000);
+      return () => clearInterval(interval);
+    }, []);
+
+    const t = testimonials[activeIdx];
+
+    return (
+      <div className={`bg-card/40 border border-border/60 rounded-xl ${mobile ? "p-3.5" : "p-5"} backdrop-blur-sm space-y-2 overflow-hidden`}>
+        <AnimatePresence mode="wait">
+          <motion.div
+            key={activeIdx}
+            initial={{ opacity: 0, x: 30 }}
+            animate={{ opacity: 1, x: 0 }}
+            exit={{ opacity: 0, x: -30 }}
+            transition={{ duration: 0.35, ease: "easeInOut" }}
+            className="space-y-2"
+          >
+            <div className="flex items-center gap-2.5">
+              <img
+                src={t.photo}
+                alt=""
+                className="w-8 h-8 rounded-full object-cover border border-primary/20"
+              />
+              <div>
+                <p className="text-xs font-semibold text-foreground">{t.name}</p>
+                <div className="flex gap-0.5 text-yellow-400 text-[10px]">★★★★★</div>
+              </div>
+            </div>
+            <p className={`text-muted-foreground italic leading-relaxed ${mobile ? "text-[11px]" : "text-xs"}`}>
+              "{t.text}"
+            </p>
+          </motion.div>
+        </AnimatePresence>
+        {/* Dots */}
+        <div className="flex justify-center gap-1.5 pt-1">
+          {testimonials.map((_, i) => (
+            <button
+              key={i}
+              onClick={() => setActiveIdx(i)}
+              className={`w-1.5 h-1.5 rounded-full transition-all duration-300 ${i === activeIdx ? "bg-primary w-4" : "bg-muted-foreground/30"}`}
+            />
+          ))}
         </div>
       </div>
-      <p className={`text-muted-foreground italic leading-relaxed ${mobile ? "text-[11px]" : "text-xs"}`}>
-        "Finalmente consigo enxergar para onde meu dinheiro vai. O DinHub me deu o controle que eu precisava para organizar minha vida financeira."
-      </p>
-    </div>
-  );
+    );
+  };
 
   /* ── Auth form card ── */
   const AuthFormCard = () => (
