@@ -311,10 +311,37 @@ const Auth = () => {
           </div>
         )}
 
+        {/* Terms checkbox — only for signup */}
+        {!isLogin && (
+          <label className="flex items-start gap-2.5 cursor-pointer select-none">
+            <button
+              type="button"
+              onClick={() => setAcceptedTerms(!acceptedTerms)}
+              className={`mt-0.5 w-4 h-4 rounded border flex-shrink-0 flex items-center justify-center transition-all duration-200 ${
+                acceptedTerms
+                  ? "bg-primary/20 border-primary/50 text-primary"
+                  : "border-border/60 bg-card/40"
+              }`}
+            >
+              {acceptedTerms && <Check className="w-3 h-3" />}
+            </button>
+            <span className="text-[10px] text-muted-foreground leading-relaxed">
+              Li e concordo com os{" "}
+              <Link to="/termos-de-uso" target="_blank" className="text-primary hover:underline underline-offset-2">
+                Termos de Uso
+              </Link>{" "}
+              e a{" "}
+              <Link to="/politica-de-privacidade" target="_blank" className="text-primary hover:underline underline-offset-2">
+                Política de Privacidade
+              </Link>
+            </span>
+          </label>
+        )}
+
         <Button
           type="submit"
-          disabled={submitting}
-          className="w-full h-11 font-semibold text-sm rounded-xl bg-primary/15 text-primary hover:bg-primary/25 border border-primary/20 relative overflow-hidden group transition-all duration-300"
+          disabled={submitting || (!isLogin && !acceptedTerms)}
+          className="w-full h-11 font-semibold text-sm rounded-xl bg-primary/15 text-primary hover:bg-primary/25 border border-primary/20 relative overflow-hidden group transition-all duration-300 disabled:opacity-40 disabled:cursor-not-allowed"
         >
           {submitting ? (
             <span className="animate-pulse">Processando...</span>
@@ -437,15 +464,22 @@ const Auth = () => {
           <TestimonialCard mobile />
         </motion.div>
 
-        {/* Security badge */}
+        {/* Security badge + legal links */}
         <motion.div
           initial={{ opacity: 0 }}
           animate={{ opacity: 1 }}
           transition={{ delay: 0.6 }}
-          className="flex items-center justify-center gap-1.5 text-[10px] text-muted-foreground/50 pb-2"
+          className="flex flex-col items-center gap-1 text-[10px] text-muted-foreground/50 pb-2"
         >
-          <Shield className="w-3 h-3" />
-          <span>Seus dados estão protegidos com criptografia</span>
+          <span className="flex items-center gap-1.5">
+            <Shield className="w-3 h-3" />
+            Seus dados estão protegidos com criptografia
+          </span>
+          <span className="flex items-center gap-1">
+            <Link to="/termos-de-uso" className="hover:text-primary transition-colors">Termos de Uso</Link>
+            <span>·</span>
+            <Link to="/politica-de-privacidade" className="hover:text-primary transition-colors">Política de Privacidade</Link>
+          </span>
         </motion.div>
       </div>
     </div>
