@@ -421,16 +421,16 @@ const Auth = () => {
             initial={{ opacity: 0 }}
             animate={{ opacity: 1 }}
             transition={{ delay: 0.6 }}
-            className="flex flex-col items-center gap-1 mt-4 text-xs text-muted-foreground/50"
+            className="flex items-center justify-between mt-6 pt-4 border-t border-border/10 text-xs text-muted-foreground/50"
           >
-            <span className="flex items-center gap-1.5">
-              <Shield className="w-3 h-3" />
-              Seus dados estão protegidos com criptografia
+            <span className="flex items-center gap-2">
+              <PiggyBank className="w-4 h-4 text-primary/60" />
+              <span>DinHub © {new Date().getFullYear()}</span>
             </span>
-            <span className="flex items-center gap-1">
+            <span className="flex items-center gap-4">
               <Link to="/termos-de-uso" className="hover:text-primary transition-colors">Termos de Uso</Link>
-              <span>·</span>
               <Link to="/politica-de-privacidade" className="hover:text-primary transition-colors">Política de Privacidade</Link>
+              <Link to="/suporte" className="hover:text-primary transition-colors">Contato</Link>
             </span>
           </motion.div>
         </div>
@@ -476,16 +476,16 @@ const Auth = () => {
           initial={{ opacity: 0 }}
           animate={{ opacity: 1 }}
           transition={{ delay: 0.6 }}
-          className="flex flex-col items-center gap-1 text-[10px] text-muted-foreground/50 pb-2"
+          className="flex items-center justify-between pt-3 border-t border-border/10 text-[10px] text-muted-foreground/50 pb-2"
         >
           <span className="flex items-center gap-1.5">
-            <Shield className="w-3 h-3" />
-            Seus dados estão protegidos com criptografia
+            <PiggyBank className="w-3.5 h-3.5 text-primary/60" />
+            <span>DinHub © {new Date().getFullYear()}</span>
           </span>
-          <span className="flex items-center gap-1">
+          <span className="flex items-center gap-3">
             <Link to="/termos-de-uso" className="hover:text-primary transition-colors">Termos de Uso</Link>
-            <span>·</span>
             <Link to="/politica-de-privacidade" className="hover:text-primary transition-colors">Política de Privacidade</Link>
+            <Link to="/suporte" className="hover:text-primary transition-colors">Contato</Link>
           </span>
         </motion.div>
       </div>
