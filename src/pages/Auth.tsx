@@ -171,16 +171,18 @@ const Auth = () => {
   );
 
   const FeaturesGrid = ({ mobile = false }: { mobile?: boolean }) => (
-    <div className="grid grid-cols-2 gap-2.5">
+    <div className="grid grid-cols-2 gap-2">
       {features.map((f) => (
         <div
           key={f.title}
-          className={`flex items-center gap-3 bg-card/50 border border-border/40 rounded-xl backdrop-blur-sm ${mobile ? "p-3" : "p-3"}`}
+          className={`flex items-center gap-2 bg-card/50 border border-border/40 rounded-xl backdrop-blur-sm ${mobile ? "px-2.5 py-2" : "p-3"}`}
         >
-          <div className="w-8 h-8 rounded-lg bg-primary/10 border border-primary/20 flex items-center justify-center text-primary shrink-0">{f.icon}</div>
+          <div className={`${mobile ? "w-6 h-6 rounded-md" : "w-8 h-8 rounded-lg"} bg-primary/10 border border-primary/20 flex items-center justify-center text-primary shrink-0`}>
+            {React.cloneElement(f.icon, { className: mobile ? "w-3 h-3" : "w-4 h-4" })}
+          </div>
           <div className="min-w-0">
-            <p className={`font-semibold text-foreground ${mobile ? "text-xs" : "text-xs"}`}>{f.title}</p>
-            <p className={`text-muted-foreground leading-snug ${mobile ? "text-[10px]" : "text-[10px]"}`}>{f.desc}</p>
+            <p className={`font-semibold text-foreground leading-none ${mobile ? "text-[10px]" : "text-xs"}`}>{f.title}</p>
+            <p className={`text-muted-foreground leading-tight mt-0.5 ${mobile ? "text-[8px]" : "text-[10px]"}`}>{f.desc}</p>
           </div>
         </div>
       ))}
