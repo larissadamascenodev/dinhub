@@ -485,7 +485,7 @@ const Auth = () => {
             <InputMethodsPill />
           </motion.div>
           <motion.div custom={3} variants={fadeUp} initial="hidden" animate="visible">
-            <StatsGrid />
+            <FeaturesGrid />
           </motion.div>
           <motion.div custom={4} variants={fadeUp} initial="hidden" animate="visible">
             <TestimonialCard />
@@ -545,7 +545,7 @@ const Auth = () => {
 
         {/* Stats + Testimonial (below form) */}
         <motion.div custom={2} variants={fadeUp} initial="hidden" animate="visible" className="space-y-2.5">
-          <StatsGrid mobile />
+          <FeaturesGrid mobile />
           <TestimonialCard mobile />
         </motion.div>
 
