@@ -1,36 +1,10 @@
 import { motion, AnimatePresence } from "framer-motion";
-import { X, Mail, MessageCircle, Clock, MapPin } from "lucide-react";
+import { X, Mail, MessageCircle, Clock, Headphones, Send } from "lucide-react";
 
 interface ContactModalProps {
   open: boolean;
   onClose: () => void;
 }
-
-const channels = [
-  {
-    icon: Mail,
-    title: "Email",
-    subtitle: "suporte@dinhub.com",
-    color: "from-blue-500/20 to-blue-600/10",
-    iconBg: "bg-blue-500/15 text-blue-400",
-    href: "mailto:suporte@dinhub.com",
-  },
-  {
-    icon: MessageCircle,
-    title: "WhatsApp",
-    subtitle: "Atendimento rápido",
-    color: "from-emerald-500/20 to-emerald-600/10",
-    iconBg: "bg-emerald-500/15 text-emerald-400",
-    href: "https://wa.me/5500000000000",
-  },
-  {
-    icon: Clock,
-    title: "Horário de Atendimento",
-    subtitle: "Seg a Sex, 9h às 18h (Brasília)",
-    color: "from-amber-500/20 to-amber-600/10",
-    iconBg: "bg-amber-500/15 text-amber-400",
-  },
-];
 
 const ContactModal = ({ open, onClose }: ContactModalProps) => {
   if (!open) return null;
@@ -42,88 +16,111 @@ const ContactModal = ({ open, onClose }: ContactModalProps) => {
           initial={{ opacity: 0 }}
           animate={{ opacity: 1 }}
           exit={{ opacity: 0 }}
-          className="fixed inset-0 z-[100] flex items-center justify-center p-4"
+          className="fixed inset-0 z-[100] flex items-end sm:items-center justify-center p-0 sm:p-4"
           onClick={onClose}
         >
-          {/* Backdrop */}
           <div className="absolute inset-0 bg-black/60 backdrop-blur-sm" />
 
-          {/* Modal */}
           <motion.div
-            initial={{ opacity: 0, scale: 0.92, y: 20 }}
-            animate={{ opacity: 1, scale: 1, y: 0 }}
-            exit={{ opacity: 0, scale: 0.92, y: 20 }}
-            transition={{ type: "spring", duration: 0.5, bounce: 0.2 }}
+            initial={{ opacity: 0, y: 60 }}
+            animate={{ opacity: 1, y: 0 }}
+            exit={{ opacity: 0, y: 60 }}
+            transition={{ type: "spring", duration: 0.5, bounce: 0.18 }}
             onClick={(e) => e.stopPropagation()}
-            className="relative w-full max-w-md rounded-2xl border border-border/20 overflow-hidden"
+            className="relative w-full sm:max-w-sm rounded-t-3xl sm:rounded-2xl border border-border/20 overflow-hidden"
             style={{
-              background: "linear-gradient(160deg, hsl(220 18% 10%) 0%, hsl(220 20% 6%) 100%)",
-              boxShadow: "0 25px 60px -12px rgba(0,0,0,0.7), 0 0 40px -8px hsl(150 100% 45% / 0.05)",
+              background: "linear-gradient(175deg, hsl(220 18% 10%) 0%, hsl(220 22% 5%) 100%)",
+              boxShadow: "0 -8px 40px -8px rgba(0,0,0,0.6), 0 0 60px -20px hsl(150 100% 45% / 0.06)",
             }}
           >
-            {/* Glow accent */}
-            <div className="absolute -top-24 -right-24 w-48 h-48 rounded-full bg-primary/6 blur-3xl pointer-events-none" />
+            {/* Top handle (mobile) */}
+            <div className="flex sm:hidden justify-center pt-3 pb-1">
+              <div className="w-10 h-1 rounded-full bg-muted-foreground/20" />
+            </div>
 
-            {/* Header */}
-            <div className="flex items-center justify-between p-5 pb-3">
-              <div className="flex items-center gap-3">
-                <div className="w-9 h-9 rounded-xl bg-primary/10 border border-primary/20 flex items-center justify-center">
-                  <Mail className="w-4 h-4 text-primary" />
-                </div>
-                <h2 className="text-lg font-bold text-foreground tracking-tight">Contato</h2>
-              </div>
+            {/* Hero section */}
+            <div className="relative px-6 pt-5 pb-4 text-center overflow-hidden">
+              <div className="absolute inset-0 bg-gradient-to-b from-primary/5 to-transparent pointer-events-none" />
+              <motion.div
+                initial={{ scale: 0.8, opacity: 0 }}
+                animate={{ scale: 1, opacity: 1 }}
+                transition={{ delay: 0.15, type: "spring", bounce: 0.3 }}
+                className="relative mx-auto w-14 h-14 rounded-2xl bg-primary/10 border border-primary/20 flex items-center justify-center mb-3"
+              >
+                <Headphones className="w-7 h-7 text-primary" />
+              </motion.div>
+              <h2 className="relative text-lg font-display font-bold text-foreground">Fale conosco</h2>
+              <p className="relative text-xs text-muted-foreground mt-1 max-w-[260px] mx-auto leading-relaxed">
+                Escolha o canal que preferir — estamos prontos para te ajudar.
+              </p>
+
+              {/* Close btn */}
               <button
                 onClick={onClose}
-                className="w-8 h-8 rounded-lg bg-muted/40 flex items-center justify-center hover:bg-muted/60 transition-colors"
+                className="absolute top-4 right-4 w-8 h-8 rounded-full bg-muted/30 flex items-center justify-center hover:bg-muted/50 transition-colors"
               >
                 <X className="w-4 h-4 text-muted-foreground" />
               </button>
             </div>
 
-            {/* Description */}
-            <p className="px-5 text-sm text-muted-foreground leading-relaxed">
-              Tem alguma dúvida, sugestão ou precisa de ajuda? Entre em contato conosco por um dos canais abaixo.
-            </p>
+            {/* Channel buttons */}
+            <div className="px-5 pb-2 space-y-2">
+              {/* Email */}
+              <motion.a
+                href="mailto:suporte@dinhub.com"
+                initial={{ opacity: 0, y: 10 }}
+                animate={{ opacity: 1, y: 0 }}
+                transition={{ delay: 0.2 }}
+                className="group flex items-center gap-3.5 p-3.5 rounded-xl border border-border/15 bg-card/30 hover:bg-primary/5 hover:border-primary/20 transition-all duration-300"
+              >
+                <div className="w-10 h-10 rounded-xl bg-blue-500/10 border border-blue-500/15 flex items-center justify-center shrink-0 group-hover:scale-105 transition-transform">
+                  <Mail className="w-4.5 h-4.5 text-blue-400" />
+                </div>
+                <div className="flex-1 min-w-0">
+                  <p className="text-sm font-semibold text-foreground">Email</p>
+                  <p className="text-[11px] text-muted-foreground truncate">suporte@dinhub.com</p>
+                </div>
+                <Send className="w-3.5 h-3.5 text-muted-foreground/40 group-hover:text-primary/60 transition-colors" />
+              </motion.a>
 
-            {/* Channels */}
-            <div className="p-5 space-y-3">
-              {channels.map((ch, i) => {
-                const Wrapper = ch.href ? "a" : "div";
-                const wrapperProps = ch.href
-                  ? { href: ch.href, target: "_blank", rel: "noopener noreferrer" }
-                  : {};
-
-                return (
-                  <motion.div
-                    key={i}
-                    initial={{ opacity: 0, x: -12 }}
-                    animate={{ opacity: 1, x: 0 }}
-                    transition={{ delay: 0.1 + i * 0.07 }}
-                  >
-                    <Wrapper
-                      {...(wrapperProps as any)}
-                      className={`flex items-center gap-4 p-4 rounded-xl border border-border/15 bg-gradient-to-r ${ch.color} backdrop-blur-sm ${ch.href ? "cursor-pointer hover:border-border/30 transition-colors" : ""}`}
-                    >
-                      <div className={`w-10 h-10 rounded-xl ${ch.iconBg} flex items-center justify-center shrink-0`}>
-                        <ch.icon className="w-5 h-5" />
-                      </div>
-                      <div>
-                        <p className="text-sm font-semibold text-foreground">{ch.title}</p>
-                        <p className="text-xs text-muted-foreground">{ch.subtitle}</p>
-                      </div>
-                    </Wrapper>
-                  </motion.div>
-                );
-              })}
+              {/* WhatsApp */}
+              <motion.a
+                href="https://wa.me/5500000000000"
+                target="_blank"
+                rel="noopener noreferrer"
+                initial={{ opacity: 0, y: 10 }}
+                animate={{ opacity: 1, y: 0 }}
+                transition={{ delay: 0.28 }}
+                className="group flex items-center gap-3.5 p-3.5 rounded-xl border border-border/15 bg-card/30 hover:bg-primary/5 hover:border-primary/20 transition-all duration-300"
+              >
+                <div className="w-10 h-10 rounded-xl bg-emerald-500/10 border border-emerald-500/15 flex items-center justify-center shrink-0 group-hover:scale-105 transition-transform">
+                  <MessageCircle className="w-4.5 h-4.5 text-emerald-400" />
+                </div>
+                <div className="flex-1 min-w-0">
+                  <p className="text-sm font-semibold text-foreground">WhatsApp</p>
+                  <p className="text-[11px] text-muted-foreground">Atendimento rápido</p>
+                </div>
+                <Send className="w-3.5 h-3.5 text-muted-foreground/40 group-hover:text-primary/60 transition-colors" />
+              </motion.a>
             </div>
 
+            {/* Schedule info — inline pill */}
+            <motion.div
+              initial={{ opacity: 0 }}
+              animate={{ opacity: 1 }}
+              transition={{ delay: 0.36 }}
+              className="mx-5 mt-2 mb-4 flex items-center justify-center gap-2 py-2.5 px-4 rounded-full bg-muted/20 border border-border/10"
+            >
+              <Clock className="w-3.5 h-3.5 text-warning" />
+              <span className="text-[11px] text-muted-foreground">
+                Seg a Sex, <span className="text-foreground/70 font-medium">9h às 18h</span> (Brasília)
+              </span>
+            </motion.div>
+
             {/* Footer */}
-            <div className="px-5 pb-5 flex items-center justify-between">
-              <div className="flex items-center gap-1.5 text-[11px] text-muted-foreground/50">
-                <MapPin className="w-3 h-3" />
-                <span>DinHub · Brasil</span>
-              </div>
-              <span className="text-[10px] text-muted-foreground/40">Desenvolvido por <span className="text-muted-foreground/60 font-medium">Néctar</span></span>
+            <div className="px-5 pb-5 pt-1 flex items-center justify-between text-[10px] text-muted-foreground/30">
+              <span>DinHub · Brasil</span>
+              <span>Desenvolvido por <span className="text-muted-foreground/50 font-medium">Néctar</span></span>
             </div>
           </motion.div>
         </motion.div>
