@@ -221,16 +221,54 @@ const PagarEditarModal = ({ open, event, onClose, onSuccess }: Props) => {
                 </div>
                 <div className="space-y-1.5">
                   <Label className="text-xs text-muted-foreground">Categoria</Label>
-                  <Select value={category} onValueChange={setCategory}>
-                    <SelectTrigger className="bg-muted border-border">
-                      <SelectValue />
-                    </SelectTrigger>
-                    <SelectContent>
-                      {CATEGORIES.map((cat) => (
-                        <SelectItem key={cat} value={cat}>{cat}</SelectItem>
-                      ))}
-                    </SelectContent>
-                  </Select>
+                  {(() => {
+                    const txType = event?.category && DEFAULT_INCOME_CATEGORIES.includes(event.category) ? "receita" : "despesa";
+                    const baseCategories = txType === "receita" ? DEFAULT_INCOME_CATEGORIES : DEFAULT_EXPENSE_CATEGORIES;
+                    const allCats = Array.from(new Set([
+                      ...baseCategories,
+                      ...customCategories.filter(c => c.type === txType).map(c => c.name),
+                    ]));
+                    const filtered = categorySearch
+                      ? allCats.filter(c => c.toLowerCase().includes(categorySearch.toLowerCase()))
+                      : allCats;
+                    return (
+                      <div className="space-y-2">
+                        <div className="relative">
+                          <Search className="absolute left-2.5 top-1/2 -translate-y-1/2 w-3.5 h-3.5 text-muted-foreground/40" />
+                          <Input
+                            value={categorySearch}
+                            onChange={(e) => setCategorySearch(e.target.value)}
+                            placeholder="Buscar categoria..."
+                            className="bg-muted/30 border-border/20 h-9 pl-8 text-xs rounded-lg"
+                          />
+                        </div>
+                        <div className="flex flex-wrap gap-1.5 max-h-40 overflow-y-auto scrollbar-none">
+                          {filtered.map((cat) => {
+                            const isSelected = category === cat;
+                            const customCat = customCategories.find(c => c.name === cat);
+                            const CatIcon = customCat ? getIconComponent(customCat.icon) : getDefaultCategoryIcon(cat);
+                            const catHex = getCategoryHexColor(cat, customCategories);
+                            return (
+                              <button
+                                key={cat}
+                                type="button"
+                                onClick={() => setCategory(cat)}
+                                className={cn(
+                                  "flex items-center gap-1.5 px-2.5 py-1.5 rounded-lg text-[11px] font-medium transition-all border",
+                                  isSelected
+                                    ? "border-primary/30 bg-primary/10 text-primary"
+                                    : "border-border/15 bg-muted/20 text-muted-foreground hover:bg-muted/40"
+                                )}
+                              >
+                                <CatIcon className="w-3 h-3" style={{ color: isSelected ? undefined : catHex }} />
+                                {cat}
+                              </button>
+                            );
+                          })}
+                        </div>
+                      </div>
+                    );
+                  })()}
                 </div>
                 <div className="flex gap-2 pt-1">
                   <Button
