@@ -465,9 +465,9 @@ const Auth = () => {
             Din<span className="text-primary">Hub</span>
           </span>
         </div>
-        <span className="flex items-center gap-1.5 text-xs text-muted-foreground">
-          <Shield className="w-3.5 h-3.5" />
-          Controle Financeiro Inteligente
+        <span className="flex items-center gap-2 text-xs text-muted-foreground bg-primary/10 border border-primary/15 rounded-full px-3.5 py-1.5">
+          <Shield className="w-3.5 h-3.5 text-primary" />
+          <span className="text-foreground/80 font-medium">Controle Financeiro Inteligente</span>
         </span>
       </motion.header>
 
