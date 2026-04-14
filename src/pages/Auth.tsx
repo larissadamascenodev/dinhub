@@ -87,6 +87,10 @@ const Auth = () => {
       toast.error("A senha deve ter pelo menos 6 caracteres");
       return;
     }
+    if (!isLogin && !acceptedTerms) {
+      toast.error("Você precisa aceitar os termos para continuar");
+      return;
+    }
     setSubmitting(true);
     try {
       if (isLogin) {
