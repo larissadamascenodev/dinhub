@@ -150,7 +150,7 @@ const Auth = () => {
           vida financeira.
         </span>
       </h1>
-      <p className={`text-muted-foreground leading-relaxed ${mobile ? "mt-1.5 text-[11px] max-w-[280px] mx-auto" : "mt-5 text-base max-w-2xl"}`}>
+      <p className={`text-muted-foreground leading-relaxed text-justify ${mobile ? "mt-1.5 text-[11px] max-w-[280px] mx-auto" : "mt-5 text-base max-w-2xl"}`}>
         Organize suas finanças, entenda para onde seu dinheiro vai e acompanhe a evolução do seu patrimônio em tempo real.
       </p>
     </div>
