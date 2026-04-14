@@ -10,8 +10,9 @@ import { Navigate } from "react-router-dom";
 import { useAuth } from "@/contexts/AuthContext";
 import { motion, AnimatePresence } from "framer-motion";
 import {
-  Eye, EyeOff, ArrowRight, Mail, Lock, TrendingUp, Target, Star,
-  PiggyBank, MessageCircle, Mic, Image, Zap, Shield, User, Check
+  Eye, EyeOff, ArrowRight, Mail, Lock,
+  PiggyBank, MessageCircle, Mic, Image, Zap, Shield, User, Check,
+  Wallet, BarChart3, Bell, Brain
 } from "lucide-react";
 import { Link } from "react-router-dom";
 
@@ -20,10 +21,11 @@ const fadeUp = {
   visible: (i: number) => ({ opacity: 1, y: 0, transition: { delay: i * 0.08, duration: 0.5, ease: [0.22, 1, 0.36, 1] as [number, number, number, number] } }),
 };
 
-const stats = [
-  { icon: <TrendingUp className="w-4 h-4" />, value: "R$ 1.2M", label: "Economizados" },
-  { icon: <Target className="w-4 h-4" />, value: "94%", label: "Metas atingidas" },
-  { icon: <Star className="w-4 h-4" />, value: "4.9", label: "Avaliação" },
+const features = [
+  { icon: <Wallet className="w-4 h-4" />, title: "Controle total", desc: "Receitas, despesas e cartões em um só lugar" },
+  { icon: <BarChart3 className="w-4 h-4" />, title: "Projeções IA", desc: "Saiba como seu saldo vai estar nos próximos meses" },
+  { icon: <Bell className="w-4 h-4" />, title: "Alertas inteligentes", desc: "Nunca mais esqueça uma conta ou ultrapasse limites" },
+  { icon: <Brain className="w-4 h-4" />, title: "Assistente financeiro", desc: "A Iara analisa seus hábitos e sugere melhorias" },
 ];
 
 const AVATAR_URLS = [
@@ -168,16 +170,18 @@ const Auth = () => {
     </div>
   );
 
-  const StatsGrid = ({ mobile = false }: { mobile?: boolean }) => (
-    <div className="grid grid-cols-3 gap-3">
-      {stats.map((s) => (
+  const FeaturesGrid = ({ mobile = false }: { mobile?: boolean }) => (
+    <div className={`grid ${mobile ? "grid-cols-2" : "grid-cols-2"} gap-2.5`}>
+      {features.map((f) => (
         <div
-          key={s.label}
-          className="group flex flex-col items-center text-center bg-card/50 border border-border/40 rounded-xl p-3 gap-1 backdrop-blur-sm hover:border-primary/30 hover:bg-primary/5 transition-all duration-300"
+          key={f.title}
+          className="flex items-start gap-2.5 bg-card/50 border border-border/40 rounded-xl p-3 backdrop-blur-sm"
         >
-          <div className="w-8 h-8 rounded-lg bg-primary/10 border border-primary/20 flex items-center justify-center text-primary mb-0.5">{s.icon}</div>
-          <p className={`font-extrabold text-foreground tracking-tight ${mobile ? "text-base" : "text-xl"}`}>{s.value}</p>
-          <p className="text-[10px] text-muted-foreground leading-tight">{s.label}</p>
+          <div className="w-7 h-7 rounded-lg bg-primary/10 border border-primary/20 flex items-center justify-center text-primary shrink-0 mt-0.5">{f.icon}</div>
+          <div className="min-w-0">
+            <p className={`font-semibold text-foreground ${mobile ? "text-[11px]" : "text-xs"}`}>{f.title}</p>
+            <p className={`text-muted-foreground leading-snug ${mobile ? "text-[9px]" : "text-[10px]"}`}>{f.desc}</p>
+          </div>
         </div>
       ))}
     </div>
@@ -481,7 +485,7 @@ const Auth = () => {
             <InputMethodsPill />
           </motion.div>
           <motion.div custom={3} variants={fadeUp} initial="hidden" animate="visible">
-            <StatsGrid />
+            <FeaturesGrid />
           </motion.div>
           <motion.div custom={4} variants={fadeUp} initial="hidden" animate="visible">
             <TestimonialCard />
@@ -541,7 +545,7 @@ const Auth = () => {
 
         {/* Stats + Testimonial (below form) */}
         <motion.div custom={2} variants={fadeUp} initial="hidden" animate="visible" className="space-y-2.5">
-          <StatsGrid mobile />
+          <FeaturesGrid mobile />
           <TestimonialCard mobile />
         </motion.div>
 
