@@ -529,6 +529,14 @@ const Auth = () => {
           </span>
         </motion.div>
 
+        {/* Tagline badge mobile */}
+        <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} transition={{ delay: 0.2 }} className="flex justify-center">
+          <span className="flex items-center gap-2 text-[10px] text-muted-foreground bg-primary/10 border border-primary/15 rounded-full px-3 py-1">
+            <Shield className="w-3 h-3 text-primary" />
+            <span className="text-foreground/80 font-medium">Controle Financeiro Inteligente</span>
+          </span>
+        </motion.div>
+
         {/* Social proof badge */}
         <motion.div custom={0} variants={fadeUp} initial="hidden" animate="visible" className="flex justify-center">
           <SocialProofBadge mobile />
