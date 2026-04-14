@@ -821,11 +821,27 @@ const Transacoes = () => {
       </AnimatePresence>
 
       {/* Timeline list */}
+      {(() => {
+        // Ensure today's date appears in the timeline for the current month
+        const now = new Date();
+        const todayStr = `${now.getFullYear()}-${String(now.getMonth() + 1).padStart(2, "0")}-${String(now.getDate()).padStart(2, "0")}`;
+        const isCurrentMonth = selectedMonth === now.getMonth() && selectedYear === now.getFullYear();
+        const groupedWithToday = useMemo(() => {
+          if (!isCurrentMonth) return grouped;
+          const hasToday = grouped.some(([date]) => date === todayStr);
+          if (hasToday) return grouped;
+          // Insert today's empty group in the correct sorted position (descending)
+          const result = [...grouped, [todayStr, [] as TransactionRow[]] as [string, TransactionRow[]]];
+          return result.sort(([a], [b]) => b.localeCompare(a));
+        }, [grouped, isCurrentMonth, todayStr]);
+
+        return null;
+      })()}
       {loading && filtered.length === 0 ? (
         <div className="flex items-center justify-center py-16">
           <div className="animate-pulse text-primary text-sm">Carregando...</div>
         </div>
-      ) : filtered.length === 0 ? (
+      ) : filtered.length === 0 && !(selectedMonth === new Date().getMonth() && selectedYear === new Date().getFullYear()) ? (
         <div className="glass-card p-8 text-center">
           <Layers className="w-6 h-6 text-muted-foreground/20 mx-auto mb-2" />
           <p className="text-xs text-muted-foreground/40">Nenhuma transação encontrada</p>
@@ -838,7 +854,16 @@ const Transacoes = () => {
           {/* Timeline line */}
           <div className="absolute left-[7px] top-3 bottom-0 w-px bg-border/30" />
 
-          {grouped.map(([date, txs], gi) => {
+          {(() => {
+            const now = new Date();
+            const todayStr = `${now.getFullYear()}-${String(now.getMonth() + 1).padStart(2, "0")}-${String(now.getDate()).padStart(2, "0")}`;
+            const isCurrentMonth = selectedMonth === now.getMonth() && selectedYear === now.getFullYear();
+            let finalGroups = grouped;
+            if (isCurrentMonth && !grouped.some(([date]) => date === todayStr)) {
+              finalGroups = [...grouped, [todayStr, [] as TransactionRow[]]].sort(([a], [b]) => b.localeCompare(a));
+            }
+            return finalGroups;
+          })().map(([date, txs], gi) => {
             const { label, isToday } = formatDateHeader(date);
             const dayTotal = getDayTotal(txs);
 
