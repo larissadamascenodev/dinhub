@@ -6,7 +6,16 @@ import { Input } from "@/components/ui/input";
 import { toast } from "sonner";
 import { Navigate } from "react-router-dom";
 import { useAuth } from "@/contexts/AuthContext";
-import { Eye, EyeOff, ArrowRight, Mail, Lock, TrendingUp, Target, Star, Wallet, MessageCircle, Mic, Image, Zap } from "lucide-react";
+import { motion, AnimatePresence } from "framer-motion";
+import {
+  Eye, EyeOff, ArrowRight, Mail, Lock, TrendingUp, Target, Star,
+  Wallet, MessageCircle, Mic, Image, Zap, Shield, ChartLine
+} from "lucide-react";
+
+const fadeUp = {
+  hidden: { opacity: 0, y: 20 },
+  visible: (i: number) => ({ opacity: 1, y: 0, transition: { delay: i * 0.08, duration: 0.5, ease: [.22, 1, .36, 1] } }),
+};
 
 const Auth = () => {
   const { user, loading } = useAuth();
@@ -19,7 +28,16 @@ const Auth = () => {
   if (loading) {
     return (
       <div className="dark min-h-screen bg-background flex items-center justify-center">
-        <div className="animate-pulse text-primary text-lg">Carregando...</div>
+        <motion.div
+          initial={{ opacity: 0, scale: 0.9 }}
+          animate={{ opacity: 1, scale: 1 }}
+          className="flex flex-col items-center gap-3"
+        >
+          <div className="w-10 h-10 rounded-xl bg-primary/20 flex items-center justify-center">
+            <Wallet className="w-5 h-5 text-primary animate-pulse" />
+          </div>
+          <span className="text-muted-foreground text-sm">Carregando...</span>
+        </motion.div>
       </div>
     );
   }
@@ -75,98 +93,150 @@ const Auth = () => {
   };
 
   return (
-    <div className="dark min-h-screen bg-background flex flex-col">
+    <div className="dark min-h-screen bg-background flex flex-col relative overflow-hidden">
+      {/* Ambient glow effects */}
+      <div className="pointer-events-none absolute -top-40 -left-40 w-[500px] h-[500px] rounded-full bg-primary/5 blur-[120px]" />
+      <div className="pointer-events-none absolute -bottom-40 -right-40 w-[400px] h-[400px] rounded-full bg-primary/3 blur-[100px]" />
+
       {/* Top bar */}
-      <header className="flex items-center justify-between px-6 py-4 lg:px-10">
-        <div className="flex items-center gap-2">
-          <Wallet className="w-6 h-6 text-primary" />
-          <span className="font-display text-lg font-bold text-foreground">FinanPro</span>
+      <motion.header
+        initial={{ opacity: 0, y: -10 }}
+        animate={{ opacity: 1, y: 0 }}
+        transition={{ duration: 0.5 }}
+        className="flex items-center justify-between px-6 py-4 lg:px-10 relative z-10"
+      >
+        <div className="flex items-center gap-2.5">
+          <div className="w-8 h-8 rounded-lg bg-primary/15 border border-primary/20 flex items-center justify-center">
+            <Wallet className="w-4 h-4 text-primary" />
+          </div>
+          <span className="font-display text-xl font-bold text-foreground tracking-tight">
+            Din<span className="text-primary">Hub</span>
+          </span>
         </div>
-        <span className="hidden sm:block text-sm text-muted-foreground">Controle Financeiro Inteligente</span>
-      </header>
+        <span className="hidden sm:flex items-center gap-1.5 text-xs text-muted-foreground">
+          <Shield className="w-3.5 h-3.5" />
+          Controle Financeiro Inteligente
+        </span>
+      </motion.header>
 
       {/* Main content */}
-      <div className="flex-1 flex flex-col lg:flex-row items-center lg:items-stretch px-4 lg:px-10 pb-8 gap-8 lg:gap-12">
-        
+      <div className="flex-1 flex flex-col lg:flex-row items-center lg:items-stretch px-4 lg:px-10 xl:px-16 pb-8 gap-8 lg:gap-16 relative z-10">
+
         {/* LEFT — Marketing */}
-        <div className="hidden lg:flex flex-col justify-center flex-1 max-w-xl space-y-8">
+        <div className="hidden lg:flex flex-col justify-center flex-1 max-w-xl space-y-7">
           {/* Social proof badge */}
-          <div className="flex items-center gap-2">
-            <span className="bg-primary/15 text-primary text-xs font-medium px-3 py-1.5 rounded-full flex items-center gap-1.5">
-              👥 +2.847 pessoas controlando suas finanças
+          <motion.div custom={0} variants={fadeUp} initial="hidden" animate="visible">
+            <span className="inline-flex items-center gap-2 bg-primary/10 text-primary text-xs font-medium px-4 py-2 rounded-full border border-primary/15 backdrop-blur-sm">
+              <span className="w-2 h-2 rounded-full bg-primary animate-pulse" />
+              +2.847 pessoas controlando suas finanças
             </span>
-          </div>
+          </motion.div>
 
           {/* Headline */}
-          <div>
-            <h1 className="font-display text-4xl xl:text-5xl font-bold leading-tight text-foreground">
-              Assuma o controle total da sua{" "}
-              <span className="text-primary">vida financeira.</span>
+          <motion.div custom={1} variants={fadeUp} initial="hidden" animate="visible">
+            <h1 className="font-display text-4xl xl:text-5xl font-bold leading-[1.1] text-foreground">
+              Assuma o controle{" "}
+              <br className="hidden xl:block" />
+              total da sua{" "}
+              <span className="text-transparent bg-clip-text bg-gradient-to-r from-primary to-emerald-300">
+                vida financeira.
+              </span>
             </h1>
-            <p className="mt-4 text-muted-foreground text-base leading-relaxed max-w-md">
-              O FinanPro transforma gastos, metas, dívidas e investimentos em um sistema inteligente que trabalha por você.
+            <p className="mt-5 text-muted-foreground text-base leading-relaxed max-w-md">
+              O DinHub transforma gastos, metas, dívidas e investimentos em um sistema inteligente que trabalha por você.
             </p>
-          </div>
+          </motion.div>
 
           {/* Input methods pill */}
-          <div className="flex items-center gap-3 bg-card/60 border border-border rounded-full px-4 py-2.5 w-fit text-sm text-muted-foreground">
-            <span>Envie por</span>
-            <span className="flex items-center gap-1 text-primary"><MessageCircle className="w-3.5 h-3.5" /> texto</span>
-            <span>·</span>
-            <span className="flex items-center gap-1 text-muted-foreground"><Mic className="w-3.5 h-3.5" /> áudio</span>
-            <span>·</span>
-            <span className="flex items-center gap-1 text-muted-foreground"><Image className="w-3.5 h-3.5" /> foto</span>
-            <Zap className="w-3.5 h-3.5 text-primary" />
-          </div>
+          <motion.div custom={2} variants={fadeUp} initial="hidden" animate="visible">
+            <div className="flex items-center gap-3 bg-card/40 border border-border/60 rounded-full px-5 py-3 w-fit text-sm text-muted-foreground backdrop-blur-sm">
+              <span>Envie por</span>
+              <span className="flex items-center gap-1 text-primary font-medium"><MessageCircle className="w-3.5 h-3.5" /> texto</span>
+              <span className="text-border">·</span>
+              <span className="flex items-center gap-1"><Mic className="w-3.5 h-3.5" /> áudio</span>
+              <span className="text-border">·</span>
+              <span className="flex items-center gap-1"><Image className="w-3.5 h-3.5" /> foto</span>
+              <Zap className="w-3.5 h-3.5 text-primary" />
+            </div>
+          </motion.div>
 
           {/* Stats */}
-          <div className="grid grid-cols-3 gap-3">
+          <motion.div custom={3} variants={fadeUp} initial="hidden" animate="visible" className="grid grid-cols-3 gap-3">
             {[
-              { icon: <TrendingUp className="w-4 h-4 text-primary" />, value: "R$ 1.2M", label: "Economizados" },
-              { icon: <Target className="w-4 h-4 text-primary" />, value: "94%", label: "Metas atingidas" },
-              { icon: <Star className="w-4 h-4 text-primary" />, value: "4.9", label: "Avaliação" },
+              { icon: <TrendingUp className="w-4 h-4" />, value: "R$ 1.2M", label: "Economizados" },
+              { icon: <Target className="w-4 h-4" />, value: "94%", label: "Metas atingidas" },
+              { icon: <Star className="w-4 h-4" />, value: "4.9", label: "Avaliação" },
             ].map((s) => (
-              <div key={s.label} className="bg-card/60 border border-border rounded-xl p-4 space-y-1">
-                {s.icon}
-                <p className="text-lg font-bold text-foreground">{s.value}</p>
+              <div
+                key={s.label}
+                className="group bg-card/40 border border-border/60 rounded-xl p-4 space-y-1.5 backdrop-blur-sm hover:border-primary/30 hover:bg-primary/5 transition-all duration-300"
+              >
+                <div className="text-primary group-hover:scale-110 transition-transform duration-300">{s.icon}</div>
+                <p className="text-xl font-bold text-foreground">{s.value}</p>
                 <p className="text-xs text-muted-foreground">{s.label}</p>
               </div>
             ))}
-          </div>
+          </motion.div>
 
           {/* Testimonial */}
-          <div className="bg-card/60 border border-border rounded-xl p-5 space-y-3">
-            <div className="flex items-center gap-3">
-              <div className="w-9 h-9 rounded-full bg-primary/20 flex items-center justify-center text-xs font-bold text-primary">CR</div>
-              <div>
-                <p className="text-sm font-semibold text-foreground">Carlos R.</p>
-                <div className="flex gap-0.5 text-yellow-400 text-xs">★★★★★</div>
+          <motion.div custom={4} variants={fadeUp} initial="hidden" animate="visible">
+            <div className="bg-card/40 border border-border/60 rounded-xl p-5 space-y-3 backdrop-blur-sm">
+              <div className="flex items-center gap-3">
+                <div className="w-10 h-10 rounded-full bg-gradient-to-br from-primary/30 to-primary/10 flex items-center justify-center text-xs font-bold text-primary border border-primary/20">
+                  CR
+                </div>
+                <div>
+                  <p className="text-sm font-semibold text-foreground">Carlos R.</p>
+                  <div className="flex gap-0.5 text-yellow-400 text-xs">★★★★★</div>
+                </div>
+              </div>
+              <p className="text-sm text-muted-foreground italic leading-relaxed">
+                "Consegui quitar todas as minhas dívidas em 6 meses seguindo o plano do DinHub. Recomendo demais!"
+              </p>
+              <div className="flex gap-1.5 justify-center pt-1">
+                <span className="w-1.5 h-1.5 rounded-full bg-muted-foreground/30" />
+                <span className="w-5 h-1.5 rounded-full bg-primary" />
+                <span className="w-1.5 h-1.5 rounded-full bg-muted-foreground/30" />
               </div>
             </div>
-            <p className="text-sm text-muted-foreground italic">
-              "Consegui quitar todas as minhas dívidas em 6 meses seguindo o plano do FinanPro. Recomendo demais!"
-            </p>
-            {/* Dots */}
-            <div className="flex gap-1.5 justify-center pt-1">
-              <span className="w-1.5 h-1.5 rounded-full bg-muted-foreground/40" />
-              <span className="w-4 h-1.5 rounded-full bg-primary" />
-              <span className="w-1.5 h-1.5 rounded-full bg-muted-foreground/40" />
-            </div>
-          </div>
+          </motion.div>
         </div>
 
         {/* RIGHT — Auth form */}
-        <div className="w-full max-w-md lg:max-w-sm flex flex-col justify-center">
-          <div className="space-y-6">
-            {/* Heading */}
-            <div>
-              <h2 className="font-display text-xl font-bold text-foreground">
-                {isLogin ? "Bem-vindo de volta" : "Crie sua conta"}
-              </h2>
-              <p className="text-sm text-muted-foreground mt-1">
-                {isLogin ? "Entre para continuar gerenciando suas finanças" : "Comece a controlar suas finanças agora"}
-              </p>
+        <div className="w-full max-w-md lg:max-w-[400px] flex flex-col justify-center">
+          {/* Mobile logo */}
+          <div className="lg:hidden flex flex-col items-center gap-3 mb-8">
+            <div className="w-14 h-14 rounded-2xl bg-primary/15 border border-primary/20 flex items-center justify-center">
+              <Wallet className="w-7 h-7 text-primary" />
             </div>
+            <span className="font-display text-2xl font-bold text-foreground">
+              Din<span className="text-primary">Hub</span>
+            </span>
+          </div>
+
+          <motion.div
+            initial={{ opacity: 0, y: 16 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ duration: 0.5, delay: 0.15 }}
+            className="bg-card/30 border border-border/50 rounded-2xl p-6 sm:p-8 backdrop-blur-md space-y-6"
+          >
+            {/* Heading */}
+            <AnimatePresence mode="wait">
+              <motion.div
+                key={isLogin ? "login" : "signup"}
+                initial={{ opacity: 0, x: isLogin ? -10 : 10 }}
+                animate={{ opacity: 1, x: 0 }}
+                exit={{ opacity: 0, x: isLogin ? 10 : -10 }}
+                transition={{ duration: 0.25 }}
+              >
+                <h2 className="font-display text-xl font-bold text-foreground">
+                  {isLogin ? "Bem-vindo de volta" : "Crie sua conta"}
+                </h2>
+                <p className="text-sm text-muted-foreground mt-1">
+                  {isLogin ? "Entre para continuar gerenciando suas finanças" : "Comece a controlar suas finanças agora"}
+                </p>
+              </motion.div>
+            </AnimatePresence>
 
             {/* OAuth buttons */}
             <div className="grid grid-cols-2 gap-3">
@@ -178,7 +248,7 @@ const Auth = () => {
                   });
                   if (error) toast.error("Erro ao entrar com Google");
                 }}
-                className="flex items-center justify-center h-12 rounded-lg border border-border bg-card/60 hover:bg-card transition-colors"
+                className="flex items-center justify-center h-12 rounded-xl border border-border/60 bg-card/40 hover:bg-primary/5 hover:border-primary/30 transition-all duration-300 backdrop-blur-sm"
               >
                 <svg className="w-5 h-5" viewBox="0 0 24 24">
                   <path d="M22.56 12.25c0-.78-.07-1.53-.2-2.25H12v4.26h5.92a5.06 5.06 0 0 1-2.2 3.32v2.77h3.57c2.08-1.92 3.28-4.74 3.28-8.1z" fill="#4285F4"/>
@@ -189,7 +259,7 @@ const Auth = () => {
               </button>
               <button
                 type="button"
-                className="flex items-center justify-center h-12 rounded-lg border border-border bg-card/60 hover:bg-card transition-colors"
+                className="flex items-center justify-center h-12 rounded-xl border border-border/60 bg-card/40 hover:bg-primary/5 hover:border-primary/30 transition-all duration-300 backdrop-blur-sm"
                 onClick={() => toast.info("Login com Apple em breve")}
               >
                 <svg className="w-5 h-5 text-foreground fill-current" viewBox="0 0 24 24">
@@ -201,41 +271,41 @@ const Auth = () => {
             {/* Divider */}
             <div className="relative">
               <div className="absolute inset-0 flex items-center">
-                <span className="w-full border-t border-border" />
+                <span className="w-full border-t border-border/40" />
               </div>
               <div className="relative flex justify-center text-xs">
-                <span className="bg-background px-3 text-muted-foreground">ou continue com email</span>
+                <span className="bg-background/80 px-3 text-muted-foreground backdrop-blur-sm">ou continue com email</span>
               </div>
             </div>
 
             {/* Form */}
             <form onSubmit={handleSubmit} className="space-y-4">
-              <div className="relative">
-                <Mail className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-muted-foreground" />
+              <div className="relative group">
+                <Mail className="absolute left-3.5 top-1/2 -translate-y-1/2 w-4 h-4 text-muted-foreground group-focus-within:text-primary transition-colors" />
                 <Input
                   type="email"
                   placeholder="seu@email.com"
                   value={email}
                   onChange={(e) => setEmail(e.target.value)}
-                  className="pl-10 h-12 bg-card/60 border-border rounded-lg"
+                  className="pl-11 h-12 bg-card/40 border-border/60 rounded-xl backdrop-blur-sm focus:border-primary/50 focus:bg-card/60 transition-all duration-300"
                   autoComplete="email"
                 />
               </div>
 
-              <div className="relative">
-                <Lock className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-muted-foreground" />
+              <div className="relative group">
+                <Lock className="absolute left-3.5 top-1/2 -translate-y-1/2 w-4 h-4 text-muted-foreground group-focus-within:text-primary transition-colors" />
                 <Input
                   type={showPassword ? "text" : "password"}
                   placeholder="••••••••"
                   value={password}
                   onChange={(e) => setPassword(e.target.value)}
-                  className="pl-10 pr-10 h-12 bg-card/60 border-border rounded-lg"
+                  className="pl-11 pr-11 h-12 bg-card/40 border-border/60 rounded-xl backdrop-blur-sm focus:border-primary/50 focus:bg-card/60 transition-all duration-300"
                   autoComplete={isLogin ? "current-password" : "new-password"}
                 />
                 <button
                   type="button"
                   onClick={() => setShowPassword(!showPassword)}
-                  className="absolute right-3 top-1/2 -translate-y-1/2 text-muted-foreground hover:text-foreground transition-colors"
+                  className="absolute right-3.5 top-1/2 -translate-y-1/2 text-muted-foreground hover:text-foreground transition-colors"
                 >
                   {showPassword ? <EyeOff className="w-4 h-4" /> : <Eye className="w-4 h-4" />}
                 </button>
@@ -252,16 +322,17 @@ const Auth = () => {
               <Button
                 type="submit"
                 disabled={submitting}
-                className="w-full h-12 font-semibold text-sm rounded-lg text-primary-foreground"
+                className="w-full h-12 font-semibold text-sm rounded-xl text-primary-foreground relative overflow-hidden group"
                 style={{ background: "var(--gradient-primary)" }}
               >
+                <span className="absolute inset-0 bg-white/10 opacity-0 group-hover:opacity-100 transition-opacity duration-300" />
                 {submitting ? (
-                  <span className="animate-pulse">Processando...</span>
+                  <span className="animate-pulse relative z-10">Processando...</span>
                 ) : (
-                  <>
+                  <span className="relative z-10 flex items-center justify-center gap-1.5">
                     {isLogin ? "Entrar" : "Criar conta"}
-                    <ArrowRight className="w-4 h-4 ml-1.5" />
-                  </>
+                    <ArrowRight className="w-4 h-4 group-hover:translate-x-0.5 transition-transform" />
+                  </span>
                 )}
               </Button>
             </form>
@@ -272,12 +343,23 @@ const Auth = () => {
               <button
                 type="button"
                 onClick={() => setIsLogin(!isLogin)}
-                className="text-primary font-medium hover:underline"
+                className="text-primary font-medium hover:underline underline-offset-2"
               >
                 {isLogin ? "Criar conta" : "Fazer login"}
               </button>
             </p>
-          </div>
+          </motion.div>
+
+          {/* Security badge */}
+          <motion.div
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            transition={{ delay: 0.6 }}
+            className="flex items-center justify-center gap-1.5 mt-4 text-xs text-muted-foreground/50"
+          >
+            <Shield className="w-3 h-3" />
+            <span>Seus dados estão protegidos com criptografia</span>
+          </motion.div>
         </div>
       </div>
     </div>
