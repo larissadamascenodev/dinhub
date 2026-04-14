@@ -36,7 +36,7 @@ const AVATAR_URLS = [
 
 const Auth = () => {
   const { user, loading } = useAuth();
-  const [isLogin, setIsLogin] = useState(true);
+  const [isLogin, setIsLogin] = useState(false);
   const [email, setEmail] = useState("");
   const [fullName, setFullName] = useState("");
   const [password, setPassword] = useState("");
