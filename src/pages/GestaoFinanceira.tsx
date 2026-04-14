@@ -406,8 +406,11 @@ const GestaoFinanceira = () => {
     setNewCardDigits("");
   };
 
+  const [addingAccount, setAddingAccount] = useState(false);
+
   const handleAddAccount = async () => {
-    if (!user || !newAccName.trim()) return;
+    if (!user || !newAccName.trim() || addingAccount) return;
+    setAddingAccount(true);
     try {
       const accPayload: any = {
         name: newAccName.trim(),
@@ -421,6 +424,8 @@ const GestaoFinanceira = () => {
       fetchData();
     } catch {
       toast.error("Erro ao criar conta");
+    } finally {
+      setAddingAccount(false);
     }
   };
 
