@@ -250,9 +250,21 @@ const DashboardLayout = () => {
     setEditTransaction(null);
   }, []);
 
+  // Show full-screen onboarding if profile loaded and name not set yet
+  const showOnboarding = !profileLoading && profile && !profile.has_completed_profile && !onboardingDismissed;
+
+  const handleOnboardingComplete = useCallback(async () => {
+    setOnboardingDismissed(true);
+    await refetchProfile();
+    window.dispatchEvent(new CustomEvent("transaction-created"));
+  }, [refetchProfile]);
+
   return (
     <MonthProvider>
-      <div className="dark min-h-screen bg-background text-foreground">
+      {showOnboarding && (
+        <OnboardingFlow onComplete={handleOnboardingComplete} onRefetch={refetchProfile} />
+      )}
+      <div className="dark min-h-screen bg-background text-foreground" style={showOnboarding ? { display: "none" } : undefined}>
         <div className="w-full mx-auto px-4 md:px-6 lg:px-8 xl:px-12 pt-0 pb-24 md:pb-8">
           <DashboardHeader profile={profile} streak={streak} streakDates={streakDates} />
           <Outlet context={profileState} />
