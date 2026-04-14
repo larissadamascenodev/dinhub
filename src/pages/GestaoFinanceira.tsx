@@ -164,52 +164,36 @@ const CreditCardTile = ({ card, idx, invoiceInfo, navigate, extraClass }: {
       )}
       style={{ background: "linear-gradient(135deg, hsl(var(--card)) 0%, hsl(var(--background)) 100%)" }}
     >
-      <div className="p-4 space-y-2.5">
-        {/* Header */}
+      <div className="p-4 space-y-3">
+        {/* Header: icon + name + chevron */}
         <div className="flex items-center justify-between">
-          <div className="flex items-center gap-2.5">
+          <div className="flex items-center gap-2">
             <div className={cn("w-8 h-8 rounded-xl flex items-center justify-center", accent.iconBg)}>
               <CreditCard className={cn("w-4 h-4", accent.dot.replace("bg-", "text-"))} />
             </div>
             <div>
               <p className="text-sm font-bold text-foreground leading-tight">{card.name}</p>
-              <p className="text-[10px] text-muted-foreground mt-0.5">
-                {card.last_four_digits ? `•••• ${card.last_four_digits}` : "Cartão de crédito"}
-              </p>
+              {card.last_four_digits && (
+                <p className="text-[10px] text-muted-foreground/50">•••• {card.last_four_digits}</p>
+              )}
             </div>
           </div>
           <ChevronRight className="w-4 h-4 text-muted-foreground/25 group-hover:text-primary transition-colors" />
         </div>
 
-        {/* Fatura aberta + Disponível */}
-        <div className="flex items-end justify-between">
-          <div>
-            <p className="text-[9px] text-muted-foreground uppercase tracking-wider font-medium">Fatura aberta</p>
-            <p className={cn(
-              "text-lg font-extrabold tabular-nums tracking-tight leading-tight",
-              invoiceAmount > 0 ? (status.isClosed ? "text-foreground" : "text-amber-400") : "text-muted-foreground"
-            )}>
-              {formatCurrency(invoiceAmount)}
-            </p>
-          </div>
-          <div className="text-right">
-            <p className="text-[9px] text-muted-foreground uppercase tracking-wider font-medium">Disponível</p>
-            <p className={cn("text-sm font-bold tabular-nums tracking-tight leading-tight", available > 0 ? "text-primary" : "text-destructive")}>
-              {formatCurrency(available)}
-            </p>
-          </div>
+        {/* Fatura aberta (destaque principal) */}
+        <div>
+          <p className="text-[10px] text-muted-foreground/70 font-medium mb-0.5">Fatura aberta</p>
+          <p className={cn(
+            "text-xl font-extrabold tabular-nums tracking-tight leading-none",
+            invoiceAmount > 0 ? "text-foreground" : "text-muted-foreground/40"
+          )}>
+            {formatCurrency(invoiceAmount)}
+          </p>
         </div>
 
-        {/* Progress bar */}
-        <div>
-          <div className="flex items-center justify-between mb-0.5">
-            <span className="text-[10px] text-muted-foreground tabular-nums">
-              {formatCurrency(usedValue)} <span className="text-muted-foreground/50">de</span> {formatCurrency(limitValue)}
-            </span>
-            <span className={cn("text-[10px] font-bold tabular-nums", usedPct >= 80 ? "text-destructive" : "text-primary")}>
-              {usedPct.toFixed(0)}%
-            </span>
-          </div>
+        {/* Limite: barra de progresso + valores */}
+        <div className="space-y-1">
           <div className="w-full h-1.5 rounded-full bg-muted/30 overflow-hidden">
             <motion.div
               initial={{ width: 0 }}
@@ -221,24 +205,26 @@ const CreditCardTile = ({ card, idx, invoiceInfo, navigate, extraClass }: {
               )}
             />
           </div>
-        </div>
-
-        {/* Fechamento / Vencimento */}
-        <div className="flex items-center gap-3 pt-0.5">
-          <div className="flex items-center gap-1">
-            <Calendar className="w-3 h-3 text-muted-foreground/50" />
-            <span className="text-[10px] text-muted-foreground">
-              Fecha dia <span className="font-semibold text-foreground/70">{card.closing_day}</span>
+          <div className="flex items-center justify-between">
+            <span className="text-[10px] text-muted-foreground/60 tabular-nums">
+              {formatCurrency(usedValue)} / {formatCurrency(limitValue)}
+              <span className="ml-1 font-semibold text-muted-foreground/80">{usedPct.toFixed(0)}%</span>
+            </span>
+            <span className={cn("text-[10px] font-bold tabular-nums", available > 0 ? "text-primary/80" : "text-destructive")}>
+              {formatCurrency(available)} livre
             </span>
           </div>
-          <span className="w-px h-3 bg-border/20" />
-          <span className="text-[10px] text-muted-foreground">
-            Vence dia <span className="font-semibold text-foreground/70">{card.due_day}</span>
-          </span>
-          <span className="ml-auto">
-            <span className={cn("text-[10px] font-medium", status.isClosed ? "text-primary" : "text-muted-foreground/60")}>
-              {status.label}
-            </span>
+        </div>
+
+        {/* Footer: fechamento, vencimento, status */}
+        <div className="flex items-center justify-between pt-0.5 border-t border-border/10">
+          <div className="flex items-center gap-2 text-[10px] text-muted-foreground/60">
+            <span>Fecha <span className="font-semibold text-foreground/60">{card.closing_day}</span></span>
+            <span className="text-border/30">•</span>
+            <span>Vence <span className="font-semibold text-foreground/60">{card.due_day}</span></span>
+          </div>
+          <span className={cn("text-[10px] font-medium", status.isClosed ? "text-primary/80" : "text-muted-foreground/50")}>
+            {status.label}
           </span>
         </div>
       </div>
