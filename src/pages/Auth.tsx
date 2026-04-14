@@ -269,7 +269,7 @@ const Auth = () => {
   };
 
   /* ── Auth form card ── */
-  const AuthFormCard = () => (
+  const renderAuthFormCard = () => (
     <motion.div
       initial={{ opacity: 0, y: 16 }}
       animate={{ opacity: 1, y: 0 }}
@@ -494,7 +494,7 @@ const Auth = () => {
 
         {/* Right — Form */}
         <div className="w-full max-w-[400px] flex flex-col justify-center">
-          <AuthFormCard />
+          {renderAuthFormCard()}
         </div>
       </div>
 
@@ -547,7 +547,7 @@ const Auth = () => {
         </motion.div>
 
         {/* Form */}
-        <AuthFormCard />
+        {renderAuthFormCard()}
 
         {/* Stats + Testimonial (below form) */}
         <motion.div custom={2} variants={fadeUp} initial="hidden" animate="visible" className="space-y-2.5">
