@@ -39,7 +39,16 @@ const PagarEditarModal = ({ open, event, onClose, onSuccess }: Props) => {
   const [mode, setMode] = useState<"view" | "edit">("view");
   const [name, setName] = useState("");
   const [category, setCategory] = useState("");
+  const [categorySearch, setCategorySearch] = useState("");
+  const [customCategories, setCustomCategories] = useState<CustomCategory[]>([]);
   const [submitting, setSubmitting] = useState(false);
+
+  // Load custom categories when entering edit mode
+  useEffect(() => {
+    if (mode === "edit" && user) {
+      getCustomCategories().then(setCustomCategories).catch(() => {});
+    }
+  }, [mode, user]);
 
   const isInvoiceEvent = !!event && event.id.startsWith("fatura-");
 
