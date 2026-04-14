@@ -150,11 +150,9 @@ const Auth = () => {
           vida financeira.
         </span>
       </h1>
-      {!mobile && (
-        <p className="mt-5 text-muted-foreground text-base leading-relaxed max-w-2xl">
-          Organize suas finanças, entenda para onde seu dinheiro vai e acompanhe a evolução do seu patrimônio em tempo real.
-        </p>
-      )}
+      <p className={`text-muted-foreground leading-relaxed ${mobile ? "mt-2 text-xs max-w-xs mx-auto" : "mt-5 text-base max-w-2xl"}`}>
+        Organize suas finanças, entenda para onde seu dinheiro vai e acompanhe a evolução do seu patrimônio em tempo real.
+      </p>
     </div>
   );
 
