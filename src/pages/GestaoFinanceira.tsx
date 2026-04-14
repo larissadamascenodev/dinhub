@@ -683,7 +683,7 @@ const GestaoFinanceira = () => {
             <div className="overflow-hidden sm:hidden" ref={cardsRef}>
               <div className="flex gap-3 px-4">
               {creditCards.map((card, idx) => (
-                <CreditCardTile key={card.id} card={card} idx={idx} invoiceInfo={openInvoices[card.id]} navigate={navigate} extraClass="min-w-0 shrink-0 basis-[80%]" />
+                <CreditCardTile key={card.id} card={card} idx={idx} invoiceInfo={openInvoices[card.id]} navigate={navigate} extraClass="min-w-0 shrink-0 basis-[85%]" />
               ))}
               <motion.button
                 initial={{ opacity: 0, y: 16 }}
