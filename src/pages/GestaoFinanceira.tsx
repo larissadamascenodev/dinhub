@@ -683,9 +683,12 @@ const GestaoFinanceira = () => {
             <div className="hidden sm:grid sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-3">
               {creditCards.map((card, idx) => {
                 const usedValue = Number(card.used_limit);
-                const usedPct = card.limit > 0 ? Math.min((usedValue / Number(card.limit)) * 100, 100) : 0;
-                const available = Math.max(Number(card.limit) - usedValue, 0);
+                const limitValue = Number(card.limit);
+                const usedPct = limitValue > 0 ? Math.min((usedValue / limitValue) * 100, 100) : 0;
+                const available = Math.max(limitValue - usedValue, 0);
                 const accent = getAccent(card.color);
+                const invoiceInfo = openInvoices[card.id];
+                const status = getInvoiceStatusLabel(card, invoiceInfo);
 
                 return (
                   <motion.div
@@ -697,7 +700,7 @@ const GestaoFinanceira = () => {
                     className="relative rounded-2xl overflow-hidden cursor-pointer group border border-primary/20 hover:border-primary/40 transition-all duration-300 active:scale-[0.98]"
                     style={{ background: "linear-gradient(135deg, hsl(var(--card)) 0%, hsl(var(--background)) 100%)" }}
                   >
-                    <div className="p-4 space-y-4">
+                    <div className="p-4 space-y-3">
                       <div className="flex items-center justify-between">
                         <div className="flex items-center gap-3">
                           <div className={cn("w-8 h-8 rounded-xl flex items-center justify-center", accent.iconBg)}>
@@ -705,68 +708,50 @@ const GestaoFinanceira = () => {
                           </div>
                           <div>
                             <p className="text-sm font-bold text-foreground leading-tight">{card.name}</p>
-                            {card.last_four_digits ? (
-                              <p className="text-[10px] text-muted-foreground mt-0.5">•••• {card.last_four_digits}</p>
-                            ) : (
-                              <p className="text-[10px] text-muted-foreground mt-0.5">Cartão de crédito</p>
-                            )}
+                            <p className="text-[10px] text-muted-foreground mt-0.5">
+                              {card.last_four_digits ? `•••• ${card.last_four_digits}` : "Cartão de crédito"}
+                            </p>
                           </div>
                         </div>
                         <ChevronRight className="w-4 h-4 text-muted-foreground/25 group-hover:text-primary transition-colors" />
                       </div>
-                      <div className="h-px bg-border/10" />
+
                       <div>
-                        <div className="grid grid-cols-2 gap-3 items-end mb-3">
-                          <div>
-                            <div className="flex items-center gap-1.5 mb-1.5">
-                              <div className={cn("w-1.5 h-1.5 rounded-full", usedValue > Number(card.limit) ? "bg-destructive" : "bg-primary")} />
-                              <p className="text-[9px] text-muted-foreground uppercase tracking-widest font-medium">Disponível</p>
-                            </div>
-                            <p className="text-xl font-extrabold tabular-nums tracking-tight text-foreground">
-                              {formatCurrency(available)}
-                            </p>
-                          </div>
-                          {(() => {
-                              const invoiceInfo = openInvoices[card.id];
-                              const invoiceAmount = invoiceInfo?.amount || 0;
-                              const status = getInvoiceStatusLabel(card, invoiceInfo);
-                              return (
-                                <div className="text-right">
-                                  <div className="flex items-center justify-end gap-1.5 mb-1.5">
-                                    <div className={cn("w-1.5 h-1.5 rounded-full", status.isClosed ? "bg-primary" : invoiceAmount > 0 ? "bg-amber-400" : "bg-muted-foreground/40")} />
-                                    <p className="text-[9px] text-muted-foreground uppercase tracking-widest font-medium">
-                                      {status.isClosed ? "Fatura fechada" : "Fatura aberta"}
-                                    </p>
-                                  </div>
-                                  <p className={cn("text-sm font-bold tabular-nums leading-[1.75rem]", invoiceAmount > 0 ? (status.isClosed ? "text-foreground" : "text-amber-400") : "text-muted-foreground")}>
-                                    {formatCurrency(invoiceAmount)}
-                                  </p>
-                                </div>
-                              );
-                            })()}
+                        <div className="flex items-center justify-between mb-1">
+                          <span className="text-[10px] font-medium text-muted-foreground">
+                            {formatCurrency(usedValue)} de {formatCurrency(limitValue)}
+                          </span>
+                          <span className={cn("text-[10px] font-bold tabular-nums", usedPct >= 80 ? "text-destructive" : "text-primary")}>
+                            {usedPct.toFixed(0)}%
+                          </span>
                         </div>
-                        <div className="flex items-center justify-between mt-2.5 mb-1">
-                          <span className="text-[10px] font-medium text-muted-foreground">{formatCurrency(usedValue)} utilizado</span>
-                          <span className="text-[10px] text-muted-foreground">de {formatCurrency(Number(card.limit))}</span>
-                        </div>
-                        <div className="w-full h-1.5 rounded-full bg-muted/30 overflow-hidden mb-1.5">
+                        <div className="w-full h-1.5 rounded-full bg-muted/30 overflow-hidden">
                           <motion.div
                             initial={{ width: 0 }}
                             animate={{ width: `${usedPct}%` }}
                             transition={{ duration: 0.8, ease: "easeOut" }}
-                            className={cn("h-full rounded-full", usedValue > Number(card.limit) ? "bg-destructive/60" : "bg-primary/40")}
+                            className={cn(
+                              "h-full rounded-full",
+                              usedPct >= 100 ? "bg-destructive/60" : usedPct >= 80 ? "bg-amber-400/60" : "bg-primary/40"
+                            )}
                           />
                         </div>
-                        <div className="flex items-center justify-between">
-                          <span className="text-[10px] font-medium text-muted-foreground">{usedPct.toFixed(0)}% usado</span>
-                          {(() => {
-                            const status = getInvoiceStatusLabel(card, openInvoices[card.id]);
-                            return (
-                              <span className={cn("text-[10px] font-medium", status.isClosed ? "text-primary" : "text-muted-foreground/60")}>
-                                {status.label}
-                              </span>
-                            );
-                          })()}
+                      </div>
+
+                      <div className="flex items-center justify-between pt-0.5">
+                        <div>
+                          <p className="text-[9px] text-muted-foreground uppercase tracking-widest font-medium mb-0.5">Disponível</p>
+                          <p className={cn("text-base font-extrabold tabular-nums tracking-tight", available > 0 ? "text-foreground" : "text-destructive")}>
+                            {formatCurrency(available)}
+                          </p>
+                        </div>
+                        <div className="text-right">
+                          <p className="text-[9px] text-muted-foreground uppercase tracking-widest font-medium mb-0.5">
+                            {status.isClosed ? "Vencimento" : "Fechamento"}
+                          </p>
+                          <p className={cn("text-[11px] font-semibold", status.isClosed ? "text-primary" : "text-muted-foreground")}>
+                            {status.label}
+                          </p>
                         </div>
                       </div>
                     </div>
