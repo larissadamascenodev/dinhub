@@ -1,4 +1,5 @@
 import { useState } from "react";
+import ContactModal from "@/components/shared/ContactModal";
 import { supabase } from "@/integrations/supabase/client";
 import { lovable } from "@/integrations/lovable/index";
 import { Button } from "@/components/ui/button";
@@ -39,6 +40,7 @@ const Auth = () => {
   const [showPassword, setShowPassword] = useState(false);
   const [submitting, setSubmitting] = useState(false);
   const [acceptedTerms, setAcceptedTerms] = useState(false);
+  const [showContact, setShowContact] = useState(false);
 
   if (loading) {
     return (
@@ -430,7 +432,7 @@ const Auth = () => {
             <span className="flex items-center gap-4">
               <Link to="/termos-de-uso" className="hover:text-primary transition-colors">Termos de Uso</Link>
               <Link to="/politica-de-privacidade" className="hover:text-primary transition-colors">Política de Privacidade</Link>
-              <Link to="/suporte" className="hover:text-primary transition-colors">Contato</Link>
+              <button onClick={() => setShowContact(true)} className="hover:text-primary transition-colors">Contato</button>
             </span>
           </motion.div>
         </div>
@@ -485,7 +487,7 @@ const Auth = () => {
           <span className="flex items-center gap-3">
             <Link to="/termos-de-uso" className="hover:text-primary transition-colors">Termos de Uso</Link>
             <Link to="/politica-de-privacidade" className="hover:text-primary transition-colors">Política de Privacidade</Link>
-            <Link to="/suporte" className="hover:text-primary transition-colors">Contato</Link>
+            <button onClick={() => setShowContact(true)} className="hover:text-primary transition-colors">Contato</button>
           </span>
         </motion.div>
       </div>
