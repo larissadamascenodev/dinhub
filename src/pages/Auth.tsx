@@ -203,22 +203,28 @@ const Auth = () => {
         </div>
 
         {/* RIGHT — Auth form */}
-        <div className="w-full max-w-md lg:max-w-[400px] flex flex-col justify-center">
+        <div className="w-full max-w-md lg:max-w-[400px] flex flex-col justify-center min-h-0">
           {/* Mobile logo */}
-          <div className="lg:hidden flex flex-col items-center gap-3 mb-8">
-            <div className="w-14 h-14 rounded-2xl bg-primary/15 border border-primary/20 flex items-center justify-center">
-              <Wallet className="w-7 h-7 text-primary" />
+          <motion.div
+            initial={{ opacity: 0, scale: 0.9 }}
+            animate={{ opacity: 1, scale: 1 }}
+            transition={{ duration: 0.4 }}
+            className="lg:hidden flex flex-col items-center gap-2 mb-6"
+          >
+            <div className="w-12 h-12 rounded-2xl bg-primary/15 border border-primary/20 flex items-center justify-center">
+              <Wallet className="w-6 h-6 text-primary" />
             </div>
-            <span className="font-display text-2xl font-bold text-foreground">
+            <span className="font-display text-2xl font-bold text-foreground tracking-tight">
               Din<span className="text-primary">Hub</span>
             </span>
-          </div>
+            <span className="text-xs text-muted-foreground">Controle Financeiro Inteligente</span>
+          </motion.div>
 
           <motion.div
             initial={{ opacity: 0, y: 16 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ duration: 0.5, delay: 0.15 }}
-            className="bg-card/30 border border-border/50 rounded-2xl p-6 sm:p-8 backdrop-blur-md space-y-6"
+            className="bg-card/30 border border-border/50 rounded-2xl p-5 sm:p-8 backdrop-blur-md space-y-5 sm:space-y-6"
           >
             {/* Heading */}
             <AnimatePresence mode="wait">
