@@ -12,6 +12,7 @@ import TransactionTypeChooser from "@/components/dashboard/TransactionTypeChoose
 import TransferModal from "@/components/dashboard/TransferModal";
 import InvoiceUploadReviewModal, { type ExtractedItem } from "@/components/fatura/InvoiceUploadReviewModal";
 import ScanProcessingOverlay from "@/components/dashboard/ScanProcessingOverlay";
+import OnboardingFlow from "@/components/onboarding/OnboardingFlow";
 import { supabase } from "@/integrations/supabase/client";
 import { createTransaction, getAccounts } from "@/services/transactionService";
 import { useAuth } from "@/contexts/AuthContext";
@@ -28,9 +29,10 @@ interface ScanAccountOption {
 const DashboardLayout = () => {
   useSwipeBack();
   const profileState = useProfile();
-  const { profile } = profileState;
+  const { profile, loading: profileLoading, refetch: refetchProfile } = profileState;
   const { user } = useAuth();
   const { streak, streakDates } = useLoginStreak();
+  const [onboardingDismissed, setOnboardingDismissed] = useState(false);
   const [showTypeChooser, setShowTypeChooser] = useState(false);
   const [showModal, setShowModal] = useState(false);
   const [showTransferModal, setShowTransferModal] = useState(false);
