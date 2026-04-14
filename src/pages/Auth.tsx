@@ -441,10 +441,10 @@ const Auth = () => {
   return (
     <div className="dark min-h-screen bg-background flex flex-col relative overflow-hidden">
       {/* Promo banner */}
-      <div className="w-full text-center py-2.5 px-4 relative z-20 border-b border-primary/10 bg-primary/15">
+      <div className="w-full text-center py-2.5 px-4 relative z-20 border-b border-border/30 bg-card">
         <p className="text-[10px] sm:text-xs font-semibold text-primary-foreground flex items-center justify-center gap-1.5 sm:gap-2 whitespace-nowrap">
-          <Zap className="w-3 h-3 sm:w-3.5 sm:h-3.5" />
-          Oferta de Lançamento: <span className="font-extrabold tracking-wide">TESTE GRATUITAMENTE</span>
+          <Zap className="w-3 h-3 sm:w-3.5 sm:h-3.5 text-primary" />
+          Oferta de Lançamento: <span className="font-extrabold tracking-wide text-primary">TESTE GRATUITAMENTE</span>
         </p>
       </div>
 
