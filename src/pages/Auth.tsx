@@ -9,7 +9,7 @@ import { useAuth } from "@/contexts/AuthContext";
 import { motion, AnimatePresence } from "framer-motion";
 import {
   Eye, EyeOff, ArrowRight, Mail, Lock, TrendingUp, Target, Star,
-  PiggyBank, MessageCircle, Mic, Image, Zap, Shield
+  PiggyBank, MessageCircle, Mic, Image, Zap, Shield, User
 } from "lucide-react";
 
 const fadeUp = {
