@@ -55,6 +55,8 @@ const App = () => (
           <Routes>
             <Route path="/auth" element={<Auth />} />
             <Route path="/reset-password" element={<ResetPassword />} />
+            <Route path="/termos-de-uso" element={<TermosDeUso />} />
+            <Route path="/politica-privacidade" element={<PoliticaPrivacidade />} />
             <Route element={<ProtectedRoute><DashboardLayout /></ProtectedRoute>}>
               <Route path="/" element={<Index />} />
               <Route path="/transacoes" element={<Transacoes />} />
@@ -74,8 +76,6 @@ const App = () => (
               <Route path="/analytics/categorias" element={<AnalyticsCategorias />} />
               <Route path="/desafios" element={<Desafios />} />
               <Route path="/parcelamentos" element={<ParcelamentosDetalhe />} />
-              <Route path="/termos-de-uso" element={<TermosDeUso />} />
-              <Route path="/politica-privacidade" element={<PoliticaPrivacidade />} />
               <Route path="/suporte" element={<Suporte />} />
               <Route path="/ajuda" element={<CentralAjuda />} />
             </Route>
