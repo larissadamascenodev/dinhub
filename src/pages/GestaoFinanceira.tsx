@@ -153,6 +153,7 @@ const CreditCardTile = ({ card, idx, invoiceInfo, navigate, extraClass }: {
   const invoiceAmount = invoiceInfo?.amount || 0;
 
   const barColor = usedPct >= 100 ? "bg-destructive" : usedPct >= 80 ? "bg-amber-400" : "bg-primary";
+  const barTrackColor = usedPct >= 100 ? "bg-destructive/15" : usedPct >= 80 ? "bg-amber-400/15" : "bg-primary/15";
 
   return (
     <motion.div
@@ -162,41 +163,47 @@ const CreditCardTile = ({ card, idx, invoiceInfo, navigate, extraClass }: {
       onClick={() => navigate(`/fatura/${card.id}`)}
       className={cn(
         "relative rounded-2xl overflow-hidden cursor-pointer group transition-all duration-300 active:scale-[0.98]",
-        "bg-card/80 backdrop-blur-xl border border-border/20 hover:border-primary/30",
+        "bg-card/60 backdrop-blur-xl border border-border/15 hover:border-primary/25",
         extraClass
       )}
     >
-      {/* Accent stripe top */}
-      <div className={cn("h-0.5 w-full", barColor)} />
-
-      <div className="p-3.5 space-y-2.5">
-        {/* Row 1: Name + Invoice amount */}
-        <div className="flex items-center justify-between">
-          <div className="flex items-center gap-2 min-w-0">
-            <div className={cn("w-7 h-7 rounded-lg flex items-center justify-center shrink-0", accent.iconBg)}>
-              <CreditCard className={cn("w-3.5 h-3.5", accent.dot.replace("bg-", "text-"))} />
-            </div>
-            <div className="min-w-0">
-              <p className="text-xs font-bold text-foreground leading-tight truncate">{card.name}</p>
-              {card.last_four_digits && (
-                <p className="text-[9px] text-muted-foreground/40 tabular-nums">•••• {card.last_four_digits}</p>
-              )}
-            </div>
+      <div className="p-3.5">
+        {/* Header: icon + name + chevron */}
+        <div className="flex items-center gap-2.5 mb-3">
+          <div className={cn("w-8 h-8 rounded-xl flex items-center justify-center shrink-0", accent.iconBg)}>
+            <CreditCard className={cn("w-4 h-4", accent.dot.replace("bg-", "text-"))} />
           </div>
-          <div className="text-right shrink-0 pl-2">
-            <p className="text-[9px] text-muted-foreground/50 leading-tight">{status.label}</p>
+          <div className="min-w-0 flex-1">
+            <p className="text-[13px] font-bold text-foreground leading-tight truncate">{card.name}</p>
+            {card.last_four_digits && (
+              <p className="text-[10px] text-muted-foreground/40 tabular-nums mt-0.5">•••• {card.last_four_digits}</p>
+            )}
+          </div>
+          <ChevronRight className="w-4 h-4 text-muted-foreground/20 group-hover:text-primary/50 transition-colors shrink-0" />
+        </div>
+
+        {/* Invoice highlight */}
+        <div className="flex items-baseline justify-between mb-2.5">
+          <div>
+            <p className="text-[10px] text-muted-foreground/50 uppercase tracking-wider leading-none mb-1">{status.label}</p>
             <p className={cn(
-              "text-sm font-extrabold tabular-nums leading-tight",
-              invoiceAmount > 0 ? "text-foreground" : "text-muted-foreground/30"
+              "text-xl font-extrabold tabular-nums leading-none tracking-tight",
+              invoiceAmount > 0 ? "text-foreground" : "text-muted-foreground/25"
             )}>
               {formatCurrency(invoiceAmount)}
             </p>
           </div>
+          <div className="text-right">
+            <p className="text-[10px] text-muted-foreground/40 leading-none mb-1">Disponível</p>
+            <p className={cn("text-sm font-bold tabular-nums leading-none", available > 0 ? "text-primary" : "text-destructive")}>
+              {formatCurrency(available)}
+            </p>
+          </div>
         </div>
 
-        {/* Row 2: Progress bar */}
-        <div className="space-y-1">
-          <div className="w-full h-1 rounded-full bg-muted/20 overflow-hidden">
+        {/* Progress bar */}
+        <div className="mb-2">
+          <div className={cn("w-full h-1.5 rounded-full overflow-hidden", barTrackColor)}>
             <motion.div
               initial={{ width: 0 }}
               animate={{ width: `${usedPct}%` }}
@@ -204,23 +211,26 @@ const CreditCardTile = ({ card, idx, invoiceInfo, navigate, extraClass }: {
               className={cn("h-full rounded-full", barColor)}
             />
           </div>
-          <div className="flex items-center justify-between">
-            <span className="text-[10px] text-muted-foreground/50 tabular-nums">
-              {formatCurrency(usedValue)} de {formatCurrency(limitValue)}
-              <span className="ml-0.5 font-semibold">{usedPct.toFixed(0)}%</span>
+          <div className="flex items-center justify-between mt-1">
+            <span className="text-[10px] text-muted-foreground/45 tabular-nums">
+              {formatCurrency(usedValue)} / {formatCurrency(limitValue)}
             </span>
-            <span className={cn("text-[10px] font-bold tabular-nums", available > 0 ? "text-primary" : "text-destructive")}>
-              {formatCurrency(available)} livre
+            <span className={cn("text-[10px] font-semibold tabular-nums", usedPct >= 80 ? "text-amber-400" : "text-muted-foreground/50")}>
+              {usedPct.toFixed(0)}%
             </span>
           </div>
         </div>
 
-        {/* Row 3: Dates compact */}
-        <div className="flex items-center gap-3 text-[10px] text-muted-foreground/50">
-          <span>Fecha dia <span className="font-semibold text-foreground/50">{card.closing_day}</span></span>
-          <span className="w-px h-2.5 bg-border/20" />
-          <span>Vence dia <span className="font-semibold text-foreground/50">{card.due_day}</span></span>
-          <ChevronRight className="w-3 h-3 ml-auto text-muted-foreground/20 group-hover:text-primary/50 transition-colors" />
+        {/* Footer: dates */}
+        <div className="flex items-center gap-2 pt-1.5 border-t border-border/10">
+          <CalendarClock className="w-3 h-3 text-muted-foreground/30 shrink-0" />
+          <span className="text-[10px] text-muted-foreground/45">
+            Fecha <span className="font-semibold text-foreground/50">{card.closing_day}</span>
+          </span>
+          <span className="text-[10px] text-muted-foreground/25">•</span>
+          <span className="text-[10px] text-muted-foreground/45">
+            Vence <span className="font-semibold text-foreground/50">{card.due_day}</span>
+          </span>
         </div>
       </div>
     </motion.div>
