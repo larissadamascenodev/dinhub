@@ -215,7 +215,7 @@ const CreditCardTile = ({ card, idx, invoiceInfo, navigate, extraClass }: {
             <span className="text-[10px] text-muted-foreground/45 tabular-nums">
               {formatCurrency(usedValue)} / {formatCurrency(limitValue)}
             </span>
-            <span className={cn("text-[10px] font-semibold tabular-nums", usedPct >= 80 ? "text-amber-400" : "text-muted-foreground/50")}>
+            <span className="text-[10px] font-semibold tabular-nums text-muted-foreground/50">
               {usedPct.toFixed(0)}%
             </span>
           </div>
