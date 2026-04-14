@@ -120,7 +120,7 @@ const Auth = () => {
       </motion.header>
 
       {/* Main content */}
-      <div className="flex-1 flex flex-col lg:flex-row items-center lg:items-stretch px-4 lg:px-10 xl:px-16 pb-8 gap-8 lg:gap-16 relative z-10">
+      <div className="flex-1 flex flex-col lg:flex-row items-center lg:items-stretch px-5 lg:px-10 xl:px-16 pb-6 lg:pb-8 gap-8 lg:gap-16 relative z-10">
 
         {/* LEFT — Marketing */}
         <div className="hidden lg:flex flex-col justify-center flex-1 max-w-xl space-y-7">
