@@ -25,7 +25,7 @@ const features = [
   { icon: <Wallet className="w-4 h-4" />, title: "Controle total", desc: "Receitas, despesas e cartões reunidos em um só lugar" },
   { icon: <Brain className="w-4 h-4" />, title: "Assistente financeiro", desc: "Analisa seus hábitos e sugere melhorias personalizadas" },
   { icon: <BarChart3 className="w-4 h-4" />, title: "Projeções inteligentes", desc: "Acompanhe projeções do seu dinheiro para o futuro" },
-  { icon: <Shield className="w-4 h-4" />, title: "Radar financeiro", desc: "Alertas e insights para proteger seu orçamento" },
+  { icon: <Shield className="w-4 h-4" />, title: "Radar financeiro", desc: "Entenda para onde seu dinheiro está indo de verdade" },
 ];
 
 const AVATAR_URLS = [
@@ -171,7 +171,7 @@ const Auth = () => {
   );
 
   const FeaturesGrid = ({ mobile = false }: { mobile?: boolean }) => (
-    <div className={`grid gap-2.5 ${mobile ? "grid-cols-1" : "grid-cols-2"}`}>
+    <div className="grid grid-cols-2 gap-2.5">
       {features.map((f) => (
         <div
           key={f.title}
