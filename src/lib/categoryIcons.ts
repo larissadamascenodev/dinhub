@@ -140,13 +140,23 @@ export const DEFAULT_INCOME_CATEGORIES = Object.keys(DEFAULT_CATEGORY_TYPE).filt
 );
 
 export function getDefaultCategoryColor(name: string): string {
-  return DEFAULT_CATEGORY_COLORS[name] || "220 10% 55%";
+  if (DEFAULT_CATEGORY_COLORS[name]) return DEFAULT_CATEGORY_COLORS[name];
+  const normalized = name.toLowerCase();
+  const match = Object.keys(DEFAULT_CATEGORY_COLORS).find(k => k.toLowerCase() === normalized);
+  return match ? DEFAULT_CATEGORY_COLORS[match] : "220 10% 55%";
 }
 
 export function getDefaultCategoryHex(name: string): string {
-  return DEFAULT_CATEGORY_HEX[name] || "#64748b";
+  if (DEFAULT_CATEGORY_HEX[name]) return DEFAULT_CATEGORY_HEX[name];
+  const normalized = name.toLowerCase();
+  const match = Object.keys(DEFAULT_CATEGORY_HEX).find(k => k.toLowerCase() === normalized);
+  return match ? DEFAULT_CATEGORY_HEX[match] : "#64748b";
 }
 
 export function getDefaultCategoryIcon(name: string) {
-  return DEFAULT_CATEGORY_ICONS[name] || FileText;
+  if (DEFAULT_CATEGORY_ICONS[name]) return DEFAULT_CATEGORY_ICONS[name];
+  // Case-insensitive fallback
+  const normalized = name.toLowerCase();
+  const match = Object.keys(DEFAULT_CATEGORY_ICONS).find(k => k.toLowerCase() === normalized);
+  return match ? DEFAULT_CATEGORY_ICONS[match] : FileText;
 }
