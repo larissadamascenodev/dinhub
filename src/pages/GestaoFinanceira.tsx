@@ -815,10 +815,10 @@ const GestaoFinanceira = () => {
           </div>
           <Button
             onClick={handleAddAccount}
-            disabled={!newAccName.trim()}
+            disabled={!newAccName.trim() || addingAccount}
             className="w-full h-11 rounded-xl text-sm font-semibold bg-primary/15 text-primary hover:bg-primary/25 border-0"
           >
-            Criar Conta
+            {addingAccount ? "Criando..." : "Criar Conta"}
           </Button>
         </div>
       </ModalOverlay>
