@@ -585,86 +585,9 @@ const GestaoFinanceira = () => {
             {/* Mobile carousel */}
             <div className="overflow-hidden sm:hidden" ref={cardsRef}>
               <div className="flex gap-3 px-4">
-              {creditCards.map((card, idx) => {
-                const usedValue = Number(card.used_limit);
-                const limitValue = Number(card.limit);
-                const usedPct = limitValue > 0 ? Math.min((usedValue / limitValue) * 100, 100) : 0;
-                const available = Math.max(limitValue - usedValue, 0);
-                const accent = getAccent(card.color);
-                const invoiceInfo = openInvoices[card.id];
-                const status = getInvoiceStatusLabel(card, invoiceInfo);
-
-                return (
-                  <motion.div
-                    key={card.id}
-                    initial={{ opacity: 0, y: 12 }}
-                    animate={{ opacity: 1, y: 0 }}
-                    transition={{ delay: idx * 0.06 }}
-                    onClick={() => navigate(`/fatura/${card.id}`)}
-                    className="relative rounded-2xl overflow-hidden cursor-pointer group min-w-0 shrink-0 basis-[80%] border border-primary/20 hover:border-primary/40 transition-all duration-300 active:scale-[0.98]"
-                    style={{ background: "linear-gradient(135deg, hsl(var(--card)) 0%, hsl(var(--background)) 100%)" }}
-                  >
-                    <div className="p-4 space-y-3">
-                      {/* Header: name + chevron */}
-                      <div className="flex items-center justify-between">
-                        <div className="flex items-center gap-3">
-                          <div className={cn("w-8 h-8 rounded-xl flex items-center justify-center", accent.iconBg)}>
-                            <CreditCard className={cn("w-4 h-4", accent.dot.replace("bg-", "text-"))} />
-                          </div>
-                          <div>
-                            <p className="text-sm font-bold text-foreground leading-tight">{card.name}</p>
-                            <p className="text-[10px] text-muted-foreground mt-0.5">
-                              {card.last_four_digits ? `•••• ${card.last_four_digits}` : "Cartão de crédito"}
-                            </p>
-                          </div>
-                        </div>
-                        <ChevronRight className="w-4 h-4 text-muted-foreground/25 group-hover:text-primary transition-colors" />
-                      </div>
-
-                      {/* Progress bar: used / limit */}
-                      <div>
-                        <div className="flex items-center justify-between mb-1">
-                          <span className="text-[10px] font-medium text-muted-foreground">
-                            {formatCurrency(usedValue)} de {formatCurrency(limitValue)}
-                          </span>
-                          <span className={cn("text-[10px] font-bold tabular-nums", usedPct >= 80 ? "text-destructive" : "text-primary")}>
-                            {usedPct.toFixed(0)}%
-                          </span>
-                        </div>
-                        <div className="w-full h-1.5 rounded-full bg-muted/30 overflow-hidden">
-                          <motion.div
-                            initial={{ width: 0 }}
-                            animate={{ width: `${usedPct}%` }}
-                            transition={{ duration: 0.8, ease: "easeOut" }}
-                            className={cn(
-                              "h-full rounded-full",
-                              usedPct >= 100 ? "bg-destructive/60" : usedPct >= 80 ? "bg-amber-400/60" : "bg-primary/40"
-                            )}
-                          />
-                        </div>
-                      </div>
-
-                      {/* Bottom row: available + closing/due */}
-                      <div className="flex items-center justify-between pt-0.5">
-                        <div>
-                          <p className="text-[9px] text-muted-foreground uppercase tracking-widest font-medium mb-0.5">Disponível</p>
-                          <p className={cn("text-base font-extrabold tabular-nums tracking-tight", available > 0 ? "text-foreground" : "text-destructive")}>
-                            {formatCurrency(available)}
-                          </p>
-                        </div>
-                        <div className="text-right">
-                          <p className="text-[9px] text-muted-foreground uppercase tracking-widest font-medium mb-0.5">
-                            {status.isClosed ? "Vencimento" : "Fechamento"}
-                          </p>
-                          <p className={cn("text-[11px] font-semibold", status.isClosed ? "text-primary" : "text-muted-foreground")}>
-                            {status.label}
-                          </p>
-                        </div>
-                      </div>
-                    </div>
-                  </motion.div>
-                );
-              })}
+              {creditCards.map((card, idx) => (
+                <CreditCardTile key={card.id} card={card} idx={idx} invoiceInfo={openInvoices[card.id]} navigate={navigate} extraClass="min-w-0 shrink-0 basis-[80%]" />
+              ))}
               <motion.button
                 initial={{ opacity: 0, y: 16 }}
                 animate={{ opacity: 1, y: 0 }}
@@ -681,83 +604,9 @@ const GestaoFinanceira = () => {
 
             {/* Desktop grid */}
             <div className="hidden sm:grid sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-3">
-              {creditCards.map((card, idx) => {
-                const usedValue = Number(card.used_limit);
-                const limitValue = Number(card.limit);
-                const usedPct = limitValue > 0 ? Math.min((usedValue / limitValue) * 100, 100) : 0;
-                const available = Math.max(limitValue - usedValue, 0);
-                const accent = getAccent(card.color);
-                const invoiceInfo = openInvoices[card.id];
-                const status = getInvoiceStatusLabel(card, invoiceInfo);
-
-                return (
-                  <motion.div
-                    key={card.id}
-                    initial={{ opacity: 0, y: 12 }}
-                    animate={{ opacity: 1, y: 0 }}
-                    transition={{ delay: idx * 0.06 }}
-                    onClick={() => navigate(`/fatura/${card.id}`)}
-                    className="relative rounded-2xl overflow-hidden cursor-pointer group border border-primary/20 hover:border-primary/40 transition-all duration-300 active:scale-[0.98]"
-                    style={{ background: "linear-gradient(135deg, hsl(var(--card)) 0%, hsl(var(--background)) 100%)" }}
-                  >
-                    <div className="p-4 space-y-3">
-                      <div className="flex items-center justify-between">
-                        <div className="flex items-center gap-3">
-                          <div className={cn("w-8 h-8 rounded-xl flex items-center justify-center", accent.iconBg)}>
-                            <CreditCard className={cn("w-4 h-4", accent.dot.replace("bg-", "text-"))} />
-                          </div>
-                          <div>
-                            <p className="text-sm font-bold text-foreground leading-tight">{card.name}</p>
-                            <p className="text-[10px] text-muted-foreground mt-0.5">
-                              {card.last_four_digits ? `•••• ${card.last_four_digits}` : "Cartão de crédito"}
-                            </p>
-                          </div>
-                        </div>
-                        <ChevronRight className="w-4 h-4 text-muted-foreground/25 group-hover:text-primary transition-colors" />
-                      </div>
-
-                      <div>
-                        <div className="flex items-center justify-between mb-1">
-                          <span className="text-[10px] font-medium text-muted-foreground">
-                            {formatCurrency(usedValue)} de {formatCurrency(limitValue)}
-                          </span>
-                          <span className={cn("text-[10px] font-bold tabular-nums", usedPct >= 80 ? "text-destructive" : "text-primary")}>
-                            {usedPct.toFixed(0)}%
-                          </span>
-                        </div>
-                        <div className="w-full h-1.5 rounded-full bg-muted/30 overflow-hidden">
-                          <motion.div
-                            initial={{ width: 0 }}
-                            animate={{ width: `${usedPct}%` }}
-                            transition={{ duration: 0.8, ease: "easeOut" }}
-                            className={cn(
-                              "h-full rounded-full",
-                              usedPct >= 100 ? "bg-destructive/60" : usedPct >= 80 ? "bg-amber-400/60" : "bg-primary/40"
-                            )}
-                          />
-                        </div>
-                      </div>
-
-                      <div className="flex items-center justify-between pt-0.5">
-                        <div>
-                          <p className="text-[9px] text-muted-foreground uppercase tracking-widest font-medium mb-0.5">Disponível</p>
-                          <p className={cn("text-base font-extrabold tabular-nums tracking-tight", available > 0 ? "text-foreground" : "text-destructive")}>
-                            {formatCurrency(available)}
-                          </p>
-                        </div>
-                        <div className="text-right">
-                          <p className="text-[9px] text-muted-foreground uppercase tracking-widest font-medium mb-0.5">
-                            {status.isClosed ? "Vencimento" : "Fechamento"}
-                          </p>
-                          <p className={cn("text-[11px] font-semibold", status.isClosed ? "text-primary" : "text-muted-foreground")}>
-                            {status.label}
-                          </p>
-                        </div>
-                      </div>
-                    </div>
-                  </motion.div>
-                );
-              })}
+              {creditCards.map((card, idx) => (
+                <CreditCardTile key={card.id} card={card} idx={idx} invoiceInfo={openInvoices[card.id]} navigate={navigate} />
+              ))}
               <motion.button
                 initial={{ opacity: 0, y: 16 }}
                 animate={{ opacity: 1, y: 0 }}
