@@ -103,7 +103,7 @@ const Auth = () => {
         initial={{ opacity: 0, y: -10 }}
         animate={{ opacity: 1, y: 0 }}
         transition={{ duration: 0.5 }}
-        className="flex items-center justify-between px-6 py-4 lg:px-10 relative z-10"
+        className="hidden lg:flex items-center justify-between px-10 py-4 relative z-10"
       >
         <div className="flex items-center gap-2.5">
           <div className="w-8 h-8 rounded-lg bg-primary/15 border border-primary/20 flex items-center justify-center">
@@ -113,7 +113,7 @@ const Auth = () => {
             Din<span className="text-primary">Hub</span>
           </span>
         </div>
-        <span className="hidden sm:flex items-center gap-1.5 text-xs text-muted-foreground">
+        <span className="flex items-center gap-1.5 text-xs text-muted-foreground">
           <Shield className="w-3.5 h-3.5" />
           Controle Financeiro Inteligente
         </span>
