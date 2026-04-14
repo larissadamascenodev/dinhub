@@ -113,14 +113,14 @@ const Auth = () => {
   /* ── Reusable sub-sections ── */
 
   const SocialProofBadge = ({ className = "" }: { className?: string }) => (
-    <span className={`inline-flex items-center gap-2.5 bg-primary/10 text-primary text-xs font-medium px-4 py-2 rounded-full border border-primary/15 backdrop-blur-sm ${className}`}>
-      <span className="flex -space-x-2">
+    <span className={`inline-flex items-center gap-2 bg-primary/10 text-primary text-[10px] font-medium px-3 py-1.5 rounded-full border border-primary/15 backdrop-blur-sm ${className}`}>
+      <span className="flex -space-x-1.5">
         {AVATAR_URLS.map((url, i) => (
           <img
             key={i}
             src={url}
             alt=""
-            className="w-5 h-5 rounded-full border-2 border-background object-cover"
+            className="w-4 h-4 rounded-full border border-background object-cover"
           />
         ))}
       </span>
@@ -147,14 +147,14 @@ const Auth = () => {
   );
 
   const InputMethodsPill = ({ mobile = false }: { mobile?: boolean }) => (
-    <div className={`inline-flex items-center gap-2 bg-gradient-to-r from-primary/10 via-card/50 to-primary/5 border border-primary/15 rounded-full px-4 py-2.5 text-xs text-muted-foreground backdrop-blur-sm ${mobile ? "mx-auto" : ""}`}>
+    <div className={`inline-flex items-center gap-1.5 bg-gradient-to-r from-primary/10 via-card/50 to-primary/5 border border-primary/15 rounded-full px-3 py-1.5 text-[10px] text-muted-foreground backdrop-blur-sm ${mobile ? "mx-auto" : ""}`}>
       <span className="text-foreground/70 font-medium">Registre via</span>
-      <span className="flex items-center gap-1 text-primary font-semibold"><MessageCircle className="w-3 h-3" /> texto</span>
+      <span className="flex items-center gap-0.5 text-primary font-semibold"><MessageCircle className="w-2.5 h-2.5" /> texto</span>
       <span className="text-primary/30">|</span>
-      <span className="flex items-center gap-1 text-primary/80"><Mic className="w-3 h-3" /> áudio</span>
+      <span className="flex items-center gap-0.5 text-primary/80"><Mic className="w-2.5 h-2.5" /> áudio</span>
       <span className="text-primary/30">|</span>
-      <span className="flex items-center gap-1 text-primary/80"><Image className="w-3 h-3" /> foto</span>
-      <Zap className="w-3 h-3 text-primary ml-0.5" />
+      <span className="flex items-center gap-0.5 text-primary/80"><Image className="w-2.5 h-2.5" /> foto</span>
+      <Zap className="w-2.5 h-2.5 text-primary ml-0.5" />
     </div>
   );
 
