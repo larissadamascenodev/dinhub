@@ -27,16 +27,12 @@ const ContactModal = ({ open, onClose }: ContactModalProps) => {
             exit={{ opacity: 0, y: 60 }}
             transition={{ type: "spring", duration: 0.5, bounce: 0.18 }}
             onClick={(e) => e.stopPropagation()}
-            className="relative w-full sm:max-w-sm rounded-t-3xl sm:rounded-2xl border border-border/20 overflow-hidden"
+            className="relative w-full max-w-sm rounded-2xl border border-border/20 overflow-hidden"
             style={{
               background: "linear-gradient(175deg, hsl(220 18% 10%) 0%, hsl(220 22% 5%) 100%)",
               boxShadow: "0 -8px 40px -8px rgba(0,0,0,0.6), 0 0 60px -20px hsl(150 100% 45% / 0.06)",
             }}
           >
-            {/* Top handle (mobile) */}
-            <div className="flex sm:hidden justify-center pt-3 pb-1">
-              <div className="w-10 h-1 rounded-full bg-muted-foreground/20" />
-            </div>
 
             {/* Hero section */}
             <div className="relative px-6 pt-5 pb-4 text-center overflow-hidden">
