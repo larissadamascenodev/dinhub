@@ -493,7 +493,7 @@ const Auth = () => {
         </div>
 
         {/* Right — Form */}
-        <div className="w-full max-w-[400px] self-stretch flex flex-col pt-6 pb-6">
+        <div className="w-full max-w-[400px] flex flex-col justify-center">
           <AuthFormCard />
         </div>
       </div>
