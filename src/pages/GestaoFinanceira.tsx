@@ -167,7 +167,7 @@ const CreditCardTile = ({ card, idx, invoiceInfo, navigate, extraClass }: {
         extraClass
       )}
     >
-      <div className="p-3.5">
+      <div className="p-4">
         {/* Header: icon + name + chevron */}
         <div className="flex items-center gap-2.5 mb-3">
           <div className={cn("w-8 h-8 rounded-xl flex items-center justify-center shrink-0", accent.iconBg)}>
