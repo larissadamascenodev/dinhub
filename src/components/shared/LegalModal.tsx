@@ -70,12 +70,12 @@ const LegalModal = ({ open, onClose, type }: LegalModalProps) => {
             <div className="absolute -top-24 -right-24 w-48 h-48 rounded-full bg-primary/6 blur-3xl pointer-events-none" />
 
             {/* Header */}
-            <div className="flex items-center justify-between p-5 pb-3 shrink-0">
-              <div className="flex items-center gap-3">
-                <div className="w-9 h-9 rounded-xl bg-primary/10 border border-primary/20 flex items-center justify-center">
-                  <Icon className="w-4 h-4 text-primary" />
+            <div className="flex items-center justify-between px-5 pt-5 pb-4 shrink-0 border-b border-border/15">
+              <div className="flex items-center gap-3.5">
+                <div className="w-10 h-10 rounded-xl bg-primary/12 border border-primary/20 flex items-center justify-center">
+                  <Icon className="w-[18px] h-[18px] text-primary" />
                 </div>
-                <h2 className="text-lg font-bold text-foreground tracking-tight">{title}</h2>
+                <h2 className="text-lg font-extrabold text-foreground tracking-tight" style={{ fontFamily: "'Plus Jakarta Sans', sans-serif" }}>{title}</h2>
               </div>
               <button
                 onClick={onClose}
