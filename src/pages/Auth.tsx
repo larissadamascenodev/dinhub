@@ -27,6 +27,7 @@ const Auth = () => {
   const { user, loading } = useAuth();
   const [isLogin, setIsLogin] = useState(true);
   const [email, setEmail] = useState("");
+  const [fullName, setFullName] = useState("");
   const [password, setPassword] = useState("");
   const [showPassword, setShowPassword] = useState(false);
   const [submitting, setSubmitting] = useState(false);
@@ -72,6 +73,10 @@ const Auth = () => {
       toast.error("Preencha todos os campos");
       return;
     }
+    if (!isLogin && !fullName.trim()) {
+      toast.error("Preencha seu nome completo");
+      return;
+    }
     if (password.length < 6) {
       toast.error("A senha deve ter pelo menos 6 caracteres");
       return;
@@ -86,7 +91,10 @@ const Auth = () => {
         const { error } = await supabase.auth.signUp({
           email,
           password,
-          options: { emailRedirectTo: window.location.origin },
+          options: {
+            emailRedirectTo: window.location.origin,
+            data: { display_name: fullName.trim() },
+          },
         });
         if (error) throw error;
         toast.success("Conta criada! Verifique seu email para confirmar.");
@@ -229,6 +237,19 @@ const Auth = () => {
 
       {/* Form */}
       <form onSubmit={handleSubmit} className="space-y-4">
+        {!isLogin && (
+          <div className="relative group">
+            <User className="absolute left-3.5 top-1/2 -translate-y-1/2 w-4 h-4 text-muted-foreground group-focus-within:text-primary transition-colors" />
+            <Input
+              type="text"
+              placeholder="Nome completo"
+              value={fullName}
+              onChange={(e) => setFullName(e.target.value)}
+              className="pl-11 h-12 bg-card/40 border-border/60 rounded-xl backdrop-blur-sm focus:border-primary/50 focus:bg-card/60 transition-all duration-300"
+              autoComplete="name"
+            />
+          </div>
+        )}
         <div className="relative group">
           <Mail className="absolute left-3.5 top-1/2 -translate-y-1/2 w-4 h-4 text-muted-foreground group-focus-within:text-primary transition-colors" />
           <Input
