@@ -1,5 +1,6 @@
 import { useState } from "react";
 import ContactModal from "@/components/shared/ContactModal";
+import LegalModal from "@/components/shared/LegalModal";
 import { supabase } from "@/integrations/supabase/client";
 import { lovable } from "@/integrations/lovable/index";
 import { Button } from "@/components/ui/button";
@@ -41,6 +42,7 @@ const Auth = () => {
   const [submitting, setSubmitting] = useState(false);
   const [acceptedTerms, setAcceptedTerms] = useState(false);
   const [showContact, setShowContact] = useState(false);
+  const [legalModal, setLegalModal] = useState<"terms" | "privacy" | null>(null);
 
   if (loading) {
     return (
@@ -430,8 +432,8 @@ const Auth = () => {
               <span>DinHub © {new Date().getFullYear()}</span>
             </span>
             <span className="flex items-center gap-4">
-              <Link to="/termos-de-uso" className="hover:text-primary transition-colors">Termos de Uso</Link>
-              <Link to="/politica-de-privacidade" className="hover:text-primary transition-colors">Política de Privacidade</Link>
+              <button onClick={() => setLegalModal("terms")} className="hover:text-primary transition-colors">Termos de Uso</button>
+              <button onClick={() => setLegalModal("privacy")} className="hover:text-primary transition-colors">Política de Privacidade</button>
               <button onClick={() => setShowContact(true)} className="hover:text-primary transition-colors">Contato</button>
             </span>
           </motion.div>
@@ -485,13 +487,14 @@ const Auth = () => {
             <span>DinHub © {new Date().getFullYear()}</span>
           </span>
           <span className="flex items-center gap-3">
-            <Link to="/termos-de-uso" className="hover:text-primary transition-colors">Termos de Uso</Link>
-            <Link to="/politica-de-privacidade" className="hover:text-primary transition-colors">Política de Privacidade</Link>
+            <button onClick={() => setLegalModal("terms")} className="hover:text-primary transition-colors">Termos de Uso</button>
+            <button onClick={() => setLegalModal("privacy")} className="hover:text-primary transition-colors">Política de Privacidade</button>
             <button onClick={() => setShowContact(true)} className="hover:text-primary transition-colors">Contato</button>
           </span>
         </motion.div>
       </div>
       <ContactModal open={showContact} onClose={() => setShowContact(false)} />
+      <LegalModal open={!!legalModal} onClose={() => setLegalModal(null)} type={legalModal || "terms"} />
     </div>
   );
 };
