@@ -85,7 +85,8 @@ Para cada item extraído, retorne:
   * Impostos — tributos, taxas governamentais
   * Bebidas — bar, distribuidora de bebidas, adega
   * Academia — academia, crossfit, natação, atividades físicas
-  * Se não identificar com confiança → outros
+  * Se não identificar com confiança → Outros
+  IMPORTANTE: Todas as categorias devem ser retornadas com a primeira letra MAIÚSCULA (ex: "Alimentação", "Transporte", "Saúde").
 - type: "despesa" para gastos/pagamentos ou "receita" para recebimentos/depósitos/transferências recebidas
   * Palavras que indicam RECEITA: "recebido", "pix recebido", "entrada", "depósito", "crédito", "salário", "transferência recebida"
   * Palavras que indicam DESPESA: "pago", "pagamento", "transferência enviada", "débito", "pix enviado", "compra"
@@ -302,7 +303,7 @@ serve(async (req) => {
         date: item.date || null,
         installment_current: item.installment_current ? Number(item.installment_current) : null,
         installment_total: item.installment_total ? Number(item.installment_total) : null,
-        category: item.category || "outros",
+        category: item.category ? String(item.category).charAt(0).toUpperCase() + String(item.category).slice(1) : "Outros",
         type: item.type || "despesa",
         confidence: typeof item.confidence === "number" ? Math.min(1, Math.max(0, item.confidence)) : 0.5,
         merchant: item.merchant || null,
