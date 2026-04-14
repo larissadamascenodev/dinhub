@@ -9,7 +9,7 @@ import { useAuth } from "@/contexts/AuthContext";
 import { motion, AnimatePresence } from "framer-motion";
 import {
   Eye, EyeOff, ArrowRight, Mail, Lock, TrendingUp, Target, Star,
-  Wallet, MessageCircle, Mic, Image, Zap, Shield
+  PiggyBank, MessageCircle, Mic, Image, Zap, Shield
 } from "lucide-react";
 
 const fadeUp = {
@@ -40,7 +40,7 @@ const Auth = () => {
           className="flex flex-col items-center gap-3"
         >
           <div className="w-10 h-10 rounded-xl bg-primary/20 flex items-center justify-center">
-            <Wallet className="w-5 h-5 text-primary animate-pulse" />
+            <PiggyBank className="w-5 h-5 text-primary animate-pulse" />
           </div>
           <span className="text-muted-foreground text-sm">Carregando...</span>
         </motion.div>
@@ -315,7 +315,7 @@ const Auth = () => {
       >
         <div className="flex items-center gap-2.5">
           <div className="w-8 h-8 rounded-lg bg-primary/15 border border-primary/20 flex items-center justify-center">
-            <Wallet className="w-4 h-4 text-primary" />
+            <PiggyBank className="w-4 h-4 text-primary" />
           </div>
           <span className="font-display text-xl font-bold text-foreground tracking-tight">
             Din<span className="text-primary">Hub</span>
@@ -376,7 +376,7 @@ const Auth = () => {
           className="flex flex-col items-center gap-1.5"
         >
           <div className="w-11 h-11 rounded-2xl bg-primary/15 border border-primary/20 flex items-center justify-center">
-            <Wallet className="w-5 h-5 text-primary" />
+            <PiggyBank className="w-5 h-5 text-primary" />
           </div>
           <span className="font-display text-xl font-bold text-foreground tracking-tight">
             Din<span className="text-primary">Hub</span>
