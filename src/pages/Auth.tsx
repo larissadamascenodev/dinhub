@@ -484,19 +484,22 @@ const Auth = () => {
         </motion.div>
 
         {/* Security badge + legal links */}
+        {/* Footer mobile */}
         <motion.div
           initial={{ opacity: 0 }}
           animate={{ opacity: 1 }}
           transition={{ delay: 0.6 }}
-          className="flex items-center justify-center gap-3 flex-wrap pt-3 border-t border-border/10 text-[9px] text-muted-foreground/50 pb-2"
+          className="flex flex-col items-center gap-2 pt-3 border-t border-border/10 text-[10px] text-muted-foreground/50 pb-2"
         >
-          <span className="flex items-center gap-1">
-            <PiggyBank className="w-3 h-3 text-primary/60" />
+          <span className="flex items-center gap-1.5">
+            <PiggyBank className="w-3.5 h-3.5 text-primary/60" />
             <span>DinHub © {new Date().getFullYear()}</span>
           </span>
-          <button onClick={() => setLegalModal("terms")} className="hover:text-primary transition-colors">Termos de Uso</button>
-          <button onClick={() => setLegalModal("privacy")} className="hover:text-primary transition-colors">Política de Privacidade</button>
-          <button onClick={() => setShowContact(true)} className="hover:text-primary transition-colors">Contato</button>
+          <span className="flex items-center gap-4">
+            <button onClick={() => setLegalModal("terms")} className="hover:text-primary transition-colors">Termos de Uso</button>
+            <button onClick={() => setLegalModal("privacy")} className="hover:text-primary transition-colors">Política de Privacidade</button>
+            <button onClick={() => setShowContact(true)} className="hover:text-primary transition-colors">Contato</button>
+          </span>
         </motion.div>
       </div>
       <ContactModal open={showContact} onClose={() => setShowContact(false)} />
