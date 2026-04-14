@@ -21,9 +21,9 @@ const fadeUp = {
 };
 
 const stats = [
-  { icon: <TrendingUp className="w-3.5 h-3.5" />, value: "R$ 1.2M", label: "Economizados" },
-  { icon: <Target className="w-3.5 h-3.5" />, value: "94%", label: "Metas atingidas" },
-  { icon: <Star className="w-3.5 h-3.5" />, value: "4.9", label: "Avaliação" },
+  { icon: <TrendingUp className="w-4 h-4" />, value: "R$ 1.2M", label: "Economizados" },
+  { icon: <Target className="w-4 h-4" />, value: "94%", label: "Metas atingidas" },
+  { icon: <Star className="w-4 h-4" />, value: "4.9", label: "Avaliação" },
 ];
 
 const AVATAR_URLS = [
@@ -169,15 +169,15 @@ const Auth = () => {
   );
 
   const StatsGrid = ({ mobile = false }: { mobile?: boolean }) => (
-    <div className="grid grid-cols-3 gap-2">
+    <div className="grid grid-cols-3 gap-3">
       {stats.map((s) => (
         <div
           key={s.label}
-          className="group bg-card/40 border border-border/60 rounded-lg p-2.5 space-y-0.5 backdrop-blur-sm hover:border-primary/30 hover:bg-primary/5 transition-all duration-300"
+          className="group flex flex-col items-center text-center bg-card/50 border border-border/40 rounded-xl p-3 gap-1 backdrop-blur-sm hover:border-primary/30 hover:bg-primary/5 transition-all duration-300"
         >
-          <div className="text-primary">{s.icon}</div>
-          <p className={`font-bold text-foreground ${mobile ? "text-sm" : "text-lg"}`}>{s.value}</p>
-          <p className="text-[9px] sm:text-[10px] text-muted-foreground">{s.label}</p>
+          <div className="w-8 h-8 rounded-lg bg-primary/10 border border-primary/20 flex items-center justify-center text-primary mb-0.5">{s.icon}</div>
+          <p className={`font-extrabold text-foreground tracking-tight ${mobile ? "text-base" : "text-xl"}`}>{s.value}</p>
+          <p className="text-[10px] text-muted-foreground leading-tight">{s.label}</p>
         </div>
       ))}
     </div>
