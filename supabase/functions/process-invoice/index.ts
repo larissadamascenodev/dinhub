@@ -27,7 +27,7 @@ Para cada item extraído, retorne:
 - date: data da compra no formato YYYY-MM-DD (ou null se não disponível)
 - installment_current: número da parcela atual (ex: se "3/10", retorne 3). null se não parcelado
 - installment_total: total de parcelas (ex: se "3/10", retorne 10). null se não parcelado
-- category: categoria sugerida (alimentação, transporte, compras, saúde, educação, lazer, moradia, serviços, assinatura, outros)
+- category: categoria sugerida com primeira letra maiúscula (Alimentação, Transporte, Compras, Saúde, Educação, Lazer, Moradia, Serviços, Assinaturas, Outros)
 - type: sempre "despesa" para faturas de cartão
 - confidence: um número de 0 a 1 indicando sua confiança na extração (1 = certeza total, 0.5 = incerto). Avalie cada campo: se o valor foi claramente lido, data presente, descrição clara = alta confiança. Se valores estão borrados, ambíguos ou parcialmente legíveis = baixa confiança.
 
