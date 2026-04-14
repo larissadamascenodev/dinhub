@@ -23,10 +23,7 @@ interface Props {
   onSuccess: () => void;
 }
 
-const CATEGORIES = [
-  "Alimentação", "Transporte", "Saúde", "Assinaturas",
-  "Lazer", "Moradia", "Educação", "Salário", "Freelance", "Investimentos", "Outros",
-];
+// Categories are loaded dynamically
 
 const fmt = (v: number) =>
   v.toLocaleString("pt-BR", { style: "currency", currency: "BRL" });
