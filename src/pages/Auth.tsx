@@ -375,10 +375,10 @@ const Auth = () => {
   return (
     <div className="dark min-h-screen bg-background flex flex-col relative overflow-hidden">
       {/* Promo banner */}
-      <div className="w-full bg-gradient-to-r from-primary/90 via-primary to-emerald-400/90 text-center py-2 px-4 relative z-20">
-        <p className="text-[10px] sm:text-xs font-semibold text-background flex items-center justify-center gap-1.5 sm:gap-2 whitespace-nowrap">
-          <Zap className="w-3 h-3 sm:w-3.5 sm:h-3.5" />
-          Oferta de Lançamento: <span className="font-extrabold tracking-wide">TESTE GRATUITAMENTE</span> — sem compromisso!
+      <div className="w-full text-center py-2.5 px-4 relative z-20 border-b border-border/30" style={{ background: "linear-gradient(90deg, hsl(220 20% 8%) 0%, hsl(220 18% 12%) 50%, hsl(220 20% 8%) 100%)" }}>
+        <p className="text-[10px] sm:text-xs font-semibold text-foreground flex items-center justify-center gap-1.5 sm:gap-2 whitespace-nowrap">
+          <Zap className="w-3 h-3 sm:w-3.5 sm:h-3.5 text-primary" />
+          Oferta de Lançamento: <span className="font-extrabold tracking-wide text-primary">TESTE GRATUITAMENTE</span> <span className="text-muted-foreground">— sem compromisso!</span>
         </p>
       </div>
 
