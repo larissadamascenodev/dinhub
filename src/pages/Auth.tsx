@@ -472,29 +472,31 @@ const Auth = () => {
       </motion.header>
 
       {/* ════════ DESKTOP LAYOUT ════════ */}
-      <div className="hidden lg:flex flex-1 items-stretch px-10 xl:px-16 pb-8 gap-12 relative z-10">
-        {/* Left — Marketing */}
-        <div className="flex flex-col justify-center flex-1 max-w-2xl space-y-7">
-          <motion.div custom={0} variants={fadeUp} initial="hidden" animate="visible">
-            <SocialProofBadge />
-          </motion.div>
-          <motion.div custom={1} variants={fadeUp} initial="hidden" animate="visible">
-            <HeadlineSection />
-          </motion.div>
-          <motion.div custom={2} variants={fadeUp} initial="hidden" animate="visible">
-            <InputMethodsPill />
-          </motion.div>
-          <motion.div custom={3} variants={fadeUp} initial="hidden" animate="visible">
-            <FeaturesGrid />
-          </motion.div>
-          <motion.div custom={4} variants={fadeUp} initial="hidden" animate="visible">
-            <TestimonialCard />
-          </motion.div>
-        </div>
+      <div className="hidden lg:flex flex-1 items-center justify-center px-10 xl:px-16 pb-8 relative z-10">
+        <div className="flex items-stretch gap-12 xl:gap-16 w-full max-w-6xl">
+          {/* Left — Marketing */}
+          <div className="flex flex-col justify-center flex-1 space-y-7">
+            <motion.div custom={0} variants={fadeUp} initial="hidden" animate="visible">
+              <SocialProofBadge />
+            </motion.div>
+            <motion.div custom={1} variants={fadeUp} initial="hidden" animate="visible">
+              <HeadlineSection />
+            </motion.div>
+            <motion.div custom={2} variants={fadeUp} initial="hidden" animate="visible">
+              <InputMethodsPill />
+            </motion.div>
+            <motion.div custom={3} variants={fadeUp} initial="hidden" animate="visible">
+              <FeaturesGrid />
+            </motion.div>
+            <motion.div custom={4} variants={fadeUp} initial="hidden" animate="visible">
+              <TestimonialCard />
+            </motion.div>
+          </div>
 
-        {/* Right — Form */}
-        <div className="w-full max-w-[400px] flex flex-col justify-center">
-          {renderAuthFormCard()}
+          {/* Right — Form */}
+          <div className="w-full max-w-[420px] shrink-0 flex flex-col justify-center">
+            {renderAuthFormCard()}
+          </div>
         </div>
       </div>
 
