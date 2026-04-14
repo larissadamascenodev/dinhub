@@ -421,10 +421,17 @@ const Auth = () => {
             initial={{ opacity: 0 }}
             animate={{ opacity: 1 }}
             transition={{ delay: 0.6 }}
-            className="flex items-center justify-center gap-1.5 mt-4 text-xs text-muted-foreground/50"
+            className="flex flex-col items-center gap-1 mt-4 text-xs text-muted-foreground/50"
           >
-            <Shield className="w-3 h-3" />
-            <span>Seus dados estão protegidos com criptografia</span>
+            <span className="flex items-center gap-1.5">
+              <Shield className="w-3 h-3" />
+              Seus dados estão protegidos com criptografia
+            </span>
+            <span className="flex items-center gap-1">
+              <Link to="/termos-de-uso" className="hover:text-primary transition-colors">Termos de Uso</Link>
+              <span>·</span>
+              <Link to="/politica-de-privacidade" className="hover:text-primary transition-colors">Política de Privacidade</Link>
+            </span>
           </motion.div>
         </div>
       </div>
