@@ -821,22 +821,6 @@ const Transacoes = () => {
       </AnimatePresence>
 
       {/* Timeline list */}
-      {(() => {
-        // Ensure today's date appears in the timeline for the current month
-        const now = new Date();
-        const todayStr = `${now.getFullYear()}-${String(now.getMonth() + 1).padStart(2, "0")}-${String(now.getDate()).padStart(2, "0")}`;
-        const isCurrentMonth = selectedMonth === now.getMonth() && selectedYear === now.getFullYear();
-        const groupedWithToday = useMemo(() => {
-          if (!isCurrentMonth) return grouped;
-          const hasToday = grouped.some(([date]) => date === todayStr);
-          if (hasToday) return grouped;
-          // Insert today's empty group in the correct sorted position (descending)
-          const result = [...grouped, [todayStr, [] as TransactionRow[]] as [string, TransactionRow[]]];
-          return result.sort(([a], [b]) => b.localeCompare(a));
-        }, [grouped, isCurrentMonth, todayStr]);
-
-        return null;
-      })()}
       {loading && filtered.length === 0 ? (
         <div className="flex items-center justify-center py-16">
           <div className="animate-pulse text-primary text-sm">Carregando...</div>
@@ -858,9 +842,9 @@ const Transacoes = () => {
             const now = new Date();
             const todayStr = `${now.getFullYear()}-${String(now.getMonth() + 1).padStart(2, "0")}-${String(now.getDate()).padStart(2, "0")}`;
             const isCurrentMonth = selectedMonth === now.getMonth() && selectedYear === now.getFullYear();
-            let finalGroups = grouped;
+            let finalGroups: [string, TransactionRow[]][] = grouped;
             if (isCurrentMonth && !grouped.some(([date]) => date === todayStr)) {
-              finalGroups = [...grouped, [todayStr, [] as TransactionRow[]]].sort(([a], [b]) => b.localeCompare(a));
+              finalGroups = ([...grouped, [todayStr, []] as [string, TransactionRow[]]] as [string, TransactionRow[]][]).sort(([a], [b]) => b.localeCompare(a));
             }
             return finalGroups;
           })().map(([date, txs], gi) => {
