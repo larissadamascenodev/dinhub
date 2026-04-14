@@ -491,6 +491,7 @@ const Auth = () => {
           </span>
         </motion.div>
       </div>
+      <ContactModal open={showContact} onClose={() => setShowContact(false)} />
     </div>
   );
 };
