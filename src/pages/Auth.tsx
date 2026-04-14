@@ -1,5 +1,6 @@
 import { useState } from "react";
 import ContactModal from "@/components/shared/ContactModal";
+import LegalModal from "@/components/shared/LegalModal";
 import { supabase } from "@/integrations/supabase/client";
 import { lovable } from "@/integrations/lovable/index";
 import { Button } from "@/components/ui/button";
@@ -41,6 +42,7 @@ const Auth = () => {
   const [submitting, setSubmitting] = useState(false);
   const [acceptedTerms, setAcceptedTerms] = useState(false);
   const [showContact, setShowContact] = useState(false);
+  const [legalModal, setLegalModal] = useState<"terms" | "privacy" | null>(null);
 
   if (loading) {
     return (
