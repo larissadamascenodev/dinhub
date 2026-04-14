@@ -22,10 +22,10 @@ const fadeUp = {
 };
 
 const features = [
-  { icon: <Wallet className="w-4 h-4" />, title: "Controle total", desc: "Receitas, despesas e cartões em um só lugar" },
-  { icon: <BarChart3 className="w-4 h-4" />, title: "Projeções IA", desc: "Saiba como seu saldo vai estar nos próximos meses" },
-  { icon: <Bell className="w-4 h-4" />, title: "Alertas inteligentes", desc: "Nunca mais esqueça uma conta ou ultrapasse limites" },
-  { icon: <Brain className="w-4 h-4" />, title: "Assistente financeiro", desc: "A Iara analisa seus hábitos e sugere melhorias" },
+  { icon: <Wallet className="w-4 h-4" />, title: "Controle total", desc: "Receitas, despesas e cartões reunidos em um só lugar" },
+  { icon: <Brain className="w-4 h-4" />, title: "Assistente financeiro", desc: "Analisa seus hábitos e sugere melhorias personalizadas" },
+  { icon: <BarChart3 className="w-4 h-4" />, title: "Projeções inteligentes", desc: "Acompanhe projeções do seu dinheiro para o futuro" },
+  { icon: <Shield className="w-4 h-4" />, title: "Radar financeiro", desc: "Alertas e insights para proteger seu orçamento" },
 ];
 
 const AVATAR_URLS = [
@@ -171,16 +171,16 @@ const Auth = () => {
   );
 
   const FeaturesGrid = ({ mobile = false }: { mobile?: boolean }) => (
-    <div className={`grid ${mobile ? "grid-cols-2" : "grid-cols-2"} gap-2.5`}>
+    <div className={`grid gap-2.5 ${mobile ? "grid-cols-1" : "grid-cols-2"}`}>
       {features.map((f) => (
         <div
           key={f.title}
-          className="flex items-start gap-2.5 bg-card/50 border border-border/40 rounded-xl p-3 backdrop-blur-sm"
+          className={`flex items-center gap-3 bg-card/50 border border-border/40 rounded-xl backdrop-blur-sm ${mobile ? "p-3" : "p-3"}`}
         >
-          <div className="w-7 h-7 rounded-lg bg-primary/10 border border-primary/20 flex items-center justify-center text-primary shrink-0 mt-0.5">{f.icon}</div>
+          <div className="w-8 h-8 rounded-lg bg-primary/10 border border-primary/20 flex items-center justify-center text-primary shrink-0">{f.icon}</div>
           <div className="min-w-0">
-            <p className={`font-semibold text-foreground ${mobile ? "text-[11px]" : "text-xs"}`}>{f.title}</p>
-            <p className={`text-muted-foreground leading-snug ${mobile ? "text-[9px]" : "text-[10px]"}`}>{f.desc}</p>
+            <p className={`font-semibold text-foreground ${mobile ? "text-xs" : "text-xs"}`}>{f.title}</p>
+            <p className={`text-muted-foreground leading-snug ${mobile ? "text-[10px]" : "text-[10px]"}`}>{f.desc}</p>
           </div>
         </div>
       ))}
