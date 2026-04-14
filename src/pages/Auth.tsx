@@ -494,6 +494,7 @@ const Auth = () => {
         </motion.div>
       </div>
       <ContactModal open={showContact} onClose={() => setShowContact(false)} />
+      <LegalModal open={!!legalModal} onClose={() => setLegalModal(null)} type={legalModal || "terms"} />
     </div>
   );
 };
