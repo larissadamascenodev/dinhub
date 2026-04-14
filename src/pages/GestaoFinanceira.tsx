@@ -167,7 +167,7 @@ const CreditCardTile = ({ card, idx, invoiceInfo, navigate, extraClass }: {
         extraClass
       )}
     >
-      <div className="p-3.5">
+      <div className="p-4">
         {/* Header: icon + name + chevron */}
         <div className="flex items-center gap-2.5 mb-3">
           <div className={cn("w-8 h-8 rounded-xl flex items-center justify-center shrink-0", accent.iconBg)}>
@@ -183,9 +183,9 @@ const CreditCardTile = ({ card, idx, invoiceInfo, navigate, extraClass }: {
         </div>
 
         {/* Invoice highlight */}
-        <div className="flex items-baseline justify-between mb-2.5">
+        <div className="flex items-baseline justify-between mb-3">
           <div>
-            <p className="text-[10px] text-muted-foreground/50 uppercase tracking-wider leading-none mb-1">{status.label}</p>
+            <p className="text-[10px] text-muted-foreground/50 uppercase tracking-wider leading-none mb-1">Fatura em aberto</p>
             <p className={cn(
               "text-xl font-extrabold tabular-nums leading-none tracking-tight",
               invoiceAmount > 0 ? "text-foreground" : "text-muted-foreground/25"
@@ -202,7 +202,7 @@ const CreditCardTile = ({ card, idx, invoiceInfo, navigate, extraClass }: {
         </div>
 
         {/* Progress bar */}
-        <div className="mb-2">
+        <div className="mb-2.5">
           <div className={cn("w-full h-1.5 rounded-full overflow-hidden", barTrackColor)}>
             <motion.div
               initial={{ width: 0 }}
@@ -221,15 +221,11 @@ const CreditCardTile = ({ card, idx, invoiceInfo, navigate, extraClass }: {
           </div>
         </div>
 
-        {/* Footer: dates */}
-        <div className="flex items-center gap-2 pt-1.5 border-t border-border/10">
+        {/* Footer: contextual date */}
+        <div className="flex items-center gap-2 pt-2 border-t border-border/10">
           <CalendarClock className="w-3 h-3 text-muted-foreground/30 shrink-0" />
-          <span className="text-[10px] text-muted-foreground/45">
-            Fecha <span className="font-semibold text-foreground/50">{card.closing_day}</span>
-          </span>
-          <span className="text-[10px] text-muted-foreground/25">•</span>
-          <span className="text-[10px] text-muted-foreground/45">
-            Vence <span className="font-semibold text-foreground/50">{card.due_day}</span>
+          <span className={cn("text-[10px] tabular-nums", status.isClosed ? "text-primary font-semibold" : "text-muted-foreground/50")}>
+            {status.label}
           </span>
         </div>
       </div>
@@ -687,7 +683,7 @@ const GestaoFinanceira = () => {
             <div className="overflow-hidden sm:hidden" ref={cardsRef}>
               <div className="flex gap-3 px-4">
               {creditCards.map((card, idx) => (
-                <CreditCardTile key={card.id} card={card} idx={idx} invoiceInfo={openInvoices[card.id]} navigate={navigate} extraClass="min-w-0 shrink-0 basis-[80%]" />
+                <CreditCardTile key={card.id} card={card} idx={idx} invoiceInfo={openInvoices[card.id]} navigate={navigate} extraClass="min-w-0 shrink-0 basis-[85%]" />
               ))}
               <motion.button
                 initial={{ opacity: 0, y: 16 }}
