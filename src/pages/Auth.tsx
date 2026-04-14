@@ -10,8 +10,9 @@ import { Navigate } from "react-router-dom";
 import { useAuth } from "@/contexts/AuthContext";
 import { motion, AnimatePresence } from "framer-motion";
 import {
-  Eye, EyeOff, ArrowRight, Mail, Lock, TrendingUp, Target, Star,
-  PiggyBank, MessageCircle, Mic, Image, Zap, Shield, User, Check
+  Eye, EyeOff, ArrowRight, Mail, Lock,
+  PiggyBank, MessageCircle, Mic, Image, Zap, Shield, User, Check,
+  Wallet, BarChart3, Bell, Brain
 } from "lucide-react";
 import { Link } from "react-router-dom";
 
@@ -20,10 +21,11 @@ const fadeUp = {
   visible: (i: number) => ({ opacity: 1, y: 0, transition: { delay: i * 0.08, duration: 0.5, ease: [0.22, 1, 0.36, 1] as [number, number, number, number] } }),
 };
 
-const stats = [
-  { icon: <TrendingUp className="w-4 h-4" />, value: "R$ 1.2M", label: "Economizados" },
-  { icon: <Target className="w-4 h-4" />, value: "94%", label: "Metas atingidas" },
-  { icon: <Star className="w-4 h-4" />, value: "4.9", label: "Avaliação" },
+const features = [
+  { icon: <Wallet className="w-4 h-4" />, title: "Controle total", desc: "Receitas, despesas e cartões em um só lugar" },
+  { icon: <BarChart3 className="w-4 h-4" />, title: "Projeções IA", desc: "Saiba como seu saldo vai estar nos próximos meses" },
+  { icon: <Bell className="w-4 h-4" />, title: "Alertas inteligentes", desc: "Nunca mais esqueça uma conta ou ultrapasse limites" },
+  { icon: <Brain className="w-4 h-4" />, title: "Assistente financeiro", desc: "A Iara analisa seus hábitos e sugere melhorias" },
 ];
 
 const AVATAR_URLS = [
