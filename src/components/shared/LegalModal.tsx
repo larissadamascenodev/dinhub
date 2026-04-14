@@ -1,0 +1,118 @@
+import { motion, AnimatePresence } from "framer-motion";
+import { X, FileText, ShieldCheck } from "lucide-react";
+import { ScrollArea } from "@/components/ui/scroll-area";
+
+interface LegalModalProps {
+  open: boolean;
+  onClose: () => void;
+  type: "terms" | "privacy";
+}
+
+const termsContent = [
+  { title: "Aceitação dos Termos", text: "Ao utilizar o DinHub, você concorda com estes Termos de Uso. Nosso objetivo é garantir uma experiência segura e transparente para você." },
+  { title: "Sobre o DinHub", text: "O DinHub é uma ferramenta de organização financeira pessoal. Permite registrar receitas, despesas, metas e investimentos, tudo em um só lugar. O app não realiza movimentações bancárias nem substitui consultoria financeira profissional." },
+  { title: "Cadastro e Responsabilidade", text: "Você é responsável por manter suas credenciais de acesso seguras. As informações inseridas no app são de sua inteira responsabilidade. Dados falsos ou uso indevido podem resultar em suspensão da conta." },
+  { title: "Planos e Acesso", text: "O DinHub oferece um período de teste gratuito por tempo limitado, permitindo que você explore as funcionalidades da plataforma antes de contratar um plano. Após o término do período de teste, o acesso completo às funcionalidades depende de uma assinatura ativa." },
+  { title: "Cobrança e Renovação", text: "Após o período gratuito, a assinatura será iniciada automaticamente, conforme as condições informadas no momento da contratação. A cobrança é recorrente, conforme o plano escolhido. Ao contratar um plano, você concorda com as condições de cobrança, valores e renovação automática." },
+  { title: "Cancelamento", text: "Você pode cancelar sua assinatura a qualquer momento diretamente pela plataforma. Após o cancelamento, o acesso permanecerá ativo até o final do período já pago. O não uso do serviço não implica cancelamento automático da assinatura." },
+  { title: "Reembolso", text: "Você pode solicitar reembolso integral no prazo de até 7 dias corridos após a contratação, conforme previsto no Código de Defesa do Consumidor. Após esse prazo, não haverá reembolso de valores já pagos." },
+  { title: "Uso Aceitável", text: "Use o DinHub apenas para fins pessoais e legítimos. É proibido tentar acessar dados de outros usuários, fazer engenharia reversa ou usar o app para atividades ilícitas." },
+  { title: "Limitação de Responsabilidade", text: "O DinHub oferece ferramentas de organização, não garantias de resultados financeiros. Decisões financeiras tomadas com base nas análises do app são de sua responsabilidade." },
+  { title: "Propriedade Intelectual", text: "Todo o conteúdo, design, código e marca do DinHub são de propriedade exclusiva da equipe DinHub. É proibida a reprodução sem autorização prévia." },
+  { title: "Alterações nos Termos", text: "Podemos atualizar estes termos periodicamente. Alterações relevantes serão comunicadas dentro do app ou por e-mail." },
+  { title: "Contato", text: "Dúvidas? Fale conosco pelo suporte dentro do app. Estamos sempre prontos para ajudar." },
+];
+
+const privacyContent = [
+  { title: "Seus Dados São Seus", text: "O DinHub nunca vende, compartilha ou monetiza seus dados pessoais. Suas informações financeiras são usadas exclusivamente para oferecer a melhor experiência dentro do app." },
+  { title: "O Que Coletamos", text: "Coletamos apenas as informações necessárias para o funcionamento do app: dados de cadastro (nome, e-mail), dados financeiros inseridos por você (receitas, despesas, metas) e dados de uso para melhoria da plataforma." },
+  { title: "Como Usamos", text: "Seus dados são utilizados para personalizar sua experiência, gerar insights financeiros com IA e melhorar continuamente a plataforma. Nunca utilizamos seus dados para publicidade direcionada." },
+  { title: "Inteligência Artificial", text: "O DinHub utiliza IA para gerar insights e projeções financeiras. Os dados processados pela IA são anonimizados e não são compartilhados com terceiros." },
+  { title: "Segurança e Criptografia", text: "Todos os dados são protegidos com criptografia de ponta a ponta. Utilizamos as melhores práticas de segurança do mercado para garantir a proteção das suas informações." },
+  { title: "LGPD", text: "O DinHub está em conformidade com a Lei Geral de Proteção de Dados (LGPD). Você tem o direito de acessar, corrigir, excluir e portar seus dados a qualquer momento." },
+  { title: "Seus Direitos", text: "Você pode solicitar a exclusão completa dos seus dados, exportar suas informações, revogar consentimentos e solicitar informações sobre o tratamento dos seus dados." },
+  { title: "Cookies e Rastreamento", text: "Utilizamos cookies essenciais para o funcionamento do app. Não utilizamos cookies de rastreamento publicitário." },
+  { title: "Atualizações", text: "Esta política pode ser atualizada periodicamente. Alterações significativas serão comunicadas por e-mail ou dentro do app." },
+  { title: "Contato", text: "Para questões relacionadas à privacidade, entre em contato pelo suporte dentro do app." },
+];
+
+const LegalModal = ({ open, onClose, type }: LegalModalProps) => {
+  if (!open) return null;
+
+  const isTerms = type === "terms";
+  const content = isTerms ? termsContent : privacyContent;
+  const title = isTerms ? "Termos de Uso" : "Política de Privacidade";
+  const Icon = isTerms ? FileText : ShieldCheck;
+
+  return (
+    <AnimatePresence>
+      {open && (
+        <motion.div
+          initial={{ opacity: 0 }}
+          animate={{ opacity: 1 }}
+          exit={{ opacity: 0 }}
+          className="fixed inset-0 z-[100] flex items-center justify-center p-4"
+          onClick={onClose}
+        >
+          <div className="absolute inset-0 bg-black/60 backdrop-blur-sm" />
+
+          <motion.div
+            initial={{ opacity: 0, scale: 0.92, y: 20 }}
+            animate={{ opacity: 1, scale: 1, y: 0 }}
+            exit={{ opacity: 0, scale: 0.92, y: 20 }}
+            transition={{ type: "spring", duration: 0.5, bounce: 0.2 }}
+            onClick={(e) => e.stopPropagation()}
+            className="relative w-full max-w-lg max-h-[80vh] rounded-2xl border border-border/20 overflow-hidden flex flex-col"
+            style={{
+              background: "linear-gradient(160deg, hsl(220 18% 10%) 0%, hsl(220 20% 6%) 100%)",
+              boxShadow: "0 25px 60px -12px rgba(0,0,0,0.7)",
+            }}
+          >
+            <div className="absolute -top-24 -right-24 w-48 h-48 rounded-full bg-primary/6 blur-3xl pointer-events-none" />
+
+            {/* Header */}
+            <div className="flex items-center justify-between p-5 pb-3 shrink-0">
+              <div className="flex items-center gap-3">
+                <div className="w-9 h-9 rounded-xl bg-primary/10 border border-primary/20 flex items-center justify-center">
+                  <Icon className="w-4 h-4 text-primary" />
+                </div>
+                <h2 className="text-lg font-bold text-foreground tracking-tight">{title}</h2>
+              </div>
+              <button
+                onClick={onClose}
+                className="w-8 h-8 rounded-lg bg-muted/40 flex items-center justify-center hover:bg-muted/60 transition-colors"
+              >
+                <X className="w-4 h-4 text-muted-foreground" />
+              </button>
+            </div>
+
+            {/* Scrollable content */}
+            <ScrollArea className="flex-1 px-5 pb-5">
+              <div className="space-y-5 pr-2">
+                {content.map((section, i) => (
+                  <motion.div
+                    key={i}
+                    initial={{ opacity: 0, y: 8 }}
+                    animate={{ opacity: 1, y: 0 }}
+                    transition={{ delay: 0.05 + i * 0.03 }}
+                    className="space-y-1.5"
+                  >
+                    <h3 className="text-sm font-semibold text-foreground">{section.title}</h3>
+                    <p className="text-[13px] text-muted-foreground leading-relaxed">{section.text}</p>
+                    {i < content.length - 1 && <div className="pt-3 border-b border-border/10" />}
+                  </motion.div>
+                ))}
+
+                <p className="text-center text-[11px] text-muted-foreground/40 pt-3 pb-2">
+                  Última atualização: Abril 2026
+                </p>
+              </div>
+            </ScrollArea>
+          </motion.div>
+        </motion.div>
+      )}
+    </AnimatePresence>
+  );
+};
+
+export default LegalModal;
