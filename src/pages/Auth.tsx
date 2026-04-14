@@ -521,19 +521,17 @@ const Auth = () => {
           initial={{ opacity: 0, x: -10 }}
           animate={{ opacity: 1, x: 0 }}
           transition={{ duration: 0.4 }}
-          className="flex items-center gap-2"
+          className="flex items-center justify-between"
         >
-          <PiggyBank className="w-6 h-6 text-primary" />
-          <span className="font-display text-lg font-bold text-foreground tracking-tight">
-            Din<span className="text-primary">Hub</span>
-          </span>
-        </motion.div>
-
-        {/* Tagline badge mobile */}
-        <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} transition={{ delay: 0.2 }} className="flex justify-center">
-          <span className="flex items-center gap-2 text-[10px] text-muted-foreground bg-primary/10 border border-primary/15 rounded-full px-3 py-1">
-            <Shield className="w-3 h-3 text-primary" />
-            <span className="text-foreground/80 font-medium">Controle Financeiro Inteligente</span>
+          <div className="flex items-center gap-2">
+            <PiggyBank className="w-6 h-6 text-primary" />
+            <span className="font-display text-lg font-bold text-foreground tracking-tight">
+              Din<span className="text-primary">Hub</span>
+            </span>
+          </div>
+          <span className="flex items-center gap-1.5 text-[9px] bg-primary/10 border border-primary/15 rounded-full px-2.5 py-1">
+            <Shield className="w-2.5 h-2.5 text-primary" />
+            <span className="text-foreground/80 font-medium">Controle Inteligente</span>
           </span>
         </motion.div>
 
