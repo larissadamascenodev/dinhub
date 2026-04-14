@@ -70,6 +70,11 @@ const LegalModal = ({ open, onClose, type }: LegalModalProps) => {
           >
             <div className="absolute -top-24 -right-24 w-48 h-48 rounded-full bg-primary/6 blur-3xl pointer-events-none" />
 
+            {/* Mobile handle */}
+            <div className="flex sm:hidden justify-center pt-3 pb-1">
+              <div className="w-10 h-1 rounded-full bg-muted-foreground/20" />
+            </div>
+
             {/* Header */}
             <div className="flex items-center justify-between p-5 pb-3 shrink-0">
               <div className="flex items-center gap-3">
@@ -87,8 +92,8 @@ const LegalModal = ({ open, onClose, type }: LegalModalProps) => {
             </div>
 
             {/* Scrollable content */}
-            <ScrollArea className="flex-1 px-5 pb-5">
-              <div className="space-y-5 pr-2">
+            <div className="flex-1 overflow-y-auto px-5 pb-5 scrollbar-none">
+              <div className="space-y-5 pr-1">
                 {content.map((section, i) => (
                   <motion.div
                     key={i}
@@ -107,7 +112,7 @@ const LegalModal = ({ open, onClose, type }: LegalModalProps) => {
                   Última atualização: Abril 2026
                 </p>
               </div>
-            </ScrollArea>
+            </div>
           </motion.div>
         </motion.div>
       )}
