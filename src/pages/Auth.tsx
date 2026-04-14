@@ -432,8 +432,8 @@ const Auth = () => {
               <span>DinHub © {new Date().getFullYear()}</span>
             </span>
             <span className="flex items-center gap-4">
-              <Link to="/termos-de-uso" className="hover:text-primary transition-colors">Termos de Uso</Link>
-              <Link to="/politica-de-privacidade" className="hover:text-primary transition-colors">Política de Privacidade</Link>
+              <button onClick={() => setLegalModal("terms")} className="hover:text-primary transition-colors">Termos de Uso</button>
+              <button onClick={() => setLegalModal("privacy")} className="hover:text-primary transition-colors">Política de Privacidade</button>
               <button onClick={() => setShowContact(true)} className="hover:text-primary transition-colors">Contato</button>
             </span>
           </motion.div>
@@ -487,8 +487,8 @@ const Auth = () => {
             <span>DinHub © {new Date().getFullYear()}</span>
           </span>
           <span className="flex items-center gap-3">
-            <Link to="/termos-de-uso" className="hover:text-primary transition-colors">Termos de Uso</Link>
-            <Link to="/politica-de-privacidade" className="hover:text-primary transition-colors">Política de Privacidade</Link>
+            <button onClick={() => setLegalModal("terms")} className="hover:text-primary transition-colors">Termos de Uso</button>
+            <button onClick={() => setLegalModal("privacy")} className="hover:text-primary transition-colors">Política de Privacidade</button>
             <button onClick={() => setShowContact(true)} className="hover:text-primary transition-colors">Contato</button>
           </span>
         </motion.div>
