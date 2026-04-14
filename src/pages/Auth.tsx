@@ -170,16 +170,18 @@ const Auth = () => {
     </div>
   );
 
-  const StatsGrid = ({ mobile = false }: { mobile?: boolean }) => (
-    <div className="grid grid-cols-3 gap-3">
-      {stats.map((s) => (
+  const FeaturesGrid = ({ mobile = false }: { mobile?: boolean }) => (
+    <div className={`grid ${mobile ? "grid-cols-2" : "grid-cols-2"} gap-2.5`}>
+      {features.map((f) => (
         <div
-          key={s.label}
-          className="group flex flex-col items-center text-center bg-card/50 border border-border/40 rounded-xl p-3 gap-1 backdrop-blur-sm hover:border-primary/30 hover:bg-primary/5 transition-all duration-300"
+          key={f.title}
+          className="flex items-start gap-2.5 bg-card/50 border border-border/40 rounded-xl p-3 backdrop-blur-sm"
         >
-          <div className="w-8 h-8 rounded-lg bg-primary/10 border border-primary/20 flex items-center justify-center text-primary mb-0.5">{s.icon}</div>
-          <p className={`font-extrabold text-foreground tracking-tight ${mobile ? "text-base" : "text-xl"}`}>{s.value}</p>
-          <p className="text-[10px] text-muted-foreground leading-tight">{s.label}</p>
+          <div className="w-7 h-7 rounded-lg bg-primary/10 border border-primary/20 flex items-center justify-center text-primary shrink-0 mt-0.5">{f.icon}</div>
+          <div className="min-w-0">
+            <p className={`font-semibold text-foreground ${mobile ? "text-[11px]" : "text-xs"}`}>{f.title}</p>
+            <p className={`text-muted-foreground leading-snug ${mobile ? "text-[9px]" : "text-[10px]"}`}>{f.desc}</p>
+          </div>
         </div>
       ))}
     </div>
