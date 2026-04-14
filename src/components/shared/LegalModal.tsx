@@ -1,6 +1,5 @@
 import { motion, AnimatePresence } from "framer-motion";
 import { X, FileText, ShieldCheck } from "lucide-react";
-import { ScrollArea } from "@/components/ui/scroll-area";
 
 interface LegalModalProps {
   open: boolean;
@@ -51,21 +50,22 @@ const LegalModal = ({ open, onClose, type }: LegalModalProps) => {
           initial={{ opacity: 0 }}
           animate={{ opacity: 1 }}
           exit={{ opacity: 0 }}
-          className="fixed inset-0 z-[100] flex items-center justify-center p-4"
+          className="fixed inset-0 z-[100] flex items-end sm:items-center justify-center p-0 sm:p-4"
           onClick={onClose}
         >
           <div className="absolute inset-0 bg-black/60 backdrop-blur-sm" />
 
           <motion.div
-            initial={{ opacity: 0, scale: 0.92, y: 20 }}
-            animate={{ opacity: 1, scale: 1, y: 0 }}
-            exit={{ opacity: 0, scale: 0.92, y: 20 }}
-            transition={{ type: "spring", duration: 0.5, bounce: 0.2 }}
+            initial={{ opacity: 0, y: 60 }}
+            animate={{ opacity: 1, y: 0 }}
+            exit={{ opacity: 0, y: 60 }}
+            transition={{ type: "spring", duration: 0.5, bounce: 0.18 }}
             onClick={(e) => e.stopPropagation()}
-            className="relative w-full max-w-lg max-h-[80vh] rounded-2xl border border-border/20 overflow-hidden flex flex-col"
+            className="relative w-full sm:max-w-lg rounded-t-3xl sm:rounded-2xl border border-border/20 overflow-hidden flex flex-col"
             style={{
+              maxHeight: "85vh",
               background: "linear-gradient(160deg, hsl(220 18% 10%) 0%, hsl(220 20% 6%) 100%)",
-              boxShadow: "0 25px 60px -12px rgba(0,0,0,0.7)",
+              boxShadow: "0 -8px 40px -8px rgba(0,0,0,0.6)",
             }}
           >
             <div className="absolute -top-24 -right-24 w-48 h-48 rounded-full bg-primary/6 blur-3xl pointer-events-none" />
