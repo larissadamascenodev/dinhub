@@ -3,7 +3,7 @@ import { useNavigate } from "react-router-dom";
 import { motion } from "framer-motion";
 import {
   ArrowLeft, ShieldCheck, TrendingUp, TrendingDown, CreditCard, BarChart3,
-  AlertTriangle, Bot, ChevronRight, Settings2, List, Sparkles,
+  AlertTriangle, Bot, ChevronRight, Settings2, List, Sparkles, Zap, PiggyBank, Scissors,
 } from "lucide-react";
 import { useFinancialProjection } from "@/hooks/useFinancialProjection";
 import { useRadarFinanceiro } from "@/hooks/useRadarFinanceiro";
@@ -13,6 +13,7 @@ import { generateHubyScoreMessage } from "@/services/hubyMessageService";
 import { generateRadarInsights } from "@/services/radarService";
 import { useScoreNotifications } from "@/hooks/useScoreNotifications";
 import { saveHealthScore, fetchPreviousScore, type PersistedScore } from "@/services/scoreHistoryService";
+import { generateHubyActions, type HubyAction } from "@/services/hubyActionsService";
 import { useAuth } from "@/contexts/AuthContext";
 import { useMonth } from "@/contexts/MonthContext";
 
@@ -144,6 +145,13 @@ export default function BotFinanceSaude() {
 
   const animatedScore = useAnimatedCounter(health.score);
   const lc = levelConfig[health.level];
+
+  // ── Smart actions from Huby ──
+  const { prevData: radarPrevData } = useRadarFinanceiro();
+  const hubyActions = useMemo<HubyAction[]>(
+    () => (isLoading ? [] : generateHubyActions(data, insights, health, radarPrevData ?? undefined)),
+    [data, insights, health, radarPrevData, isLoading]
+  );
 
   return (
     <div className="space-y-4 pb-4">
@@ -301,6 +309,67 @@ export default function BotFinanceSaude() {
           </div>
         </div>
       </motion.div>
+
+      {/* ── Huby Smart Actions ── */}
+      {!isLoading && hubyActions.length > 0 && (
+        <motion.div
+          initial={{ opacity: 0, y: 10 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ delay: 0.38 }}
+          className="space-y-3"
+        >
+          <p className="text-[11px] font-semibold tracking-[1px] text-muted-foreground/70 uppercase">
+            Sugestões da Huby
+          </p>
+          {hubyActions.map((action, i) => {
+            const iconMap = {
+              economia: <Scissors className="w-4 h-4" />,
+              ajuste: <Zap className="w-4 h-4" />,
+              oportunidade: <PiggyBank className="w-4 h-4" />,
+            };
+            const colorMap = {
+              economia: { bg: "bg-destructive/10", text: "text-destructive", border: "border-destructive/15" },
+              ajuste: { bg: "bg-warning/10", text: "text-warning", border: "border-warning/15" },
+              oportunidade: { bg: "bg-primary/10", text: "text-primary", border: "border-primary/15" },
+            };
+            const c = colorMap[action.tipo];
+            return (
+              <motion.div
+                key={`${action.titulo}-${i}`}
+                initial={{ opacity: 0, x: -8 }}
+                animate={{ opacity: 1, x: 0 }}
+                transition={{ delay: 0.4 + i * 0.06 }}
+                className={`rounded-[16px] p-4 border ${c.border} bg-card/60 backdrop-blur-xl`}
+                style={{ boxShadow: "0 2px 8px -4px rgba(0,0,0,0.12)" }}
+              >
+                <div className="flex items-start gap-3">
+                  <div className={`w-9 h-9 rounded-xl flex items-center justify-center flex-shrink-0 ${c.bg}`}>
+                    <span className={c.text}>{iconMap[action.tipo]}</span>
+                  </div>
+                  <div className="flex-1 min-w-0">
+                    <h4 className="text-[13px] font-bold text-foreground mb-0.5">{action.titulo}</h4>
+                    <p className="text-[11px] text-muted-foreground leading-relaxed mb-2">
+                      {action.descricao}
+                    </p>
+                    <div className="flex items-center justify-between">
+                      <span className={`text-[12px] font-bold ${c.text}`}>
+                        Economia estimada: R${action.impacto_estimado.toLocaleString("pt-BR")}
+                      </span>
+                      <button
+                        onClick={() => navigate(action.path)}
+                        className={`text-[11px] font-semibold ${c.text} flex items-center gap-0.5 hover:underline`}
+                      >
+                        {action.acao}
+                        <ChevronRight className="w-3 h-3" />
+                      </button>
+                    </div>
+                  </div>
+                </div>
+              </motion.div>
+            );
+          })}
+        </motion.div>
+      )}
 
       {/* ── Quick actions ── */}
       <motion.div
