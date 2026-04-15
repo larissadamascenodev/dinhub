@@ -124,7 +124,7 @@ const BotFinance = () => {
             <Bot className="w-5 h-5 text-primary-foreground" />
           </div>
           <div>
-            <h3 className="text-base font-bold text-foreground">Assistente DinHub</h3>
+            <h3 className="text-base font-bold text-foreground">Huby Assistant</h3>
             <p className="text-xs text-primary flex items-center gap-1 mt-0.5">
               <span className="w-1.5 h-1.5 rounded-full bg-primary inline-block animate-pulse" />
               Online agora
