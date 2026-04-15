@@ -1,253 +1,314 @@
-import { useState } from "react";
+import { useMemo } from "react";
 import { useNavigate } from "react-router-dom";
 import { motion } from "framer-motion";
-import { ArrowLeft, Heart, TrendingUp, Shield, Clock, Wallet, ChevronRight, Target, Settings2, Scissors, Zap, Sparkles, Brain } from "lucide-react";
+import {
+  ArrowLeft, ShieldCheck, TrendingUp, TrendingDown, CreditCard, BarChart3,
+  AlertTriangle, Bot, ChevronRight, Settings2, List, Sparkles,
+} from "lucide-react";
 import { useFinancialProjection } from "@/hooks/useFinancialProjection";
+import { useRadarFinanceiro } from "@/hooks/useRadarFinanceiro";
 import { useAnimatedCounter } from "@/hooks/useAnimatedCounter";
+import { calculateHealthScore, type HealthScoreV2, type HealthFactor } from "@/services/healthScoreService";
+import { generateHubyMessage } from "@/services/hubyMessageService";
 
-const fmtCurrency = (v: number) =>
-  v.toLocaleString("pt-BR", { style: "currency", currency: "BRL" });
+const fmt = (v: number) => v.toLocaleString("pt-BR", { style: "currency", currency: "BRL" });
 
-const GlassSection = ({
-  children,
-  delay = 0,
-  className = "",
-}: {
-  children: React.ReactNode;
-  delay?: number;
-  className?: string;
-}) => (
-  <motion.div
-    initial={{ opacity: 0, y: 16 }}
-    animate={{ opacity: 1, y: 0 }}
-    transition={{ delay, duration: 0.35, ease: "easeOut" }}
-    className={`glass-card p-4 space-y-3 ${className}`}
-  >
-    {children}
-  </motion.div>
-);
+// ─── Factor icons ───────────────────────────────────────────────────
+const factorIcons: Record<string, React.ReactNode> = {
+  "Comprometimento da renda": <TrendingDown className="w-4 h-4" />,
+  "Parcelamentos": <CreditCard className="w-4 h-4" />,
+  "Estabilidade de gastos": <BarChart3 className="w-4 h-4" />,
+  "Alertas do Radar": <AlertTriangle className="w-4 h-4" />,
+};
 
-const SectionHeader = ({ icon, title }: { icon: React.ReactNode; title: string }) => (
-  <div className="flex items-center gap-2">
-    {icon}
-    <h2 className="text-sm font-semibold font-display">{title}</h2>
-  </div>
-);
+const statusColors = {
+  saudavel: { text: "text-primary", bg: "bg-primary/10", bar: "bg-primary" },
+  atencao: { text: "text-warning", bg: "bg-warning/10", bar: "bg-warning" },
+  critico: { text: "text-destructive", bg: "bg-destructive/10", bar: "bg-destructive" },
+};
 
-const BotFinanceSaude = () => {
+const levelConfig = {
+  verde: {
+    stroke: "hsl(var(--primary))",
+    text: "text-primary",
+    bg: "rgba(74,222,128,0.08)",
+    border: "rgba(74,222,128,0.2)",
+    glow: "rgba(74,222,128,0.06)",
+    message: "Seu financeiro está bem equilibrado. Continue assim.",
+  },
+  amarelo: {
+    stroke: "hsl(var(--warning))",
+    text: "text-warning",
+    bg: "rgba(245,158,11,0.08)",
+    border: "rgba(245,158,11,0.2)",
+    glow: "rgba(245,158,11,0.06)",
+    message: "Alguns pontos precisam de ajuste para evitar problemas.",
+  },
+  vermelho: {
+    stroke: "hsl(var(--destructive))",
+    text: "text-destructive",
+    bg: "rgba(239,68,68,0.08)",
+    border: "rgba(239,68,68,0.2)",
+    glow: "rgba(239,68,68,0.06)",
+    message: "Seu orçamento está sob pressão. Hora de agir.",
+  },
+};
+
+export default function BotFinanceSaude() {
   const navigate = useNavigate();
-  const { healthScore: healthData, projections, data, dailyLimit } = useFinancialProjection();
-  const animatedScore = useAnimatedCounter(healthData.score);
+  const { data, loading } = useFinancialProjection();
+  const { insights, loading: radarLoading } = useRadarFinanceiro();
+  const isLoading = loading || radarLoading;
 
-  const scoreColor =
-    healthData.score >= 75 ? "text-primary" : healthData.score >= 50 ? "text-warning" : "text-destructive";
-  const scoreStroke =
-    healthData.score >= 75 ? "hsl(var(--primary))" : healthData.score >= 50 ? "hsl(var(--warning))" : "hsl(var(--destructive))";
-  const scoreBg =
-    healthData.score >= 75 ? "bg-primary/10" : healthData.score >= 50 ? "bg-warning/10" : "bg-destructive/10";
+  // Estimate installment total from transactions
+  const totalParcelado = useMemo(
+    () =>
+      data.transactions
+        .filter((t) => t.type === "despesa" && t.status === "pago")
+        .reduce((s, t) => s + t.amount, 0) -
+      data.transactions
+        .filter(
+          (t) =>
+            t.type === "despesa" &&
+            t.status === "pago" &&
+            !(t as any).recurrence_type?.includes("parcelado")
+        )
+        .reduce((s, t) => s + t.amount, 0) || 0,
+    [data.transactions]
+  );
 
-  // Generate personalized tips based on factors
-  const tips = healthData.factors
-    .filter((f) => f.value / f.max < 0.6)
-    .map((f) => {
-      if (f.label === "Saldo crescente") return { icon: TrendingUp, text: "Foque em aumentar seu saldo — reduza gastos variáveis ou busque renda extra.", color: "text-primary" };
-      if (f.label === "Controle de gastos") return { icon: Shield, text: "Seus gastos de hoje estão altos. Tente manter dentro da média diária.", color: "text-warning" };
-      if (f.label === "Consistência") return { icon: Clock, text: "Sua projeção mostra meses negativos. Busque estabilizar receita e despesa.", color: "text-destructive" };
-      return { icon: Wallet, text: "Pague suas despesas pendentes para melhorar sua pontuação.", color: "text-primary" };
-    });
+  // Better installment calc: filter only parcelado
+  const parceladoTotal = useMemo(
+    () =>
+      data.transactions
+        .filter((t) => t.type === "despesa" && (t as any).recurrence_type === "parcelado")
+        .reduce((s, t) => s + t.amount, 0),
+    [data.transactions]
+  );
+
+  const health = useMemo<HealthScoreV2>(
+    () => (isLoading ? { score: 0, label: "Atenção", level: "amarelo", factors: [] } : calculateHealthScore(data, insights, parceladoTotal)),
+    [data, insights, parceladoTotal, isLoading]
+  );
+
+  const animatedScore = useAnimatedCounter(health.score);
+  const lc = levelConfig[health.level];
+  const hubyMsg = useMemo(() => generateHubyMessage(insights), [insights]);
+
+  // Previous month score estimate (simplified: add/subtract based on trend)
+  const prevScoreEstimate = useMemo(() => {
+    if (insights.length === 0) return Math.max(health.score - 5, 0);
+    return Math.min(health.score + 8, 100);
+  }, [health.score, insights.length]);
+
+  const scoreDiff = health.score - prevScoreEstimate;
 
   return (
     <div className="space-y-4 pb-4">
-      {/* Header */}
-      <motion.div initial={{ opacity: 0, y: 8 }} animate={{ opacity: 1, y: 0 }} className="flex items-center gap-3">
+      {/* Back */}
+      <motion.div initial={{ opacity: 0, y: 8 }} animate={{ opacity: 1, y: 0 }}>
         <button
-          onClick={() => navigate("/bot-finance")}
+          onClick={() => navigate(-1)}
           className="w-8 h-8 rounded-xl bg-secondary flex items-center justify-center hover:bg-secondary/80 transition-colors"
         >
           <ArrowLeft className="w-4 h-4 text-foreground" />
         </button>
-        <div>
-          <h1 className="font-display text-lg font-bold">Saúde Financeira</h1>
-          <p className="text-[11px] text-muted-foreground">Score completo com dicas personalizadas</p>
+      </motion.div>
+
+      {/* Header */}
+      <motion.div initial={{ opacity: 0, y: 8 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.03 }}>
+        <h1 className="font-display text-[22px] font-bold text-foreground tracking-tight">Saúde Financeira</h1>
+        <p className="text-[13px] text-muted-foreground mt-0.5">{lc.message}</p>
+      </motion.div>
+
+      {/* ── Score Card ── */}
+      <motion.div
+        initial={{ opacity: 0, y: 12 }}
+        animate={{ opacity: 1, y: 0 }}
+        transition={{ delay: 0.06 }}
+        className="rounded-[20px] p-6 relative overflow-hidden"
+        style={{ background: lc.bg, border: `1px solid ${lc.border}` }}
+      >
+        <div
+          className="absolute -top-10 -right-10 w-[120px] h-[120px] rounded-full pointer-events-none"
+          style={{ background: `radial-gradient(circle, ${lc.glow} 0%, transparent 70%)` }}
+        />
+
+        <div className="flex flex-col items-center gap-4 relative z-[1]">
+          {/* Ring */}
+          <div className="relative w-36 h-36">
+            <svg className="w-36 h-36 -rotate-90" viewBox="0 0 144 144">
+              <circle cx="72" cy="72" r="60" fill="none" stroke="hsl(var(--secondary))" strokeWidth="8" />
+              <motion.circle
+                cx="72" cy="72" r="60" fill="none"
+                stroke={lc.stroke}
+                strokeWidth="8" strokeLinecap="round"
+                initial={{ strokeDasharray: "0 377" }}
+                animate={{ strokeDasharray: `${(health.score / 100) * 377} 377` }}
+                transition={{ duration: 1, delay: 0.3, ease: "easeOut" }}
+              />
+            </svg>
+            <div className="absolute inset-0 flex flex-col items-center justify-center">
+              <span className={`text-4xl font-bold tabular-nums font-display ${lc.text}`}>
+                {isLoading ? "—" : Math.round(animatedScore)}
+              </span>
+              <span className="text-[10px] text-muted-foreground">/100</span>
+            </div>
+          </div>
+
+          {/* Label + evolution */}
+          <div className="text-center">
+            <p className={`text-lg font-bold font-display ${lc.text}`}>{health.label}</p>
+            {!isLoading && (
+              <div className="flex items-center justify-center gap-1 mt-1">
+                {scoreDiff > 0 ? (
+                  <TrendingUp className="w-3 h-3 text-primary" />
+                ) : scoreDiff < 0 ? (
+                  <TrendingDown className="w-3 h-3 text-destructive" />
+                ) : null}
+                <span className={`text-[11px] font-semibold ${scoreDiff > 0 ? "text-primary" : scoreDiff < 0 ? "text-destructive" : "text-muted-foreground"}`}>
+                  {scoreDiff > 0 ? `+${scoreDiff}` : scoreDiff < 0 ? `${scoreDiff}` : "="} pontos em relação ao mês passado
+                </span>
+              </div>
+            )}
+          </div>
         </div>
       </motion.div>
 
-      <div className="space-y-4 max-w-3xl mx-auto">
-
-        {/* Score principal */}
-        <GlassSection delay={0.05}>
-          <div className="flex flex-col items-center py-4 gap-3">
-            {/* Large circular score */}
-            <div className="relative w-32 h-32">
-              <svg className="w-32 h-32 -rotate-90" viewBox="0 0 128 128">
-                <circle cx="64" cy="64" r="54" fill="none" stroke="hsl(var(--secondary))" strokeWidth="7" />
-                <circle
-                  cx="64" cy="64" r="54" fill="none"
-                  stroke={scoreStroke}
-                  strokeWidth="7" strokeLinecap="round"
-                  strokeDasharray={`${(healthData.score / 100) * 339.3} 339.3`}
-                  className="transition-all duration-1000 ease-out"
-                />
-              </svg>
-              <div className="absolute inset-0 flex flex-col items-center justify-center">
-                <span className={`text-3xl font-bold tabular-nums font-display ${scoreColor}`}>{Math.round(animatedScore)}</span>
-                <span className="text-[10px] text-muted-foreground">/100</span>
-              </div>
-            </div>
-            <div className="text-center">
-              <p className={`text-lg font-bold font-display ${scoreColor}`}>{healthData.label}</p>
-              <p className="text-xs text-muted-foreground mt-0.5">
-                {healthData.score >= 75
-                  ? "Suas finanças estão ótimas! Continue assim 🎉"
-                  : healthData.score >= 50
-                    ? "Pode melhorar com pequenos ajustes 💡"
-                    : healthData.score >= 30
-                      ? "Atenção: alguns pontos precisam de cuidado ⚠️"
-                      : "Situação crítica — hora de agir 🚨"}
-              </p>
-            </div>
-          </div>
-        </GlassSection>
-
-        {/* Fatores detalhados */}
-        <GlassSection delay={0.12}>
-          <SectionHeader icon={<Heart className="w-4 h-4 text-primary" />} title="Fatores de Pontuação" />
-          <div className="space-y-3">
-            {healthData.factors.map((f, i) => {
-              const pct = f.value / f.max;
-              const barColor = pct >= 0.7 ? "bg-primary" : pct >= 0.4 ? "bg-warning" : "bg-destructive";
-              const textColor = pct >= 0.7 ? "text-primary" : pct >= 0.4 ? "text-warning" : "text-destructive";
-              return (
-                <motion.div
-                  key={f.label}
-                  initial={{ opacity: 0, x: -8 }}
-                  animate={{ opacity: 1, x: 0 }}
-                  transition={{ delay: 0.15 + i * 0.06 }}
-                >
-                  <div className="flex items-center justify-between mb-1">
-                    <span className="text-xs text-foreground font-medium">{f.label}</span>
-                    <span className={`text-xs font-bold tabular-nums ${textColor}`}>{f.value}/{f.max}</span>
+      {/* ── Factor breakdown ── */}
+      {!isLoading && health.factors.length > 0 && (
+        <motion.div
+          initial={{ opacity: 0, y: 10 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ delay: 0.15 }}
+          className="space-y-3"
+        >
+          <p className="text-[11px] font-semibold tracking-[1px] text-muted-foreground/70 uppercase">
+            Detalhamento
+          </p>
+          {health.factors.map((f, i) => {
+            const sc = statusColors[f.status];
+            const pct = f.value;
+            return (
+              <motion.div
+                key={f.label}
+                initial={{ opacity: 0, y: 8 }}
+                animate={{ opacity: 1, y: 0 }}
+                transition={{ delay: 0.18 + i * 0.05 }}
+                className="rounded-[16px] p-4 border border-border/10 bg-card/60 backdrop-blur-xl"
+                style={{ boxShadow: "0 2px 8px -4px rgba(0,0,0,0.15)" }}
+              >
+                <div className="flex items-start gap-3">
+                  <div className={`w-9 h-9 rounded-xl flex items-center justify-center flex-shrink-0 ${sc.bg}`}>
+                    <span className={sc.text}>{factorIcons[f.label] ?? <ShieldCheck className="w-4 h-4" />}</span>
                   </div>
-                  <div className="h-2 w-full rounded-full bg-secondary overflow-hidden">
-                    <motion.div
-                      initial={{ width: 0 }}
-                      animate={{ width: `${pct * 100}%` }}
-                      transition={{ duration: 0.7, delay: 0.2 + i * 0.06 }}
-                      className={`h-full rounded-full ${barColor}`}
-                    />
-                  </div>
-                </motion.div>
-              );
-            })}
-          </div>
-        </GlassSection>
-
-        {/* Dicas personalizadas */}
-        {tips.length > 0 && (
-          <GlassSection delay={0.2}>
-            <SectionHeader icon={<Sparkles className="w-4 h-4 text-[hsl(260,60%,65%)]" />} title="Dicas para Melhorar" />
-            <div className="space-y-2">
-              {tips.map((tip, i) => {
-                const Icon = tip.icon;
-                return (
-                  <motion.div
-                    key={i}
-                    initial={{ opacity: 0, y: 6 }}
-                    animate={{ opacity: 1, y: 0 }}
-                    transition={{ delay: 0.25 + i * 0.06 }}
-                    className="flex items-start gap-3 p-3 rounded-xl bg-secondary/30"
-                  >
-                    <div className={`w-7 h-7 rounded-lg ${scoreBg} flex items-center justify-center flex-shrink-0`}>
-                      <Icon className={`w-3.5 h-3.5 ${tip.color}`} />
+                  <div className="flex-1 min-w-0">
+                    <div className="flex items-center justify-between mb-1">
+                      <h4 className="text-[13px] font-bold text-foreground">{f.label}</h4>
+                      <span className={`text-[12px] font-bold tabular-nums ${sc.text}`}>
+                        {Math.round(f.weighted)}/{Math.round(f.weight * 100)}
+                      </span>
                     </div>
-                    <p className="text-xs text-foreground leading-relaxed">{tip.text}</p>
-                  </motion.div>
-                );
-              })}
-            </div>
-          </GlassSection>
-        )}
-
-        {/* Resumo rápido */}
-        <GlassSection delay={0.28}>
-          <SectionHeader icon={<Brain className="w-4 h-4 text-[hsl(260,60%,65%)]" />} title="Resumo" />
-          <div className="grid grid-cols-2 gap-2">
-            <div className="bg-secondary/40 rounded-xl p-3 text-center">
-              <p className="text-[9px] text-muted-foreground mb-0.5">Limite diário</p>
-              <p className={`text-sm font-bold tabular-nums ${
-                dailyLimit.tone === "positive" ? "text-primary" : dailyLimit.tone === "neutral" ? "text-warning" : "text-destructive"
-              }`}>
-                {fmtCurrency(dailyLimit.safeToSpend)}
-              </p>
-            </div>
-            <div className="bg-secondary/40 rounded-xl p-3 text-center">
-              <p className="text-[9px] text-muted-foreground mb-0.5">Saldo previsto</p>
-              <p className={`text-sm font-bold tabular-nums ${data.saldoPrevisto >= 0 ? "text-primary" : "text-destructive"}`}>
-                {fmtCurrency(data.saldoPrevisto)}
-              </p>
-            </div>
-            <div className="bg-secondary/40 rounded-xl p-3 text-center">
-              <p className="text-[9px] text-muted-foreground mb-0.5">Meses positivos</p>
-              <p className="text-sm font-bold tabular-nums text-primary">
-                {projections.filter((p) => p.delta > 0).length}/6
-              </p>
-            </div>
-            <div className="bg-secondary/40 rounded-xl p-3 text-center">
-              <p className="text-[9px] text-muted-foreground mb-0.5">Pendências</p>
-              <p className="text-sm font-bold tabular-nums text-warning">
-                {fmtCurrency(data.despesasPendentes)}
-              </p>
-            </div>
-          </div>
-        </GlassSection>
-
-        {/* Ações inteligentes */}
-        <GlassSection delay={0.34}>
-          <SectionHeader icon={<Zap className="w-4 h-4 text-primary" />} title="Ações Recomendadas" />
-          <div className="grid grid-cols-1 sm:grid-cols-3 gap-2">
-            {[
-              {
-                icon: Target, label: "Ver projeções", desc: "Simule cenários futuros",
-                color: "text-primary", bgColor: "bg-primary/10 group-hover:bg-primary/20",
-                action: () => navigate("/bot-finance/projecoes"),
-              },
-              {
-                icon: Settings2, label: "Ajustar limite", desc: "Configurar gasto diário",
-                color: "text-warning", bgColor: "bg-warning/10 group-hover:bg-warning/20",
-                action: () => navigate("/bot-finance/projecoes"),
-              },
-              {
-                icon: Scissors, label: "Reduzir gastos", desc: "Veja onde cortar",
-                color: "text-destructive", bgColor: "bg-destructive/10 group-hover:bg-destructive/20",
-                action: () => navigate("/transacoes"),
-              },
-            ].map((item) => {
-              const Icon = item.icon;
-              return (
-                <button
-                  key={item.label}
-                  onClick={item.action}
-                  className="group flex items-center gap-3 p-3 rounded-xl bg-secondary/30 hover:bg-secondary/50 active:scale-[0.96] transition-all text-left relative overflow-hidden"
-                >
-                  <div className="absolute inset-0 opacity-0 group-hover:opacity-100 transition-opacity duration-300 pointer-events-none"
-                    style={{ background: "radial-gradient(ellipse at 30% 50%, hsl(var(--primary) / 0.06) 0%, transparent 70%)" }}
-                  />
-                  <div className={`relative w-9 h-9 rounded-xl ${item.bgColor} flex items-center justify-center flex-shrink-0 transition-colors`}>
-                    <Icon className={`w-4 h-4 ${item.color}`} />
+                    <p className="text-[11px] text-muted-foreground mb-2">{f.description}</p>
+                    <div className="h-1.5 w-full bg-border/15 rounded-full overflow-hidden">
+                      <motion.div
+                        initial={{ width: 0 }}
+                        animate={{ width: `${pct}%` }}
+                        transition={{ duration: 0.6, delay: 0.25 + i * 0.05 }}
+                        className={`h-full rounded-full ${sc.bar}`}
+                      />
+                    </div>
                   </div>
-                  <div className="relative flex-1 min-w-0">
-                    <p className="text-xs font-medium text-foreground truncate">{item.label}</p>
-                    <p className="text-[10px] text-muted-foreground truncate">{item.desc}</p>
-                  </div>
-                  <ChevronRight className="relative w-3.5 h-3.5 text-muted-foreground/30 group-hover:text-primary transition-colors flex-shrink-0" />
-                </button>
-              );
-            })}
+                </div>
+              </motion.div>
+            );
+          })}
+        </motion.div>
+      )}
+
+      {/* ── Huby message ── */}
+      <motion.div
+        initial={{ opacity: 0, y: 10 }}
+        animate={{ opacity: 1, y: 0 }}
+        transition={{ delay: 0.35 }}
+        className="rounded-[18px] p-4 relative overflow-hidden"
+        style={{
+          background: "linear-gradient(135deg, #0f2318 0%, #0a1a0f 60%, hsl(var(--card)) 100%)",
+          border: "1px solid rgba(74, 222, 128, 0.2)",
+        }}
+      >
+        <div
+          className="absolute -top-6 -right-6 w-[80px] h-[80px] rounded-full pointer-events-none"
+          style={{ background: "radial-gradient(circle, rgba(74,222,128,0.1) 0%, transparent 70%)" }}
+        />
+        <div className="flex items-start gap-3 relative z-[1]">
+          <div
+            className="w-9 h-9 rounded-xl flex items-center justify-center flex-shrink-0"
+            style={{
+              background: "linear-gradient(135deg, hsl(var(--primary)), #16a34a)",
+              boxShadow: "0 0 12px rgba(74,222,128,0.25)",
+            }}
+          >
+            <Bot className="w-4 h-4 text-primary-foreground" />
           </div>
-        </GlassSection>
-      </div>
+          <div>
+            <h5 className="text-[12px] font-bold text-primary mb-0.5">Huby diz</h5>
+            <p className="text-[12px] text-muted-foreground leading-relaxed italic whitespace-pre-line">
+              {isLoading ? "Analisando seus dados..." : hubyMsg.main}
+            </p>
+          </div>
+        </div>
+      </motion.div>
+
+      {/* ── Quick actions ── */}
+      <motion.div
+        initial={{ opacity: 0, y: 10 }}
+        animate={{ opacity: 1, y: 0 }}
+        transition={{ delay: 0.4 }}
+        className="space-y-2"
+      >
+        <p className="text-[11px] font-semibold tracking-[1px] text-muted-foreground/70 uppercase">
+          Ações rápidas
+        </p>
+        <div className="grid grid-cols-3 gap-2">
+          {[
+            { icon: <BarChart3 className="w-4 h-4" />, label: "Categorias", path: "/analytics/categorias" },
+            { icon: <Settings2 className="w-4 h-4" />, label: "Limites", path: "/categorias" },
+            { icon: <List className="w-4 h-4" />, label: "Transações", path: "/transacoes" },
+          ].map((a) => (
+            <button
+              key={a.label}
+              onClick={() => navigate(a.path)}
+              className="rounded-[14px] p-3 flex flex-col items-center gap-1.5 border border-border/10 bg-card/40 backdrop-blur-xl hover:bg-card/60 active:scale-[0.97] transition-all"
+            >
+              <div className="text-primary">{a.icon}</div>
+              <span className="text-[10px] font-semibold text-muted-foreground">{a.label}</span>
+            </button>
+          ))}
+        </div>
+      </motion.div>
+
+      {/* ── Tip ── */}
+      <motion.div
+        initial={{ opacity: 0 }}
+        animate={{ opacity: 1 }}
+        transition={{ delay: 0.45 }}
+        className="rounded-2xl p-3.5 flex items-start gap-3"
+        style={{ background: "rgba(245,158,11,0.08)", border: "1px solid rgba(245,158,11,0.15)" }}
+      >
+        <div
+          className="w-[34px] h-[34px] rounded-[10px] flex items-center justify-center flex-shrink-0 text-base"
+          style={{ background: "rgba(245,158,11,0.12)" }}
+        >
+          💡
+        </div>
+        <div>
+          <h5 className="text-xs font-bold text-warning mb-0.5">Como funciona o Score</h5>
+          <p className="text-xs text-muted-foreground leading-relaxed">
+            O score considera comprometimento da renda (40%), parcelamentos (25%), estabilidade dos gastos (20%) e alertas do Radar (15%).
+          </p>
+        </div>
+      </motion.div>
     </div>
   );
-};
-
-export default BotFinanceSaude;
+}
