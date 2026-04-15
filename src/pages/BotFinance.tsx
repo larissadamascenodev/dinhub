@@ -1,3 +1,4 @@
+import { useMemo } from "react";
 import { motion } from "framer-motion";
 import { useNavigate } from "react-router-dom";
 import { Bot, MessageCircle, Camera, Mic, Radar, HeartPulse, TrendingUp, Sparkles, Lightbulb, Search } from "lucide-react";
@@ -5,18 +6,28 @@ import { useProfile } from "@/hooks/useProfile";
 import { useFinancialProjection } from "@/hooks/useFinancialProjection";
 import { useRadarFinanceiro } from "@/hooks/useRadarFinanceiro";
 import { generateHubyMessage } from "@/services/hubyMessageService";
+import { calculateHealthScore } from "@/services/healthScoreService";
 
 const BotFinance = () => {
   const navigate = useNavigate();
   const { profile } = useProfile();
-  const { healthScore, projections, data, insight, loading } = useFinancialProjection();
+  const { projections, data, insight, loading } = useFinancialProjection();
   const { insights: radarInsights, status: radarStatus, loading: radarLoading } = useRadarFinanceiro();
 
   const firstName = profile?.display_name?.split(" ")[0] || "usuário";
-  const score = healthScore?.score ?? 0;
-  const scoreLabel =
-    score >= 80 ? "Excelente" : score >= 60 ? "Bom" : score >= 40 ? "Regular" : "Atenção";
-  const scoreBadgeEmoji = score >= 80 ? "🟢" : score >= 60 ? "🟢" : score >= 40 ? "🟡" : "🔴";
+
+  // New health score v2
+  const parceladoTotal = useMemo(
+    () => data.transactions.filter((t) => t.type === "despesa" && (t as any).recurrence_type === "parcelado").reduce((s, t) => s + t.amount, 0),
+    [data.transactions]
+  );
+  const health = useMemo(
+    () => (loading || radarLoading ? null : calculateHealthScore(data, radarInsights, parceladoTotal)),
+    [data, radarInsights, parceladoTotal, loading, radarLoading]
+  );
+  const score = health?.score ?? 0;
+  const scoreLabel = health?.label ?? "—";
+  const scoreBadgeEmoji = health?.level === "verde" ? "🟢" : health?.level === "amarelo" ? "🟡" : "🔴";
 
   // Radar: use real insight data
   const radarBadgeEmoji = radarStatus.level === "verde" ? "🟢" : radarStatus.level === "amarelo" ? "🟡" : "🔴";
