@@ -12,7 +12,7 @@ import { calculateHealthScore, type HealthScoreV2, type HealthFactor } from "@/s
 import { generateHubyScoreMessage } from "@/services/hubyMessageService";
 import { generateRadarInsights } from "@/services/radarService";
 import { useScoreNotifications } from "@/hooks/useScoreNotifications";
-import { saveHealthScore, fetchPreviousScore, type PersistedScore } from "@/services/scoreHistoryService";
+import { saveHealthScore, fetchPreviousScore, fetchScoreHistory, type PersistedScore } from "@/services/scoreHistoryService";
 import { generateHubyActions, type HubyAction } from "@/services/hubyActionsService";
 import { useAuth } from "@/contexts/AuthContext";
 import { useMonth } from "@/contexts/MonthContext";
