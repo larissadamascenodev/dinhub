@@ -4,6 +4,7 @@ import { Bot, MessageCircle, Camera, Mic, Radar, HeartPulse, TrendingUp, Sparkle
 import { useProfile } from "@/hooks/useProfile";
 import { useFinancialProjection } from "@/hooks/useFinancialProjection";
 import { useRadarFinanceiro } from "@/hooks/useRadarFinanceiro";
+import { generateHubyMessage } from "@/services/hubyMessageService";
 
 const BotFinance = () => {
   const navigate = useNavigate();
@@ -158,8 +159,8 @@ const BotFinance = () => {
           style={{ background: "rgba(255,255,255,0.05)" }}
         >
           <span className="font-semibold text-foreground">💡 Olá, {firstName}!</span>{" "}
-          <span className="text-muted-foreground italic">
-            Seus gastos com Eletrônicos subiram 40% esse mês. Quer que eu analise onde você pode economizar?
+          <span className="text-muted-foreground italic whitespace-pre-line">
+            {radarLoading ? "Analisando seus dados..." : generateHubyMessage(radarInsights).main}
           </span>
         </div>
 

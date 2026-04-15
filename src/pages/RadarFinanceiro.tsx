@@ -7,6 +7,7 @@ import {
 } from "lucide-react";
 import { useRadarFinanceiro } from "@/hooks/useRadarFinanceiro";
 import type { RadarInsight } from "@/services/radarService";
+import { generateHubyMessage } from "@/services/hubyMessageService";
 
 const fmt = (v: number) =>
   v.toLocaleString("pt-BR", { style: "currency", currency: "BRL" });
@@ -151,20 +152,8 @@ export default function RadarFinanceiro() {
     ? (prevData?.categories?.find((c) => c.name === topCategoryInsight.categoria)?.amount ?? 0)
     : 0;
 
-  // Huby message
-  const hubyMessage = useMemo(() => {
-    if (insights.length === 0) {
-      return "Tá tudo nos trilhos! 🚀 Continue assim que o mês fecha no verde.";
-    }
-    const topInsight = insights[0];
-    if (topInsight.tipo === "alerta" && topInsight.id === "comprometimento-renda") {
-      return "Ei, suas despesas estão quase passando da receita... bora dar uma olhada juntos? 👀";
-    }
-    if (topInsight.categoria) {
-      return `Seus gastos com ${topInsight.categoria} subiram esse mês... quer ver onde dá pra ajustar? 😉`;
-    }
-    return "Encontrei alguns padrões nos seus gastos. Vamos dar uma olhada? 🧐";
-  }, [insights]);
+  // Huby message from template engine
+  const hubyMsg = useMemo(() => generateHubyMessage(insights), [insights]);
 
   // Summary text
   const summaryText = useMemo(() => {
@@ -342,9 +331,14 @@ export default function RadarFinanceiro() {
           </div>
           <div>
             <h5 className="text-[12px] font-bold text-primary mb-0.5">Huby diz</h5>
-            <p className="text-[12px] text-muted-foreground leading-relaxed italic">
-              {hubyMessage}
+            <p className="text-[12px] text-muted-foreground leading-relaxed italic whitespace-pre-line">
+              {hubyMsg.main}
             </p>
+            {hubyMsg.secondary && (
+              <p className="text-[11px] text-muted-foreground/60 mt-1.5 italic">
+                💬 {hubyMsg.secondary}
+              </p>
+            )}
           </div>
         </div>
       </motion.div>
