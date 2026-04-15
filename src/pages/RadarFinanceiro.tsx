@@ -331,9 +331,14 @@ export default function RadarFinanceiro() {
           </div>
           <div>
             <h5 className="text-[12px] font-bold text-primary mb-0.5">Huby diz</h5>
-            <p className="text-[12px] text-muted-foreground leading-relaxed italic">
-              {hubyMessage}
+            <p className="text-[12px] text-muted-foreground leading-relaxed italic whitespace-pre-line">
+              {hubyMsg.main}
             </p>
+            {hubyMsg.secondary && (
+              <p className="text-[11px] text-muted-foreground/60 mt-1.5 italic">
+                💬 {hubyMsg.secondary}
+              </p>
+            )}
           </div>
         </div>
       </motion.div>
