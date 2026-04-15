@@ -254,6 +254,13 @@ const ActiveCard = ({
           </div>
         </div>
 
+        {/* Huby message */}
+        <div className="bg-primary/[0.04] border border-primary/10 rounded-xl px-3 py-2">
+          <p className="text-[11px] text-muted-foreground leading-relaxed">
+            💬 {getHubyMessage(uc.checkin_count ?? 0, c.duration_days, !!uc.violated)}
+          </p>
+        </div>
+
         {/* Check-in */}
         <Button
           className={cn(
