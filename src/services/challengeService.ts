@@ -1,4 +1,7 @@
 import { supabase } from "@/integrations/supabase/client";
+import type { RadarInsight } from "@/services/radarService";
+import type { HealthScoreV2 } from "@/services/healthScoreService";
+import type { DashboardData } from "@/types/finance";
 
 // Maps challenge names to related transaction categories
 const CHALLENGE_CATEGORY_MAP: Record<string, string[]> = {
@@ -8,6 +11,10 @@ const CHALLENGE_CATEGORY_MAP: Record<string, string[]> = {
   "Transporte Consciente por 15 Dias": ["Transporte", "Uber"],
   "Semana Sem Streaming Extra": ["Assinaturas", "Streaming"],
   "30 Dias de Almoço em Casa": ["Fast Food", "Fast-food", "Delivery"],
+  // Dynamic template mappings
+  "7 dias sem delivery": ["Delivery", "Fast Food", "Fast-food"],
+  "Sem compras por 5 dias": ["Compras online", "Vestuário", "Eletrônicos"],
+  "Transporte consciente essa semana": ["Transporte", "Uber"],
 };
 
 // Reverse map: category → challenge names it's relevant to
@@ -30,6 +37,147 @@ const CHALLENGE_HINTS: Record<string, string> = {
   "Semana Sem Streaming Extra": "Assinaturas extras estão acumulando",
   "30 Dias de Almoço em Casa": "Almoçar fora tem pesado no bolso",
 };
+
+// ─── Dynamic challenge templates based on Radar/Score ───────────────
+
+interface DynamicTemplate {
+  name: string;
+  description: string;
+  icon: string;
+  difficulty: string;
+  duration_days: number;
+  categories: string[];
+}
+
+const DYNAMIC_TEMPLATES: DynamicTemplate[] = [
+  { name: "7 dias sem delivery", description: "Cozinhe em casa por uma semana e veja a diferença no bolso", icon: "🍔", difficulty: "facil", duration_days: 7, categories: ["Delivery", "Fast Food", "Fast-food"] },
+  { name: "Sem compras por 5 dias", description: "Segure o impulso e deixe o cartão descansar", icon: "🛍️", difficulty: "facil", duration_days: 5, categories: ["Compras online", "Vestuário", "Eletrônicos"] },
+  { name: "Transporte consciente essa semana", description: "Reduza corridas de app — ande, pedale ou use transporte público", icon: "🚗", difficulty: "medio", duration_days: 7, categories: ["Transporte", "Uber"] },
+  { name: "0 novas parcelas por 10 dias", description: "Nenhuma compra parcelada por 10 dias. Seu futuro agradece", icon: "💳", difficulty: "medio", duration_days: 10, categories: [] },
+  { name: "Guardar dinheiro por 7 dias", description: "Separe um valor todo dia — pode ser pouco, o hábito é o que conta", icon: "💰", difficulty: "facil", duration_days: 7, categories: [] },
+];
+
+/**
+ * Generates dynamic personalized challenge suggestions based on Radar insights,
+ * health score, and current spending behaviour.
+ */
+export function generateDynamicSuggestions(
+  data: DashboardData,
+  insights: RadarInsight[],
+  health: HealthScoreV2
+): Challenge[] {
+  const catSums: Record<string, number> = {};
+  for (const t of data.transactions) {
+    if (t.type === "despesa" && t.status === "pago") {
+      catSums[t.category] = (catSums[t.category] ?? 0) + t.amount;
+    }
+  }
+
+  const results: Challenge[] = [];
+  const daysInMonth = 30;
+
+  // Radar-driven suggestions
+  const alertCats = new Set(
+    insights
+      .filter((i) => i.tipo === "alerta" || i.tipo === "atencao")
+      .map((i) => i.categoria)
+      .filter(Boolean) as string[]
+  );
+
+  for (const tpl of DYNAMIC_TEMPLATES) {
+    if (tpl.categories.length === 0) continue;
+
+    const hasAlert = tpl.categories.some((c) => alertCats.has(c));
+    const totalSpend = tpl.categories.reduce((s, c) => s + (catSums[c] ?? 0), 0);
+
+    if (!hasAlert && totalSpend < 150) continue;
+
+    const dailyAvg = totalSpend / daysInMonth;
+    const economia = Math.round(dailyAvg * tpl.duration_days);
+    if (economia < 30) continue;
+
+    results.push({
+      id: `dynamic-${tpl.name}`,
+      user_id: null,
+      name: tpl.name,
+      description: tpl.description,
+      duration_days: tpl.duration_days,
+      difficulty: tpl.difficulty,
+      potential_savings: economia,
+      cover_image: null,
+      icon: tpl.icon,
+      is_system: false,
+      created_at: new Date().toISOString(),
+      personalHint: hasAlert ? "O Radar identificou essa categoria no seu perfil" : undefined,
+      realPotential: economia,
+      isDynamic: true,
+    });
+  }
+
+  // Installments heavy
+  const parcelado = data.transactions
+    .filter((t) => t.type === "despesa" && (t as any).recurrence_type === "parcelado")
+    .reduce((s, t) => s + t.amount, 0);
+  const parcPct = data.receitas > 0 ? (parcelado / data.receitas) * 100 : 0;
+
+  if (parcPct > 30) {
+    results.push({
+      id: "dynamic-parcelas",
+      user_id: null,
+      name: "0 novas parcelas por 10 dias",
+      description: "Seus parcelamentos estão pesados — segure novas compras parceladas",
+      duration_days: 10,
+      difficulty: "medio",
+      potential_savings: Math.round(parcelado * 0.15),
+      cover_image: null,
+      icon: "💳",
+      is_system: false,
+      created_at: new Date().toISOString(),
+      personalHint: `${Math.round(parcPct)}% da sua renda está em parcelas`,
+      realPotential: Math.round(parcelado * 0.15),
+      isDynamic: true,
+    });
+  }
+
+  // Score high — opportunity
+  if (health.score >= 75 && results.length === 0) {
+    const sobra = Math.max(data.receitas - data.despesas, 0);
+    const meta = Math.round(sobra * 0.2);
+    if (meta > 50) {
+      results.push({
+        id: "dynamic-guardar",
+        user_id: null,
+        name: `Guardar R$${meta} em 7 dias`,
+        description: "Seu financeiro tá no ponto — aproveite pra criar reserva",
+        duration_days: 7,
+        difficulty: "facil",
+        potential_savings: meta,
+        cover_image: null,
+        icon: "💰",
+        is_system: false,
+        created_at: new Date().toISOString(),
+        personalHint: "Oportunidade: seu score tá ótimo!",
+        realPotential: meta,
+        isDynamic: true,
+      });
+    }
+  }
+
+  return results.slice(0, 3);
+}
+
+// ─── Huby motivational messages for active challenges ───────────────
+
+export function getHubyMessage(checkinCount: number, totalDays: number, violated: boolean): string {
+  if (violated) return "Ops, escorregou… mas tudo bem, recomeça agora! Cada tentativa vale 💪";
+  const pct = (checkinCount / totalDays) * 100;
+  if (checkinCount === 0) return "Bora começar! Seu primeiro check-in é o mais importante 🚀";
+  if (pct >= 100) return "Boa! Desafio concluído 👏 olha quanto você economizou!";
+  if (pct >= 75) return "Falta pouco! Já fez a parte mais difícil 🔥";
+  if (pct >= 50) return "Tá indo bem 👏 continua assim que tá valendo!";
+  if (pct >= 25) return "Bom ritmo! Cada dia conta pra construir o hábito ✨";
+  return "Boa! Esse desafio já pode te fazer economizar uma grana 👀";
+}
 
 export interface Challenge {
   id: string;
