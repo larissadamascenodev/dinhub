@@ -102,6 +102,13 @@ export default function BotFinanceSaude() {
     });
   }, [user?.id, selectedMonth, selectedYear]);
 
+  // Fetch score history (last 6 months)
+  const [scoreHistory, setScoreHistory] = useState<PersistedScore[]>([]);
+  useEffect(() => {
+    if (!user?.id) return;
+    fetchScoreHistory(user.id, 6).then(setScoreHistory);
+  }, [user?.id, health.score]);
+
   // Build prevHealth from persisted data, fallback to calculated
   const { prevData } = useRadarFinanceiro();
   const prevInsights = useMemo(() => {
