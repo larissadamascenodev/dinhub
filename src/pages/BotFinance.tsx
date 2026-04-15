@@ -92,7 +92,7 @@ const BotFinance = () => {
         animate={{ opacity: 1, y: 0 }}
         className="pt-1"
       >
-        <h1 className="font-display text-[22px] font-bold text-foreground tracking-tight">Bot Finance</h1>
+        <h1 className="font-display text-[22px] font-bold text-foreground tracking-tight">Bot Huby</h1>
         <p className="text-[13px] text-muted-foreground mt-0.5">Sua central de inteligência financeira</p>
       </motion.div>
 
