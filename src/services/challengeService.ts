@@ -191,8 +191,9 @@ export interface Challenge {
   icon: string;
   is_system: boolean;
   created_at: string;
-  personalHint?: string;       // personalized message
-  realPotential?: number;      // real potential based on data
+  personalHint?: string;
+  realPotential?: number;
+  isDynamic?: boolean;
 }
 
 export interface UserChallenge {
