@@ -11,6 +11,7 @@ import { useAnimatedCounter } from "@/hooks/useAnimatedCounter";
 import { calculateHealthScore, type HealthScoreV2, type HealthFactor } from "@/services/healthScoreService";
 import { generateHubyScoreMessage } from "@/services/hubyMessageService";
 import { generateRadarInsights } from "@/services/radarService";
+import { useScoreNotifications } from "@/hooks/useScoreNotifications";
 
 const fmt = (v: number) => v.toLocaleString("pt-BR", { style: "currency", currency: "BRL" });
 
@@ -120,6 +121,9 @@ export default function BotFinanceSaude() {
     classificacaoAtual: classMap[health.level],
     classificacaoAnterior: classMap[prevHealth.level],
   }), [health, prevHealth]);
+
+  // Fire score notifications
+  useScoreNotifications(health, prevHealth, isLoading);
 
   const animatedScore = useAnimatedCounter(health.score);
   const lc = levelConfig[health.level];
