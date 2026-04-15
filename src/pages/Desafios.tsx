@@ -500,7 +500,25 @@ const Desafios = () => {
     if (!user) return;
     setAcceptingId(challengeId);
     try {
-      await acceptChallenge(challengeId, user.id);
+      // Dynamic challenges start with "dynamic-" and need to be created first
+      if (challengeId.startsWith("dynamic-")) {
+        const dynamicChallenge = suggestions.find((s) => s.id === challengeId);
+        if (dynamicChallenge) {
+          await createCustomChallenge(
+            {
+              name: dynamicChallenge.name,
+              description: dynamicChallenge.description ?? undefined,
+              duration_days: dynamicChallenge.duration_days,
+              difficulty: dynamicChallenge.difficulty,
+              potential_savings: dynamicChallenge.potential_savings,
+              icon: dynamicChallenge.icon,
+            },
+            user.id
+          );
+        }
+      } else {
+        await acceptChallenge(challengeId, user.id);
+      }
       toast.success("Desafio aceito! 💪");
       await load();
     } catch {
