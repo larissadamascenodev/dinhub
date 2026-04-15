@@ -370,6 +370,42 @@ export type Database = {
         }
         Relationships: []
       }
+      health_scores: {
+        Row: {
+          created_at: string
+          factors: Json | null
+          id: string
+          level: string
+          month: number
+          score: number
+          updated_at: string
+          user_id: string
+          year: number
+        }
+        Insert: {
+          created_at?: string
+          factors?: Json | null
+          id?: string
+          level?: string
+          month: number
+          score?: number
+          updated_at?: string
+          user_id: string
+          year: number
+        }
+        Update: {
+          created_at?: string
+          factors?: Json | null
+          id?: string
+          level?: string
+          month?: number
+          score?: number
+          updated_at?: string
+          user_id?: string
+          year?: number
+        }
+        Relationships: []
+      }
       invoice_items: {
         Row: {
           amount: number
