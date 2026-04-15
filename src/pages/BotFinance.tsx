@@ -20,9 +20,9 @@ const BotFinance = () => {
       label: "Radar Financeiro",
       desc: "Alertas e padrões detectados",
       stat: "3 alertas",
-      badge: "🔴 Atenção",
+      badge: "🟡 Atenção",
       path: "/bot-finance/balanco",
-      theme: "red" as const,
+      theme: "amber" as const,
     },
     {
       icon: <HeartPulse className="w-[18px] h-[18px]" />,
@@ -54,12 +54,12 @@ const BotFinance = () => {
   ];
 
   const themeStyles = {
-    red: {
-      iconBg: "rgba(248,113,113,0.15)",
-      iconColor: "#f87171",
-      statColor: "#f87171",
-      borderColor: "rgba(248,113,113,0.15)",
-      cardBg: "linear-gradient(135deg, #1a1111, hsl(var(--card)))",
+    amber: {
+      iconBg: "rgba(245,158,11,0.15)",
+      iconColor: "#f59e0b",
+      statColor: "#f59e0b",
+      borderColor: "rgba(245,158,11,0.15)",
+      cardBg: "linear-gradient(135deg, #1a1608, hsl(var(--card)))",
     },
     green: {
       iconBg: "rgba(74,222,128,0.15)",
@@ -115,13 +115,13 @@ const BotFinance = () => {
 
         <div className="flex items-center gap-3 mb-3.5 relative z-[1]">
           <div
-            className="w-11 h-11 rounded-[14px] flex items-center justify-center flex-shrink-0 text-[22px]"
+            className="w-11 h-11 rounded-[14px] flex items-center justify-center flex-shrink-0 text-xl"
             style={{
               background: "linear-gradient(135deg, hsl(var(--primary)), #16a34a)",
               boxShadow: "0 0 20px rgba(74,222,128,0.3)",
             }}
           >
-            🤖
+            <Bot className="w-5 h-5 text-primary-foreground" />
           </div>
           <div>
             <h3 className="text-base font-bold text-foreground">Assistente DinHub</h3>
@@ -145,7 +145,7 @@ const BotFinance = () => {
         <div className="flex gap-2 relative z-[1]">
           <button
             onClick={() => navigate("/bot-finance/balanco")}
-            className="flex-1 flex items-center justify-center gap-1.5 bg-primary text-primary-foreground rounded-xl py-2.5 text-[13px] font-bold hover:bg-primary/90 active:opacity-85 transition-all"
+            className="flex-1 flex items-center justify-center gap-1.5 bg-primary/15 text-primary rounded-xl py-2.5 text-[13px] font-bold hover:bg-primary/20 active:opacity-85 transition-all"
           >
             <MessageCircle className="w-4 h-4" />
             Conversar agora →
