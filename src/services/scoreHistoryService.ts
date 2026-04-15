@@ -73,7 +73,7 @@ export async function fetchPreviousScore(
     .eq("year", prevYear)
     .maybeSingle();
 
-  return (data as PersistedScore | null) ?? null;
+  return (data as unknown as PersistedScore | null) ?? null;
 }
 
 /**
@@ -91,5 +91,5 @@ export async function fetchScoreHistory(
     .order("month", { ascending: false })
     .limit(limit);
 
-  return ((data as PersistedScore[] | null) ?? []).reverse();
+  return ((data as unknown as PersistedScore[] | null) ?? []).reverse();
 }
