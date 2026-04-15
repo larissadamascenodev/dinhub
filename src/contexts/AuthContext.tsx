@@ -26,6 +26,24 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
   const [loading, setLoading] = useState(true);
   const initializedRef = useRef(false);
   const manualSignOutRef = useRef(false);
+  const prefetchedUserRef = useRef<string | null>(null);
+
+  // Start prefetching data as soon as we have a user — deduped by userId
+  const triggerPrefetch = useCallback((userId: string) => {
+    if (prefetchedUserRef.current === userId) return;
+    prefetchedUserRef.current = userId;
+
+    const now = new Date();
+    const month = now.getMonth();
+    const year = now.getFullYear();
+
+    // Fire-and-forget — don't block auth flow
+    Promise.all([
+      prefetchDashboardData(month, year, { userId, includeHistorical: false }),
+      getAccounts(),
+      getCreditCards(),
+    ]).catch(() => {});
+  }, []);
 
   useEffect(() => {
     let mounted = true;
@@ -34,14 +52,25 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
       if (!mounted) return;
       setSession(nextSession);
       setUser(nextSession?.user ?? null);
+
+      // Start prefetching immediately when session is available
+      if (nextSession?.user) {
+        triggerPrefetch(nextSession.user.id);
+      }
     };
 
+    // 1. Set up listener FIRST (catches all subsequent events)
     const { data: { subscription } } = supabase.auth.onAuthStateChange(
       (event, session) => {
-        // Only clear session on explicit sign out, not on token refresh failures
-        if (event === "SIGNED_OUT" && !manualSignOutRef.current) {
-          // Token refresh may have failed — try to recover silently
-          // Don't immediately clear user state
+        // Only clear session on explicit sign out
+        if (event === "SIGNED_OUT") {
+          if (manualSignOutRef.current) {
+            applySession(null);
+            manualSignOutRef.current = false;
+            prefetchedUserRef.current = null;
+          }
+          // Ignore SIGNED_OUT from token refresh failures — keep current session
+          if (initializedRef.current && mounted) setLoading(false);
           return;
         }
 
@@ -50,14 +79,10 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
         if (initializedRef.current && mounted) {
           setLoading(false);
         }
-
-        // Reset manual sign out flag after processing
-        if (event === "SIGNED_OUT") {
-          manualSignOutRef.current = false;
-        }
       }
     );
 
+    // 2. Then restore existing session
     supabase.auth.getSession().then(({ data: { session } }) => {
       initializedRef.current = true;
       applySession(session);
@@ -67,7 +92,7 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
       }
     });
 
-    // Re-validate session when the user returns to the tab/browser
+    // 3. Re-validate session when user returns to the tab/browser
     const handleVisibilityChange = () => {
       if (document.visibilityState === "visible") {
         supabase.auth.getSession().then(({ data: { session: freshSession } }) => {
@@ -75,8 +100,7 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
           if (freshSession) {
             applySession(freshSession);
           }
-          // If no session and user was logged in, don't force logout —
-          // autoRefreshToken will attempt recovery on next API call
+          // Don't force logout if no session — autoRefreshToken will recover
         });
       }
     };
@@ -88,21 +112,14 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
       subscription.unsubscribe();
       document.removeEventListener("visibilitychange", handleVisibilityChange);
     };
-  }, []);
+  }, [triggerPrefetch]);
 
+  // Clear cache when user changes (logout → login as different user)
   useEffect(() => {
-    clearFinanceQueryCache();
-    if (!user) return;
-
-    const now = new Date();
-    const month = now.getMonth();
-    const year = now.getFullYear();
-
-    void Promise.all([
-      prefetchDashboardData(month, year, { userId: user.id, includeHistorical: false }),
-      getAccounts(),
-      getCreditCards(),
-    ]).catch(() => {});
+    if (!user) {
+      clearFinanceQueryCache();
+      prefetchedUserRef.current = null;
+    }
   }, [user]);
 
   const signOut = useCallback(async () => {
