@@ -9,7 +9,8 @@ import { useFinancialProjection } from "@/hooks/useFinancialProjection";
 import { useRadarFinanceiro } from "@/hooks/useRadarFinanceiro";
 import { useAnimatedCounter } from "@/hooks/useAnimatedCounter";
 import { calculateHealthScore, type HealthScoreV2, type HealthFactor } from "@/services/healthScoreService";
-import { generateHubyMessage } from "@/services/hubyMessageService";
+import { generateHubyScoreMessage } from "@/services/hubyMessageService";
+import { generateRadarInsights } from "@/services/radarService";
 
 const fmt = (v: number) => v.toLocaleString("pt-BR", { style: "currency", currency: "BRL" });
 
