@@ -3,7 +3,7 @@ import { useNavigate } from "react-router-dom";
 import { motion } from "framer-motion";
 import {
   ArrowLeft, ShieldCheck, TrendingUp, TrendingDown, CreditCard, BarChart3,
-  AlertTriangle, Bot, ChevronRight, Settings2, List, Sparkles,
+  AlertTriangle, Bot, ChevronRight, Settings2, List, Sparkles, Zap, PiggyBank, Scissors,
 } from "lucide-react";
 import { useFinancialProjection } from "@/hooks/useFinancialProjection";
 import { useRadarFinanceiro } from "@/hooks/useRadarFinanceiro";
