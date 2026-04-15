@@ -122,6 +122,9 @@ export default function BotFinanceSaude() {
     classificacaoAnterior: classMap[prevHealth.level],
   }), [health, prevHealth]);
 
+  // Fire score notifications
+  useScoreNotifications(health, prevHealth, isLoading);
+
   const animatedScore = useAnimatedCounter(health.score);
   const lc = levelConfig[health.level];
 
