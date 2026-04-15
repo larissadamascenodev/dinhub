@@ -9,7 +9,8 @@ import { useFinancialProjection } from "@/hooks/useFinancialProjection";
 import { useRadarFinanceiro } from "@/hooks/useRadarFinanceiro";
 import { useAnimatedCounter } from "@/hooks/useAnimatedCounter";
 import { calculateHealthScore, type HealthScoreV2, type HealthFactor } from "@/services/healthScoreService";
-import { generateHubyMessage } from "@/services/hubyMessageService";
+import { generateHubyScoreMessage } from "@/services/hubyMessageService";
+import { generateRadarInsights } from "@/services/radarService";
 
 const fmt = (v: number) => v.toLocaleString("pt-BR", { style: "currency", currency: "BRL" });
 
@@ -91,17 +92,37 @@ export default function BotFinanceSaude() {
     [data, insights, parceladoTotal, isLoading]
   );
 
+  // Compute real previous month score using prevData from radar
+  const { prevData } = useRadarFinanceiro();
+  const prevInsights = useMemo(() => {
+    if (isLoading || !prevData) return [];
+    // Generate insights for previous month (prev vs prev-prev — simplified: use empty baseline)
+    return generateRadarInsights(prevData, undefined as any);
+  }, [prevData, isLoading]);
+
+  const prevParcelado = useMemo(
+    () => (prevData?.transactions ?? []).filter((t) => t.type === "despesa" && (t as any).recurrence_type === "parcelado").reduce((s, t) => s + t.amount, 0),
+    [prevData]
+  );
+
+  const prevHealth = useMemo<HealthScoreV2>(
+    () => (isLoading || !prevData ? { score: 0, label: "Atenção", level: "amarelo", factors: [] } : calculateHealthScore(prevData, prevInsights, prevParcelado)),
+    [prevData, prevInsights, prevParcelado, isLoading]
+  );
+
+  const scoreDiff = health.score - prevHealth.score;
+
+  const classMap = { verde: "saudavel", amarelo: "atencao", vermelho: "critico" } as const;
+
+  const hubyMsg = useMemo(() => generateHubyScoreMessage({
+    scoreAtual: health.score,
+    scoreAnterior: prevHealth.score,
+    classificacaoAtual: classMap[health.level],
+    classificacaoAnterior: classMap[prevHealth.level],
+  }), [health, prevHealth]);
+
   const animatedScore = useAnimatedCounter(health.score);
   const lc = levelConfig[health.level];
-  const hubyMsg = useMemo(() => generateHubyMessage(insights), [insights]);
-
-  // Previous month score estimate (simplified: add/subtract based on trend)
-  const prevScoreEstimate = useMemo(() => {
-    if (insights.length === 0) return Math.max(health.score - 5, 0);
-    return Math.min(health.score + 8, 100);
-  }, [health.score, insights.length]);
-
-  const scoreDiff = health.score - prevScoreEstimate;
 
   return (
     <div className="space-y-4 pb-4">
