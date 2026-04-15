@@ -5,7 +5,7 @@ import {
   ArrowLeft, AlertTriangle, TrendingUp, TrendingDown, Zap,
   ShieldCheck, ChevronRight, ChevronDown, ChevronUp, Bot, BarChart3,
   Settings2, List, Sparkles, CreditCard, RefreshCw, Wallet, Receipt,
-  PiggyBank, Scissors, Package,
+  PiggyBank, Scissors, Package, DollarSign, Activity, Target,
 } from "lucide-react";
 import { useRadarFinanceiro } from "@/hooks/useRadarFinanceiro";
 import { calculateHealthScore, type HealthScoreV2 } from "@/services/healthScoreService";
@@ -27,12 +27,16 @@ function Section({
   children,
   defaultOpen = true,
   delay = 0,
+  badge,
+  badgeColor,
 }: {
   title: string;
   emoji?: string;
   children: React.ReactNode;
   defaultOpen?: boolean;
   delay?: number;
+  badge?: string;
+  badgeColor?: string;
 }) {
   const [open, setOpen] = useState(defaultOpen);
   return (
@@ -47,10 +51,15 @@ function Section({
         onClick={() => setOpen(!open)}
         className="w-full flex items-center justify-between p-4 hover:bg-card/80 transition-colors"
       >
-        <span className="text-[13px] font-bold text-foreground flex items-center gap-2">
+        <div className="flex items-center gap-2">
           {emoji && <span className="text-sm">{emoji}</span>}
-          {title}
-        </span>
+          <span className="text-[13px] font-bold text-foreground">{title}</span>
+          {badge && (
+            <span className={`text-[9px] font-bold px-1.5 py-0.5 rounded-full ${badgeColor || "bg-primary/10 text-primary"}`}>
+              {badge}
+            </span>
+          )}
+        </div>
         {open ? (
           <ChevronUp className="w-4 h-4 text-muted-foreground" />
         ) : (
@@ -74,25 +83,28 @@ function Section({
   );
 }
 
-// ─── Stat cell ──────────────────────────────────────────────────────
+// ─── Stat cell (compact) ────────────────────────────────────────────
 
 function StatCell({
   icon,
   label,
   value,
   color = "text-foreground",
+  sub,
 }: {
   icon: React.ReactNode;
   label: string;
   value: string;
   color?: string;
+  sub?: string;
 }) {
   return (
     <div className="flex items-center gap-2.5 rounded-[14px] bg-secondary/30 border border-border/5 px-3 py-2.5">
       <div className="text-primary/70 flex-shrink-0">{icon}</div>
-      <div className="min-w-0">
+      <div className="min-w-0 flex-1">
         <p className="text-[9px] text-muted-foreground uppercase tracking-wider font-medium">{label}</p>
         <p className={`text-[13px] font-bold tabular-nums ${color}`}>{value}</p>
+        {sub && <p className="text-[8px] text-muted-foreground/60 mt-0.5">{sub}</p>}
       </div>
     </div>
   );
@@ -137,6 +149,7 @@ function CategoryBar({
   amount,
   pctVal,
   prevAmount,
+  isDominant,
 }: {
   name: string;
   icon: string;
@@ -144,6 +157,7 @@ function CategoryBar({
   amount: number;
   pctVal: number;
   prevAmount?: number;
+  isDominant?: boolean;
 }) {
   const change = prevAmount != null && prevAmount > 0 ? Math.round(((amount - prevAmount) / prevAmount) * 100) : null;
   return (
@@ -152,6 +166,9 @@ function CategoryBar({
         <div className="flex items-center gap-1.5">
           <span className="text-[11px]">{icon}</span>
           <span className="text-[11px] font-semibold text-foreground">{name}</span>
+          {isDominant && (
+            <span className="text-[8px] font-bold px-1 py-0.5 rounded bg-warning/15 text-warning">TOP</span>
+          )}
         </div>
         <div className="flex items-center gap-2">
           <span className="text-[11px] font-bold text-foreground tabular-nums">{fmt(amount)}</span>
@@ -179,9 +196,10 @@ function CategoryBar({
 
 // ─── Comparison row ─────────────────────────────────────────────────
 
-function CompareRow({ label, current, prev }: { label: string; current: number; prev: number }) {
+function CompareRow({ label, current, prev, invertColor }: { label: string; current: number; prev: number; invertColor?: boolean }) {
   const change = prev > 0 ? Math.round(((current - prev) / prev) * 100) : 0;
   const up = current > prev;
+  const isGood = invertColor ? !up : up;
   return (
     <div className="flex items-center justify-between py-1.5">
       <span className="text-[11px] text-muted-foreground">{label}</span>
@@ -189,13 +207,40 @@ function CompareRow({ label, current, prev }: { label: string; current: number; 
         <span className="text-[11px] text-muted-foreground/50 line-through tabular-nums">{fmt(prev)}</span>
         <span className="text-[12px] font-bold text-foreground tabular-nums">{fmt(current)}</span>
         {change !== 0 && (
-          <span className={`text-[10px] font-semibold flex items-center gap-0.5 ${up ? "text-destructive" : "text-primary"}`}>
+          <span className={`text-[10px] font-semibold flex items-center gap-0.5 ${isGood ? "text-destructive" : "text-primary"}`}>
             {up ? <TrendingUp className="w-3 h-3" /> : <TrendingDown className="w-3 h-3" />}
             {up ? "+" : ""}{change}%
           </span>
         )}
       </div>
     </div>
+  );
+}
+
+// ─── Progress ring (mini) ───────────────────────────────────────────
+
+function ProgressRing({ value, size = 48, stroke = 4, color }: { value: number; size?: number; stroke?: number; color: string }) {
+  const radius = (size - stroke) / 2;
+  const circumference = 2 * Math.PI * radius;
+  const offset = circumference - (Math.min(value, 100) / 100) * circumference;
+
+  return (
+    <svg width={size} height={size} className="transform -rotate-90">
+      <circle cx={size / 2} cy={size / 2} r={radius} fill="none" stroke="hsl(var(--border) / 0.15)" strokeWidth={stroke} />
+      <motion.circle
+        cx={size / 2}
+        cy={size / 2}
+        r={radius}
+        fill="none"
+        stroke={color}
+        strokeWidth={stroke}
+        strokeLinecap="round"
+        strokeDasharray={circumference}
+        initial={{ strokeDashoffset: circumference }}
+        animate={{ strokeDashoffset: offset }}
+        transition={{ duration: 1, ease: "easeOut" }}
+      />
+    </svg>
   );
 }
 
@@ -231,6 +276,7 @@ export default function RadarFinanceiro() {
   const receitas = data?.receitas ?? 0;
   const despesas = data?.despesas ?? 0;
   const balanco = data?.balanco ?? 0;
+  const saldoAtual = data?.saldoAtual ?? 0;
   const prevReceitas = prevData?.receitas ?? 0;
   const prevDespesas = prevData?.despesas ?? 0;
 
@@ -264,38 +310,51 @@ export default function RadarFinanceiro() {
   // Comprometimento
   const comprometimentoPct = pct(despesas, receitas);
   const comprometimentoColor =
-    comprometimentoPct <= 50 ? "text-primary" : comprometimentoPct <= 80 ? "text-warning" : "text-destructive";
+    comprometimentoPct < 60 ? "text-primary" : comprometimentoPct <= 80 ? "text-warning" : "text-destructive";
   const comprometimentoBg =
-    comprometimentoPct <= 50 ? "bg-primary" : comprometimentoPct <= 80 ? "bg-warning" : "bg-destructive";
+    comprometimentoPct < 60 ? "bg-primary" : comprometimentoPct <= 80 ? "bg-warning" : "bg-destructive";
+  const comprometimentoRing =
+    comprometimentoPct < 60 ? "hsl(var(--primary))" : comprometimentoPct <= 80 ? "hsl(var(--warning))" : "hsl(var(--destructive))";
 
   // Top 5 categories with prev comparison
   const topCats = useMemo(() => {
     const cats = (data?.categories ?? []).slice(0, 5);
     const prevMap: Record<string, number> = {};
     (prevData?.categories ?? []).forEach((c) => { prevMap[c.name] = c.amount; });
-    return cats.map((c) => ({ ...c, prev: prevMap[c.name] }));
+    return cats.map((c, i) => ({ ...c, prev: prevMap[c.name], isDominant: i === 0 }));
   }, [data, prevData]);
+
+  // Category alerts
+  const catAlerts = useMemo(() => {
+    const alerts: string[] = [];
+    if (topCats.length > 0) {
+      const top = topCats[0];
+      const topPct = pct(top.amount, despesas);
+      if (topPct > 30) alerts.push(`${top.name} domina ${topPct}% dos gastos`);
+    }
+    const growing = topCats.filter(c => c.prev && c.prev > 0 && c.amount > c.prev * 1.2);
+    if (growing.length > 0) alerts.push(`${growing.length} categoria${growing.length > 1 ? 's' : ''} em crescimento`);
+    return alerts;
+  }, [topCats, despesas]);
+
+  // Installment count
+  const installmentCount = useMemo(
+    () =>
+      (data?.transactions ?? [])
+        .filter((t) => t.type === "despesa" && (t as any).recurrence_type === "parcelado").length,
+    [data]
+  );
+
+  // Expense change vs prev
+  const expenseChange = prevDespesas > 0 ? Math.round(((despesas - prevDespesas) / prevDespesas) * 100) : 0;
 
   // Status config
   const statusConfig = {
-    verde: { bg: "rgba(74,222,128,0.08)", border: "rgba(74,222,128,0.2)", text: "text-primary", emoji: "🟢", label: "Sob controle" },
-    amarelo: { bg: "rgba(245,158,11,0.08)", border: "rgba(245,158,11,0.2)", text: "text-warning", emoji: "🟡", label: "Atenção" },
-    vermelho: { bg: "rgba(239,68,68,0.08)", border: "rgba(239,68,68,0.2)", text: "text-destructive", emoji: "🔴", label: "Crítico" },
+    verde: { bg: "rgba(74,222,128,0.08)", border: "rgba(74,222,128,0.2)", text: "text-primary", ringColor: "hsl(var(--primary))", emoji: "🟢", label: "Sob controle" },
+    amarelo: { bg: "rgba(245,158,11,0.08)", border: "rgba(245,158,11,0.2)", text: "text-warning", ringColor: "hsl(var(--warning))", emoji: "🟡", label: "Atenção" },
+    vermelho: { bg: "rgba(239,68,68,0.08)", border: "rgba(239,68,68,0.2)", text: "text-destructive", ringColor: "hsl(var(--destructive))", emoji: "🔴", label: "Crítico" },
   };
   const sc = statusConfig[status.level];
-
-  // Summary text
-  const summaryText = useMemo(() => {
-    if (!data) return "";
-    const parts: string[] = [];
-    if (comprometimentoPct > 80) parts.push("renda muito comprometida");
-    else if (comprometimentoPct > 50) parts.push("renda parcialmente comprometida");
-    if (totalParcelado > 0) parts.push("parcelamentos ativos");
-    const alertas = insights.filter((i) => i.tipo === "alerta").length;
-    if (alertas > 0) parts.push(`${alertas} alerta${alertas > 1 ? "s" : ""}`);
-    if (parts.length === 0) return "Seu financeiro está estável este mês.";
-    return `Seu financeiro está ${status.level === "verde" ? "estável" : "em atenção"}, com ${parts.join(", ")}.`;
-  }, [data, insights, comprometimentoPct, totalParcelado, status.level]);
 
   if (loading) {
     return (
@@ -323,6 +382,7 @@ export default function RadarFinanceiro() {
       {/* ── 1. Header + Status ── */}
       <motion.div initial={{ opacity: 0, y: 8 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.03 }}>
         <h1 className="font-display text-[22px] font-bold text-foreground tracking-tight">Radar Financeiro</h1>
+        <p className="text-[11px] text-muted-foreground mt-0.5">Visão 360° da sua vida financeira</p>
       </motion.div>
 
       <motion.div
@@ -332,17 +392,25 @@ export default function RadarFinanceiro() {
         className="rounded-[20px] p-4 relative overflow-hidden"
         style={{ background: sc.bg, border: `1px solid ${sc.border}` }}
       >
-        <div className="flex items-center gap-3 relative z-[1]">
-          <div className="w-11 h-11 rounded-2xl flex items-center justify-center flex-shrink-0" style={{ background: sc.bg }}>
-            <ShieldCheck className={`w-5 h-5 ${sc.text}`} />
+        <div className="flex items-center gap-4 relative z-[1]">
+          <div className="relative flex-shrink-0">
+            <ProgressRing value={health.score} size={56} stroke={5} color={sc.ringColor} />
+            <div className="absolute inset-0 flex items-center justify-center">
+              <span className={`text-[14px] font-black tabular-nums ${sc.text}`}>{health.score}</span>
+            </div>
           </div>
           <div className="flex-1 min-w-0">
             <div className="flex items-center gap-2 mb-0.5">
               <span className="text-sm">{sc.emoji}</span>
               <h2 className={`text-[14px] font-bold ${sc.text}`}>{sc.label}</h2>
-              <span className={`text-[11px] font-bold ${sc.text} tabular-nums`}>({health.score}pts)</span>
             </div>
-            <p className="text-[11px] text-muted-foreground leading-relaxed">{summaryText}</p>
+            <p className="text-[11px] text-muted-foreground leading-relaxed">
+              {comprometimentoPct < 60
+                ? "Seu financeiro está equilibrado este mês."
+                : comprometimentoPct <= 80
+                  ? "Pontos de atenção detectados — ajustes podem ajudar."
+                  : "Situação crítica — ação necessária para equilibrar."}
+            </p>
           </div>
         </div>
       </motion.div>
@@ -365,7 +433,7 @@ export default function RadarFinanceiro() {
           >
             <Bot className="w-4 h-4 text-primary-foreground" />
           </div>
-          <div>
+          <div className="flex-1 min-w-0">
             <h5 className="text-[11px] font-bold text-primary mb-0.5">Huby diz</h5>
             <p className="text-[12px] text-muted-foreground leading-relaxed italic whitespace-pre-line">{hubyMsg.main}</p>
             {hubyMsg.secondary && (
@@ -375,26 +443,47 @@ export default function RadarFinanceiro() {
         </div>
       </motion.div>
 
-      {/* ── 3. Visão geral (grid) ── */}
-      <Section title="Visão Geral" emoji="📊" delay={0.14}>
+      {/* ── 3. Snapshot (6 indicadores) ── */}
+      <Section title="Visão Rápida" emoji="📊" delay={0.14}>
         <div className="grid grid-cols-2 gap-2">
-          <StatCell icon={<TrendingUp className="w-4 h-4" />} label="Receita" value={fmt(receitas)} color="text-primary" />
-          <StatCell icon={<TrendingDown className="w-4 h-4" />} label="Despesa" value={fmt(despesas)} color="text-destructive" />
-          <StatCell icon={<Wallet className="w-4 h-4" />} label="Saldo do mês" value={fmt(balanco)} color={balanco >= 0 ? "text-primary" : "text-destructive"} />
-          <StatCell icon={<CreditCard className="w-4 h-4" />} label="Cartão" value={fmt(cardTotal)} />
-          <StatCell icon={<RefreshCw className="w-4 h-4" />} label="Recorrentes" value={fmt(recDespesas)} />
-          <StatCell icon={<Package className="w-4 h-4" />} label="Parcelamentos" value={fmt(totalParcelado)} />
+          <StatCell icon={<DollarSign className="w-4 h-4" />} label="Receita" value={fmt(receitas)} color="text-primary" />
+          <StatCell icon={<TrendingDown className="w-4 h-4" />} label="Despesas" value={fmt(despesas)} color="text-destructive" sub={expenseChange !== 0 ? `${expenseChange > 0 ? "+" : ""}${expenseChange}% vs anterior` : undefined} />
+          <StatCell icon={<Wallet className="w-4 h-4" />} label="Saldo atual" value={fmt(saldoAtual)} color={saldoAtual >= 0 ? "text-primary" : "text-destructive"} />
+          <StatCell icon={<CreditCard className="w-4 h-4" />} label="Total cartão" value={fmt(cardTotal)} sub={cardTotal > 0 ? `${cardPct}% dos gastos` : undefined} />
+          <StatCell icon={<RefreshCw className="w-4 h-4" />} label="Custos fixos" value={fmt(recDespesas)} sub={fixoPct > 0 ? `${fixoPct}% da renda` : undefined} />
+          <StatCell icon={<Package className="w-4 h-4" />} label="Parcelamentos" value={fmt(totalParcelado)} sub={installmentCount > 0 ? `${installmentCount} ativo${installmentCount > 1 ? "s" : ""}` : undefined} />
         </div>
       </Section>
 
-      {/* ── 4. Comprometimento ── */}
-      <Section title="Comprometimento da Renda" emoji="📉" delay={0.18}>
-        <div className="space-y-2">
-          <div className="flex items-center justify-between">
-            <span className="text-[11px] text-muted-foreground">Renda comprometida</span>
-            <span className={`text-[16px] font-bold tabular-nums ${comprometimentoColor}`}>{comprometimentoPct}%</span>
+      {/* ── 4. Comprometimento da Renda ── */}
+      <Section title="Comprometimento da Renda" emoji="📉" delay={0.18}
+        badge={`${comprometimentoPct}%`}
+        badgeColor={comprometimentoPct < 60 ? "bg-primary/15 text-primary" : comprometimentoPct <= 80 ? "bg-warning/15 text-warning" : "bg-destructive/15 text-destructive"}
+      >
+        <div className="space-y-3">
+          <div className="flex items-center gap-4">
+            <div className="relative flex-shrink-0">
+              <ProgressRing value={comprometimentoPct} size={64} stroke={6} color={comprometimentoRing} />
+              <div className="absolute inset-0 flex items-center justify-center">
+                <span className={`text-[15px] font-black tabular-nums ${comprometimentoColor}`}>{comprometimentoPct}%</span>
+              </div>
+            </div>
+            <div className="flex-1 space-y-1">
+              <div className="flex justify-between text-[10px]">
+                <span className="text-muted-foreground">Receita</span>
+                <span className="font-bold text-primary tabular-nums">{fmt(receitas)}</span>
+              </div>
+              <div className="flex justify-between text-[10px]">
+                <span className="text-muted-foreground">Despesas</span>
+                <span className="font-bold text-destructive tabular-nums">{fmt(despesas)}</span>
+              </div>
+              <div className="flex justify-between text-[10px]">
+                <span className="text-muted-foreground">Livre</span>
+                <span className={`font-bold tabular-nums ${balanco >= 0 ? "text-primary" : "text-destructive"}`}>{fmt(Math.max(receitas - despesas, 0))}</span>
+              </div>
+            </div>
           </div>
-          <div className="h-3 rounded-full bg-border/10 overflow-hidden">
+          <div className="h-2.5 rounded-full bg-border/10 overflow-hidden">
             <motion.div
               initial={{ width: 0 }}
               animate={{ width: `${Math.min(comprometimentoPct, 100)}%` }}
@@ -402,27 +491,46 @@ export default function RadarFinanceiro() {
               className={`h-full rounded-full ${comprometimentoBg}`}
             />
           </div>
-          <div className="flex justify-between text-[9px] text-muted-foreground/50">
-            <span>0%</span>
-            <span>50%</span>
-            <span>100%</span>
-          </div>
+          <p className="text-[11px] text-muted-foreground leading-relaxed">
+            💡 {comprometimentoPct < 60
+              ? "Boa! Você ainda tem margem confortável."
+              : comprometimentoPct <= 80
+                ? `Você já comprometeu ${comprometimentoPct}% da sua renda — atenção aos próximos gastos.`
+                : `Você já comprometeu ${comprometimentoPct}% da sua renda — o orçamento está muito apertado.`}
+          </p>
         </div>
       </Section>
 
-      {/* ── 5. Cartão de crédito ── */}
+      {/* ── 5. Cartão de Crédito ── */}
       {cardTotal > 0 && (
-        <Section title="Cartão de Crédito" emoji="💳" delay={0.22}>
-          <div className="space-y-2">
-            <div className="flex items-center justify-between">
-              <span className="text-[11px] text-muted-foreground">Total no cartão este mês</span>
-              <span className="text-[14px] font-bold text-foreground tabular-nums">{fmt(cardTotal)}</span>
+        <Section title="Análise de Cartão" emoji="💳" delay={0.22}
+          badge={`${cardPct}% dos gastos`}
+          badgeColor={cardPct > 50 ? "bg-warning/15 text-warning" : "bg-muted/20 text-muted-foreground"}
+        >
+          <div className="space-y-3">
+            <div className="grid grid-cols-2 gap-2">
+              <div className="rounded-[12px] bg-secondary/20 border border-border/5 p-2.5">
+                <p className="text-[9px] text-muted-foreground uppercase tracking-wider">Total no cartão</p>
+                <p className="text-[14px] font-bold text-foreground tabular-nums mt-0.5">{fmt(cardTotal)}</p>
+              </div>
+              <div className="rounded-[12px] bg-secondary/20 border border-border/5 p-2.5">
+                <p className="text-[9px] text-muted-foreground uppercase tracking-wider">% dos gastos</p>
+                <p className={`text-[14px] font-bold tabular-nums mt-0.5 ${cardPct > 50 ? "text-warning" : "text-foreground"}`}>{cardPct}%</p>
+              </div>
             </div>
+            {totalParcelado > 0 && (
+              <div className="rounded-[12px] bg-warning/5 border border-warning/10 p-2.5">
+                <p className="text-[10px] text-warning font-semibold">⚠️ Parcelas no cartão: {fmt(totalParcelado)}</p>
+                <p className="text-[9px] text-muted-foreground mt-0.5">Comprometendo {pct(totalParcelado, receitas)}% da renda</p>
+              </div>
+            )}
             <p className="text-[11px] text-muted-foreground leading-relaxed">
-              💡 O cartão representa <span className="font-semibold text-warning">{cardPct}%</span> dos seus gastos esse mês
+              💡 {cardPct > 50
+                ? `Seu cartão representa ${cardPct}% dos seus gastos — cuidado com o acúmulo.`
+                : `Cartão representa ${cardPct}% dos gastos — sob controle.`}
             </p>
             <button
-              onClick={() => navigate("/fatura")}
+              onClick={() => navigate("/gestao")}
               className="text-[11px] font-semibold text-primary flex items-center gap-0.5 hover:underline"
             >
               Ver faturas <ChevronRight className="w-3 h-3" />
@@ -431,28 +539,82 @@ export default function RadarFinanceiro() {
         </Section>
       )}
 
-      {/* ── 6. Recorrentes ── */}
-      <Section title="Receitas e Despesas Fixas" emoji="🔁" delay={0.26} defaultOpen={false}>
-        <div className="space-y-2">
-          <div className="flex items-center justify-between py-1">
-            <span className="text-[11px] text-muted-foreground">Receitas recorrentes</span>
-            <span className="text-[12px] font-bold text-primary tabular-nums">{fmt(recReceitas)}</span>
+      {/* ── 6. Parcelamentos (Impacto Futuro) ── */}
+      {totalParcelado > 0 && (
+        <Section title="Parcelamentos" emoji="📦" delay={0.26}
+          badge={`${installmentCount} ativo${installmentCount > 1 ? "s" : ""}`}
+          badgeColor="bg-warning/15 text-warning"
+        >
+          <div className="space-y-3">
+            <div className="grid grid-cols-2 gap-2">
+              <div className="rounded-[12px] bg-secondary/20 border border-border/5 p-2.5">
+                <p className="text-[9px] text-muted-foreground uppercase tracking-wider">Mensal comprometido</p>
+                <p className="text-[14px] font-bold text-warning tabular-nums mt-0.5">{fmt(totalParcelado)}</p>
+              </div>
+              <div className="rounded-[12px] bg-secondary/20 border border-border/5 p-2.5">
+                <p className="text-[9px] text-muted-foreground uppercase tracking-wider">% da renda</p>
+                <p className={`text-[14px] font-bold tabular-nums mt-0.5 ${pct(totalParcelado, receitas) > 30 ? "text-destructive" : "text-warning"}`}>
+                  {pct(totalParcelado, receitas)}%
+                </p>
+              </div>
+            </div>
+            <p className="text-[11px] text-muted-foreground leading-relaxed">
+              ⚠️ Você tem <span className="font-semibold text-warning">{fmt(totalParcelado)}</span> comprometidos em parcelas este mês.
+            </p>
+            <button
+              onClick={() => navigate("/parcelamentos")}
+              className="text-[11px] font-semibold text-primary flex items-center gap-0.5 hover:underline"
+            >
+              Ver parcelamentos <ChevronRight className="w-3 h-3" />
+            </button>
           </div>
-          <div className="flex items-center justify-between py-1">
-            <span className="text-[11px] text-muted-foreground">Despesas recorrentes</span>
-            <span className="text-[12px] font-bold text-destructive tabular-nums">{fmt(recDespesas)}</span>
+        </Section>
+      )}
+
+      {/* ── 7. Receitas e Despesas Fixas ── */}
+      <Section title="Receitas e Despesas Fixas" emoji="🔁" delay={0.3} defaultOpen={false}
+        badge={fixoPct > 0 ? `${fixoPct}% da renda` : undefined}
+        badgeColor={fixoPct > 60 ? "bg-destructive/15 text-destructive" : fixoPct > 40 ? "bg-warning/15 text-warning" : "bg-muted/20 text-muted-foreground"}
+      >
+        <div className="space-y-3">
+          <div className="grid grid-cols-2 gap-2">
+            <div className="rounded-[12px] bg-primary/5 border border-primary/10 p-2.5">
+              <p className="text-[9px] text-muted-foreground uppercase tracking-wider">Receitas fixas</p>
+              <p className="text-[14px] font-bold text-primary tabular-nums mt-0.5">{fmt(recReceitas)}</p>
+            </div>
+            <div className="rounded-[12px] bg-destructive/5 border border-destructive/10 p-2.5">
+              <p className="text-[9px] text-muted-foreground uppercase tracking-wider">Despesas fixas</p>
+              <p className="text-[14px] font-bold text-destructive tabular-nums mt-0.5">{fmt(recDespesas)}</p>
+            </div>
           </div>
           {receitas > 0 && (
             <p className="text-[11px] text-muted-foreground leading-relaxed">
-              💡 Seus custos fixos consomem <span className="font-semibold text-warning">{fixoPct}%</span> da sua renda
+              💡 {fixoPct > 60
+                ? `Seus custos fixos consomem ${fixoPct}% da renda — é bastante.`
+                : fixoPct > 40
+                  ? `Custos fixos em ${fixoPct}% da renda — dentro do aceitável.`
+                  : `Custos fixos controlados em ${fixoPct}% da renda.`}
             </p>
           )}
         </div>
       </Section>
 
-      {/* ── 7. Gastos por categoria ── */}
-      <Section title="Gastos por Categoria" emoji="📊" delay={0.3}>
+      {/* ── 8. Gastos por Categoria (Core do Radar) ── */}
+      <Section title="Gastos por Categoria" emoji="📊" delay={0.34}
+        badge={catAlerts.length > 0 ? `${catAlerts.length} alerta${catAlerts.length > 1 ? "s" : ""}` : undefined}
+        badgeColor="bg-warning/15 text-warning"
+      >
         <div className="space-y-3">
+          {catAlerts.length > 0 && (
+            <div className="space-y-1">
+              {catAlerts.map((alert, i) => (
+                <div key={i} className="flex items-center gap-2 rounded-[10px] bg-warning/5 border border-warning/10 px-2.5 py-1.5">
+                  <AlertTriangle className="w-3 h-3 text-warning flex-shrink-0" />
+                  <span className="text-[10px] text-warning font-medium">{alert}</span>
+                </div>
+              ))}
+            </div>
+          )}
           {topCats.map((cat) => (
             <CategoryBar
               key={cat.name}
@@ -462,6 +624,7 @@ export default function RadarFinanceiro() {
               amount={cat.amount}
               pctVal={pct(cat.amount, despesas)}
               prevAmount={cat.prev}
+              isDominant={cat.isDominant}
             />
           ))}
           {topCats.length === 0 && <p className="text-[11px] text-muted-foreground text-center py-2">Sem dados de categorias</p>}
@@ -474,55 +637,44 @@ export default function RadarFinanceiro() {
         </div>
       </Section>
 
-      {/* ── 8. Insights inteligentes ── */}
+      {/* ── 9. Comparação Mensal ── */}
+      {prevData && (
+        <Section title="Comparação Mensal" emoji="📈" delay={0.38} defaultOpen={false}
+          badge={expenseChange !== 0 ? `${expenseChange > 0 ? "+" : ""}${expenseChange}% gastos` : undefined}
+          badgeColor={expenseChange > 0 ? "bg-destructive/15 text-destructive" : "bg-primary/15 text-primary"}
+        >
+          <div className="space-y-1">
+            <CompareRow label="Receitas" current={receitas} prev={prevReceitas} invertColor />
+            <CompareRow label="Despesas" current={despesas} prev={prevDespesas} />
+            <CompareRow label="Saldo" current={balanco} prev={prevData.balanco} invertColor />
+          </div>
+          {expenseChange !== 0 && (
+            <p className="text-[11px] text-muted-foreground leading-relaxed mt-2">
+              💡 {expenseChange > 0
+                ? `Seus gastos aumentaram ${expenseChange}% em relação ao mês anterior.`
+                : `Seus gastos diminuíram ${Math.abs(expenseChange)}% — bom trabalho!`}
+            </p>
+          )}
+        </Section>
+      )}
+
+      {/* ── 10. Insights Inteligentes ── */}
       {insights.length > 0 && (
-        <Section title="Análise Inteligente" emoji="🧠" delay={0.34}>
+        <Section title="Insights Inteligentes" emoji="🧠" delay={0.42}
+          badge={`${insights.length} detectado${insights.length > 1 ? "s" : ""}`}
+          badgeColor={insights.some(i => i.tipo === "alerta") ? "bg-destructive/15 text-destructive" : "bg-warning/15 text-warning"}
+        >
           <div className="space-y-2">
             {insights.slice(0, 3).map((insight) => (
               <InsightCard key={insight.id} insight={insight} navigate={navigate} />
             ))}
-            {insights.length > 3 && (
-              <p className="text-[10px] text-muted-foreground text-center">+{insights.length - 3} insights</p>
-            )}
           </div>
         </Section>
       )}
 
-      {/* ── 9. Parcelamentos (impacto futuro) ── */}
-      {totalParcelado > 0 && (
-        <Section title="Impacto dos Parcelamentos" emoji="📦" delay={0.38} defaultOpen={false}>
-          <div className="space-y-2">
-            <div className="flex items-center justify-between">
-              <span className="text-[11px] text-muted-foreground">Valor mensal comprometido</span>
-              <span className="text-[14px] font-bold text-warning tabular-nums">{fmt(totalParcelado)}</span>
-            </div>
-            <p className="text-[11px] text-muted-foreground leading-relaxed">
-              ⚠️ Você tem <span className="font-semibold text-warning">{fmt(totalParcelado)}</span> em parcelas comprometidas este mês
-            </p>
-            <button
-              onClick={() => navigate("/parcelamentos")}
-              className="text-[11px] font-semibold text-primary flex items-center gap-0.5 hover:underline"
-            >
-              Ver parcelamentos <ChevronRight className="w-3 h-3" />
-            </button>
-          </div>
-        </Section>
-      )}
-
-      {/* ── 10. Comparação mensal ── */}
-      {prevData && (
-        <Section title="Comparação Mensal" emoji="📈" delay={0.42} defaultOpen={false}>
-          <div className="space-y-1">
-            <CompareRow label="Receitas" current={receitas} prev={prevReceitas} />
-            <CompareRow label="Despesas" current={despesas} prev={prevDespesas} />
-            <CompareRow label="Saldo" current={balanco} prev={prevData.balanco} />
-          </div>
-        </Section>
-      )}
-
-      {/* ── 11. Bloco de ações (Huby) ── */}
+      {/* ── 11. Ações Recomendadas ── */}
       {hubyActions.length > 0 && (
-        <Section title="Sugestões de Ação" emoji="🎯" delay={0.46}>
+        <Section title="Ações Recomendadas" emoji="🎯" delay={0.46}>
           <div className="space-y-2">
             {hubyActions.map((action, i) => {
               const colorMap = {
@@ -540,9 +692,11 @@ export default function RadarFinanceiro() {
                     <h4 className="text-[12px] font-bold text-foreground">{action.titulo}</h4>
                     <p className="text-[10px] text-muted-foreground leading-relaxed mt-0.5">{action.descricao}</p>
                     <div className="flex items-center justify-between mt-2">
-                      <span className={`text-[11px] font-bold ${c.text}`}>
-                        Economia: R${action.impacto_estimado.toLocaleString("pt-BR")}
-                      </span>
+                      <div className="flex items-center gap-2">
+                        <span className={`text-[11px] font-bold ${c.text}`}>
+                          💰 R${action.impacto_estimado.toLocaleString("pt-BR")}
+                        </span>
+                      </div>
                       <button onClick={() => navigate(action.path)} className={`text-[10px] font-semibold ${c.text} flex items-center gap-0.5`}>
                         {action.acao} <ChevronRight className="w-3 h-3" />
                       </button>
