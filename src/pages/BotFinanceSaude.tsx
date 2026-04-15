@@ -146,6 +146,13 @@ export default function BotFinanceSaude() {
   const animatedScore = useAnimatedCounter(health.score);
   const lc = levelConfig[health.level];
 
+  // ── Smart actions from Huby ──
+  const { prevData: radarPrevData } = useRadarFinanceiro();
+  const hubyActions = useMemo<HubyAction[]>(
+    () => (isLoading ? [] : generateHubyActions(data, insights, health, radarPrevData ?? undefined)),
+    [data, insights, health, radarPrevData, isLoading]
+  );
+
   return (
     <div className="space-y-4 pb-4">
       {/* Back */}
