@@ -12,7 +12,7 @@ import { calculateHealthScore, type HealthScoreV2, type HealthFactor } from "@/s
 import { generateHubyScoreMessage } from "@/services/hubyMessageService";
 import { generateRadarInsights } from "@/services/radarService";
 import { useScoreNotifications } from "@/hooks/useScoreNotifications";
-import { saveHealthScore, fetchPreviousScore, type PersistedScore } from "@/services/scoreHistoryService";
+import { saveHealthScore, fetchPreviousScore, fetchScoreHistory, type PersistedScore } from "@/services/scoreHistoryService";
 import { generateHubyActions, type HubyAction } from "@/services/hubyActionsService";
 import { useAuth } from "@/contexts/AuthContext";
 import { useMonth } from "@/contexts/MonthContext";
@@ -101,6 +101,13 @@ export default function BotFinanceSaude() {
       setPrevLoaded(true);
     });
   }, [user?.id, selectedMonth, selectedYear]);
+
+  // Fetch score history (last 6 months)
+  const [scoreHistory, setScoreHistory] = useState<PersistedScore[]>([]);
+  useEffect(() => {
+    if (!user?.id) return;
+    fetchScoreHistory(user.id, 6).then(setScoreHistory);
+  }, [user?.id, health.score]);
 
   // Build prevHealth from persisted data, fallback to calculated
   const { prevData } = useRadarFinanceiro();
@@ -224,6 +231,107 @@ export default function BotFinanceSaude() {
           </div>
         </div>
       </motion.div>
+
+      {/* ── Score Evolution Chart ── */}
+      {!isLoading && scoreHistory.length >= 2 && (
+        <motion.div
+          initial={{ opacity: 0, y: 10 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ delay: 0.12 }}
+          className="rounded-[18px] p-4 border border-border/10 bg-card/60 backdrop-blur-xl"
+          style={{ boxShadow: "0 2px 8px -4px rgba(0,0,0,0.12)" }}
+        >
+          <p className="text-[11px] font-semibold tracking-[1px] text-muted-foreground/70 uppercase mb-3">
+            Evolução do Score
+          </p>
+          {(() => {
+            const MONTHS = ["Jan", "Fev", "Mar", "Abr", "Mai", "Jun", "Jul", "Ago", "Set", "Out", "Nov", "Dez"];
+            const points = scoreHistory.map((s) => ({
+              label: MONTHS[s.month] ?? `${s.month + 1}`,
+              score: s.score,
+              level: s.level,
+            }));
+
+            const W = 280;
+            const H = 100;
+            const padX = 24;
+            const padY = 12;
+            const chartW = W - padX * 2;
+            const chartH = H - padY * 2;
+
+            const minScore = Math.max(0, Math.min(...points.map((p) => p.score)) - 10);
+            const maxScore = Math.min(100, Math.max(...points.map((p) => p.score)) + 10);
+            const range = maxScore - minScore || 1;
+
+            const coords = points.map((p, i) => ({
+              x: padX + (i / Math.max(points.length - 1, 1)) * chartW,
+              y: padY + chartH - ((p.score - minScore) / range) * chartH,
+              ...p,
+            }));
+
+            const pathD = coords.map((c, i) => `${i === 0 ? "M" : "L"} ${c.x} ${c.y}`).join(" ");
+
+            const levelColor = (l: string) =>
+              l === "verde" ? "hsl(var(--primary))" : l === "amarelo" ? "hsl(var(--warning))" : "hsl(var(--destructive))";
+
+            return (
+              <div className="flex justify-center">
+                <svg viewBox={`0 0 ${W} ${H}`} className="w-full max-w-[320px]" style={{ height: 120 }}>
+                  {/* Grid lines */}
+                  {[0, 0.5, 1].map((t) => {
+                    const y = padY + chartH - t * chartH;
+                    const val = Math.round(minScore + t * range);
+                    return (
+                      <g key={t}>
+                        <line x1={padX} y1={y} x2={W - padX} y2={y} stroke="hsl(var(--border))" strokeWidth="0.5" strokeDasharray="3 3" opacity={0.3} />
+                        <text x={padX - 4} y={y + 3} textAnchor="end" fill="hsl(var(--muted-foreground))" fontSize="7" opacity={0.5}>{val}</text>
+                      </g>
+                    );
+                  })}
+
+                  {/* Area fill */}
+                  <defs>
+                    <linearGradient id="scoreGrad" x1="0" y1="0" x2="0" y2="1">
+                      <stop offset="0%" stopColor="hsl(var(--primary))" stopOpacity={0.2} />
+                      <stop offset="100%" stopColor="hsl(var(--primary))" stopOpacity={0} />
+                    </linearGradient>
+                  </defs>
+                  <path
+                    d={`${pathD} L ${coords[coords.length - 1].x} ${padY + chartH} L ${coords[0].x} ${padY + chartH} Z`}
+                    fill="url(#scoreGrad)"
+                  />
+
+                  {/* Line */}
+                  <motion.path
+                    d={pathD}
+                    fill="none"
+                    stroke="hsl(var(--primary))"
+                    strokeWidth="2"
+                    strokeLinecap="round"
+                    strokeLinejoin="round"
+                    initial={{ pathLength: 0 }}
+                    animate={{ pathLength: 1 }}
+                    transition={{ duration: 1, delay: 0.3 }}
+                  />
+
+                  {/* Dots + labels */}
+                  {coords.map((c, i) => (
+                    <g key={i}>
+                      <circle cx={c.x} cy={c.y} r="4" fill={levelColor(c.level)} stroke="hsl(var(--card))" strokeWidth="2" />
+                      <text x={c.x} y={c.y - 8} textAnchor="middle" fill="hsl(var(--foreground))" fontSize="8" fontWeight="700">
+                        {c.score}
+                      </text>
+                      <text x={c.x} y={padY + chartH + 10} textAnchor="middle" fill="hsl(var(--muted-foreground))" fontSize="7" opacity={0.6}>
+                        {c.label}
+                      </text>
+                    </g>
+                  ))}
+                </svg>
+              </div>
+            );
+          })()}
+        </motion.div>
+      )}
 
       {/* ── Factor breakdown ── */}
       {!isLoading && health.factors.length > 0 && (
