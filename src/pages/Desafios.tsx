@@ -9,6 +9,8 @@ import { Input } from "@/components/ui/input";
 import { toast } from "sonner";
 import { useAuth } from "@/contexts/AuthContext";
 import { cn } from "@/lib/utils";
+import { useRadarFinanceiro } from "@/hooks/useRadarFinanceiro";
+import { calculateHealthScore } from "@/services/healthScoreService";
 import {
   Challenge,
   UserChallenge,
@@ -18,6 +20,8 @@ import {
   checkinChallenge,
   createCustomChallenge,
   abandonChallenge,
+  generateDynamicSuggestions,
+  getHubyMessage,
 } from "@/services/challengeService";
 
 const DIFFICULTY_LABEL: Record<string, string> = { facil: "Fácil", medio: "Médio", dificil: "Difícil" };
@@ -250,6 +254,13 @@ const ActiveCard = ({
           </div>
         </div>
 
+        {/* Huby message */}
+        <div className="bg-primary/[0.04] border border-primary/10 rounded-xl px-3 py-2">
+          <p className="text-[11px] text-muted-foreground leading-relaxed">
+            💬 {getHubyMessage(uc.checkin_count ?? 0, c.duration_days, !!uc.violated)}
+          </p>
+        </div>
+
         {/* Check-in */}
         <Button
           className={cn(
@@ -435,6 +446,9 @@ const Desafios = () => {
   const [checkinId, setCheckinId] = useState<string | null>(null);
   const [createOpen, setCreateOpen] = useState(false);
 
+  // Radar + Score data for dynamic suggestions
+  const { insights, currentData, loading: radarLoading } = useRadarFinanceiro();
+
   const load = useCallback(async () => {
     setLoading(true);
     try {
@@ -445,16 +459,40 @@ const Desafios = () => {
           toast.error(`Desafio "${uc.challenge.name}" foi quebrado! Uma nova despesa foi detectada nas categorias monitoradas. O progresso foi reiniciado.`, { duration: 6000 });
         }
       }
-      // Filter out already accepted suggestions
       const acceptedIds = new Set(a.map((uc) => uc.challenge_id));
-      setSuggestions(s.filter((c) => !acceptedIds.has(c.id)));
+      const acceptedNames = new Set(a.map((uc) => uc.challenge?.name?.toLowerCase()));
+
+      // Merge system suggestions with dynamic ones
+      let allSuggestions = s.filter((c) => !acceptedIds.has(c.id));
+
+      // Add dynamic suggestions from Radar/Score if data is available
+      if (currentData && insights) {
+        const health = calculateHealthScore(
+          currentData,
+          insights,
+          currentData.transactions
+            .filter((t) => t.type === "despesa" && (t as any).recurrence_type === "parcelado")
+            .reduce((sum, t) => sum + t.amount, 0)
+        );
+        const dynamic = generateDynamicSuggestions(currentData, insights, health);
+        // Add dynamic suggestions that aren't already present or accepted
+        for (const d of dynamic) {
+          const nameKey = d.name.toLowerCase();
+          const alreadyExists = allSuggestions.some((s) => s.name.toLowerCase() === nameKey);
+          if (!alreadyExists && !acceptedNames.has(nameKey)) {
+            allSuggestions.unshift(d); // dynamic first
+          }
+        }
+      }
+
+      setSuggestions(allSuggestions);
       setActive(a);
     } catch {
       toast.error("Erro ao carregar desafios");
     } finally {
       setLoading(false);
     }
-  }, []);
+  }, [currentData, insights]);
 
   useEffect(() => { load(); }, [load]);
 
@@ -462,7 +500,25 @@ const Desafios = () => {
     if (!user) return;
     setAcceptingId(challengeId);
     try {
-      await acceptChallenge(challengeId, user.id);
+      // Dynamic challenges start with "dynamic-" and need to be created first
+      if (challengeId.startsWith("dynamic-")) {
+        const dynamicChallenge = suggestions.find((s) => s.id === challengeId);
+        if (dynamicChallenge) {
+          await createCustomChallenge(
+            {
+              name: dynamicChallenge.name,
+              description: dynamicChallenge.description ?? undefined,
+              duration_days: dynamicChallenge.duration_days,
+              difficulty: dynamicChallenge.difficulty,
+              potential_savings: dynamicChallenge.potential_savings,
+              icon: dynamicChallenge.icon,
+            },
+            user.id
+          );
+        }
+      } else {
+        await acceptChallenge(challengeId, user.id);
+      }
       toast.success("Desafio aceito! 💪");
       await load();
     } catch {
