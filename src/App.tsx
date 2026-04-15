@@ -18,6 +18,7 @@ import BotFinance from "./pages/BotFinance.tsx";
 import BotFinanceProjecoes from "./pages/BotFinanceProjecoes.tsx";
 import BotFinanceSaude from "./pages/BotFinanceSaude.tsx";
 import BotFinanceBalanco from "./pages/BotFinanceBalanco.tsx";
+import RadarFinanceiro from "./pages/RadarFinanceiro.tsx";
 import GerenciarCategorias from "./pages/GerenciarCategorias.tsx";
 import Metas from "./pages/Metas.tsx";
 import MetaDetalhe from "./pages/MetaDetalhe.tsx";
@@ -69,6 +70,7 @@ const App = () => (
               <Route path="/bot-finance/projecoes" element={<BotFinanceProjecoes />} />
               <Route path="/bot-finance/saude" element={<BotFinanceSaude />} />
               <Route path="/bot-finance/balanco" element={<BotFinanceBalanco />} />
+              <Route path="/bot-finance/radar" element={<RadarFinanceiro />} />
               <Route path="/configuracoes" element={<Configuracoes />} />
               <Route path="/categorias" element={<GerenciarCategorias />} />
               <Route path="/metas" element={<Metas />} />

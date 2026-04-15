@@ -3,11 +3,13 @@ import { useNavigate } from "react-router-dom";
 import { Bot, MessageCircle, Camera, Mic, Radar, HeartPulse, TrendingUp, Sparkles, Lightbulb, Search } from "lucide-react";
 import { useProfile } from "@/hooks/useProfile";
 import { useFinancialProjection } from "@/hooks/useFinancialProjection";
+import { useRadarFinanceiro } from "@/hooks/useRadarFinanceiro";
 
 const BotFinance = () => {
   const navigate = useNavigate();
   const { profile } = useProfile();
   const { healthScore, projections, data, insight, loading } = useFinancialProjection();
+  const { insights: radarInsights, status: radarStatus, loading: radarLoading } = useRadarFinanceiro();
 
   const firstName = profile?.display_name?.split(" ")[0] || "usuário";
   const score = healthScore?.score ?? 0;
@@ -15,11 +17,12 @@ const BotFinance = () => {
     score >= 80 ? "Excelente" : score >= 60 ? "Bom" : score >= 40 ? "Regular" : "Atenção";
   const scoreBadgeEmoji = score >= 80 ? "🟢" : score >= 60 ? "🟢" : score >= 40 ? "🟡" : "🔴";
 
-  // Radar: count risk months from projections
-  const riskCount = projections?.filter((p) => p.risk === "risco").length ?? 0;
-  const attentionCount = projections?.filter((p) => p.risk === "atencao").length ?? 0;
-  const alertCount = riskCount + attentionCount;
-  const radarBadge = riskCount > 0 ? "🔴 Risco detectado" : alertCount > 0 ? "🟡 Atenção" : "🟢 Tudo certo";
+  // Radar: use real insight data
+  const radarBadgeEmoji = radarStatus.level === "verde" ? "🟢" : radarStatus.level === "amarelo" ? "🟡" : "🔴";
+  const radarBadge = `${radarBadgeEmoji} ${radarStatus.label}`;
+  const radarStatText = radarLoading ? "..." : radarStatus.insightCount > 0
+    ? `${radarStatus.insightCount} alerta${radarStatus.insightCount > 1 ? "s" : ""}`
+    : "Nenhum alerta";
 
   // Projeções: find first positive month or show trend
   const positiveMonths = projections?.filter((p) => p.delta > 0).length ?? 0;
@@ -37,9 +40,9 @@ const BotFinance = () => {
       icon: <Radar className="w-[18px] h-[18px]" />,
       label: "Radar Financeiro",
       desc: "Alertas e padrões detectados",
-      stat: loading ? "..." : alertCount > 0 ? `${alertCount} alerta${alertCount > 1 ? "s" : ""}` : "Nenhum alerta",
+      stat: radarStatText,
       badge: radarBadge,
-      path: "/bot-finance/balanco",
+      path: "/bot-finance/radar",
       theme: "amber" as const,
     },
     {
