@@ -7,20 +7,38 @@ import { useFinancialProjection } from "@/hooks/useFinancialProjection";
 const BotFinance = () => {
   const navigate = useNavigate();
   const { profile } = useProfile();
-  const { healthScore } = useFinancialProjection();
+  const { healthScore, projections, data, insight, loading } = useFinancialProjection();
 
   const firstName = profile?.display_name?.split(" ")[0] || "usuário";
   const score = healthScore?.score ?? 0;
   const scoreLabel =
     score >= 80 ? "Excelente" : score >= 60 ? "Bom" : score >= 40 ? "Regular" : "Atenção";
+  const scoreBadgeEmoji = score >= 80 ? "🟢" : score >= 60 ? "🟢" : score >= 40 ? "🟡" : "🔴";
+
+  // Radar: count risk months from projections
+  const riskCount = projections?.filter((p) => p.risk === "risco").length ?? 0;
+  const attentionCount = projections?.filter((p) => p.risk === "atencao").length ?? 0;
+  const alertCount = riskCount + attentionCount;
+  const radarBadge = riskCount > 0 ? "🔴 Risco detectado" : alertCount > 0 ? "🟡 Atenção" : "🟢 Tudo certo";
+
+  // Projeções: find first positive month or show trend
+  const positiveMonths = projections?.filter((p) => p.delta > 0).length ?? 0;
+  const lastProjection = projections?.[projections.length - 1];
+  const projTrend = lastProjection
+    ? lastProjection.balance > 0 ? "📈 Tendência positiva" : "📉 Tendência negativa"
+    : "🔮 Calculando...";
+  const projStat = loading ? "..." : `${positiveMonths}/12 meses +`;
+
+  // Análise: use insight text
+  const insightText = insight || "Analisando seus dados...";
 
   const tools = [
     {
       icon: <Radar className="w-[18px] h-[18px]" />,
       label: "Radar Financeiro",
       desc: "Alertas e padrões detectados",
-      stat: "3 alertas",
-      badge: "🟡 Atenção",
+      stat: loading ? "..." : alertCount > 0 ? `${alertCount} alerta${alertCount > 1 ? "s" : ""}` : "Nenhum alerta",
+      badge: radarBadge,
       path: "/bot-finance/balanco",
       theme: "amber" as const,
     },
@@ -28,8 +46,8 @@ const BotFinance = () => {
       icon: <HeartPulse className="w-[18px] h-[18px]" />,
       label: "Saúde Financeira",
       desc: "Score geral do seu dinheiro",
-      stat: `${score} / 100`,
-      badge: `🟢 ${scoreLabel}`,
+      stat: loading ? "..." : `${score} / 100`,
+      badge: `${scoreBadgeEmoji} ${scoreLabel}`,
       path: "/bot-finance/saude",
       theme: "green" as const,
     },
@@ -37,8 +55,8 @@ const BotFinance = () => {
       icon: <TrendingUp className="w-[18px] h-[18px]" />,
       label: "Projeções",
       desc: "Como seu dinheiro evolui",
-      stat: "abr/2027",
-      badge: "🔮 Livre em 12 meses",
+      stat: projStat,
+      badge: projTrend,
       path: "/bot-finance/projecoes",
       theme: "purple" as const,
     },
@@ -46,8 +64,8 @@ const BotFinance = () => {
       icon: <Search className="w-[18px] h-[18px]" />,
       label: "Análise IA",
       desc: "Insights personalizados",
-      stat: "5 dicas",
-      badge: "✨ Novidades",
+      stat: loading ? "..." : "Ver análise",
+      badge: "✨ Disponível",
       path: "/analytics-categorias",
       theme: "cyan" as const,
     },
