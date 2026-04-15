@@ -213,8 +213,8 @@ const BotFinance = () => {
         initial={{ opacity: 0 }}
         animate={{ opacity: 1 }}
         transition={{ delay: 0.4 }}
-        className="rounded-2xl p-3.5 flex items-start gap-3 border border-border/50"
-        style={{ background: "hsl(var(--card))" }}
+        className="rounded-2xl p-3.5 flex items-start gap-3"
+        style={{ background: "rgba(245,158,11,0.08)", border: "1px solid rgba(245,158,11,0.15)" }}
       >
         <div
           className="w-[34px] h-[34px] rounded-[10px] flex items-center justify-center flex-shrink-0 text-base"
