@@ -9,6 +9,8 @@ import { Input } from "@/components/ui/input";
 import { toast } from "sonner";
 import { useAuth } from "@/contexts/AuthContext";
 import { cn } from "@/lib/utils";
+import { useRadarFinanceiro } from "@/hooks/useRadarFinanceiro";
+import { calculateHealthScore } from "@/services/healthScoreService";
 import {
   Challenge,
   UserChallenge,
@@ -18,6 +20,8 @@ import {
   checkinChallenge,
   createCustomChallenge,
   abandonChallenge,
+  generateDynamicSuggestions,
+  getHubyMessage,
 } from "@/services/challengeService";
 
 const DIFFICULTY_LABEL: Record<string, string> = { facil: "Fácil", medio: "Médio", dificil: "Difícil" };
