@@ -446,6 +446,9 @@ const Desafios = () => {
   const [checkinId, setCheckinId] = useState<string | null>(null);
   const [createOpen, setCreateOpen] = useState(false);
 
+  // Radar + Score data for dynamic suggestions
+  const { insights, currentData, loading: radarLoading } = useRadarFinanceiro();
+
   const load = useCallback(async () => {
     setLoading(true);
     try {
@@ -456,16 +459,40 @@ const Desafios = () => {
           toast.error(`Desafio "${uc.challenge.name}" foi quebrado! Uma nova despesa foi detectada nas categorias monitoradas. O progresso foi reiniciado.`, { duration: 6000 });
         }
       }
-      // Filter out already accepted suggestions
       const acceptedIds = new Set(a.map((uc) => uc.challenge_id));
-      setSuggestions(s.filter((c) => !acceptedIds.has(c.id)));
+      const acceptedNames = new Set(a.map((uc) => uc.challenge?.name?.toLowerCase()));
+
+      // Merge system suggestions with dynamic ones
+      let allSuggestions = s.filter((c) => !acceptedIds.has(c.id));
+
+      // Add dynamic suggestions from Radar/Score if data is available
+      if (currentData && insights) {
+        const health = calculateHealthScore(
+          currentData,
+          insights,
+          currentData.transactions
+            .filter((t) => t.type === "despesa" && (t as any).recurrence_type === "parcelado")
+            .reduce((sum, t) => sum + t.amount, 0)
+        );
+        const dynamic = generateDynamicSuggestions(currentData, insights, health);
+        // Add dynamic suggestions that aren't already present or accepted
+        for (const d of dynamic) {
+          const nameKey = d.name.toLowerCase();
+          const alreadyExists = allSuggestions.some((s) => s.name.toLowerCase() === nameKey);
+          if (!alreadyExists && !acceptedNames.has(nameKey)) {
+            allSuggestions.unshift(d); // dynamic first
+          }
+        }
+      }
+
+      setSuggestions(allSuggestions);
       setActive(a);
     } catch {
       toast.error("Erro ao carregar desafios");
     } finally {
       setLoading(false);
     }
-  }, []);
+  }, [currentData, insights]);
 
   useEffect(() => { load(); }, [load]);
 
