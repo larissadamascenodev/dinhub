@@ -1,11 +1,11 @@
 /**
  * Huby — Dynamic message generator.
- * Transforms Radar insights into natural, friendly, actionable messages.
+ * Transforms Radar insights AND score evolution into natural, friendly, actionable messages.
  */
 
 import type { RadarInsight } from "@/services/radarService";
 
-interface HubyMessage {
+export interface HubyMessage {
   main: string;
   secondary: string | null;
 }
@@ -92,11 +92,100 @@ const templates = {
   ],
 };
 
+// ─── Score evolution templates ──────────────────────────────────────
+
+type ScoreLevel = "saudavel" | "atencao" | "critico";
+
+interface ScoreEvolutionInput {
+  scoreAtual: number;
+  scoreAnterior: number;
+  classificacaoAtual: ScoreLevel;
+  classificacaoAnterior: ScoreLevel;
+}
+
+const scoreTemplates = {
+  melhora: {
+    obs: [
+      "Seu score melhorou esse mês 👏",
+      "Boa! Seu controle financeiro evoluiu",
+      "Você está no caminho certo 🚀",
+    ],
+    comp: [
+      "pequenos ajustes já fizeram diferença",
+      "isso mostra que você está mais no controle",
+      "continue assim que a tendência é boa",
+    ],
+    acao: [
+      "quer ver o que mais ajudou nisso?",
+      "posso te mostrar onde você acertou",
+    ],
+  },
+  piora: {
+    obs: [
+      "Seu score caiu um pouco esse mês…",
+      "Teve uma leve queda no seu controle financeiro",
+      "Seu score deu uma reduzida",
+    ],
+    comp: [
+      "nada grave, mas vale atenção",
+      "isso pode virar padrão se não ajustar",
+      "melhor olhar isso agora",
+    ],
+    acao: [
+      "quer ver o que causou isso?",
+      "posso te ajudar a ajustar",
+    ],
+  },
+  estavel: {
+    obs: [
+      "Seu score se manteve estável",
+      "Nada mudou muito esse mês",
+    ],
+    comp: [
+      "isso é bom, mas sempre dá pra melhorar",
+      "talvez tenha oportunidades escondidas",
+    ],
+    acao: [
+      "quer dar uma otimizada nisso?",
+      "posso te mostrar onde melhorar",
+    ],
+  },
+  // Classification change (priority)
+  melhoraGrande: {
+    obs: [
+      "Boa! Você saiu da zona crítica 👏",
+      "Seu financeiro deu um salto importante 🚀",
+      "Parabéns! Evolução significativa no seu score",
+    ],
+    comp: [
+      "isso mostra que seus ajustes estão funcionando",
+      "grande progresso, continue nessa direção",
+    ],
+    acao: [
+      "quer ver o que fez a diferença?",
+      "posso mostrar os detalhes da evolução",
+    ],
+  },
+  quedaGrande: {
+    obs: [
+      "Você saiu da zona saudável… vale atenção aqui",
+      "Seu controle financeiro perdeu um pouco de força",
+      "O score caiu de forma significativa esse mês",
+    ],
+    comp: [
+      "isso pode pesar se continuar assim",
+      "quanto antes ajustar, melhor",
+    ],
+    acao: [
+      "quer ver onde está o problema?",
+      "posso te ajudar a voltar ao controle",
+    ],
+  },
+};
+
 // ─── Helpers ────────────────────────────────────────────────────────
 
 function pick<T>(arr: T[]): T {
-  // Use a seed based on current date (day) to avoid changing every render
-  // but still rotate daily
   const dayOfYear = Math.floor(
     (Date.now() - new Date(new Date().getFullYear(), 0, 0).getTime()) / 86400000
   );
@@ -116,7 +205,24 @@ function getInsightType(insight: RadarInsight): keyof typeof templates | null {
   return null;
 }
 
-// ─── Main generator ─────────────────────────────────────────────────
+const levelPriority: Record<ScoreLevel, number> = { critico: 0, atencao: 1, saudavel: 2 };
+
+function getScoreTemplateKey(input: ScoreEvolutionInput) {
+  const diff = input.scoreAtual - input.scoreAnterior;
+  const prevP = levelPriority[input.classificacaoAnterior];
+  const currP = levelPriority[input.classificacaoAtual];
+
+  // Classification changed → priority
+  if (currP > prevP) return "melhoraGrande";
+  if (currP < prevP) return "quedaGrande";
+
+  // Same classification → use score diff
+  if (diff > 0) return "melhora";
+  if (diff < 0) return "piora";
+  return "estavel";
+}
+
+// ─── Main generator (Radar-based) ───────────────────────────────────
 
 export function generateHubyMessage(insights: RadarInsight[]): HubyMessage {
   if (insights.length === 0) {
@@ -126,7 +232,6 @@ export function generateHubyMessage(insights: RadarInsight[]): HubyMessage {
     };
   }
 
-  // Primary: most important insight
   const primary = insights[0];
   const primaryType = getInsightType(primary);
 
@@ -147,7 +252,6 @@ export function generateHubyMessage(insights: RadarInsight[]): HubyMessage {
     main = `Encontrei algo nos seus gastos… quer dar uma olhada?`;
   }
 
-  // Secondary: second insight (if exists)
   let secondary: string | null = null;
   if (insights.length > 1) {
     const sec = insights[1];
@@ -164,6 +268,21 @@ export function generateHubyMessage(insights: RadarInsight[]): HubyMessage {
   }
 
   return { main, secondary };
+}
+
+// ─── Score evolution generator ──────────────────────────────────────
+
+export function generateHubyScoreMessage(input: ScoreEvolutionInput): HubyMessage {
+  const key = getScoreTemplateKey(input);
+  const t = scoreTemplates[key];
+  const obs = pick(t.obs);
+  const comp = pick(t.comp);
+  const acao = pick(t.acao);
+
+  return {
+    main: `${obs}\n${comp}\n${acao}`,
+    secondary: null,
+  };
 }
 
 /**
