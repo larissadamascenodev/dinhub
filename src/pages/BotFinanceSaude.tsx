@@ -1,4 +1,4 @@
-import { useMemo } from "react";
+import { useMemo, useEffect, useState, useRef } from "react";
 import { useNavigate } from "react-router-dom";
 import { motion } from "framer-motion";
 import {
@@ -12,6 +12,9 @@ import { calculateHealthScore, type HealthScoreV2, type HealthFactor } from "@/s
 import { generateHubyScoreMessage } from "@/services/hubyMessageService";
 import { generateRadarInsights } from "@/services/radarService";
 import { useScoreNotifications } from "@/hooks/useScoreNotifications";
+import { saveHealthScore, fetchPreviousScore, type PersistedScore } from "@/services/scoreHistoryService";
+import { useAuth } from "@/contexts/AuthContext";
+import { useMonth } from "@/contexts/MonthContext";
 
 const fmt = (v: number) => v.toLocaleString("pt-BR", { style: "currency", currency: "BRL" });
 
