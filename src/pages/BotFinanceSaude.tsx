@@ -63,24 +63,9 @@ export default function BotFinanceSaude() {
   const navigate = useNavigate();
   const { data, loading } = useFinancialProjection();
   const { insights, loading: radarLoading } = useRadarFinanceiro();
+  const { user } = useAuth();
+  const { selectedMonth, selectedYear } = useMonth();
   const isLoading = loading || radarLoading;
-
-  // Estimate installment total from transactions
-  const totalParcelado = useMemo(
-    () =>
-      data.transactions
-        .filter((t) => t.type === "despesa" && t.status === "pago")
-        .reduce((s, t) => s + t.amount, 0) -
-      data.transactions
-        .filter(
-          (t) =>
-            t.type === "despesa" &&
-            t.status === "pago" &&
-            !(t as any).recurrence_type?.includes("parcelado")
-        )
-        .reduce((s, t) => s + t.amount, 0) || 0,
-    [data.transactions]
-  );
 
   // Better installment calc: filter only parcelado
   const parceladoTotal = useMemo(
@@ -96,11 +81,30 @@ export default function BotFinanceSaude() {
     [data, insights, parceladoTotal, isLoading]
   );
 
-  // Compute real previous month score using prevData from radar
+  // ── Persist current score ──
+  const hasSaved = useRef(false);
+  useEffect(() => {
+    if (isLoading || !user?.id || hasSaved.current || health.score === 0) return;
+    hasSaved.current = true;
+    saveHealthScore(user.id, selectedMonth, selectedYear, health);
+  }, [isLoading, user?.id, health, selectedMonth, selectedYear]);
+
+  // ── Fetch real previous month score from DB ──
+  const [prevPersisted, setPrevPersisted] = useState<PersistedScore | null>(null);
+  const [prevLoaded, setPrevLoaded] = useState(false);
+  useEffect(() => {
+    if (!user?.id) return;
+    setPrevLoaded(false);
+    fetchPreviousScore(user.id, selectedMonth, selectedYear).then((s) => {
+      setPrevPersisted(s);
+      setPrevLoaded(true);
+    });
+  }, [user?.id, selectedMonth, selectedYear]);
+
+  // Build prevHealth from persisted data, fallback to calculated
   const { prevData } = useRadarFinanceiro();
   const prevInsights = useMemo(() => {
     if (isLoading || !prevData) return [];
-    // Generate insights for previous month (prev vs prev-prev — simplified: use empty baseline)
     return generateRadarInsights(prevData, undefined as any);
   }, [prevData, isLoading]);
 
@@ -109,10 +113,20 @@ export default function BotFinanceSaude() {
     [prevData]
   );
 
-  const prevHealth = useMemo<HealthScoreV2>(
-    () => (isLoading || !prevData ? { score: 0, label: "Atenção", level: "amarelo", factors: [] } : calculateHealthScore(prevData, prevInsights, prevParcelado)),
-    [prevData, prevInsights, prevParcelado, isLoading]
-  );
+  const prevHealth = useMemo<HealthScoreV2>(() => {
+    // Prefer persisted score
+    if (prevPersisted && prevLoaded) {
+      return {
+        score: prevPersisted.score,
+        label: prevPersisted.score >= 80 ? "Saudável" : prevPersisted.score >= 50 ? "Atenção" : "Crítico",
+        level: (prevPersisted.level as HealthScoreV2["level"]) ?? "amarelo",
+        factors: (prevPersisted.factors ?? []) as HealthFactor[],
+      };
+    }
+    // Fallback to calculated
+    if (isLoading || !prevData) return { score: 0, label: "Atenção", level: "amarelo", factors: [] };
+    return calculateHealthScore(prevData, prevInsights, prevParcelado);
+  }, [prevPersisted, prevLoaded, isLoading, prevData, prevInsights, prevParcelado]);
 
   const scoreDiff = health.score - prevHealth.score;
 
