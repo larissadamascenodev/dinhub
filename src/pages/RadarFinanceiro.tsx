@@ -7,6 +7,7 @@ import {
 } from "lucide-react";
 import { useRadarFinanceiro } from "@/hooks/useRadarFinanceiro";
 import type { RadarInsight } from "@/services/radarService";
+import { generateHubyMessage } from "@/services/hubyMessageService";
 
 const fmt = (v: number) =>
   v.toLocaleString("pt-BR", { style: "currency", currency: "BRL" });
@@ -151,20 +152,8 @@ export default function RadarFinanceiro() {
     ? (prevData?.categories?.find((c) => c.name === topCategoryInsight.categoria)?.amount ?? 0)
     : 0;
 
-  // Huby message
-  const hubyMessage = useMemo(() => {
-    if (insights.length === 0) {
-      return "Tá tudo nos trilhos! 🚀 Continue assim que o mês fecha no verde.";
-    }
-    const topInsight = insights[0];
-    if (topInsight.tipo === "alerta" && topInsight.id === "comprometimento-renda") {
-      return "Ei, suas despesas estão quase passando da receita... bora dar uma olhada juntos? 👀";
-    }
-    if (topInsight.categoria) {
-      return `Seus gastos com ${topInsight.categoria} subiram esse mês... quer ver onde dá pra ajustar? 😉`;
-    }
-    return "Encontrei alguns padrões nos seus gastos. Vamos dar uma olhada? 🧐";
-  }, [insights]);
+  // Huby message from template engine
+  const hubyMsg = useMemo(() => generateHubyMessage(insights), [insights]);
 
   // Summary text
   const summaryText = useMemo(() => {
