@@ -25,6 +25,7 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
   const [session, setSession] = useState<Session | null>(null);
   const [loading, setLoading] = useState(true);
   const initializedRef = useRef(false);
+  const manualSignOutRef = useRef(false);
 
   useEffect(() => {
     let mounted = true;
@@ -36,11 +37,23 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
     };
 
     const { data: { subscription } } = supabase.auth.onAuthStateChange(
-      (_event, session) => {
+      (event, session) => {
+        // Only clear session on explicit sign out, not on token refresh failures
+        if (event === "SIGNED_OUT" && !manualSignOutRef.current) {
+          // Token refresh may have failed — try to recover silently
+          // Don't immediately clear user state
+          return;
+        }
+
         applySession(session);
 
         if (initializedRef.current && mounted) {
           setLoading(false);
+        }
+
+        // Reset manual sign out flag after processing
+        if (event === "SIGNED_OUT") {
+          manualSignOutRef.current = false;
         }
       }
     );
@@ -54,9 +67,26 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
       }
     });
 
+    // Re-validate session when the user returns to the tab/browser
+    const handleVisibilityChange = () => {
+      if (document.visibilityState === "visible") {
+        supabase.auth.getSession().then(({ data: { session: freshSession } }) => {
+          if (!mounted) return;
+          if (freshSession) {
+            applySession(freshSession);
+          }
+          // If no session and user was logged in, don't force logout —
+          // autoRefreshToken will attempt recovery on next API call
+        });
+      }
+    };
+
+    document.addEventListener("visibilitychange", handleVisibilityChange);
+
     return () => {
       mounted = false;
       subscription.unsubscribe();
+      document.removeEventListener("visibilitychange", handleVisibilityChange);
     };
   }, []);
 
@@ -76,7 +106,8 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
   }, [user]);
 
   const signOut = useCallback(async () => {
-    await supabase.auth.signOut();
+    manualSignOutRef.current = true;
+    await supabase.auth.signOut({ scope: "local" });
   }, []);
 
   const value = useMemo(
