@@ -2,10 +2,11 @@ import { useMemo } from "react";
 import { useMonth } from "@/contexts/MonthContext";
 import { useFinanceData } from "@/hooks/useFinanceData";
 import { generateRadarInsights, getRadarStatus, type RadarInsight, type RadarStatus } from "@/services/radarService";
+import type { DashboardData } from "@/types/finance";
 
 /**
  * Hook that runs the Radar Financeiro engine with live data.
- * Returns insights, status and loading state.
+ * Returns insights, status, loading state, and raw data for UI.
  * Re-runs automatically on transaction changes (via useFinanceData realtime).
  */
 export function useRadarFinanceiro() {
@@ -27,5 +28,5 @@ export function useRadarFinanceiro() {
 
   const status: RadarStatus = useMemo(() => getRadarStatus(insights), [insights]);
 
-  return { insights, status, loading };
+  return { insights, status, loading, currentData, prevData };
 }
