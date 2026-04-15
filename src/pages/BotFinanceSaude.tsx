@@ -11,6 +11,7 @@ import { useAnimatedCounter } from "@/hooks/useAnimatedCounter";
 import { calculateHealthScore, type HealthScoreV2, type HealthFactor } from "@/services/healthScoreService";
 import { generateHubyScoreMessage } from "@/services/hubyMessageService";
 import { generateRadarInsights } from "@/services/radarService";
+import { useScoreNotifications } from "@/hooks/useScoreNotifications";
 
 const fmt = (v: number) => v.toLocaleString("pt-BR", { style: "currency", currency: "BRL" });
 
