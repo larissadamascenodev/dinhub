@@ -100,8 +100,17 @@ const Auth = () => {
     setSubmitting(true);
     try {
       if (isLogin) {
-        const { error } = await supabase.auth.signInWithPassword({ email, password });
+        const { data, error } = await supabase.auth.signInWithPassword({ email, password });
         if (error) throw error;
+        // Kick off data prefetch immediately so dashboard is ready by the time we navigate
+        if (data.session?.user) {
+          const now = new Date();
+          const { prefetchDashboardData } = await import("@/services/dashboardData");
+          void prefetchDashboardData(now.getMonth(), now.getFullYear(), {
+            userId: data.session.user.id,
+            includeHistorical: false,
+          }).catch(() => {});
+        }
         toast.success("Login realizado com sucesso!");
       } else {
         const { error } = await supabase.auth.signUp({
