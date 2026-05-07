@@ -1,21 +1,50 @@
+## Problema
 
+Ao escanear comprovantes, a edge function `process-invoice` retorna erro 500:
 
-## Plan: Remover confirmação de email no cadastro
+```
+TypeError: userClient.auth.getClaims is not a function
+```
 
-A tela de consentimento OAuth (screenshot) é do Google e não pode ser removida. Porém, o que podemos fazer é **ativar o auto-confirm de email** no backend, para que ao criar conta com email/senha o usuário entre direto no app sem precisar confirmar por email.
+O método `auth.getClaims` não existe na versão do SDK Supabase usada na função. A autenticação do usuário falha antes mesmo da imagem ser processada, e o frontend mostra "Edge Function returned a non-2xx status code".
 
-### O que será feito
+## Causa raiz
 
-1. **Ativar auto-confirm de email** no backend usando a ferramenta de configuração de autenticação (`configure_auth` com `double_confirm_email_changes: false` e auto-confirm habilitado)
+Em `supabase/functions/process-invoice/index.ts` (linha 174) usamos:
 
-2. **Atualizar a mensagem de sucesso** no cadastro — trocar "Conta criada! Verifique seu email para confirmar." por "Conta criada com sucesso!" já que o usuário será logado automaticamente
+```ts
+const { data: claimsData, error: claimsError } = await userClient.auth.getClaims(...)
+```
 
-### Observação
+Esse método não está disponível. O padrão correto (e usado nas outras edge functions do projeto) é `auth.getUser()`.
 
-A tela de permissão do Google (da screenshot) é parte do fluxo OAuth do Google e não pode ser removida — ela aparece sempre que o usuário escolhe login com Google. O auto-confirm afeta apenas o cadastro por email/senha.
+## Correção
 
-### Detalhes técnicos
+Substituir o bloco de validação de auth (linhas 169–180) por:
 
-- Arquivo editado: `src/pages/Auth.tsx` (linha 116 — mensagem de toast)
-- Configuração de backend: habilitar auto-confirm para signups de email
+```ts
+const userClient = createClient(
+  Deno.env.get("SUPABASE_URL")!,
+  Deno.env.get("SUPABASE_ANON_KEY")!,
+  { global: { headers: { Authorization: authHeader } } }
+);
+const { data: userData, error: userError } = await userClient.auth.getUser();
+if (userError || !userData?.user) {
+  return new Response(JSON.stringify({ error: "Unauthorized" }), {
+    status: 401,
+    headers: { ...corsHeaders, "Content-Type": "application/json" },
+  });
+}
+```
 
+Se mais abaixo no arquivo o código referenciar `claimsData.claims.sub`, ajustar para `userData.user.id`.
+
+## Validação
+
+1. Edge function é re-deployada automaticamente.
+2. Verificar logs de `process-invoice` após novo upload — não deve aparecer mais o `TypeError`.
+3. Testar fluxo: subir foto de comprovante → modal de revisão deve abrir com dados extraídos.
+
+## Escopo
+
+Apenas a edge function `process-invoice`. Nenhuma alteração de UI ou de outras funções.
