@@ -27,6 +27,29 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
   const initializedRef = useRef(false);
   const manualSignOutRef = useRef(false);
   const prefetchedUserRef = useRef<string | null>(null);
+  const refreshTimerRef = useRef<ReturnType<typeof setTimeout> | null>(null);
+
+  // Proactively refresh the session ~2 minutes before expiry to avoid
+  // any latency or unexpected logout from an expired access token.
+  const scheduleProactiveRefresh = useCallback((nextSession: Session | null) => {
+    if (refreshTimerRef.current) {
+      clearTimeout(refreshTimerRef.current);
+      refreshTimerRef.current = null;
+    }
+    if (!nextSession?.expires_at) return;
+
+    const expiresAtMs = nextSession.expires_at * 1000;
+    const refreshLeadMs = 2 * 60 * 1000; // refresh 2 min before expiry
+    const delay = Math.max(expiresAtMs - Date.now() - refreshLeadMs, 5_000);
+
+    refreshTimerRef.current = setTimeout(async () => {
+      try {
+        await supabase.auth.refreshSession();
+      } catch {
+        // onAuthStateChange will react to any successful refresh
+      }
+    }, delay);
+  }, []);
 
   // Start prefetching data as soon as we have a user — deduped by userId
   const triggerPrefetch = useCallback((userId: string) => {
