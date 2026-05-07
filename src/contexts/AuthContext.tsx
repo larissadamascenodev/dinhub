@@ -75,6 +75,7 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
       if (!mounted) return;
       setSession(nextSession);
       setUser(nextSession?.user ?? null);
+      scheduleProactiveRefresh(nextSession);
 
       // Start prefetching immediately when session is available
       if (nextSession?.user) {
