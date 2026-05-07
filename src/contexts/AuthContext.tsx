@@ -138,8 +138,12 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
       mounted = false;
       subscription.unsubscribe();
       document.removeEventListener("visibilitychange", handleVisibilityChange);
+      if (refreshTimerRef.current) {
+        clearTimeout(refreshTimerRef.current);
+        refreshTimerRef.current = null;
+      }
     };
-  }, [triggerPrefetch]);
+  }, [triggerPrefetch, scheduleProactiveRefresh]);
 
   // Clear cache when user changes (logout → login as different user)
   useEffect(() => {
