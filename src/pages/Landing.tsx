@@ -124,12 +124,50 @@ export default function Landing() {
                 ))}
             </div>
             <div className="grid md:grid-cols-2 gap-12 items-center">
-                <div className="bg-landing rounded-3xl border border-landing h-96 flex items-center justify-center text-primary/30">Placeholder {features[activeFeature].title}</div>
-                <div>
-                    <h2 className="text-3xl font-bold mb-4">{features[activeFeature].title}</h2>
-                    <p className="text-lg opacity-70 mb-8">{features[activeFeature].desc}</p>
-                    <div className="grid grid-cols-2 gap-4">
-                        {features[activeFeature].stats.map(s => <div key={s} className="bg-landing p-4 rounded-xl border border-landing text-sm">{s}</div>)}
+                <motion.div 
+                    key={activeFeature}
+                    initial={{ opacity: 0, scale: 0.95 }}
+                    animate={{ opacity: 1, scale: 1 }}
+                    className="bg-landing rounded-[40px] border border-landing h-[500px] flex items-center justify-center text-primary/20 relative overflow-hidden group"
+                >
+                    <div className="absolute inset-0 bg-gradient-to-br from-primary/10 to-transparent" />
+                    <div className="z-10 text-center p-8">
+                        <Smartphone className="w-20 h-20 mx-auto mb-4 opacity-40 group-hover:scale-110 transition-all" />
+                        <p className="font-bold text-lg opacity-60">Screenshot: {features[activeFeature].title}</p>
+                        <p className="text-xs opacity-40 mt-2 max-w-[200px] mx-auto">Visualização real da interface do DinHub Pro para mobile</p>
+                    </div>
+                    {/* Floating elements to mimic app UI */}
+                    <div className="absolute top-8 left-8 right-8 h-12 rounded-xl bg-white/5 border border-white/10" />
+                    <div className="absolute bottom-8 left-8 right-8 h-32 rounded-2xl bg-white/5 border border-white/10" />
+                </motion.div>
+                <div className="space-y-6">
+                    <div className="bg-primary/10 border border-primary/20 px-3 py-1 rounded-full text-[10px] font-bold text-primary inline-block uppercase tracking-wider">Aba {activeFeature + 1}</div>
+                    <h2 className="text-4xl font-display font-bold">{features[activeFeature].desc}</h2>
+                    <p className="text-lg opacity-70 leading-relaxed">
+                        {activeFeature === 0 && "Saldo disponível, receitas, despesas, gastos por categoria e parcelamentos ativos."}
+                        {activeFeature === 1 && "O Bot Huby não espera você perguntar — ele te avisa proativamente."}
+                        {activeFeature === 2 && "Score financeiro em tempo real com recomendações do que fazer agora."}
+                        {activeFeature === 3 && "Timeline de saldo com projeção para 6 meses baseada nos seus hábitos reais."}
+                        {activeFeature === 4 && "22 parcelamentos ativos, quanto está comprometido e quando termina cada um."}
+                    </p>
+                    <div className="grid grid-cols-1 gap-3">
+                        {(activeFeature === 0 ? ["Saldo com projeção fim do mês", "Receitas vs Despesas em destaque", "Gastos por categoria visual", "Parcelamentos ativos com valor/mês"] :
+                          activeFeature === 1 ? ["Detecta comportamentos incomuns", "Conversa sem jargão", "Sugere com base no SEU histórico", "Disponível via texto, foto ou áudio"] :
+                          activeFeature === 2 ? ["Score 0 a 100", "Alertas por padrão anormal", "Diagnóstico com pontos de atenção", "Recomendações: O que fazer"] :
+                          activeFeature === 3 ? ["Timeline acumulada mês a mês", "Previsão baseada em histórico real", "Balanço com receitas vs despesas", "Visão de até 12 meses"] :
+                          ["22 parcelamentos em um lugar", "Comprometido por mês em destaque", "Data de liberdade financeira", "Progresso visual por parcela"]).map(p => (
+                            <div key={p} className="flex items-center gap-3 text-sm opacity-80">
+                                <Check className="w-4 h-4 text-primary" /> {p}
+                            </div>
+                        ))}
+                    </div>
+                    <div className="grid grid-cols-3 gap-3 pt-6">
+                        {features[activeFeature].stats.map(s => (
+                            <div key={s} className="bg-landing p-3 rounded-2xl border border-landing text-center">
+                                <p className="text-[10px] font-bold text-primary uppercase mb-1">{s.split(' ').slice(1).join(' ')}</p>
+                                <p className="text-sm font-bold">{s.split(' ')[0]}</p>
+                            </div>
+                        ))}
                     </div>
                 </div>
             </div>
