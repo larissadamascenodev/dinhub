@@ -671,6 +671,8 @@ export type Database = {
           has_completed_profile: boolean
           has_transactions: boolean
           id: string
+          stripe_customer_id: string | null
+          subscription_status: string | null
           updated_at: string
         }
         Insert: {
@@ -682,6 +684,8 @@ export type Database = {
           has_completed_profile?: boolean
           has_transactions?: boolean
           id: string
+          stripe_customer_id?: string | null
+          subscription_status?: string | null
           updated_at?: string
         }
         Update: {
@@ -693,6 +697,8 @@ export type Database = {
           has_completed_profile?: boolean
           has_transactions?: boolean
           id?: string
+          stripe_customer_id?: string | null
+          subscription_status?: string | null
           updated_at?: string
         }
         Relationships: []
@@ -731,6 +737,45 @@ export type Database = {
             referencedColumns: ["id"]
           },
         ]
+      }
+      subscriptions: {
+        Row: {
+          created_at: string
+          current_period_end: string | null
+          id: string
+          plan: string | null
+          status: string | null
+          stripe_customer_id: string | null
+          stripe_subscription_id: string | null
+          trial_end: string | null
+          updated_at: string
+          user_id: string
+        }
+        Insert: {
+          created_at?: string
+          current_period_end?: string | null
+          id?: string
+          plan?: string | null
+          status?: string | null
+          stripe_customer_id?: string | null
+          stripe_subscription_id?: string | null
+          trial_end?: string | null
+          updated_at?: string
+          user_id: string
+        }
+        Update: {
+          created_at?: string
+          current_period_end?: string | null
+          id?: string
+          plan?: string | null
+          status?: string | null
+          stripe_customer_id?: string | null
+          stripe_subscription_id?: string | null
+          trial_end?: string | null
+          updated_at?: string
+          user_id?: string
+        }
+        Relationships: []
       }
       transactions: {
         Row: {
