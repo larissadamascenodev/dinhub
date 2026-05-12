@@ -265,7 +265,7 @@ serve(async (req) => {
     }
 
     // Try primary model, then fallback
-    const models = ["google/gemini-2.5-flash", "google/gemini-2.5-pro"];
+    const models = ["google/gemini-1.5-flash", "google/gemini-1.5-pro"];
     let aiData: any = null;
     let lastError = "";
 
