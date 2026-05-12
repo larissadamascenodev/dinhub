@@ -10,8 +10,37 @@ import { toast } from "sonner";
 
 export default function Landing() {
   const navigate = useNavigate();
+  const { user } = useAuth();
   const [billingCycle, setBillingCycle] = useState<"monthly" | "annual">("annual");
   const [activeFeature, setActiveFeature] = useState(0);
+  const [loadingCheckout, setLoadingCheckout] = useState(false);
+
+  const handleStartTrial = async () => {
+    if (!user) {
+      navigate("/auth");
+      return;
+    }
+
+    setLoadingCheckout(true);
+    try {
+      const priceId = billingCycle === "annual" 
+        ? "price_annual" 
+        : "price_monthly";
+
+      await createStripeCheckout({
+        priceId,
+        userId: user.id,
+        userEmail: user.email || "",
+        userName: user.user_metadata?.display_name || "",
+        successUrl: `${window.location.origin}/obrigado`,
+        cancelUrl: window.location.origin,
+      });
+    } catch (err) {
+      toast.error("Erro ao iniciar checkout. Tente novamente.");
+    } finally {
+      setLoadingCheckout(false);
+    }
+  };
 
   const features = [
     { id: 0, title: "Início", desc: "Tudo que importa numa tela só.", stats: ["R$713 Saldo", "22 Parcelas", "12 dias"] },
