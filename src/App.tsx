@@ -10,6 +10,7 @@ import Landing from "./pages/Landing.tsx";
 import Success from "./pages/Success.tsx";
 import Auth from "./pages/Auth.tsx";
 import ResetPassword from "./pages/ResetPassword.tsx";
+import Upgrade from "./pages/Upgrade.tsx";
 import GestaoFinanceira from "./pages/GestaoFinanceira.tsx";
 import FaturaCartao from "./pages/FaturaCartao.tsx";
 import Configuracoes from "./pages/Configuracoes.tsx";
