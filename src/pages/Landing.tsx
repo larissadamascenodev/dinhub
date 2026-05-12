@@ -220,9 +220,113 @@ export default function Landing() {
         </div>
       </section>
       
-      <footer className="py-12 border-t border-landing text-center text-sm opacity-60">
-        © 2026 DinHub — Todos os direitos reservados.
+      <section className="py-24 bg-landing overflow-hidden">
+        <div className="container mx-auto px-4">
+            <div className="text-center mb-16">
+                <div className="inline-flex items-center gap-2 bg-primary/10 border border-primary/20 px-3 py-1 rounded-full text-[10px] font-bold text-primary mb-4 uppercase tracking-wider">Simples assim</div>
+                <h2 className="text-4xl font-display font-bold">3 passos para assumir o controle.</h2>
+            </div>
+            <div className="grid md:grid-cols-3 gap-8 relative">
+                {[
+                    { n: "01", t: "Cria sua conta", d: "Menos de 2 minutos. Sem cartão nos 3 dias de trial." },
+                    { n: "02", t: "A IA analisa", d: "Bot Huby lê seus gastos e gera insights personalizados." },
+                    { n: "03", t: "Você decide", d: "Com visibilidade real, você toma decisões melhores." }
+                ].map((s, idx) => (
+                    <div key={s.n} className="p-8 rounded-[32px] bg-card-landing border border-landing relative group hover:border-green-landing transition-all">
+                        <div className="text-6xl font-display font-black text-primary/10 absolute top-4 right-8 group-hover:text-primary/20 transition-all">{s.n}</div>
+                        <h3 className="text-xl font-bold mb-4">{s.t}</h3>
+                        <p className="opacity-60 text-sm">{s.d}</p>
+                    </div>
+                ))}
+            </div>
+        </div>
+      </section>
+
+      <section id="depoimentos" className="py-24 bg-card-landing">
+        <div className="container mx-auto px-4">
+            <div className="text-center mb-16">
+                <div className="inline-flex items-center gap-2 bg-primary/10 border border-primary/20 px-3 py-1 rounded-full text-[10px] font-bold text-primary mb-4 uppercase tracking-wider">Quem já assumiu o controle</div>
+                <h2 className="text-4xl font-display font-bold">Resultados reais. Pessoas reais.</h2>
+            </div>
+            <div className="grid md:grid-cols-3 gap-8">
+                {[
+                    { n: "Rafael M.", j: "Designer 26 anos", t: "Em 3 semanas o Huby me mostrou que eu gastava R$400/mês em coisas que nem lembrava.", r: "R$400 economizados/mês" },
+                    { n: "Larissa T.", j: "Analista 24 anos", t: "Finalmente entendi pra onde meu salário ia.", r: "Controle total em 1 semana", featured: true },
+                    { n: "Bruno K.", j: "Freelancer 29 anos", t: "Hoje tenho 4 meses guardados pela primeira vez na vida.", r: "4 meses de reserva criados" }
+                ].map(d => (
+                    <div key={d.n} className={`p-8 rounded-[32px] bg-landing border ${d.featured ? 'border-green-landing shadow-2xl shadow-primary/5' : 'border-landing'} space-y-4`}>
+                        <div className="flex gap-1 text-primary">
+                            {Array(5).fill(0).map((_, i) => <Check key={i} className="w-4 h-4" />)}
+                        </div>
+                        <p className="italic opacity-80 leading-relaxed">"{d.t}"</p>
+                        <div className="pt-4 border-t border-landing flex items-center justify-between">
+                            <div>
+                                <p className="font-bold text-sm">{d.n}</p>
+                                <p className="text-[10px] opacity-50">{d.j}</p>
+                            </div>
+                            <div className="bg-primary/10 text-primary text-[10px] font-bold px-3 py-1 rounded-full">
+                                {d.r}
+                            </div>
+                        </div>
+                    </div>
+                ))}
+            </div>
+        </div>
+      </section>
+
+      <section id="faq" className="py-24 bg-landing">
+        <div className="container mx-auto px-4 max-w-3xl">
+            <div className="text-center mb-16">
+                <h2 className="text-4xl font-display font-bold">Perguntas frequentes</h2>
+            </div>
+            <Accordion type="single" collapsible className="space-y-4">
+                {[
+                    { q: "Preciso de cartão para o trial?", a: "Não! Você pode testar todas as funcionalidades por 3 dias sem cadastrar nenhum cartão de crédito." },
+                    { q: "O que acontece depois dos 3 dias?", a: "Sua conta ficará em modo de visualização. Para continuar usando a IA e registrando novas transações, você precisará escolher um plano." },
+                    { q: "O Bot Huby realmente funciona?", a: "Sim! Ele utiliza modelos avançados de IA para analisar seus gastos reais e te dar conselhos que fazem sentido para o seu momento." },
+                    { q: "O DinHub acessa minha conta bancária?", a: "Não. Por segurança, você registra seus gastos via texto, áudio ou foto, e a IA organiza tudo." },
+                    { q: "Posso cancelar quando quiser?", a: "Sim, o cancelamento é instantâneo e pode ser feito diretamente na sua área de configurações." }
+                ].map((f, i) => (
+                    <AccordionItem key={i} value={`item-${i}`} className="border border-landing bg-card-landing rounded-2xl px-6">
+                        <AccordionTrigger className="hover:no-underline font-bold text-left">{f.q}</AccordionTrigger>
+                        <AccordionContent className="opacity-70 leading-relaxed">{f.a}</AccordionContent>
+                    </AccordionItem>
+                ))}
+            </Accordion>
+        </div>
+      </section>
+
+      <section className="py-24 landing-grid relative overflow-hidden">
+        <div className="container mx-auto px-4 text-center">
+            <h2 className="text-5xl md:text-7xl font-display font-extrabold mb-12 leading-tight">
+                O futuro da sua vida financeira <span className="text-primary text-glow">começa aqui.</span>
+            </h2>
+            <Button size="lg" className="h-16 px-12 text-xl rounded-full bg-primary hover:bg-primary/90 text-black font-bold glow-button mb-12" onClick={() => navigate("/auth")}>
+                Assumir o controle agora →
+            </Button>
+            <div className="flex flex-wrap justify-center gap-6 opacity-60 text-xs font-bold">
+                {["✓ 3 dias grátis", "✓ Sem cartão", "✓ Cancele quando quiser", "✓ Garantia 7 dias", "✓ Suporte em português"].map(t => (
+                    <span key={t}>{t}</span>
+                ))}
+            </div>
+        </div>
+      </section>
+
+      <footer className="py-12 border-t border-landing bg-card-landing">
+        <div className="container mx-auto px-4 flex flex-col md:flex-row items-center justify-between gap-8">
+            <div className="flex items-center gap-2">
+                <span className="text-2xl">🐷</span>
+                <span className="font-display font-bold text-xl tracking-tight">Din<span className="text-primary">Hub</span></span>
+            </div>
+            <div className="flex gap-8 text-xs font-medium opacity-60">
+                <a href="/termos-de-uso" className="hover:text-primary transition-colors">Termos</a>
+                <a href="/politica-privacidade" className="hover:text-primary transition-colors">Privacidade</a>
+                <a href="/suporte" className="hover:text-primary transition-colors">Suporte</a>
+            </div>
+            <p className="text-[10px] opacity-40">© 2026 DinHub — Todos os direitos reservados.</p>
+        </div>
       </footer>
     </div>
   );
 }
+
