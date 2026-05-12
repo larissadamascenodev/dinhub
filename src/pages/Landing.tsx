@@ -2,7 +2,7 @@ import { useState } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import { Button } from "@/components/ui/button";
 import { Accordion, AccordionContent, AccordionItem, AccordionTrigger } from "@/components/ui/accordion";
-import { ArrowRight, Check, Zap, Bot, ShieldCheck, Play, Lock, ChevronDown } from "lucide-react";
+import { ArrowRight, Check, Zap, Bot, ShieldCheck, Play, Lock, ChevronDown, Smartphone } from "lucide-react";
 import { useNavigate } from "react-router-dom";
 import { useAuth } from "@/contexts/AuthContext";
 import { createStripeCheckout } from "@/services/stripe";
