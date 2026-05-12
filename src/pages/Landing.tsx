@@ -2,7 +2,7 @@ import { useState } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import { Button } from "@/components/ui/button";
 import { Accordion, AccordionContent, AccordionItem, AccordionTrigger } from "@/components/ui/accordion";
-import { ArrowRight, Check, Zap, Smartphone, Bot, TrendingUp, BarChart, CreditCard, ShieldCheck, Play, Lock } from "lucide-react";
+import { ArrowRight, Check, Zap, Bot, ShieldCheck, Play, Lock, ChevronDown } from "lucide-react";
 import { useNavigate } from "react-router-dom";
 import { useAuth } from "@/contexts/AuthContext";
 import { createStripeCheckout } from "@/services/stripe";
@@ -33,7 +33,7 @@ export default function Landing() {
         userEmail: user.email || "",
         userName: user.user_metadata?.display_name || "",
         successUrl: `${window.location.origin}/obrigado`,
-        cancelUrl: window.location.origin,
+        cancelUrl: window.location.href,
       });
     } catch (err) {
       toast.error("Erro ao iniciar checkout. Tente novamente.");
@@ -138,16 +138,84 @@ export default function Landing() {
 
       <section id="preços" className="py-24">
         <div className="container mx-auto px-4 text-center">
-           <h2 className="text-4xl font-bold mb-8">Um plano. Tudo incluído.</h2>
-           <div className="flex justify-center gap-4 mb-12">
-               <button onClick={() => setBillingCycle('monthly')} className={`px-4 py-2 rounded-full ${billingCycle === 'monthly' ? 'bg-primary text-black' : 'opacity-50'}`}>Mensal</button>
-               <button onClick={() => setBillingCycle('annual')} className={`px-4 py-2 rounded-full ${billingCycle === 'annual' ? 'bg-primary text-black' : 'opacity-50'}`}>Anual</button>
+           <div className="inline-flex items-center gap-2 bg-primary/10 border border-primary/20 px-3 py-1 rounded-full text-[10px] font-bold text-primary mb-4 uppercase tracking-wider">Sem enrolação</div>
+           <h2 className="text-4xl md:text-5xl font-display font-bold mb-8">Um plano. Tudo incluído.</h2>
+           
+           <div className="flex items-center justify-center gap-4 mb-12">
+               <span className={`text-sm font-medium ${billingCycle === 'monthly' ? 'text-foreground' : 'text-muted-foreground'}`}>Mensal</span>
+               <button 
+                onClick={() => setBillingCycle(billingCycle === 'monthly' ? 'annual' : 'monthly')}
+                className="w-14 h-7 rounded-full bg-card-landing border border-landing relative p-1 transition-all"
+               >
+                 <motion.div 
+                    animate={{ x: billingCycle === 'annual' ? 28 : 0 }}
+                    className="w-5 h-5 rounded-full bg-primary shadow-lg"
+                 />
+               </button>
+               <span className={`text-sm font-medium ${billingCycle === 'annual' ? 'text-foreground' : 'text-muted-foreground'}`}>Anual</span>
            </div>
-           <div className="max-w-md mx-auto bg-card-landing p-8 rounded-3xl border border-green-landing relative">
-             <div className="absolute -top-4 left-1/2 -translate-x-1/2 bg-primary text-black text-xs font-bold px-4 py-1 rounded-full">ACESSO COMPLETO</div>
-             <h3 className="text-2xl font-bold mb-4">DinHub Pro</h3>
-             <div className="text-5xl font-bold mb-6">{billingCycle === 'annual' ? 'R$12,42' : 'R$19,90'}<span className="text-sm font-normal opacity-60">/mês</span></div>
-             <Button className="w-full h-12 bg-primary text-black font-bold mb-6" onClick={() => navigate("/auth")}>Começar meus 3 dias grátis →</Button>
+
+           {billingCycle === 'annual' && (
+             <motion.div initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }} className="mb-8 text-primary font-bold text-sm">
+                🎉 Você economiza R$88 por ano no plano anual
+             </motion.div>
+           )}
+
+           <div className="max-w-md mx-auto bg-card-landing p-8 rounded-[32px] border border-green-landing relative shadow-2xl shadow-primary/5">
+             <div className="absolute -top-4 left-1/2 -translate-x-1/2 bg-primary text-black text-[10px] font-bold px-4 py-1.5 rounded-full">ACESSO COMPLETO</div>
+             <h3 className="text-2xl font-display font-bold mb-4">DinHub Pro</h3>
+             <div className="flex items-baseline justify-center gap-1 mb-2">
+                <span className="text-5xl font-bold">{billingCycle === 'annual' ? 'R$12,42' : 'R$19,90'}</span>
+                <span className="text-sm opacity-60">/mês</span>
+             </div>
+             {billingCycle === 'annual' && <p className="text-xs opacity-50 mb-6">Cobrado R$149/ano</p>}
+             
+             <div className="bg-primary/10 border border-primary/20 rounded-full py-2 px-4 mb-8 text-[11px] font-bold text-primary">
+                🎁 3 dias grátis para testar — sem cartão de crédito
+             </div>
+
+             <div className="space-y-4 text-left mb-8">
+                {[
+                    "Bot Huby ilimitado — IA que conversa com você",
+                    "Radar Financeiro com alertas automáticos",
+                    "Score de saúde financeira em tempo real",
+                    "Projeções inteligentes para 12 meses",
+                    "Control completo de parcelamentos",
+                    "Balanço mensal com previsão de meses futuros",
+                    "Registre via texto, áudio ou foto",
+                    "Relatórios financeiros em PDF",
+                    "Suporte prioritário em português"
+                ].map(item => (
+                    <div key={item} className="flex items-center gap-3 text-sm">
+                        <div className="w-5 h-5 rounded-full bg-primary/20 flex items-center justify-center shrink-0">
+                            <Check className="w-3 h-3 text-primary" />
+                        </div>
+                        <span className="opacity-80">{item}</span>
+                    </div>
+                ))}
+             </div>
+
+             <Button 
+                disabled={loadingCheckout}
+                className="w-full h-14 bg-primary hover:bg-primary/90 text-black font-bold text-lg rounded-2xl mb-6 shadow-lg shadow-primary/20" 
+                onClick={handleStartTrial}
+             >
+              {loadingCheckout ? "Processando..." : "Começar meus 3 dias grátis →"}
+             </Button>
+
+             <div className="space-y-4">
+                <div className="flex items-center justify-center gap-2 text-[10px] opacity-60">
+                    <ShieldCheck className="w-4 h-4 text-primary" />
+                    🛡️ Garantia de 7 dias após assinar — reembolso 100%
+                </div>
+                <div className="pt-4 border-t border-landing flex items-center justify-center gap-4 opacity-50 grayscale hover:grayscale-0 transition-all">
+                    <div className="flex items-center gap-1.5">
+                        <Lock className="w-3 h-3" />
+                        <span className="text-[10px] font-bold">Stripe Secured</span>
+                    </div>
+                    <span className="text-[10px]">SSL · No Card Data · PCI DSS</span>
+                </div>
+             </div>
            </div>
         </div>
       </section>
