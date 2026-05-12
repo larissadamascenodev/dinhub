@@ -74,7 +74,7 @@ ${catSummary}
 Gere insights financeiros usando a ferramenta fornecida.`;
 
     const requestBody = JSON.stringify({
-      model: "google/gemini-2.5-flash-lite",
+      model: "google/gemini-1.5-flash",
       messages: [
         { role: "system", content: systemPrompt },
         { role: "user", content: userPrompt },
