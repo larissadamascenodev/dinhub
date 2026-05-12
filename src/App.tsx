@@ -78,6 +78,7 @@ const App = () => (
             <Route path="/" element={<PublicRoute><Landing /></PublicRoute>} />
             <Route path="/auth" element={<Auth />} />
             <Route path="/obrigado" element={<Success />} />
+            <Route path="/upgrade" element={<Upgrade />} />
             <Route path="/reset-password" element={<ResetPassword />} />
             <Route path="/termos-de-uso" element={<TermosDeUso />} />
             <Route path="/politica-privacidade" element={<PoliticaPrivacidade />} />
