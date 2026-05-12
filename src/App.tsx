@@ -37,16 +37,28 @@ import NotFound from "./pages/NotFound.tsx";
 
 const queryClient = new QueryClient();
 
+import { useSubscription } from "@/hooks/useSubscription";
+
 const ProtectedRoute = ({ children }: { children: React.ReactNode }) => {
-  const { user, loading } = useAuth();
-  if (loading) {
+  const { user, loading: authLoading } = useAuth();
+  const { isSubscribed, loading: subLoading, status } = useSubscription();
+
+  if (authLoading || subLoading) {
     return (
       <div className="dark min-h-screen bg-background flex items-center justify-center">
         <div className="animate-pulse text-primary text-lg">Carregando...</div>
       </div>
     );
   }
-  return user ? <>{children}</> : <Navigate to="/auth" replace />;
+
+  if (!user) return <Navigate to="/auth" replace />;
+
+  // If not subscribed and not trialing, redirect to upgrade page unless already there
+  if (!isSubscribed && window.location.pathname !== "/upgrade") {
+     return <Navigate to="/upgrade" replace />;
+  }
+
+  return <>{children}</>;
 };
 
 const PublicRoute = ({ children }: { children: React.ReactNode }) => {
