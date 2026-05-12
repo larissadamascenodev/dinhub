@@ -62,12 +62,14 @@ const App = () => (
       <BrowserRouter>
         <AuthProvider>
           <Routes>
+            <Route path="/" element={<PublicRoute><Landing /></PublicRoute>} />
             <Route path="/auth" element={<Auth />} />
+            <Route path="/obrigado" element={<Success />} />
             <Route path="/reset-password" element={<ResetPassword />} />
             <Route path="/termos-de-uso" element={<TermosDeUso />} />
             <Route path="/politica-privacidade" element={<PoliticaPrivacidade />} />
             <Route element={<ProtectedRoute><DashboardLayout /></ProtectedRoute>}>
-              <Route path="/" element={<Index />} />
+              <Route path="/dashboard" element={<Index />} />
               <Route path="/transacoes" element={<Transacoes />} />
               <Route path="/detalhe/:tipo" element={<ReceitasDespesasDetalhe />} />
               <Route path="/gestao" element={<GestaoFinanceira />} />
