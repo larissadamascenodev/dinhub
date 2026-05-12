@@ -2,8 +2,11 @@ import { useState } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import { Button } from "@/components/ui/button";
 import { Accordion, AccordionContent, AccordionItem, AccordionTrigger } from "@/components/ui/accordion";
-import { ArrowRight, Check, Zap, Smartphone, Bot, TrendingUp, BarChart, CreditCard, ShieldCheck, Play } from "lucide-react";
+import { ArrowRight, Check, Zap, Smartphone, Bot, TrendingUp, BarChart, CreditCard, ShieldCheck, Play, Lock } from "lucide-react";
 import { useNavigate } from "react-router-dom";
+import { useAuth } from "@/contexts/AuthContext";
+import { createStripeCheckout } from "@/services/stripe";
+import { toast } from "sonner";
 
 export default function Landing() {
   const navigate = useNavigate();
