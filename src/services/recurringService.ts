@@ -108,7 +108,7 @@ export async function getRecurringForMonth(month: number, year: number) {
 
   return uniqueFixaTxs.filter((t) => {
     if (excludedIds.has(t.id)) return false;
-    const origDate = new Date(t.date);
+    const origDate = new Date(t.date + "T12:00:00");
     if (origDate.getMonth() === month && origDate.getFullYear() === year) return false;
     return true;
   });
@@ -182,7 +182,7 @@ export async function getRecurringTransactionsForMonth(
   const materializedRecurring = (recurringTxs as MonthlyRecurringTransaction[])
     .map((tx) => ({
       ...tx,
-      date: `${year}-${String(month + 1).padStart(2, "0")}-${String(new Date(tx.date).getDate()).padStart(2, "0")}`,
+      date: `${year}-${String(month + 1).padStart(2, "0")}-${String(new Date(tx.date + "T12:00:00").getDate()).padStart(2, "0")}`,
       status: "pendente",
       _isRecurringMaterialized: true,
     }))

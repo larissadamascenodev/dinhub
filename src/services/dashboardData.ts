@@ -251,7 +251,7 @@ export async function buildDashboardData(
     isTransaction: false,
   }));
 
-  const allEvents = [...events, ...pendingAsEvents, ...faturaPendingEvents].sort((a, b) => parseInt(a.date) - parseInt(b.date));
+  const allEvents = [...events, ...pendingAsEvents, ...faturaPendingEvents].sort((a, b) => (a.rawDate || "").localeCompare(b.rawDate || ""));
 
   // Build category breakdown from ALL expense transactions in this month
   // (including credit card purchases by their purchase date)
