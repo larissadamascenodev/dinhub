@@ -9,6 +9,10 @@ const stripe = new Stripe(Deno.env.get("STRIPE_SECRET_KEY") ?? "", {
 
 const cryptoProvider = Stripe.createSubtleCryptoProvider();
 
+function getPlan(priceId: string): "annual" | "monthly" {
+  return priceId === Deno.env.get("STRIPE_PRICE_ANNUAL") ? "annual" : "monthly";
+}
+
 serve(async (req) => {
   const signature = req.headers.get("stripe-signature");
   if (!signature) {
@@ -16,7 +20,7 @@ serve(async (req) => {
   }
 
   const body = await req.text();
-  let event;
+  let event: Stripe.Event;
 
   try {
     event = await stripe.webhooks.constructEventAsync(
@@ -27,6 +31,7 @@ serve(async (req) => {
       cryptoProvider
     );
   } catch (err) {
+    console.error("Webhook signature verification failed:", err.message);
     return new Response(`Webhook Error: ${err.message}`, { status: 400 });
   }
 
@@ -39,7 +44,7 @@ serve(async (req) => {
 
   switch (event.type) {
     case "checkout.session.completed": {
-      const session = event.data.object;
+      const session = event.data.object as Stripe.Checkout.Session;
       const customerId = session.customer as string;
       const userId = session.client_reference_id;
       const subscriptionId = session.subscription as string;
@@ -51,35 +56,40 @@ serve(async (req) => {
 
       const subscription = await stripe.subscriptions.retrieve(subscriptionId);
       const priceId = subscription.items.data[0].price.id;
-      const plan = priceId === Deno.env.get("STRIPE_PRICE_ANNUAL") ? "annual" : "monthly";
 
       const { error } = await supabaseAdmin
         .from("subscriptions")
-        .upsert({
-          user_id: userId,
-          stripe_customer_id: customerId,
-          stripe_subscription_id: subscriptionId,
-          plan: plan,
-          status: subscription.status,
-          trial_end: subscription.trial_end ? new Date(subscription.trial_end * 1000).toISOString() : null,
-          current_period_end: new Date(subscription.current_period_end * 1000).toISOString(),
-        });
+        .upsert(
+          {
+            user_id: userId,
+            stripe_customer_id: customerId,
+            stripe_subscription_id: subscriptionId,
+            plan: getPlan(priceId),
+            status: subscription.status,
+            trial_end: subscription.trial_end
+              ? new Date(subscription.trial_end * 1000).toISOString()
+              : null,
+            current_period_end: new Date(subscription.current_period_end * 1000).toISOString(),
+          },
+          { onConflict: "user_id" }
+        );
 
-      if (error) console.error("Error updating subscription:", error);
+      if (error) console.error("Error upserting subscription:", error);
       break;
     }
 
     case "customer.subscription.updated": {
-      const subscription = event.data.object;
+      const subscription = event.data.object as Stripe.Subscription;
       const priceId = subscription.items.data[0].price.id;
-      const plan = priceId === Deno.env.get("STRIPE_PRICE_ANNUAL") ? "annual" : "monthly";
 
       const { error } = await supabaseAdmin
         .from("subscriptions")
         .update({
           status: subscription.status,
-          plan: plan,
-          trial_end: subscription.trial_end ? new Date(subscription.trial_end * 1000).toISOString() : null,
+          plan: getPlan(priceId),
+          trial_end: subscription.trial_end
+            ? new Date(subscription.trial_end * 1000).toISOString()
+            : null,
           current_period_end: new Date(subscription.current_period_end * 1000).toISOString(),
           updated_at: new Date().toISOString(),
         })
@@ -90,7 +100,7 @@ serve(async (req) => {
     }
 
     case "customer.subscription.deleted": {
-      const subscription = event.data.object;
+      const subscription = event.data.object as Stripe.Subscription;
       const { error } = await supabaseAdmin
         .from("subscriptions")
         .update({
@@ -103,8 +113,27 @@ serve(async (req) => {
       break;
     }
 
+    case "invoice.payment_succeeded": {
+      // Renews the period end when a recurring payment succeeds
+      const invoice = event.data.object as Stripe.Invoice;
+      if (invoice.subscription) {
+        const subscription = await stripe.subscriptions.retrieve(invoice.subscription as string);
+        const { error } = await supabaseAdmin
+          .from("subscriptions")
+          .update({
+            status: subscription.status,
+            current_period_end: new Date(subscription.current_period_end * 1000).toISOString(),
+            updated_at: new Date().toISOString(),
+          })
+          .eq("stripe_subscription_id", invoice.subscription as string);
+
+        if (error) console.error("Error renewing subscription period:", error);
+      }
+      break;
+    }
+
     case "invoice.payment_failed": {
-      const invoice = event.data.object;
+      const invoice = event.data.object as Stripe.Invoice;
       if (invoice.subscription) {
         const { error } = await supabaseAdmin
           .from("subscriptions")
@@ -120,17 +149,41 @@ serve(async (req) => {
     }
 
     case "charge.dispute.created": {
-      const dispute = event.data.object;
-      // Find subscription by customer or charge
-      // This is a bit simplified, ideally you look up the payment intent
+      const dispute = event.data.object as Stripe.Dispute;
+      // Look up the subscription by the charge's customer
+      const charge = await stripe.charges.retrieve(dispute.charge as string);
+      if (charge.customer) {
+        const { error } = await supabaseAdmin
+          .from("subscriptions")
+          .update({
+            status: "disputed",
+            updated_at: new Date().toISOString(),
+          })
+          .eq("stripe_customer_id", charge.customer as string);
+
+        if (error) console.error("Error marking disputed:", error);
+      }
       break;
     }
 
     case "charge.refunded": {
-      const charge = event.data.object;
-      // Find subscription by customer
+      const charge = event.data.object as Stripe.Charge;
+      if (charge.customer) {
+        const { error } = await supabaseAdmin
+          .from("subscriptions")
+          .update({
+            status: "refunded",
+            updated_at: new Date().toISOString(),
+          })
+          .eq("stripe_customer_id", charge.customer as string);
+
+        if (error) console.error("Error marking refunded:", error);
+      }
       break;
     }
+
+    default:
+      console.log(`Unhandled event type: ${event.type}`);
   }
 
   return new Response(JSON.stringify({ received: true }), {

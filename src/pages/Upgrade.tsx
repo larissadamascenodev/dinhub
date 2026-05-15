@@ -1,17 +1,39 @@
 import { motion } from "framer-motion";
 import { Button } from "@/components/ui/button";
-import { CreditCard, ShieldCheck, ArrowRight } from "lucide-react";
+import { CreditCard, ShieldCheck, ArrowRight, Check, Zap } from "lucide-react";
 import { useAuth } from "@/contexts/AuthContext";
 import { createStripeCheckout } from "@/services/stripe";
 import { useState } from "react";
 
+const PRICE_MONTHLY = import.meta.env.VITE_STRIPE_PRICE_MONTHLY as string;
+const PRICE_ANNUAL = import.meta.env.VITE_STRIPE_PRICE_ANNUAL as string;
+
+const FEATURES = [
+  "Dashboard completo com saldo em tempo real",
+  "Cartões de crédito e faturas",
+  "Metas financeiras com IA",
+  "Radar de padrões de gasto",
+  "Bot Huby — assistente financeiro IA",
+  "OCR de recibos e faturas",
+  "Desafios de economia",
+  "Projeções financeiras",
+];
+
 export default function Upgrade() {
   const { user } = useAuth();
-  const [loading, setLoading] = useState(false);
+  const [loading, setLoading] = useState<"monthly" | "annual" | null>(null);
+  const [plan, setPlan] = useState<"monthly" | "annual">("annual");
 
-  const handleUpgrade = async (priceId: string) => {
+  const handleUpgrade = async (selectedPlan: "monthly" | "annual") => {
     if (!user) return;
-    setLoading(true);
+    const priceId = selectedPlan === "annual" ? PRICE_ANNUAL : PRICE_MONTHLY;
+
+    if (!priceId || priceId.startsWith("price_SUBSTITUIR")) {
+      alert("Plano ainda não configurado. Configure VITE_STRIPE_PRICE_MONTHLY e VITE_STRIPE_PRICE_ANNUAL no .env");
+      return;
+    }
+
+    setLoading(selectedPlan);
     try {
       await createStripeCheckout({
         priceId,
@@ -19,39 +41,101 @@ export default function Upgrade() {
         userEmail: user.email || "",
         userName: user.user_metadata?.display_name || "",
         successUrl: `${window.location.origin}/obrigado`,
-        cancelUrl: window.location.href,
+        cancelUrl: `${window.location.origin}/upgrade`,
       });
     } finally {
-      setLoading(false);
+      setLoading(null);
     }
   };
 
   return (
     <div className="min-h-screen bg-landing flex items-center justify-center p-4">
-      <motion.div 
+      <motion.div
         initial={{ opacity: 0, y: 20 }}
         animate={{ opacity: 1, y: 0 }}
-        className="max-w-md w-full bg-card-landing p-8 rounded-3xl border border-green-landing text-center space-y-6"
+        className="max-w-lg w-full space-y-6"
       >
-        <div className="bg-primary/10 w-16 h-16 rounded-full flex items-center justify-center mx-auto">
-          <CreditCard className="w-8 h-8 text-primary" />
-        </div>
-        <h1 className="text-3xl font-display font-bold">Acesso Bloqueado</h1>
-        <p className="text-muted-foreground">
-          Sua assinatura expirou ou o pagamento falhou. Para continuar acessando o DinHub, reative seu plano.
-        </p>
-        
-        <div className="space-y-4 pt-4">
-          <Button 
-            disabled={loading}
-            onClick={() => handleUpgrade("price_annual")}
-            className="w-full h-12 bg-primary text-black font-bold text-lg rounded-xl"
-          >
-            Reativar Plano Pro <ArrowRight className="ml-2 w-5 h-5" />
-          </Button>
-          <div className="flex items-center justify-center gap-2 text-xs opacity-50">
-            <ShieldCheck className="w-4 h-4" /> Pagamento 100% seguro via Stripe
+        {/* Header */}
+        <div className="text-center space-y-2">
+          <div className="bg-primary/10 w-14 h-14 rounded-full flex items-center justify-center mx-auto">
+            <CreditCard className="w-7 h-7 text-primary" />
           </div>
+          <h1 className="text-3xl font-display font-bold">DinHub Pro</h1>
+          <p className="text-muted-foreground text-sm">
+            Controle total das suas finanças com IA. Experimente 3 dias grátis, cancele quando quiser.
+          </p>
+        </div>
+
+        {/* Plan toggle */}
+        <div className="bg-card-landing border border-green-landing rounded-2xl p-1 flex gap-1">
+          <button
+            onClick={() => setPlan("monthly")}
+            className={`flex-1 py-2 rounded-xl text-sm font-medium transition-all ${
+              plan === "monthly" ? "bg-primary text-black" : "text-muted-foreground hover:text-foreground"
+            }`}
+          >
+            Mensal
+          </button>
+          <button
+            onClick={() => setPlan("annual")}
+            className={`flex-1 py-2 rounded-xl text-sm font-medium transition-all flex items-center justify-center gap-1.5 ${
+              plan === "annual" ? "bg-primary text-black" : "text-muted-foreground hover:text-foreground"
+            }`}
+          >
+            Anual
+            <span className={`text-xs px-1.5 py-0.5 rounded-full font-bold ${
+              plan === "annual" ? "bg-black/20 text-black" : "bg-primary/20 text-primary"
+            }`}>
+              -40%
+            </span>
+          </button>
+        </div>
+
+        {/* Card */}
+        <div className="bg-card-landing border border-green-landing rounded-3xl p-6 space-y-5">
+          <div className="flex items-end gap-1">
+            <span className="text-4xl font-display font-bold">
+              {plan === "annual" ? "R$ 14,90" : "R$ 24,90"}
+            </span>
+            <span className="text-muted-foreground text-sm pb-1">/mês</span>
+            {plan === "annual" && (
+              <span className="text-xs text-muted-foreground pb-1 ml-1">(R$ 178,80/ano)</span>
+            )}
+          </div>
+
+          <div className="space-y-2.5">
+            {FEATURES.map((feat) => (
+              <div key={feat} className="flex items-center gap-2.5 text-sm">
+                <Check className="w-4 h-4 text-primary shrink-0" />
+                <span>{feat}</span>
+              </div>
+            ))}
+          </div>
+
+          <Button
+            onClick={() => handleUpgrade(plan)}
+            disabled={loading !== null}
+            className="w-full h-12 bg-primary text-black font-bold text-base rounded-xl"
+          >
+            {loading === plan ? (
+              "Redirecionando..."
+            ) : (
+              <>
+                <Zap className="mr-2 w-4 h-4" />
+                Começar 3 dias grátis
+                <ArrowRight className="ml-2 w-4 h-4" />
+              </>
+            )}
+          </Button>
+
+          <p className="text-xs text-center text-muted-foreground">
+            Sem cobrança nos primeiros 3 dias. Cancele a qualquer momento.
+          </p>
+        </div>
+
+        <div className="flex items-center justify-center gap-2 text-xs opacity-40">
+          <ShieldCheck className="w-3.5 h-3.5" />
+          Pagamento 100% seguro via Stripe
         </div>
       </motion.div>
     </div>
