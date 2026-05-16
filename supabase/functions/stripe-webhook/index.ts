@@ -1,4 +1,3 @@
-import { serve } from "https://deno.land/std@0.190.0/http/server.ts";
 import { createClient } from "https://esm.sh/@supabase/supabase-js@2.100.1";
 import Stripe from "https://esm.sh/stripe@14.25.0?target=deno";
 
@@ -13,7 +12,7 @@ function getPlan(priceId: string): "annual" | "monthly" {
   return priceId === Deno.env.get("STRIPE_PRICE_ANNUAL") ? "annual" : "monthly";
 }
 
-serve(async (req) => {
+Deno.serve(async (req) => {
   const signature = req.headers.get("stripe-signature");
   if (!signature) {
     return new Response("No signature", { status: 400 });

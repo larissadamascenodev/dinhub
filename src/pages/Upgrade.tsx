@@ -1,9 +1,12 @@
+import { useEffect } from "react";
 import { motion } from "framer-motion";
 import { Button } from "@/components/ui/button";
-import { CreditCard, ShieldCheck, ArrowRight, Check, Zap } from "lucide-react";
+import { CreditCard, ShieldCheck, ArrowRight, Check, Zap, Loader2 } from "lucide-react";
 import { useAuth } from "@/contexts/AuthContext";
+import { useSubscription } from "@/hooks/useSubscription";
 import { createStripeCheckout } from "@/services/stripe";
 import { useState } from "react";
+import { useNavigate } from "react-router-dom";
 
 const PRICE_MONTHLY = import.meta.env.VITE_STRIPE_PRICE_MONTHLY as string;
 const PRICE_ANNUAL = import.meta.env.VITE_STRIPE_PRICE_ANNUAL as string;
@@ -20,9 +23,18 @@ const FEATURES = [
 ];
 
 export default function Upgrade() {
+  const navigate = useNavigate();
   const { user } = useAuth();
+  const { isSubscribed, loading: subLoading } = useSubscription();
   const [loading, setLoading] = useState<"monthly" | "annual" | null>(null);
   const [plan, setPlan] = useState<"monthly" | "annual">("annual");
+
+  // If the user already has an active subscription, send them to the app
+  useEffect(() => {
+    if (!subLoading && isSubscribed) {
+      navigate("/dashboard", { replace: true });
+    }
+  }, [isSubscribed, subLoading, navigate]);
 
   const handleUpgrade = async (selectedPlan: "monthly" | "annual") => {
     if (!user) return;
@@ -47,6 +59,15 @@ export default function Upgrade() {
       setLoading(null);
     }
   };
+
+  // Show spinner while checking subscription to avoid flashing the upgrade page
+  if (subLoading) {
+    return (
+      <div className="min-h-screen bg-landing flex items-center justify-center">
+        <Loader2 className="w-8 h-8 text-primary animate-spin" />
+      </div>
+    );
+  }
 
   return (
     <div className="min-h-screen bg-landing flex items-center justify-center p-4">

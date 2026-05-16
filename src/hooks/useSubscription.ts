@@ -24,14 +24,31 @@ export const useSubscription = () => {
 
   const fetchStatus = useCallback(async (): Promise<SubscriptionStatus> => {
     if (!user) return "inactive";
-    const { data, error } = await supabase
+
+    // Primary: dedicated subscriptions table
+    const { data: sub, error: subError } = await supabase
       .from("subscriptions")
       .select("status")
       .eq("user_id", user.id)
       .maybeSingle();
 
-    if (error) throw error;
-    return (data?.status as SubscriptionStatus) || "inactive";
+    if (!subError && sub?.status) {
+      return sub.status as SubscriptionStatus;
+    }
+
+    // Fallback: profiles.subscription_status (kept in sync by DB trigger)
+    const { data: profile } = await supabase
+      .from("profiles")
+      .select("subscription_status")
+      .eq("id", user.id)
+      .maybeSingle();
+
+    const ps = profile?.subscription_status as string | undefined;
+    if (ps && ps !== "inactive") {
+      return ps as SubscriptionStatus;
+    }
+
+    return "inactive";
   }, [user]);
 
   const checkSubscription = useCallback(async () => {
