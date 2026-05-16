@@ -1,7 +1,6 @@
 
 -- Generate missing installment children for Consórcio (id: 3a444df9-1dee-4ce1-af5d-d55f3df17c3c)
--- Parent: installment 1/12, date 2026-04-10, amount 293.57, category Investimento, payment_method conta
--- Need to create installments 2 through 12
+-- Skips gracefully if the user/transaction does not exist in this environment.
 
 DO $$
 DECLARE
@@ -11,8 +10,13 @@ DECLARE
   v_base_date date := '2026-04-10';
   i integer;
   v_target_date date;
+  v_user_exists boolean;
 BEGIN
-  -- Temporarily disable the generate_installments trigger to avoid recursion
+  SELECT EXISTS (SELECT 1 FROM auth.users WHERE id = v_user_id) INTO v_user_exists;
+  IF NOT v_user_exists THEN
+    RETURN;
+  END IF;
+
   ALTER TABLE public.transactions DISABLE TRIGGER trg_generate_installments;
   ALTER TABLE public.transactions DISABLE TRIGGER trg_handle_credit_card_invoice;
 
@@ -29,10 +33,9 @@ BEGIN
       'pendente', 'conta', 'parcelado', 12,
       i, NULL, v_account_id,
       v_parent_id
-    );
+    ) ON CONFLICT DO NOTHING;
   END LOOP;
 
-  -- Re-enable triggers
   ALTER TABLE public.transactions ENABLE TRIGGER trg_generate_installments;
   ALTER TABLE public.transactions ENABLE TRIGGER trg_handle_credit_card_invoice;
 END $$;
