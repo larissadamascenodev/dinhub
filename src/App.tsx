@@ -6,11 +6,8 @@ import { TooltipProvider } from "@/components/ui/tooltip";
 import { AuthProvider, useAuth } from "@/contexts/AuthContext";
 import DashboardLayout from "@/components/dashboard/DashboardLayout";
 import Index from "./pages/Index.tsx";
-import Landing from "./pages/Landing.tsx";
-import Success from "./pages/Success.tsx";
 import Auth from "./pages/Auth.tsx";
 import ResetPassword from "./pages/ResetPassword.tsx";
-import Upgrade from "./pages/Upgrade.tsx";
 import GestaoFinanceira from "./pages/GestaoFinanceira.tsx";
 import FaturaCartao from "./pages/FaturaCartao.tsx";
 import Configuracoes from "./pages/Configuracoes.tsx";
@@ -37,34 +34,16 @@ import NotFound from "./pages/NotFound.tsx";
 
 const queryClient = new QueryClient();
 
-import { useSubscription } from "@/hooks/useSubscription";
-
 const ProtectedRoute = ({ children }: { children: React.ReactNode }) => {
-  const { user, loading: authLoading } = useAuth();
-  const { isSubscribed, loading: subLoading, status } = useSubscription();
-
-  if (authLoading || subLoading) {
+  const { user, loading } = useAuth();
+  if (loading) {
     return (
       <div className="dark min-h-screen bg-background flex items-center justify-center">
         <div className="animate-pulse text-primary text-lg">Carregando...</div>
       </div>
     );
   }
-
-  if (!user) return <Navigate to="/auth" replace />;
-
-  // If not subscribed and not trialing, redirect to upgrade page unless already there
-  if (!isSubscribed && window.location.pathname !== "/upgrade") {
-     return <Navigate to="/upgrade" replace />;
-  }
-
-  return <>{children}</>;
-};
-
-const PublicRoute = ({ children }: { children: React.ReactNode }) => {
-  const { user, loading } = useAuth();
-  if (loading) return null;
-  return user ? <Navigate to="/dashboard" replace /> : <>{children}</>;
+  return user ? <>{children}</> : <Navigate to="/auth" replace />;
 };
 
 const App = () => (
@@ -75,15 +54,12 @@ const App = () => (
       <BrowserRouter>
         <AuthProvider>
           <Routes>
-            <Route path="/" element={<PublicRoute><Landing /></PublicRoute>} />
             <Route path="/auth" element={<Auth />} />
-            <Route path="/obrigado" element={<Success />} />
-            <Route path="/upgrade" element={<Upgrade />} />
             <Route path="/reset-password" element={<ResetPassword />} />
             <Route path="/termos-de-uso" element={<TermosDeUso />} />
             <Route path="/politica-privacidade" element={<PoliticaPrivacidade />} />
             <Route element={<ProtectedRoute><DashboardLayout /></ProtectedRoute>}>
-              <Route path="/dashboard" element={<Index />} />
+              <Route path="/" element={<Index />} />
               <Route path="/transacoes" element={<Transacoes />} />
               <Route path="/detalhe/:tipo" element={<ReceitasDespesasDetalhe />} />
               <Route path="/gestao" element={<GestaoFinanceira />} />

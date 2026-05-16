@@ -239,10 +239,65 @@ export async function deleteGoalDepositWithRefund(
  * Generate a cover image for a goal using AI based on goal name.
  */
 export async function generateGoalCoverImage(goalName: string): Promise<string | null> {
-  // Image generation requires an Edge Function — LOVABLE_API_KEY is server-side only.
-  // Calling the AI gateway directly from the browser would expose the key.
-  // This feature is disabled until a generate-goal-image Edge Function is created.
-  return null;
+  try {
+    const prompt = `Generate a beautiful, cinematic, slightly dark and moody photograph representing the concept of "${goalName}" as a financial savings goal. No text. Photorealistic, wide angle, atmospheric lighting.`;
+    
+    const response = await fetch("https://ai.gateway.lovable.dev/v1/chat/completions", {
+      method: "POST",
+      headers: {
+        Authorization: `Bearer ${import.meta.env.VITE_SUPABASE_PUBLISHABLE_KEY}`,
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify({
+        model: "google/gemini-3.1-flash-image-preview",
+        messages: [{ role: "user", content: prompt }],
+        modalities: ["image", "text"],
+      }),
+    });
+
+    if (!response.ok) {
+      console.error("Cover image generation failed:", response.status);
+      return null;
+    }
+
+    const data = await response.json();
+    console.log("Cover image response keys:", JSON.stringify(Object.keys(data)));
+    
+    // Try multiple response formats
+    const choice = data.choices?.[0]?.message;
+    
+    // Format 1: images array
+    const imageUrl = choice?.images?.[0]?.image_url?.url;
+    if (imageUrl) return imageUrl;
+    
+    // Format 2: content parts with image_url
+    if (Array.isArray(choice?.content)) {
+      for (const part of choice.content) {
+        if (part.type === "image_url" && part.image_url?.url) {
+          return part.image_url.url;
+        }
+        if (part.type === "image" && part.image_url?.url) {
+          return part.image_url.url;
+        }
+      }
+    }
+
+    // Format 3: inline_data in parts
+    if (Array.isArray(choice?.content)) {
+      for (const part of choice.content) {
+        if (part.inline_data?.data) {
+          const mime = part.inline_data.mime_type || "image/png";
+          return `data:${mime};base64,${part.inline_data.data}`;
+        }
+      }
+    }
+
+    console.error("No image found in response:", JSON.stringify(data).slice(0, 500));
+    return null;
+  } catch (err) {
+    console.error("Failed to generate cover image:", err);
+    return null;
+  }
 }
 
 export function computeGoalInsights(

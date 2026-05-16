@@ -20,7 +20,7 @@ export const useGreeting = () => {
 };
 
 const NAV_ITEMS = [
-  { label: "Dashboard", icon: LayoutDashboard, path: "/dashboard" },
+  { label: "Dashboard", icon: LayoutDashboard, path: "/" },
   { label: "Transações", icon: ArrowLeftRight, path: "/transacoes" },
   { label: "Nova transação", icon: Plus, path: "/nova-transacao", isAction: true },
   { label: "Bot Huby", icon: Bot, path: "/bot-finance" },

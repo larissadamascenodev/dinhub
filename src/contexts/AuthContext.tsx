@@ -83,72 +83,53 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
       }
     };
 
-    // 1. Restore existing session — fall back to refresh if expired
-    const restoreSession = async () => {
-      if (initializedRef.current) return;
-      
-      try {
-        let { data: { session } } = await supabase.auth.getSession();
-        if (!session) {
-          const { data: refreshed } = await supabase.auth.refreshSession();
-          session = refreshed.session ?? null;
-        }
-        
-        if (mounted && !initializedRef.current) {
-          initializedRef.current = true;
-          applySession(session);
-          setLoading(false);
-        }
-      } catch (err) {
-        console.error("Auth restoration error:", err);
-        if (mounted) {
-          initializedRef.current = true;
-          setLoading(false);
-        }
-      }
-    };
-
-    // 2. Set up listener FIRST
+    // 1. Set up listener FIRST (catches all subsequent events)
     const { data: { subscription } } = supabase.auth.onAuthStateChange(
       (event, session) => {
-        if (!mounted) return;
-
-        // If we get a session from the listener before getSession finishes, 
-        // mark as initialized so restoreSession doesn't override with potentially older data
-        if (session) initializedRef.current = true;
-
+        // Only clear session on explicit sign out
         if (event === "SIGNED_OUT") {
           if (manualSignOutRef.current) {
             applySession(null);
             manualSignOutRef.current = false;
             prefetchedUserRef.current = null;
           }
-          setLoading(false);
+          // Ignore SIGNED_OUT from token refresh failures — keep current session
+          if (initializedRef.current && mounted) setLoading(false);
           return;
         }
 
         applySession(session);
-        setLoading(false);
+
+        if (initializedRef.current && mounted) {
+          setLoading(false);
+        }
       }
     );
 
-    restoreSession();
+    // 2. Then restore existing session — fall back to refresh if expired
+    (async () => {
+      let { data: { session } } = await supabase.auth.getSession();
+      if (!session) {
+        // Try refresh in case access token expired but refresh token is still valid
+        const { data: refreshed } = await supabase.auth.refreshSession();
+        session = refreshed.session ?? null;
+      }
+      initializedRef.current = true;
+      applySession(session);
+      if (mounted) setLoading(false);
+    })();
 
     // 3. Re-validate session when user returns to the tab/browser
     const handleVisibilityChange = async () => {
       if (document.visibilityState !== "visible") return;
       let { data: { session: freshSession } } = await supabase.auth.getSession();
       if (!freshSession) {
-        const { data: refreshed, error } = await supabase.auth.refreshSession();
+        const { data: refreshed } = await supabase.auth.refreshSession();
         freshSession = refreshed.session ?? null;
-        
-        // If refresh failed and we are visible, the session is likely dead
-        if (!freshSession && error && mounted) {
-          applySession(null);
-        }
       }
       if (!mounted) return;
       if (freshSession) applySession(freshSession);
+      // Don't force logout if no session — keep current state
     };
 
     document.addEventListener("visibilitychange", handleVisibilityChange);

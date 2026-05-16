@@ -73,7 +73,7 @@ const TransacoesAnalytics = () => {
       const baseTxs = (txRes.data ?? []) as TransactionRow[];
       const materializedRecurring = recurringTxs.map((t: any) => ({
         ...t,
-        date: `${selectedYear}-${String(selectedMonth + 1).padStart(2, "0")}-${String(new Date(t.date + "T12:00:00").getDate()).padStart(2, "0")}`,
+        date: `${selectedYear}-${String(selectedMonth + 1).padStart(2, "0")}-${String(new Date(t.date).getDate()).padStart(2, "0")}`,
       })) as TransactionRow[];
 
       setTransactions([...baseTxs, ...materializedRecurring]);
