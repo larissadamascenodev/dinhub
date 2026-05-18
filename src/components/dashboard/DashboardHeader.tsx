@@ -20,7 +20,7 @@ export const useGreeting = () => {
 };
 
 const NAV_ITEMS = [
-  { label: "Dashboard", icon: LayoutDashboard, path: "/" },
+  { label: "Dashboard", icon: LayoutDashboard, path: "/dashboard" },
   { label: "Transações", icon: ArrowLeftRight, path: "/transacoes" },
   { label: "Nova transação", icon: Plus, path: "/nova-transacao", isAction: true },
   { label: "Bot Huby", icon: Bot, path: "/bot-finance" },
@@ -173,7 +173,7 @@ const DashboardHeader = memo(({ profile, streak = 0, streakDates = [] }: { profi
       {/* Desktop Top Bar */}
       <div className="hidden md:flex items-center justify-between sticky top-0 z-50 bg-background/70 backdrop-blur-2xl px-6 py-3 border-b border-border/10 -mx-4 md:-mx-6 mb-4">
         {/* Logo */}
-        <div className="flex items-center gap-2 flex-shrink-0 cursor-pointer" onClick={() => navigate("/")}>
+        <div className="flex items-center gap-2 flex-shrink-0 cursor-pointer" onClick={() => navigate("/dashboard")}>
           <PiggyBank className="w-8 h-8 text-primary" />
           <span className="font-display font-bold text-2xl">
             <span className="text-foreground">Din</span>

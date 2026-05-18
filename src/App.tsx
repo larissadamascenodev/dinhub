@@ -7,6 +7,7 @@ import { AuthProvider, useAuth } from "@/contexts/AuthContext";
 import DashboardLayout from "@/components/dashboard/DashboardLayout";
 import Index from "./pages/Index.tsx";
 import Auth from "./pages/Auth.tsx";
+import Landing from "./pages/Landing.tsx";
 import ResetPassword from "./pages/ResetPassword.tsx";
 import GestaoFinanceira from "./pages/GestaoFinanceira.tsx";
 import FaturaCartao from "./pages/FaturaCartao.tsx";
@@ -43,7 +44,7 @@ const ProtectedRoute = ({ children }: { children: React.ReactNode }) => {
       </div>
     );
   }
-  return user ? <>{children}</> : <Navigate to="/auth" replace />;
+  return user ? <>{children}</> : <Navigate to="/" replace />;
 };
 
 const App = () => (
@@ -54,12 +55,13 @@ const App = () => (
       <BrowserRouter>
         <AuthProvider>
           <Routes>
+            <Route path="/" element={<Landing />} />
             <Route path="/auth" element={<Auth />} />
             <Route path="/reset-password" element={<ResetPassword />} />
             <Route path="/termos-de-uso" element={<TermosDeUso />} />
             <Route path="/politica-privacidade" element={<PoliticaPrivacidade />} />
             <Route element={<ProtectedRoute><DashboardLayout /></ProtectedRoute>}>
-              <Route path="/" element={<Index />} />
+              <Route path="/dashboard" element={<Index />} />
               <Route path="/transacoes" element={<Transacoes />} />
               <Route path="/detalhe/:tipo" element={<ReceitasDespesasDetalhe />} />
               <Route path="/gestao" element={<GestaoFinanceira />} />
@@ -81,6 +83,7 @@ const App = () => (
               <Route path="/suporte" element={<Suporte />} />
               <Route path="/ajuda" element={<CentralAjuda />} />
             </Route>
+            {/* Redirect / to /dashboard if logged in, but Landing handles its own logic */}
             <Route path="*" element={<NotFound />} />
           </Routes>
         </AuthProvider>
