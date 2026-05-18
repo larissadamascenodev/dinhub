@@ -574,84 +574,8 @@ const Landing: React.FC = () => {
               ))}
             </div>
 
-            <div className="relative mt-12 flex items-center gap-6">
-              <div className="relative w-44 h-44 flex items-center justify-center" aria-label="Huby - assistente IA">
-                {/* Outer atmospheric halo — reage ao volume */}
-                <motion.div
-                  className="absolute inset-0 rounded-full bg-[#00ff7b] blur-3xl pointer-events-none"
-                  style={{
-                    opacity: isSpeaking ? 0.25 + audioLevel * 0.7 : 0.18,
-                    scale: 0.9 + audioLevel * 0.55,
-                  }}
-                  animate={!isSpeaking ? { opacity: [0.18, 0.35, 0.18], scale: [0.95, 1.08, 0.95] } : undefined}
-                  transition={!isSpeaking ? { duration: 4, repeat: Infinity, ease: "easeInOut" } : { type: "spring", stiffness: 220, damping: 18 }}
-                />
+            {/* Orb was here, moved to the right column */}
 
-                {/* Voice-reactive ring */}
-                <motion.div
-                  className="absolute rounded-full border-2 border-[#00ff7b] pointer-events-none"
-                  style={{
-                    width: 110 + audioLevel * 90,
-                    height: 110 + audioLevel * 90,
-                    opacity: isSpeaking ? 0.25 + audioLevel * 0.55 : 0,
-                    borderColor: `rgba(0,255,123,${0.3 + audioLevel * 0.6})`,
-                    boxShadow: `0 0 ${20 + audioLevel * 40}px rgba(0,255,123,${0.3 + audioLevel * 0.5})`,
-                  }}
-                  transition={{ type: "spring", stiffness: 260, damping: 20 }}
-                />
-
-                {/* Continuous expanding rings (always visible when speaking) */}
-                {isSpeaking && [0, 1, 2].map((i) => (
-                  <motion.div
-                    key={i}
-                    className="absolute rounded-full border border-[#00ff7b]/40 pointer-events-none"
-                    initial={{ width: 80, height: 80, opacity: 0.5 }}
-                    animate={{
-                      width: 180 + audioLevel * 60,
-                      height: 180 + audioLevel * 60,
-                      opacity: 0,
-                    }}
-                    transition={{ duration: 1.8, repeat: Infinity, delay: i * 0.6, ease: "easeOut" }}
-                  />
-                ))}
-
-                {/* Core orb — escala com o volume */}
-                <motion.div
-                  className="relative z-10 w-24 h-24 rounded-full"
-                  style={{
-                    background:
-                      "radial-gradient(circle at 35% 30%, #d4ffe6 0%, #4dffa3 25%, #00ff7b 55%, #008f45 90%)",
-                    boxShadow: `0 0 ${30 + audioLevel * 60}px rgba(0,255,123,${0.55 + audioLevel * 0.4}), 0 0 ${60 + audioLevel * 80}px rgba(0,255,123,${0.3 + audioLevel * 0.35}), inset 0 -10px 20px rgba(0,90,40,0.6), inset 0 8px 18px rgba(255,255,255,0.35)`,
-                    scale: 1 + audioLevel * 0.18,
-                  }}
-                  animate={!isSpeaking ? { scale: [1, 1.04, 1], y: [0, -4, 0] } : undefined}
-                  transition={!isSpeaking ? { duration: 4, repeat: Infinity, ease: "easeInOut" } : { type: "spring", stiffness: 320, damping: 16 }}
-                >
-                  <motion.div
-                    className="absolute top-3 left-4 w-6 h-4 rounded-full bg-white/70 blur-[2px]"
-                    style={{ opacity: 0.7 + audioLevel * 0.3 }}
-                  />
-                </motion.div>
-              </div>
-
-              {isSpeaking && (
-                <div className="flex gap-1 items-end h-10">
-                  {[0, 1, 2, 3, 4].map((i) => {
-                    // Cada barra tem um deslocamento de fase para parecer um equalizador real
-                    const phase = [1, 0.7, 1.1, 0.8, 0.95][i];
-                    const h = 6 + audioLevel * 36 * phase + Math.sin(Date.now() / (120 + i * 40)) * 2;
-                    return (
-                      <motion.div
-                        key={i}
-                        className="w-1.5 bg-[#00ff7b] rounded-full"
-                        style={{ height: Math.max(4, h) }}
-                        transition={{ type: "spring", stiffness: 400, damping: 18 }}
-                      />
-                    );
-                  })}
-                </div>
-              )}
-            </div>
 
           </div>
 
