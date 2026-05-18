@@ -337,34 +337,58 @@ const Landing = () => {
 
                 {/* Floating UI Elements */}
                 <motion.div 
-                  animate={{ y: [0, -20, 0], x: [0, 5, 0] }}
-                  transition={{ duration: 5, repeat: Infinity, ease: "easeInOut" }}
-                  className="absolute top-[10%] -right-16 md:-right-24 bg-black/90 backdrop-blur-3xl border border-white/10 p-8 rounded-[2.5rem] shadow-[0_30px_60px_rgba(0,0,0,0.5)] z-30 group/card hover:border-primary/60 transition-all duration-500"
+                  initial={{ opacity: 0, x: 50 }}
+                  animate={{ 
+                    opacity: 1, 
+                    x: 0,
+                    y: [0, -15, 0]
+                  }}
+                  transition={{ 
+                    opacity: { duration: 0.8, delay: 1 },
+                    x: { duration: 0.8, delay: 1 },
+                    y: { duration: 5, repeat: Infinity, ease: "easeInOut" }
+                  }}
+                  className="absolute top-[8%] -right-16 md:-right-24 bg-black/90 backdrop-blur-3xl border border-white/10 p-7 rounded-[2.5rem] shadow-[0_30px_60px_rgba(0,0,0,0.5)] z-30 group/card hover:border-primary/60 transition-all duration-500 min-w-[280px]"
                 >
-                  <div className="flex items-center gap-6">
-                    <div className="w-16 h-16 rounded-[1.25rem] bg-primary/20 flex items-center justify-center shadow-lg group-hover/card:scale-110 transition-transform duration-500">
-                      <TrendingUp className="w-8 h-8 text-primary" />
+                  <div className="absolute -top-3 -left-3 w-10 h-10 rounded-full bg-primary flex items-center justify-center text-black font-black text-sm shadow-[0_0_20px_rgba(0,230,118,0.4)] z-50">
+                    01
+                  </div>
+                  <div className="flex items-center gap-5">
+                    <div className="w-14 h-14 rounded-2xl bg-primary/15 flex items-center justify-center shadow-lg group-hover/card:scale-110 transition-transform duration-500">
+                      <TrendingUp className="w-7 h-7 text-primary" />
                     </div>
                     <div>
-                      <p className="text-[12px] font-black text-white/40 uppercase tracking-[0.25em] mb-2">Economia Prevista</p>
-                      <p className="text-3xl font-black text-white">+R$ 1.240,00</p>
+                      <p className="text-[10px] font-black text-white/40 uppercase tracking-[0.2em] mb-1">Economia Prevista</p>
+                      <p className="text-2xl font-black text-white">+R$ 1.240,00</p>
                     </div>
                   </div>
                 </motion.div>
 
                 <motion.div 
-                  animate={{ y: [0, 20, 0], x: [0, -5, 0] }}
-                  transition={{ duration: 6, repeat: Infinity, ease: "easeInOut", delay: 1 }}
-                  className="absolute bottom-[15%] -left-16 md:-left-24 bg-black/90 backdrop-blur-3xl border border-white/10 p-8 rounded-[2.5rem] shadow-[0_30px_60px_rgba(0,0,0,0.5)] z-30 group/card hover:border-primary/60 transition-all duration-500"
+                  initial={{ opacity: 0, x: -50 }}
+                  animate={{ 
+                    opacity: 1, 
+                    x: 0,
+                    y: [0, 15, 0]
+                  }}
+                  transition={{ 
+                    opacity: { duration: 0.8, delay: 1.2 },
+                    x: { duration: 0.8, delay: 1.2 },
+                    y: { duration: 6, repeat: Infinity, ease: "easeInOut", delay: 0.5 }
+                  }}
+                  className="absolute bottom-[20%] -left-16 md:-left-28 bg-black/90 backdrop-blur-3xl border border-white/10 p-7 rounded-[2.5rem] shadow-[0_30px_60px_rgba(0,0,0,0.5)] z-30 group/card hover:border-primary/60 transition-all duration-500 min-w-[260px]"
                 >
-                  <div className="flex items-center gap-6">
-                    <div className="relative w-20 h-20">
+                  <div className="absolute -top-3 -right-3 w-10 h-10 rounded-full bg-primary flex items-center justify-center text-black font-black text-sm shadow-[0_0_20px_rgba(0,230,118,0.4)] z-50">
+                    02
+                  </div>
+                  <div className="flex items-center gap-5">
+                    <div className="relative w-16 h-16">
                       <svg className="w-full h-full" viewBox="0 0 36 36">
                         <path className="text-white/5 stroke-current" strokeWidth="3" fill="none" d="M18 2.0845 a 15.9155 15.9155 0 0 1 0 31.831 a 15.9155 15.9155 0 0 1 0 -31.831" />
                         <motion.path 
                           initial={{ strokeDasharray: "0, 100" }}
                           animate={{ strokeDasharray: "84, 100" }}
-                          transition={{ duration: 3, delay: 1.5, ease: "easeOut" }}
+                          transition={{ duration: 3, delay: 2, ease: "easeOut" }}
                           className="text-primary stroke-current" 
                           strokeWidth="3.5" 
                           strokeLinecap="round" 
@@ -373,31 +397,35 @@ const Landing = () => {
                         />
                       </svg>
                       <div className="absolute inset-0 flex items-center justify-center">
-                        <span className="text-xl font-black text-white">84</span>
+                        <span className="text-lg font-black text-white">84</span>
                       </div>
                     </div>
                     <div>
-                      <p className="text-[12px] font-black text-white/40 uppercase tracking-[0.25em] mb-2">Score Financeiro</p>
-                      <p className="text-2xl font-black text-primary italic">EXCELENTE</p>
+                      <p className="text-[10px] font-black text-white/40 uppercase tracking-[0.2em] mb-1">Score Financeiro</p>
+                      <p className="text-xl font-black text-primary italic">EXCELENTE</p>
                     </div>
                   </div>
                 </motion.div>
 
                 <motion.div 
-                  initial={{ opacity: 0, y: 30 }}
+                  initial={{ opacity: 0, y: 50 }}
                   animate={{ opacity: 1, y: 0 }}
-                  transition={{ duration: 1, delay: 2.5 }}
-                  className="absolute -bottom-10 right-12 bg-gradient-to-r from-primary via-primary/80 to-primary p-[1.5px] rounded-3xl shadow-[0_20px_50px_rgba(0,230,118,0.4)] z-50 hidden md:block"
+                  transition={{ duration: 1, delay: 1.5 }}
+                  className="absolute -bottom-6 -right-4 bg-gradient-to-r from-primary via-primary/80 to-primary p-[1px] rounded-[2rem] shadow-[0_20px_50px_rgba(0,230,118,0.4)] z-50 hidden md:block group/radar overflow-hidden"
                 >
-                  <div className="bg-black/95 backdrop-blur-3xl px-8 py-5 rounded-[calc(1.5rem-1.5px)] flex items-center gap-6">
-                    <div className="w-12 h-12 rounded-full bg-primary/20 flex items-center justify-center">
-                      <CheckCircle2 className="w-7 h-7 text-primary" />
+                  <div className="bg-black/95 backdrop-blur-3xl px-7 py-4 rounded-[calc(2rem-1px)] flex items-center gap-5 relative overflow-hidden">
+                    <div className="absolute top-0 left-0 w-full h-[1px] bg-primary/50 animate-scan z-10" />
+                    <div className="absolute -top-3 -left-3 w-10 h-10 rounded-full bg-primary flex items-center justify-center text-black font-black text-sm shadow-[0_0_20px_rgba(0,230,118,0.4)] z-50">
+                      03
+                    </div>
+                    <div className="w-11 h-11 rounded-full bg-primary/10 flex items-center justify-center">
+                      <Target className="w-6 h-6 text-primary animate-pulse" />
                     </div>
                     <div>
-                      <p className="text-[11px] font-black text-primary uppercase tracking-[0.3em] mb-1">Gasto Identificado</p>
-                      <p className="text-lg font-black text-white">Mercado: R$ 142,50</p>
+                      <p className="text-[9px] font-black text-primary uppercase tracking-[0.3em] mb-0.5">Radar Huby: Ativo</p>
+                      <p className="text-base font-black text-white">Mercado: R$ 142,50</p>
                     </div>
-                    <ArrowUpRight className="w-6 h-6 text-white/30 ml-4" />
+                    <ArrowUpRight className="w-5 h-5 text-white/20 ml-3" />
                   </div>
                 </motion.div>
               </motion.div>
