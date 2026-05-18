@@ -10,7 +10,7 @@ import { useAuth } from "@/contexts/AuthContext";
 import { useNavigate } from "react-router-dom";
 import { supabase } from "@/integrations/supabase/client";
 import heroWoman from "@/assets/hero-woman.jpeg";
-import hubyBot from "@/assets/huby-bot.jpeg";
+import hubyBot from "@/assets/huby-character.png";
 
 
 const NEON = "#00ff7b";
@@ -511,8 +511,34 @@ const Landing: React.FC = () => {
 
             <div className="relative mt-12 flex items-center gap-6">
               <div className="relative">
-                <div className={`absolute inset-0 bg-[#00ff7b]/20 blur-3xl rounded-full transition-opacity duration-500 ${isSpeaking ? "opacity-100 animate-pulse" : "opacity-0"}`} />
-                <img src={hubyBot} alt="Huby - assistente IA" className={`w-40 h-40 object-contain relative z-10 transition-transform duration-500 ${isSpeaking ? "scale-110" : "scale-100"}`} />
+                {/* Glow halo */}
+                <motion.div
+                  className="absolute inset-0 bg-[#00ff7b]/30 blur-3xl rounded-full"
+                  animate={isSpeaking ? { opacity: [0.5, 1, 0.5], scale: [1, 1.15, 1] } : { opacity: [0.25, 0.45, 0.25], scale: [0.95, 1.05, 0.95] }}
+                  transition={{ duration: isSpeaking ? 1.2 : 3.5, repeat: Infinity, ease: "easeInOut" }}
+                />
+                {/* Pulsing rings under Huby when speaking */}
+                {isSpeaking && [0, 1, 2].map((i) => (
+                  <motion.div
+                    key={i}
+                    className="absolute left-1/2 bottom-2 -translate-x-1/2 rounded-full border border-[#00ff7b]/40"
+                    initial={{ width: 40, height: 10, opacity: 0.7 }}
+                    animate={{ width: 180, height: 40, opacity: 0 }}
+                    transition={{ duration: 1.8, repeat: Infinity, delay: i * 0.6, ease: "easeOut" }}
+                  />
+                ))}
+                {/* Huby floating + breathing */}
+                <motion.img
+                  src={hubyBot}
+                  alt="Huby - assistente IA"
+                  className="w-44 h-44 object-contain relative z-10 drop-shadow-[0_0_30px_rgba(0,255,123,0.45)]"
+                  animate={
+                    isSpeaking
+                      ? { y: [0, -6, 0, -4, 0], scale: [1, 1.06, 1.02, 1.05, 1], rotate: [-1.5, 1.5, -1, 1, -1.5] }
+                      : { y: [0, -8, 0], rotate: [-1, 1, -1] }
+                  }
+                  transition={{ duration: isSpeaking ? 0.9 : 4, repeat: Infinity, ease: "easeInOut" }}
+                />
               </div>
               {isSpeaking && (
                 <div className="flex gap-1 items-end h-8">
