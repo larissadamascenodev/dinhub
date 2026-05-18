@@ -1,7 +1,7 @@
 import { serve } from "https://deno.land/std@0.168.0/http/server.ts";
 
 const ELEVENLABS_API_KEY = Deno.env.get("ELEVENLABS_API_KEY");
-const VOICE_ID = "JBFqnCBv73JpST9G8WfK"; // George - sophisticated British male (Jarvis-like)
+const VOICE_ID = "onwK4e9ZLuTAKqWW03F9"; // Daniel - British male, Jarvis-like
 
 const corsHeaders = {
   "Access-Control-Allow-Origin": "*",

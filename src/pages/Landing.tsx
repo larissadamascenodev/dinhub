@@ -59,6 +59,7 @@ const Landing: React.FC = () => {
   const navigate = useNavigate();
   const [selectedInsight, setSelectedInsight] = React.useState<number | null>(null);
   const [isSpeaking, setIsSpeaking] = React.useState(false);
+  const [orbStyle, setOrbStyle] = React.useState<"wireframe" | "rings" | "solid">("wireframe");
 
   const insights = [
     { 
@@ -626,9 +627,134 @@ const Landing: React.FC = () => {
             </div>
           </div>
 
-          <div className="relative min-h-[500px] flex items-center justify-center">
-            <div className="relative w-[340px] h-[340px] lg:w-[520px] lg:h-[520px]" aria-label="Huby - assistente IA">
-              <HubyWireframeSphere isSpeaking={isSpeaking} audioLevel={audioLevel} />
+          <div className="relative min-h-[560px] flex flex-col items-center justify-center gap-6">
+            {/* Style switcher */}
+            <div className="flex items-center gap-1 p-1 rounded-full border border-white/10 bg-white/[0.03] backdrop-blur-xl">
+              {([
+                { id: "wireframe", label: "Constelação" },
+                { id: "rings", label: "Anéis" },
+                { id: "solid", label: "Orb Sólido" },
+              ] as const).map((opt) => (
+                <button
+                  key={opt.id}
+                  onClick={() => setOrbStyle(opt.id)}
+                  className={`px-4 py-1.5 rounded-full text-[11px] font-black uppercase tracking-[0.15em] transition-all ${
+                    orbStyle === opt.id
+                      ? "bg-[#00ff7b] text-black shadow-[0_0_20px_rgba(0,255,123,0.5)]"
+                      : "text-white/50 hover:text-white"
+                  }`}
+                >
+                  {opt.label}
+                </button>
+              ))}
+            </div>
+
+            <div className="relative w-[340px] h-[340px] lg:w-[520px] lg:h-[520px] flex items-center justify-center" aria-label="Huby - assistente IA">
+              {/* WIREFRAME */}
+              {orbStyle === "wireframe" && (
+                <HubyWireframeSphere isSpeaking={isSpeaking} audioLevel={audioLevel} />
+              )}
+
+              {/* RINGS */}
+              {orbStyle === "rings" && (
+                <>
+                  <motion.div
+                    className="absolute inset-0 rounded-full bg-[#00ff7b] blur-[80px] pointer-events-none"
+                    style={{
+                      opacity: isSpeaking ? 0.25 + audioLevel * 0.6 : 0.18,
+                      scale: 0.7 + audioLevel * 0.4,
+                    }}
+                    animate={!isSpeaking ? { opacity: [0.15, 0.3, 0.15], scale: [0.7, 0.85, 0.7] } : undefined}
+                    transition={!isSpeaking ? { duration: 4, repeat: Infinity, ease: "easeInOut" } : { type: "spring", stiffness: 220, damping: 18 }}
+                  />
+                  {[0, 1, 2, 3].map((i) => (
+                    <motion.div
+                      key={i}
+                      className="absolute rounded-full border-2 border-[#00ff7b]/40 pointer-events-none"
+                      initial={{ width: 120, height: 120, opacity: 0.6 }}
+                      animate={{
+                        width: 380 + audioLevel * 120,
+                        height: 380 + audioLevel * 120,
+                        opacity: 0,
+                        rotate: [0, 360],
+                      }}
+                      transition={{
+                        width: { duration: 2.4, repeat: Infinity, delay: i * 0.6, ease: "easeOut" },
+                        height: { duration: 2.4, repeat: Infinity, delay: i * 0.6, ease: "easeOut" },
+                        opacity: { duration: 2.4, repeat: Infinity, delay: i * 0.6, ease: "easeOut" },
+                        rotate: { duration: 30, repeat: Infinity, ease: "linear" },
+                      }}
+                    />
+                  ))}
+                  {[200, 280, 360].map((sz, i) => (
+                    <motion.div
+                      key={`s-${i}`}
+                      className="absolute rounded-full border border-[#00ff7b]/30 pointer-events-none"
+                      style={{
+                        width: sz + audioLevel * 30,
+                        height: sz + audioLevel * 30,
+                        borderColor: `rgba(0,255,123,${0.2 + audioLevel * 0.5})`,
+                        boxShadow: `0 0 ${15 + audioLevel * 25}px rgba(0,255,123,${0.2 + audioLevel * 0.4})`,
+                      }}
+                      animate={{ rotate: i % 2 === 0 ? 360 : -360 }}
+                      transition={{ duration: 20 + i * 5, repeat: Infinity, ease: "linear" }}
+                    />
+                  ))}
+                  <motion.div
+                    className="relative z-10 w-20 h-20 rounded-full bg-[#00ff7b]"
+                    style={{
+                      boxShadow: `0 0 ${30 + audioLevel * 60}px rgba(0,255,123,${0.6 + audioLevel * 0.4})`,
+                      scale: 1 + audioLevel * 0.3,
+                    }}
+                    animate={!isSpeaking ? { scale: [1, 1.08, 1] } : undefined}
+                    transition={!isSpeaking ? { duration: 3, repeat: Infinity, ease: "easeInOut" } : { type: "spring", stiffness: 320, damping: 16 }}
+                  />
+                </>
+              )}
+
+              {/* SOLID ORB */}
+              {orbStyle === "solid" && (
+                <>
+                  <motion.div
+                    className="absolute inset-0 rounded-full bg-[#00ff7b] blur-[100px] pointer-events-none"
+                    style={{
+                      opacity: isSpeaking ? 0.3 + audioLevel * 0.6 : 0.2,
+                      scale: 0.9 + audioLevel * 0.4,
+                    }}
+                    animate={!isSpeaking ? { opacity: [0.18, 0.32, 0.18], scale: [0.9, 1.05, 0.9] } : undefined}
+                    transition={!isSpeaking ? { duration: 4, repeat: Infinity, ease: "easeInOut" } : { type: "spring", stiffness: 220, damping: 18 }}
+                  />
+                  {isSpeaking && [0, 1, 2].map((i) => (
+                    <motion.div
+                      key={i}
+                      className="absolute rounded-full border border-[#00ff7b]/40 pointer-events-none"
+                      initial={{ width: 180, height: 180, opacity: 0.5 }}
+                      animate={{
+                        width: 380 + audioLevel * 80,
+                        height: 380 + audioLevel * 80,
+                        opacity: 0,
+                      }}
+                      transition={{ duration: 1.8, repeat: Infinity, delay: i * 0.6, ease: "easeOut" }}
+                    />
+                  ))}
+                  <motion.div
+                    className="relative z-10 w-44 h-44 lg:w-56 lg:h-56 rounded-full"
+                    style={{
+                      background:
+                        "radial-gradient(circle at 35% 30%, #d4ffe6 0%, #4dffa3 25%, #00ff7b 55%, #008f45 90%)",
+                      boxShadow: `0 0 ${50 + audioLevel * 80}px rgba(0,255,123,${0.6 + audioLevel * 0.4}), 0 0 ${100 + audioLevel * 100}px rgba(0,255,123,${0.35 + audioLevel * 0.35}), inset 0 -18px 35px rgba(0,90,40,0.6), inset 0 12px 28px rgba(255,255,255,0.4)`,
+                      scale: 1 + audioLevel * 0.18,
+                    }}
+                    animate={!isSpeaking ? { scale: [1, 1.05, 1], y: [0, -6, 0] } : undefined}
+                    transition={!isSpeaking ? { duration: 4, repeat: Infinity, ease: "easeInOut" } : { type: "spring", stiffness: 320, damping: 16 }}
+                  >
+                    <motion.div
+                      className="absolute top-5 left-7 w-10 h-7 rounded-full bg-white/70 blur-[3px]"
+                      style={{ opacity: 0.7 + audioLevel * 0.3 }}
+                    />
+                  </motion.div>
+                </>
+              )}
 
               {isSpeaking && (
                 <div className="absolute -bottom-2 left-1/2 -translate-x-1/2 flex gap-1.5 items-end h-12">
@@ -647,6 +773,7 @@ const Landing: React.FC = () => {
               )}
             </div>
           </div>
+
         </div>
       </section>
 
