@@ -59,6 +59,7 @@ const Landing: React.FC = () => {
   const navigate = useNavigate();
   const [selectedInsight, setSelectedInsight] = React.useState<number | null>(null);
   const [isSpeaking, setIsSpeaking] = React.useState(false);
+  const [orbStyle, setOrbStyle] = React.useState<"wireframe" | "rings" | "solid">("wireframe");
 
   const insights = [
     { 
