@@ -574,10 +574,58 @@ const Landing: React.FC = () => {
               ))}
             </div>
 
-            {/* Orb was here, moved to the right column */}
+            <div className="mt-8">
+              {!selectedInsight ? (
+                <div className="p-10 rounded-3xl border border-white/[0.05] bg-white/[0.01] text-center space-y-4 opacity-40">
+                  <div className="w-16 h-16 rounded-full bg-white/5 border border-white/10 flex items-center justify-center mx-auto mb-4">
+                    <Brain size={28} className="text-white" />
+                  </div>
+                  <p className="text-xs font-bold tracking-widest uppercase">Selecione uma pergunta acima</p>
+                </div>
+              ) : (
+                <motion.div
+                  initial={{ opacity: 0, scale: 0.95, y: 20 }}
+                  animate={{ opacity: 1, scale: 1, y: 0 }}
+                  key={selectedInsight}
+                  className="w-full"
+                >
+                  <GlassCard className="p-8 relative overflow-hidden group">
+                    <div className="absolute top-0 right-0 p-6 opacity-10 group-hover:opacity-20 transition-opacity">
+                      {insights[selectedInsight].icon}
+                    </div>
+                    
+                    <div className="flex items-center gap-4 mb-6">
+                      <div className="w-12 h-12 rounded-2xl flex items-center justify-center shrink-0" style={{ background: `${insights[selectedInsight].c}1a`, color: insights[selectedInsight].c }}>
+                        {insights[selectedInsight].icon}
+                      </div>
+                      <div>
+                        <Pill tone="green">{insights[selectedInsight].tag}</Pill>
+                        <h3 className="text-lg font-black mt-1">Análise Huby</h3>
+                      </div>
+                    </div>
 
+                    <p className="text-base text-white/90 leading-relaxed">
+                      {insights[selectedInsight].t}
+                      <span className="text-[#00ff7b] font-black underline decoration-[#00ff7b]/30 underline-offset-4 mx-1">
+                        {insights[selectedInsight].b}
+                      </span>
+                      {insights[selectedInsight].t2}
+                    </p>
 
-          </div>
+                    <div className="mt-6 pt-6 border-t border-white/10">
+                      <div className="flex items-center gap-3 text-[#00ff7b]">
+                        <Sparkles size={16} />
+                        <span className="text-[10px] font-black uppercase tracking-widest">Insight Recomendado</span>
+                      </div>
+                      <p className="mt-2.5 text-xs text-white/50 leading-relaxed italic">
+                        "{insights[selectedInsight].voiceText}"
+                      </p>
+                    </div>
+                  </GlassCard>
+                </motion.div>
+              )}
+            </div>
+
 
           <div className="relative min-h-[400px] flex items-center justify-center">
             {!selectedInsight ? (
