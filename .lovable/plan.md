@@ -1,50 +1,34 @@
-## Problema
+I will transform the landing page into an elite, "Extraordinary" experience by implementing high-fidelity design patterns used by award-winning agencies (Awwwards/Apple style).
 
-Ao escanear comprovantes, a edge function `process-invoice` retorna erro 500:
+### Visual & Experience Enhancements
 
-```
-TypeError: userClient.auth.getClaims is not a function
-```
+1. **Global Grain & Texture**:
+    - Add a subtle, animated noise overlay across the entire application to provide a tactile, premium feel.
+    - Implement a custom cursor that reacts to interactive elements (magnification, color inversion).
 
-O método `auth.getClaims` não existe na versão do SDK Supabase usada na função. A autenticação do usuário falha antes mesmo da imagem ser processada, e o frontend mostra "Edge Function returned a non-2xx status code".
+2. **Advanced Typography & Layout**:
+    - Refine the hero section with an asymmetrical, editorial layout.
+    - Use "Sora" and "Inter" fonts with tighter tracking and deliberate leading.
+    - Implement a floating "Glassmorphic" navigation island.
 
-## Causa raiz
+3. **Motion & Interactivity**:
+    - **Parallax Hero**: The background elements and floating cards will respond to mouse movement.
+    - **Smooth Entrances**: Every element will use high-end cubic-bezier transitions for a fluid feel.
+    - **Micro-Interactions**: Enhanced hover states for cards and buttons with magnetic effects.
 
-Em `supabase/functions/process-invoice/index.ts` (linha 174) usamos:
+4. **Visual Depth**:
+    - Improve background image integration using advanced CSS masks and blend modes (difference, screen, luminosity).
+    - Add "Light Leaks" and subtle radial gradients for better depth perception.
 
-```ts
-const { data: claimsData, error: claimsError } = await userClient.auth.getClaims(...)
-```
+5. **Component Refinement**:
+    - Redesign the transaction cards into a "Bento" stack with clearer hierarchy.
+    - Add a "Trust Bar" or "Social Proof" section that feels integrated rather than tacked on.
 
-Esse método não está disponível. O padrão correto (e usado nas outras edge functions do projeto) é `auth.getUser()`.
+### Technical Details
 
-## Correção
+- **Framer Motion**: Extensive use for all layout transitions and mouse-responsive interactions.
+- **Tailwind CSS**: Leveraging arbitrary values for precise spacing and blur effects.
+- **SVG Filters**: For the grain/noise texture.
+- **React Hooks**: Using `useScroll` and `useSpring` for smooth parallax effects.
 
-Substituir o bloco de validação de auth (linhas 169–180) por:
-
-```ts
-const userClient = createClient(
-  Deno.env.get("SUPABASE_URL")!,
-  Deno.env.get("SUPABASE_ANON_KEY")!,
-  { global: { headers: { Authorization: authHeader } } }
-);
-const { data: userData, error: userError } = await userClient.auth.getUser();
-if (userError || !userData?.user) {
-  return new Response(JSON.stringify({ error: "Unauthorized" }), {
-    status: 401,
-    headers: { ...corsHeaders, "Content-Type": "application/json" },
-  });
-}
-```
-
-Se mais abaixo no arquivo o código referenciar `claimsData.claims.sub`, ajustar para `userData.user.id`.
-
-## Validação
-
-1. Edge function é re-deployada automaticamente.
-2. Verificar logs de `process-invoice` após novo upload — não deve aparecer mais o `TypeError`.
-3. Testar fluxo: subir foto de comprovante → modal de revisão deve abrir com dados extraídos.
-
-## Escopo
-
-Apenas a edge function `process-invoice`. Nenhuma alteração de UI ou de outras funções.
+I will start by updating the `Landing.tsx` file with these premium features.
