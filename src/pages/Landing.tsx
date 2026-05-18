@@ -205,7 +205,7 @@ const Landing = () => {
               }}
             >
               <img 
-                src="https://img-cdn.pixlr.com/image-generator/history/65bb50a2014452a713efc128/861faed1-0a3f-4e1d-98ef-3f783f0f3a44/medium.webp" 
+                src="https://images.unsplash.com/photo-1573163715152-498477dffa85?q=80&w=2069&auto=format&fit=crop" 
                 alt="Pessoa preocupada com finanças, integrada no cenário" 
                 className="w-full h-full object-cover grayscale opacity-30 mix-blend-screen"
               />
