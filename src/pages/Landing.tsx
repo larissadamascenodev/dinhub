@@ -564,10 +564,8 @@ const Landing: React.FC = () => {
                   <div className={`w-8 h-8 rounded-lg flex items-center justify-center shrink-0 ${
                     selectedInsight === insight.id ? "bg-[#00ff7b]/20 text-[#00ff7b]" : "bg-white/5 text-white/40"
                   }`}>
-                    {insight.id === 0 && <UtensilsCrossed size={14} />}
-                    {insight.id === 1 && <Bell size={14} />}
-                    {insight.id === 2 && <BarChart3 size={14} />}
-                    {insight.id === 3 && <Car size={14} />}
+                    {insight.icon}
+
                   </div>
                   {insight.question}
                 </button>
