@@ -205,9 +205,9 @@ const Landing = () => {
               }}
             >
               <img 
-                src="https://images.unsplash.com/photo-1573497019940-1c28c88b4f3e?auto=format&fit=crop&q=80&w=1000" 
-                alt="Pessoa real integrada no cenário" 
-                className="w-full h-full object-cover grayscale-[0.2] opacity-60"
+                src="https://images.unsplash.com/photo-1554224155-6726b3ff858f?auto=format&fit=crop&q=80&w=1200" 
+                alt="Pessoa preocupada com finanças, integrada no cenário" 
+                className="w-full h-full object-cover grayscale-[0.5] opacity-40 mix-blend-screen"
               />
               <div className="absolute inset-0 bg-gradient-to-t from-[#020202] via-transparent to-transparent opacity-90" />
               <div className="absolute inset-0 bg-gradient-to-l from-transparent via-[#020202]/40 to-[#020202]" />
