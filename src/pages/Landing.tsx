@@ -211,10 +211,10 @@ const Landing = () => {
               initial={{ opacity: 0 }}
               animate={{ opacity: 1 }}
               transition={{ duration: 1.5 }}
-              className="absolute right-[-10%] lg:right-[-15%] top-1/2 -translate-y-1/2 w-[140%] lg:w-[130%] h-[130%] pointer-events-none z-0 overflow-hidden"
+              className="absolute right-[-20%] md:right-[-10%] lg:right-[-15%] top-1/2 -translate-y-1/2 w-[160%] md:w-[140%] lg:w-[130%] h-[150%] md:h-[130%] pointer-events-none z-0 overflow-hidden"
               style={{
-                maskImage: 'linear-gradient(to left, black 40%, transparent 95%), linear-gradient(to bottom, transparent, black 20%, black 80%, transparent)',
-                WebkitMaskImage: 'linear-gradient(to left, black 40%, transparent 95%), linear-gradient(to bottom, transparent, black 20%, black 80%, transparent)'
+                maskImage: 'linear-gradient(to left, black 30%, transparent 90%), linear-gradient(to bottom, transparent, black 15%, black 85%, transparent)',
+                WebkitMaskImage: 'linear-gradient(to left, black 30%, transparent 90%), linear-gradient(to bottom, transparent, black 15%, black 85%, transparent)'
               }}
             >
               <img 
