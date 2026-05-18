@@ -28,6 +28,7 @@ export const AuthModal = ({ open, onOpenChange, defaultView = "login" }: AuthMod
   const [submitting, setSubmitting] = useState(false);
   const [acceptedTerms, setAcceptedTerms] = useState(false);
   const [legalModal, setLegalModal] = useState<"terms" | "privacy" | null>(null);
+  const navigate = useNavigate();
 
   // Sync isLogin with defaultView when modal opens
   React.useEffect(() => {
