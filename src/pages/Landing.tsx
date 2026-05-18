@@ -11,6 +11,7 @@ import { useNavigate } from "react-router-dom";
 import { supabase } from "@/integrations/supabase/client";
 import heroWoman from "@/assets/hero-woman.jpeg";
 import hubyBot from "@/assets/huby-character.png";
+import HubyWireframeSphere from "@/components/HubyWireframeSphere";
 
 
 const NEON = "#00ff7b";
@@ -626,75 +627,19 @@ const Landing: React.FC = () => {
           </div>
 
           <div className="relative min-h-[500px] flex items-center justify-center">
-            <div className="relative w-[300px] h-[300px] lg:w-[450px] lg:h-[450px] flex items-center justify-center" aria-label="Huby - assistente IA">
-              {/* Outer atmospheric halo — reage ao volume */}
-              <motion.div
-                className="absolute inset-0 rounded-full bg-[#00ff7b] blur-[80px] pointer-events-none"
-                style={{
-                  opacity: isSpeaking ? 0.25 + audioLevel * 0.7 : 0.18,
-                  scale: 1 + audioLevel * 0.55,
-                }}
-                animate={!isSpeaking ? { opacity: [0.15, 0.3, 0.15], scale: [0.9, 1.05, 0.9] } : undefined}
-                transition={!isSpeaking ? { duration: 4, repeat: Infinity, ease: "easeInOut" } : { type: "spring", stiffness: 220, damping: 18 }}
-              />
-
-              {/* Voice-reactive ring */}
-              <motion.div
-                className="absolute rounded-full border-2 border-[#00ff7b] pointer-events-none"
-                style={{
-                  width: 140 + audioLevel * 140,
-                  height: 140 + audioLevel * 140,
-                  opacity: isSpeaking ? 0.3 + audioLevel * 0.6 : 0,
-                  borderColor: `rgba(0,255,123,${0.4 + audioLevel * 0.6})`,
-                  boxShadow: `0 0 ${30 + audioLevel * 50}px rgba(0,255,123,${0.4 + audioLevel * 0.5})`,
-                }}
-                transition={{ type: "spring", stiffness: 260, damping: 20 }}
-              />
-
-              {/* Continuous expanding rings (always visible when speaking) */}
-              {isSpeaking && [0, 1, 2].map((i) => (
-                <motion.div
-                  key={i}
-                  className="absolute rounded-full border border-[#00ff7b]/40 pointer-events-none"
-                  initial={{ width: 100, height: 100, opacity: 0.5 }}
-                  animate={{
-                    width: 280 + audioLevel * 100,
-                    height: 280 + audioLevel * 100,
-                    opacity: 0,
-                  }}
-                  transition={{ duration: 1.8, repeat: Infinity, delay: i * 0.6, ease: "easeOut" }}
-                />
-              ))}
-
-              {/* Core orb — escala com o volume */}
-              <motion.div
-                className="relative z-10 w-32 h-32 lg:w-48 lg:h-48 rounded-full"
-                style={{
-                  background:
-                    "radial-gradient(circle at 35% 30%, #d4ffe6 0%, #4dffa3 25%, #00ff7b 55%, #008f45 90%)",
-                  boxShadow: `0 0 ${40 + audioLevel * 80}px rgba(0,255,123,${0.6 + audioLevel * 0.4}), 0 0 ${80 + audioLevel * 100}px rgba(0,255,123,${0.35 + audioLevel * 0.35}), inset 0 -15px 30px rgba(0,90,40,0.6), inset 0 10px 25px rgba(255,255,255,0.4)`,
-                  scale: 1 + audioLevel * 0.2,
-                }}
-                animate={!isSpeaking ? { scale: [1, 1.05, 1], y: [0, -6, 0] } : undefined}
-                transition={!isSpeaking ? { duration: 4, repeat: Infinity, ease: "easeInOut" } : { type: "spring", stiffness: 320, damping: 16 }}
-              >
-                <motion.div
-                  className="absolute top-4 left-6 w-8 h-6 rounded-full bg-white/70 blur-[3px]"
-                  style={{ opacity: 0.7 + audioLevel * 0.3 }}
-                />
-              </motion.div>
+            <div className="relative w-[340px] h-[340px] lg:w-[520px] lg:h-[520px]" aria-label="Huby - assistente IA">
+              <HubyWireframeSphere isSpeaking={isSpeaking} audioLevel={audioLevel} />
 
               {isSpeaking && (
-                <div className="absolute -bottom-12 flex gap-1.5 items-end h-12">
+                <div className="absolute -bottom-2 left-1/2 -translate-x-1/2 flex gap-1.5 items-end h-12">
                   {[0, 1, 2, 3, 4, 5, 6].map((i) => {
                     const phase = [1, 0.7, 1.2, 0.8, 1.1, 0.9, 1.05][i];
                     const h = 8 + audioLevel * 48 * phase + Math.sin(Date.now() / (100 + i * 30)) * 3;
                     return (
-                      <motion.div
+                      <div
                         key={i}
-                        className="w-2 bg-[#00ff7b] rounded-full"
+                        className="w-1.5 bg-[#00ff7b] rounded-full shadow-[0_0_10px_rgba(0,255,123,0.8)]"
                         style={{ height: Math.max(6, h) }}
-                        transition={{ type: "spring", stiffness: 400, damping: 18 }}
                       />
                     );
                   })}
