@@ -299,7 +299,4 @@ const Landing = () => {
   );
 };
 
-// Helper for Motion Values
-import { useMotionValue } from "framer-motion";
-
 export default Landing;
