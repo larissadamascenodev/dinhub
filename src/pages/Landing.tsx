@@ -106,22 +106,47 @@ const Landing: React.FC = () => {
     },
   ];
 
+  const [audio, setAudio] = React.useState<HTMLAudioElement | null>(null);
+
   const speakInsight = async (text: string) => {
+    // Stop any current audio
+    if (audio) {
+      audio.pause();
+      audio.currentTime = 0;
+    }
+    window.speechSynthesis.cancel();
+
     setIsSpeaking(true);
-    // Placeholder for actual TTS call
-    console.log("Speaking:", text);
-    
-    // We'll try to use the Edge Function later when the key is available
-    // For now, let's use the browser's native speech synthesis as a fallback
-    const utterance = new SpeechSynthesisUtterance(text);
-    utterance.lang = 'pt-BR';
-    utterance.onend = () => setIsSpeaking(false);
-    window.speechSynthesis.speak(utterance);
+
+    try {
+      const { data, error } = await supabase.functions.invoke("elevenlabs-tts", {
+        body: { text },
+      });
+
+      if (error || !data) throw new Error("TTS function failed");
+
+      // data should be a blob if the function returns ArrayBuffer
+      const audioUrl = URL.createObjectURL(data);
+      const newAudio = new Audio(audioUrl);
+      setAudio(newAudio);
+      newAudio.onended = () => setIsSpeaking(false);
+      newAudio.play();
+    } catch (e) {
+      console.error("TTS Error, falling back to browser speech:", e);
+      const utterance = new SpeechSynthesisUtterance(text);
+      utterance.lang = 'pt-BR';
+      utterance.onend = () => setIsSpeaking(false);
+      window.speechSynthesis.speak(utterance);
+    }
   };
 
   const handleInsightClick = (id: number) => {
     if (selectedInsight === id) {
       setSelectedInsight(null);
+      if (audio) {
+        audio.pause();
+        audio.currentTime = 0;
+      }
       window.speechSynthesis.cancel();
       setIsSpeaking(false);
       return;
@@ -129,6 +154,7 @@ const Landing: React.FC = () => {
     setSelectedInsight(id);
     speakInsight(insights[id].voiceText);
   };
+
 
 
   const openAuth = (v: "login" | "signup") => { setAuthView(v); setAuthOpen(true); };
