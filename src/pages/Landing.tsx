@@ -54,6 +54,80 @@ const Landing: React.FC = () => {
   const [authView, setAuthView] = React.useState<"login" | "signup">("signup");
   const { user } = useAuth();
   const navigate = useNavigate();
+  const [selectedInsight, setSelectedInsight] = React.useState<number | null>(null);
+  const [isSpeaking, setIsSpeaking] = React.useState(false);
+
+  const insights = [
+    { 
+      id: 0,
+      question: "Quanto gastei com delivery este mês?",
+      icon:<TrendingUp size={18}/>, 
+      c:"#00ff7b", 
+      t:"Você gastou ", 
+      b:"18% a mais com delivery", 
+      t2:" do que no mês passado. Isso representa R$ 842,90.", 
+      tag:"Alimentação",
+      voiceText: "Notei que seus gastos com delivery subiram 18% em comparação ao mês passado. Atualmente, você já destinou 842 reais para essa categoria. Talvez seja um bom momento para revisar esses pedidos."
+    },
+    { 
+      id: 1,
+      question: "Tenho assinaturas que não uso?",
+      icon:<Bell size={18}/>, 
+      c:"#f59e0b", 
+      t:"", 
+      b:"3 assinaturas somam R$ 79,90/mês", 
+      t2:" e quase não são usadas nos últimos 60 dias.", 
+      tag:"Assinaturas",
+      voiceText: "Identifiquei três assinaturas recorrentes que somam quase 80 reais por mês e que não registraram uso significativo nos últimos 60 dias. Cancelá-las pode gerar uma economia imediata."
+    },
+    { 
+      id: 2,
+      question: "Quanto posso economizar em 5 anos?",
+      icon:<BarChart3 size={18}/>, 
+      c:"#a78bfa", 
+      t:"Se investir R$ 300/mês, pode acumular ", 
+      b:"R$ 31.723,41 em 5 anos", 
+      t2:" considerando uma taxa conservadora.", 
+      tag:"Investimentos",
+      voiceText: "Se você começar a investir apenas 300 reais por mês hoje, em cinco anos você terá acumulado mais de 31 mil reais. O tempo é o seu maior aliado nos investimentos."
+    },
+    { 
+      id: 3,
+      question: "Qual gasto mais cresceu este mês?",
+      icon:<Car size={18}/>, 
+      c:"#3b82f6", 
+      t:"Seus gastos com ", 
+      b:"Uber aumentaram 38%", 
+      t2:" nas últimas duas semanas.", 
+      tag:"Transporte",
+      voiceText: "Seus gastos com transporte por aplicativo, especialmente o Uber, tiveram uma alta repentina de 38% nas últimas duas semanas. Verifique se houve alguma mudança na sua rotina que justifique isso."
+    },
+  ];
+
+  const speakInsight = async (text: string) => {
+    setIsSpeaking(true);
+    // Placeholder for actual TTS call
+    console.log("Speaking:", text);
+    
+    // We'll try to use the Edge Function later when the key is available
+    // For now, let's use the browser's native speech synthesis as a fallback
+    const utterance = new SpeechSynthesisUtterance(text);
+    utterance.lang = 'pt-BR';
+    utterance.onend = () => setIsSpeaking(false);
+    window.speechSynthesis.speak(utterance);
+  };
+
+  const handleInsightClick = (id: number) => {
+    if (selectedInsight === id) {
+      setSelectedInsight(null);
+      window.speechSynthesis.cancel();
+      setIsSpeaking(false);
+      return;
+    }
+    setSelectedInsight(id);
+    speakInsight(insights[id].voiceText);
+  };
+
 
   const openAuth = (v: "login" | "signup") => { setAuthView(v); setAuthOpen(true); };
   const goCta = () => user ? navigate("/dashboard") : openAuth("signup");
