@@ -107,14 +107,66 @@ const Landing: React.FC = () => {
   ];
 
   const [audio, setAudio] = React.useState<HTMLAudioElement | null>(null);
+  const [audioLevel, setAudioLevel] = React.useState(0);
+  const audioCtxRef = React.useRef<AudioContext | null>(null);
+  const rafRef = React.useRef<number | null>(null);
+  const sourceMapRef = React.useRef<WeakMap<HTMLAudioElement, MediaElementAudioSourceNode>>(new WeakMap());
+
+  const stopLevelLoop = React.useCallback(() => {
+    if (rafRef.current) cancelAnimationFrame(rafRef.current);
+    rafRef.current = null;
+    setAudioLevel(0);
+  }, []);
+
+  const startLevelLoop = React.useCallback((mediaEl: HTMLAudioElement) => {
+    try {
+      if (!audioCtxRef.current) {
+        const Ctx = (window.AudioContext || (window as any).webkitAudioContext);
+        audioCtxRef.current = new Ctx();
+      }
+      const ctx = audioCtxRef.current!;
+      if (ctx.state === "suspended") ctx.resume();
+
+      let source = sourceMapRef.current.get(mediaEl);
+      if (!source) {
+        source = ctx.createMediaElementSource(mediaEl);
+        sourceMapRef.current.set(mediaEl, source);
+      }
+      const analyser = ctx.createAnalyser();
+      analyser.fftSize = 512;
+      analyser.smoothingTimeConstant = 0.75;
+      source.disconnect();
+      source.connect(analyser);
+      analyser.connect(ctx.destination);
+
+      const data = new Uint8Array(analyser.fftSize);
+      let smoothed = 0;
+      const tick = () => {
+        analyser.getByteTimeDomainData(data);
+        let sumSq = 0;
+        for (let i = 0; i < data.length; i++) {
+          const v = (data[i] - 128) / 128;
+          sumSq += v * v;
+        }
+        const rms = Math.sqrt(sumSq / data.length);
+        const boosted = Math.min(1, rms * 2.6);
+        smoothed = smoothed * 0.6 + boosted * 0.4;
+        setAudioLevel(smoothed);
+        rafRef.current = requestAnimationFrame(tick);
+      };
+      tick();
+    } catch (e) {
+      console.warn("Audio analyser unavailable", e);
+    }
+  }, []);
 
   const speakInsight = async (text: string) => {
-    // Stop any current audio
     if (audio) {
       audio.pause();
       audio.currentTime = 0;
     }
     window.speechSynthesis.cancel();
+    stopLevelLoop();
 
     setIsSpeaking(true);
 
@@ -125,20 +177,33 @@ const Landing: React.FC = () => {
 
       if (error || !data) throw new Error("TTS function failed");
 
-      // data should be a blob if the function returns ArrayBuffer
       const audioUrl = URL.createObjectURL(data);
       const newAudio = new Audio(audioUrl);
+      newAudio.crossOrigin = "anonymous";
       setAudio(newAudio);
-      newAudio.onended = () => setIsSpeaking(false);
-      newAudio.play();
+      newAudio.onended = () => { setIsSpeaking(false); stopLevelLoop(); };
+      newAudio.onpause = () => stopLevelLoop();
+      await newAudio.play();
+      startLevelLoop(newAudio);
     } catch (e) {
       console.error("TTS Error, falling back to browser speech:", e);
       const utterance = new SpeechSynthesisUtterance(text);
       utterance.lang = 'pt-BR';
-      utterance.onend = () => setIsSpeaking(false);
+      utterance.onend = () => { setIsSpeaking(false); stopLevelLoop(); };
+      const startedAt = performance.now();
+      const fakeTick = () => {
+        const t = (performance.now() - startedAt) / 1000;
+        const v = 0.35 + 0.4 * Math.abs(Math.sin(t * 6)) + 0.15 * Math.sin(t * 11);
+        setAudioLevel(Math.max(0, Math.min(1, v)));
+        rafRef.current = requestAnimationFrame(fakeTick);
+      };
+      fakeTick();
       window.speechSynthesis.speak(utterance);
     }
   };
+
+  React.useEffect(() => () => { stopLevelLoop(); audioCtxRef.current?.close(); }, [stopLevelLoop]);
+
 
   const handleInsightClick = (id: number) => {
     if (selectedInsight === id) {
