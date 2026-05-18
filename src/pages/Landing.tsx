@@ -3,7 +3,6 @@ import { motion, AnimatePresence } from "framer-motion";
 import { 
   PiggyBank, 
   ArrowRight, 
-  Wallet, 
   Shield, 
   Zap, 
   Menu,
@@ -11,14 +10,15 @@ import {
   Star,
   CheckCircle2,
   TrendingUp,
-  Target
+  Target,
+  ArrowUpRight
 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { AuthModal } from "@/components/auth/AuthModal";
 import { useAuth } from "@/contexts/AuthContext";
 import { useNavigate } from "react-router-dom";
 
-// Huby Mascot Component
+// Huby Mascot Component Refined
 const HubyMascot = ({ className = "" }: { className?: string }) => {
   return (
     <motion.div 
@@ -26,21 +26,15 @@ const HubyMascot = ({ className = "" }: { className?: string }) => {
       transition={{ duration: 6, repeat: Infinity, ease: "easeInOut" }}
       className={`relative w-48 h-48 md:w-64 md:h-64 ${className}`}
     >
-      {/* Intense Glow effect */}
       <div className="absolute inset-0 bg-primary/25 blur-[80px] rounded-full animate-pulse" />
       
-      {/* 3D Mascot CSS Construction */}
       <div className="relative w-full h-full perspective-1000">
-        {/* Main Body - Sleeker 3D Sphere */}
         <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[90%] h-[90%] rounded-[45%] bg-gradient-to-br from-[#1a1a1a] via-[#050505] to-[#000] border-2 border-primary/50 shadow-[0_30px_60px_rgba(0,0,0,0.6),inset_0_2px_10px_rgba(0,230,118,0.2)] overflow-hidden">
-          {/* Circuitry Pattern Overlay */}
           <div className="absolute inset-0 opacity-30 bg-[radial-gradient(circle_at_center,var(--primary)_0%,transparent_70%)]" />
           <div className="absolute inset-0 bg-[linear-gradient(rgba(0,230,118,0.1)_1px,transparent_1px),linear-gradient(90deg,rgba(0,230,118,0.1)_1px,transparent_1px)] bg-[size:20px_20px] opacity-10" />
           
-          {/* Face Area - Glassy Visor */}
           <div className="absolute top-[32%] left-1/2 -translate-x-1/2 w-[75%] h-[40%] rounded-[2rem] bg-black/70 backdrop-blur-xl border border-primary/40 flex flex-col items-center justify-center shadow-[inset_0_0_20px_rgba(0,230,118,0.1)]">
             <div className="flex items-center gap-8 mb-2">
-              {/* Eyes with scanning line */}
               <div className="relative">
                 <motion.div 
                   animate={{ scaleY: [1, 0.1, 1], opacity: [1, 0.5, 1] }}
@@ -57,19 +51,15 @@ const HubyMascot = ({ className = "" }: { className?: string }) => {
               </div>
             </div>
             
-            {/* Pulsing Status Light */}
             <motion.div 
               animate={{ opacity: [0.3, 1, 0.3] }}
               transition={{ duration: 2, repeat: Infinity }}
               className="w-12 h-1 rounded-full bg-primary/60 shadow-[0_0_10px_var(--primary)]"
             />
           </div>
-          
-          {/* Reflection highlight */}
           <div className="absolute top-4 left-8 w-1/2 h-1/4 bg-white/5 rounded-full blur-xl rotate-[-35deg]" />
         </div>
         
-        {/* Floating Mechanical Ears/Modules */}
         <motion.div 
           animate={{ rotate: [12, 18, 12], y: [0, 8, 0] }}
           transition={{ duration: 4, repeat: Infinity, ease: "easeInOut" }}
@@ -145,7 +135,6 @@ const Landing = () => {
             </span>
           </div>
 
-          {/* Desktop Links */}
           <div className="hidden lg:flex items-center gap-10">
             {["Funcionalidades", "Como funciona", "Preços"].map((item) => (
               <a 
@@ -184,13 +173,11 @@ const Landing = () => {
             )}
           </div>
 
-          {/* Mobile Menu Toggle */}
           <button className="lg:hidden p-2 text-foreground" onClick={() => setMobileMenuOpen(!mobileMenuOpen)}>
               {mobileMenuOpen ? <X /> : <Menu />}
           </button>
         </div>
 
-        {/* Mobile Menu Overlay */}
         <AnimatePresence>
           {mobileMenuOpen && (
               <motion.div 
@@ -227,201 +214,229 @@ const Landing = () => {
       </nav>
 
       {/* Hero Section */}
-      <section className="relative min-h-[90vh] flex items-center pt-24 pb-12 overflow-hidden">
-        {/* Ambient Gradients */}
-        <div className="absolute top-[-10%] left-[-5%] w-[500px] h-[500px] bg-primary/10 blur-[150px] rounded-full pointer-events-none opacity-40" />
-        <div className="absolute bottom-[-10%] right-[-5%] w-[600px] h-[600px] bg-primary/10 blur-[180px] rounded-full pointer-events-none opacity-30" />
+      <section className="relative min-h-screen flex items-center pt-32 pb-20 overflow-hidden">
+        {/* Background Effects */}
+        <div className="absolute top-[-20%] left-[-10%] w-[800px] h-[800px] bg-primary/10 blur-[200px] rounded-full pointer-events-none opacity-40 animate-pulse" />
+        <div className="absolute bottom-[-20%] right-[-10%] w-[900px] h-[900px] bg-primary/10 blur-[250px] rounded-full pointer-events-none opacity-30 animate-pulse" />
         
-        {/* Grid Background */}
-        <div className="absolute inset-0 bg-[linear-gradient(rgba(255,255,255,0.02)_1px,transparent_1px),linear-gradient(90deg,rgba(255,255,255,0.02)_1px,transparent_1px)] bg-[size:60px_60px] pointer-events-none [mask-image:radial-gradient(ellipse_at_center,black_30%,transparent_80%)]" />
+        <div className="absolute inset-0 bg-[linear-gradient(rgba(255,255,255,0.02)_1px,transparent_1px),linear-gradient(90deg,rgba(255,255,255,0.02)_1px,transparent_1px)] bg-[size:50px_50px] pointer-events-none [mask-image:radial-gradient(ellipse_at_center,black_40%,transparent_90%)]" />
 
         <div className="container mx-auto px-6 relative z-10">
-          <div className="grid lg:grid-cols-2 gap-16 items-center">
+          <div className="grid lg:grid-cols-2 gap-20 items-center">
             
             {/* Left Content */}
-            <div className="space-y-10 max-w-xl mx-auto lg:mx-0 text-center lg:text-left">
-              {/* Social Proof Badge */}
+            <div className="space-y-12 max-w-3xl mx-auto lg:mx-0 text-center lg:text-left">
               <motion.div 
                 initial={{ opacity: 0, y: 20 }}
                 animate={{ opacity: 1, y: 0 }}
-                transition={{ duration: 0.6 }}
-                className="inline-flex items-center gap-3 px-5 py-2.5 bg-white/[0.03] border border-white/10 rounded-full backdrop-blur-xl shadow-xl"
+                transition={{ duration: 0.8 }}
+                className="inline-flex items-center gap-4 px-6 py-3 bg-white/[0.03] border border-white/10 rounded-2xl backdrop-blur-2xl shadow-2xl"
               >
-                <div className="flex -space-x-2.5">
+                <div className="flex -space-x-3">
                   {AVATAR_URLS.map((url, i) => (
-                    <img key={i} src={url} alt="" className="w-7 h-7 rounded-full border-2 border-[#0a0a0a] object-cover" />
+                    <img key={i} src={url} alt="" className="w-8 h-8 rounded-full border-2 border-[#0a0a0a] object-cover ring-2 ring-primary/20" />
                   ))}
                 </div>
-                <div className="flex items-center gap-1.5">
+                <div className="flex items-center gap-2 border-l border-white/10 pl-4">
                   <div className="flex">
-                    {[1,2,3,4,5].map(s => <Star key={s} className="w-3 h-3 text-primary fill-primary" />)}
+                    {[1,2,3,4,5].map(s => <Star key={s} className="w-4 h-4 text-primary fill-primary" />)}
                   </div>
-                  <span className="text-[11px] font-bold text-white/80 tracking-wide uppercase">
-                    +4.200 USUÁRIOS ATIVOS
+                  <span className="text-[12px] font-black text-white/90 tracking-tight uppercase">
+                    +4.200 <span className="text-white/50 font-medium tracking-normal">USUÁRIOS ATIVOS</span>
                   </span>
                 </div>
               </motion.div>
 
-              {/* Headline */}
-              <div className="space-y-4">
+              <div className="space-y-6">
                 <motion.h1 
-                  initial={{ opacity: 0, y: 20 }}
+                  initial={{ opacity: 0, y: 30 }}
                   animate={{ opacity: 1, y: 0 }}
-                  transition={{ duration: 0.6, delay: 0.1 }}
-                  className="font-display text-5xl md:text-7xl font-extrabold tracking-tighter leading-[0.95] text-white"
+                  transition={{ duration: 0.8, delay: 0.2 }}
+                  className="font-display text-6xl md:text-[90px] font-black tracking-[-0.06em] leading-[0.85] text-white"
                 >
-                  Controle total da sua vida <br />
-                  <span className="text-primary italic">financeira.</span>
+                  Controle financeiro <br />
+                  <span className="text-primary italic">de um jeito que você nunca viu.</span>
                 </motion.h1>
                 
                 <motion.p 
-                  initial={{ opacity: 0, y: 20 }}
+                  initial={{ opacity: 0, y: 30 }}
                   animate={{ opacity: 1, y: 0 }}
-                  transition={{ duration: 0.6, delay: 0.2 }}
-                  className="text-muted-foreground text-lg md:text-xl font-medium leading-relaxed max-w-lg mx-auto lg:mx-0"
+                  transition={{ duration: 0.8, delay: 0.3 }}
+                  className="text-muted-foreground text-xl md:text-2xl font-medium leading-relaxed max-w-2xl mx-auto lg:mx-0"
                 >
-                  Organize suas contas, planeje seu futuro e tome decisões inteligentes com o assistente que entende seus hábitos.
+                  A primeira inteligência artificial que organiza suas contas, prevê o futuro do seu dinheiro e te ajuda a economizar de verdade.
                 </motion.p>
               </div>
 
-              {/* CTA & Features */}
               <motion.div 
-                initial={{ opacity: 0, y: 20 }}
+                initial={{ opacity: 0, y: 30 }}
                 animate={{ opacity: 1, y: 0 }}
-                transition={{ duration: 0.6, delay: 0.3 }}
-                className="space-y-8"
+                transition={{ duration: 0.8, delay: 0.4 }}
+                className="space-y-12"
               >
-                <div className="flex flex-col sm:flex-row items-center gap-5 justify-center lg:justify-start">
+                <div className="flex flex-col sm:flex-row items-center gap-8 justify-center lg:justify-start">
                   <Button 
                     onClick={() => user ? navigate("/dashboard") : openAuth("signup")}
-                    className="w-full sm:w-auto h-16 px-10 text-base font-black rounded-2xl bg-primary text-black hover:scale-105 transition-all duration-300 shadow-[0_15px_40px_rgba(0,230,118,0.3)] group"
+                    className="w-full sm:w-auto h-20 px-14 text-xl font-black rounded-[2.5rem] bg-primary text-black hover:scale-105 transition-all duration-500 shadow-[0_25px_60px_rgba(0,230,118,0.5)] group relative overflow-hidden"
                   >
-                    COMEÇAR AGORA GRÁTIS
-                    <ArrowRight className="ml-3 w-5 h-5 group-hover:translate-x-1 transition-transform" />
+                    <span className="relative z-10 flex items-center">
+                      COMEÇAR AGORA GRÁTIS
+                      <ArrowRight className="ml-5 w-7 h-7 group-hover:translate-x-3 transition-transform duration-500" />
+                    </span>
                   </Button>
                   
-                  <button className="flex items-center gap-2.5 text-white/60 hover:text-white font-bold text-sm transition-colors group">
-                    <div className="w-10 h-10 rounded-full bg-white/5 border border-white/10 flex items-center justify-center group-hover:bg-white/10">
-                      <Zap className="w-4 h-4 text-primary" />
+                  <button className="flex items-center gap-5 text-white/80 hover:text-white font-black text-lg transition-all duration-300 group">
+                    <div className="w-16 h-16 rounded-[1.5rem] bg-white/5 border border-white/10 flex items-center justify-center group-hover:bg-white/10 group-hover:border-primary/50 transition-all duration-500 shadow-2xl">
+                      <Zap className="w-7 h-7 text-primary animate-pulse" />
                     </div>
                     VER DEMONSTRAÇÃO
                   </button>
                 </div>
 
-                {/* Features Row */}
-                <div className="flex flex-wrap items-center justify-center lg:justify-start gap-x-6 gap-y-3">
+                <div className="flex flex-wrap items-center justify-center lg:justify-start gap-x-12 gap-y-6">
                   {[
                     { icon: CheckCircle2, text: "Sem anuidade" },
                     { icon: Shield, text: "100% Seguro" },
                     { icon: Zap, text: "Instantâneo" }
                   ].map((f, i) => (
-                    <div key={i} className="flex items-center gap-2">
-                      <f.icon className="w-4 h-4 text-primary" />
-                      <span className="text-[11px] font-bold text-white/40 tracking-widest uppercase">{f.text}</span>
+                    <div key={i} className="flex items-center gap-4">
+                      <div className="w-8 h-8 rounded-full bg-primary/10 flex items-center justify-center">
+                        <f.icon className="w-4 h-4 text-primary" />
+                      </div>
+                      <span className="text-[13px] font-bold text-white/30 tracking-[0.2em] uppercase">{f.text}</span>
                     </div>
                   ))}
                 </div>
               </motion.div>
             </div>
 
-            {/* Right Content - Person & Mascot & Floating UI */}
-            <div className="relative flex justify-center lg:justify-end">
+            {/* Right Content - Visual */}
+            <div className="relative flex justify-center lg:justify-end py-20 lg:py-0">
               <motion.div 
-                initial={{ opacity: 0, scale: 0.9, x: 50 }}
-                animate={{ opacity: 1, scale: 1, x: 0 }}
-                transition={{ duration: 0.8, delay: 0.2 }}
-                className="relative w-full max-w-[500px] aspect-[4/5] rounded-[3rem] overflow-hidden group shadow-2xl border border-white/5"
+                initial={{ opacity: 0, scale: 0.85, rotateY: -10 }}
+                animate={{ opacity: 1, scale: 1, rotateY: 0 }}
+                transition={{ duration: 1.5, ease: [0.16, 1, 0.3, 1] }}
+                className="relative w-full max-w-[580px] aspect-[4/5] rounded-[5rem] group shadow-[0_0_120px_rgba(0,0,0,0.6)] border border-white/5 bg-[#050505] overflow-visible"
               >
-                {/* Main AI Person Image */}
-                <img 
-                  src="https://images.unsplash.com/photo-1573496359142-b8d87734a5a2?w=1000&auto=format&fit=crop&q=80" 
-                  alt="Person checking finance" 
-                  className="w-full h-full object-cover grayscale-[0.2] group-hover:grayscale-0 transition-all duration-700 group-hover:scale-105"
-                />
+                <div className="absolute inset-0 rounded-[5rem] overflow-hidden">
+                  <img 
+                    src="https://images.unsplash.com/photo-1573496359142-b8d87734a5a2?w=1200&auto=format&fit=crop&q=95" 
+                    alt="DinHub AI Person" 
+                    className="w-full h-full object-cover grayscale-[0.4] group-hover:grayscale-0 transition-all duration-[1.5s] group-hover:scale-110"
+                  />
+                  <motion.div 
+                    animate={{ top: ["0%", "100%", "0%"] }}
+                    transition={{ duration: 10, repeat: Infinity, ease: "linear" }}
+                    className="absolute left-0 right-0 h-[3px] bg-gradient-to-r from-transparent via-primary to-transparent z-10 shadow-[0_0_20px_var(--primary)]"
+                  />
+                  <div className="absolute inset-0 bg-gradient-to-t from-[#0a0a0a] via-transparent to-transparent opacity-90" />
+                  <div className="absolute inset-0 bg-gradient-to-tr from-primary/10 via-transparent to-transparent opacity-40" />
+                </div>
                 
-                {/* Overlay Gradient */}
-                <div className="absolute inset-0 bg-gradient-to-t from-black via-transparent to-transparent opacity-60" />
-                
-                {/* Floating Huby Mascot */}
-                <HubyMascot className="absolute -top-10 -left-10 md:-left-20 scale-75 md:scale-100 z-20" />
+                <HubyMascot className="absolute -top-20 -left-20 md:-left-32 z-40 drop-shadow-[0_30px_60px_rgba(0,0,0,0.6)] scale-110" />
 
                 {/* Floating UI Elements */}
                 <motion.div 
-                  animate={{ y: [0, -10, 0] }}
-                  transition={{ duration: 3, repeat: Infinity, ease: "easeInOut" }}
-                  className="absolute top-[20%] right-[-5%] bg-black/60 backdrop-blur-xl border border-white/10 p-5 rounded-2xl shadow-2xl z-10 hidden sm:block"
+                  animate={{ y: [0, -20, 0], x: [0, 5, 0] }}
+                  transition={{ duration: 5, repeat: Infinity, ease: "easeInOut" }}
+                  className="absolute top-[10%] -right-16 md:-right-24 bg-black/90 backdrop-blur-3xl border border-white/10 p-8 rounded-[2.5rem] shadow-[0_30px_60px_rgba(0,0,0,0.5)] z-30 group/card hover:border-primary/60 transition-all duration-500"
                 >
-                  <div className="flex items-center gap-4">
-                    <div className="w-10 h-10 rounded-full bg-primary/20 flex items-center justify-center">
-                      <TrendingUp className="w-5 h-5 text-primary" />
+                  <div className="flex items-center gap-6">
+                    <div className="w-16 h-16 rounded-[1.25rem] bg-primary/20 flex items-center justify-center shadow-lg group-hover/card:scale-110 transition-transform duration-500">
+                      <TrendingUp className="w-8 h-8 text-primary" />
                     </div>
                     <div>
-                      <p className="text-[10px] font-bold text-white/40 uppercase tracking-widest">Economia este mês</p>
-                      <p className="text-xl font-black text-white">+R$ 1.240,00</p>
+                      <p className="text-[12px] font-black text-white/40 uppercase tracking-[0.25em] mb-2">Economia Prevista</p>
+                      <p className="text-3xl font-black text-white">+R$ 1.240,00</p>
                     </div>
                   </div>
                 </motion.div>
 
                 <motion.div 
-                  animate={{ y: [0, 10, 0] }}
-                  transition={{ duration: 4, repeat: Infinity, ease: "easeInOut", delay: 1 }}
-                  className="absolute bottom-[15%] left-[-10%] bg-black/60 backdrop-blur-xl border border-white/10 p-5 rounded-2xl shadow-2xl z-10 hidden sm:block"
+                  animate={{ y: [0, 20, 0], x: [0, -5, 0] }}
+                  transition={{ duration: 6, repeat: Infinity, ease: "easeInOut", delay: 1 }}
+                  className="absolute bottom-[15%] -left-16 md:-left-24 bg-black/90 backdrop-blur-3xl border border-white/10 p-8 rounded-[2.5rem] shadow-[0_30px_60px_rgba(0,0,0,0.5)] z-30 group/card hover:border-primary/60 transition-all duration-500"
                 >
-                  <div className="flex items-center gap-4">
-                    <div className="w-10 h-10 rounded-full bg-primary/20 flex items-center justify-center">
-                      <Target className="w-5 h-5 text-primary" />
+                  <div className="flex items-center gap-6">
+                    <div className="relative w-20 h-20">
+                      <svg className="w-full h-full" viewBox="0 0 36 36">
+                        <path className="text-white/5 stroke-current" strokeWidth="3" fill="none" d="M18 2.0845 a 15.9155 15.9155 0 0 1 0 31.831 a 15.9155 15.9155 0 0 1 0 -31.831" />
+                        <motion.path 
+                          initial={{ strokeDasharray: "0, 100" }}
+                          animate={{ strokeDasharray: "84, 100" }}
+                          transition={{ duration: 3, delay: 1.5, ease: "easeOut" }}
+                          className="text-primary stroke-current" 
+                          strokeWidth="3.5" 
+                          strokeLinecap="round" 
+                          fill="none" 
+                          d="M18 2.0845 a 15.9155 15.9155 0 0 1 0 31.831 a 15.9155 15.9155 0 0 1 0 -31.831" 
+                        />
+                      </svg>
+                      <div className="absolute inset-0 flex items-center justify-center">
+                        <span className="text-xl font-black text-white">84</span>
+                      </div>
                     </div>
                     <div>
-                      <p className="text-[10px] font-bold text-white/40 uppercase tracking-widest">Meta: Viagem Japão</p>
-                      <div className="w-32 h-2 bg-white/5 rounded-full mt-2 overflow-hidden">
-                        <div className="w-[75%] h-full bg-primary" />
-                      </div>
-                      <p className="text-[10px] font-black text-white mt-1">75% CONCLUÍDO</p>
+                      <p className="text-[12px] font-black text-white/40 uppercase tracking-[0.25em] mb-2">Score Financeiro</p>
+                      <p className="text-2xl font-black text-primary italic">EXCELENTE</p>
                     </div>
                   </div>
                 </motion.div>
-                
-                {/* Mobile Mascot positioning */}
-                <div className="sm:hidden absolute bottom-4 right-4 scale-50 opacity-80">
-                  <HubyMascot />
-                </div>
+
+                <motion.div 
+                  initial={{ opacity: 0, y: 30 }}
+                  animate={{ opacity: 1, y: 0 }}
+                  transition={{ duration: 1, delay: 2.5 }}
+                  className="absolute -bottom-10 right-12 bg-gradient-to-r from-primary via-primary/80 to-primary p-[1.5px] rounded-3xl shadow-[0_20px_50px_rgba(0,230,118,0.4)] z-50 hidden md:block"
+                >
+                  <div className="bg-black/95 backdrop-blur-3xl px-8 py-5 rounded-[calc(1.5rem-1.5px)] flex items-center gap-6">
+                    <div className="w-12 h-12 rounded-full bg-primary/20 flex items-center justify-center">
+                      <CheckCircle2 className="w-7 h-7 text-primary" />
+                    </div>
+                    <div>
+                      <p className="text-[11px] font-black text-primary uppercase tracking-[0.3em] mb-1">Gasto Identificado</p>
+                      <p className="text-lg font-black text-white">Mercado: R$ 142,50</p>
+                    </div>
+                    <ArrowUpRight className="w-6 h-6 text-white/30 ml-4" />
+                  </div>
+                </motion.div>
               </motion.div>
               
-              {/* Decorative elements behind the image */}
-              <div className="absolute -z-10 top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[120%] h-[120%] bg-primary/5 blur-[100px] rounded-full" />
+              <div className="absolute -z-10 top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[130%] h-[130%] bg-primary/5 blur-[150px] rounded-full" />
             </div>
 
           </div>
         </div>
       </section>
 
-      {/* Trust Section / Logos */}
-      <section className="py-16 border-y border-white/5 bg-black/40">
-        <div className="container mx-auto px-6">
-          <p className="text-center text-[10px] font-black text-white/20 tracking-[0.3em] uppercase mb-10">
-            PROTEGIDO PELAS MELHORES TECNOLOGIAS DE SEGURANÇA
+      {/* Trust Section */}
+      <section className="py-24 border-y border-white/5 bg-black/40 relative overflow-hidden">
+        <div className="absolute inset-0 opacity-20 bg-[radial-gradient(circle_at_center,var(--primary)_0%,transparent_70%)] pointer-events-none" />
+        <div className="container mx-auto px-6 relative z-10">
+          <p className="text-center text-[12px] font-black text-white/30 tracking-[0.4em] uppercase mb-16">
+            PROTEGIDO PELAS MELHORES TECNOLOGIAS DO MUNDO
           </p>
-          <div className="flex flex-wrap justify-center items-center gap-12 md:gap-24 opacity-30 grayscale">
-            <div className="text-xl font-bold italic tracking-tighter">BITDEFENDER</div>
-            <div className="text-xl font-bold tracking-tighter">SUPABASE</div>
-            <div className="text-xl font-bold tracking-tighter">LOVABLE</div>
-            <div className="text-xl font-bold tracking-tighter">STRIPE</div>
+          <div className="flex flex-wrap justify-center items-center gap-16 md:gap-32 opacity-25 grayscale hover:opacity-60 transition-opacity duration-500">
+            <div className="text-2xl font-black italic tracking-tighter">BITDEFENDER</div>
+            <div className="text-2xl font-black tracking-tighter">SUPABASE</div>
+            <div className="text-2xl font-black tracking-tighter">LOVABLE</div>
+            <div className="text-2xl font-black tracking-tighter">STRIPE</div>
           </div>
         </div>
       </section>
       
-      {/* Basic Footer for now */}
-      <footer className="py-20 bg-[#050505] border-t border-white/5">
+      {/* Basic Footer */}
+      <footer className="py-24 bg-[#050505] border-t border-white/5">
         <div className="container mx-auto px-6">
-          <div className="grid md:grid-cols-4 gap-12 mb-16">
-            <div className="space-y-6">
-              <div className="flex items-center gap-2">
-                <div className="bg-primary p-1.5 rounded-lg">
-                  <PiggyBank className="w-5 h-5 text-black" />
+          <div className="grid md:grid-cols-4 gap-16 mb-20">
+            <div className="space-y-8">
+              <div className="flex items-center gap-3">
+                <div className="bg-primary p-2 rounded-xl">
+                  <PiggyBank className="w-6 h-6 text-black" />
                 </div>
-                <span className="font-display text-xl font-black tracking-tighter">DinHub</span>
+                <span className="font-display text-2xl font-black tracking-tighter">DinHub</span>
               </div>
-              <p className="text-sm text-muted-foreground leading-relaxed">
+              <p className="text-base text-muted-foreground leading-relaxed font-medium">
                 Transformando a relação das pessoas com o dinheiro através de tecnologia e inteligência artificial.
               </p>
             </div>
@@ -431,24 +446,28 @@ const Landing = () => {
               { title: "Empresa", links: ["Sobre nós", "Blog", "Carreiras"] },
               { title: "Legal", links: ["Termos de Uso", "Privacidade", "Cookies"] }
             ].map((col) => (
-              <div key={col.title} className="space-y-6">
-                <h4 className="text-sm font-black uppercase tracking-widest text-white/80">{col.title}</h4>
-                <ul className="space-y-4">
+              <div key={col.title} className="space-y-8">
+                <h4 className="text-sm font-black uppercase tracking-[0.2em] text-white/80">{col.title}</h4>
+                <ul className="space-y-5">
                   {col.links.map(link => (
-                    <li key={link}><a href="#" className="text-sm text-muted-foreground hover:text-primary transition-colors font-medium">{link}</a></li>
+                    <li key={link}>
+                      <a href="#" className="text-[15px] text-muted-foreground hover:text-primary transition-colors font-semibold">
+                        {link}
+                      </a>
+                    </li>
                   ))}
                 </ul>
               </div>
             ))}
           </div>
           
-          <div className="pt-10 border-t border-white/5 flex flex-col md:flex-row justify-between items-center gap-6">
-            <p className="text-xs text-muted-foreground font-medium">
+          <div className="pt-12 border-t border-white/5 flex flex-col md:flex-row justify-between items-center gap-8">
+            <p className="text-sm text-muted-foreground font-semibold">
               © {new Date().getFullYear()} DinHub Finance. Todos os direitos reservados.
             </p>
-            <div className="flex gap-6">
-              <a href="/termos-de-uso" className="text-xs text-muted-foreground hover:text-white transition-colors">Termos</a>
-              <a href="/politica-privacidade" className="text-xs text-muted-foreground hover:text-white transition-colors">Privacidade</a>
+            <div className="flex gap-10">
+              <a href="/termos-de-uso" className="text-sm text-muted-foreground hover:text-white transition-colors font-medium">Termos</a>
+              <a href="/politica-privacidade" className="text-sm text-muted-foreground hover:text-white transition-colors font-medium">Privacidade</a>
             </div>
           </div>
         </div>
