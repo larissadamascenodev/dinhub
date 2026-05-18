@@ -8,8 +8,10 @@ import {
 import { AuthModal } from "@/components/auth/AuthModal";
 import { useAuth } from "@/contexts/AuthContext";
 import { useNavigate } from "react-router-dom";
+import { supabase } from "@/integrations/supabase/client";
 import heroWoman from "@/assets/hero-woman.jpeg";
 import hubyBot from "@/assets/huby-bot.jpeg";
+
 
 const NEON = "#00ff7b";
 
@@ -54,6 +56,106 @@ const Landing: React.FC = () => {
   const [authView, setAuthView] = React.useState<"login" | "signup">("signup");
   const { user } = useAuth();
   const navigate = useNavigate();
+  const [selectedInsight, setSelectedInsight] = React.useState<number | null>(null);
+  const [isSpeaking, setIsSpeaking] = React.useState(false);
+
+  const insights = [
+    { 
+      id: 0,
+      question: "Quanto gastei com delivery este mês?",
+      icon:<TrendingUp size={18}/>, 
+      c:"#00ff7b", 
+      t:"Você gastou ", 
+      b:"18% a mais com delivery", 
+      t2:" do que no mês passado. Isso representa R$ 842,90.", 
+      tag:"Alimentação",
+      voiceText: "Notei que seus gastos com delivery subiram 18% em comparação ao mês passado. Atualmente, você já destinou 842 reais para essa categoria. Talvez seja um bom momento para revisar esses pedidos."
+    },
+    { 
+      id: 1,
+      question: "Tenho assinaturas que não uso?",
+      icon:<Bell size={18}/>, 
+      c:"#f59e0b", 
+      t:"", 
+      b:"3 assinaturas somam R$ 79,90/mês", 
+      t2:" e quase não são usadas nos últimos 60 dias.", 
+      tag:"Assinaturas",
+      voiceText: "Identifiquei três assinaturas recorrentes que somam quase 80 reais por mês e que não registraram uso significativo nos últimos 60 dias. Cancelá-las pode gerar uma economia imediata."
+    },
+    { 
+      id: 2,
+      question: "Quanto posso economizar em 5 anos?",
+      icon:<BarChart3 size={18}/>, 
+      c:"#a78bfa", 
+      t:"Se investir R$ 300/mês, pode acumular ", 
+      b:"R$ 31.723,41 em 5 anos", 
+      t2:" considerando uma taxa conservadora.", 
+      tag:"Investimentos",
+      voiceText: "Se você começar a investir apenas 300 reais por mês hoje, em cinco anos você terá acumulado mais de 31 mil reais. O tempo é o seu maior aliado nos investimentos."
+    },
+    { 
+      id: 3,
+      question: "Qual gasto mais cresceu este mês?",
+      icon:<Car size={18}/>, 
+      c:"#3b82f6", 
+      t:"Seus gastos com ", 
+      b:"Uber aumentaram 38%", 
+      t2:" nas últimas duas semanas.", 
+      tag:"Transporte",
+      voiceText: "Seus gastos com transporte por aplicativo, especialmente o Uber, tiveram uma alta repentina de 38% nas últimas duas semanas. Verifique se houve alguma mudança na sua rotina que justifique isso."
+    },
+  ];
+
+  const [audio, setAudio] = React.useState<HTMLAudioElement | null>(null);
+
+  const speakInsight = async (text: string) => {
+    // Stop any current audio
+    if (audio) {
+      audio.pause();
+      audio.currentTime = 0;
+    }
+    window.speechSynthesis.cancel();
+
+    setIsSpeaking(true);
+
+    try {
+      const { data, error } = await supabase.functions.invoke("elevenlabs-tts", {
+        body: { text },
+      });
+
+      if (error || !data) throw new Error("TTS function failed");
+
+      // data should be a blob if the function returns ArrayBuffer
+      const audioUrl = URL.createObjectURL(data);
+      const newAudio = new Audio(audioUrl);
+      setAudio(newAudio);
+      newAudio.onended = () => setIsSpeaking(false);
+      newAudio.play();
+    } catch (e) {
+      console.error("TTS Error, falling back to browser speech:", e);
+      const utterance = new SpeechSynthesisUtterance(text);
+      utterance.lang = 'pt-BR';
+      utterance.onend = () => setIsSpeaking(false);
+      window.speechSynthesis.speak(utterance);
+    }
+  };
+
+  const handleInsightClick = (id: number) => {
+    if (selectedInsight === id) {
+      setSelectedInsight(null);
+      if (audio) {
+        audio.pause();
+        audio.currentTime = 0;
+      }
+      window.speechSynthesis.cancel();
+      setIsSpeaking(false);
+      return;
+    }
+    setSelectedInsight(id);
+    speakInsight(insights[id].voiceText);
+  };
+
+
 
   const openAuth = (v: "login" | "signup") => { setAuthView(v); setAuthOpen(true); };
   const goCta = () => user ? navigate("/dashboard") : openAuth("signup");
@@ -369,107 +471,6 @@ const Landing: React.FC = () => {
         </div>
       </section>
 
-      {/* ===== 5. INVOICES IN REAL TIME ===== */}
-      <section className="relative py-32 px-6 lg:px-12 overflow-hidden">
-        <div className="max-w-[1400px] mx-auto text-center mb-16">
-          <Pill tone="green" icon={<Wallet size={12}/>}>Acompanhamento em tempo real</Pill>
-          <h2 className="mt-5 text-5xl lg:text-7xl font-black leading-[1.02] tracking-[-0.035em] max-w-4xl mx-auto">
-            Suas faturas <span className="text-[#00ff7b]">sempre sob controle</span> em tempo real.
-          </h2>
-          <p className="mt-6 text-lg text-white/55 max-w-2xl mx-auto">
-            Acompanhe gastos, limite e cobranças em tempo real. Zero surpresas, mais organização e tranquilidade.
-          </p>
-        </div>
-
-        <div className="relative max-w-[1100px] mx-auto h-[640px]">
-          {/* Phone center */}
-          <div className="absolute left-1/2 -translate-x-1/2 top-0 w-[320px] h-[640px]">
-            <div className="absolute inset-0 bg-[#00ff7b]/15 blur-[100px] rounded-full" />
-            <div className="relative w-full h-full rounded-[44px] border border-white/15 bg-[#0a0d10] p-3 shadow-[0_40px_100px_rgba(0,0,0,0.7)]">
-              <div className="w-full h-full rounded-[36px] border border-white/[0.06] overflow-hidden bg-black flex flex-col p-5 gap-4 relative">
-                <div className="flex justify-between items-center text-[11px] text-white/70">
-                  <span className="font-bold">09:49</span>
-                  <span>•••• 92%</span>
-                </div>
-                <div className="flex justify-between items-center">
-                  <div className="flex items-center gap-2">
-                    <div className="w-7 h-7 rounded-md bg-[#00ff7b]/15 text-[#00ff7b] flex items-center justify-center"><TrendingUp size={14}/></div>
-                    <span className="font-black text-sm">DinHub</span>
-                  </div>
-                  <div className="flex gap-2">
-                    <div className="w-7 h-7 rounded-full bg-white/5 flex items-center justify-center text-[10px]">4</div>
-                  </div>
-                </div>
-                <div className="flex gap-2">
-                  {["Mai","Jun","Jul"].map((m,i)=>(
-                    <span key={m} className={`px-3 py-1 text-[11px] font-bold rounded-full ${i===1?"bg-[#00ff7b]/20 text-[#00ff7b] border border-[#00ff7b]/30":"text-white/40 border border-white/10"}`}>{m}</span>
-                  ))}
-                </div>
-                <div className="p-4 rounded-2xl bg-white/[0.03] border border-white/[0.06]">
-                  <div className="flex justify-between items-center mb-3">
-                    <div>
-                      <p className="text-xs font-bold">Nubank PJ</p>
-                      <p className="text-[10px] text-white/40">•••• 3426</p>
-                    </div>
-                    <span className="text-[10px] text-[#00ff7b] font-bold flex items-center gap-1"><span className="w-1.5 h-1.5 rounded-full bg-[#00ff7b]"/>Aberta</span>
-                  </div>
-                  <p className="text-center text-[10px] font-bold text-white/40 uppercase tracking-widest">Fatura de Junho</p>
-                  <p className="text-center text-2xl font-black my-2 tabular-nums">R$ 631,57</p>
-                  <p className="text-center text-[10px] text-white/40">Vence em 27 dias</p>
-                </div>
-                <div>
-                  <div className="flex justify-between text-[10px] mb-1.5"><span className="text-white/50">LIMITE</span><span className="text-[#00ff7b] font-bold">76% utilizado</span></div>
-                  <div className="h-1.5 rounded-full bg-white/5"><div className="h-full w-[76%] rounded-full bg-[#00ff7b]"/></div>
-                </div>
-                <button className="mt-auto h-11 rounded-xl bg-[#00ff7b]/15 text-[#00ff7b] text-xs font-black border border-[#00ff7b]/20">Pagar Fatura · R$ 631,57</button>
-              </div>
-            </div>
-          </div>
-
-          {/* Floating cards around */}
-          <motion.div initial={{opacity:0,y:20}} whileInView={{opacity:1,y:0}} viewport={{once:true}} className="absolute top-12 left-0 lg:left-8 w-[260px]">
-            <GlassCard className="p-4">
-              <div className="flex items-center gap-2 mb-2"><Wallet size={14} className="text-[#00ff7b]"/><span className="text-xs font-bold">Fatura fechada</span></div>
-              <p className="text-[10px] text-white/40">Nubank PJ •••• 3426</p>
-              <p className="text-xl font-black mt-2 tabular-nums">R$ 631,57</p>
-              <p className="text-[10px] text-white/40 mt-1">Vence em 27 dias</p>
-            </GlassCard>
-          </motion.div>
-
-          <motion.div initial={{opacity:0,y:20}} whileInView={{opacity:1,y:0}} viewport={{once:true}} className="absolute top-[35%] left-0 lg:left-2 w-[260px]">
-            <GlassCard className="p-4">
-              <div className="flex items-center gap-2 mb-2"><span className="w-2 h-2 rounded-full bg-[#00ff7b]"/><span className="text-[10px] font-black uppercase tracking-wider text-white/60">Limite utilizado</span></div>
-              <p className="text-2xl font-black tabular-nums">76%</p>
-              <div className="h-1.5 rounded-full bg-white/5 mt-2"><div className="h-full w-[76%] rounded-full bg-[#00ff7b]"/></div>
-              <p className="text-[10px] text-white/40 mt-2 tabular-nums">R$ 4.113,61 de R$ 5.380,63</p>
-            </GlassCard>
-          </motion.div>
-
-          <motion.div initial={{opacity:0,y:20}} whileInView={{opacity:1,y:0}} viewport={{once:true}} className="absolute top-12 right-0 lg:right-4 w-[280px]">
-            <GlassCard className="p-4">
-              <div className="flex items-center gap-2 mb-3"><CreditCard size={14} className="text-[#00ff7b]"/><span className="text-xs font-bold">Parcelamentos Ativos</span><span className="ml-auto text-[10px] text-white/40">7 itens</span></div>
-              {[
-                {n:"PlayStation 5",v:"R$ 337,67",p:"3 de 10",c:"#a78bfa",i:<Gamepad2 size={12}/>},
-                {n:"iPhone 14",v:"R$ 289,90",p:"5 de 12",c:"#3b82f6",i:<Smartphone size={12}/>},
-                {n:"Sofá retrátil",v:"R$ 237,45",p:"4 de 18",c:"#00ff7b",i:<Sofa size={12}/>},
-              ].map((x,i)=>(
-                <div key={i} className="flex items-center gap-2 py-1.5 border-t border-white/5 first:border-0">
-                  <div className="w-7 h-7 rounded-lg flex items-center justify-center" style={{background:`${x.c}1a`,color:x.c}}>{x.i}</div>
-                  <div className="flex-1"><p className="text-[11px] font-bold">{x.n}</p><p className="text-[9px] text-white/40">{x.p} parcelas</p></div>
-                  <p className="text-[11px] font-black tabular-nums">{x.v}</p>
-                </div>
-              ))}
-            </GlassCard>
-          </motion.div>
-
-          <motion.div initial={{opacity:0,y:20}} whileInView={{opacity:1,y:0}} viewport={{once:true}} className="absolute bottom-4 right-0 lg:right-12 w-[240px]">
-            <GlassCard className="p-4">
-              <div className="flex items-center gap-2 mb-2"><Bell size={14} className="text-orange-400"/><span className="text-xs font-bold">Alerta inteligente</span></div>
-              <p className="text-xs text-white/60 leading-relaxed">Você gastou <span className="text-[#00ff7b] font-bold">90% do limite</span> em <span className="text-[#00ff7b] font-bold">Delivery</span> este mês.</p>
-            </GlassCard>
-          </motion.div>
-        </div>
-      </section>
 
       {/* ===== 6. AI INSIGHTS (HUBY) ===== */}
       <section className="relative py-28 px-6 lg:px-12">
@@ -481,31 +482,104 @@ const Landing: React.FC = () => {
               <span className="text-[#00ff7b]">E tome decisões melhores.</span>
             </h2>
             <p className="mt-6 text-lg text-white/55 max-w-lg leading-relaxed">
-              A Huby transforma dados em clareza. Faça perguntas sobre seu dinheiro, receba respostas práticas e descubra o que realmente importa.
+              A Huby transforma dados em clareza. Clique em uma das perguntas frequentes e ouça a análise personalizada da sua assistente.
             </p>
 
-            <div className="relative mt-10">
-              <img src={hubyBot} alt="Huby - assistente IA" className="w-64 h-64 object-contain mx-auto lg:mx-0" />
+            <div className="mt-10 grid grid-cols-1 sm:grid-cols-2 gap-3 max-w-lg">
+              {insights.map((insight) => (
+                <button
+                  key={insight.id}
+                  onClick={() => handleInsightClick(insight.id)}
+                  className={`px-4 py-3 rounded-2xl border text-left transition-all text-xs font-bold leading-tight flex items-center gap-3 ${
+                    selectedInsight === insight.id
+                      ? "bg-[#00ff7b]/20 border-[#00ff7b]/50 text-[#00ff7b]"
+                      : "bg-white/[0.03] border-white/[0.08] text-white/60 hover:bg-white/[0.06] hover:border-white/20"
+                  }`}
+                >
+                  <div className={`w-8 h-8 rounded-lg flex items-center justify-center shrink-0 ${
+                    selectedInsight === insight.id ? "bg-[#00ff7b]/20 text-[#00ff7b]" : "bg-white/5 text-white/40"
+                  }`}>
+                    {insight.id === 0 && <UtensilsCrossed size={14} />}
+                    {insight.id === 1 && <Bell size={14} />}
+                    {insight.id === 2 && <BarChart3 size={14} />}
+                    {insight.id === 3 && <Car size={14} />}
+                  </div>
+                  {insight.question}
+                </button>
+              ))}
+            </div>
+
+            <div className="relative mt-12 flex items-center gap-6">
+              <div className="relative">
+                <div className={`absolute inset-0 bg-[#00ff7b]/20 blur-3xl rounded-full transition-opacity duration-500 ${isSpeaking ? "opacity-100 animate-pulse" : "opacity-0"}`} />
+                <img src={hubyBot} alt="Huby - assistente IA" className={`w-40 h-40 object-contain relative z-10 transition-transform duration-500 ${isSpeaking ? "scale-110" : "scale-100"}`} />
+              </div>
+              {isSpeaking && (
+                <div className="flex gap-1 items-end h-8">
+                  {[...Array(5)].map((_, i) => (
+                    <motion.div
+                      key={i}
+                      animate={{ height: [8, 32, 12, 28, 8] }}
+                      transition={{ duration: 0.8, repeat: Infinity, delay: i * 0.1 }}
+                      className="w-1.5 bg-[#00ff7b] rounded-full"
+                    />
+                  ))}
+                </div>
+              )}
             </div>
           </div>
 
-          <div className="space-y-4">
-            {[
-              { icon:<TrendingUp size={18}/>, c:"#00ff7b", t:"Você gastou ", b:"18% a mais com delivery", t2:" do que no mês passado.", tag:"Alimentação" },
-              { icon:<Bell size={18}/>, c:"#f59e0b", t:"", b:"3 assinaturas somam R$ 79,90/mês", t2:" e quase não são usadas.", tag:"Assinaturas" },
-              { icon:<BarChart3 size={18}/>, c:"#a78bfa", t:"Se investir R$ 300/mês, pode acumular ", b:"R$ 31.723,41 em 5 anos.", t2:"", tag:"Investimentos" },
-              { icon:<Car size={18}/>, c:"#3b82f6", t:"Seus gastos com ", b:"Uber aumentaram 38%", t2:" este mês.", tag:"Transporte" },
-            ].map((card, i) => (
-              <motion.div key={i} initial={{opacity:0,x:20}} whileInView={{opacity:1,x:0}} viewport={{once:true}} transition={{delay:i*0.08}}>
-                <GlassCard className="p-5 flex items-start gap-4">
-                  <div className="w-11 h-11 rounded-xl flex items-center justify-center shrink-0" style={{background:`${card.c}1a`,color:card.c}}>{card.icon}</div>
-                  <p className="text-sm text-white/80 leading-relaxed flex-1">
-                    {card.t}<span className="text-[#00ff7b] font-bold">{card.b}</span>{card.t2}
+          <div className="relative min-h-[400px] flex items-center justify-center">
+            {!selectedInsight ? (
+              <div className="text-center space-y-4 opacity-40">
+                <div className="w-20 h-20 rounded-full bg-white/5 border border-white/10 flex items-center justify-center mx-auto mb-6">
+                  <Brain size={32} className="text-white" />
+                </div>
+                <p className="text-sm font-bold tracking-widest uppercase">Selecione uma pergunta acima</p>
+                <p className="text-xs text-white/50 max-w-[280px] mx-auto">A Huby analisará seus dados em tempo real para te dar a melhor resposta.</p>
+              </div>
+            ) : (
+              <motion.div
+                initial={{ opacity: 0, scale: 0.95, y: 20 }}
+                animate={{ opacity: 1, scale: 1, y: 0 }}
+                key={selectedInsight}
+                className="w-full"
+              >
+                <GlassCard className="p-8 relative overflow-hidden group">
+                  <div className="absolute top-0 right-0 p-6 opacity-10 group-hover:opacity-20 transition-opacity">
+                    {insights[selectedInsight].icon}
+                  </div>
+                  
+                  <div className="flex items-center gap-4 mb-8">
+                    <div className="w-14 h-14 rounded-2xl flex items-center justify-center shrink-0" style={{ background: `${insights[selectedInsight].c}1a`, color: insights[selectedInsight].c }}>
+                      {insights[selectedInsight].icon}
+                    </div>
+                    <div>
+                      <Pill tone="green">{insights[selectedInsight].tag}</Pill>
+                      <h3 className="text-xl font-black mt-1">Análise Huby</h3>
+                    </div>
+                  </div>
+
+                  <p className="text-lg text-white/90 leading-relaxed">
+                    {insights[selectedInsight].t}
+                    <span className="text-[#00ff7b] font-black underline decoration-[#00ff7b]/30 underline-offset-4">
+                      {insights[selectedInsight].b}
+                    </span>
+                    {insights[selectedInsight].t2}
                   </p>
-                  <span className="text-[10px] font-bold text-white/50 px-3 py-1 rounded-full bg-white/5 border border-white/10 shrink-0">{card.tag}</span>
+
+                  <div className="mt-8 pt-8 border-t border-white/10">
+                    <div className="flex items-center gap-3 text-[#00ff7b]">
+                      <Sparkles size={16} />
+                      <span className="text-xs font-black uppercase tracking-widest">Insight Recomendado</span>
+                    </div>
+                    <p className="mt-3 text-sm text-white/50 leading-relaxed italic">
+                      "{insights[selectedInsight].voiceText}"
+                    </p>
+                  </div>
                 </GlassCard>
               </motion.div>
-            ))}
+            )}
           </div>
         </div>
       </section>
