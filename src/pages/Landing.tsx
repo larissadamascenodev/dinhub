@@ -187,11 +187,11 @@ const Landing = () => {
               className="flex flex-col sm:flex-row items-center gap-4 w-full sm:w-auto"
             >
               <Button 
-                onClick={() => openAuth("signup")}
+                onClick={() => user ? navigate("/dashboard") : openAuth("signup")}
                 size="lg" 
                 className="w-full sm:w-auto px-10 py-7 text-base font-bold rounded-2xl bg-primary text-primary-foreground hover:scale-105 transition-all duration-300 shadow-[0_0_30px_rgba(0,230,118,0.3)]"
               >
-                Começar agora grátis
+                {user ? "Acessar Dashboard" : "Começar agora grátis"}
                 <ArrowRight className="ml-2 w-5 h-5" />
               </Button>
               <Button 
