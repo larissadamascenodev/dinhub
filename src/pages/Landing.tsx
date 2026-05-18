@@ -704,30 +704,9 @@ const Landing: React.FC = () => {
               )}
             </div>
           </div>
-
-                  <p className="text-lg text-white/90 leading-relaxed">
-                    {insights[selectedInsight].t}
-                    <span className="text-[#00ff7b] font-black underline decoration-[#00ff7b]/30 underline-offset-4">
-                      {insights[selectedInsight].b}
-                    </span>
-                    {insights[selectedInsight].t2}
-                  </p>
-
-                  <div className="mt-8 pt-8 border-t border-white/10">
-                    <div className="flex items-center gap-3 text-[#00ff7b]">
-                      <Sparkles size={16} />
-                      <span className="text-xs font-black uppercase tracking-widest">Insight Recomendado</span>
-                    </div>
-                    <p className="mt-3 text-sm text-white/50 leading-relaxed italic">
-                      "{insights[selectedInsight].voiceText}"
-                    </p>
-                  </div>
-                </GlassCard>
-              </motion.div>
-            )}
-          </div>
         </div>
       </section>
+
 
       {/* ===== 7. HOW IT WORKS ===== */}
       <section className="relative py-28 px-6 lg:px-12">
