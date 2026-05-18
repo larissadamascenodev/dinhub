@@ -8,7 +8,8 @@ import {
   Menu,
   X,
   Plus,
-  Upload
+  Upload,
+  Settings2
 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { AuthModal } from "@/components/auth/AuthModal";
@@ -22,6 +23,10 @@ const Landing = () => {
   const { user } = useAuth();
   const navigate = useNavigate();
   const [heroBg, setHeroBg] = useState("https://images.unsplash.com/photo-1554224155-6726b3ff858f?auto=format&fit=crop&q=80&w=1200");
+  const [bgOpacity, setBgOpacity] = useState(40);
+  const [bgGrayscale, setBgGrayscale] = useState(40);
+  const [bgBrightness, setBgBrightness] = useState(50);
+  const [showControls, setShowControls] = useState(false);
 
   const handleImageUpload = (e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0];
@@ -220,17 +225,88 @@ const Landing = () => {
               <img 
                 src={heroBg} 
                 alt="Fundo integrado" 
-                className="w-full h-full object-cover grayscale-[0.4] opacity-40 brightness-50"
+                className="w-full h-full object-cover transition-all duration-300"
+                style={{ 
+                  filter: `grayscale(${bgGrayscale}%) brightness(${bgBrightness}%)`,
+                  opacity: bgOpacity / 100
+                }}
               />
-              <label className="absolute bottom-10 right-10 z-50 p-4 rounded-full bg-white/10 hover:bg-white/20 backdrop-blur-md border border-white/20 cursor-pointer transition-all pointer-events-auto group">
-                <Upload className="w-6 h-6 text-white group-hover:scale-110 transition-transform" />
-                <input 
-                  type="file" 
-                  accept="image/*" 
-                  onChange={handleImageUpload} 
-                  className="hidden" 
-                />
-              </label>
+              <div className="absolute bottom-10 right-10 z-50 flex gap-2 pointer-events-auto">
+                <div className="relative group/controls">
+                  <button 
+                    onClick={() => setShowControls(!showControls)}
+                    className="p-4 rounded-full bg-white/10 hover:bg-white/20 backdrop-blur-md border border-white/20 cursor-pointer transition-all group"
+                  >
+                    <Settings2 className="w-6 h-6 text-white group-hover:rotate-45 transition-transform" />
+                  </button>
+                  
+                  <AnimatePresence>
+                    {showControls && (
+                      <motion.div 
+                        initial={{ opacity: 0, scale: 0.95, y: 10 }}
+                        animate={{ opacity: 1, scale: 1, y: 0 }}
+                        exit={{ opacity: 0, scale: 0.95, y: 10 }}
+                        className="absolute bottom-full right-0 mb-4 p-6 rounded-[24px] bg-[#0f0f0f]/95 backdrop-blur-2xl border border-white/10 shadow-2xl w-[280px] flex flex-col gap-6"
+                      >
+                        <div className="space-y-3">
+                          <div className="flex justify-between items-center text-xs font-bold uppercase tracking-widest text-white/40">
+                            <span>Opacidade</span>
+                            <span className="text-[#00ff7b]">{bgOpacity}%</span>
+                          </div>
+                          <input 
+                            type="range" 
+                            min="0" 
+                            max="100" 
+                            value={bgOpacity} 
+                            onChange={(e) => setBgOpacity(Number(e.target.value))}
+                            className="w-full accent-[#00ff7b] h-1.5 bg-white/10 rounded-lg appearance-none cursor-pointer"
+                          />
+                        </div>
+
+                        <div className="space-y-3">
+                          <div className="flex justify-between items-center text-xs font-bold uppercase tracking-widest text-white/40">
+                            <span>Tons de Cinza</span>
+                            <span className="text-[#00ff7b]">{bgGrayscale}%</span>
+                          </div>
+                          <input 
+                            type="range" 
+                            min="0" 
+                            max="100" 
+                            value={bgGrayscale} 
+                            onChange={(e) => setBgGrayscale(Number(e.target.value))}
+                            className="w-full accent-[#00ff7b] h-1.5 bg-white/10 rounded-lg appearance-none cursor-pointer"
+                          />
+                        </div>
+
+                        <div className="space-y-3">
+                          <div className="flex justify-between items-center text-xs font-bold uppercase tracking-widest text-white/40">
+                            <span>Brilho</span>
+                            <span className="text-[#00ff7b]">{bgBrightness}%</span>
+                          </div>
+                          <input 
+                            type="range" 
+                            min="0" 
+                            max="200" 
+                            value={bgBrightness} 
+                            onChange={(e) => setBgBrightness(Number(e.target.value))}
+                            className="w-full accent-[#00ff7b] h-1.5 bg-white/10 rounded-lg appearance-none cursor-pointer"
+                          />
+                        </div>
+                      </motion.div>
+                    )}
+                  </AnimatePresence>
+                </div>
+
+                <label className="p-4 rounded-full bg-white/10 hover:bg-white/20 backdrop-blur-md border border-white/20 cursor-pointer transition-all group">
+                  <Upload className="w-6 h-6 text-white group-hover:scale-110 transition-transform" />
+                  <input 
+                    type="file" 
+                    accept="image/*" 
+                    onChange={handleImageUpload} 
+                    className="hidden" 
+                  />
+                </label>
+              </div>
               <div className="absolute inset-0 bg-gradient-to-t from-[#020202] via-transparent to-transparent opacity-90" />
               <div className="absolute inset-0 bg-gradient-to-l from-transparent via-[#020202]/40 to-[#020202]" />
             </motion.div>
