@@ -63,46 +63,46 @@ const Landing: React.FC = () => {
     { 
       id: 0,
       question: "Quanto gastei com delivery este mês?",
-      icon:<TrendingUp size={18}/>, 
+      icon:<UtensilsCrossed size={18}/>, 
       c:"#00ff7b", 
       t:"Você gastou ", 
-      b:"18% a mais com delivery", 
-      t2:" do que no mês passado. Isso representa R$ 842,90.", 
+      b:"R$ 842,90 em delivery", 
+      t2:" este mês, o que representa 18% a mais que no mês anterior.", 
       tag:"Alimentação",
-      voiceText: "Notei que seus gastos com delivery subiram 18% em comparação ao mês passado. Atualmente, você já destinou 842 reais para essa categoria. Talvez seja um bom momento para revisar esses pedidos."
+      voiceText: "Senhor, identifiquei um aumento de 18% nos seus gastos com delivery este mês. O total acumulado é de 842 reais e 90 centavos. Recomendo cautela com os próximos pedidos."
     },
     { 
       id: 1,
-      question: "Tenho assinaturas que não uso?",
-      icon:<Bell size={18}/>, 
+      question: "Quantos parcelamentos ainda tenho?",
+      icon:<CreditCard size={18}/>, 
       c:"#f59e0b", 
-      t:"", 
-      b:"3 assinaturas somam R$ 79,90/mês", 
-      t2:" e quase não são usadas nos últimos 60 dias.", 
-      tag:"Assinaturas",
-      voiceText: "Identifiquei três assinaturas recorrentes que somam quase 80 reais por mês e que não registraram uso significativo nos últimos 60 dias. Cancelá-las pode gerar uma economia imediata."
+      t:"Você possui ", 
+      b:"18 parcelamentos ativos", 
+      t2:", com um comprometimento mensal de R$ 1.279,47.", 
+      tag:"Parcelamentos",
+      voiceText: "Atualmente, senhor, existem 18 parcelamentos ativos em seu nome. O valor mensal comprometido é de 1.279 reais. O próximo item a ser quitado será o PlayStation 5 em 7 meses."
     },
     { 
       id: 2,
-      question: "Quanto posso economizar em 5 anos?",
-      icon:<BarChart3 size={18}/>, 
+      question: "Quanto vai sobrar este mês?",
+      icon:<Wallet size={18}/>, 
       c:"#a78bfa", 
-      t:"Se investir R$ 300/mês, pode acumular ", 
-      b:"R$ 31.723,41 em 5 anos", 
-      t2:" considerando uma taxa conservadora.", 
-      tag:"Investimentos",
-      voiceText: "Se você começar a investir apenas 300 reais por mês hoje, em cinco anos você terá acumulado mais de 31 mil reais. O tempo é o seu maior aliado nos investimentos."
+      t:"Baseado na sua média, deve sobrar ", 
+      b:"R$ 1.150,00", 
+      t2:" após todas as contas fixas e variáveis previstas.", 
+      tag:"Previsão",
+      voiceText: "De acordo com meus cálculos, senhor, a projeção de sobra para este mês é de aproximadamente 1.150 reais, já considerando todas as suas despesas recorrentes e parcelas."
     },
     { 
       id: 3,
       question: "Qual gasto mais cresceu este mês?",
-      icon:<Car size={18}/>, 
-      c:"#3b82f6", 
+      icon:<TrendingUp size={18}/>, 
+      c:"#ef4444", 
       t:"Seus gastos com ", 
-      b:"Uber aumentaram 38%", 
-      t2:" nas últimas duas semanas.", 
-      tag:"Transporte",
-      voiceText: "Seus gastos com transporte por aplicativo, especialmente o Uber, tiveram uma alta repentina de 38% nas últimas duas semanas. Verifique se houve alguma mudança na sua rotina que justifique isso."
+      b:"Apostas/Lazer subiram 45%", 
+      t2:" nos últimos 30 dias.", 
+      tag:"Alerta",
+      voiceText: "Senhor, detectei um comportamento atípico. Seus gastos com apostas e lazer subiram 45% nos últimos 30 dias. Seria prudente revisar esses limites para manter a saúde do seu caixa."
     },
   ];
 
@@ -564,87 +564,136 @@ const Landing: React.FC = () => {
                   <div className={`w-8 h-8 rounded-lg flex items-center justify-center shrink-0 ${
                     selectedInsight === insight.id ? "bg-[#00ff7b]/20 text-[#00ff7b]" : "bg-white/5 text-white/40"
                   }`}>
-                    {insight.id === 0 && <UtensilsCrossed size={14} />}
-                    {insight.id === 1 && <Bell size={14} />}
-                    {insight.id === 2 && <BarChart3 size={14} />}
-                    {insight.id === 3 && <Car size={14} />}
+                    {insight.icon}
+
                   </div>
                   {insight.question}
                 </button>
               ))}
             </div>
 
-            <div className="relative mt-12 flex items-center gap-6">
-              <div className="relative w-44 h-44 flex items-center justify-center" aria-label="Huby - assistente IA">
-                {/* Outer atmospheric halo — reage ao volume */}
+            <div className="mt-8">
+              {!selectedInsight ? (
+                <div className="p-10 rounded-3xl border border-white/[0.05] bg-white/[0.01] text-center space-y-4 opacity-40">
+                  <div className="w-16 h-16 rounded-full bg-white/5 border border-white/10 flex items-center justify-center mx-auto mb-4">
+                    <Brain size={28} className="text-white" />
+                  </div>
+                  <p className="text-xs font-bold tracking-widest uppercase">Selecione uma pergunta acima</p>
+                </div>
+              ) : (
                 <motion.div
-                  className="absolute inset-0 rounded-full bg-[#00ff7b] blur-3xl pointer-events-none"
-                  style={{
-                    opacity: isSpeaking ? 0.25 + audioLevel * 0.7 : 0.18,
-                    scale: 0.9 + audioLevel * 0.55,
-                  }}
-                  animate={!isSpeaking ? { opacity: [0.18, 0.35, 0.18], scale: [0.95, 1.08, 0.95] } : undefined}
-                  transition={!isSpeaking ? { duration: 4, repeat: Infinity, ease: "easeInOut" } : { type: "spring", stiffness: 220, damping: 18 }}
-                />
-
-                {/* Voice-reactive ring */}
-                <motion.div
-                  className="absolute rounded-full border-2 border-[#00ff7b] pointer-events-none"
-                  style={{
-                    width: 110 + audioLevel * 90,
-                    height: 110 + audioLevel * 90,
-                    opacity: isSpeaking ? 0.25 + audioLevel * 0.55 : 0,
-                    borderColor: `rgba(0,255,123,${0.3 + audioLevel * 0.6})`,
-                    boxShadow: `0 0 ${20 + audioLevel * 40}px rgba(0,255,123,${0.3 + audioLevel * 0.5})`,
-                  }}
-                  transition={{ type: "spring", stiffness: 260, damping: 20 }}
-                />
-
-                {/* Continuous expanding rings (always visible when speaking) */}
-                {isSpeaking && [0, 1, 2].map((i) => (
-                  <motion.div
-                    key={i}
-                    className="absolute rounded-full border border-[#00ff7b]/40 pointer-events-none"
-                    initial={{ width: 80, height: 80, opacity: 0.5 }}
-                    animate={{
-                      width: 180 + audioLevel * 60,
-                      height: 180 + audioLevel * 60,
-                      opacity: 0,
-                    }}
-                    transition={{ duration: 1.8, repeat: Infinity, delay: i * 0.6, ease: "easeOut" }}
-                  />
-                ))}
-
-                {/* Core orb — escala com o volume */}
-                <motion.div
-                  className="relative z-10 w-24 h-24 rounded-full"
-                  style={{
-                    background:
-                      "radial-gradient(circle at 35% 30%, #d4ffe6 0%, #4dffa3 25%, #00ff7b 55%, #008f45 90%)",
-                    boxShadow: `0 0 ${30 + audioLevel * 60}px rgba(0,255,123,${0.55 + audioLevel * 0.4}), 0 0 ${60 + audioLevel * 80}px rgba(0,255,123,${0.3 + audioLevel * 0.35}), inset 0 -10px 20px rgba(0,90,40,0.6), inset 0 8px 18px rgba(255,255,255,0.35)`,
-                    scale: 1 + audioLevel * 0.18,
-                  }}
-                  animate={!isSpeaking ? { scale: [1, 1.04, 1], y: [0, -4, 0] } : undefined}
-                  transition={!isSpeaking ? { duration: 4, repeat: Infinity, ease: "easeInOut" } : { type: "spring", stiffness: 320, damping: 16 }}
+                  initial={{ opacity: 0, scale: 0.95, y: 20 }}
+                  animate={{ opacity: 1, scale: 1, y: 0 }}
+                  key={selectedInsight}
+                  className="w-full"
                 >
-                  <motion.div
-                    className="absolute top-3 left-4 w-6 h-4 rounded-full bg-white/70 blur-[2px]"
-                    style={{ opacity: 0.7 + audioLevel * 0.3 }}
-                  />
+                  <GlassCard className="p-8 relative overflow-hidden group">
+                    <div className="absolute top-0 right-0 p-6 opacity-10 group-hover:opacity-20 transition-opacity">
+                      {insights[selectedInsight].icon}
+                    </div>
+                    
+                    <div className="flex items-center gap-4 mb-6">
+                      <div className="w-12 h-12 rounded-2xl flex items-center justify-center shrink-0" style={{ background: `${insights[selectedInsight].c}1a`, color: insights[selectedInsight].c }}>
+                        {insights[selectedInsight].icon}
+                      </div>
+                      <div>
+                        <Pill tone="green">{insights[selectedInsight].tag}</Pill>
+                        <h3 className="text-lg font-black mt-1">Análise Huby</h3>
+                      </div>
+                    </div>
+
+                    <p className="text-base text-white/90 leading-relaxed">
+                      {insights[selectedInsight].t}
+                      <span className="text-[#00ff7b] font-black underline decoration-[#00ff7b]/30 underline-offset-4 mx-1">
+                        {insights[selectedInsight].b}
+                      </span>
+                      {insights[selectedInsight].t2}
+                    </p>
+
+                    <div className="mt-6 pt-6 border-t border-white/10">
+                      <div className="flex items-center gap-3 text-[#00ff7b]">
+                        <Sparkles size={16} />
+                        <span className="text-[10px] font-black uppercase tracking-widest">Insight Recomendado</span>
+                      </div>
+                      <p className="mt-2.5 text-xs text-white/50 leading-relaxed italic">
+                        "{insights[selectedInsight].voiceText}"
+                      </p>
+                    </div>
+                  </GlassCard>
                 </motion.div>
-              </div>
+              )}
+            </div>
+          </div>
+
+          <div className="relative min-h-[500px] flex items-center justify-center">
+            <div className="relative w-[300px] h-[300px] lg:w-[450px] lg:h-[450px] flex items-center justify-center" aria-label="Huby - assistente IA">
+              {/* Outer atmospheric halo — reage ao volume */}
+              <motion.div
+                className="absolute inset-0 rounded-full bg-[#00ff7b] blur-[80px] pointer-events-none"
+                style={{
+                  opacity: isSpeaking ? 0.25 + audioLevel * 0.7 : 0.18,
+                  scale: 1 + audioLevel * 0.55,
+                }}
+                animate={!isSpeaking ? { opacity: [0.15, 0.3, 0.15], scale: [0.9, 1.05, 0.9] } : undefined}
+                transition={!isSpeaking ? { duration: 4, repeat: Infinity, ease: "easeInOut" } : { type: "spring", stiffness: 220, damping: 18 }}
+              />
+
+              {/* Voice-reactive ring */}
+              <motion.div
+                className="absolute rounded-full border-2 border-[#00ff7b] pointer-events-none"
+                style={{
+                  width: 140 + audioLevel * 140,
+                  height: 140 + audioLevel * 140,
+                  opacity: isSpeaking ? 0.3 + audioLevel * 0.6 : 0,
+                  borderColor: `rgba(0,255,123,${0.4 + audioLevel * 0.6})`,
+                  boxShadow: `0 0 ${30 + audioLevel * 50}px rgba(0,255,123,${0.4 + audioLevel * 0.5})`,
+                }}
+                transition={{ type: "spring", stiffness: 260, damping: 20 }}
+              />
+
+              {/* Continuous expanding rings (always visible when speaking) */}
+              {isSpeaking && [0, 1, 2].map((i) => (
+                <motion.div
+                  key={i}
+                  className="absolute rounded-full border border-[#00ff7b]/40 pointer-events-none"
+                  initial={{ width: 100, height: 100, opacity: 0.5 }}
+                  animate={{
+                    width: 280 + audioLevel * 100,
+                    height: 280 + audioLevel * 100,
+                    opacity: 0,
+                  }}
+                  transition={{ duration: 1.8, repeat: Infinity, delay: i * 0.6, ease: "easeOut" }}
+                />
+              ))}
+
+              {/* Core orb — escala com o volume */}
+              <motion.div
+                className="relative z-10 w-32 h-32 lg:w-48 lg:h-48 rounded-full"
+                style={{
+                  background:
+                    "radial-gradient(circle at 35% 30%, #d4ffe6 0%, #4dffa3 25%, #00ff7b 55%, #008f45 90%)",
+                  boxShadow: `0 0 ${40 + audioLevel * 80}px rgba(0,255,123,${0.6 + audioLevel * 0.4}), 0 0 ${80 + audioLevel * 100}px rgba(0,255,123,${0.35 + audioLevel * 0.35}), inset 0 -15px 30px rgba(0,90,40,0.6), inset 0 10px 25px rgba(255,255,255,0.4)`,
+                  scale: 1 + audioLevel * 0.2,
+                }}
+                animate={!isSpeaking ? { scale: [1, 1.05, 1], y: [0, -6, 0] } : undefined}
+                transition={!isSpeaking ? { duration: 4, repeat: Infinity, ease: "easeInOut" } : { type: "spring", stiffness: 320, damping: 16 }}
+              >
+                <motion.div
+                  className="absolute top-4 left-6 w-8 h-6 rounded-full bg-white/70 blur-[3px]"
+                  style={{ opacity: 0.7 + audioLevel * 0.3 }}
+                />
+              </motion.div>
 
               {isSpeaking && (
-                <div className="flex gap-1 items-end h-10">
-                  {[0, 1, 2, 3, 4].map((i) => {
-                    // Cada barra tem um deslocamento de fase para parecer um equalizador real
-                    const phase = [1, 0.7, 1.1, 0.8, 0.95][i];
-                    const h = 6 + audioLevel * 36 * phase + Math.sin(Date.now() / (120 + i * 40)) * 2;
+                <div className="absolute -bottom-12 flex gap-1.5 items-end h-12">
+                  {[0, 1, 2, 3, 4, 5, 6].map((i) => {
+                    const phase = [1, 0.7, 1.2, 0.8, 1.1, 0.9, 1.05][i];
+                    const h = 8 + audioLevel * 48 * phase + Math.sin(Date.now() / (100 + i * 30)) * 3;
                     return (
                       <motion.div
                         key={i}
-                        className="w-1.5 bg-[#00ff7b] rounded-full"
-                        style={{ height: Math.max(4, h) }}
+                        className="w-2 bg-[#00ff7b] rounded-full"
+                        style={{ height: Math.max(6, h) }}
                         transition={{ type: "spring", stiffness: 400, damping: 18 }}
                       />
                     );
@@ -652,63 +701,10 @@ const Landing: React.FC = () => {
                 </div>
               )}
             </div>
-
-          </div>
-
-          <div className="relative min-h-[400px] flex items-center justify-center">
-            {!selectedInsight ? (
-              <div className="text-center space-y-4 opacity-40">
-                <div className="w-20 h-20 rounded-full bg-white/5 border border-white/10 flex items-center justify-center mx-auto mb-6">
-                  <Brain size={32} className="text-white" />
-                </div>
-                <p className="text-sm font-bold tracking-widest uppercase">Selecione uma pergunta acima</p>
-                <p className="text-xs text-white/50 max-w-[280px] mx-auto">A Huby analisará seus dados em tempo real para te dar a melhor resposta.</p>
-              </div>
-            ) : (
-              <motion.div
-                initial={{ opacity: 0, scale: 0.95, y: 20 }}
-                animate={{ opacity: 1, scale: 1, y: 0 }}
-                key={selectedInsight}
-                className="w-full"
-              >
-                <GlassCard className="p-8 relative overflow-hidden group">
-                  <div className="absolute top-0 right-0 p-6 opacity-10 group-hover:opacity-20 transition-opacity">
-                    {insights[selectedInsight].icon}
-                  </div>
-                  
-                  <div className="flex items-center gap-4 mb-8">
-                    <div className="w-14 h-14 rounded-2xl flex items-center justify-center shrink-0" style={{ background: `${insights[selectedInsight].c}1a`, color: insights[selectedInsight].c }}>
-                      {insights[selectedInsight].icon}
-                    </div>
-                    <div>
-                      <Pill tone="green">{insights[selectedInsight].tag}</Pill>
-                      <h3 className="text-xl font-black mt-1">Análise Huby</h3>
-                    </div>
-                  </div>
-
-                  <p className="text-lg text-white/90 leading-relaxed">
-                    {insights[selectedInsight].t}
-                    <span className="text-[#00ff7b] font-black underline decoration-[#00ff7b]/30 underline-offset-4">
-                      {insights[selectedInsight].b}
-                    </span>
-                    {insights[selectedInsight].t2}
-                  </p>
-
-                  <div className="mt-8 pt-8 border-t border-white/10">
-                    <div className="flex items-center gap-3 text-[#00ff7b]">
-                      <Sparkles size={16} />
-                      <span className="text-xs font-black uppercase tracking-widest">Insight Recomendado</span>
-                    </div>
-                    <p className="mt-3 text-sm text-white/50 leading-relaxed italic">
-                      "{insights[selectedInsight].voiceText}"
-                    </p>
-                  </div>
-                </GlassCard>
-              </motion.div>
-            )}
           </div>
         </div>
       </section>
+
 
       {/* ===== 7. HOW IT WORKS ===== */}
       <section className="relative py-28 px-6 lg:px-12">

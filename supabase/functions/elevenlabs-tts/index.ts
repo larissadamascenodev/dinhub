@@ -1,7 +1,7 @@
 import { serve } from "https://deno.land/std@0.168.0/http/server.ts";
 
 const ELEVENLABS_API_KEY = Deno.env.get("ELEVENLABS_API_KEY");
-const VOICE_ID = "EXAVITQu4vr4xnSDxMaL"; // Sarah - soft and professional
+const VOICE_ID = "JBFqnCBv73JpST9G8WfK"; // George - sophisticated British male (Jarvis-like)
 
 const corsHeaders = {
   "Access-Control-Allow-Origin": "*",
@@ -32,11 +32,11 @@ serve(async (req) => {
           text,
           model_id: "eleven_multilingual_v2",
           voice_settings: {
-            stability: 0.32,
+            stability: 0.35,
             similarity_boost: 0.85,
-            style: 0.55,
+            style: 0.0,
             use_speaker_boost: true,
-            speed: 1.02,
+            speed: 1.05,
           },
         }),
       }
