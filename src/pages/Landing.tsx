@@ -510,35 +510,57 @@ const Landing: React.FC = () => {
             </div>
 
             <div className="relative mt-12 flex items-center gap-6">
-              <div className="relative">
-                {/* Glow halo */}
+              <div className="relative w-44 h-44 flex items-center justify-center" aria-label="Huby - assistente IA">
+                {/* Outer atmospheric halo */}
                 <motion.div
-                  className="absolute inset-0 bg-[#00ff7b]/30 blur-3xl rounded-full"
-                  animate={isSpeaking ? { opacity: [0.5, 1, 0.5], scale: [1, 1.15, 1] } : { opacity: [0.25, 0.45, 0.25], scale: [0.95, 1.05, 0.95] }}
-                  transition={{ duration: isSpeaking ? 1.2 : 3.5, repeat: Infinity, ease: "easeInOut" }}
+                  className="absolute inset-0 rounded-full bg-[#00ff7b]/25 blur-3xl"
+                  animate={isSpeaking
+                    ? { opacity: [0.5, 1, 0.5], scale: [1, 1.25, 1] }
+                    : { opacity: [0.3, 0.55, 0.3], scale: [0.95, 1.1, 0.95] }}
+                  transition={{ duration: isSpeaking ? 1.1 : 4, repeat: Infinity, ease: "easeInOut" }}
                 />
-                {/* Pulsing rings under Huby when speaking */}
-                {isSpeaking && [0, 1, 2].map((i) => (
+
+                {/* Expanding rings */}
+                {[0, 1, 2].map((i) => (
                   <motion.div
                     key={i}
-                    className="absolute left-1/2 bottom-2 -translate-x-1/2 rounded-full border border-[#00ff7b]/40"
-                    initial={{ width: 40, height: 10, opacity: 0.7 }}
-                    animate={{ width: 180, height: 40, opacity: 0 }}
-                    transition={{ duration: 1.8, repeat: Infinity, delay: i * 0.6, ease: "easeOut" }}
+                    className="absolute rounded-full border border-[#00ff7b]/40"
+                    initial={{ width: 60, height: 60, opacity: 0.6 }}
+                    animate={{
+                      width: isSpeaking ? 200 : 160,
+                      height: isSpeaking ? 200 : 160,
+                      opacity: 0,
+                    }}
+                    transition={{
+                      duration: isSpeaking ? 1.8 : 3,
+                      repeat: Infinity,
+                      delay: i * (isSpeaking ? 0.55 : 1),
+                      ease: "easeOut",
+                    }}
                   />
                 ))}
-                {/* Huby floating + breathing */}
-                <motion.img
-                  src={hubyBot}
-                  alt="Huby - assistente IA"
-                  className="w-44 h-44 object-contain relative z-10 drop-shadow-[0_0_30px_rgba(0,255,123,0.45)]"
-                  animate={
-                    isSpeaking
-                      ? { y: [0, -6, 0, -4, 0], scale: [1, 1.06, 1.02, 1.05, 1], rotate: [-1.5, 1.5, -1, 1, -1.5] }
-                      : { y: [0, -8, 0], rotate: [-1, 1, -1] }
-                  }
+
+                {/* Core orb */}
+                <motion.div
+                  className="relative z-10 w-24 h-24 rounded-full"
+                  style={{
+                    background:
+                      "radial-gradient(circle at 35% 30%, #d4ffe6 0%, #4dffa3 25%, #00ff7b 55%, #008f45 90%)",
+                    boxShadow:
+                      "0 0 40px rgba(0,255,123,0.7), 0 0 80px rgba(0,255,123,0.45), inset 0 -10px 20px rgba(0,90,40,0.6), inset 0 8px 18px rgba(255,255,255,0.35)",
+                  }}
+                  animate={isSpeaking
+                    ? { scale: [1, 1.12, 0.98, 1.08, 1] }
+                    : { scale: [1, 1.04, 1], y: [0, -4, 0] }}
                   transition={{ duration: isSpeaking ? 0.9 : 4, repeat: Infinity, ease: "easeInOut" }}
-                />
+                >
+                  {/* Inner highlight */}
+                  <motion.div
+                    className="absolute top-3 left-4 w-6 h-4 rounded-full bg-white/70 blur-[2px]"
+                    animate={{ opacity: [0.7, 0.95, 0.7] }}
+                    transition={{ duration: 2.5, repeat: Infinity, ease: "easeInOut" }}
+                  />
+                </motion.div>
               </div>
               {isSpeaking && (
                 <div className="flex gap-1 items-end h-8">
