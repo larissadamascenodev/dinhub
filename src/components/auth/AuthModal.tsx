@@ -87,6 +87,7 @@ export const AuthModal = ({ open, onOpenChange, defaultView = "login" }: AuthMod
         }
         toast.success("Login realizado com sucesso!");
         onOpenChange(false);
+        navigate("/dashboard");
       } else {
         const { error } = await supabase.auth.signUp({
           email,
