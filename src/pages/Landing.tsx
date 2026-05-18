@@ -7,7 +7,8 @@ import {
   Shield, 
   Menu,
   X,
-  Plus
+  Plus,
+  Upload
 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { AuthModal } from "@/components/auth/AuthModal";
@@ -20,6 +21,18 @@ const Landing = () => {
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
   const { user } = useAuth();
   const navigate = useNavigate();
+  const [heroBg, setHeroBg] = useState("https://images.unsplash.com/photo-1554224155-6726b3ff858f?auto=format&fit=crop&q=80&w=1200");
+
+  const handleImageUpload = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0];
+    if (file) {
+      const reader = new FileReader();
+      reader.onloadend = () => {
+        setHeroBg(reader.result as string);
+      };
+      reader.readAsDataURL(file);
+    }
+  };
 
   const openAuth = (view: "login" | "signup") => {
     setAuthView(view);
@@ -205,10 +218,19 @@ const Landing = () => {
               }}
             >
               <img 
-                src="https://images.unsplash.com/photo-1554224155-6726b3ff858f?auto=format&fit=crop&q=80&w=1200" 
-                alt="Pessoa real integrada no cenário" 
+                src={heroBg} 
+                alt="Fundo integrado" 
                 className="w-full h-full object-cover grayscale-[0.4] opacity-40 brightness-50"
               />
+              <label className="absolute bottom-10 right-10 z-50 p-4 rounded-full bg-white/10 hover:bg-white/20 backdrop-blur-md border border-white/20 cursor-pointer transition-all pointer-events-auto group">
+                <Upload className="w-6 h-6 text-white group-hover:scale-110 transition-transform" />
+                <input 
+                  type="file" 
+                  accept="image/*" 
+                  onChange={handleImageUpload} 
+                  className="hidden" 
+                />
+              </label>
               <div className="absolute inset-0 bg-gradient-to-t from-[#020202] via-transparent to-transparent opacity-90" />
               <div className="absolute inset-0 bg-gradient-to-l from-transparent via-[#020202]/40 to-[#020202]" />
             </motion.div>
