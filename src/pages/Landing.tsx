@@ -192,26 +192,38 @@ const Landing = () => {
             </motion.div>
           </div>
 
-          {/* Right Content - Visual */}
-          <div className="relative flex justify-center lg:justify-end items-center py-10">
+          {/* Right Content - Visual Background Integration */}
+          <div className="relative h-full flex items-center justify-center lg:justify-end min-h-[500px] lg:min-h-0">
+            <motion.div 
+              initial={{ opacity: 0 }}
+              animate={{ opacity: 1 }}
+              transition={{ duration: 1.5 }}
+              className="absolute right-[-10%] lg:right-[-15%] top-1/2 -translate-y-1/2 w-[140%] lg:w-[130%] h-[130%] pointer-events-none z-0 overflow-hidden"
+              style={{
+                maskImage: 'linear-gradient(to left, black 40%, transparent 95%), linear-gradient(to bottom, transparent, black 20%, black 80%, transparent)',
+                WebkitMaskImage: 'linear-gradient(to left, black 40%, transparent 95%), linear-gradient(to bottom, transparent, black 20%, black 80%, transparent)'
+              }}
+            >
+              <img 
+                src="https://images.unsplash.com/photo-1573496359142-b8d87734a5a2?w=1200&auto=format&fit=crop&q=95" 
+                alt="Pessoa preocupada olhando gastos" 
+                className="w-full h-full object-cover grayscale-[0.1] opacity-60"
+              />
+              <div className="absolute inset-0 bg-gradient-to-t from-[#020202] via-transparent to-transparent opacity-80" />
+            </motion.div>
+
             <motion.div 
               initial={{ opacity: 0, scale: 0.9 }}
               animate={{ opacity: 1, scale: 1 }}
-              transition={{ duration: 0.8 }}
-              className="relative w-full max-w-[650px]"
+              transition={{ duration: 0.8, delay: 0.2 }}
+              className="relative w-full max-w-[650px] aspect-[4/5] lg:aspect-auto"
             >
-              {/* Main Image */}
-              <div className="rounded-[40px] overflow-hidden border border-white/5 shadow-2xl relative">
-                <img 
-                  src="https://images.unsplash.com/photo-1573496359142-b8d87734a5a2?w=1200&auto=format&fit=crop&q=95" 
-                  alt="Pessoa preocupada olhando gastos" 
-                  className="w-full h-full object-cover grayscale-[0.2]"
-                />
-                <div className="absolute inset-0 bg-gradient-to-t from-[#020202] via-transparent to-transparent opacity-60" />
+              {/* Scan Effect Overlaying the blended image area */}
+              <div className="absolute inset-0 z-10 overflow-hidden pointer-events-none">
                 <motion.div 
-                  animate={{ top: ["0%", "100%", "0%"] }}
-                  transition={{ duration: 5, repeat: Infinity, ease: "linear" }}
-                  className="absolute left-0 right-0 h-[2px] bg-gradient-to-r from-transparent via-[#00ff7b] to-transparent z-10 shadow-[0_0_15px_#00ff7b]"
+                  animate={{ top: ["-10%", "110%", "-10%"] }}
+                  transition={{ duration: 6, repeat: Infinity, ease: "linear" }}
+                  className="absolute left-[-20%] right-[-20%] h-[1px] bg-gradient-to-r from-transparent via-[#00ff7b]/50 to-transparent shadow-[0_0_20px_#00ff7b]"
                 />
               </div>
 
