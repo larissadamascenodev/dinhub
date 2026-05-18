@@ -625,38 +625,85 @@ const Landing: React.FC = () => {
                 </motion.div>
               )}
             </div>
+          </div>
 
-
-          <div className="relative min-h-[400px] flex items-center justify-center">
-            {!selectedInsight ? (
-              <div className="text-center space-y-4 opacity-40">
-                <div className="w-20 h-20 rounded-full bg-white/5 border border-white/10 flex items-center justify-center mx-auto mb-6">
-                  <Brain size={32} className="text-white" />
-                </div>
-                <p className="text-sm font-bold tracking-widest uppercase">Selecione uma pergunta acima</p>
-                <p className="text-xs text-white/50 max-w-[280px] mx-auto">A Huby analisará seus dados em tempo real para te dar a melhor resposta.</p>
-              </div>
-            ) : (
+          <div className="relative min-h-[500px] flex items-center justify-center">
+            <div className="relative w-[300px] h-[300px] lg:w-[450px] lg:h-[450px] flex items-center justify-center" aria-label="Huby - assistente IA">
+              {/* Outer atmospheric halo — reage ao volume */}
               <motion.div
-                initial={{ opacity: 0, scale: 0.95, y: 20 }}
-                animate={{ opacity: 1, scale: 1, y: 0 }}
-                key={selectedInsight}
-                className="w-full"
+                className="absolute inset-0 rounded-full bg-[#00ff7b] blur-[80px] pointer-events-none"
+                style={{
+                  opacity: isSpeaking ? 0.25 + audioLevel * 0.7 : 0.18,
+                  scale: 1 + audioLevel * 0.55,
+                }}
+                animate={!isSpeaking ? { opacity: [0.15, 0.3, 0.15], scale: [0.9, 1.05, 0.9] } : undefined}
+                transition={!isSpeaking ? { duration: 4, repeat: Infinity, ease: "easeInOut" } : { type: "spring", stiffness: 220, damping: 18 }}
+              />
+
+              {/* Voice-reactive ring */}
+              <motion.div
+                className="absolute rounded-full border-2 border-[#00ff7b] pointer-events-none"
+                style={{
+                  width: 140 + audioLevel * 140,
+                  height: 140 + audioLevel * 140,
+                  opacity: isSpeaking ? 0.3 + audioLevel * 0.6 : 0,
+                  borderColor: `rgba(0,255,123,${0.4 + audioLevel * 0.6})`,
+                  boxShadow: `0 0 ${30 + audioLevel * 50}px rgba(0,255,123,${0.4 + audioLevel * 0.5})`,
+                }}
+                transition={{ type: "spring", stiffness: 260, damping: 20 }}
+              />
+
+              {/* Continuous expanding rings (always visible when speaking) */}
+              {isSpeaking && [0, 1, 2].map((i) => (
+                <motion.div
+                  key={i}
+                  className="absolute rounded-full border border-[#00ff7b]/40 pointer-events-none"
+                  initial={{ width: 100, height: 100, opacity: 0.5 }}
+                  animate={{
+                    width: 280 + audioLevel * 100,
+                    height: 280 + audioLevel * 100,
+                    opacity: 0,
+                  }}
+                  transition={{ duration: 1.8, repeat: Infinity, delay: i * 0.6, ease: "easeOut" }}
+                />
+              ))}
+
+              {/* Core orb — escala com o volume */}
+              <motion.div
+                className="relative z-10 w-32 h-32 lg:w-48 lg:h-48 rounded-full"
+                style={{
+                  background:
+                    "radial-gradient(circle at 35% 30%, #d4ffe6 0%, #4dffa3 25%, #00ff7b 55%, #008f45 90%)",
+                  boxShadow: `0 0 ${40 + audioLevel * 80}px rgba(0,255,123,${0.6 + audioLevel * 0.4}), 0 0 ${80 + audioLevel * 100}px rgba(0,255,123,${0.35 + audioLevel * 0.35}), inset 0 -15px 30px rgba(0,90,40,0.6), inset 0 10px 25px rgba(255,255,255,0.4)`,
+                  scale: 1 + audioLevel * 0.2,
+                }}
+                animate={!isSpeaking ? { scale: [1, 1.05, 1], y: [0, -6, 0] } : undefined}
+                transition={!isSpeaking ? { duration: 4, repeat: Infinity, ease: "easeInOut" } : { type: "spring", stiffness: 320, damping: 16 }}
               >
-                <GlassCard className="p-8 relative overflow-hidden group">
-                  <div className="absolute top-0 right-0 p-6 opacity-10 group-hover:opacity-20 transition-opacity">
-                    {insights[selectedInsight].icon}
-                  </div>
-                  
-                  <div className="flex items-center gap-4 mb-8">
-                    <div className="w-14 h-14 rounded-2xl flex items-center justify-center shrink-0" style={{ background: `${insights[selectedInsight].c}1a`, color: insights[selectedInsight].c }}>
-                      {insights[selectedInsight].icon}
-                    </div>
-                    <div>
-                      <Pill tone="green">{insights[selectedInsight].tag}</Pill>
-                      <h3 className="text-xl font-black mt-1">Análise Huby</h3>
-                    </div>
-                  </div>
+                <motion.div
+                  className="absolute top-4 left-6 w-8 h-6 rounded-full bg-white/70 blur-[3px]"
+                  style={{ opacity: 0.7 + audioLevel * 0.3 }}
+                />
+              </motion.div>
+
+              {isSpeaking && (
+                <div className="absolute -bottom-12 flex gap-1.5 items-end h-12">
+                  {[0, 1, 2, 3, 4, 5, 6].map((i) => {
+                    const phase = [1, 0.7, 1.2, 0.8, 1.1, 0.9, 1.05][i];
+                    const h = 8 + audioLevel * 48 * phase + Math.sin(Date.now() / (100 + i * 30)) * 3;
+                    return (
+                      <motion.div
+                        key={i}
+                        className="w-2 bg-[#00ff7b] rounded-full"
+                        style={{ height: Math.max(6, h) }}
+                        transition={{ type: "spring", stiffness: 400, damping: 18 }}
+                      />
+                    );
+                  })}
+                </div>
+              )}
+            </div>
+          </div>
 
                   <p className="text-lg text-white/90 leading-relaxed">
                     {insights[selectedInsight].t}
