@@ -44,7 +44,7 @@ const ProtectedRoute = ({ children }: { children: React.ReactNode }) => {
       </div>
     );
   }
-  return user ? <>{children}</> : <Navigate to="/auth" replace />;
+  return user ? <>{children}</> : <Navigate to="/" replace />;
 };
 
 const App = () => (
