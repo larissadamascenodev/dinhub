@@ -451,7 +451,7 @@ const Landing = () => {
               <div className="absolute -z-10 top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[130%] h-[130%] bg-primary/5 blur-[150px] rounded-full" />
             </div>
 
-          </div>
+          </motion.div>
         </div>
       </section>
 
