@@ -193,23 +193,23 @@ const Landing = () => {
           </div>
 
           {/* Right Content - Visual Background Integration */}
-          <div className="relative h-full flex items-center justify-center lg:justify-end">
+          <div className="relative h-full flex items-center justify-center lg:justify-end min-h-[500px] lg:min-h-0">
             <motion.div 
               initial={{ opacity: 0 }}
               animate={{ opacity: 1 }}
               transition={{ duration: 1.5 }}
-              className="absolute right-[-10%] lg:right-[-20%] top-1/2 -translate-y-1/2 w-[140%] lg:w-[120%] h-[120%] pointer-events-none z-0"
+              className="absolute right-[-10%] lg:right-[-15%] top-1/2 -translate-y-1/2 w-[140%] lg:w-[130%] h-[130%] pointer-events-none z-0 overflow-hidden"
               style={{
-                maskImage: 'radial-gradient(circle at center, black 30%, transparent 70%)',
-                WebkitMaskImage: 'radial-gradient(circle at center, black 30%, transparent 70%)'
+                maskImage: 'linear-gradient(to left, black 40%, transparent 95%), linear-gradient(to bottom, transparent, black 20%, black 80%, transparent)',
+                WebkitMaskImage: 'linear-gradient(to left, black 40%, transparent 95%), linear-gradient(to bottom, transparent, black 20%, black 80%, transparent)'
               }}
             >
               <img 
                 src="https://images.unsplash.com/photo-1573496359142-b8d87734a5a2?w=1200&auto=format&fit=crop&q=95" 
                 alt="Pessoa preocupada olhando gastos" 
-                className="w-full h-full object-cover grayscale-[0.3] opacity-50"
+                className="w-full h-full object-cover grayscale-[0.1] opacity-60"
               />
-              <div className="absolute inset-0 bg-gradient-to-r from-[#020202] via-transparent to-transparent" />
+              <div className="absolute inset-0 bg-gradient-to-t from-[#020202] via-transparent to-transparent opacity-80" />
             </motion.div>
 
             <motion.div 
