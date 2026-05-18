@@ -205,18 +205,19 @@ const Landing = () => {
               }}
             >
               <img 
-                src="/lovable-uploads/617cb75f-223f-42a1-a75d-63523f46f399.png" 
+                src="https://images.unsplash.com/photo-1573497019940-1c28c88b4f3e?auto=format&fit=crop&q=80&w=1000" 
                 alt="Pessoa real integrada no cenário" 
-                className="w-full h-full object-cover grayscale-[0.2] opacity-80"
+                className="w-full h-full object-cover grayscale-[0.2] opacity-60"
               />
-              <div className="absolute inset-0 bg-gradient-to-t from-[#020202] via-transparent to-transparent opacity-80" />
+              <div className="absolute inset-0 bg-gradient-to-t from-[#020202] via-transparent to-transparent opacity-90" />
+              <div className="absolute inset-0 bg-gradient-to-l from-transparent via-[#020202]/40 to-[#020202]" />
             </motion.div>
 
             <motion.div 
               initial={{ opacity: 0, scale: 0.9 }}
               animate={{ opacity: 1, scale: 1 }}
               transition={{ duration: 0.8, delay: 0.2 }}
-              className="relative w-full max-w-[650px] aspect-[4/5] lg:aspect-auto"
+              className="relative w-full max-w-[650px] min-h-[600px] lg:min-h-[700px]"
             >
               {/* Scan Effect Overlaying the blended image area */}
               <div className="absolute inset-0 z-10 overflow-hidden pointer-events-none">
@@ -236,7 +237,7 @@ const Landing = () => {
                   className="absolute top-[10%] -right-4 md:-right-8 w-[280px] md:w-[340px] p-5 rounded-[24px] bg-[#0f0f0f]/90 backdrop-blur-xl border border-white/10 shadow-2xl flex justify-between items-center"
                 >
                   <div className="flex items-center gap-4">
-                    <img src="https://upload.wikimedia.org/wikipedia/commons/thumb/5/58/Ifood_logo.svg/512px-Ifood_logo.svg.png" className="w-12 h-12 md:w-14 md:h-14 rounded-2xl bg-[#111] p-2 object-contain" />
+                    <img src="https://logodownload.org/wp-content/uploads/2017/05/ifood-logo-0.png" className="w-12 h-12 md:w-14 md:h-14 rounded-2xl bg-[#EA1D2C] p-2 object-contain" />
                     <div>
                       <strong className="text-lg md:text-2xl block">iFood</strong>
                       <p className="text-white/55 text-sm">Hoje, 13:42</p>
@@ -252,7 +253,7 @@ const Landing = () => {
                   className="absolute top-[28%] -right-2 md:right-0 w-[280px] md:w-[340px] p-5 rounded-[24px] bg-[#0f0f0f]/90 backdrop-blur-xl border border-white/10 shadow-2xl flex justify-between items-center"
                 >
                   <div className="flex items-center gap-4">
-                    <img src="https://upload.wikimedia.org/wikipedia/commons/c/cc/Uber_logo_2018.png" className="w-12 h-12 md:w-14 md:h-14 rounded-2xl bg-white p-3 object-contain" />
+                    <img src="https://upload.wikimedia.org/wikipedia/commons/thumb/5/58/Uber_logo_2018.svg/512px-Uber_logo_2018.svg.png" className="w-12 h-12 md:w-14 md:h-14 rounded-2xl bg-black p-3 object-contain invert" />
                     <div>
                       <strong className="text-lg md:text-2xl block">Uber</strong>
                       <p className="text-white/55 text-sm">Hoje, 12:18</p>
@@ -268,7 +269,7 @@ const Landing = () => {
                   className="absolute top-[46%] -right-4 md:-right-4 w-[280px] md:w-[340px] p-5 rounded-[24px] bg-[#0f0f0f]/90 backdrop-blur-xl border border-white/10 shadow-2xl flex justify-between items-center"
                 >
                   <div className="flex items-center gap-4">
-                    <img src="https://upload.wikimedia.org/wikipedia/commons/2/2e/Mercado_Libre_logo.svg" className="w-12 h-12 md:w-14 md:h-14 rounded-2xl bg-[#ffdb00] p-2 object-contain" />
+                    <img src="https://logodownload.org/wp-content/uploads/2014/10/mercado-livre-logo-11.png" className="w-12 h-12 md:w-14 md:h-14 rounded-2xl bg-[#FFE600] p-2 object-contain" />
                     <div>
                       <strong className="text-lg md:text-2xl block">M. Livre</strong>
                       <p className="text-white/55 text-sm">Hoje, 10:37</p>
