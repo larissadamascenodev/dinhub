@@ -89,7 +89,7 @@ const ResetPassword = () => {
           <p className="text-sm text-muted-foreground">
             Este link de recuperação é inválido ou expirou.
           </p>
-          <Button onClick={() => navigate("/auth")} className="w-full" style={{ background: "var(--gradient-primary)" }}>
+          <Button onClick={() => navigate("/")} className="w-full" style={{ background: "var(--gradient-primary)" }}>
             Voltar ao login
           </Button>
         </div>
