@@ -22,56 +22,70 @@ import { useNavigate } from "react-router-dom";
 const HubyMascot = ({ className = "" }: { className?: string }) => {
   return (
     <motion.div 
-      animate={{ y: [0, -15, 0] }}
-      transition={{ duration: 4, repeat: Infinity, ease: "easeInOut" }}
-      className={`relative w-40 h-40 md:w-56 md:h-56 ${className}`}
+      animate={{ y: [0, -20, 0] }}
+      transition={{ duration: 6, repeat: Infinity, ease: "easeInOut" }}
+      className={`relative w-48 h-48 md:w-64 md:h-64 ${className}`}
     >
-      {/* Glow effect */}
-      <div className="absolute inset-0 bg-primary/20 blur-[60px] rounded-full animate-pulse" />
+      {/* Intense Glow effect */}
+      <div className="absolute inset-0 bg-primary/25 blur-[80px] rounded-full animate-pulse" />
       
       {/* 3D Mascot CSS Construction */}
-      <div className="relative w-full h-full">
-        {/* Main Body */}
-        <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[85%] h-[85%] rounded-[40%] bg-gradient-to-br from-[#1a1a1a] to-[#000] border-2 border-primary/40 shadow-[0_20px_40px_rgba(0,0,0,0.4)] overflow-hidden">
-          {/* Inner details / circuitry */}
-          <div className="absolute inset-0 opacity-20 bg-[radial-gradient(circle_at_center,var(--primary)_0%,transparent_70%)]" />
-          <div className="absolute top-[20%] left-0 right-0 h-px bg-primary/20" />
-          <div className="absolute bottom-[20%] left-0 right-0 h-px bg-primary/20" />
+      <div className="relative w-full h-full perspective-1000">
+        {/* Main Body - Sleeker 3D Sphere */}
+        <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[90%] h-[90%] rounded-[45%] bg-gradient-to-br from-[#1a1a1a] via-[#050505] to-[#000] border-2 border-primary/50 shadow-[0_30px_60px_rgba(0,0,0,0.6),inset_0_2px_10px_rgba(0,230,118,0.2)] overflow-hidden">
+          {/* Circuitry Pattern Overlay */}
+          <div className="absolute inset-0 opacity-30 bg-[radial-gradient(circle_at_center,var(--primary)_0%,transparent_70%)]" />
+          <div className="absolute inset-0 bg-[linear-gradient(rgba(0,230,118,0.1)_1px,transparent_1px),linear-gradient(90deg,rgba(0,230,118,0.1)_1px,transparent_1px)] bg-[size:20px_20px] opacity-10" />
           
-          {/* Face Area */}
-          <div className="absolute top-[35%] left-1/2 -translate-x-1/2 w-[70%] h-[35%] rounded-full bg-black/60 backdrop-blur-md border border-primary/30 flex items-center justify-center gap-6">
-            {/* Eyes */}
+          {/* Face Area - Glassy Visor */}
+          <div className="absolute top-[32%] left-1/2 -translate-x-1/2 w-[75%] h-[40%] rounded-[2rem] bg-black/70 backdrop-blur-xl border border-primary/40 flex flex-col items-center justify-center shadow-[inset_0_0_20px_rgba(0,230,118,0.1)]">
+            <div className="flex items-center gap-8 mb-2">
+              {/* Eyes with scanning line */}
+              <div className="relative">
+                <motion.div 
+                  animate={{ scaleY: [1, 0.1, 1], opacity: [1, 0.5, 1] }}
+                  transition={{ duration: 5, repeat: Infinity, times: [0, 0.95, 1] }}
+                  className="w-5 h-5 rounded-full bg-primary shadow-[0_0_15px_var(--primary)]" 
+                />
+              </div>
+              <div className="relative">
+                <motion.div 
+                  animate={{ scaleY: [1, 0.1, 1], opacity: [1, 0.5, 1] }}
+                  transition={{ duration: 5, repeat: Infinity, times: [0, 0.95, 1], delay: 0.1 }}
+                  className="w-5 h-5 rounded-full bg-primary shadow-[0_0_15px_var(--primary)]" 
+                />
+              </div>
+            </div>
+            
+            {/* Pulsing Status Light */}
             <motion.div 
-              animate={{ scaleY: [1, 0.1, 1] }}
-              transition={{ duration: 4, repeat: Infinity, times: [0, 0.95, 1] }}
-              className="w-4 h-4 rounded-full bg-primary shadow-[0_0_10px_var(--primary)]" 
-            />
-            <motion.div 
-              animate={{ scaleY: [1, 0.1, 1] }}
-              transition={{ duration: 4, repeat: Infinity, times: [0, 0.95, 1] }}
-              className="w-4 h-4 rounded-full bg-primary shadow-[0_0_10px_var(--primary)]" 
+              animate={{ opacity: [0.3, 1, 0.3] }}
+              transition={{ duration: 2, repeat: Infinity }}
+              className="w-12 h-1 rounded-full bg-primary/60 shadow-[0_0_10px_var(--primary)]"
             />
           </div>
           
-          {/* Interactive Mouth/Status */}
-          <div className="absolute bottom-[20%] left-1/2 -translate-x-1/2 w-8 h-1 rounded-full bg-primary/40" />
+          {/* Reflection highlight */}
+          <div className="absolute top-4 left-8 w-1/2 h-1/4 bg-white/5 rounded-full blur-xl rotate-[-35deg]" />
         </div>
         
-        {/* Floating Ears/Antennas */}
+        {/* Floating Mechanical Ears/Modules */}
         <motion.div 
-          animate={{ y: [0, 5, 0] }}
-          transition={{ duration: 2, repeat: Infinity }}
-          className="absolute -top-[5%] left-[20%] w-10 h-10 rounded-xl bg-gradient-to-br from-primary/80 to-primary/20 border border-primary/40 rotate-12 flex items-center justify-center"
+          animate={{ rotate: [12, 18, 12], y: [0, 8, 0] }}
+          transition={{ duration: 4, repeat: Infinity, ease: "easeInOut" }}
+          className="absolute -top-[5%] left-[10%] w-14 h-14 rounded-2xl bg-[#111] border border-primary/40 shadow-xl flex items-center justify-center overflow-hidden"
         >
-          <div className="w-4 h-4 bg-white/20 rounded-sm" />
+          <div className="absolute inset-0 bg-gradient-to-br from-primary/30 to-transparent" />
+          <Zap className="w-6 h-6 text-primary drop-shadow-[0_0_5px_rgba(0,230,118,0.5)]" />
         </motion.div>
         
         <motion.div 
-          animate={{ y: [0, -5, 0] }}
-          transition={{ duration: 2, repeat: Infinity, delay: 0.5 }}
-          className="absolute -top-[5%] right-[20%] w-10 h-10 rounded-xl bg-gradient-to-br from-primary/80 to-primary/20 border border-primary/40 -rotate-12 flex items-center justify-center"
+          animate={{ rotate: [-12, -18, -12], y: [0, -8, 0] }}
+          transition={{ duration: 4, repeat: Infinity, ease: "easeInOut", delay: 0.5 }}
+          className="absolute -top-[5%] right-[10%] w-14 h-14 rounded-2xl bg-[#111] border border-primary/40 shadow-xl flex items-center justify-center overflow-hidden"
         >
-          <div className="w-4 h-4 bg-white/20 rounded-sm" />
+          <div className="absolute inset-0 bg-gradient-to-br from-primary/30 to-transparent" />
+          <Shield className="w-6 h-6 text-primary drop-shadow-[0_0_5px_rgba(0,230,118,0.5)]" />
         </motion.div>
       </div>
     </motion.div>
