@@ -222,14 +222,29 @@ const Landing = () => {
         <div className="absolute inset-0 bg-[linear-gradient(rgba(255,255,255,0.02)_1px,transparent_1px),linear-gradient(90deg,rgba(255,255,255,0.02)_1px,transparent_1px)] bg-[size:50px_50px] pointer-events-none [mask-image:radial-gradient(ellipse_at_center,black_40%,transparent_90%)]" />
 
         <div className="container mx-auto px-6 relative z-10">
-          <div className="grid lg:grid-cols-2 gap-20 items-center">
+          <motion.div 
+            initial="hidden"
+            animate="visible"
+            variants={{
+              hidden: { opacity: 0 },
+              visible: {
+                opacity: 1,
+                transition: {
+                  staggerChildren: 0.15,
+                  delayChildren: 0.2
+                }
+              }
+            }}
+            className="grid lg:grid-cols-2 gap-20 items-center"
+          >
             
             {/* Left Content */}
             <div className="space-y-12 max-w-3xl mx-auto lg:mx-0 text-center lg:text-left">
               <motion.div 
-                initial={{ opacity: 0, y: 20 }}
-                animate={{ opacity: 1, y: 0 }}
-                transition={{ duration: 0.8 }}
+                variants={{
+                  hidden: { opacity: 0, y: 20 },
+                  visible: { opacity: 1, y: 0 }
+                }}
                 className="inline-flex items-center gap-4 px-6 py-3 bg-white/[0.03] border border-white/10 rounded-2xl backdrop-blur-2xl shadow-2xl"
               >
                 <div className="flex -space-x-3">
@@ -249,9 +264,10 @@ const Landing = () => {
 
               <div className="space-y-6">
                 <motion.h1 
-                  initial={{ opacity: 0, y: 30 }}
-                  animate={{ opacity: 1, y: 0 }}
-                  transition={{ duration: 0.8, delay: 0.2 }}
+                  variants={{
+                    hidden: { opacity: 0, y: 30 },
+                    visible: { opacity: 1, y: 0 }
+                  }}
                   className="font-display text-6xl md:text-[90px] font-black tracking-[-0.06em] leading-[0.85] text-white"
                 >
                   Controle financeiro <br />
@@ -259,9 +275,10 @@ const Landing = () => {
                 </motion.h1>
                 
                 <motion.p 
-                  initial={{ opacity: 0, y: 30 }}
-                  animate={{ opacity: 1, y: 0 }}
-                  transition={{ duration: 0.8, delay: 0.3 }}
+                  variants={{
+                    hidden: { opacity: 0, y: 30 },
+                    visible: { opacity: 1, y: 0 }
+                  }}
                   className="text-muted-foreground text-xl md:text-2xl font-medium leading-relaxed max-w-2xl mx-auto lg:mx-0"
                 >
                   A primeira inteligência artificial que organiza suas contas, prevê o futuro do seu dinheiro e te ajuda a economizar de verdade.
@@ -269,9 +286,10 @@ const Landing = () => {
               </div>
 
               <motion.div 
-                initial={{ opacity: 0, y: 30 }}
-                animate={{ opacity: 1, y: 0 }}
-                transition={{ duration: 0.8, delay: 0.4 }}
+                variants={{
+                  hidden: { opacity: 0, y: 30 },
+                  visible: { opacity: 1, y: 0 }
+                }}
                 className="space-y-12"
               >
                 <div className="flex flex-col sm:flex-row items-center gap-8 justify-center lg:justify-start">
