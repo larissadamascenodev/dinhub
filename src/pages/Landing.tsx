@@ -8,8 +8,10 @@ import {
 import { AuthModal } from "@/components/auth/AuthModal";
 import { useAuth } from "@/contexts/AuthContext";
 import { useNavigate } from "react-router-dom";
+import { supabase } from "@/integrations/supabase/client";
 import heroWoman from "@/assets/hero-woman.jpeg";
 import hubyBot from "@/assets/huby-bot.jpeg";
+
 
 const NEON = "#00ff7b";
 
