@@ -79,7 +79,7 @@ const Landing = () => {
               <Button 
                 variant="ghost" 
                 className="text-sm font-semibold text-foreground hover:text-primary transition-colors"
-                onClick={() => navigate("/")}
+                onClick={() => navigate("/dashboard")}
               >
                 Dashboard
               </Button>
