@@ -205,9 +205,9 @@ const Landing = () => {
               }}
             >
               <img 
-                src="https://images.unsplash.com/photo-1573496359142-b8d87734a5a2?w=1200&auto=format&fit=crop&q=95" 
-                alt="Pessoa preocupada olhando gastos" 
-                className="w-full h-full object-cover grayscale-[0.1] opacity-60"
+                src="/lovable-uploads/617cb75f-223f-42a1-a75d-63523f46f399.png" 
+                alt="Pessoa real integrada no cenário" 
+                className="w-full h-full object-cover grayscale-[0.2] opacity-80"
               />
               <div className="absolute inset-0 bg-gradient-to-t from-[#020202] via-transparent to-transparent opacity-80" />
             </motion.div>
