@@ -454,31 +454,104 @@ const Landing: React.FC = () => {
               <span className="text-[#00ff7b]">E tome decisões melhores.</span>
             </h2>
             <p className="mt-6 text-lg text-white/55 max-w-lg leading-relaxed">
-              A Huby transforma dados em clareza. Faça perguntas sobre seu dinheiro, receba respostas práticas e descubra o que realmente importa.
+              A Huby transforma dados em clareza. Clique em uma das perguntas frequentes e ouça a análise personalizada da sua assistente.
             </p>
 
-            <div className="relative mt-10">
-              <img src={hubyBot} alt="Huby - assistente IA" className="w-64 h-64 object-contain mx-auto lg:mx-0" />
+            <div className="mt-10 grid grid-cols-1 sm:grid-cols-2 gap-3 max-w-lg">
+              {insights.map((insight) => (
+                <button
+                  key={insight.id}
+                  onClick={() => handleInsightClick(insight.id)}
+                  className={`px-4 py-3 rounded-2xl border text-left transition-all text-xs font-bold leading-tight flex items-center gap-3 ${
+                    selectedInsight === insight.id
+                      ? "bg-[#00ff7b]/20 border-[#00ff7b]/50 text-[#00ff7b]"
+                      : "bg-white/[0.03] border-white/[0.08] text-white/60 hover:bg-white/[0.06] hover:border-white/20"
+                  }`}
+                >
+                  <div className={`w-8 h-8 rounded-lg flex items-center justify-center shrink-0 ${
+                    selectedInsight === insight.id ? "bg-[#00ff7b]/20 text-[#00ff7b]" : "bg-white/5 text-white/40"
+                  }`}>
+                    {insight.id === 0 && <UtensilsCrossed size={14} />}
+                    {insight.id === 1 && <Bell size={14} />}
+                    {insight.id === 2 && <BarChart3 size={14} />}
+                    {insight.id === 3 && <Car size={14} />}
+                  </div>
+                  {insight.question}
+                </button>
+              ))}
+            </div>
+
+            <div className="relative mt-12 flex items-center gap-6">
+              <div className="relative">
+                <div className={`absolute inset-0 bg-[#00ff7b]/20 blur-3xl rounded-full transition-opacity duration-500 ${isSpeaking ? "opacity-100 animate-pulse" : "opacity-0"}`} />
+                <img src={hubyBot} alt="Huby - assistente IA" className={`w-40 h-40 object-contain relative z-10 transition-transform duration-500 ${isSpeaking ? "scale-110" : "scale-100"}`} />
+              </div>
+              {isSpeaking && (
+                <div className="flex gap-1 items-end h-8">
+                  {[...Array(5)].map((_, i) => (
+                    <motion.div
+                      key={i}
+                      animate={{ height: [8, 32, 12, 28, 8] }}
+                      transition={{ duration: 0.8, repeat: Infinity, delay: i * 0.1 }}
+                      className="w-1.5 bg-[#00ff7b] rounded-full"
+                    />
+                  ))}
+                </div>
+              )}
             </div>
           </div>
 
-          <div className="space-y-4">
-            {[
-              { icon:<TrendingUp size={18}/>, c:"#00ff7b", t:"Você gastou ", b:"18% a mais com delivery", t2:" do que no mês passado.", tag:"Alimentação" },
-              { icon:<Bell size={18}/>, c:"#f59e0b", t:"", b:"3 assinaturas somam R$ 79,90/mês", t2:" e quase não são usadas.", tag:"Assinaturas" },
-              { icon:<BarChart3 size={18}/>, c:"#a78bfa", t:"Se investir R$ 300/mês, pode acumular ", b:"R$ 31.723,41 em 5 anos.", t2:"", tag:"Investimentos" },
-              { icon:<Car size={18}/>, c:"#3b82f6", t:"Seus gastos com ", b:"Uber aumentaram 38%", t2:" este mês.", tag:"Transporte" },
-            ].map((card, i) => (
-              <motion.div key={i} initial={{opacity:0,x:20}} whileInView={{opacity:1,x:0}} viewport={{once:true}} transition={{delay:i*0.08}}>
-                <GlassCard className="p-5 flex items-start gap-4">
-                  <div className="w-11 h-11 rounded-xl flex items-center justify-center shrink-0" style={{background:`${card.c}1a`,color:card.c}}>{card.icon}</div>
-                  <p className="text-sm text-white/80 leading-relaxed flex-1">
-                    {card.t}<span className="text-[#00ff7b] font-bold">{card.b}</span>{card.t2}
+          <div className="relative min-h-[400px] flex items-center justify-center">
+            {!selectedInsight ? (
+              <div className="text-center space-y-4 opacity-40">
+                <div className="w-20 h-20 rounded-full bg-white/5 border border-white/10 flex items-center justify-center mx-auto mb-6">
+                  <Brain size={32} className="text-white" />
+                </div>
+                <p className="text-sm font-bold tracking-widest uppercase">Selecione uma pergunta acima</p>
+                <p className="text-xs text-white/50 max-w-[280px] mx-auto">A Huby analisará seus dados em tempo real para te dar a melhor resposta.</p>
+              </div>
+            ) : (
+              <motion.div
+                initial={{ opacity: 0, scale: 0.95, y: 20 }}
+                animate={{ opacity: 1, scale: 1, y: 0 }}
+                key={selectedInsight}
+                className="w-full"
+              >
+                <GlassCard className="p-8 relative overflow-hidden group">
+                  <div className="absolute top-0 right-0 p-6 opacity-10 group-hover:opacity-20 transition-opacity">
+                    {insights[selectedInsight].icon}
+                  </div>
+                  
+                  <div className="flex items-center gap-4 mb-8">
+                    <div className="w-14 h-14 rounded-2xl flex items-center justify-center shrink-0" style={{ background: `${insights[selectedInsight].c}1a`, color: insights[selectedInsight].c }}>
+                      {insights[selectedInsight].icon}
+                    </div>
+                    <div>
+                      <Pill tone="green">{insights[selectedInsight].tag}</Pill>
+                      <h3 className="text-xl font-black mt-1">Análise Huby</h3>
+                    </div>
+                  </div>
+
+                  <p className="text-lg text-white/90 leading-relaxed">
+                    {insights[selectedInsight].t}
+                    <span className="text-[#00ff7b] font-black underline decoration-[#00ff7b]/30 underline-offset-4">
+                      {insights[selectedInsight].b}
+                    </span>
+                    {insights[selectedInsight].t2}
                   </p>
-                  <span className="text-[10px] font-bold text-white/50 px-3 py-1 rounded-full bg-white/5 border border-white/10 shrink-0">{card.tag}</span>
+
+                  <div className="mt-8 pt-8 border-t border-white/10">
+                    <div className="flex items-center gap-3 text-[#00ff7b]">
+                      <Sparkles size={16} />
+                      <span className="text-xs font-black uppercase tracking-widest">Insight Recomendado</span>
+                    </div>
+                    <p className="mt-3 text-sm text-white/50 leading-relaxed italic">
+                      "{insights[selectedInsight].voiceText}"
+                    </p>
+                  </div>
                 </GlassCard>
               </motion.div>
-            ))}
+            )}
           </div>
         </div>
       </section>
