@@ -176,9 +176,9 @@ export const Hero: React.FC<{ onCta: () => void }> = ({ onCta }) => {
         </div>
 
         {/* Scroll Indicator */}
-        <div className="mt-16 animate-bounce text-white/20">
-          <div className="w-6 h-10 rounded-full border-2 border-current flex justify-center p-1">
-             <div className="w-1.5 h-1.5 rounded-full bg-current" />
+        <div className="mt-16 text-white/20">
+          <div className="w-5 h-8 rounded-full border border-current flex justify-center p-1.5">
+             <div className="w-1 h-1 rounded-full bg-current animate-bounce" />
           </div>
         </div>
       </div>
