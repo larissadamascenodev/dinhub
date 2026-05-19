@@ -19,17 +19,12 @@ export const CtaFinal: React.FC<{ onCta: () => void }> = ({ onCta }) => {
         <Reveal>
           <div className="text-center">
             <h2
-              className="font-display font-extrabold text-white leading-[1.05]"
-              style={{ fontSize: "clamp(1.8rem, 4vw, 3.4rem)" }}
+              className="font-display font-extrabold text-white leading-tight"
+              style={{ fontSize: "clamp(2rem, 5vw, 4rem)" }}
             >
-              Controle hoje.
+              Controle hoje.<br />
+              <span style={{ color: NEON }}>Mais liberdade amanhã.</span>
             </h2>
-            <p
-              className="font-display font-extrabold mt-1"
-              style={{ color: NEON, fontSize: "clamp(1.8rem, 4vw, 3.4rem)", lineHeight: 1.05 }}
-            >
-              Mais liberdade amanhã.
-            </p>
             <p
               className="mt-4 text-[#a0a0a0] max-w-[540px] mx-auto"
               style={{ fontSize: "clamp(0.95rem, 1.15vw, 1.05rem)" }}
@@ -40,7 +35,7 @@ export const CtaFinal: React.FC<{ onCta: () => void }> = ({ onCta }) => {
         </Reveal>
 
         <Reveal delay={0.1}>
-          <div className="mt-7 grid grid-cols-3 gap-2 sm:gap-4 max-w-[720px] mx-auto">
+          <div className="mt-8 grid grid-cols-1 sm:grid-cols-3 gap-3 sm:gap-4 max-w-[720px] mx-auto px-4 sm:px-0">
             {[
               ["Você registra.", "DinHub organiza."],
               ["Você entende.", "DinHub te mostra."],
@@ -48,11 +43,11 @@ export const CtaFinal: React.FC<{ onCta: () => void }> = ({ onCta }) => {
             ].map(([a, b]) => (
               <div
                 key={a}
-                className="rounded-xl p-3 sm:p-4 text-center"
-                style={{ background: "#111111", border: `1px solid ${NEON}22` }}
+                className="rounded-xl p-4 sm:p-5 text-center transition-all hover:border-[#00e676]/40"
+                style={{ background: "#111111", border: `1px solid ${NEON}22`, boxShadow: "0 4px 20px rgba(0,0,0,0.2)" }}
               >
-                <p className="text-white font-bold text-[11px] sm:text-sm leading-tight">{a}</p>
-                <p className="font-bold mt-1 text-[11px] sm:text-sm leading-tight" style={{ color: NEON }}>{b}</p>
+                <p className="text-white font-bold text-sm sm:text-base leading-tight">{a}</p>
+                <p className="font-bold mt-1 text-sm sm:text-base leading-tight" style={{ color: NEON }}>{b}</p>
               </div>
             ))}
           </div>
