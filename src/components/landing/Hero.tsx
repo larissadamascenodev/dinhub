@@ -29,14 +29,6 @@ export const Hero: React.FC<{ onCta: () => void }> = ({ onCta }) => {
       </div>
 
       <div className="relative z-10 w-full max-w-[1320px] px-5 flex flex-col items-center text-center">
-        {/* Offer Pill */}
-        <div className="flex items-center gap-2 mb-8">
-           <div className="flex items-center gap-2 bg-black border border-white/5 px-4 py-2 rounded-full">
-              <span className="text-[#00e676] text-sm">✦</span>
-              <span className="text-white font-bold text-xs lg:text-sm uppercase tracking-wider">Oferta de Lançamento:</span>
-              <span className="text-[#00e676] font-bold text-xs lg:text-sm uppercase tracking-wider">TESTE GRATUITAMENTE</span>
-           </div>
-        </div>
 
         {/* Top Feature Pill */}
         <div 
