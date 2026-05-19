@@ -177,23 +177,23 @@ const TxnCard: React.FC<Txn & { className?: string; style?: React.CSSProperties 
 );
 
 const MiniInfo: React.FC<{ icon: React.ReactElement; title: string; subtitle: string }> = ({ icon, title, subtitle }) => (
-  <div className="flex flex-col items-start gap-2">
+  <div className="flex flex-col items-start gap-2 min-w-0">
     <div
       className="rounded-lg sm:rounded-xl flex items-center justify-center shrink-0"
       style={{
         background: "rgba(0,230,118,0.1)",
         color: NEON,
-        width: "clamp(32px, 8vw, 44px)",
-        height: "clamp(32px, 8vw, 44px)",
+        width: "clamp(36px, 8vw, 44px)",
+        height: "clamp(36px, 8vw, 44px)",
       }}
     >
-      {React.cloneElement(icon, { size: 20, strokeWidth: 2.2 })}
+      {React.cloneElement(icon, { size: 28, strokeWidth: 2.2 })}
     </div>
-    <div className="min-w-0">
-      <p className="font-bold text-white mb-0.5 sm:mb-1 leading-tight" style={{ fontSize: "clamp(0.72rem, 2.6vw, 0.95rem)" }}>
+    <div className="min-w-0 w-full">
+      <p className="font-bold text-white mb-1 leading-tight" style={{ fontSize: "clamp(0.82rem, 2.4vw, 0.95rem)" }}>
         {title}
       </p>
-      <p className="text-white/60 leading-snug" style={{ fontSize: "clamp(0.62rem, 2.2vw, 0.82rem)" }}>
+      <p className="text-white/60 leading-snug" style={{ fontSize: "clamp(0.72rem, 2vw, 0.82rem)" }}>
         {subtitle}
       </p>
     </div>
