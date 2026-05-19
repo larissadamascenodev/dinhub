@@ -1,7 +1,7 @@
 import React from "react";
 import { Sparkles, TrendingUp, DollarSign, Camera, Calendar, AlertCircle, BarChart3, Heart, Radar, Shield, Lock, CheckCircle2 } from "lucide-react";
 import { Section, Pill, H2, Sub, Card, Reveal, NEON } from "./shared";
-import huby from "@/assets/huby-character.png";
+import HubyMascot from "./HubyMascot";
 
 const quickQs = [
   { icon: <TrendingUp size={14} />, label: "Quanto posso investir este mês?" },
