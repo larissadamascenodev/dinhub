@@ -18,7 +18,7 @@ import { AuthForm } from "../auth/AuthForm";
 
 export const Hero: React.FC<{ onCta: () => void }> = ({ onCta }) => {
   return (
-    <section className="relative w-full min-h-screen bg-[#0a0a0a] flex flex-col items-center pt-24 pb-16 lg:pt-32">
+    <section className="relative w-full min-h-screen bg-[#0a0a0a] flex flex-col items-center pt-16 pb-16">
       {/* Background Elements */}
       <div className="absolute inset-0 pointer-events-none overflow-hidden">
         <div 
@@ -29,9 +29,18 @@ export const Hero: React.FC<{ onCta: () => void }> = ({ onCta }) => {
       </div>
 
       <div className="relative z-10 w-full max-w-[1320px] px-5 flex flex-col items-center text-center">
+        {/* Offer Pill */}
+        <div className="flex items-center gap-2 mb-12">
+           <div className="flex items-center gap-2 bg-black border border-white/5 px-4 py-2 rounded-full">
+              <span className="text-[#00e676] text-sm">✦</span>
+              <span className="text-white font-bold text-xs lg:text-sm uppercase tracking-wider">Oferta de Lançamento:</span>
+              <span className="text-[#00e676] font-bold text-xs lg:text-sm uppercase tracking-wider">TESTE GRATUITAMENTE</span>
+           </div>
+        </div>
+
         {/* Top Feature Pill */}
         <div 
-          className="inline-flex items-center gap-2 rounded-full px-4 py-2 mb-8 border border-[#00e676]/20 bg-[#00e676]/5 backdrop-blur-sm"
+          className="inline-flex items-center gap-2 rounded-full px-4 py-2 mb-8 bg-[#00e676]/5 border border-[#00e676]/10 backdrop-blur-sm"
           style={{ fontSize: "clamp(0.7rem, 0.9vw, 0.85rem)" }}
         >
           <div className="flex -space-x-1.5 mr-1">
@@ -61,7 +70,7 @@ export const Hero: React.FC<{ onCta: () => void }> = ({ onCta }) => {
         </p>
 
         {/* Record Pill */}
-        <div className="inline-flex items-center gap-6 px-6 py-2.5 rounded-full bg-white/5 border border-white/10 mb-12 text-[10px] lg:text-xs font-bold uppercase tracking-widest text-white/40">
+        <div className="inline-flex items-center gap-4 px-6 py-2 rounded-full bg-white/5 border border-white/10 mb-12 text-[10px] lg:text-xs font-bold uppercase tracking-widest text-white/40">
            <span>Registre via</span>
            <span className="flex items-center gap-1.5 text-[#00e676] opacity-80"><MessageSquare size={14} /> texto</span>
            <span className="flex items-center gap-1.5 text-[#00e676] opacity-80"><Mic size={14} /> áudio</span>
