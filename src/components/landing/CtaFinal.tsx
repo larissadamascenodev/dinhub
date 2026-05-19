@@ -40,7 +40,7 @@ export const CtaFinal: React.FC<{ onCta: () => void }> = ({ onCta }) => {
         </Reveal>
 
         <Reveal delay={0.1}>
-          <div className="mt-7 grid grid-cols-3 gap-2 sm:gap-4 max-w-[720px] mx-auto">
+          <div className="mt-8 grid grid-cols-1 sm:grid-cols-3 gap-3 sm:gap-4 max-w-[720px] mx-auto px-4 sm:px-0">
             {[
               ["Você registra.", "DinHub organiza."],
               ["Você entende.", "DinHub te mostra."],
@@ -48,11 +48,11 @@ export const CtaFinal: React.FC<{ onCta: () => void }> = ({ onCta }) => {
             ].map(([a, b]) => (
               <div
                 key={a}
-                className="rounded-xl p-3 sm:p-4 text-center"
-                style={{ background: "#111111", border: `1px solid ${NEON}22` }}
+                className="rounded-xl p-4 sm:p-5 text-center transition-all hover:border-[#00e676]/40"
+                style={{ background: "#111111", border: `1px solid ${NEON}22`, boxShadow: "0 4px 20px rgba(0,0,0,0.2)" }}
               >
-                <p className="text-white font-bold text-[11px] sm:text-sm leading-tight">{a}</p>
-                <p className="font-bold mt-1 text-[11px] sm:text-sm leading-tight" style={{ color: NEON }}>{b}</p>
+                <p className="text-white font-bold text-sm sm:text-base leading-tight">{a}</p>
+                <p className="font-bold mt-1 text-sm sm:text-base leading-tight" style={{ color: NEON }}>{b}</p>
               </div>
             ))}
           </div>
