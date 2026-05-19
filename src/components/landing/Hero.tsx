@@ -109,7 +109,7 @@ export const Hero: React.FC<{ onCta: () => void }> = ({ onCta }) => {
         </div>
 
         {/* Bottom Stats Grid - Like Operafit */}
-        <div className="grid grid-cols-2 lg:grid-cols-4 gap-8 lg:gap-20 mt-16 lg:mt-10 text-center z-20">
+        <div className="grid grid-cols-2 lg:grid-cols-4 gap-8 lg:gap-20 mt-8 lg:mt-4 text-center z-20">
           <StatBox label="Para registrar" value="3s" />
           <StatBox label="Estágios de controle" value="7+" />
           <StatBox label="Medalhas" value="50+" />
