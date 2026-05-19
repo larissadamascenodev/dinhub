@@ -44,9 +44,9 @@ export const Hero: React.FC<{ onCta: () => void }> = ({ onCta }) => {
       >
         <div className="grid lg:grid-cols-2 gap-10 items-center">
           {/* LEFT: copy */}
-          <div className="flex flex-col" style={{ gap: "clamp(1rem, 1.8vw, 1.5rem)" }}>
+          <div className="flex flex-col items-center text-center lg:items-start lg:text-left" style={{ gap: "24px" }}>
             <div
-              className="inline-flex items-center gap-3 self-start rounded-full border px-3 py-2 max-w-full"
+              className="inline-flex items-center gap-3 rounded-full border px-3 py-2 max-w-full"
               style={{ background: "rgba(0,230,118,0.06)", borderColor: "rgba(0,230,118,0.25)" }}
             >
               <div className="flex -space-x-2 shrink-0">
@@ -54,19 +54,18 @@ export const Hero: React.FC<{ onCta: () => void }> = ({ onCta }) => {
                   <img key={i} src={src} alt="" className="h-7 w-7 rounded-full border-2" style={{ borderColor: "#0a0a0a" }} />
                 ))}
               </div>
-              <span className="font-semibold" style={{ color: NEON_GLOW, fontSize: "clamp(0.7rem, 0.95vw, 0.9rem)" }}>
+              <span className="font-semibold" style={{ color: NEON_GLOW, fontSize: "clamp(0.78rem, 2.6vw, 0.9rem)" }}>
                 +2.847 pessoas assumindo o controle
               </span>
             </div>
 
             <h1
-              className="font-display font-extrabold text-white tracking-tight"
+              className="font-display font-extrabold text-white tracking-tight w-full"
               style={{
-                fontSize: "clamp(1.9rem, 5vw, 4.4rem)",
-                lineHeight: 1.05,
+                fontSize: "clamp(2rem, 8vw, 4.4rem)",
+                lineHeight: 1.08,
                 wordWrap: "break-word",
                 overflowWrap: "break-word",
-                maxWidth: "100%",
               }}
             >
               Seu dinheiro some todo mês e você{" "}
@@ -74,19 +73,20 @@ export const Hero: React.FC<{ onCta: () => void }> = ({ onCta }) => {
             </h1>
 
             <p
-              className="text-[#a0a0a0]"
+              className="text-[#a0a0a0] w-full"
               style={{
-                fontSize: "clamp(0.95rem, 3.5vw, 1.25rem)",
+                fontSize: "clamp(0.9rem, 3.5vw, 1.18rem)",
                 lineHeight: 1.55,
-                maxWidth: "100%",
                 wordWrap: "break-word",
                 overflowWrap: "break-word",
+                paddingLeft: "4px",
+                paddingRight: "4px",
               }}
             >
               O DinHub analisa cada centavo, te avisa antes de virar problema e te mostra o que fazer. Em português, sem enrolação.
             </p>
 
-            <div className="flex flex-col sm:flex-row flex-wrap gap-3 pt-2 w-full">
+            <div className="flex flex-col sm:flex-row sm:flex-wrap gap-3 pt-1 w-full">
               <button
                 onClick={onCta}
                 className="inline-flex items-center justify-center gap-2 rounded-full font-bold text-black transition-all hover:scale-[1.02] w-full sm:w-auto"
@@ -177,23 +177,23 @@ const TxnCard: React.FC<Txn & { className?: string; style?: React.CSSProperties 
 );
 
 const MiniInfo: React.FC<{ icon: React.ReactElement; title: string; subtitle: string }> = ({ icon, title, subtitle }) => (
-  <div className="flex flex-col items-start gap-2">
+  <div className="flex flex-col items-start gap-2 min-w-0">
     <div
       className="rounded-lg sm:rounded-xl flex items-center justify-center shrink-0"
       style={{
         background: "rgba(0,230,118,0.1)",
         color: NEON,
-        width: "clamp(32px, 8vw, 44px)",
-        height: "clamp(32px, 8vw, 44px)",
+        width: "clamp(36px, 8vw, 44px)",
+        height: "clamp(36px, 8vw, 44px)",
       }}
     >
-      {React.cloneElement(icon, { size: 20, strokeWidth: 2.2 })}
+      {React.cloneElement(icon, { size: 28, strokeWidth: 2.2 })}
     </div>
-    <div className="min-w-0">
-      <p className="font-bold text-white mb-0.5 sm:mb-1 leading-tight" style={{ fontSize: "clamp(0.72rem, 2.6vw, 0.95rem)" }}>
+    <div className="min-w-0 w-full">
+      <p className="font-bold text-white mb-1 leading-tight" style={{ fontSize: "clamp(0.82rem, 2.4vw, 0.95rem)" }}>
         {title}
       </p>
-      <p className="text-white/60 leading-snug" style={{ fontSize: "clamp(0.62rem, 2.2vw, 0.82rem)" }}>
+      <p className="text-white/60 leading-snug" style={{ fontSize: "clamp(0.72rem, 2vw, 0.82rem)" }}>
         {subtitle}
       </p>
     </div>
