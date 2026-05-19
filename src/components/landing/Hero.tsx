@@ -33,10 +33,10 @@ export const Hero: React.FC<{ onCta: () => void }> = ({ onCta }) => {
         {/* Main Headline */}
         <h1
           className="font-display font-black text-white tracking-tight w-full mb-6 leading-[1.0] max-w-[900px]"
-          style={{ fontSize: "clamp(2.5rem, 8vw, 6rem)" }}
+          style={{ fontSize: "clamp(2.5rem, 8vw, 6.2rem)" }}
         >
-          Seu dinheiro no <span className="italic opacity-40">piloto</span><br />
-          <span style={{ color: NEON }}>automático.</span>
+          Seu dinheiro <span className="opacity-40 italic">no</span><br />
+          <span style={{ color: NEON }}>piloto automático.</span>
         </h1>
 
         {/* Supporting Text */}
