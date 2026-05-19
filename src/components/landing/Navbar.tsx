@@ -42,8 +42,9 @@ export const Navbar: React.FC<Props> = ({ onLogin, onSignup }) => {
             paddingBottom: "clamp(0.85rem, 1.2vw, 1.1rem)",
           }}
         >
-          <a href="#" className="font-display font-extrabold text-white" style={{ fontSize: "clamp(1.35rem, 1.8vw, 1.7rem)", letterSpacing: "-0.02em" }}>
-            Din<span style={{ color: NEON }}>Hub</span>
+          <a href="#" className="flex items-center gap-2 group">
+             <div className="w-8 h-8 rounded-lg flex items-center justify-center font-black text-black text-sm" style={{ background: NEON }}>D</div>
+             <span className="font-display font-extrabold text-white text-xl tracking-tight">DinHub</span>
           </a>
 
           {/* Desktop pill nav */}
