@@ -58,7 +58,7 @@ export const Navbar: React.FC<Props> = ({ onLogin, onSignup }) => {
             ))}
           </nav>
 
-          <div className="hidden lg:flex items-center gap-3">
+          <div className="flex items-center gap-3">
             <button
               onClick={onLogin}
               className="rounded-full border border-white/15 bg-white/[0.03] px-5 py-2.5 text-sm font-semibold text-white transition-colors hover:bg-white/[0.08]"
@@ -67,25 +67,12 @@ export const Navbar: React.FC<Props> = ({ onLogin, onSignup }) => {
             </button>
             <button
               onClick={onSignup}
-              className="rounded-full px-5 py-2.5 text-sm font-bold text-black transition-all hover:scale-[1.03]"
+              className="hidden lg:flex rounded-full px-5 py-2.5 text-sm font-bold text-black transition-all hover:scale-[1.03]"
               style={{ background: NEON, boxShadow: "0 0 24px rgba(0,230,118,0.35)" }}
             >
-              Começar grátis
+              Cadastre-se
             </button>
           </div>
-
-          <button
-            onClick={onSignup}
-            className="lg:hidden rounded-full font-bold text-black transition-all active:scale-95"
-            style={{
-              background: NEON,
-              padding: "8px 16px",
-              fontSize: "0.82rem",
-              boxShadow: "0 0 18px rgba(0,230,118,0.35)",
-            }}
-          >
-            Começar grátis
-          </button>
         </div>
       </header>
 
