@@ -46,7 +46,7 @@ const Landing: React.FC = () => {
         <CtaFinal onCta={openSignup} />
       </main>
       <Footer />
-      <AuthModal open={authOpen} onOpenChange={setAuthOpen} initialView={authView} />
+      <AuthModal open={authOpen} onOpenChange={setAuthOpen} defaultView={authView} />
 
       <style>{`
         @media (prefers-reduced-motion: reduce) {
