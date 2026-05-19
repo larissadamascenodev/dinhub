@@ -40,7 +40,7 @@ const CategoriasTab: React.FC = () => {
   ];
   return (
     <div className="grid lg:grid-cols-[1fr_1.15fr] gap-12 items-center min-w-0">
-      <div>
+      <div className="min-w-0 w-full">
         <Pill><BarChart3 size={12} /> Análise inteligente</Pill>
         <H2 className="mt-5">Entenda para onde<br /><span style={{ color: NEON }}>seu dinheiro está indo</span></H2>
         <Sub className="mt-4 max-w-[500px]">O DinHub organiza seus gastos por categoria e revela padrões que passam despercebidos. Mais clareza, menos sustos no fim do mês.</Sub>
@@ -115,7 +115,7 @@ const ParcelamentosTab: React.FC = () => {
   ];
   return (
     <div className="grid lg:grid-cols-[1fr_1.15fr] gap-12 items-center min-w-0">
-      <div>
+      <div className="min-w-0 w-full">
         <Pill tone="orange"><Calendar size={12} /> Acompanhamento de parcelamentos</Pill>
         <h2 className="mt-5 font-display font-bold text-white leading-[1.05] tracking-tight" style={{ fontSize: "clamp(2rem, 3.8vw, 3.4rem)", fontWeight: 700 }}>Todas as suas <span style={{ color: NEON }}>parcelas organizadas</span> em um só lugar.</h2>
         <Sub className="mt-4 max-w-[500px]">O DinHub acompanha cada parcelamento, mostra o que já foi pago, o que falta e o impacto no seu orçamento. Mais controle, menos surpresas.</Sub>
@@ -197,7 +197,7 @@ const ParcelamentosTab: React.FC = () => {
 const ScannerTab: React.FC = () => {
   return (
     <div className="grid lg:grid-cols-[1fr_1.05fr] gap-12 items-center min-w-0">
-      <div>
+      <div className="min-w-0 w-full">
         <Pill>Escaneie. Automatize. Economize.</Pill>
         <H2 className="mt-5">Escaneie seus comprovantes e deixe a IA <span style={{ color: NEON }}>fazer o resto.</span></H2>
         <Sub className="mt-4 max-w-[520px]">Diga adeus à digitação manual. Escaneie qualquer comprovante e o DinHub identifica, organiza e categoriza automaticamente cada gasto para você ter total controle do seu dinheiro.</Sub>
