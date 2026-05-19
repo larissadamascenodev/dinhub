@@ -47,13 +47,13 @@ export const Navbar: React.FC<Props> = ({ onLogin, onSignup }) => {
              <span className="font-display font-extrabold text-white text-xl tracking-tight">DinHub</span>
           </a>
 
-          {/* Desktop pill nav */}
-          <nav className="hidden lg:flex items-center gap-8">
+          {/* Desktop nav */}
+          <nav className="hidden lg:flex items-center gap-10">
             {links.map((l) => (
               <a
                 key={l.label}
                 href={l.href}
-                className="text-sm font-bold text-white/70 transition-colors hover:text-white uppercase tracking-widest"
+                className="text-[10px] font-black text-white/40 transition-colors hover:text-white uppercase tracking-[0.25em]"
               >
                 {l.label}
               </a>
