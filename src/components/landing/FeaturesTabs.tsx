@@ -117,7 +117,7 @@ const ParcelamentosTab: React.FC = () => {
     <div className="grid lg:grid-cols-[1fr_1.15fr] gap-12 items-center">
       <div>
         <Pill tone="orange"><Calendar size={12} /> Acompanhamento de parcelamentos</Pill>
-        <H2 className="mt-5">Todas as suas <span style={{ color: NEON }}>parcelas organizadas</span> em um só lugar.</H2>
+        <h2 className="mt-5 font-display font-bold text-white leading-[1.05] tracking-tight" style={{ fontSize: "clamp(2rem, 3.8vw, 3.4rem)", fontWeight: 700 }}>Todas as suas <span style={{ color: NEON }}>parcelas organizadas</span> em um só lugar.</h2>
         <Sub className="mt-4 max-w-[500px]">O DinHub acompanha cada parcelamento, mostra o que já foi pago, o que falta e o impacto no seu orçamento. Mais controle, menos surpresas.</Sub>
         <div className="mt-6 grid sm:grid-cols-2 gap-4">
           {[
