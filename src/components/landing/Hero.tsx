@@ -1,5 +1,5 @@
 import React from "react";
-import { ArrowRight, Search, Bell, MoveRight, CreditCard, Sparkles } from "lucide-react";
+import { ArrowRight, Search, Bell, MoveRight, CreditCard, Sparkles, TrendingUp, ShieldCheck } from "lucide-react";
 import { NEON, NEON_GLOW } from "./shared";
 import heroWoman from "@/assets/hero-woman.jpeg";
 
@@ -11,198 +11,179 @@ const avatars = [
   "https://randomuser.me/api/portraits/women/68.jpg",
 ];
 
-type Txn = { name: string; time: string; value: string; logo: React.ReactNode; logoBg: string; highlight?: boolean };
-
-const txns: Txn[] = [
-  { name: "iFood", time: "Hoje, 13:42", value: "- R$ 45,90", logo: <span className="text-white font-black italic text-sm">iFood</span>, logoBg: "bg-[#EA1D2C]" },
-  { name: "Uber", time: "Hoje, 12:18", value: "- R$ 28,40", logo: <span className="text-black font-black text-xs">Uber</span>, logoBg: "bg-white" },
-  { name: "Mercado Livre", time: "Hoje, 10:37", value: "- R$ 199,90", logo: <span className="text-2xl">🤝</span>, logoBg: "bg-[#FFE600]" },
-  { name: "Netflix", time: "Ontem, 21:34", value: "- R$ 55,90", logo: <span className="text-[#E50914] font-black text-xl">N</span>, logoBg: "bg-black border border-white/15" },
-  { name: "Fatura cartão", time: "Ontem, 18:20", value: "- R$ 1.254,80", logo: <CreditCard className="text-white" size={20} />, logoBg: "bg-[#00e676]", highlight: true },
-];
-
 export const Hero: React.FC<{ onCta: () => void }> = ({ onCta }) => {
   return (
-    <section className="relative w-full overflow-hidden bg-[#0a0a0a]" style={{ paddingTop: "clamp(6rem, 10vw, 8rem)", paddingBottom: "clamp(3rem, 6vw, 5rem)" }}>
-      {/* Background with glow and image */}
-      <div className="absolute inset-0 pointer-events-none">
+    <section className="relative w-full overflow-hidden bg-[#0a0a0a]" style={{ paddingTop: "clamp(6rem, 10vw, 8rem)", paddingBottom: "clamp(4rem, 8vw, 6rem)" }}>
+      {/* Dynamic Background Elements */}
+      <div className="absolute inset-0 pointer-events-none overflow-hidden">
         <div 
-          className="absolute top-0 right-0 h-full w-full lg:w-[70%] opacity-40 mix-blend-screen"
-          style={{
-            background: `radial-gradient(circle at 70% 30%, ${NEON}33 0%, transparent 70%)`
-          }}
+          className="absolute -top-[20%] -left-[10%] w-[70%] h-[70%] rounded-full opacity-20 blur-[120px]"
+          style={{ background: `radial-gradient(circle, ${NEON} 0%, transparent 70%)` }}
         />
-        <img
-          src={heroWoman}
-          alt=""
-          className="absolute right-0 top-0 h-full w-full lg:w-[60%] object-cover object-center opacity-40"
-          style={{ 
-            maskImage: "linear-gradient(to left, black 20%, transparent 90%), linear-gradient(to bottom, black 80%, transparent 100%)",
-            WebkitMaskImage: "linear-gradient(to left, black 20%, transparent 90%), linear-gradient(to bottom, black 80%, transparent 100%)"
-          }}
+        <div 
+          className="absolute bottom-0 right-0 w-[50%] h-[50%] rounded-full opacity-10 blur-[100px]"
+          style={{ background: `radial-gradient(circle, #a855f7 0%, transparent 70%)` }}
         />
+        {/* Animated Grid Lines */}
+        <div className="absolute inset-0 opacity-[0.03]" style={{ backgroundImage: `linear-gradient(${NEON} 1px, transparent 1px), linear-gradient(90deg, ${NEON} 1px, transparent 1px)`, backgroundSize: '40px 40px' }} />
       </div>
 
-      <div className="relative mx-auto w-full hero-container" style={{ maxWidth: "1320px" }}>
-        <div className="grid lg:grid-cols-[1.1fr_0.9fr] gap-12 lg:gap-16 items-center w-full min-w-0">
-          {/* LEFT: Content */}
-          <div className="flex flex-col items-center text-center lg:items-start lg:text-left min-w-0 w-full z-10">
-            
-            <div
-              className="inline-flex items-center gap-2 rounded-full border mb-6 px-4 py-1.5"
-              style={{ background: "rgba(0,230,118,0.08)", borderColor: `${NEON}33` }}
-            >
-              <div className="flex -space-x-2 shrink-0">
-                {avatars.map((src, i) => (
-                  <img key={i} src={src} alt="" className="rounded-full border-2 w-6 h-6 border-[#0a0a0a]" />
-                ))}
-              </div>
-              <span className="font-bold text-xs uppercase tracking-wider" style={{ color: NEON }}>
-                +2.847 pessoas no controle
-              </span>
+      <div className="relative mx-auto w-full px-5 lg:px-10" style={{ maxWidth: "1320px" }}>
+        <div className="flex flex-col items-center text-center max-w-[1000px] mx-auto z-10 relative">
+          
+          {/* Top Badge */}
+          <div
+            className="inline-flex items-center gap-2 rounded-full border mb-8 px-4 py-2 transition-transform hover:scale-105"
+            style={{ background: "rgba(255,255,255,0.03)", borderColor: "rgba(255,255,255,0.1)" }}
+          >
+            <div className="flex -space-x-2 shrink-0">
+              {avatars.map((src, i) => (
+                <img key={i} src={src} alt="" className="rounded-full border-2 w-7 h-7 border-[#0a0a0a]" />
+              ))}
             </div>
-
-            <h1
-              className="font-display font-black text-white tracking-tight w-full mb-6 leading-[1.05]"
-              style={{ fontSize: "clamp(2.4rem, 7vw, 4.8rem)" }}
-            >
-              Seu dinheiro some e você <br className="hidden lg:block" />
-              <span style={{ color: NEON }} className="relative">
-                não sabe por quê.
-                <svg className="absolute -bottom-2 left-0 w-full h-3 text-[#00e676]/30" viewBox="0 0 100 10" preserveAspectRatio="none">
-                  <path d="M0 5 Q 25 0 50 5 T 100 5" fill="none" stroke="currentColor" strokeWidth="4" />
-                </svg>
-              </span>
-            </h1>
-
-            <p
-              className="text-white/70 w-full mb-8 max-w-[580px]"
-              style={{ fontSize: "clamp(1rem, 1.2vw, 1.25rem)", lineHeight: 1.6 }}
-            >
-              O DinHub analisa cada centavo das suas contas, te avisa antes de virar problema e te mostra exatamente o que fazer. Sem planilhas, sem esforço.
-            </p>
-
-            <div className="flex flex-col sm:flex-row gap-4 w-full sm:w-auto">
-              <button
-                onClick={onCta}
-                className="inline-flex items-center justify-center gap-3 rounded-full font-black text-black transition-all hover:scale-[1.02] active:scale-[0.98] w-full sm:w-auto"
-                style={{
-                  background: NEON,
-                  padding: "1.1rem 2.2rem",
-                  fontSize: "1.05rem",
-                  boxShadow: `0 10px 40px ${NEON}44`,
-                }}
-              >
-                COMEÇAR AGORA <ArrowRight size={20} strokeWidth={3} />
-              </button>
-              
-              <div className="flex items-center justify-center gap-2 px-4 py-3 rounded-full bg-white/5 border border-white/10">
-                <div className="flex gap-0.5">
-                  {[1,2,3,4,5].map(s => (
-                    <span key={s} className="text-[#f59e0b] text-sm">★</span>
-                  ))}
-                </div>
-                <span className="text-white/80 text-xs font-bold uppercase tracking-widest">Nota 4.9 na Store</span>
-              </div>
-            </div>
+            <div className="h-4 w-px bg-white/10 mx-1" />
+            <span className="text-white/90 text-xs font-bold tracking-tight">
+              A escolha de <span style={{ color: NEON }}>+2.847</span> usuários inteligentes
+            </span>
           </div>
 
-          {/* RIGHT: Visual */}
-          <div className="relative w-full flex justify-center lg:justify-end z-10">
-            <div className="relative w-full max-w-[420px]">
-              {/* Decorative elements */}
-              <div className="absolute -top-10 -right-10 w-32 h-32 rounded-full blur-[60px]" style={{ background: NEON }} />
-              <div className="absolute -bottom-10 -left-10 w-32 h-32 rounded-full blur-[60px]" style={{ background: "#a855f7" }} />
+          {/* Main Headline */}
+          <h1
+            className="font-display font-black text-white tracking-tighter w-full mb-8 leading-[0.95]"
+            style={{ fontSize: "clamp(2.8rem, 9vw, 6rem)" }}
+          >
+            O fim do <span className="text-white/30 italic">"não sei onde"</span><br />
+            o meu <span style={{ color: NEON }}>dinheiro parou.</span>
+          </h1>
 
-              {/* Transaction stack */}
-              <div className="flex flex-col gap-4 w-full">
-                {txns.map((t, i) => (
-                  <div 
-                    key={i} 
-                    className="transform transition-all duration-500"
-                    style={{ 
-                      animation: `floatIn 0.8s ${0.1 * i}s both`,
-                      transform: `perspective(1000px) rotateX(10deg) rotateY(-5deg)`
-                    }}
-                  >
-                    <TxnCard {...t} />
-                  </div>
-                ))}
-              </div>
+          {/* Supporting Text */}
+          <p
+            className="text-white/60 w-full mb-10 max-w-[700px] font-medium"
+            style={{ fontSize: "clamp(1.1rem, 1.4vw, 1.4rem)", lineHeight: 1.5 }}
+          >
+            Esqueça as planilhas chatas. O DinHub conecta suas contas, identifica gastos inúteis e te dá um plano real para sobrar dinheiro todo mês.
+          </p>
 
-              {/* Floating notification */}
-              <div 
-                className="absolute -right-4 top-1/2 -translate-y-1/2 p-4 rounded-2xl bg-[#111] border border-[#00e676]/30 shadow-2xl z-20 hidden sm:block animate-bounce"
-                style={{ animationDuration: '3s' }}
-              >
-                <div className="flex items-center gap-3">
-                  <div className="w-10 h-10 rounded-full bg-[#00e676]/10 flex items-center justify-center text-[#00e676]">
-                    <Sparkles size={20} />
-                  </div>
-                  <div>
-                    <p className="text-white font-bold text-sm">Huby detectou!</p>
-                    <p className="text-white/50 text-xs">Você pode economizar R$ 120 hoje.</p>
-                  </div>
+          {/* Call to Action Group */}
+          <div className="flex flex-col sm:flex-row gap-5 items-center justify-center w-full sm:w-auto">
+            <button
+              onClick={onCta}
+              className="group relative inline-flex items-center justify-center gap-3 rounded-2xl font-black text-black transition-all hover:scale-[1.05] active:scale-[0.95] w-full sm:w-auto overflow-hidden"
+              style={{
+                background: NEON,
+                padding: "1.2rem 2.8rem",
+                fontSize: "1.1rem",
+                boxShadow: `0 20px 50px ${NEON}33`,
+              }}
+            >
+              <span className="relative z-10 flex items-center gap-2">
+                COMEÇAR AGORA <ArrowRight size={22} strokeWidth={3} className="transition-transform group-hover:translate-x-1" />
+              </span>
+              <div className="absolute inset-0 bg-white/20 translate-x-[-100%] group-hover:translate-x-[100%] transition-transform duration-500 ease-in-out" />
+            </button>
+            
+            <div className="flex flex-col items-center sm:items-start gap-1">
+              <div className="flex items-center gap-2">
+                <div className="flex -space-x-0.5">
+                  {[1,2,3,4,5].map(s => <span key={s} className="text-[#f59e0b] text-sm leading-none">★</span>)}
                 </div>
+                <span className="text-white font-bold text-sm">4.9/5</span>
               </div>
+              <span className="text-white/40 text-[10px] uppercase font-bold tracking-widest">Baseado em reviews reais</span>
             </div>
           </div>
         </div>
 
-        {/* Bottom trust indicators */}
-        <div className="mt-16 lg:mt-24 pt-10 border-t border-white/5">
-          <div className="grid grid-cols-1 sm:grid-cols-3 gap-6 lg:gap-12">
-            <Feature icon={<Search size={22} />} title="Analisa cada centavo" desc="Visão automática de tudo que entra e sai da sua conta." />
-            <Feature icon={<Bell size={22} />} title="Alertas de impacto" desc="Te avisamos sobre gastos atípicos antes de doer no bolso." />
-            <Feature icon={<MoveRight size={22} />} title="Ação inteligente" desc="Sugestões práticas do que fazer para economizar mais." />
+        {/* Floating Dashboard Preview (Centralized Overlapping) */}
+        <div className="mt-16 lg:mt-24 relative flex justify-center perspective-[2000px]">
+          <div 
+            className="relative w-full max-w-[900px] aspect-[16/9] rounded-3xl overflow-hidden border border-white/10 shadow-[0_40px_100px_rgba(0,0,0,0.8)]"
+            style={{ 
+              background: "#111",
+              transform: "rotateX(15deg)",
+              transformStyle: "preserve-3d"
+            }}
+          >
+            {/* Mock Dashboard UI */}
+            <div className="absolute inset-0 p-4 lg:p-8 flex flex-col gap-6">
+              <div className="flex justify-between items-center opacity-40">
+                <div className="h-4 w-32 bg-white/10 rounded" />
+                <div className="flex gap-2">
+                  <div className="h-8 w-8 rounded-full bg-white/5" />
+                  <div className="h-8 w-8 rounded-full bg-white/5" />
+                </div>
+              </div>
+              <div className="grid grid-cols-3 gap-6">
+                <div className="h-32 rounded-2xl bg-white/[0.03] border border-white/5 p-5">
+                  <div className="h-3 w-16 bg-white/10 rounded mb-3" />
+                  <div className="h-6 w-24 bg-white/20 rounded" />
+                </div>
+                <div className="h-32 rounded-2xl bg-white/[0.03] border border-white/5 p-5">
+                  <div className="h-3 w-16 bg-white/10 rounded mb-3" />
+                  <div className="h-6 w-24 bg-white/20 rounded" />
+                </div>
+                <div className="h-32 rounded-2xl bg-white/[0.03] border border-white/5 p-5" style={{ borderColor: `${NEON}33`, background: `${NEON}05` }}>
+                  <div className="h-3 w-16 bg-[#00e676]/30 rounded mb-3" />
+                  <div className="h-6 w-24 bg-[#00e676]/40 rounded" />
+                </div>
+              </div>
+              <div className="flex-1 rounded-2xl bg-white/[0.02] border border-white/5 relative overflow-hidden">
+                <div className="absolute inset-0 opacity-10" style={{ background: `linear-gradient(90deg, transparent, ${NEON}, transparent)`, width: '200%', left: '-50%', animation: 'shimmer 3s infinite linear' }} />
+              </div>
+            </div>
+            {/* Woman Overlay with Mask */}
+            <img 
+              src={heroWoman} 
+              alt="Background" 
+              className="absolute right-0 top-0 h-full w-auto object-cover mix-blend-overlay opacity-30" 
+            />
           </div>
+
+          {/* Floating Feature Cards around the Dashboard */}
+          <div className="absolute -left-4 lg:-left-20 top-1/4 animate-bounce hidden sm:block" style={{ animationDuration: '4s' }}>
+            <HeroCard icon={<Sparkles size={18} />} color={NEON} label="AI Insights" text="R$ 340 economizados hoje" />
+          </div>
+          <div className="absolute -right-4 lg:-right-12 bottom-1/4 animate-bounce hidden sm:block" style={{ animationDuration: '3.5s', animationDelay: '0.5s' }}>
+            <HeroCard icon={<TrendingUp size={18} />} color="#a855f7" label="Projeção" text="Meta de férias 85% concluída" />
+          </div>
+        </div>
+
+        {/* Triple Feature Bottom Row */}
+        <div className="mt-12 lg:mt-0 grid grid-cols-1 sm:grid-cols-3 gap-8 pt-12">
+          <FeatureItem icon={<Search />} title="Auditoria Automática" desc="Cada transação é rastreada e classificada por nossa IA." />
+          <FeatureItem icon={<Bell />} title="Alertas Preventivos" desc="Receba notificações antes que um gasto comprometa seu mês." />
+          <FeatureItem icon={<ShieldCheck />} title="Segurança Bancária" desc="Criptografia de ponta a ponta com acesso somente leitura." />
         </div>
       </div>
 
       <style>{`
-        @keyframes floatIn { 
-          from { opacity: 0; transform: translateY(30px) perspective(1000px) rotateX(10deg) rotateY(-5deg); } 
-          to { opacity: 1; transform: translateY(0) perspective(1000px) rotateX(10deg) rotateY(-5deg); } 
-        }
-        .hero-container { padding-left: 20px; padding-right: 20px; }
-        @media (min-width: 640px) {
-          .hero-container { padding-left: clamp(1.5rem, 4vw, 3rem); padding-right: clamp(1.5rem, 4vw, 3rem); }
-        }
+        @keyframes shimmer { from { transform: translateX(-50%); } to { transform: translateX(50%); } }
+        @keyframes floatY { 0%, 100% { transform: translateY(0); } 50% { transform: translateY(-10px); } }
       `}</style>
     </section>
   );
 };
 
-const TxnCard: React.FC<Txn> = ({ name, time, value, logo, logoBg, highlight }) => (
-  <div
-    className="flex items-center gap-4 rounded-2xl p-4 transition-all hover:scale-[1.02] cursor-default"
-    style={{
-      background: "rgba(20,20,20,0.85)",
-      backdropFilter: "blur(20px)",
-      border: highlight ? `2px solid ${NEON}` : "1px solid rgba(255,255,255,0.08)",
-      boxShadow: highlight ? `0 0 30px ${NEON}33` : "0 10px 40px rgba(0,0,0,0.5)",
-    }}
-  >
-    <div className={`h-11 w-11 rounded-xl flex items-center justify-center shrink-0 shadow-inner ${logoBg}`}>{logo}</div>
-    <div className="flex-1 min-w-0">
-      <p className="text-white font-bold leading-tight truncate text-base">{name}</p>
-      <p className="text-white/40 mt-1 text-xs">{time}</p>
+const HeroCard: React.FC<{ icon: React.ReactNode; color: string; label: string; text: string }> = ({ icon, color, label, text }) => (
+  <div className="p-4 rounded-2xl bg-[#111] border border-white/10 shadow-2xl flex items-center gap-4 backdrop-blur-xl">
+    <div className="w-10 h-10 rounded-xl flex items-center justify-center shrink-0" style={{ background: `${color}15`, color: color }}>
+      {icon}
     </div>
-    <div className="text-right">
-      <p className="font-black text-[#ff5959] text-base tabular-nums">{value}</p>
-      {highlight && <p className="text-[10px] font-bold tracking-widest uppercase mt-0.5" style={{ color: NEON }}>Urgente</p>}
+    <div className="pr-4">
+      <p className="text-white/40 text-[10px] font-black uppercase tracking-widest">{label}</p>
+      <p className="text-white font-bold text-sm whitespace-nowrap">{text}</p>
     </div>
   </div>
 );
 
-const Feature: React.FC<{ icon: React.ReactNode; title: string; desc: string }> = ({ icon, title, desc }) => (
-  <div className="flex gap-4 items-start group">
-    <div className="h-12 w-12 rounded-2xl flex items-center justify-center shrink-0 transition-all group-hover:scale-110" style={{ background: "rgba(0,230,118,0.06)", color: NEON, border: `1px solid ${NEON}22` }}>
-      {icon}
+const FeatureItem: React.FC<{ icon: React.ReactElement; title: string; desc: string }> = ({ icon, title, desc }) => (
+  <div className="flex flex-col items-center sm:items-start text-center sm:text-left gap-4 p-6 rounded-3xl transition-colors hover:bg-white/[0.02]">
+    <div className="w-14 h-14 rounded-2xl flex items-center justify-center shrink-0" style={{ background: "rgba(255,255,255,0.03)", color: NEON, border: "1px solid rgba(255,255,255,0.08)" }}>
+      {React.cloneElement(icon, { size: 28 })}
     </div>
     <div>
-      <h3 className="text-white font-bold text-sm lg:text-base leading-tight">{title}</h3>
-      <p className="text-white/50 text-xs lg:text-sm mt-1.5 leading-relaxed">{desc}</p>
+      <h3 className="text-white font-black text-lg tracking-tight">{title}</h3>
+      <p className="text-white/40 text-sm mt-2 leading-relaxed">{desc}</p>
     </div>
   </div>
 );
