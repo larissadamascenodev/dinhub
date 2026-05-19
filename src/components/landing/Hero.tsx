@@ -2,6 +2,7 @@ import React from "react";
 import { ArrowRight, Search, Bell, ShieldCheck, Star, Camera, Mic, Type } from "lucide-react";
 import { NEON } from "./shared";
 import heroWoman from "@/assets/hero-woman.jpeg";
+import dashboardPhone from "@/assets/dashboard-phone.jpeg";
 
 export const Hero: React.FC<{ onCta: () => void }> = ({ onCta }) => {
   return (
@@ -112,56 +113,23 @@ export const Hero: React.FC<{ onCta: () => void }> = ({ onCta }) => {
              <div className="absolute inset-0 bg-[#00e676] rounded-[3rem] blur-[80px] opacity-20 group-hover:opacity-30 transition-opacity" />
              
              <div
-                className="relative mx-auto rounded-[3rem] p-3 border border-white/10"
+                className="relative mx-auto rounded-[2.5rem] lg:rounded-[3rem] p-2 lg:p-3 border border-white/10"
                 style={{
                   background: "linear-gradient(145deg,#1c1c1c,#0a0a0a)",
                   boxShadow: `0 40px 100px -20px rgba(0,0,0,0.8)`,
-                  width: "clamp(260px, 40vw, 360px)"
+                  width: "clamp(260px, 35vw, 320px)"
                 }}
               >
                 <div className="absolute top-3 left-1/2 -translate-x-1/2 z-10 h-6 w-28 rounded-full bg-black" />
-                <div className="rounded-[2.4rem] bg-[#0a0a0a] overflow-hidden relative" style={{ aspectRatio: "9/19" }}>
+                <div className="rounded-[2rem] lg:rounded-[2.4rem] bg-[#0a0a0a] overflow-hidden relative" style={{ aspectRatio: "9/19" }}>
                    <img 
-                    src={heroWoman} 
-                    alt="" 
-                    className="absolute inset-0 w-full h-full object-cover opacity-40 brightness-50"
+                    src={dashboardPhone} 
+                    alt="App Dashboard" 
+                    className="absolute inset-0 w-full h-full object-cover"
                   />
                   
-                  {/* Mockup content */}
-                  <div className="absolute inset-0 p-6 pt-12 flex flex-col justify-between">
-                    <div className="space-y-4">
-                       <div className="rounded-2xl bg-white/[0.05] border border-white/10 p-3 backdrop-blur-md">
-                          <p className="text-[10px] text-white/40 uppercase tracking-widest font-bold mb-1">Analisando faturas...</p>
-                          <div className="h-1.5 w-full bg-white/5 rounded-full overflow-hidden">
-                             <div className="h-full bg-[#00e676] animate-progress-fast" style={{ width: '60%' }} />
-                          </div>
-                       </div>
-                       
-                       {[
-                         { icon: "🍕", label: "Delivery iFood", value: "-R$ 45,90" },
-                         { icon: "🚗", label: "Viagem Uber", value: "-R$ 28,40" },
-                         { icon: "🛍️", label: "Mercado Livre", value: "-R$ 199,90" }
-                       ].map((item, i) => (
-                         <div key={i} className="flex items-center justify-between p-2 rounded-xl bg-white/[0.03] border border-white/5">
-                            <div className="flex items-center gap-2">
-                               <span className="text-base">{item.icon}</span>
-                               <span className="text-white font-medium text-xs">{item.label}</span>
-                            </div>
-                            <span className="text-white/60 font-bold text-[10px]">{item.value}</span>
-                         </div>
-                       ))}
-                    </div>
-
-                    <div className="rounded-2xl bg-[#00e676] p-4 text-black flex flex-col items-center gap-1">
-                       <span className="text-[10px] font-black uppercase tracking-tighter opacity-70">Saldo Previsto</span>
-                       <span className="text-2xl font-black">R$ 3.847,90</span>
-                       <div className="flex gap-2 w-full mt-2">
-                          <div className="h-1 flex-1 bg-black/20 rounded-full" />
-                          <div className="h-1 flex-1 bg-black/20 rounded-full" />
-                          <div className="h-1 flex-1 bg-black/20 rounded-full" />
-                       </div>
-                    </div>
-                  </div>
+                  {/* Overlay for better readability of floating elements if needed */}
+                  <div className="absolute inset-0 bg-black/10 pointer-events-none" />
                 </div>
               </div>
           </div>
