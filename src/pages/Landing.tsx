@@ -10,6 +10,7 @@ import { FeaturesTabs } from "@/components/landing/FeaturesTabs";
 import { AntesDuranteDepois } from "@/components/landing/AntesDuranteDepois";
 import { Pricing } from "@/components/landing/Pricing";
 import { Testimonials } from "@/components/landing/Testimonials";
+import { ToolsMarquee } from "@/components/landing/ToolsMarquee";
 import { CtaFinal, Footer } from "@/components/landing/CtaFinal";
 
 const Landing: React.FC = () => {
