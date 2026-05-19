@@ -6,7 +6,7 @@ import dashboardPhone from "@/assets/dashboard-phone.jpeg";
 
 export const Hero: React.FC<{ onCta: () => void }> = ({ onCta }) => {
   return (
-    <section className="relative w-full min-h-screen overflow-hidden bg-[#0a0a0a] flex flex-col items-center pt-24 pb-16 lg:pt-32">
+    <section className="relative w-full overflow-hidden bg-[#0a0a0a] flex flex-col items-center pt-24 pb-16 lg:pt-32">
       {/* Background Elements - Inspired by Operafit */}
       <div className="absolute inset-0 pointer-events-none overflow-hidden">
         <div 
