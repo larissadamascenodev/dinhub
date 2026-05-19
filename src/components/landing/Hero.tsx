@@ -160,42 +160,39 @@ export const Hero: React.FC<{ onCta: () => void }> = ({ onCta }) => {
 
 const TxnCard: React.FC<Txn & { className?: string; style?: React.CSSProperties }> = ({ name, time, value, logo, logoBg, highlight, className = "", style }) => (
   <div
-    className={`flex items-center gap-3 rounded-2xl px-4 py-3 ${className}`}
+    className={`flex items-center gap-3 rounded-2xl ${className}`}
     style={{
       background: "rgba(17,17,17,0.85)",
       backdropFilter: "blur(14px)",
       border: highlight ? `1.5px solid ${NEON}` : "1px solid rgba(255,255,255,0.07)",
       boxShadow: highlight ? `0 0 24px ${NEON}33` : "0 8px 30px rgba(0,0,0,0.4)",
+      height: 56,
+      padding: "10px 14px",
       ...style,
     }}
   >
-    <div className={`h-11 w-11 rounded-xl flex items-center justify-center shrink-0 overflow-hidden ${logoBg}`}>{logo}</div>
+    <div className={`h-9 w-9 rounded-lg flex items-center justify-center shrink-0 overflow-hidden ${logoBg}`}>{logo}</div>
     <div className="flex-1 min-w-0">
-      <p className="text-white font-bold text-sm leading-tight truncate">{name}</p>
-      <p className="text-white/50 text-xs mt-0.5">{time}</p>
+      <p className="text-white font-bold leading-tight truncate" style={{ fontSize: "0.88rem" }}>{name}</p>
+      <p className="text-white/50 mt-0.5" style={{ fontSize: "0.75rem" }}>{time}</p>
     </div>
-    <p className="font-black text-[#ff5959] tabular-nums whitespace-nowrap" style={{ fontSize: "clamp(0.875rem, 1vw, 1rem)" }}>{value}</p>
+    <p className="font-black text-[#ff5959] tabular-nums whitespace-nowrap" style={{ fontSize: "0.88rem" }}>{value}</p>
   </div>
 );
 
 const MiniInfo: React.FC<{ icon: React.ReactElement; title: string; subtitle: string }> = ({ icon, title, subtitle }) => (
-  <div className="flex flex-col items-start gap-2 min-w-0">
-    <div
-      className="rounded-lg sm:rounded-xl flex items-center justify-center shrink-0"
-      style={{
-        background: "rgba(0,230,118,0.1)",
-        color: NEON,
-        width: "clamp(36px, 8vw, 44px)",
-        height: "clamp(36px, 8vw, 44px)",
-      }}
-    >
-      {React.cloneElement(icon, { size: 28, strokeWidth: 2.2 })}
-    </div>
+  <div
+    className="flex flex-col gap-2 min-w-0"
+    style={{ background: "#111111", border: "1px solid #1a1a1a", borderRadius: 14, padding: 12, flex: 1 }}
+  >
+    <span style={{ color: NEON }} className="shrink-0">
+      {React.cloneElement(icon, { size: 24, strokeWidth: 2.2 })}
+    </span>
     <div className="min-w-0 w-full">
-      <p className="font-bold text-white mb-1 leading-tight" style={{ fontSize: "clamp(0.82rem, 2.4vw, 0.95rem)" }}>
+      <p className="font-bold text-white leading-tight" style={{ fontSize: "0.78rem" }}>
         {title}
       </p>
-      <p className="text-white/60 leading-snug" style={{ fontSize: "clamp(0.72rem, 2vw, 0.82rem)" }}>
+      <p className="text-white/60 leading-snug mt-1" style={{ fontSize: "0.7rem" }}>
         {subtitle}
       </p>
     </div>
