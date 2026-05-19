@@ -70,7 +70,7 @@ export const Hero: React.FC<{ onCta: () => void }> = ({ onCta }) => {
         </p>
 
         {/* Record Pill */}
-        <div className="inline-flex items-center gap-4 px-6 py-2 rounded-full bg-white/5 border border-white/10 mb-12 text-[10px] lg:text-xs font-bold uppercase tracking-widest text-white/40">
+        <div className="inline-flex items-center gap-4 px-6 py-2 rounded-full bg-white/5 border border-white/10 mb-8 text-[10px] lg:text-xs font-bold uppercase tracking-widest text-white/40">
            <span>Registre via</span>
            <span className="flex items-center gap-1.5 text-[#00e676] opacity-80"><MessageSquare size={14} /> texto</span>
            <span className="flex items-center gap-1.5 text-[#00e676] opacity-80"><Mic size={14} /> áudio</span>
