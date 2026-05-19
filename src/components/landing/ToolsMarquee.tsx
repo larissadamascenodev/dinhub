@@ -19,55 +19,59 @@ import {
   Lock,
   MessageSquare,
   Sparkles,
-  ZapIcon
+  ZapIcon,
+  CircleDollarSign,
+  PiggyBank
 } from "lucide-react";
 import { NEON } from "./shared";
 
 const tools = [
-  { icon: <BrainCircuit size={20} />, name: "IA Huby" },
-  { icon: <Wallet size={20} />, name: "Contas" },
-  { icon: <CreditCard size={20} />, name: "Cartões" },
-  { icon: <Target size={20} />, name: "Metas" },
-  { icon: <TrendingUp size={20} />, name: "Investimentos" },
-  { icon: <BarChart3 size={20} />, name: "Relatórios" },
-  { icon: <Bell size={20} />, name: "Alertas" },
-  { icon: <ShieldCheck size={20} />, name: "Segurança" },
-  { icon: <Zap size={20} />, name: "Instantâneo" },
-  { icon: <Search size={20} />, name: "Auditoria" },
-  { icon: <Smartphone size={20} />, name: "App Mobile" },
-  { icon: <PieChart size={20} />, name: "Categorias" },
-  { icon: <ArrowUpRight size={20} />, name: "Cashback" },
-  { icon: <Globe size={20} />, name: "Global" },
-  { icon: <PlusCircle size={20} />, name: "Nova Transação" },
-  { icon: <History size={20} />, name: "Extrato" },
-  { icon: <Lock size={20} />, name: "Privacidade" },
-  { icon: <MessageSquare size={20} />, name: "Suporte" },
-  { icon: <Sparkles size={20} />, name: "Insights" },
-  { icon: <ZapIcon size={20} />, name: "Velocidade" },
+  { icon: <BrainCircuit size={22} />, name: "IA Huby" },
+  { icon: <Wallet size={22} />, name: "Contas" },
+  { icon: <CreditCard size={22} />, name: "Cartões" },
+  { icon: <Target size={22} />, name: "Metas" },
+  { icon: <TrendingUp size={22} />, name: "Investimentos" },
+  { icon: <BarChart3 size={22} />, name: "Relatórios" },
+  { icon: <Bell size={22} />, name: "Alertas" },
+  { icon: <ShieldCheck size={22} />, name: "Segurança" },
+  { icon: <Zap size={22} />, name: "Instantâneo" },
+  { icon: <Search size={22} />, name: "Auditoria" },
+  { icon: <Smartphone size={22} />, name: "App Mobile" },
+  { icon: <PieChart size={22} />, name: "Categorias" },
+  { icon: <ArrowUpRight size={22} />, name: "Cashback" },
+  { icon: <Globe size={22} />, name: "Global" },
+  { icon: <PlusCircle size={22} />, name: "Novo" },
+  { icon: <History size={22} />, name: "Extrato" },
+  { icon: <Lock size={22} />, name: "Privacidade" },
+  { icon: <MessageSquare size={22} />, name: "Suporte" },
+  { icon: <Sparkles size={22} />, name: "Insights" },
+  { icon: <CircleDollarSign size={22} />, name: "Câmbio" },
+  { icon: <PiggyBank size={22} />, name: "Poupança" },
+  { icon: <ZapIcon size={22} />, name: "Eficiência" },
 ];
 
 export const ToolsMarquee = () => {
   return (
-    <div className="relative w-full py-8 lg:py-12 overflow-hidden bg-[#0a0a0a] border-y border-white/[0.05]">
-      {/* Decorative gradient edges - stronger for better fade */}
-      <div className="absolute inset-y-0 left-0 w-32 lg:w-96 bg-gradient-to-r from-[#0a0a0a] via-[#0a0a0a]/90 to-transparent z-10 pointer-events-none" />
-      <div className="absolute inset-y-0 right-0 w-32 lg:w-96 bg-gradient-to-l from-[#0a0a0a] via-[#0a0a0a]/90 to-transparent z-10 pointer-events-none" />
+    <div className="relative w-full py-12 lg:py-20 overflow-hidden bg-[#0a0a0a]">
+      {/* Decorative gradient edges - Very strong for seamless flow */}
+      <div className="absolute inset-y-0 left-0 w-32 lg:w-[450px] bg-gradient-to-r from-[#0a0a0a] via-[#0a0a0a]/95 to-transparent z-20 pointer-events-none" />
+      <div className="absolute inset-y-0 right-0 w-32 lg:w-[450px] bg-gradient-to-l from-[#0a0a0a] via-[#0a0a0a]/95 to-transparent z-20 pointer-events-none" />
       
-      <div className="flex flex-col gap-4 lg:gap-6">
+      <div className="flex flex-col gap-6 lg:gap-10">
         {/* Row 1 - Left to Right */}
-        <div className="flex whitespace-nowrap gap-4 lg:gap-6 w-max animate-marquee">
+        <div className="flex whitespace-nowrap gap-5 lg:gap-8 w-max animate-marquee">
           {[...tools, ...tools, ...tools].map((tool, idx) => (
             <div 
               key={`r1-${idx}`}
-              className="inline-flex items-center gap-3 px-6 py-3 lg:px-10 lg:py-5 rounded-2xl bg-white/[0.03] border border-white/[0.08] backdrop-blur-md transition-all hover:bg-white/[0.08] hover:border-white/20 group cursor-default"
+              className="inline-flex items-center gap-4 px-8 py-4 lg:px-12 lg:py-7 rounded-[2rem] bg-white/[0.02] border border-white/[0.06] backdrop-blur-xl transition-all duration-500 hover:bg-white/[0.07] hover:border-[#00e676]/30 hover:-translate-y-1 group cursor-default"
             >
               <div 
-                className="transition-all duration-300 group-hover:scale-110 group-hover:drop-shadow-[0_0_12px_rgba(0,230,118,0.6)]"
+                className="transition-all duration-500 group-hover:scale-110 group-hover:drop-shadow-[0_0_15px_rgba(0,230,118,0.7)]"
                 style={{ color: NEON }}
               >
                 {tool.icon}
               </div>
-              <span className="text-white/40 font-bold text-[11px] lg:text-[13px] uppercase tracking-[0.2em] group-hover:text-white transition-colors">
+              <span className="text-white/30 font-display font-black text-[12px] lg:text-[15px] uppercase tracking-[0.25em] group-hover:text-white transition-colors duration-500">
                 {tool.name}
               </span>
             </div>
@@ -75,19 +79,19 @@ export const ToolsMarquee = () => {
         </div>
 
         {/* Row 2 - Right to Left */}
-        <div className="flex whitespace-nowrap gap-4 lg:gap-6 w-max animate-marquee-reverse">
+        <div className="flex whitespace-nowrap gap-5 lg:gap-8 w-max animate-marquee-reverse">
           {[...tools, ...tools, ...tools].reverse().map((tool, idx) => (
             <div 
               key={`r2-${idx}`}
-              className="inline-flex items-center gap-3 px-6 py-3 lg:px-10 lg:py-5 rounded-2xl bg-white/[0.03] border border-white/[0.08] backdrop-blur-md transition-all hover:bg-white/[0.08] hover:border-white/20 group cursor-default"
+              className="inline-flex items-center gap-4 px-8 py-4 lg:px-12 lg:py-7 rounded-[2rem] bg-white/[0.02] border border-white/[0.06] backdrop-blur-xl transition-all duration-500 hover:bg-white/[0.07] hover:border-[#00e676]/30 hover:-translate-y-1 group cursor-default"
             >
               <div 
-                className="transition-all duration-300 group-hover:scale-110 group-hover:drop-shadow-[0_0_12px_rgba(0,230,118,0.6)]"
+                className="transition-all duration-500 group-hover:scale-110 group-hover:drop-shadow-[0_0_15px_rgba(0,230,118,0.7)]"
                 style={{ color: NEON }}
               >
                 {tool.icon}
               </div>
-              <span className="text-white/40 font-bold text-[11px] lg:text-[13px] uppercase tracking-[0.2em] group-hover:text-white transition-colors">
+              <span className="text-white/30 font-display font-black text-[12px] lg:text-[15px] uppercase tracking-[0.25em] group-hover:text-white transition-colors duration-500">
                 {tool.name}
               </span>
             </div>
@@ -105,10 +109,10 @@ export const ToolsMarquee = () => {
           100% { transform: translateX(0); }
         }
         .animate-marquee {
-          animation: marquee 60s linear infinite;
+          animation: marquee 80s linear infinite;
         }
         .animate-marquee-reverse {
-          animation: marquee-reverse 60s linear infinite;
+          animation: marquee-reverse 80s linear infinite;
         }
         .animate-marquee:hover, .animate-marquee-reverse:hover {
           animation-play-state: paused;
