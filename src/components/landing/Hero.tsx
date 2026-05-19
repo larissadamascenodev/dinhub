@@ -107,30 +107,23 @@ export const Hero: React.FC<{ onCta: () => void }> = ({ onCta }) => {
             className="absolute bottom-[20%] right-[-5%] -rotate-6 bg-blue-500/10 border-blue-500/30 text-blue-400"
           />
 
-          {/* Center Phone Mockup */}
+          {/* Center Mockup - Using the raw image provided */}
           <div className="relative z-20 group">
-             {/* Glow behind phone */}
+             {/* Glow behind mockup */}
              <div className="absolute inset-0 bg-[#00e676] rounded-[3rem] blur-[80px] opacity-20 group-hover:opacity-30 transition-opacity" />
              
              <div
-                className="relative mx-auto rounded-[2.5rem] lg:rounded-[3rem] p-2 lg:p-3 border border-white/10"
+                className="relative mx-auto"
                 style={{
-                  background: "linear-gradient(145deg,#1c1c1c,#0a0a0a)",
-                  boxShadow: `0 40px 100px -20px rgba(0,0,0,0.8)`,
-                  width: "clamp(260px, 35vw, 320px)"
+                  width: "clamp(260px, 35vw, 320px)",
+                  aspectRatio: "9/19"
                 }}
               >
-                <div className="absolute top-3 left-1/2 -translate-x-1/2 z-10 h-6 w-28 rounded-full bg-black" />
-                <div className="rounded-[2rem] lg:rounded-[2.4rem] bg-[#0a0a0a] overflow-hidden relative" style={{ aspectRatio: "9/19" }}>
-                   <img 
-                    src={dashboardPhone} 
-                    alt="App Dashboard" 
-                    className="absolute inset-0 w-full h-full object-cover"
-                  />
-                  
-                  {/* Overlay for better readability of floating elements if needed */}
-                  <div className="absolute inset-0 bg-black/10 pointer-events-none" />
-                </div>
+                <img 
+                  src={dashboardPhone} 
+                  alt="App Mockup" 
+                  className="w-full h-full object-contain"
+                />
               </div>
           </div>
         </div>
