@@ -39,7 +39,7 @@ const CategoriasTab: React.FC = () => {
     { name: "Apostas", value: "R$ 427,00", pct: 11.1, color: "#ef4444", icon: <Dices size={18} /> },
   ];
   return (
-    <div className="grid lg:grid-cols-[1fr_1.15fr] gap-12 items-center">
+    <div className="grid lg:grid-cols-[1fr_1.15fr] gap-12 items-center min-w-0">
       <div>
         <Pill><BarChart3 size={12} /> Análise inteligente</Pill>
         <H2 className="mt-5">Entenda para onde<br /><span style={{ color: NEON }}>seu dinheiro está indo</span></H2>
@@ -114,7 +114,7 @@ const ParcelamentosTab: React.FC = () => {
     { icon: <Plane size={18} />, color: "#ec4899", name: "Viagem p/ Nordeste", value: "R$ 255,55", progress: 25, parcels: "2/8" },
   ];
   return (
-    <div className="grid lg:grid-cols-[1fr_1.15fr] gap-12 items-center">
+    <div className="grid lg:grid-cols-[1fr_1.15fr] gap-12 items-center min-w-0">
       <div>
         <Pill tone="orange"><Calendar size={12} /> Acompanhamento de parcelamentos</Pill>
         <h2 className="mt-5 font-display font-bold text-white leading-[1.05] tracking-tight" style={{ fontSize: "clamp(2rem, 3.8vw, 3.4rem)", fontWeight: 700 }}>Todas as suas <span style={{ color: NEON }}>parcelas organizadas</span> em um só lugar.</h2>
@@ -196,7 +196,7 @@ const ParcelamentosTab: React.FC = () => {
 /* ===================== TAB 4: SCANNER ===================== */
 const ScannerTab: React.FC = () => {
   return (
-    <div className="grid lg:grid-cols-[1fr_1.05fr] gap-12 items-center">
+    <div className="grid lg:grid-cols-[1fr_1.05fr] gap-12 items-center min-w-0">
       <div>
         <Pill>Escaneie. Automatize. Economize.</Pill>
         <H2 className="mt-5">Escaneie seus comprovantes e deixe a IA <span style={{ color: NEON }}>fazer o resto.</span></H2>

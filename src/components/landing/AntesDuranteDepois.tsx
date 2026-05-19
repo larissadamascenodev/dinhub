@@ -18,7 +18,7 @@ export const AntesDuranteDepois: React.FC = () => {
         </div>
       </Reveal>
 
-      <div className="mt-12 grid lg:grid-cols-3 gap-5">
+      <div className="mt-12 grid lg:grid-cols-3 gap-5 min-w-0">
         {/* ANTES */}
         <Reveal>
           <Card className="p-6 h-full flex flex-col" style={{ borderColor: "rgba(239,68,68,0.35)" }}>
