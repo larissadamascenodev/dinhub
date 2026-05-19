@@ -38,6 +38,7 @@ const Landing: React.FC = () => {
       <Navbar onLogin={openLogin} onSignup={openSignup} />
       <main>
         <Hero onCta={openSignup} />
+        <ToolsMarquee />
         <DashboardOverview />
         <HubySection />
         <FeaturesTabs />
