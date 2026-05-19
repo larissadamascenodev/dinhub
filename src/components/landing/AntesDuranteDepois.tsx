@@ -1,7 +1,7 @@
 import React from "react";
 import { X, Zap, CheckCircle2, Rocket, TrendingUp } from "lucide-react";
 import { Section, H2, Sub, Card, Reveal, NEON } from "./shared";
-import huby from "@/assets/huby-character.png";
+
 
 export const AntesDuranteDepois: React.FC = () => {
   return (
