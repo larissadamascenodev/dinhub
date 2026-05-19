@@ -121,7 +121,7 @@ export const Hero: React.FC<{ onCta: () => void }> = ({ onCta }) => {
                 }}
               >
                 <div className="absolute top-3 left-1/2 -translate-x-1/2 z-10 h-6 w-28 rounded-full bg-black" />
-                <div className="rounded-[2.4rem] bg-[#0a0a0a] overflow-hidden relative" style={{ aspectRatio: "9/19" }}>
+                <div className="rounded-[2rem] lg:rounded-[2.4rem] bg-[#0a0a0a] overflow-hidden relative" style={{ aspectRatio: "9/19" }}>
                    <img 
                     src={dashboardPhone} 
                     alt="App Dashboard" 
