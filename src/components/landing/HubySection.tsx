@@ -51,24 +51,7 @@ export const HubySection: React.FC = () => {
 
           {/* Mascot + speech */}
           <div className="mt-10 flex items-end gap-4 justify-center sm:justify-start">
-            <div className="relative">
-              <img
-                src={huby}
-                alt="Huby"
-                className="relative z-10 object-contain"
-                style={{ width: "clamp(180px, 22vw, 260px)", height: "auto", animation: "hubyFloat 4s ease-in-out infinite" }}
-              />
-              <div
-                className="absolute left-1/2 -translate-x-1/2 -bottom-2 rounded-full"
-                style={{
-                  width: "70%",
-                  height: "30px",
-                  background: `radial-gradient(ellipse, ${NEON}66 0%, transparent 70%)`,
-                  filter: "blur(12px)",
-                  animation: "hubyGlow 3s ease-in-out infinite",
-                }}
-              />
-            </div>
+            <HubyMascot size={180} />
             <div
               className="relative rounded-2xl px-4 py-3 max-w-[240px] mb-8"
               style={{ background: "rgba(17,17,17,0.95)", border: `1px solid ${NEON}55`, boxShadow: `0 0 24px ${NEON}22` }}
