@@ -27,7 +27,7 @@ export const HubySection: React.FC = () => {
   return (
     <Section id="funcionalidades">
       {/* PART A — Huby */}
-      <div className="grid lg:grid-cols-[1fr_1.15fr] gap-10 lg:gap-14 items-start min-w-0">
+      <div className="grid grid-cols-1 lg:grid-cols-[1fr_1.15fr] gap-10 lg:gap-14 items-start min-w-0">
         <Reveal>
           <div className="min-w-0 w-full max-w-full">
             <Pill><Sparkles size={12} /> Huby · Sua assistente financeira</Pill>
