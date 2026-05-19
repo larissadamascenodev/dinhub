@@ -151,7 +151,7 @@ export const HubySection: React.FC = () => {
             mockup={<RadarMockup />}
             alertTitle="Alerta detectado"
             alertText="Gastos com delivery acima do normal"
-            footer="Detectamos aumento de gastos em Delivery nos últimos 7 dias."
+            
           />
           <ToolCard
             icon={<BarChart3 size={22} />}
