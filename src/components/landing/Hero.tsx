@@ -1,5 +1,5 @@
 import React from "react";
-import { ArrowRight, Play, Target, Bell, Shield, CreditCard } from "lucide-react";
+import { ArrowRight, Play, Search, Bell, MoveRight, CreditCard } from "lucide-react";
 import { NEON, NEON_GLOW } from "./shared";
 import heroWoman from "@/assets/hero-woman.jpeg";
 
@@ -24,7 +24,6 @@ const txns: Txn[] = [
 export const Hero: React.FC<{ onCta: () => void }> = ({ onCta }) => {
   return (
     <section className="relative w-full overflow-hidden" style={{ paddingTop: "clamp(7rem, 11vw, 9rem)", paddingBottom: "clamp(3rem, 6vw, 5rem)" }}>
-      {/* hero-bg-woman: SUBSTITUIR este asset pela imagem definitiva da mulher estressada */}
       <div className="hero-bg-woman absolute inset-0 pointer-events-none">
         <img
           src={heroWoman}
@@ -39,41 +38,58 @@ export const Hero: React.FC<{ onCta: () => void }> = ({ onCta }) => {
         />
       </div>
 
-      <div className="relative mx-auto w-full" style={{ maxWidth: "1320px", paddingLeft: "clamp(1.25rem, 4vw, 3rem)", paddingRight: "clamp(1.25rem, 4vw, 3rem)" }}>
+      <div
+        className="relative mx-auto w-full hero-container"
+        style={{ maxWidth: "1320px" }}
+      >
         <div className="grid lg:grid-cols-2 gap-10 items-center">
           {/* LEFT: copy */}
           <div className="flex flex-col" style={{ gap: "clamp(1rem, 1.8vw, 1.5rem)" }}>
-            {/* Badge */}
             <div
-              className="inline-flex items-center gap-3 self-start rounded-full border px-3 py-2"
+              className="inline-flex items-center gap-3 self-start rounded-full border px-3 py-2 max-w-full"
               style={{ background: "rgba(0,230,118,0.06)", borderColor: "rgba(0,230,118,0.25)" }}
             >
-              <div className="flex -space-x-2">
+              <div className="flex -space-x-2 shrink-0">
                 {avatars.map((src, i) => (
                   <img key={i} src={src} alt="" className="h-7 w-7 rounded-full border-2" style={{ borderColor: "#0a0a0a" }} />
                 ))}
               </div>
-              <span className="font-semibold" style={{ color: NEON_GLOW, fontSize: "clamp(0.75rem, 0.95vw, 0.9rem)" }}>
+              <span className="font-semibold" style={{ color: NEON_GLOW, fontSize: "clamp(0.7rem, 0.95vw, 0.9rem)" }}>
                 +2.847 pessoas assumindo o controle
               </span>
             </div>
 
             <h1
               className="font-display font-extrabold text-white tracking-tight"
-              style={{ fontSize: "clamp(2rem, 5vw, 4.4rem)", lineHeight: 1.02 }}
+              style={{
+                fontSize: "clamp(1.9rem, 5vw, 4.4rem)",
+                lineHeight: 1.05,
+                wordWrap: "break-word",
+                overflowWrap: "break-word",
+                maxWidth: "100%",
+              }}
             >
               Seu dinheiro some todo mês e você{" "}
               <span style={{ color: NEON }}>não sabe por quê.</span>
             </h1>
 
-            <p className="text-[#a0a0a0] max-w-[560px]" style={{ fontSize: "clamp(1rem, 1.3vw, 1.18rem)", lineHeight: 1.55 }}>
+            <p
+              className="text-[#a0a0a0]"
+              style={{
+                fontSize: "clamp(0.95rem, 3.5vw, 1.25rem)",
+                lineHeight: 1.55,
+                maxWidth: "100%",
+                wordWrap: "break-word",
+                overflowWrap: "break-word",
+              }}
+            >
               O DinHub analisa cada centavo, te avisa antes de virar problema e te mostra o que fazer. Em português, sem enrolação.
             </p>
 
-            <div className="flex flex-wrap gap-3 pt-2">
+            <div className="flex flex-col sm:flex-row flex-wrap gap-3 pt-2 w-full">
               <button
                 onClick={onCta}
-                className="inline-flex items-center gap-2 rounded-full font-bold text-black transition-all hover:scale-[1.02]"
+                className="inline-flex items-center justify-center gap-2 rounded-full font-bold text-black transition-all hover:scale-[1.02] w-full sm:w-auto"
                 style={{
                   background: NEON,
                   padding: "clamp(0.9rem, 1.3vw, 1.1rem) clamp(1.4rem, 2vw, 1.9rem)",
@@ -84,7 +100,7 @@ export const Hero: React.FC<{ onCta: () => void }> = ({ onCta }) => {
                 Descobrir para onde vai meu dinheiro <ArrowRight size={18} />
               </button>
               <button
-                className="inline-flex items-center gap-2 rounded-full border border-white/20 bg-white/[0.03] font-semibold text-white transition-all hover:bg-white/[0.08]"
+                className="inline-flex items-center justify-center gap-2 rounded-full border border-white/20 bg-white/[0.03] font-semibold text-white transition-all hover:bg-white/[0.08] w-full sm:w-auto"
                 style={{
                   padding: "clamp(0.9rem, 1.3vw, 1.1rem) clamp(1.4rem, 2vw, 1.9rem)",
                   fontSize: "clamp(0.9rem, 1.05vw, 1.05rem)",
@@ -98,20 +114,18 @@ export const Hero: React.FC<{ onCta: () => void }> = ({ onCta }) => {
           {/* RIGHT: floating txn cards */}
           <div className="relative flex flex-col gap-3 items-stretch lg:items-end">
             {/* Mobile: horizontal carousel */}
-            <div className="flex lg:hidden gap-3 overflow-x-auto scrollbar-hide -mx-5 px-5 snap-x snap-mandatory">
+            <div
+              className="flex lg:hidden gap-3 overflow-x-auto hero-scroll snap-x snap-mandatory"
+              style={{ marginLeft: "-20px", marginRight: "-20px", paddingLeft: "20px", paddingRight: "20px", scrollPadding: "20px" }}
+            >
               {txns.map((t, i) => (
-                <TxnCard key={i} {...t} className="snap-center shrink-0 w-[78vw] max-w-[320px]" />
+                <TxnCard key={i} {...t} className="snap-center shrink-0" style={{ width: "85vw", maxWidth: "360px" }} />
               ))}
             </div>
             {/* Desktop: stack */}
             <div className="hidden lg:flex flex-col gap-3 w-full max-w-[360px]">
               {txns.map((t, i) => (
-                <div
-                  key={i}
-                  style={{
-                    animation: `floatIn 0.7s ${0.15 * i}s both`,
-                  }}
-                >
+                <div key={i} style={{ animation: `floatIn 0.7s ${0.15 * i}s both` }}>
                   <TxnCard {...t} />
                 </div>
               ))}
@@ -119,38 +133,30 @@ export const Hero: React.FC<{ onCta: () => void }> = ({ onCta }) => {
           </div>
         </div>
 
-        {/* Bottom mini cards */}
+        {/* Bottom mini cards — 3 em linha, desktop e mobile */}
         <div className="mt-10 lg:mt-16 border-t border-white/[0.06] pt-8">
-          <div className="grid grid-cols-3 gap-3 sm:gap-5">
-            <MiniInfo icon={<Target size={20} />} title="Meta de férias">
-              <span className="text-white/80 text-[11px] sm:text-sm">R$ 2.350 / R$ 5.000</span>
-              <div className="mt-2 h-1.5 w-full rounded-full bg-white/8 overflow-hidden">
-                <div className="h-full rounded-full" style={{ width: "47%", background: NEON, boxShadow: `0 0 12px ${NEON}` }} />
-              </div>
-              <span className="mt-1 inline-block text-[10px] sm:text-xs font-bold" style={{ color: NEON }}>47%</span>
-            </MiniInfo>
-            <MiniInfo icon={<Bell size={20} />} title="Alerta de gastos">
-              <p className="text-white/70 text-[11px] sm:text-sm">
-                <span style={{ color: NEON }} className="font-bold">90%</span> do limite de <span style={{ color: NEON }}>Lazer</span>.
-              </p>
-            </MiniInfo>
-            <MiniInfo icon={<Shield size={20} />} title="Radar de risco">
-              <p className="text-white/70 text-[11px] sm:text-sm">
-                Aumento em <span style={{ color: NEON }}>Delivery</span>.
-              </p>
-            </MiniInfo>
+          <div className="grid grid-cols-3 gap-2 sm:gap-5">
+            <MiniInfo icon={<Search />} title="Analisa cada centavo" subtitle="Visão completa de tudo que entra e sai." />
+            <MiniInfo icon={<Bell />} title="Te avisa antes" subtitle="Alertas antes de virar problema no seu bolso." />
+            <MiniInfo icon={<MoveRight />} title="Te mostra o que fazer" subtitle="Decisões claras para você agir com confiança." />
           </div>
         </div>
       </div>
 
       <style>{`
         @keyframes floatIn { from { opacity: 0; transform: translateY(20px); } to { opacity: 1; transform: translateY(0); } }
+        .hero-scroll::-webkit-scrollbar { display: none; }
+        .hero-scroll { scrollbar-width: none; -ms-overflow-style: none; }
+        .hero-container { padding-left: 20px; padding-right: 20px; }
+        @media (min-width: 640px) {
+          .hero-container { padding-left: clamp(1.5rem, 4vw, 3rem); padding-right: clamp(1.5rem, 4vw, 3rem); }
+        }
       `}</style>
     </section>
   );
 };
 
-const TxnCard: React.FC<Txn & { className?: string }> = ({ name, time, value, logo, logoBg, highlight, className = "" }) => (
+const TxnCard: React.FC<Txn & { className?: string; style?: React.CSSProperties }> = ({ name, time, value, logo, logoBg, highlight, className = "", style }) => (
   <div
     className={`flex items-center gap-3 rounded-2xl px-4 py-3 ${className}`}
     style={{
@@ -158,6 +164,7 @@ const TxnCard: React.FC<Txn & { className?: string }> = ({ name, time, value, lo
       backdropFilter: "blur(14px)",
       border: highlight ? `1.5px solid ${NEON}` : "1px solid rgba(255,255,255,0.07)",
       boxShadow: highlight ? `0 0 24px ${NEON}33` : "0 8px 30px rgba(0,0,0,0.4)",
+      ...style,
     }}
   >
     <div className={`h-11 w-11 rounded-xl flex items-center justify-center shrink-0 overflow-hidden ${logoBg}`}>{logo}</div>
@@ -165,18 +172,30 @@ const TxnCard: React.FC<Txn & { className?: string }> = ({ name, time, value, lo
       <p className="text-white font-bold text-sm leading-tight truncate">{name}</p>
       <p className="text-white/50 text-xs mt-0.5">{time}</p>
     </div>
-    <p className="font-black text-[#ff5959] tabular-nums" style={{ fontSize: "clamp(0.875rem, 1vw, 1rem)" }}>{value}</p>
+    <p className="font-black text-[#ff5959] tabular-nums whitespace-nowrap" style={{ fontSize: "clamp(0.875rem, 1vw, 1rem)" }}>{value}</p>
   </div>
 );
 
-const MiniInfo: React.FC<{ icon: React.ReactNode; title: string; children: React.ReactNode }> = ({ icon, title, children }) => (
-  <div className="flex flex-col sm:flex-row gap-2 sm:gap-3">
-    <div className="h-8 w-8 sm:h-10 sm:w-10 rounded-lg sm:rounded-xl flex items-center justify-center shrink-0" style={{ background: "rgba(0,230,118,0.1)", color: NEON }}>
-      {icon}
+const MiniInfo: React.FC<{ icon: React.ReactElement; title: string; subtitle: string }> = ({ icon, title, subtitle }) => (
+  <div className="flex flex-col items-start gap-2">
+    <div
+      className="rounded-lg sm:rounded-xl flex items-center justify-center shrink-0"
+      style={{
+        background: "rgba(0,230,118,0.1)",
+        color: NEON,
+        width: "clamp(32px, 8vw, 44px)",
+        height: "clamp(32px, 8vw, 44px)",
+      }}
+    >
+      {React.cloneElement(icon, { size: 20, strokeWidth: 2.2 })}
     </div>
-    <div className="flex-1 min-w-0">
-      <p className="font-bold text-white text-xs sm:text-sm mb-0.5 sm:mb-1">{title}</p>
-      {children}
+    <div className="min-w-0">
+      <p className="font-bold text-white mb-0.5 sm:mb-1 leading-tight" style={{ fontSize: "clamp(0.72rem, 2.6vw, 0.95rem)" }}>
+        {title}
+      </p>
+      <p className="text-white/60 leading-snug" style={{ fontSize: "clamp(0.62rem, 2.2vw, 0.82rem)" }}>
+        {subtitle}
+      </p>
     </div>
   </div>
 );
