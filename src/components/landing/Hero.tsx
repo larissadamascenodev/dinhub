@@ -63,22 +63,23 @@ export const Hero: React.FC<{ onCta: () => void }> = ({ onCta }) => {
             </span>
           </button>
           
-          <button className="px-8 py-4 lg:px-12 lg:py-5 rounded-full border border-white/10 bg-white/[0.03] text-white font-bold hover:bg-white/[0.08] transition-colors uppercase tracking-tight text-sm lg:text-base backdrop-blur-sm">
-            Ver Recursos
+          <button 
+            onClick={onCta}
+            className="flex flex-col items-center gap-2 group transition-opacity hover:opacity-80"
+          >
+            <div className="flex items-center gap-6 text-white/40 mb-2">
+              <div className="flex items-center gap-2 text-[10px] font-black uppercase tracking-[0.2em]">
+                <Camera size={14} /> Foto
+              </div>
+              <div className="flex items-center gap-2 text-[10px] font-black uppercase tracking-[0.2em]">
+                <Mic size={14} /> Voz
+              </div>
+              <div className="flex items-center gap-2 text-[10px] font-black uppercase tracking-[0.2em]">
+                <Type size={14} /> Texto
+              </div>
+            </div>
+            <p className="text-white/30 text-[10px] font-bold uppercase tracking-widest">Sem cartão de crédito · Cancele quando quiser</p>
           </button>
-        </div>
-
-        {/* Input Methods Icons - Inspired by Operafit's Photo/Voice/Text */}
-        <div className="flex items-center gap-8 mb-16 text-white/40">
-          <div className="flex items-center gap-2 text-xs font-bold uppercase tracking-widest hover:text-white transition-colors cursor-pointer">
-            <Camera size={16} /> Foto
-          </div>
-          <div className="flex items-center gap-2 text-xs font-bold uppercase tracking-widest hover:text-white transition-colors cursor-pointer">
-            <Mic size={16} /> Voz
-          </div>
-          <div className="flex items-center gap-2 text-xs font-bold uppercase tracking-widest hover:text-white transition-colors cursor-pointer">
-            <Type size={16} /> Texto
-          </div>
         </div>
 
         {/* Floating Badges Area - The "Scatter" layout from Operafit */}
