@@ -63,12 +63,6 @@ export const AntesDuranteDepois: React.FC = () => {
                 </li>
               ))}
             </ul>
-            <div className="mt-5 flex justify-center">
-              <div className="relative">
-                <img src={huby} alt="" style={{ width: "120px", animation: "hubyFloat 4s ease-in-out infinite" }} />
-                <div className="absolute left-1/2 -translate-x-1/2 -bottom-2 rounded-full" style={{ width: "80%", height: "20px", background: `radial-gradient(ellipse, ${NEON}66, transparent 70%)`, filter: "blur(10px)" }} />
-              </div>
-            </div>
             <div className="mt-4 rounded-xl p-3 text-xs" style={{ background: "#0e0e0e", border: `1px solid ${NEON}33` }}>
               <p className="text-white/60 text-[10px] uppercase tracking-wider">Visão geral</p>
               <p className="text-white/50 text-[10px] mt-2">Saldo disponível</p>
