@@ -53,14 +53,14 @@ export const HubySection: React.FC = () => {
             </div>
 
             {/* Mascot + speech */}
-            <div className="mt-10 flex flex-wrap items-end gap-4 justify-center sm:justify-start">
-              <HubyMascot size={160} />
+            <div className="mt-10 flex flex-wrap items-end gap-4 justify-center sm:justify-start min-w-0">
+              <HubyMascot size={140} />
               <div
-                className="relative rounded-2xl px-4 py-3 mb-8"
-                style={{ background: "rgba(17,17,17,0.95)", border: `1px solid ${NEON}55`, boxShadow: `0 0 24px ${NEON}22`, maxWidth: "240px" }}
+                className="relative rounded-2xl px-4 py-3 mb-8 min-w-0"
+                style={{ background: "rgba(17,17,17,0.95)", border: `1px solid ${NEON}55`, boxShadow: `0 0 24px ${NEON}22`, flex: "1 1 180px", maxWidth: "240px" }}
               >
                 <p className="text-white text-sm leading-relaxed">
-                  Olá! Eu sou a <span style={{ color: NEON }} className="font-bold">Huby, sua assistente financeira</span>.
+                  Olá! Eu sou a <span style={{ color: NEON }} className="font-bold">Huby, sua assistente</span>.
                 </p>
                 <p className="text-white/60 text-xs mt-2">Em que posso te ajudar?</p>
               </div>
