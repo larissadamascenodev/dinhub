@@ -17,7 +17,8 @@ export const Navbar: React.FC<Props> = ({ onLogin, onSignup }) => {
   }, []);
 
   const links = [
-    { label: "Funcionalidades", href: "#funcionalidades" },
+    { label: "Quem Somos", href: "#" },
+    { label: "Termos de Uso", href: "/termos-de-uso" },
   ];
 
   return (
@@ -41,17 +42,18 @@ export const Navbar: React.FC<Props> = ({ onLogin, onSignup }) => {
             paddingBottom: "clamp(0.85rem, 1.2vw, 1.1rem)",
           }}
         >
-          <a href="#" className="font-display font-extrabold text-white" style={{ fontSize: "clamp(1.35rem, 1.8vw, 1.7rem)", letterSpacing: "-0.02em" }}>
-            Din<span style={{ color: NEON }}>Hub</span>
+          <a href="#" className="flex items-center gap-2 group">
+             <div className="w-8 h-8 rounded-lg flex items-center justify-center font-black text-black text-sm" style={{ background: NEON }}>D</div>
+             <span className="font-display font-extrabold text-white text-xl tracking-tight">DinHub</span>
           </a>
 
-          {/* Desktop pill nav */}
-          <nav className="hidden lg:flex items-center gap-1 rounded-full border border-white/8 bg-white/[0.03] px-2 py-1.5 backdrop-blur">
+          {/* Desktop nav */}
+          <nav className="hidden lg:flex items-center gap-10">
             {links.map((l) => (
               <a
-                key={l.href}
+                key={l.label}
                 href={l.href}
-                className="rounded-full px-4 py-2 text-sm font-medium text-white/75 transition-colors hover:text-white hover:bg-white/[0.06]"
+                className="text-[10px] font-black text-white/40 transition-colors hover:text-white uppercase tracking-[0.25em]"
               >
                 {l.label}
               </a>
@@ -60,17 +62,11 @@ export const Navbar: React.FC<Props> = ({ onLogin, onSignup }) => {
 
           <div className="flex items-center gap-3">
             <button
-              onClick={onLogin}
-              className="rounded-full border border-white/15 bg-white/[0.03] px-5 py-2.5 text-sm font-semibold text-white transition-colors hover:bg-white/[0.08]"
-            >
-              Entrar
-            </button>
-            <button
               onClick={onSignup}
-              className="hidden lg:flex rounded-full px-5 py-2.5 text-sm font-bold text-black transition-all hover:scale-[1.03]"
-              style={{ background: NEON, boxShadow: "0 0 24px rgba(0,230,118,0.35)" }}
+              className="rounded-full px-6 py-2.5 text-sm font-bold text-black transition-all hover:scale-[1.03] active:scale-95"
+              style={{ background: NEON, boxShadow: `0 8px 20px ${NEON}44` }}
             >
-              Cadastre-se
+              Começar Grátis
             </button>
           </div>
         </div>
