@@ -201,16 +201,16 @@ const ScannerTab: React.FC = () => {
         <Pill>Escaneie. Automatize. Economize.</Pill>
         <H2 className="mt-5">Escaneie seus comprovantes e deixe a IA <span style={{ color: NEON }}>fazer o resto.</span></H2>
         <Sub className="mt-4 max-w-[520px]">Diga adeus à digitação manual. Escaneie qualquer comprovante e o DinHub identifica, organiza e categoriza automaticamente cada gasto para você ter total controle do seu dinheiro.</Sub>
-        <div className="mt-6 grid sm:grid-cols-3 gap-4">
+        <div className="mt-6 grid grid-cols-3 gap-2 sm:gap-4">
           {[
-            { icon: <FileText size={18} />, title: "Leitura inteligente", desc: "A IA extrai todas as informações importantes do seu comprovante." },
-            { icon: <LayoutGrid size={18} />, title: "Categorização automática", desc: "Cada gasto é classificado na categoria correta sem você precisar fazer nada." },
-            { icon: <CheckCircle2 size={18} />, title: "Organização imediata", desc: "Tudo é salvo e organizado na hora, pronto para você analisar e tomar decisões." },
+            { icon: <FileText size={14} />, title: "Leitura inteligente", desc: "A IA extrai as informações do comprovante." },
+            { icon: <LayoutGrid size={14} />, title: "Categorização automática", desc: "Cada gasto vai para a categoria correta." },
+            { icon: <CheckCircle2 size={14} />, title: "Organização imediata", desc: "Tudo salvo e organizado na hora." },
           ].map((f, i) => (
-            <div key={i}>
-              <div className="h-11 w-11 rounded-full flex items-center justify-center" style={{ background: "rgba(0,230,118,0.1)", color: NEON, border: `1px solid ${NEON}33` }}>{f.icon}</div>
-              <h4 className="text-white font-bold mt-3 text-sm">{f.title}</h4>
-              <p className="text-white/55 text-xs mt-1">{f.desc}</p>
+            <div key={i} className="min-w-0">
+              <div className="h-8 w-8 sm:h-11 sm:w-11 rounded-full flex items-center justify-center" style={{ background: "rgba(0,230,118,0.1)", color: NEON, border: `1px solid ${NEON}33` }}>{f.icon}</div>
+              <h4 className="text-white font-bold mt-2 sm:mt-3 text-[0.72rem] sm:text-sm leading-tight">{f.title}</h4>
+              <p className="text-white/55 text-[0.65rem] sm:text-xs mt-1 leading-snug">{f.desc}</p>
             </div>
           ))}
         </div>
