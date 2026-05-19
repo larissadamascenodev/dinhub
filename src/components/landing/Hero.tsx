@@ -168,11 +168,11 @@ export const Hero: React.FC<{ onCta: () => void }> = ({ onCta }) => {
         </div>
 
         {/* Bottom Stats Grid - Like Operafit */}
-        <div className="grid grid-cols-2 lg:grid-cols-4 gap-8 lg:gap-20 mt-16 lg:mt-0 text-center z-20">
+        <div className="grid grid-cols-2 lg:grid-cols-4 gap-8 lg:gap-20 mt-16 lg:mt-10 text-center z-20">
           <StatBox label="Para registrar" value="3s" />
           <StatBox label="Contas conectadas" value="12+" />
           <StatBox label="Usuários ativos" value="50k+" />
-          <StatBox label="Economia média" value="25%" />
+          <StatBox label="Economia média" value="100%" />
         </div>
 
         {/* Scroll Indicator */}
