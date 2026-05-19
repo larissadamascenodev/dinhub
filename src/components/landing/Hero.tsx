@@ -83,61 +83,29 @@ export const Hero: React.FC<{ onCta: () => void }> = ({ onCta }) => {
           </button>
         </div>
 
-        {/* Floating Badges Area - The "Scatter" layout from Operafit */}
-        <div className="relative w-full max-w-[1200px] h-[500px] lg:h-[700px] flex items-center justify-center mt-[-40px]">
-          {/* Scatter items around the center */}
+        {/* Floating Badges Area - Reduced height after mockup removal */}
+        <div className="relative w-full max-w-[1000px] h-[250px] lg:h-[350px] flex items-center justify-center mt-[-20px]">
+          {/* Scatter items */}
           <ScatterBadge 
             icon={<Search size={16}/>} 
             label="SCANNER IA" 
-            className="absolute top-[10%] left-[5%] -rotate-12 bg-[#00e676]/10 border-[#00e676]/30 text-[#00ff88]"
+            className="absolute top-[10%] left-[10%] -rotate-12 bg-[#00e676]/10 border-[#00e676]/30 text-[#00ff88]"
           />
           <ScatterBadge 
             icon={<Bell size={16}/>} 
             label="ALERTAS" 
-            className="absolute top-[5%] right-[10%] rotate-6 bg-orange-500/10 border-orange-500/30 text-orange-400"
+            className="absolute top-[20%] right-[10%] rotate-6 bg-orange-500/10 border-orange-500/30 text-orange-400"
           />
           <ScatterBadge 
             icon={<Star size={16}/>} 
             label="METAS" 
-            className="absolute bottom-[30%] left-[-2%] rotate-12 bg-purple-500/10 border-purple-500/30 text-purple-400"
+            className="absolute bottom-[20%] left-[5%] rotate-12 bg-purple-500/10 border-purple-500/30 text-purple-400"
           />
           <ScatterBadge 
             icon={<ShieldCheck size={16}/>} 
             label="SEGURANÇA" 
-            className="absolute bottom-[20%] right-[-5%] -rotate-6 bg-blue-500/10 border-blue-500/30 text-blue-400"
+            className="absolute bottom-[10%] right-[5%] -rotate-6 bg-blue-500/10 border-blue-500/30 text-blue-400"
           />
-
-          {/* Center Phone Mockup - Recreation inspired by Operafit with real screen */}
-          <div className="relative z-20 group">
-             {/* Glow behind phone */}
-             <div className="absolute inset-0 bg-[#00e676] rounded-[3.5rem] blur-[100px] opacity-25 group-hover:opacity-35 transition-opacity" />
-             
-             {/* Device Frame */}
-             <div
-                className="relative mx-auto bg-[#0a0a0a] rounded-[3rem] lg:rounded-[3.5rem] p-3 lg:p-4 border-[6px] border-[#1a1a1a] shadow-[0_0_0_2px_rgba(255,255,255,0.05)]"
-                style={{
-                  boxShadow: `0 50px 100px -20px rgba(0,0,0,0.9)`,
-                  width: "clamp(280px, 38vw, 340px)"
-                }}
-              >
-                {/* Dynamic Island / Notch Area */}
-                <div className="absolute top-6 left-1/2 -translate-x-1/2 z-30 h-6 w-28 rounded-full bg-[#111] border border-white/5 shadow-inner flex items-center justify-end px-4">
-                  <div className="w-2 h-2 rounded-full bg-[#1a1a1a]" />
-                </div>
-
-                {/* Internal Screen with Real Dashboard */}
-                <div className="rounded-[2rem] lg:rounded-[2.4rem] bg-black overflow-hidden relative shadow-2xl border border-white/5" style={{ aspectRatio: "9/19.5" }}>
-                   <img 
-                    src={dashboardPhone} 
-                    alt="App Dashboard Screen" 
-                    className="absolute inset-0 w-full h-full object-cover"
-                  />
-                  
-                  {/* Glass Reflection effect */}
-                  <div className="absolute inset-0 bg-gradient-to-tr from-white/5 to-transparent pointer-events-none" />
-                </div>
-              </div>
-          </div>
         </div>
 
         {/* Bottom Stats Grid - Like Operafit */}
