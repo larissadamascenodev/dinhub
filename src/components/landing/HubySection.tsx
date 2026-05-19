@@ -41,13 +41,13 @@ export const HubySection: React.FC = () => {
               A Huby transforma dados em clareza. Faça perguntas sobre seu dinheiro, receba respostas práticas e descubra o que realmente importa.
             </Sub>
 
-            <div className="mt-6 grid sm:grid-cols-2 gap-2.5">
+            <div className="mt-6 -mx-5 sm:mx-0 flex sm:grid sm:grid-cols-2 gap-2.5 overflow-x-auto sm:overflow-visible px-5 sm:px-0 snap-x snap-mandatory [scrollbar-width:none] [&::-webkit-scrollbar]:hidden">
               {quickQs.map((q, i) => (
                 <button
                   key={i}
-                  className="text-left rounded-full border border-white/10 bg-white/[0.03] px-4 py-3 text-white/85 text-sm transition-all hover:border-[#00e676]/40 hover:bg-[#00e676]/5 flex items-center gap-2 w-full"
+                  className="shrink-0 sm:shrink snap-start text-left rounded-full border border-white/10 bg-white/[0.03] px-4 py-3 text-white/85 text-xs sm:text-sm transition-all hover:border-[#00e676]/40 hover:bg-[#00e676]/5 flex items-center gap-2"
                 >
-                  <span style={{ color: NEON }} className="shrink-0">{q.icon}</span> <span className="truncate">{q.label}</span>
+                  <span style={{ color: NEON }} className="shrink-0">{q.icon}</span> <span className="whitespace-nowrap sm:whitespace-normal sm:truncate">{q.label}</span>
                 </button>
               ))}
             </div>
