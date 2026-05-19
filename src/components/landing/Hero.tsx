@@ -2,6 +2,7 @@ import React from "react";
 import { ArrowRight, Search, Bell, ShieldCheck, Star, Camera, Mic, Type } from "lucide-react";
 import { NEON } from "./shared";
 import heroWoman from "@/assets/hero-woman.jpeg";
+import dashboardPhone from "@/assets/dashboard-phone.jpeg";
 
 export const Hero: React.FC<{ onCta: () => void }> = ({ onCta }) => {
   return (
