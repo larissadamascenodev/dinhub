@@ -15,7 +15,7 @@ export default {
     extend: {
       fontFamily: {
         sans: ['Inter', 'sans-serif'],
-        display: ['Sora', 'Plus Jakarta Sans', 'sans-serif'],
+        display: ['Plus Jakarta Sans', 'sans-serif'],
       },
       colors: {
         border: "hsl(var(--border))",
@@ -105,10 +105,6 @@ export default {
           "0%, 100%": { boxShadow: "0 0 20px -5px hsl(142 71% 55% / 0.4)" },
           "50%": { boxShadow: "0 0 30px -5px hsl(142 71% 55% / 0.6)" },
         },
-        "scan": {
-          "0%": { top: "0%" },
-          "100%": { top: "100%" },
-        },
       },
       animation: {
         "accordion-down": "accordion-down 0.2s ease-out",
@@ -116,7 +112,6 @@ export default {
         "fade-in": "fade-in 0.4s ease-out",
         "slide-up": "slide-up 0.5s ease-out",
         "pulse-glow": "pulse-glow 2s ease-in-out infinite",
-        "scan": "scan 3s linear infinite",
       },
     },
   },

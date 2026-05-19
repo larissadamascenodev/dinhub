@@ -231,7 +231,7 @@ const Configuracoes = () => {
 
   const handleLogout = async () => {
     await supabase.auth.signOut();
-    navigate("/");
+    navigate("/auth");
   };
 
   const openResetModal = () => {

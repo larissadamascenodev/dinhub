@@ -4,7 +4,7 @@ import { motion, AnimatePresence } from "framer-motion";
 import { useNavigate, useLocation } from "react-router-dom";
 
 const navItems = [
-  { icon: Home, label: "Início", path: "/dashboard" },
+  { icon: Home, label: "Início", path: "/" },
   { icon: ArrowLeftRight, label: "Transações", path: "/transacoes" },
   { icon: null, label: "", isCenter: true, path: "" },
   { icon: Bot, label: "Bot Huby", path: "/bot-finance" },
