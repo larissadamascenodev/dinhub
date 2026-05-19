@@ -52,18 +52,24 @@ const tools = [
 
 export const ToolsMarquee = () => {
   return (
-    <div className="relative w-full py-12 lg:py-20 overflow-hidden bg-[#0a0a0a]">
+    <div className="relative w-full py-10 lg:py-16 overflow-hidden bg-[#0a0a0a]">
+      {/* Subtle background glow */}
+      <div 
+        className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[60%] h-[60%] rounded-full opacity-[0.03] blur-[100px] pointer-events-none"
+        style={{ background: `radial-gradient(circle, ${NEON} 0%, transparent 70%)` }}
+      />
+
       {/* Decorative gradient edges - Very strong for seamless flow */}
-      <div className="absolute inset-y-0 left-0 w-32 lg:w-[400px] bg-gradient-to-r from-[#0a0a0a] via-[#0a0a0a]/95 to-transparent z-20 pointer-events-none" />
-      <div className="absolute inset-y-0 right-0 w-32 lg:w-[400px] bg-gradient-to-l from-[#0a0a0a] via-[#0a0a0a]/95 to-transparent z-20 pointer-events-none" />
+      <div className="absolute inset-y-0 left-0 w-32 lg:w-[350px] bg-gradient-to-r from-[#0a0a0a] via-[#0a0a0a]/90 to-transparent z-20 pointer-events-none" />
+      <div className="absolute inset-y-0 right-0 w-32 lg:w-[350px] bg-gradient-to-l from-[#0a0a0a] via-[#0a0a0a]/90 to-transparent z-20 pointer-events-none" />
       
-      <div className="flex flex-col gap-5 lg:gap-8">
+      <div className="flex flex-col gap-4 lg:gap-6">
         {/* Row 1 - Left to Right */}
         <div className="flex whitespace-nowrap gap-4 lg:gap-6 w-max animate-marquee">
           {[...tools, ...tools, ...tools].map((tool, idx) => (
             <div 
               key={`r1-${idx}`}
-              className="inline-flex items-center gap-3 px-5 py-3 lg:px-7 lg:py-4 rounded-[18px] transition-all duration-300 hover:border-[#00e676]/40 hover:-translate-y-1 group cursor-default"
+              className="inline-flex items-center gap-3 px-5 py-3 lg:px-8 lg:py-4 rounded-[18px] transition-all duration-300 hover:border-[#00e676]/40 hover:-translate-y-1 group cursor-default"
               style={{ background: CARD_BG, border: `1px solid ${CARD_BORDER}` }}
             >
               <div 
@@ -72,7 +78,7 @@ export const ToolsMarquee = () => {
               >
                 {tool.icon}
               </div>
-              <span className="text-[#a0a0a0] font-sans font-semibold text-[11px] lg:text-[13px] uppercase tracking-[0.15em] group-hover:text-white transition-colors duration-300">
+              <span className="text-[#a0a0a0] font-sans font-semibold text-[10px] lg:text-[12px] uppercase tracking-[0.2em] group-hover:text-white transition-colors duration-300">
                 {tool.name}
               </span>
             </div>
@@ -84,7 +90,7 @@ export const ToolsMarquee = () => {
           {[...tools, ...tools, ...tools].reverse().map((tool, idx) => (
             <div 
               key={`r2-${idx}`}
-              className="inline-flex items-center gap-3 px-5 py-3 lg:px-7 lg:py-4 rounded-[18px] transition-all duration-300 hover:border-[#00e676]/40 hover:-translate-y-1 group cursor-default"
+              className="inline-flex items-center gap-3 px-5 py-3 lg:px-8 lg:py-4 rounded-[18px] transition-all duration-300 hover:border-[#00e676]/40 hover:-translate-y-1 group cursor-default"
               style={{ background: CARD_BG, border: `1px solid ${CARD_BORDER}` }}
             >
               <div 
@@ -93,7 +99,7 @@ export const ToolsMarquee = () => {
               >
                 {tool.icon}
               </div>
-              <span className="text-[#a0a0a0] font-sans font-semibold text-[11px] lg:text-[13px] uppercase tracking-[0.15em] group-hover:text-white transition-colors duration-300">
+              <span className="text-[#a0a0a0] font-sans font-semibold text-[10px] lg:text-[12px] uppercase tracking-[0.2em] group-hover:text-white transition-colors duration-300">
                 {tool.name}
               </span>
             </div>
@@ -111,10 +117,10 @@ export const ToolsMarquee = () => {
           100% { transform: translateX(0); }
         }
         .animate-marquee {
-          animation: marquee 70s linear infinite;
+          animation: marquee 50s linear infinite;
         }
         .animate-marquee-reverse {
-          animation: marquee-reverse 70s linear infinite;
+          animation: marquee-reverse 50s linear infinite;
         }
         .animate-marquee:hover, .animate-marquee-reverse:hover {
           animation-play-state: paused;
