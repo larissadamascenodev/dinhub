@@ -30,7 +30,7 @@ export const Hero: React.FC<{ onCta: () => void }> = ({ onCta }) => {
 
       <div className="relative z-10 w-full max-w-[1320px] px-5 flex flex-col items-center text-center">
         {/* Offer Pill */}
-        <div className="flex items-center gap-2 mb-12">
+        <div className="flex items-center gap-2 mb-8">
            <div className="flex items-center gap-2 bg-black border border-white/5 px-4 py-2 rounded-full">
               <span className="text-[#00e676] text-sm">✦</span>
               <span className="text-white font-bold text-xs lg:text-sm uppercase tracking-wider">Oferta de Lançamento:</span>
@@ -40,7 +40,7 @@ export const Hero: React.FC<{ onCta: () => void }> = ({ onCta }) => {
 
         {/* Top Feature Pill */}
         <div 
-          className="inline-flex items-center gap-2 rounded-full px-4 py-2 mb-8 bg-[#00e676]/5 border border-[#00e676]/10 backdrop-blur-sm"
+          className="inline-flex items-center gap-2 rounded-full px-4 py-2 mb-6 bg-[#00e676]/5 border border-[#00e676]/10 backdrop-blur-sm"
           style={{ fontSize: "clamp(0.7rem, 0.9vw, 0.85rem)" }}
         >
           <div className="flex -space-x-1.5 mr-1">
