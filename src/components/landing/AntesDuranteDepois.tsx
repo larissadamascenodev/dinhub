@@ -7,13 +7,8 @@ export const AntesDuranteDepois: React.FC = () => {
   return (
     <Section>
       <Reveal>
-        <div className="text-center">
-          <p className="font-display font-extrabold text-white" style={{ fontSize: "clamp(1.6rem, 3.2vw, 2.8rem)", letterSpacing: "0.02em" }}>
-            ANTES, DURANTE E DEPOIS.
-          </p>
-          <p className="font-display font-extrabold" style={{ color: NEON, fontSize: "clamp(1.6rem, 3.2vw, 2.8rem)", letterSpacing: "0.02em" }}>
-            O CONTROLE QUE MUDA TUDO.
-          </p>
+        <div className="text-center max-w-[820px] mx-auto">
+          <H2>Antes, durante e depois. <span style={{ color: NEON }}>O controle que muda tudo.</span></H2>
           <Sub className="mt-4 max-w-[640px] mx-auto">Do caos à clareza financeira com a inteligência da Huby.</Sub>
         </div>
       </Reveal>
