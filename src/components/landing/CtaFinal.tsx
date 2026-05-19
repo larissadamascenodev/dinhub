@@ -19,17 +19,12 @@ export const CtaFinal: React.FC<{ onCta: () => void }> = ({ onCta }) => {
         <Reveal>
           <div className="text-center">
             <h2
-              className="font-display font-extrabold text-white leading-[1.05]"
-              style={{ fontSize: "clamp(1.8rem, 4vw, 3.4rem)" }}
+              className="font-display font-extrabold text-white leading-tight"
+              style={{ fontSize: "clamp(2rem, 5vw, 4rem)" }}
             >
-              Controle hoje.
+              Controle hoje.<br />
+              <span style={{ color: NEON }}>Mais liberdade amanhã.</span>
             </h2>
-            <p
-              className="font-display font-extrabold mt-1"
-              style={{ color: NEON, fontSize: "clamp(1.8rem, 4vw, 3.4rem)", lineHeight: 1.05 }}
-            >
-              Mais liberdade amanhã.
-            </p>
             <p
               className="mt-4 text-[#a0a0a0] max-w-[540px] mx-auto"
               style={{ fontSize: "clamp(0.95rem, 1.15vw, 1.05rem)" }}
