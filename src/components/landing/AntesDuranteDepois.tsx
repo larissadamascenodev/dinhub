@@ -104,9 +104,6 @@ export const AntesDuranteDepois: React.FC = () => {
                 ))}
               </div>
             </div>
-            <div className="depois-bg-man mt-5 rounded-xl flex-1 min-h-[100px] relative overflow-hidden" style={{ background: "linear-gradient(135deg, #0e2a18 0%, #0a0a0a 100%)" }}>
-              <p className="absolute top-2 left-2 text-[10px] text-white/40">{/* SUBSTITUIR pelo asset do homem feliz */}</p>
-            </div>
           </Card>
         </Reveal>
       </div>
