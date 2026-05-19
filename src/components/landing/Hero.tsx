@@ -42,9 +42,9 @@ export const Hero: React.FC<{ onCta: () => void }> = ({ onCta }) => {
         {/* Supporting Text */}
         <p
           className="text-white/60 w-full mb-10 max-w-[650px] font-medium"
-          style={{ fontSize: "clamp(1rem, 1.3vw, 1.4rem)", lineHeight: 1.4 }}
+          style={{ fontSize: "clamp(1rem, 1.2vw, 1.3rem)", lineHeight: 1.5 }}
         >
-          Conecte suas contas. A IA categoriza tudo, prevê faturas e evita desperdícios — tudo num só app.
+          Aponte a câmera. A IA calcula gastos e categoriza tudo em 3 segundos. Metas, faturas, grupos e medalhas — tudo num só app.
         </p>
 
         {/* CTA Group */}
