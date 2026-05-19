@@ -1,5 +1,4 @@
 import React from "react";
-import { Menu, X } from "lucide-react";
 import { NEON } from "./shared";
 
 interface Props {
