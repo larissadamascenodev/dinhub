@@ -1,5 +1,5 @@
 import React from "react";
-import { ArrowRight, Play, Search, Bell, MoveRight, CreditCard } from "lucide-react";
+import { ArrowRight, Search, Bell, MoveRight, CreditCard, Sparkles } from "lucide-react";
 import { NEON, NEON_GLOW } from "./shared";
 import heroWoman from "@/assets/hero-woman.jpeg";
 
@@ -23,123 +23,147 @@ const txns: Txn[] = [
 
 export const Hero: React.FC<{ onCta: () => void }> = ({ onCta }) => {
   return (
-    <section className="relative w-full overflow-hidden" style={{ paddingTop: "clamp(7rem, 11vw, 9rem)", paddingBottom: "clamp(3rem, 6vw, 5rem)" }}>
-      <div className="hero-bg-woman absolute inset-0 pointer-events-none">
+    <section className="relative w-full overflow-hidden bg-[#0a0a0a]" style={{ paddingTop: "clamp(6rem, 10vw, 8rem)", paddingBottom: "clamp(3rem, 6vw, 5rem)" }}>
+      {/* Background with glow and image */}
+      <div className="absolute inset-0 pointer-events-none">
+        <div 
+          className="absolute top-0 right-0 h-full w-full lg:w-[70%] opacity-40 mix-blend-screen"
+          style={{
+            background: `radial-gradient(circle at 70% 30%, ${NEON}33 0%, transparent 70%)`
+          }}
+        />
         <img
           src={heroWoman}
           alt=""
-          className="absolute right-0 top-0 h-full w-full lg:w-[65%] object-cover object-center opacity-[0.55]"
-          style={{ maskImage: "linear-gradient(to left, black 30%, transparent 100%)", WebkitMaskImage: "linear-gradient(to left, black 30%, transparent 100%)" }}
-        />
-        <div className="absolute inset-0" style={{ background: "linear-gradient(90deg, #0a0a0a 0%, rgba(10,10,10,0.7) 45%, rgba(10,10,10,0.35) 100%)" }} />
-        <div
-          className="absolute top-[-10%] right-[-5%] w-[60vw] h-[60vw] max-w-[800px] max-h-[800px] rounded-full pointer-events-none"
-          style={{ background: `radial-gradient(circle, ${NEON}33 0%, transparent 65%)`, filter: "blur(40px)" }}
+          className="absolute right-0 top-0 h-full w-full lg:w-[60%] object-cover object-center opacity-40"
+          style={{ 
+            maskImage: "linear-gradient(to left, black 20%, transparent 90%), linear-gradient(to bottom, black 80%, transparent 100%)",
+            WebkitMaskImage: "linear-gradient(to left, black 20%, transparent 90%), linear-gradient(to bottom, black 80%, transparent 100%)"
+          }}
         />
       </div>
 
-      <div
-        className="relative mx-auto w-full hero-container"
-        style={{ maxWidth: "1320px" }}
-      >
-        <div className="grid lg:grid-cols-2 gap-10 items-center w-full min-w-0">
-          {/* LEFT: copy */}
-          <div className="flex flex-col items-center text-center lg:items-start lg:text-left min-w-0 w-full" style={{ gap: "24px" }}>
-
+      <div className="relative mx-auto w-full hero-container" style={{ maxWidth: "1320px" }}>
+        <div className="grid lg:grid-cols-[1.1fr_0.9fr] gap-12 lg:gap-16 items-center w-full min-w-0">
+          {/* LEFT: Content */}
+          <div className="flex flex-col items-center text-center lg:items-start lg:text-left min-w-0 w-full z-10">
+            
             <div
-              className="inline-flex items-center gap-2 rounded-full border max-w-full"
-              style={{ background: "rgba(0,230,118,0.06)", borderColor: "rgba(0,230,118,0.25)", padding: "6px 14px" }}
+              className="inline-flex items-center gap-2 rounded-full border mb-6 px-4 py-1.5"
+              style={{ background: "rgba(0,230,118,0.08)", borderColor: `${NEON}33` }}
             >
               <div className="flex -space-x-2 shrink-0">
                 {avatars.map((src, i) => (
-                  <img key={i} src={src} alt="" className="rounded-full border-2" style={{ width: 24, height: 24, borderColor: "#0a0a0a" }} />
+                  <img key={i} src={src} alt="" className="rounded-full border-2 w-6 h-6 border-[#0a0a0a]" />
                 ))}
               </div>
-              <span className="font-semibold" style={{ color: NEON_GLOW, fontSize: "0.82rem" }}>
+              <span className="font-bold text-xs uppercase tracking-wider" style={{ color: NEON }}>
                 +2.847 pessoas no controle
               </span>
             </div>
 
             <h1
-              className="font-display font-extrabold text-white tracking-tight w-full"
-              style={{
-                fontSize: "clamp(2rem, 8vw, 4.4rem)",
-                lineHeight: 1.08,
-                wordWrap: "break-word",
-                overflowWrap: "break-word",
-              }}
+              className="font-display font-black text-white tracking-tight w-full mb-6 leading-[1.05]"
+              style={{ fontSize: "clamp(2.4rem, 7vw, 4.8rem)" }}
             >
-              Seu dinheiro some todo mês e você{" "}
-              <span style={{ color: NEON }}>não sabe por quê.</span>
+              Seu dinheiro some e você <br className="hidden lg:block" />
+              <span style={{ color: NEON }} className="relative">
+                não sabe por quê.
+                <svg className="absolute -bottom-2 left-0 w-full h-3 text-[#00e676]/30" viewBox="0 0 100 10" preserveAspectRatio="none">
+                  <path d="M0 5 Q 25 0 50 5 T 100 5" fill="none" stroke="currentColor" strokeWidth="4" />
+                </svg>
+              </span>
             </h1>
 
             <p
-              className="text-[#a0a0a0] w-full"
-              style={{
-                fontSize: "clamp(0.9rem, 3.5vw, 1.18rem)",
-                lineHeight: 1.55,
-                wordWrap: "break-word",
-                overflowWrap: "break-word",
-                paddingLeft: "4px",
-                paddingRight: "4px",
-              }}
+              className="text-white/70 w-full mb-8 max-w-[580px]"
+              style={{ fontSize: "clamp(1rem, 1.2vw, 1.25rem)", lineHeight: 1.6 }}
             >
-              O DinHub analisa cada centavo, te avisa antes de virar problema e te mostra o que fazer. Em português, sem enrolação.
+              O DinHub analisa cada centavo das suas contas, te avisa antes de virar problema e te mostra exatamente o que fazer. Sem planilhas, sem esforço.
             </p>
 
-            <div className="flex flex-col sm:flex-row sm:flex-wrap gap-3 pt-1 w-full">
+            <div className="flex flex-col sm:flex-row gap-4 w-full sm:w-auto">
               <button
                 onClick={onCta}
-                className="inline-flex items-center justify-center gap-2 rounded-full font-bold text-black transition-all hover:scale-[1.02] w-full sm:w-auto"
+                className="inline-flex items-center justify-center gap-3 rounded-full font-black text-black transition-all hover:scale-[1.02] active:scale-[0.98] w-full sm:w-auto"
                 style={{
                   background: NEON,
-                  padding: "clamp(0.9rem, 1.3vw, 1.1rem) clamp(1.4rem, 2vw, 1.9rem)",
-                  fontSize: "clamp(0.9rem, 1.05vw, 1.05rem)",
-                  boxShadow: "0 0 30px rgba(0,255,136,0.35)",
+                  padding: "1.1rem 2.2rem",
+                  fontSize: "1.05rem",
+                  boxShadow: `0 10px 40px ${NEON}44`,
                 }}
               >
-                Descobrir para onde vai meu dinheiro <ArrowRight size={18} />
+                COMEÇAR AGORA <ArrowRight size={20} strokeWidth={3} />
               </button>
+              
+              <div className="flex items-center justify-center gap-2 px-4 py-3 rounded-full bg-white/5 border border-white/10">
+                <div className="flex gap-0.5">
+                  {[1,2,3,4,5].map(s => (
+                    <span key={s} className="text-[#f59e0b] text-sm">★</span>
+                  ))}
+                </div>
+                <span className="text-white/80 text-xs font-bold uppercase tracking-widest">Nota 4.9 na Store</span>
+              </div>
             </div>
           </div>
 
-          {/* RIGHT: floating txn cards */}
-          <div className="relative flex flex-col gap-3 items-stretch lg:items-end min-w-0 w-full max-w-full">
-            {/* Mobile: horizontal carousel */}
-            <div
-              className="flex lg:hidden gap-3 overflow-x-auto hero-scroll snap-x snap-mandatory min-w-0 w-full max-w-full"
-              style={{ marginLeft: "-20px", marginRight: "-20px", paddingLeft: "20px", paddingRight: "20px", scrollPadding: "20px" }}
-            >
+          {/* RIGHT: Visual */}
+          <div className="relative w-full flex justify-center lg:justify-end z-10">
+            <div className="relative w-full max-w-[420px]">
+              {/* Decorative elements */}
+              <div className="absolute -top-10 -right-10 w-32 h-32 rounded-full blur-[60px]" style={{ background: NEON }} />
+              <div className="absolute -bottom-10 -left-10 w-32 h-32 rounded-full blur-[60px]" style={{ background: "#a855f7" }} />
 
-              {txns.map((t, i) => (
-                <TxnCard key={i} {...t} className="snap-start shrink-0" style={{ width: "78vw", maxWidth: "320px" }} />
-              ))}
-            </div>
-            {/* Desktop: stack */}
-            <div className="hidden lg:flex flex-col gap-3 w-full max-w-[360px]">
-              {txns.map((t, i) => (
-                <div key={i} style={{ animation: `floatIn 0.7s ${0.15 * i}s both` }}>
-                  <TxnCard {...t} />
+              {/* Transaction stack */}
+              <div className="flex flex-col gap-4 w-full">
+                {txns.map((t, i) => (
+                  <div 
+                    key={i} 
+                    className="transform transition-all duration-500"
+                    style={{ 
+                      animation: `floatIn 0.8s ${0.1 * i}s both`,
+                      transform: `perspective(1000px) rotateX(10deg) rotateY(-5deg)`
+                    }}
+                  >
+                    <TxnCard {...t} />
+                  </div>
+                ))}
+              </div>
+
+              {/* Floating notification */}
+              <div 
+                className="absolute -right-4 top-1/2 -translate-y-1/2 p-4 rounded-2xl bg-[#111] border border-[#00e676]/30 shadow-2xl z-20 hidden sm:block animate-bounce"
+                style={{ animationDuration: '3s' }}
+              >
+                <div className="flex items-center gap-3">
+                  <div className="w-10 h-10 rounded-full bg-[#00e676]/10 flex items-center justify-center text-[#00e676]">
+                    <Sparkles size={20} />
+                  </div>
+                  <div>
+                    <p className="text-white font-bold text-sm">Huby detectou!</p>
+                    <p className="text-white/50 text-xs">Você pode economizar R$ 120 hoje.</p>
+                  </div>
                 </div>
-              ))}
+              </div>
             </div>
           </div>
         </div>
 
-        {/* Bottom mini cards — 3 em linha, desktop e mobile */}
-        <div className="mt-10 lg:mt-16 border-t border-white/[0.06] pt-8">
-          <div className="grid grid-cols-3 sm:gap-5" style={{ gap: 8 }}>
-            <MiniInfo icon={<Search />} title="Analisa cada centavo" subtitle="Visão completa de tudo que entra e sai." />
-            <MiniInfo icon={<Bell />} title="Te avisa antes" subtitle="Alertas antes de virar problema no seu bolso." />
-            <MiniInfo icon={<MoveRight />} title="Te mostra o que fazer" subtitle="Decisões claras para você agir com confiança." />
+        {/* Bottom trust indicators */}
+        <div className="mt-16 lg:mt-24 pt-10 border-t border-white/5">
+          <div className="grid grid-cols-1 sm:grid-cols-3 gap-6 lg:gap-12">
+            <Feature icon={<Search size={22} />} title="Analisa cada centavo" desc="Visão automática de tudo que entra e sai da sua conta." />
+            <Feature icon={<Bell size={22} />} title="Alertas de impacto" desc="Te avisamos sobre gastos atípicos antes de doer no bolso." />
+            <Feature icon={<MoveRight size={22} />} title="Ação inteligente" desc="Sugestões práticas do que fazer para economizar mais." />
           </div>
         </div>
       </div>
 
       <style>{`
-        @keyframes floatIn { from { opacity: 0; transform: translateY(20px); } to { opacity: 1; transform: translateY(0); } }
-        .hero-scroll::-webkit-scrollbar { display: none; }
-        .hero-scroll { scrollbar-width: none; -ms-overflow-style: none; }
+        @keyframes floatIn { 
+          from { opacity: 0; transform: translateY(30px) perspective(1000px) rotateX(10deg) rotateY(-5deg); } 
+          to { opacity: 1; transform: translateY(0) perspective(1000px) rotateX(10deg) rotateY(-5deg); } 
+        }
         .hero-container { padding-left: 20px; padding-right: 20px; }
         @media (min-width: 640px) {
           .hero-container { padding-left: clamp(1.5rem, 4vw, 3rem); padding-right: clamp(1.5rem, 4vw, 3rem); }
@@ -149,43 +173,36 @@ export const Hero: React.FC<{ onCta: () => void }> = ({ onCta }) => {
   );
 };
 
-const TxnCard: React.FC<Txn & { className?: string; style?: React.CSSProperties }> = ({ name, time, value, logo, logoBg, highlight, className = "", style }) => (
+const TxnCard: React.FC<Txn> = ({ name, time, value, logo, logoBg, highlight }) => (
   <div
-    className={`flex items-center gap-3 rounded-2xl ${className}`}
+    className="flex items-center gap-4 rounded-2xl p-4 transition-all hover:scale-[1.02] cursor-default"
     style={{
-      background: "rgba(17,17,17,0.85)",
-      backdropFilter: "blur(14px)",
-      border: highlight ? `1.5px solid ${NEON}` : "1px solid rgba(255,255,255,0.07)",
-      boxShadow: highlight ? `0 0 24px ${NEON}33` : "0 8px 30px rgba(0,0,0,0.4)",
-      height: 56,
-      padding: "10px 14px",
-      ...style,
+      background: "rgba(20,20,20,0.85)",
+      backdropFilter: "blur(20px)",
+      border: highlight ? `2px solid ${NEON}` : "1px solid rgba(255,255,255,0.08)",
+      boxShadow: highlight ? `0 0 30px ${NEON}33` : "0 10px 40px rgba(0,0,0,0.5)",
     }}
   >
-    <div className={`h-9 w-9 rounded-lg flex items-center justify-center shrink-0 overflow-hidden ${logoBg}`}>{logo}</div>
+    <div className={`h-11 w-11 rounded-xl flex items-center justify-center shrink-0 shadow-inner ${logoBg}`}>{logo}</div>
     <div className="flex-1 min-w-0">
-      <p className="text-white font-bold leading-tight truncate" style={{ fontSize: "0.88rem" }}>{name}</p>
-      <p className="text-white/50 mt-0.5" style={{ fontSize: "0.75rem" }}>{time}</p>
+      <p className="text-white font-bold leading-tight truncate text-base">{name}</p>
+      <p className="text-white/40 mt-1 text-xs">{time}</p>
     </div>
-    <p className="font-black text-[#ff5959] tabular-nums whitespace-nowrap" style={{ fontSize: "0.88rem" }}>{value}</p>
+    <div className="text-right">
+      <p className="font-black text-[#ff5959] text-base tabular-nums">{value}</p>
+      {highlight && <p className="text-[10px] font-bold tracking-widest uppercase mt-0.5" style={{ color: NEON }}>Urgente</p>}
+    </div>
   </div>
 );
 
-const MiniInfo: React.FC<{ icon: React.ReactElement; title: string; subtitle: string }> = ({ icon, title, subtitle }) => (
-  <div
-    className="flex flex-col gap-2 min-w-0"
-    style={{ background: "#111111", border: "1px solid #1a1a1a", borderRadius: 14, padding: 12, flex: 1 }}
-  >
-    <span style={{ color: NEON }} className="shrink-0">
-      {React.cloneElement(icon, { size: 24, strokeWidth: 2.2 })}
-    </span>
-    <div className="min-w-0 w-full">
-      <p className="font-bold text-white leading-tight" style={{ fontSize: "0.78rem" }}>
-        {title}
-      </p>
-      <p className="text-white/60 leading-snug mt-1" style={{ fontSize: "0.7rem" }}>
-        {subtitle}
-      </p>
+const Feature: React.FC<{ icon: React.ReactNode; title: string; desc: string }> = ({ icon, title, desc }) => (
+  <div className="flex gap-4 items-start group">
+    <div className="h-12 w-12 rounded-2xl flex items-center justify-center shrink-0 transition-all group-hover:scale-110" style={{ background: "rgba(0,230,118,0.06)", color: NEON, border: `1px solid ${NEON}22` }}>
+      {icon}
+    </div>
+    <div>
+      <h3 className="text-white font-bold text-sm lg:text-base leading-tight">{title}</h3>
+      <p className="text-white/50 text-xs lg:text-sm mt-1.5 leading-relaxed">{desc}</p>
     </div>
   </div>
 );
