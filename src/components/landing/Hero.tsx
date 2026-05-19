@@ -42,9 +42,10 @@ export const Hero: React.FC<{ onCta: () => void }> = ({ onCta }) => {
         className="relative mx-auto w-full hero-container"
         style={{ maxWidth: "1320px" }}
       >
-        <div className="grid lg:grid-cols-2 gap-10 items-center">
+        <div className="grid lg:grid-cols-2 gap-10 items-center w-full min-w-0">
           {/* LEFT: copy */}
-          <div className="flex flex-col items-center text-center lg:items-start lg:text-left" style={{ gap: "24px" }}>
+          <div className="flex flex-col items-center text-center lg:items-start lg:text-left min-w-0 w-full" style={{ gap: "24px" }}>
+
             <div
               className="inline-flex items-center gap-3 rounded-full border px-3 py-2 max-w-full"
               style={{ background: "rgba(0,230,118,0.06)", borderColor: "rgba(0,230,118,0.25)" }}
@@ -112,12 +113,13 @@ export const Hero: React.FC<{ onCta: () => void }> = ({ onCta }) => {
           </div>
 
           {/* RIGHT: floating txn cards */}
-          <div className="relative flex flex-col gap-3 items-stretch lg:items-end">
+          <div className="relative flex flex-col gap-3 items-stretch lg:items-end min-w-0 w-full max-w-full">
             {/* Mobile: horizontal carousel */}
             <div
-              className="flex lg:hidden gap-3 overflow-x-auto hero-scroll snap-x snap-mandatory"
+              className="flex lg:hidden gap-3 overflow-x-auto hero-scroll snap-x snap-mandatory min-w-0 w-full max-w-full"
               style={{ marginLeft: "-20px", marginRight: "-20px", paddingLeft: "20px", paddingRight: "20px", scrollPadding: "20px" }}
             >
+
               {txns.map((t, i) => (
                 <TxnCard key={i} {...t} className="snap-center shrink-0" style={{ width: "85vw", maxWidth: "360px" }} />
               ))}
