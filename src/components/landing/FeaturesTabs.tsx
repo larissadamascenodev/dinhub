@@ -44,17 +44,17 @@ const CategoriasTab: React.FC = () => {
         <Pill><BarChart3 size={12} /> Análise inteligente</Pill>
         <H2 className="mt-5">Entenda para onde<br /><span style={{ color: NEON }}>seu dinheiro está indo</span></H2>
         <Sub className="mt-4 max-w-[500px]">O DinHub organiza seus gastos por categoria e revela padrões que passam despercebidos. Mais clareza, menos sustos no fim do mês.</Sub>
-        <div className="mt-6 grid sm:grid-cols-2 gap-4">
+        <div className="mt-6 grid grid-cols-2 gap-3 sm:gap-4">
           {[
-            { icon: <Brain size={16} />, title: "Categorização automática", desc: "Nossa IA identifica e organiza seus gastos sem esforço." },
-            { icon: <BarChart3 size={16} />, title: "Visão clara e completa", desc: "Veja quanto cada categoria pesa no seu mês." },
-            { icon: <Bell size={16} />, title: "Alertas inteligentes", desc: "Detectamos aumentos e padrões preocupantes." },
-            { icon: <Target size={16} />, title: "Decisões melhores", desc: "Informamos o que importa para você economizar de verdade." },
+            { icon: <Brain size={14} />, title: "Categorização automática", desc: "Nossa IA identifica e organiza seus gastos sem esforço." },
+            { icon: <BarChart3 size={14} />, title: "Visão clara e completa", desc: "Veja quanto cada categoria pesa no seu mês." },
+            { icon: <Bell size={14} />, title: "Alertas inteligentes", desc: "Detectamos aumentos e padrões preocupantes." },
+            { icon: <Target size={14} />, title: "Decisões melhores", desc: "Informamos o que importa para você economizar." },
           ].map((f, i) => (
-            <div key={i}>
-              <div className="h-10 w-10 rounded-xl flex items-center justify-center" style={{ background: "rgba(0,230,118,0.1)", color: NEON, border: `1px solid ${NEON}33` }}>{f.icon}</div>
-              <h4 className="text-white font-bold mt-3 text-sm">{f.title}</h4>
-              <p className="text-white/55 text-xs mt-1">{f.desc}</p>
+            <div key={i} className="min-w-0">
+              <div className="h-8 w-8 sm:h-10 sm:w-10 rounded-lg sm:rounded-xl flex items-center justify-center" style={{ background: "rgba(0,230,118,0.1)", color: NEON, border: `1px solid ${NEON}33` }}>{f.icon}</div>
+              <h4 className="text-white font-bold mt-2 sm:mt-3 text-[0.78rem] sm:text-sm leading-tight">{f.title}</h4>
+              <p className="text-white/55 text-[0.7rem] sm:text-xs mt-1 leading-snug">{f.desc}</p>
             </div>
           ))}
         </div>
