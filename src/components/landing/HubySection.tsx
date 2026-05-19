@@ -128,7 +128,7 @@ export const HubySection: React.FC = () => {
           </div>
         </Reveal>
 
-        <div className="mt-12 grid lg:grid-cols-3 gap-5 min-w-0">
+        <div className="mt-12 grid grid-cols-1 lg:grid-cols-3 gap-5 min-w-0">
           <ToolCard
             icon={<Radar size={22} />}
             title="Radar Financeiro"
