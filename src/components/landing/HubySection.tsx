@@ -93,7 +93,7 @@ export const HubySection: React.FC = () => {
             </div>
             <div className="mt-3 space-y-2">
               {actions.map((a, i) => (
-                <div key={i} className="rounded-xl px-3.5 py-3 flex items-center gap-3 hover:bg-white/[0.03] transition-colors cursor-pointer" style={{ background: "#0e0e0e", border: "1px solid rgba(255,255,255,0.05)" }}>
+                <div key={i} className="rounded-xl px-3.5 py-3 flex items-center gap-3 hover:bg-white/[0.03] transition-colors cursor-pointer min-w-0" style={{ background: "#0e0e0e", border: "1px solid rgba(255,255,255,0.05)" }}>
                   <div className="h-9 w-9 rounded-lg flex items-center justify-center shrink-0" style={{ background: `${a.color}1a`, color: a.color }}>
                     {a.icon}
                   </div>
