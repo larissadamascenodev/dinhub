@@ -117,7 +117,7 @@ export const Hero: React.FC<{ onCta: () => void }> = ({ onCta }) => {
                 style={{
                   background: "linear-gradient(145deg,#1c1c1c,#0a0a0a)",
                   boxShadow: `0 40px 100px -20px rgba(0,0,0,0.8)`,
-                  width: "clamp(260px, 40vw, 360px)"
+                  width: "clamp(260px, 35vw, 320px)"
                 }}
               >
                 <div className="absolute top-3 left-1/2 -translate-x-1/2 z-10 h-6 w-28 rounded-full bg-black" />
