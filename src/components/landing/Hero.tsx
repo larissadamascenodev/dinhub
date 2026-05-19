@@ -84,7 +84,7 @@ export const Hero: React.FC<{ onCta: () => void }> = ({ onCta }) => {
         </div>
 
         {/* Floating Badges Area - Reduced height after mockup removal */}
-        <div className="relative w-full max-w-[1000px] h-[250px] lg:h-[350px] flex items-center justify-center mt-[-20px]">
+        <div className="relative w-full max-w-[1000px] h-[200px] lg:h-[250px] flex items-center justify-center mt-[-40px]">
           {/* Scatter items */}
           <ScatterBadge 
             icon={<Search size={16}/>} 
