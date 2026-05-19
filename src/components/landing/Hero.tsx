@@ -100,15 +100,6 @@ export const Hero: React.FC<{ onCta: () => void }> = ({ onCta }) => {
               >
                 Descobrir para onde vai meu dinheiro <ArrowRight size={18} />
               </button>
-              <button
-                className="inline-flex items-center justify-center gap-2 rounded-full border border-white/20 bg-white/[0.03] font-semibold text-white transition-all hover:bg-white/[0.08] w-full sm:w-auto"
-                style={{
-                  padding: "clamp(0.9rem, 1.3vw, 1.1rem) clamp(1.4rem, 2vw, 1.9rem)",
-                  fontSize: "clamp(0.9rem, 1.05vw, 1.05rem)",
-                }}
-              >
-                <Play size={16} fill="white" /> Ver como funciona
-              </button>
             </div>
           </div>
 
