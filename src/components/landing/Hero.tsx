@@ -107,25 +107,34 @@ export const Hero: React.FC<{ onCta: () => void }> = ({ onCta }) => {
             className="absolute bottom-[20%] right-[-5%] -rotate-6 bg-blue-500/10 border-blue-500/30 text-blue-400"
           />
 
-          {/* Center Phone Mockup - Only the phone showing the real dashboard */}
+          {/* Center Phone Mockup - Recreation inspired by Operafit with real screen */}
           <div className="relative z-20 group">
              {/* Glow behind phone */}
-             <div className="absolute inset-0 bg-[#00e676] rounded-[3rem] blur-[80px] opacity-20 group-hover:opacity-30 transition-opacity" />
+             <div className="absolute inset-0 bg-[#00e676] rounded-[3.5rem] blur-[100px] opacity-25 group-hover:opacity-35 transition-opacity" />
              
+             {/* Device Frame */}
              <div
-                className="relative mx-auto rounded-[2.5rem] lg:rounded-[3rem] p-1 lg:p-1.5 border border-white/20 bg-[#0a0a0a]"
+                className="relative mx-auto bg-[#0a0a0a] rounded-[3rem] lg:rounded-[3.5rem] p-3 lg:p-4 border-[6px] border-[#1a1a1a] shadow-[0_0_0_2px_rgba(255,255,255,0.05)]"
                 style={{
-                  boxShadow: `0 40px 100px -20px rgba(0,0,0,0.8)`,
-                  width: "clamp(260px, 35vw, 320px)"
+                  boxShadow: `0 50px 100px -20px rgba(0,0,0,0.9)`,
+                  width: "clamp(280px, 38vw, 340px)"
                 }}
               >
-                {/* Real Dashboard Image in Phone Shape */}
-                <div className="rounded-[2.2rem] lg:rounded-[2.7rem] overflow-hidden relative" style={{ aspectRatio: "9/19" }}>
+                {/* Dynamic Island / Notch Area */}
+                <div className="absolute top-6 left-1/2 -translate-x-1/2 z-30 h-6 w-28 rounded-full bg-[#111] border border-white/5 shadow-inner flex items-center justify-end px-4">
+                  <div className="w-2 h-2 rounded-full bg-[#1a1a1a]" />
+                </div>
+
+                {/* Internal Screen with Real Dashboard */}
+                <div className="rounded-[2rem] lg:rounded-[2.4rem] bg-black overflow-hidden relative shadow-2xl border border-white/5" style={{ aspectRatio: "9/19.5" }}>
                    <img 
                     src={dashboardPhone} 
-                    alt="App Dashboard Real Screen" 
+                    alt="App Dashboard Screen" 
                     className="absolute inset-0 w-full h-full object-cover"
                   />
+                  
+                  {/* Glass Reflection effect */}
+                  <div className="absolute inset-0 bg-gradient-to-tr from-white/5 to-transparent pointer-events-none" />
                 </div>
               </div>
           </div>
