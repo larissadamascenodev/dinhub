@@ -113,12 +113,13 @@ export const Hero: React.FC<{ onCta: () => void }> = ({ onCta }) => {
           </div>
 
           {/* RIGHT: floating txn cards */}
-          <div className="relative flex flex-col gap-3 items-stretch lg:items-end">
+          <div className="relative flex flex-col gap-3 items-stretch lg:items-end min-w-0 w-full max-w-full">
             {/* Mobile: horizontal carousel */}
             <div
-              className="flex lg:hidden gap-3 overflow-x-auto hero-scroll snap-x snap-mandatory"
+              className="flex lg:hidden gap-3 overflow-x-auto hero-scroll snap-x snap-mandatory min-w-0 w-full max-w-full"
               style={{ marginLeft: "-20px", marginRight: "-20px", paddingLeft: "20px", paddingRight: "20px", scrollPadding: "20px" }}
             >
+
               {txns.map((t, i) => (
                 <TxnCard key={i} {...t} className="snap-center shrink-0" style={{ width: "85vw", maxWidth: "360px" }} />
               ))}
