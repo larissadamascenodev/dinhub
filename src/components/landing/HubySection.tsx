@@ -78,12 +78,12 @@ export const HubySection: React.FC = () => {
             </div>
             <div className="space-y-2.5">
               {insights.map((ins, i) => (
-                <div key={i} className="rounded-xl p-3.5 flex items-start gap-3" style={{ background: "#0e0e0e", border: "1px solid rgba(255,255,255,0.05)" }}>
+                <div key={i} className="rounded-xl p-3.5 flex items-start gap-3 min-w-0" style={{ background: "#0e0e0e", border: "1px solid rgba(255,255,255,0.05)" }}>
                   <div className="h-9 w-9 rounded-lg flex items-center justify-center shrink-0" style={{ background: ins.bg, color: ins.color }}>
                     {ins.icon}
                   </div>
-                  <p className="text-white/85 text-sm flex-1 leading-snug">{ins.text}</p>
-                  <span className="text-[10px] px-2 py-1 rounded-full bg-white/5 text-white/60 font-semibold whitespace-nowrap">{ins.tag}</span>
+                  <p className="text-white/85 text-sm flex-1 leading-snug min-w-0">{ins.text}</p>
+                  <span className="text-[10px] px-2 py-1 rounded-full bg-white/5 text-white/60 font-semibold whitespace-nowrap shrink-0">{ins.tag}</span>
                 </div>
               ))}
             </div>
