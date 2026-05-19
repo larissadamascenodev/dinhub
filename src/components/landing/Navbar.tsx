@@ -89,44 +89,7 @@ export const Navbar: React.FC<Props> = ({ onLogin, onSignup }) => {
         </div>
       </header>
 
-      {/* Mobile menu overlay */}
-      {open && (
-        <div className="fixed inset-0 z-[60] lg:hidden" style={{ background: "rgba(10,10,10,0.97)", backdropFilter: "blur(20px)" }}>
-          <div className="flex items-center justify-between p-5">
-            <span className="font-display font-extrabold text-white text-xl">
-              Din<span style={{ color: NEON }}>Hub</span>
-            </span>
-            <button onClick={() => setOpen(false)} className="p-2 text-white" aria-label="Fechar">
-              <X size={26} />
-            </button>
-          </div>
-          <nav className="flex flex-col items-center justify-center gap-6 pt-12">
-            {links.map((l) => (
-              <a
-                key={l.href}
-                href={l.href}
-                onClick={() => setOpen(false)}
-                className="text-2xl font-bold text-white"
-              >
-                {l.label}
-              </a>
-            ))}
-            <button
-              onClick={() => { setOpen(false); onLogin(); }}
-              className="mt-6 rounded-full border border-white/20 px-8 py-3 text-base font-semibold text-white w-[80vw]"
-            >
-              Entrar
-            </button>
-            <button
-              onClick={() => { setOpen(false); onSignup(); }}
-              className="rounded-full px-8 py-3 text-base font-bold text-black w-[80vw]"
-              style={{ background: NEON }}
-            >
-              Começar grátis
-            </button>
-          </nav>
-        </div>
-      )}
+      {false && open && null}
     </>
   );
 };
