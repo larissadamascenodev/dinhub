@@ -42,9 +42,10 @@ export const Hero: React.FC<{ onCta: () => void }> = ({ onCta }) => {
         className="relative mx-auto w-full hero-container"
         style={{ maxWidth: "1320px" }}
       >
-        <div className="grid lg:grid-cols-2 gap-10 items-center">
+        <div className="grid lg:grid-cols-2 gap-10 items-center w-full min-w-0">
           {/* LEFT: copy */}
-          <div className="flex flex-col items-center text-center lg:items-start lg:text-left" style={{ gap: "24px" }}>
+          <div className="flex flex-col items-center text-center lg:items-start lg:text-left min-w-0 w-full" style={{ gap: "24px" }}>
+
             <div
               className="inline-flex items-center gap-3 rounded-full border px-3 py-2 max-w-full"
               style={{ background: "rgba(0,230,118,0.06)", borderColor: "rgba(0,230,118,0.25)" }}
