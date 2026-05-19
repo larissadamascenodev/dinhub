@@ -8,7 +8,7 @@ interface Props {
 
 export const Navbar: React.FC<Props> = ({ onLogin, onSignup }) => {
   const [scrolled, setScrolled] = React.useState(false);
-  const [open, setOpen] = React.useState(false);
+  const [open] = React.useState(false);
 
   React.useEffect(() => {
     const onScroll = () => setScrolled(window.scrollY > 20);
