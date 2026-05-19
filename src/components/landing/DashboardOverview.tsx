@@ -29,15 +29,15 @@ export const DashboardOverview: React.FC = () => {
           <Sub className="mt-4 max-w-[520px]">
             A Dashboard do DinHub reúne tudo que você precisa em um só lugar para entender, controlar e evoluir suas finanças todos os dias.
           </Sub>
-          <div className="mt-7 grid gap-5">
+          <div className="mt-7 grid grid-cols-2 lg:grid-cols-1 gap-4 lg:gap-5">
             {bullets.map((b, i) => (
-              <div key={i} className="flex gap-4">
-                <div className="h-11 w-11 rounded-full flex items-center justify-center shrink-0" style={{ background: "rgba(0,230,118,0.1)", color: NEON, border: "1px solid rgba(0,230,118,0.25)" }}>
+              <div key={i} className="flex flex-col lg:flex-row gap-2 lg:gap-4">
+                <div className="h-10 w-10 lg:h-11 lg:w-11 rounded-full flex items-center justify-center shrink-0" style={{ background: "rgba(0,230,118,0.1)", color: NEON, border: "1px solid rgba(0,230,118,0.25)" }}>
                   {b.icon}
                 </div>
                 <div>
-                  <h3 className="text-white font-bold" style={{ fontSize: "clamp(1rem, 1.15vw, 1.1rem)" }}>{b.title}</h3>
-                  <p className="text-[#a0a0a0] text-sm mt-1 max-w-[420px]">{b.desc}</p>
+                  <h3 className="text-white font-bold text-sm lg:text-base" style={{ fontSize: "clamp(0.9rem, 1.15vw, 1.1rem)" }}>{b.title}</h3>
+                  <p className="text-[#a0a0a0] text-xs lg:text-sm mt-1 max-w-[420px]">{b.desc}</p>
                 </div>
               </div>
             ))}
