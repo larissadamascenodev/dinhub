@@ -56,7 +56,7 @@ export const Hero: React.FC<{ onCta: () => void }> = ({ onCta }) => {
         {/* Main Headline */}
         <h1
           className="font-display font-black text-white tracking-tight w-full mb-6 leading-[1.1] max-w-[1000px]"
-          style={{ fontSize: "clamp(2.4rem, 6.5vw, 5.2rem)" }}
+          style={{ fontSize: "clamp(2rem, 5vw, 4.4rem)" }}
         >
           Assuma o controle total da sua <span style={{ color: NEON }}>vida financeira.</span>
         </h1>
