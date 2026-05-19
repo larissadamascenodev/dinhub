@@ -61,17 +61,11 @@ export const Navbar: React.FC<Props> = ({ onLogin, onSignup }) => {
 
           <div className="flex items-center gap-3">
             <button
-              onClick={onLogin}
-              className="rounded-full border border-white/15 bg-white/[0.03] px-5 py-2.5 text-sm font-semibold text-white transition-colors hover:bg-white/[0.08]"
-            >
-              Entrar
-            </button>
-            <button
               onClick={onSignup}
-              className="hidden lg:flex rounded-full px-5 py-2.5 text-sm font-bold text-black transition-all hover:scale-[1.03]"
-              style={{ background: NEON, boxShadow: "0 0 24px rgba(0,230,118,0.35)" }}
+              className="rounded-full px-6 py-2.5 text-sm font-bold text-black transition-all hover:scale-[1.03] active:scale-95"
+              style={{ background: NEON, boxShadow: `0 8px 20px ${NEON}44` }}
             >
-              Cadastre-se
+              Começar Grátis
             </button>
           </div>
         </div>
