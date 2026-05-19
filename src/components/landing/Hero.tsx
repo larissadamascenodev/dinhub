@@ -113,7 +113,7 @@ export const Hero: React.FC<{ onCta: () => void }> = ({ onCta }) => {
              <div className="absolute inset-0 bg-[#00e676] rounded-[3rem] blur-[80px] opacity-20 group-hover:opacity-30 transition-opacity" />
              
              <div
-                className="relative mx-auto rounded-[3rem] p-3 border border-white/10"
+                className="relative mx-auto rounded-[2.5rem] lg:rounded-[3rem] p-2 lg:p-3 border border-white/10"
                 style={{
                   background: "linear-gradient(145deg,#1c1c1c,#0a0a0a)",
                   boxShadow: `0 40px 100px -20px rgba(0,0,0,0.8)`,
