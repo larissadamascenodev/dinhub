@@ -46,15 +46,6 @@ export const AntesDuranteDepois: React.FC = () => {
                 </div>
               ))}
             </div>
-            {/* antes-bg-man placeholder */}
-            <div className="antes-bg-man mt-5 rounded-xl flex-1 min-h-[120px] relative overflow-hidden" style={{ background: "linear-gradient(135deg, #2a0e0e 0%, #0a0a0a 100%)" }}>
-              <div className="absolute inset-0 flex items-end justify-center p-4 opacity-60">
-                <svg viewBox="0 0 100 50" className="w-full h-12">
-                  <polyline points="0,10 20,15 40,25 60,30 80,40 100,45" stroke="#ef4444" strokeWidth="2" fill="none" />
-                </svg>
-              </div>
-              <p className="absolute top-2 left-2 text-[10px] text-white/40">{/* SUBSTITUIR pelo asset do homem estressado */}</p>
-            </div>
           </Card>
         </Reveal>
 
