@@ -47,12 +47,12 @@ export const Navbar: React.FC<Props> = ({ onLogin, onSignup }) => {
           </a>
 
           {/* Desktop pill nav */}
-          <nav className="hidden lg:flex items-center gap-1 rounded-full border border-white/8 bg-white/[0.03] px-2 py-1.5 backdrop-blur">
+          <nav className="hidden lg:flex items-center gap-8">
             {links.map((l) => (
               <a
-                key={l.href}
+                key={l.label}
                 href={l.href}
-                className="rounded-full px-4 py-2 text-sm font-medium text-white/75 transition-colors hover:text-white hover:bg-white/[0.06]"
+                className="text-sm font-bold text-white/70 transition-colors hover:text-white uppercase tracking-widest"
               >
                 {l.label}
               </a>
