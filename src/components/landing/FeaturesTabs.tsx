@@ -6,18 +6,7 @@ import {
 } from "lucide-react";
 import { Section, Pill, H2, Sub, Card, Reveal, NEON } from "./shared";
 
-type TabKey = "transacoes" | "categorias" | "parcelamentos" | "scanner";
-
-const TABS: { key: TabKey; label: string }[] = [
-  { key: "transacoes", label: "Transações" },
-  { key: "categorias", label: "Categorias" },
-  { key: "parcelamentos", label: "Parcelamentos" },
-  { key: "scanner", label: "Scanner" },
-];
-
 export const FeaturesTabs: React.FC = () => {
-  const [tab, setTab] = React.useState<TabKey>("transacoes");
-
   return (
     <Section>
       <Reveal>
@@ -27,37 +16,11 @@ export const FeaturesTabs: React.FC = () => {
         </div>
       </Reveal>
 
-      <div className="mt-10 flex justify-center">
-        <div className="flex gap-2 overflow-x-auto scrollbar-hide max-w-full -mx-5 px-5">
-          {TABS.map((t) => {
-            const active = t.key === tab;
-            return (
-              <button
-                key={t.key}
-                onClick={() => setTab(t.key)}
-                className="rounded-full px-5 py-2.5 text-sm font-semibold whitespace-nowrap transition-all"
-                style={{
-                  color: active ? NEON : "rgba(255,255,255,0.65)",
-                  background: active ? "rgba(0,230,118,0.08)" : "rgba(255,255,255,0.03)",
-                  border: `1px solid ${active ? NEON + "55" : "rgba(255,255,255,0.08)"}`,
-                }}
-              >
-                {t.label}
-              </button>
-            );
-          })}
-        </div>
+      <div className="mt-12 space-y-16 lg:space-y-24">
+        <CategoriasTab />
+        <ScannerTab />
+        <ParcelamentosTab />
       </div>
-
-      <div className="mt-10 relative">
-        <div key={tab} style={{ animation: "fadeTab 0.4s ease" }}>
-          {tab === "transacoes" && <TransacoesTab />}
-          {tab === "categorias" && <CategoriasTab />}
-          {tab === "parcelamentos" && <ParcelamentosTab />}
-          {tab === "scanner" && <ScannerTab />}
-        </div>
-      </div>
-      <style>{`@keyframes fadeTab { from{opacity:0;transform:translateY(8px)} to{opacity:1;transform:translateY(0)} }`}</style>
     </Section>
   );
 };
