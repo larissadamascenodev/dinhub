@@ -26,61 +26,8 @@ export const FeaturesTabs: React.FC = () => {
 };
 
 /* ===================== TAB 1: TRANSAÇÕES ===================== */
-const TransacoesTab: React.FC = () => {
-  const tx = [
-    { name: "DAS", time: "Hoje, 14:32", value: "-R$ 51,89", neg: true, icon: <Zap size={16} />, bg: "rgba(245,158,11,0.18)", color: "#f59e0b" },
-    { name: "Nubank PJ", time: "Hoje, 10:35", value: "+R$ 610,36", neg: false, icon: <TrendingUp size={16} />, bg: "rgba(0,230,118,0.15)", color: NEON },
-    { name: "Salário", time: "01 Mai", value: "+R$ 850,00", neg: false, icon: <BarChart3 size={16} />, bg: "rgba(59,130,246,0.15)", color: "#3b82f6" },
-    { name: "iFood", time: "Ontem", value: "-R$ 42,70", neg: true, icon: <ShoppingCart size={16} />, bg: "rgba(239,68,68,0.15)", color: "#ef4444" },
-    { name: "Parcela Auto", time: "05 Mai", value: "-R$ 293,57", neg: true, icon: <Car size={16} />, bg: "rgba(168,85,247,0.15)", color: "#a855f7" },
-  ];
-  return (
-    <div className="grid lg:grid-cols-[1fr_1.1fr] gap-12 items-center">
-      <div>
-        <Pill>Controle total</Pill>
-        <H2 className="mt-5">Controle total das suas <span style={{ color: NEON }}>finanças</span></H2>
-        <Sub className="mt-4 max-w-[480px]">Veja para onde seu dinheiro vai, identifique padrões e tome decisões com confiança.</Sub>
-        <div className="mt-6 grid gap-4">
-          {[
-            { icon: <BarChart3 size={16} />, text: "Diagnóstico em tempo real" },
-            { icon: <Brain size={16} />, text: "IA que conversa com você" },
-            { icon: <TrendingUp size={16} />, text: "Projeções de 12 meses" },
-            { icon: <Bell size={16} />, text: "Alertas antes de virar problema" },
-          ].map((b, i) => (
-            <div key={i} className="flex items-center gap-3">
-              <div className="h-9 w-9 rounded-full flex items-center justify-center" style={{ background: "rgba(0,230,118,0.12)", color: NEON, border: `1px solid ${NEON}33` }}>{b.icon}</div>
-              <span className="text-white">{b.text}</span>
-            </div>
-          ))}
-        </div>
-        <a href="#" className="mt-7 inline-flex items-center gap-2 font-bold" style={{ color: NEON }}>Explorar funcionalidades <ArrowRight size={18} /></a>
-      </div>
-      <div className="relative">
-        <Card className="p-5 lg:p-6">
-          <div className="flex items-center justify-between">
-            <h3 className="text-white font-bold" style={{ fontSize: "clamp(1rem, 1.2vw, 1.2rem)" }}>Transações recentes</h3>
-            <span className="text-xs" style={{ color: NEON }}>Maio 2026</span>
-          </div>
-          <div className="mt-4 divide-y divide-white/5">
-            {tx.map((t, i) => (
-              <div key={i} className="flex items-center gap-3 py-3">
-                <div className="h-10 w-10 rounded-xl flex items-center justify-center" style={{ background: t.bg, color: t.color }}>{t.icon}</div>
-                <div className="flex-1">
-                  <p className="text-white font-semibold text-sm">{t.name}</p>
-                  <p className="text-white/40 text-xs">{t.time}</p>
-                </div>
-                <p className="font-bold text-sm" style={{ color: t.neg ? "#ff5959" : NEON }}>{t.value}</p>
-              </div>
-            ))}
-          </div>
-        </Card>
-        <div className="mt-4 rounded-xl px-4 py-3 flex items-center gap-2 text-xs" style={{ background: "#0e0e0e", border: `1px solid ${NEON}22`, color: "rgba(255,255,255,0.7)" }}>
-          <Shield size={14} style={{ color: NEON }} /> Seus dados 100% protegidos — Sincronização segura e automática.
-        </div>
-      </div>
-    </div>
-  );
-};
+
+
 
 /* ===================== TAB 2: CATEGORIAS ===================== */
 const CategoriasTab: React.FC = () => {
