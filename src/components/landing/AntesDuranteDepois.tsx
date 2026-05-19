@@ -108,17 +108,6 @@ export const AntesDuranteDepois: React.FC = () => {
         </Reveal>
       </div>
 
-      <Reveal delay={0.3}>
-        <div className="mt-10 grid sm:grid-cols-2 gap-5">
-          <p className="text-white/75 flex items-start gap-2" style={{ fontSize: "clamp(0.95rem, 1.1vw, 1.05rem)" }}>
-            <Rocket size={20} style={{ color: NEON }} className="shrink-0 mt-1" />
-            O futuro das suas finanças começa com uma decisão. <strong className="text-white">DinHub: inteligência financeira que trabalha por você.</strong>
-          </p>
-          <p className="text-right text-white/75" style={{ fontSize: "clamp(0.95rem, 1.1vw, 1.05rem)" }}>
-            Mais controle. Menos preocupação. <span style={{ color: NEON }} className="font-bold">Mais você.</span>
-          </p>
-        </div>
-      </Reveal>
     </Section>
   );
 };
