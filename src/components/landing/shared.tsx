@@ -12,7 +12,7 @@ export const Section: React.FC<React.HTMLAttributes<HTMLElement>> = ({ className
     style={{ paddingTop: "clamp(3rem, 7vw, 7rem)", paddingBottom: "clamp(3rem, 7vw, 7rem)" }}
     {...rest}
   >
-    <div className="mx-auto w-full" style={{ maxWidth: "1320px", paddingLeft: "clamp(1.25rem, 4vw, 3rem)", paddingRight: "clamp(1.25rem, 4vw, 3rem)" }}>
+    <div className="mx-auto w-full min-w-0" style={{ maxWidth: "1320px", paddingLeft: "clamp(1.25rem, 4vw, 3rem)", paddingRight: "clamp(1.25rem, 4vw, 3rem)" }}>
       {children}
     </div>
   </section>
@@ -36,7 +36,7 @@ export const Pill: React.FC<{ children: React.ReactNode; tone?: "green" | "orang
 };
 
 export const H2: React.FC<{ children: React.ReactNode; className?: string }> = ({ children, className = "" }) => (
-  <h2 className={`font-display font-extrabold text-white leading-[1.05] tracking-tight ${className}`} style={{ fontSize: "clamp(1.8rem, 3.5vw, 3.2rem)" }}>
+  <h2 className={`font-display font-extrabold text-white leading-[1.05] tracking-tight ${className}`} style={{ fontSize: "clamp(1.6rem, 3.5vw, 3.2rem)", wordWrap: "break-word", overflowWrap: "break-word" }}>
     {children}
   </h2>
 );

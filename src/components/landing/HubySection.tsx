@@ -27,39 +27,43 @@ export const HubySection: React.FC = () => {
   return (
     <Section id="funcionalidades">
       {/* PART A — Huby */}
-      <div className="grid lg:grid-cols-[1fr_1.15fr] gap-10 lg:gap-14 items-start">
+      <div className="grid grid-cols-1 lg:grid-cols-[1fr_1.15fr] gap-10 lg:gap-14 items-start min-w-0">
         <Reveal>
-          <Pill><Sparkles size={12} /> Huby · Sua assistente financeira</Pill>
-          <H2 className="mt-5">
-            Pergunte. Entenda.<br />
-            <span style={{ color: NEON }}>E tome decisões melhores.</span>
-          </H2>
-          <Sub className="mt-4 max-w-[520px]">
-            A Huby transforma dados em clareza. Faça perguntas sobre seu dinheiro, receba respostas práticas e descubra o que realmente importa.
-          </Sub>
+          <div className="min-w-0 w-full max-w-full">
+            <Pill><Sparkles size={12} /> Huby · Sua assistente financeira</Pill>
+            <H2 className="mt-5" >
+              <span style={{ wordWrap: "break-word", overflowWrap: "break-word" }}>
+                Pergunte. Entenda.<br />
+                <span style={{ color: NEON }}>E tome decisões melhores.</span>
+              </span>
+            </H2>
+            <Sub className="mt-4 max-w-[520px]">
+              A Huby transforma dados em clareza. Faça perguntas sobre seu dinheiro, receba respostas práticas e descubra o que realmente importa.
+            </Sub>
 
-          <div className="mt-6 grid sm:grid-cols-2 gap-2.5">
-            {quickQs.map((q, i) => (
-              <button
-                key={i}
-                className="text-left rounded-full border border-white/10 bg-white/[0.03] px-4 py-3 text-white/85 text-sm transition-all hover:border-[#00e676]/40 hover:bg-[#00e676]/5 flex items-center gap-2"
+            <div className="mt-6 grid sm:grid-cols-2 gap-2.5">
+              {quickQs.map((q, i) => (
+                <button
+                  key={i}
+                  className="text-left rounded-full border border-white/10 bg-white/[0.03] px-4 py-3 text-white/85 text-sm transition-all hover:border-[#00e676]/40 hover:bg-[#00e676]/5 flex items-center gap-2 w-full"
+                >
+                  <span style={{ color: NEON }} className="shrink-0">{q.icon}</span> <span className="truncate">{q.label}</span>
+                </button>
+              ))}
+            </div>
+
+            {/* Mascot + speech */}
+            <div className="mt-10 flex flex-wrap items-end gap-4 justify-center sm:justify-start min-w-0">
+              <HubyMascot size={140} />
+              <div
+                className="relative rounded-2xl px-4 py-3 mb-8 min-w-0"
+                style={{ background: "rgba(17,17,17,0.95)", border: `1px solid ${NEON}55`, boxShadow: `0 0 24px ${NEON}22`, flex: "1 1 180px", maxWidth: "240px" }}
               >
-                <span style={{ color: NEON }}>{q.icon}</span> {q.label}
-              </button>
-            ))}
-          </div>
-
-          {/* Mascot + speech */}
-          <div className="mt-10 flex items-end gap-4 justify-center sm:justify-start">
-            <HubyMascot size={180} />
-            <div
-              className="relative rounded-2xl px-4 py-3 max-w-[240px] mb-8"
-              style={{ background: "rgba(17,17,17,0.95)", border: `1px solid ${NEON}55`, boxShadow: `0 0 24px ${NEON}22` }}
-            >
-              <p className="text-white text-sm leading-relaxed">
-                Olá! Eu sou a <span style={{ color: NEON }} className="font-bold">Huby, sua assistente financeira</span>.
-              </p>
-              <p className="text-white/60 text-xs mt-2">Em que posso te ajudar?</p>
+                <p className="text-white text-sm leading-relaxed">
+                  Olá! Eu sou a <span style={{ color: NEON }} className="font-bold">Huby, sua assistente</span>.
+                </p>
+                <p className="text-white/60 text-xs mt-2">Em que posso te ajudar?</p>
+              </div>
             </div>
           </div>
         </Reveal>
@@ -74,12 +78,12 @@ export const HubySection: React.FC = () => {
             </div>
             <div className="space-y-2.5">
               {insights.map((ins, i) => (
-                <div key={i} className="rounded-xl p-3.5 flex items-start gap-3" style={{ background: "#0e0e0e", border: "1px solid rgba(255,255,255,0.05)" }}>
+                <div key={i} className="rounded-xl p-3.5 flex items-start gap-3 min-w-0" style={{ background: "#0e0e0e", border: "1px solid rgba(255,255,255,0.05)" }}>
                   <div className="h-9 w-9 rounded-lg flex items-center justify-center shrink-0" style={{ background: ins.bg, color: ins.color }}>
                     {ins.icon}
                   </div>
-                  <p className="text-white/85 text-sm flex-1 leading-snug">{ins.text}</p>
-                  <span className="text-[10px] px-2 py-1 rounded-full bg-white/5 text-white/60 font-semibold whitespace-nowrap">{ins.tag}</span>
+                  <p className="text-white/85 text-sm flex-1 leading-snug min-w-0">{ins.text}</p>
+                  <span className="text-[10px] px-2 py-1 rounded-full bg-white/5 text-white/60 font-semibold whitespace-nowrap shrink-0">{ins.tag}</span>
                 </div>
               ))}
             </div>
@@ -89,7 +93,7 @@ export const HubySection: React.FC = () => {
             </div>
             <div className="mt-3 space-y-2">
               {actions.map((a, i) => (
-                <div key={i} className="rounded-xl px-3.5 py-3 flex items-center gap-3 hover:bg-white/[0.03] transition-colors cursor-pointer" style={{ background: "#0e0e0e", border: "1px solid rgba(255,255,255,0.05)" }}>
+                <div key={i} className="rounded-xl px-3.5 py-3 flex items-center gap-3 hover:bg-white/[0.03] transition-colors cursor-pointer min-w-0" style={{ background: "#0e0e0e", border: "1px solid rgba(255,255,255,0.05)" }}>
                   <div className="h-9 w-9 rounded-lg flex items-center justify-center shrink-0" style={{ background: `${a.color}1a`, color: a.color }}>
                     {a.icon}
                   </div>
@@ -124,7 +128,7 @@ export const HubySection: React.FC = () => {
           </div>
         </Reveal>
 
-        <div className="mt-12 grid lg:grid-cols-3 gap-5">
+        <div className="mt-12 grid grid-cols-1 lg:grid-cols-3 gap-5 min-w-0">
           <ToolCard
             icon={<Radar size={22} />}
             title="Radar Financeiro"
