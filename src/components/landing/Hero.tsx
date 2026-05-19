@@ -121,22 +121,22 @@ export const Hero: React.FC<{ onCta: () => void }> = ({ onCta }) => {
 
         {/* Bottom mini cards */}
         <div className="mt-10 lg:mt-16 border-t border-white/[0.06] pt-8">
-          <div className="grid sm:grid-cols-3 gap-5">
+          <div className="grid grid-cols-3 gap-3 sm:gap-5">
             <MiniInfo icon={<Target size={20} />} title="Meta de férias">
-              <span className="text-white/80 text-sm">R$ 2.350,00 / R$ 5.000,00</span>
+              <span className="text-white/80 text-[11px] sm:text-sm">R$ 2.350 / R$ 5.000</span>
               <div className="mt-2 h-1.5 w-full rounded-full bg-white/8 overflow-hidden">
                 <div className="h-full rounded-full" style={{ width: "47%", background: NEON, boxShadow: `0 0 12px ${NEON}` }} />
               </div>
-              <span className="mt-1 inline-block text-xs font-bold" style={{ color: NEON }}>47%</span>
+              <span className="mt-1 inline-block text-[10px] sm:text-xs font-bold" style={{ color: NEON }}>47%</span>
             </MiniInfo>
             <MiniInfo icon={<Bell size={20} />} title="Alerta de gastos">
-              <p className="text-white/70 text-sm">
-                Você já gastou <span style={{ color: NEON }} className="font-bold">90%</span> do seu limite com <span style={{ color: NEON }}>Lazer</span> neste mês.
+              <p className="text-white/70 text-[11px] sm:text-sm">
+                <span style={{ color: NEON }} className="font-bold">90%</span> do limite de <span style={{ color: NEON }}>Lazer</span>.
               </p>
             </MiniInfo>
             <MiniInfo icon={<Shield size={20} />} title="Radar de risco">
-              <p className="text-white/70 text-sm">
-                Detectamos aumento de gastos em <span style={{ color: NEON }}>Delivery</span>.
+              <p className="text-white/70 text-[11px] sm:text-sm">
+                Aumento em <span style={{ color: NEON }}>Delivery</span>.
               </p>
             </MiniInfo>
           </div>
