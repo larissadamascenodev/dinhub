@@ -16,11 +16,6 @@ export const Navbar: React.FC<Props> = ({ onLogin, onSignup }) => {
     return () => window.removeEventListener("scroll", onScroll);
   }, []);
 
-  const links = [
-    { label: "Quem Somos", href: "#" },
-    { label: "Termos de Uso", href: "/termos-de-uso" },
-  ];
-
   return (
     <>
       <header
@@ -47,26 +42,13 @@ export const Navbar: React.FC<Props> = ({ onLogin, onSignup }) => {
              <span className="font-display font-extrabold text-white text-xl tracking-tight">DinHub</span>
           </a>
 
-          {/* Desktop nav */}
-          <nav className="hidden lg:flex items-center gap-10">
-            {links.map((l) => (
-              <a
-                key={l.label}
-                href={l.href}
-                className="text-[10px] font-black text-white/40 transition-colors hover:text-white uppercase tracking-[0.25em]"
-              >
-                {l.label}
-              </a>
-            ))}
-          </nav>
-
-          <div className="flex items-center gap-3">
-            <button
-              onClick={onSignup}
-              className="rounded-full px-6 py-2.5 text-sm font-bold text-black transition-all hover:scale-[1.03] active:scale-95"
-              style={{ background: NEON, boxShadow: `0 8px 20px ${NEON}44` }}
+          <div className="flex items-center gap-4">
+            <button 
+              onClick={onLogin}
+              className="px-4 py-2 text-sm font-bold border border-white/20 rounded-full hover:bg-white/5 transition-all"
+              style={{ background: 'rgba(255,255,255,0.03)' }}
             >
-              Começar Grátis
+              Controle Inteligente
             </button>
           </div>
         </div>
