@@ -137,7 +137,7 @@ export const Hero: React.FC<{ onCta: () => void }> = ({ onCta }) => {
 
         {/* Bottom mini cards — 3 em linha, desktop e mobile */}
         <div className="mt-10 lg:mt-16 border-t border-white/[0.06] pt-8">
-          <div className="grid grid-cols-3 gap-2 sm:gap-5">
+          <div className="grid grid-cols-3 sm:gap-5" style={{ gap: 8 }}>
             <MiniInfo icon={<Search />} title="Analisa cada centavo" subtitle="Visão completa de tudo que entra e sai." />
             <MiniInfo icon={<Bell />} title="Te avisa antes" subtitle="Alertas antes de virar problema no seu bolso." />
             <MiniInfo icon={<MoveRight />} title="Te mostra o que fazer" subtitle="Decisões claras para você agir com confiança." />
