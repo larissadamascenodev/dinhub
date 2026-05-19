@@ -218,32 +218,51 @@ const ToolCard: React.FC<{
 );
 
 const RadarMockup: React.FC = () => (
-  <div className="relative mx-auto rounded-2xl overflow-hidden flex items-center justify-center" style={{ background: "#000", border: "1px solid #1a1a1a", aspectRatio: "1/0.85", maxWidth: "300px" }}>
+  <div className="relative mx-auto rounded-2xl overflow-hidden flex items-center justify-center" style={{ background: "#0d0d0d", border: `1px solid ${NEON}33`, aspectRatio: "1/0.85", maxWidth: "300px" }}>
     <p className="absolute top-3 left-1/2 -translate-x-1/2 text-white/70 text-xs font-bold">Radar de risco</p>
     <div className="relative w-[180px] h-[180px]">
-      {[1, 2, 3].map((i) => (
+      {/* concentric circles */}
+      {[1, 0.75, 0.5, 0.25].map((s, i) => (
         <div
           key={i}
-          className="absolute inset-0 rounded-full border"
+          className="absolute inset-0 m-auto rounded-full border"
           style={{
-            borderColor: `${NEON}${i === 3 ? "55" : "33"}`,
-            transform: `scale(${1 - i * 0.22})`,
-            animation: `radarPulse 2.5s ${i * 0.4}s ease-out infinite`,
+            width: `${s * 100}%`,
+            height: `${s * 100}%`,
+            borderColor: `${NEON}22`,
           }}
         />
       ))}
+      {/* cross lines */}
+      <div className="absolute inset-0 m-auto h-px w-full" style={{ background: `${NEON}15` }} />
+      <div className="absolute inset-0 m-auto w-px h-full" style={{ background: `${NEON}15` }} />
+      {/* center dot */}
       <div className="absolute inset-0 m-auto h-2 w-2 rounded-full" style={{ background: NEON, boxShadow: `0 0 12px ${NEON}` }} />
+      {/* sweep with trail */}
       <div
         className="absolute inset-0 rounded-full"
         style={{
-          background: `conic-gradient(from 0deg, transparent 70%, ${NEON}66 100%)`,
+          background: `conic-gradient(from 0deg, transparent 0deg, transparent 270deg, ${NEON}11 300deg, ${NEON}55 350deg, ${NEON}cc 360deg)`,
           animation: "radarSweep 3s linear infinite",
-          maskImage: "radial-gradient(circle, black 100%, transparent 100%)",
+          borderRadius: "50%",
         }}
       />
+      {/* pulses */}
+      {[0, 1, 2].map((i) => (
+        <div
+          key={i}
+          className="absolute inset-0 m-auto rounded-full border"
+          style={{
+            width: "20%",
+            height: "20%",
+            borderColor: `${NEON}88`,
+            animation: `radarPulse 2.5s ${i * 0.8}s ease-out infinite`,
+          }}
+        />
+      ))}
     </div>
     <style>{`
-      @keyframes radarPulse { 0%{opacity:.8} 100%{transform:scale(1.4);opacity:0} }
+      @keyframes radarPulse { 0%{opacity:.9;transform:scale(1)} 100%{transform:scale(5);opacity:0} }
       @keyframes radarSweep { from{transform:rotate(0)} to{transform:rotate(360deg)} }
     `}</style>
   </div>
@@ -254,22 +273,44 @@ const ProjectionMockup: React.FC = () => {
   const w = 280, h = 140;
   const max = 100;
   const path = pts.map((p, i) => `${i === 0 ? "M" : "L"} ${(i / (pts.length - 1)) * w} ${h - (p.v / max) * h}`).join(" ");
+  const ref = React.useRef<SVGPathElement>(null);
+  const [len, setLen] = React.useState(0);
+  const [visible, setVisible] = React.useState(false);
+  const wrapRef = React.useRef<HTMLDivElement>(null);
+  React.useEffect(() => {
+    if (ref.current) setLen(ref.current.getTotalLength());
+    const el = wrapRef.current;
+    if (!el) return;
+    const obs = new IntersectionObserver(([e]) => { if (e.isIntersecting) { setVisible(true); obs.disconnect(); } }, { threshold: 0.3 });
+    obs.observe(el);
+    return () => obs.disconnect();
+  }, []);
   return (
-    <div className="relative mx-auto rounded-2xl p-3" style={{ background: "#000", border: "1px solid #1a1a1a", maxWidth: "300px" }}>
+    <div ref={wrapRef} className="relative mx-auto rounded-2xl p-3" style={{ background: "#0d0d0d", border: `1px solid ${NEON}33`, maxWidth: "300px" }}>
       <p className="text-white text-xs font-bold">Projeção</p>
       <p className="text-white/50 text-[10px]">Saldo projetado</p>
       <p className="font-extrabold" style={{ color: NEON, fontSize: "1.15rem" }}>R$ 8.750,00</p>
       <svg viewBox={`0 0 ${w} ${h + 20}`} className="w-full mt-2">
         <defs>
           <linearGradient id="pgrad" x1="0" x2="0" y1="0" y2="1">
-            <stop offset="0%" stopColor={NEON} stopOpacity="0.4" />
+            <stop offset="0%" stopColor={NEON} stopOpacity="0.45" />
             <stop offset="100%" stopColor={NEON} stopOpacity="0" />
           </linearGradient>
         </defs>
-        <path d={`${path} L ${w} ${h} L 0 ${h} Z`} fill="url(#pgrad)" />
-        <path d={path} fill="none" stroke={NEON} strokeWidth="2" />
+        <path d={`${path} L ${w} ${h} L 0 ${h} Z`} fill="url(#pgrad)" opacity={visible ? 1 : 0} style={{ transition: "opacity 1.2s 0.8s ease" }} />
+        <path
+          ref={ref}
+          d={path}
+          fill="none"
+          stroke={NEON}
+          strokeWidth="2.5"
+          strokeLinecap="round"
+          strokeDasharray={len}
+          strokeDashoffset={visible ? 0 : len}
+          style={{ transition: "stroke-dashoffset 1.6s cubic-bezier(0.65,0,0.35,1)", filter: `drop-shadow(0 0 6px ${NEON})` }}
+        />
         {pts.map((p, i) => (
-          <circle key={i} cx={(i / (pts.length - 1)) * w} cy={h - (p.v / max) * h} r="3" fill={NEON} />
+          <circle key={i} cx={(i / (pts.length - 1)) * w} cy={h - (p.v / max) * h} r="3" fill={NEON} opacity={visible ? 1 : 0} style={{ transition: `opacity 0.4s ${0.4 + i * 0.25}s ease` }} />
         ))}
         {pts.map((p, i) => (
           <text key={i} x={(i / (pts.length - 1)) * w} y={h + 14} fill="#666" fontSize="9" textAnchor="middle">{p.m}</text>
@@ -280,20 +321,43 @@ const ProjectionMockup: React.FC = () => {
 };
 
 const HealthMockup: React.FC = () => {
-  const score = 82;
+  const target = 82;
+  const [score, setScore] = React.useState(0);
+  const wrapRef = React.useRef<HTMLDivElement>(null);
+  React.useEffect(() => {
+    const el = wrapRef.current;
+    if (!el) return;
+    const obs = new IntersectionObserver(([e]) => {
+      if (e.isIntersecting) {
+        const start = performance.now();
+        const dur = 1600;
+        const tick = (t: number) => {
+          const p = Math.min(1, (t - start) / dur);
+          const eased = 1 - Math.pow(1 - p, 3);
+          setScore(Math.round(eased * target));
+          if (p < 1) requestAnimationFrame(tick);
+        };
+        requestAnimationFrame(tick);
+        obs.disconnect();
+      }
+    }, { threshold: 0.3 });
+    obs.observe(el);
+    return () => obs.disconnect();
+  }, []);
   const angle = (score / 100) * 180 - 90;
+  const arcLen = 251;
   return (
-    <div className="relative mx-auto rounded-2xl p-4 flex flex-col items-center" style={{ background: "#000", border: "1px solid #1a1a1a", maxWidth: "300px" }}>
+    <div ref={wrapRef} className="relative mx-auto rounded-2xl p-4 flex flex-col items-center" style={{ background: "#0d0d0d", border: `1px solid ${NEON}33`, maxWidth: "300px" }}>
       <p className="text-white text-xs font-bold mb-2">Saúde Financeira</p>
       <svg viewBox="0 0 200 120" className="w-[200px]">
-        <path d="M 20 100 A 80 80 0 0 1 180 100" fill="none" stroke="#222" strokeWidth="12" strokeLinecap="round" />
-        <path d="M 20 100 A 80 80 0 0 1 180 100" fill="none" stroke={NEON} strokeWidth="12" strokeLinecap="round" strokeDasharray="251" strokeDashoffset={251 - (251 * score) / 100} />
-        <g transform={`rotate(${angle} 100 100)`}>
-          <line x1="100" y1="100" x2="100" y2="35" stroke="white" strokeWidth="2" />
+        <path d="M 20 100 A 80 80 0 0 1 180 100" fill="none" stroke="#1f1f1f" strokeWidth="14" strokeLinecap="round" />
+        <path d="M 20 100 A 80 80 0 0 1 180 100" fill="none" stroke={NEON} strokeWidth="14" strokeLinecap="round" strokeDasharray={arcLen} strokeDashoffset={arcLen - (arcLen * score) / 100} style={{ filter: `drop-shadow(0 0 8px ${NEON})` }} />
+        <g transform={`rotate(${angle} 100 100)`} style={{ transition: "transform 0.1s linear" }}>
+          <line x1="100" y1="100" x2="100" y2="35" stroke="white" strokeWidth="2.5" strokeLinecap="round" />
           <circle cx="100" cy="100" r="6" fill="white" />
         </g>
       </svg>
-      <p className="text-white font-extrabold text-3xl mt-1">82<span className="text-white/40 text-sm font-normal"> de 100</span></p>
+      <p className="text-white font-extrabold text-3xl mt-1 tabular-nums">{score}<span className="text-white/40 text-sm font-normal"> de 100</span></p>
       <p style={{ color: NEON }} className="font-bold text-sm">Muito boa</p>
       <p className="text-white/50 text-[10px] mt-1 text-center">Parabéns! Você está no caminho certo.</p>
     </div>
