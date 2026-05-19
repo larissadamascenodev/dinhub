@@ -170,12 +170,12 @@ const TxnCard: React.FC<Txn & { className?: string }> = ({ name, time, value, lo
 );
 
 const MiniInfo: React.FC<{ icon: React.ReactNode; title: string; children: React.ReactNode }> = ({ icon, title, children }) => (
-  <div className="flex gap-3">
-    <div className="h-10 w-10 rounded-xl flex items-center justify-center shrink-0" style={{ background: "rgba(0,230,118,0.1)", color: NEON }}>
+  <div className="flex flex-col sm:flex-row gap-2 sm:gap-3">
+    <div className="h-8 w-8 sm:h-10 sm:w-10 rounded-lg sm:rounded-xl flex items-center justify-center shrink-0" style={{ background: "rgba(0,230,118,0.1)", color: NEON }}>
       {icon}
     </div>
-    <div className="flex-1">
-      <p className="font-bold text-white text-sm mb-1">{title}</p>
+    <div className="flex-1 min-w-0">
+      <p className="font-bold text-white text-xs sm:text-sm mb-0.5 sm:mb-1">{title}</p>
       {children}
     </div>
   </div>
