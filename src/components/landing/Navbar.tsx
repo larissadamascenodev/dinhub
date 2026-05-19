@@ -75,8 +75,17 @@ export const Navbar: React.FC<Props> = ({ onLogin, onSignup }) => {
             </button>
           </div>
 
-          <button onClick={() => setOpen(true)} className="lg:hidden p-2 text-white" aria-label="Menu">
-            <Menu size={26} />
+          <button
+            onClick={onSignup}
+            className="lg:hidden rounded-full font-bold text-black transition-all active:scale-95"
+            style={{
+              background: NEON,
+              padding: "8px 16px",
+              fontSize: "0.82rem",
+              boxShadow: "0 0 18px rgba(0,230,118,0.35)",
+            }}
+          >
+            Começar grátis
           </button>
         </div>
       </header>
