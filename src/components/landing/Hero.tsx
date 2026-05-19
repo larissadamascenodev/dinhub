@@ -47,16 +47,16 @@ export const Hero: React.FC<{ onCta: () => void }> = ({ onCta }) => {
           <div className="flex flex-col items-center text-center lg:items-start lg:text-left min-w-0 w-full" style={{ gap: "24px" }}>
 
             <div
-              className="inline-flex items-center gap-3 rounded-full border px-3 py-2 max-w-full"
-              style={{ background: "rgba(0,230,118,0.06)", borderColor: "rgba(0,230,118,0.25)" }}
+              className="inline-flex items-center gap-2 rounded-full border max-w-full"
+              style={{ background: "rgba(0,230,118,0.06)", borderColor: "rgba(0,230,118,0.25)", padding: "6px 14px" }}
             >
               <div className="flex -space-x-2 shrink-0">
                 {avatars.map((src, i) => (
-                  <img key={i} src={src} alt="" className="h-7 w-7 rounded-full border-2" style={{ borderColor: "#0a0a0a" }} />
+                  <img key={i} src={src} alt="" className="rounded-full border-2" style={{ width: 24, height: 24, borderColor: "#0a0a0a" }} />
                 ))}
               </div>
-              <span className="font-semibold" style={{ color: NEON_GLOW, fontSize: "clamp(0.78rem, 2.6vw, 0.9rem)" }}>
-                +2.847 pessoas assumindo o controle
+              <span className="font-semibold" style={{ color: NEON_GLOW, fontSize: "0.82rem" }}>
+                +2.847 pessoas no controle
               </span>
             </div>
 
