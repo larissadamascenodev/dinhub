@@ -12,9 +12,10 @@ export const Section: React.FC<React.HTMLAttributes<HTMLElement>> = ({ className
     style={{ paddingTop: "clamp(3rem, 7vw, 7rem)", paddingBottom: "clamp(3rem, 7vw, 7rem)" }}
     {...rest}
   >
-    <div className="mx-auto w-full" style={{ maxWidth: "1320px", paddingLeft: "clamp(1.25rem, 4vw, 3rem)", paddingRight: "clamp(1.25rem, 4vw, 3rem)" }}>
-      {children}
+    <div className="mx-auto w-full min-w-0" style={{ maxWidth: "1320px", paddingLeft: "20px", paddingRight: "20px" }}>
+      <div className="w-full min-w-0" style={{ paddingLeft: 0, paddingRight: 0 }}>{children}</div>
     </div>
+    <style>{`@media (min-width: 640px){section > div.mx-auto{padding-left:clamp(1.5rem,4vw,3rem) !important;padding-right:clamp(1.5rem,4vw,3rem) !important;}}`}</style>
   </section>
 );
 
