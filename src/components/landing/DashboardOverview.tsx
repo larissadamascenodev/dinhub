@@ -19,7 +19,7 @@ const categories = [
 export const DashboardOverview: React.FC = () => {
   return (
     <Section id="como-funciona">
-      <div className="grid lg:grid-cols-[1fr_1.05fr] gap-12 lg:gap-16 items-center">
+      <div className="grid lg:grid-cols-[1fr_1.05fr] gap-12 lg:gap-16 items-center min-w-0">
         <Reveal>
           <Pill>Sua central financeira</Pill>
           <H2 className="mt-5">
