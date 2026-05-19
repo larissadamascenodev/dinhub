@@ -121,7 +121,7 @@ export const Hero: React.FC<{ onCta: () => void }> = ({ onCta }) => {
             >
 
               {txns.map((t, i) => (
-                <TxnCard key={i} {...t} className="snap-center shrink-0" style={{ width: "85vw", maxWidth: "360px" }} />
+                <TxnCard key={i} {...t} className="snap-start shrink-0" style={{ width: "78vw", maxWidth: "320px" }} />)
               ))}
             </div>
             {/* Desktop: stack */}
