@@ -1,7 +1,7 @@
 import React from "react";
 import { X, Zap, CheckCircle2, Rocket, TrendingUp } from "lucide-react";
 import { Section, H2, Sub, Card, Reveal, NEON } from "./shared";
-import huby from "@/assets/huby-character.png";
+
 
 export const AntesDuranteDepois: React.FC = () => {
   return (
@@ -46,15 +46,6 @@ export const AntesDuranteDepois: React.FC = () => {
                 </div>
               ))}
             </div>
-            {/* antes-bg-man placeholder */}
-            <div className="antes-bg-man mt-5 rounded-xl flex-1 min-h-[120px] relative overflow-hidden" style={{ background: "linear-gradient(135deg, #2a0e0e 0%, #0a0a0a 100%)" }}>
-              <div className="absolute inset-0 flex items-end justify-center p-4 opacity-60">
-                <svg viewBox="0 0 100 50" className="w-full h-12">
-                  <polyline points="0,10 20,15 40,25 60,30 80,40 100,45" stroke="#ef4444" strokeWidth="2" fill="none" />
-                </svg>
-              </div>
-              <p className="absolute top-2 left-2 text-[10px] text-white/40">{/* SUBSTITUIR pelo asset do homem estressado */}</p>
-            </div>
           </Card>
         </Reveal>
 
@@ -72,12 +63,6 @@ export const AntesDuranteDepois: React.FC = () => {
                 </li>
               ))}
             </ul>
-            <div className="mt-5 flex justify-center">
-              <div className="relative">
-                <img src={huby} alt="" style={{ width: "120px", animation: "hubyFloat 4s ease-in-out infinite" }} />
-                <div className="absolute left-1/2 -translate-x-1/2 -bottom-2 rounded-full" style={{ width: "80%", height: "20px", background: `radial-gradient(ellipse, ${NEON}66, transparent 70%)`, filter: "blur(10px)" }} />
-              </div>
-            </div>
             <div className="mt-4 rounded-xl p-3 text-xs" style={{ background: "#0e0e0e", border: `1px solid ${NEON}33` }}>
               <p className="text-white/60 text-[10px] uppercase tracking-wider">Visão geral</p>
               <p className="text-white/50 text-[10px] mt-2">Saldo disponível</p>
@@ -118,9 +103,6 @@ export const AntesDuranteDepois: React.FC = () => {
                   <div key={i} className="flex-1 rounded-t" style={{ height: `${h}%`, background: NEON, opacity: 0.4 + (i / 7) * 0.6 }} />
                 ))}
               </div>
-            </div>
-            <div className="depois-bg-man mt-5 rounded-xl flex-1 min-h-[100px] relative overflow-hidden" style={{ background: "linear-gradient(135deg, #0e2a18 0%, #0a0a0a 100%)" }}>
-              <p className="absolute top-2 left-2 text-[10px] text-white/40">{/* SUBSTITUIR pelo asset do homem feliz */}</p>
             </div>
           </Card>
         </Reveal>

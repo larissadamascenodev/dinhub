@@ -19,8 +19,6 @@ export const Navbar: React.FC<Props> = ({ onLogin, onSignup }) => {
 
   const links = [
     { label: "Funcionalidades", href: "#funcionalidades" },
-    { label: "Como Funciona", href: "#como-funciona" },
-    { label: "Preços", href: "#precos" },
   ];
 
   return (
