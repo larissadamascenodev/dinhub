@@ -1,5 +1,18 @@
 import React from "react";
-import { ArrowRight, Search, Bell, ShieldCheck, Star, Camera, Mic, Type } from "lucide-react";
+import { 
+  ArrowRight, 
+  Search, 
+  Bell, 
+  ShieldCheck, 
+  Star, 
+  Camera, 
+  Mic, 
+  Type, 
+  MessageSquare, 
+  Brain, 
+  LayoutGrid, 
+  TrendingUp 
+} from "lucide-react";
 import { NEON, Reveal } from "./shared";
 import { AuthForm } from "../auth/AuthForm";
 
@@ -112,5 +125,3 @@ const HeroFeatureCard: React.FC<{ icon: React.ReactNode; title: string; desc: st
     <p className="text-white/40 text-[11px] leading-relaxed">{desc}</p>
   </div>
 );
-
-import { MessageSquare, Brain } from "lucide-react";
