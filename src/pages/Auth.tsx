@@ -145,39 +145,6 @@ const Auth = () => {
   };
 
   /* ── Reusable sub-sections ── */
-  const ScrollingBanner = () => {
-    const items = [
-      "LEITURA INTELIGENTE",
-      "CATEGORIZAÇÃO AUTOMÁTICA",
-      "ORGANIZAÇÃO IMEDIATA",
-      "RADAR FINANCEIRO",
-      "PROJEÇÃO FINANCEIRA",
-      "SAÚDE FINANCEIRA",
-      "DASHBOARD COMPLETO",
-      "ASSISTENTE HUBY IA",
-      "DADOS PROTEGIDOS",
-      "MAIS DE 2.800 USUÁRIOS"
-    ];
-    
-    return (
-      <div className="w-full bg-[#001f13] py-3 sm:py-5 overflow-hidden border-y border-primary/20 relative z-20 my-6 sm:my-10 shadow-[0_0_30px_rgba(0,230,118,0.05)]">
-        <motion.div 
-          animate={{ x: ["0%", "-50%"] }}
-          transition={{ duration: 40, repeat: Infinity, ease: "linear" }}
-          className="flex whitespace-nowrap gap-8 sm:gap-16 items-center w-max"
-        >
-          {[...items, ...items, ...items, ...items].map((item, i) => (
-            <div key={i} className="flex items-center gap-2 sm:gap-4 px-2">
-              <div className="w-1 sm:w-1.5 h-1 sm:h-1.5 rounded-full bg-primary animate-pulse flex-shrink-0" />
-              <span className="text-[10px] sm:text-sm font-black tracking-[0.2em] sm:tracking-[0.35em] text-primary uppercase italic whitespace-nowrap">
-                {item}
-              </span>
-            </div>
-          ))}
-        </motion.div>
-      </div>
-    );
-  };
 
 
 
@@ -497,13 +464,6 @@ const Auth = () => {
 
   return (
     <div className="dark min-h-screen bg-background flex flex-col relative overflow-hidden">
-      {/* Promo banner */}
-      <div className="w-full text-center py-2.5 px-4 relative z-20 border-b border-border/30 bg-background">
-        <p className="text-[10px] sm:text-xs font-semibold text-primary-foreground flex items-center justify-center gap-1.5 sm:gap-2 whitespace-nowrap">
-          <Zap className="w-3 h-3 sm:w-3.5 sm:h-3.5 text-primary" />
-          Oferta de Lançamento: <span className="font-extrabold tracking-wide text-primary">TESTE GRATUITAMENTE</span>
-        </p>
-      </div>
 
       {/* Ambient glow */}
       <div className="pointer-events-none absolute -top-40 -left-40 w-[500px] h-[500px] rounded-full bg-primary/5 blur-[120px]" />
@@ -562,10 +522,6 @@ const Auth = () => {
 
         <motion.div custom={2} variants={fadeUp} initial="hidden" animate="visible">
           <InputMethodsPill />
-        </motion.div>
-
-        <motion.div custom={3.5} variants={fadeUp} initial="hidden" animate="visible" className="w-screen relative left-1/2 right-1/2 -ml-[50vw] -mr-[50vw]">
-          <ScrollingBanner />
         </motion.div>
 
 
