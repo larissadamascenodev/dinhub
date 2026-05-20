@@ -474,12 +474,12 @@ const Auth = () => {
       <div className="pointer-events-none absolute -top-40 -left-40 w-[500px] h-[500px] rounded-full bg-primary/5 blur-[120px]" />
       <div className="pointer-events-none absolute -bottom-40 -right-40 w-[400px] h-[400px] rounded-full bg-primary/3 blur-[100px]" />
 
-      {/* Desktop top bar */}
+      {/* Header */}
       <motion.header
         initial={{ opacity: 0, y: -10 }}
         animate={{ opacity: 1, y: 0 }}
         transition={{ duration: 0.5 }}
-        className="hidden lg:flex items-center justify-between px-10 py-4 relative z-10"
+        className="flex items-center justify-between px-6 lg:px-10 py-4 relative z-30"
       >
         <div className="flex items-center gap-2">
           <PiggyBank className="w-6 h-6 text-primary" />
@@ -487,117 +487,95 @@ const Auth = () => {
             Din<span className="text-primary">Hub</span>
           </span>
         </div>
-        <span className="flex items-center gap-2 text-xs text-muted-foreground bg-primary/10 border border-primary/15 rounded-full px-3.5 py-1.5">
-          <Shield className="w-3.5 h-3.5 text-primary" />
-          <span className="text-foreground/80 font-medium">Controle Financeiro Inteligente</span>
-        </span>
+        
+        <div className="flex items-center gap-3">
+          <Button 
+            variant="ghost" 
+            size="sm" 
+            onClick={() => openAuthModal(true)}
+            className="text-xs font-medium text-muted-foreground hover:text-primary transition-colors hidden sm:flex"
+          >
+            Entrar
+          </Button>
+          <Button 
+            size="sm" 
+            onClick={() => openAuthModal(false)}
+            className="text-xs font-semibold bg-primary/10 text-primary border border-primary/20 hover:bg-primary/20 rounded-full px-5"
+          >
+            Cadastre-se
+          </Button>
+          <Button 
+            variant="ghost" 
+            size="sm" 
+            onClick={() => openAuthModal(true)}
+            className="text-xs font-medium text-muted-foreground sm:hidden"
+          >
+            Login
+          </Button>
+        </div>
       </motion.header>
 
-      {/* ════════ DESKTOP LAYOUT ════════ */}
-      <div className="hidden lg:flex flex-1 items-center justify-center px-10 xl:px-16 pb-8 relative z-10">
-        <div className="flex items-stretch gap-12 xl:gap-16 w-full max-w-6xl">
-          {/* Left — Marketing */}
-          <div className="flex flex-col justify-center flex-1 space-y-7">
-            <motion.div custom={0} variants={fadeUp} initial="hidden" animate="visible">
-              <SocialProofBadge />
-            </motion.div>
-            <motion.div custom={1} variants={fadeUp} initial="hidden" animate="visible">
-              <HeadlineSection />
-            </motion.div>
-            <motion.div custom={2} variants={fadeUp} initial="hidden" animate="visible">
-              <InputMethodsPill />
-            </motion.div>
-            <motion.div custom={3} variants={fadeUp} initial="hidden" animate="visible">
-              <FeaturesGrid />
-            </motion.div>
-            <motion.div custom={4} variants={fadeUp} initial="hidden" animate="visible">
-              <TestimonialCard />
-            </motion.div>
-          </div>
+      {/* Main content - Centered marketing */}
+      <main className="flex-1 flex flex-col items-center justify-center px-6 py-12 lg:py-20 relative z-10 max-w-4xl mx-auto text-center space-y-8 lg:space-y-10">
+        <motion.div custom={0} variants={fadeUp} initial="hidden" animate="visible">
+          <SocialProofBadge />
+        </motion.div>
+        
+        <motion.div custom={1} variants={fadeUp} initial="hidden" animate="visible">
+          <HeadlineSection />
+        </motion.div>
 
-          {/* Right — Form */}
-          <div className="w-full max-w-[420px] shrink-0 flex flex-col justify-center">
-            {renderAuthFormCard()}
-          </div>
-        </div>
-      </div>
+        <motion.div custom={2} variants={fadeUp} initial="hidden" animate="visible">
+          <InputMethodsPill />
+        </motion.div>
 
-      {/* Desktop footer — bottom of page */}
-      <motion.div
+        <motion.div custom={3} variants={fadeUp} initial="hidden" animate="visible" className="w-full">
+          <FeaturesGrid />
+        </motion.div>
+
+        <motion.div custom={4} variants={fadeUp} initial="hidden" animate="visible" className="pt-6">
+          <Button 
+            size="lg" 
+            onClick={() => openAuthModal(false)}
+            className="h-14 px-10 text-base font-bold rounded-full bg-primary hover:bg-primary/90 text-primary-foreground shadow-lg shadow-primary/20 group"
+          >
+            Começar Agora Grátis
+            <ArrowRight className="ml-2 w-5 h-5 group-hover:translate-x-1 transition-transform" />
+          </Button>
+        </motion.div>
+
+        <motion.div custom={5} variants={fadeUp} initial="hidden" animate="visible" className="w-full max-w-lg">
+          <TestimonialCard />
+        </motion.div>
+      </main>
+
+      {/* Footer */}
+      <motion.footer
         initial={{ opacity: 0 }}
         animate={{ opacity: 1 }}
         transition={{ delay: 0.6 }}
-        className="hidden lg:flex items-center justify-center gap-6 py-4 border-t border-border/10 text-xs text-muted-foreground/50 relative z-10"
+        className="flex flex-col sm:flex-row items-center justify-center gap-4 sm:gap-6 py-8 border-t border-border/10 text-[10px] sm:text-xs text-muted-foreground/50 relative z-10"
       >
         <span className="flex items-center gap-2">
           <PiggyBank className="w-4 h-4 text-primary/60" />
           <span>DinHub © {new Date().getFullYear()}</span>
         </span>
-        <button onClick={() => setLegalModal("terms")} className="hover:text-primary transition-colors">Termos de Uso</button>
-        <button onClick={() => setLegalModal("privacy")} className="hover:text-primary transition-colors">Política de Privacidade</button>
-        <button onClick={() => setShowContact(true)} className="hover:text-primary transition-colors">Contato</button>
-      </motion.div>
+        <div className="flex items-center gap-4 sm:gap-6">
+          <button onClick={() => setLegalModal("terms")} className="hover:text-primary transition-colors">Termos de Uso</button>
+          <button onClick={() => setLegalModal("privacy")} className="hover:text-primary transition-colors">Política de Privacidade</button>
+          <button onClick={() => setShowContact(true)} className="hover:text-primary transition-colors">Contato</button>
+        </div>
+      </motion.footer>
 
-      {/* ════════ MOBILE LAYOUT ════════ */}
-      <div className="flex lg:hidden flex-1 flex-col px-5 py-5 relative z-10 overflow-y-auto gap-4">
-        {/* Logo — top left like inside the app */}
-        <motion.div
-          initial={{ opacity: 0, x: -10 }}
-          animate={{ opacity: 1, x: 0 }}
-          transition={{ duration: 0.4 }}
-          className="flex items-center justify-between"
-        >
-          <div className="flex items-center gap-2">
-            <PiggyBank className="w-6 h-6 text-primary" />
-            <span className="font-display text-lg font-bold text-foreground tracking-tight">
-              Din<span className="text-primary">Hub</span>
-            </span>
+      {/* Auth Modal */}
+      <Dialog open={isAuthModalOpen} onOpenChange={setIsAuthModalOpen}>
+        <DialogContent className="sm:max-w-[440px] p-0 border-none bg-transparent overflow-hidden shadow-none">
+          <div className="relative z-50">
+            {renderAuthFormCard()}
           </div>
-          <span className="flex items-center gap-1.5 text-[9px] bg-primary/10 border border-primary/15 rounded-full px-2.5 py-1">
-            <Shield className="w-2.5 h-2.5 text-primary" />
-            <span className="text-foreground/80 font-medium">Controle Inteligente</span>
-          </span>
-        </motion.div>
+        </DialogContent>
+      </Dialog>
 
-        {/* Social proof badge */}
-        <motion.div custom={0} variants={fadeUp} initial="hidden" animate="visible" className="flex justify-center">
-          <SocialProofBadge mobile />
-        </motion.div>
-
-        {/* Headline + input methods (above form) */}
-        <motion.div custom={1} variants={fadeUp} initial="hidden" animate="visible" className="space-y-2 flex flex-col items-center">
-          <HeadlineSection mobile />
-          <InputMethodsPill mobile />
-        </motion.div>
-
-        {/* Form */}
-        {renderAuthFormCard()}
-
-        {/* Stats + Testimonial (below form) */}
-        <motion.div custom={2} variants={fadeUp} initial="hidden" animate="visible" className="space-y-2.5">
-          <FeaturesGrid mobile />
-          <TestimonialCard mobile />
-        </motion.div>
-
-        {/* Security badge + legal links */}
-        {/* Footer mobile */}
-        <motion.div
-          initial={{ opacity: 0 }}
-          animate={{ opacity: 1 }}
-          transition={{ delay: 0.6 }}
-          className="flex flex-col items-center gap-2 pt-3 border-t border-border/10 text-[10px] text-muted-foreground/50 pb-2"
-        >
-          <span className="flex items-center gap-1.5">
-            <PiggyBank className="w-3.5 h-3.5 text-primary/60" />
-            <span>DinHub © {new Date().getFullYear()}</span>
-          </span>
-          <span className="flex items-center gap-4">
-            <button onClick={() => setLegalModal("terms")} className="hover:text-primary transition-colors">Termos de Uso</button>
-            <button onClick={() => setLegalModal("privacy")} className="hover:text-primary transition-colors">Política de Privacidade</button>
-            <button onClick={() => setShowContact(true)} className="hover:text-primary transition-colors">Contato</button>
-          </span>
-        </motion.div>
-      </div>
       <ContactModal open={showContact} onClose={() => setShowContact(false)} />
       <LegalModal open={!!legalModal} onClose={() => setLegalModal(null)} type={legalModal || "terms"} />
     </div>
