@@ -42,8 +42,6 @@ const AVATAR_URLS = [
 ];
 
 const Auth = () => {
-
-const Auth = () => {
   const { user, loading } = useAuth();
   const [isLogin, setIsLogin] = useState(true);
   const [isAuthModalOpen, setIsAuthModalOpen] = useState(false);
