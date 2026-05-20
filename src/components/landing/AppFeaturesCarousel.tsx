@@ -299,7 +299,7 @@ const IPhoneMockup = ({ activeTab }: { activeTab: TabType }) => {
 };
 
 export const AppFeaturesCarousel = () => {
-  const [activeTab, setActiveTab] = useState<TabType>("Dashboard");
+  const [activeTab, setActiveTab] = useState<TabType | null>(null);
 
   return (
     <section className="w-full bg-[#0a0a0a] pt-10 pb-20 px-6 relative overflow-hidden">
