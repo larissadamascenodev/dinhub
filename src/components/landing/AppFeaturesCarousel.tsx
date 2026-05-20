@@ -300,7 +300,7 @@ export const AppFeaturesCarousel = () => {
   const [activeTab, setActiveTab] = useState<TabType>("Dashboard");
 
   return (
-    <section className="w-full bg-[#0a0a0a] py-20 px-6 relative overflow-hidden">
+    <section className="w-full bg-[#0a0a0a] pt-10 pb-20 px-6 relative overflow-hidden">
       <div className="max-w-6xl mx-auto">
         <div className="text-center mb-16">
           <motion.div
