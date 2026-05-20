@@ -503,11 +503,10 @@ const Auth = () => {
                       </div>
                     </div>
 
-                    {/* Bottom Nav App */}
-                    <div className="absolute bottom-0 left-0 right-0 h-16 bg-[#0a0a0a] border-t border-[#1a1a1a] px-6 flex items-center justify-between z-50">
+                <div className="absolute inset-x-0 bottom-0 h-16 bg-[#0a0a0a] border-t border-[#1a1a1a] px-4 flex items-center justify-between z-50">
                       <LayoutGrid className="w-5 h-5 text-primary" />
                       <TrendingUp className="w-5 h-5 text-[#444]" />
-                      <div className="w-11 h-11 bg-primary rounded-full flex items-center justify-center -translate-y-4 shadow-[0_0_20px_rgba(0,230,118,0.3)]">
+                      <div className="w-11 h-11 bg-primary rounded-full flex items-center justify-center -translate-y-6 shadow-[0_0_20px_rgba(0,230,118,0.3)] border-4 border-[#070808]">
                         <Plus className="w-6 h-6 text-black font-bold" />
                       </div>
                       <Brain className="w-5 h-5 text-[#444]" />
