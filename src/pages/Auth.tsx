@@ -167,15 +167,15 @@ const Auth = () => {
 
   const HeadlineSection = ({ mobile = false }: { mobile?: boolean }) => (
     <div className="text-center">
-      <h1 className={`font-display font-bold leading-[1.1] text-foreground ${mobile ? "text-2xl" : "text-4xl xl:text-6xl"}`}>
-        Assuma o controle{" "}
-        total da sua{" "}
-        <span className="text-transparent bg-clip-text bg-gradient-to-r from-primary to-emerald-300">
-          vida financeira.
+      <h1 className={`font-display font-bold leading-[1.05] tracking-tight text-foreground ${mobile ? "text-4xl" : "text-5xl lg:text-7xl"}`}>
+        Domine suas finanças <br className="hidden sm:block" /> de um jeito{" "}
+        <span className="text-transparent bg-clip-text bg-gradient-to-r from-primary via-emerald-400 to-primary">
+          realmente simples.
         </span>
       </h1>
-      <p className={`text-muted-foreground leading-relaxed mx-auto ${mobile ? "mt-1.5 text-[11px]" : "mt-6 text-lg max-w-2xl"}`}>
-        Organize suas finanças, entenda para onde seu dinheiro vai e acompanhe a evolução do seu patrimônio em tempo real.
+      <p className={`text-muted-foreground leading-relaxed mx-auto font-medium ${mobile ? "mt-4 text-sm px-4" : "mt-8 text-xl max-w-2xl opacity-80"}`}>
+        A ferramenta completa para quem quer organizar gastos, <br className="hidden sm:block" />
+        planejar o futuro e ver o patrimônio crescer todo mês.
       </p>
     </div>
   );
