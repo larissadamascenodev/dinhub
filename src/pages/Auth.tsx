@@ -537,7 +537,101 @@ const Auth = () => {
           </Button>
         </motion.div>
 
-        <motion.div custom={5} variants={fadeUp} initial="hidden" animate="visible" className="w-full max-w-lg">
+        {/* Mock App Preview Section */}
+        <motion.div 
+          custom={5} 
+          variants={fadeUp} 
+          initial="hidden" 
+          animate="visible"
+          className="w-full max-w-5xl mx-auto pt-4 sm:pt-8"
+        >
+          <div className="relative group">
+            {/* Main Mockup Container */}
+            <div className="relative z-10 bg-[#0A0A0A] rounded-[2rem] sm:rounded-[3rem] border border-white/5 shadow-2xl overflow-hidden aspect-[16/10] sm:aspect-video flex flex-col">
+              {/* Mock App Header */}
+              <div className="h-10 sm:h-14 border-b border-white/5 flex items-center justify-between px-4 sm:px-8 bg-black/40 backdrop-blur-md shrink-0">
+                <div className="flex items-center gap-1.5 sm:gap-3">
+                  <div className="w-2.5 h-2.5 sm:w-3.5 sm:h-3.5 rounded-full bg-primary/20 border border-primary/30 flex items-center justify-center">
+                    <div className="w-1 sm:w-1.5 h-1 sm:h-1.5 rounded-full bg-primary animate-pulse" />
+                  </div>
+                  <div className="h-3 sm:h-4 w-16 sm:w-24 bg-white/5 rounded-full" />
+                </div>
+                <div className="flex gap-2 sm:gap-3">
+                  <div className="w-6 h-6 sm:w-8 sm:h-8 rounded-lg bg-white/5" />
+                  <div className="w-6 h-6 sm:w-8 sm:h-8 rounded-lg bg-white/5" />
+                </div>
+              </div>
+
+              {/* Mock App Body */}
+              <div className="flex-1 p-4 sm:p-8 flex flex-col gap-4 sm:gap-6 overflow-hidden">
+                {/* Stats row */}
+                <div className="grid grid-cols-2 sm:grid-cols-4 gap-3 sm:gap-4 shrink-0">
+                  {[1, 2, 3, 4].map((i) => (
+                    <div key={i} className="h-16 sm:h-24 bg-white/[0.03] border border-white/5 rounded-xl sm:rounded-2xl p-3 sm:p-4 flex flex-col justify-between">
+                      <div className="h-2 sm:h-3 w-1/2 bg-white/10 rounded-full" />
+                      <div className="h-4 sm:h-6 w-3/4 bg-primary/20 rounded-full" />
+                    </div>
+                  ))}
+                </div>
+
+                {/* Main chart area */}
+                <div className="flex-1 bg-white/[0.02] border border-white/5 rounded-2xl sm:rounded-3xl p-4 sm:p-6 relative overflow-hidden">
+                  <div className="flex justify-between items-center mb-4 sm:mb-8">
+                    <div className="h-4 sm:h-6 w-32 sm:w-48 bg-white/10 rounded-full" />
+                    <div className="flex gap-1.5 sm:gap-2">
+                      <div className="h-6 sm:h-8 w-12 sm:w-16 bg-primary/10 rounded-lg" />
+                      <div className="h-6 sm:h-8 w-12 sm:w-16 bg-white/5 rounded-lg" />
+                    </div>
+                  </div>
+                  {/* Fake Chart Lines */}
+                  <svg className="w-full h-full opacity-30" viewBox="0 0 400 100" preserveAspectRatio="none">
+                    <path d="M0,80 Q50,70 100,85 T200,60 T300,75 T400,40" fill="none" stroke="currentColor" strokeWidth="2" className="text-primary" />
+                    <path d="M0,90 Q50,85 100,92 T200,80 T300,88 T400,70" fill="none" stroke="currentColor" strokeWidth="1" className="text-white/20" />
+                  </svg>
+                </div>
+              </div>
+            </div>
+
+            {/* Float Elements for Visual Interest */}
+            <div className="absolute -top-6 -right-6 z-20 w-24 sm:w-40 h-24 sm:h-40 bg-primary/10 blur-[60px] rounded-full animate-pulse" />
+            <div className="absolute -bottom-10 -left-10 z-20 w-32 sm:w-56 h-32 sm:h-56 bg-primary/5 blur-[80px] rounded-full" />
+            
+            {/* Small floating cards to mimic complexity */}
+            <motion.div 
+              animate={{ y: [0, -10, 0] }}
+              transition={{ duration: 4, repeat: Infinity, ease: "easeInOut" }}
+              className="absolute -right-4 sm:-right-8 top-1/4 z-30 p-3 sm:p-5 bg-card/80 border border-primary/20 rounded-xl sm:rounded-2xl shadow-2xl backdrop-blur-md hidden md:block"
+            >
+              <div className="flex items-center gap-3">
+                <div className="w-8 h-8 sm:w-10 sm:h-10 rounded-full bg-primary/20 flex items-center justify-center">
+                  <Zap className="w-4 h-4 sm:w-5 sm:h-5 text-primary" />
+                </div>
+                <div>
+                  <div className="text-[10px] sm:text-xs text-muted-foreground">Economia hoje</div>
+                  <div className="text-xs sm:text-sm font-bold text-foreground">+ R$ 124,50</div>
+                </div>
+              </div>
+            </motion.div>
+
+            <motion.div 
+              animate={{ y: [0, 10, 0] }}
+              transition={{ duration: 5, repeat: Infinity, ease: "easeInOut", delay: 1 }}
+              className="absolute -left-4 sm:-left-8 bottom-1/4 z-30 p-3 sm:p-5 bg-card/80 border border-primary/20 rounded-xl sm:rounded-2xl shadow-2xl backdrop-blur-md hidden md:block"
+            >
+              <div className="flex items-center gap-3">
+                <div className="w-8 h-8 sm:w-10 sm:h-10 rounded-full bg-emerald-500/20 flex items-center justify-center">
+                  <Check className="w-4 h-4 sm:w-5 sm:h-5 text-emerald-500" />
+                </div>
+                <div>
+                  <div className="text-[10px] sm:text-xs text-muted-foreground">Meta atingida</div>
+                  <div className="text-xs sm:text-sm font-bold text-foreground">Reserva de Emergência</div>
+                </div>
+              </div>
+            </motion.div>
+          </div>
+        </motion.div>
+
+        <motion.div custom={6} variants={fadeUp} initial="hidden" animate="visible" className="w-full max-w-lg">
           <TestimonialCard />
         </motion.div>
       </main>
