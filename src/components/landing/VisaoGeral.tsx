@@ -180,7 +180,7 @@ const appNavItems = [
 ];
 
 // ── COMPONENTE ───────────────────────────────────────────────
-const VisaoGeral = () => {
+const VisaoGeral = ({ onCTA }: { onCTA?: () => void }) => {
   const [animated, setAnimated] = useState(false);
 
   useEffect(() => {
