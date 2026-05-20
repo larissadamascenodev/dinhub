@@ -265,7 +265,7 @@ const AppScreen = ({ type }: { type: TabType }) => {
 
 const IPhoneMockup = ({ activeTab }: { activeTab: TabType }) => {
   return (
-    <div className="relative mx-auto w-[280px] h-[580px] bg-[#1a1a1a] rounded-[3rem] p-3 shadow-2xl border-4 border-[#2a2a2a]">
+    <div className="relative mx-auto w-[280px] h-[580px] bg-[#1a1a1a] rounded-[3rem] p-3 shadow-[0_0_50px_rgba(0,230,118,0.1)] border-4 border-[#2a2a2a]">
       {/* Notch */}
       <div className="absolute top-0 left-1/2 -translate-x-1/2 w-32 h-6 bg-[#1a1a1a] rounded-b-2xl z-20 flex items-center justify-center">
         <div className="w-10 h-1 bg-[#222] rounded-full mb-1" />
