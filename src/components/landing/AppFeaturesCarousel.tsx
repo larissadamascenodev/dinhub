@@ -263,7 +263,7 @@ const AppScreen = ({ type }: { type: TabType }) => {
   }
 };
 
-const iPhoneMockup = ({ activeTab }: { activeTab: TabType }) => {
+const IPhoneMockup = ({ activeTab }: { activeTab: TabType }) => {
   return (
     <div className="relative mx-auto w-[280px] h-[580px] bg-[#1a1a1a] rounded-[3rem] p-3 shadow-2xl border-4 border-[#2a2a2a]">
       {/* Notch */}
@@ -347,10 +347,10 @@ export const AppFeaturesCarousel = () => {
             viewport={{ once: true }}
             className="order-1 lg:order-1"
           >
-            <iPhoneMockup activeTab={activeTab} />
+            <IPhoneMockup activeTab={activeTab} />
           </motion.div>
 
-          {/* Text content - Hidden on mobile as per user's "texto descritivo abaixo" but let's just make it a nice info panel */}
+          {/* Text content */}
           <div className="order-2 lg:order-2 space-y-8">
             <div className="hidden lg:block space-y-8">
                <AnimatePresence mode="wait">
