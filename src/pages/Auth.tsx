@@ -537,63 +537,7 @@ const Auth = () => {
           </Button>
         </motion.div>
 
-        {/* Simple Dashboard Card (Match reference) */}
-        <motion.div 
-          custom={5} 
-          variants={fadeUp} 
-          initial="hidden" 
-          animate="visible"
-          className="w-full max-w-4xl mx-auto pt-8 sm:pt-16 px-4"
-        >
-          <div className="bg-[#0A0A0A] rounded-3xl border border-white/10 shadow-2xl overflow-hidden relative">
-            <div className="p-8 sm:p-12">
-              {/* Card Header */}
-              <div className="flex justify-between items-start mb-12">
-                <div className="text-left">
-                  <div className="text-primary text-xs font-bold uppercase tracking-widest mb-2">Patrimônio Total</div>
-                  <div className="text-4xl sm:text-6xl font-bold text-white tracking-tight">
-                    R$ 124.500<span className="text-white/30">,00</span>
-                  </div>
-                </div>
-                <div className="bg-primary/10 border border-primary/20 rounded-2xl p-4">
-                  <BarChart3 className="w-6 h-6 sm:w-8 sm:h-8 text-primary" />
-                </div>
-              </div>
-
-              {/* Card Content Grid */}
-              <div className="grid grid-cols-1 sm:grid-cols-3 gap-6">
-                <div className="bg-white/5 border border-white/10 rounded-2xl p-6 text-left">
-                  <div className="text-white/40 text-[10px] font-bold uppercase mb-2">Receitas</div>
-                  <div className="text-xl font-bold text-emerald-500">R$ 12.450,00</div>
-                </div>
-                <div className="bg-white/5 border border-white/10 rounded-2xl p-6 text-left">
-                  <div className="text-white/40 text-[10px] font-bold uppercase mb-2">Despesas</div>
-                  <div className="text-xl font-bold text-red-400">R$ 4.120,00</div>
-                </div>
-                <div className="bg-white/5 border border-white/10 rounded-2xl p-6 text-left">
-                  <div className="text-white/40 text-[10px] font-bold uppercase mb-2">Investimentos</div>
-                  <div className="text-xl font-bold text-primary">R$ 8.330,00</div>
-                </div>
-              </div>
-
-              {/* Subtle Chart Line at Bottom */}
-              <div className="mt-12 h-24 w-full relative">
-                <svg className="w-full h-full opacity-30" viewBox="0 0 400 100" preserveAspectRatio="none">
-                  <path d="M0,80 Q50,70 100,85 T200,40 T300,75 T400,20" fill="none" stroke="currentColor" strokeWidth="3" className="text-primary" />
-                </svg>
-              </div>
-            </div>
-            
-            {/* Background Glow */}
-            <div className="absolute top-0 right-0 w-64 h-64 bg-primary/10 blur-[100px] rounded-full -translate-y-1/2 translate-x-1/2" />
-          </div>
-        </motion.div>
-
-
-
-
-
-        <motion.div custom={6} variants={fadeUp} initial="hidden" animate="visible" className="w-full max-w-lg">
+        <motion.div custom={5} variants={fadeUp} initial="hidden" animate="visible" className="w-full max-w-lg">
           <TestimonialCard />
         </motion.div>
       </main>
