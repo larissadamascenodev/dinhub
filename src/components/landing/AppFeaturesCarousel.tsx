@@ -349,55 +349,63 @@ export const AppFeaturesCarousel = () => {
           ))}
         </div>
 
-        <div className="grid lg:grid-cols-2 gap-12 items-center min-h-[600px]">
-          {/* Mockup */}
-          <motion.div
-            key={activeTab}
-            initial={{ opacity: 0, scale: 0.95, y: 20 }}
-            animate={{ opacity: 1, scale: 1, y: 0 }}
-            viewport={{ once: true }}
-            className="order-1 lg:order-1"
-          >
-            <IPhoneMockup activeTab={activeTab} />
-          </motion.div>
+        <AnimatePresence>
+          {activeTab && (
+            <motion.div 
+              initial={{ opacity: 0, height: 0 }}
+              animate={{ opacity: 1, height: "auto" }}
+              exit={{ opacity: 0, height: 0 }}
+              className="grid lg:grid-cols-2 gap-12 items-center overflow-hidden"
+            >
+              {/* Mockup */}
+              <motion.div
+                key={activeTab}
+                initial={{ opacity: 0, scale: 0.95, y: 20 }}
+                animate={{ opacity: 1, scale: 1, y: 0 }}
+                className="order-1 lg:order-1"
+              >
+                <IPhoneMockup activeTab={activeTab} />
+              </motion.div>
 
-          {/* Text content */}
-          <div className="order-2 lg:order-2 space-y-8">
-            <div className="hidden lg:block space-y-8">
-               <AnimatePresence mode="wait">
-                  <motion.div
-                    key={activeTab}
-                    initial={{ opacity: 0, x: 20 }}
-                    animate={{ opacity: 1, x: 0 }}
-                    exit={{ opacity: 0, x: -20 }}
-                    className="space-y-4"
-                  >
-                    <h3 className="text-3xl font-bold text-white">{activeTab}</h3>
-                    <p className="text-gray-400 text-lg leading-relaxed">
+              {/* Text content */}
+              <div className="order-2 lg:order-2 space-y-8">
+                <div className="hidden lg:block space-y-8">
+                  <AnimatePresence mode="wait">
+                      <motion.div
+                        key={activeTab}
+                        initial={{ opacity: 0, x: 20 }}
+                        animate={{ opacity: 1, x: 0 }}
+                        exit={{ opacity: 0, x: -20 }}
+                        className="space-y-4"
+                      >
+                        <h3 className="text-3xl font-bold text-white">{activeTab}</h3>
+                        <p className="text-gray-400 text-lg leading-relaxed">
+                          {activeTab === "Dashboard" && "Tenha uma visão clara do seu saldo, previsto e fluxo de caixa mensal em segundos."}
+                          {activeTab === "Categorias" && "Descubra exatamente onde seu dinheiro está indo com gráficos intuitivos e insights automáticos."}
+                          {activeTab === "Transações" && "Acompanhe cada centavo que entra e sai com uma lista organizada e detalhada."}
+                          {activeTab === "Parcelamentos" && "Saiba quando cada parcela termina e quanto do seu orçamento futuro já está comprometido."}
+                          {activeTab === "Fatura" && "Gerencie seus cartões de crédito em um só lugar. Visualize limites, gastos e das de fechamento."}
+                          {activeTab === "Metas" && "Crie objetivos financeiros, acompanhe o progresso e participe de desafios para economizar mais."}
+                        </p>
+                      </motion.div>
+                  </AnimatePresence>
+                </div>
+                
+                <div className="lg:hidden text-center space-y-4">
+                  <h3 className="text-2xl font-bold text-white">{activeTab}</h3>
+                  <p className="text-gray-400 text-sm">
                       {activeTab === "Dashboard" && "Tenha uma visão clara do seu saldo, previsto e fluxo de caixa mensal em segundos."}
-                      {activeTab === "Categorias" && "Descubra exatamente onde seu dinheiro está indo com gráficos intuitivos e insights automáticos."}
-                      {activeTab === "Transações" && "Acompanhe cada centavo que entra e sai com uma lista organizada e detalhada."}
-                      {activeTab === "Parcelamentos" && "Saiba quando cada parcela termina e quanto do seu orçamento futuro já está comprometido."}
-                      {activeTab === "Fatura" && "Gerencie seus cartões de crédito em um só lugar. Visualize limites, gastos e datas de fechamento."}
-                      {activeTab === "Metas" && "Crie objetivos financeiros, acompanhe o progresso e participe de desafios para economizar mais."}
-                    </p>
-                  </motion.div>
-               </AnimatePresence>
-            </div>
-            
-            <div className="lg:hidden text-center space-y-4">
-               <h3 className="text-2xl font-bold text-white">{activeTab}</h3>
-               <p className="text-gray-400 text-sm">
-                  {activeTab === "Dashboard" && "Tenha uma visão clara do seu saldo, previsto e fluxo de caixa mensal em segundos."}
-                  {activeTab === "Categorias" && "Descubra exatamente onde seu dinheiro está indo com gráficos intuitivos."}
-                  {activeTab === "Transações" && "Acompanhe cada centavo que entra e sai com uma lista organizada."}
-                  {activeTab === "Parcelamentos" && "Saiba quando cada parcela termina e o comprometimento do seu orçamento."}
-                  {activeTab === "Fatura" && "Gerencie seus cartões de crédito em um só lugar."}
-                  {activeTab === "Metas" && "Crie objetivos financeiros e acompanhe o progresso."}
-               </p>
-            </div>
-          </div>
-        </div>
+                      {activeTab === "Categorias" && "Descubra exatamente onde seu dinheiro está indo com gráficos intuitivos."}
+                      {activeTab === "Transações" && "Acompanhe cada centavo que entra e sai com uma lista organizada."}
+                      {activeTab === "Parcelamentos" && "Saiba quando cada parcela termina e o comprometimento do seu orçamento."}
+                      {activeTab === "Fatura" && "Gerencie seus cartões de crédito em um só lugar."}
+                      {activeTab === "Metas" && "Crie objetivos financeiros e acompanhe o progresso."}
+                  </p>
+                </div>
+              </div>
+            </motion.div>
+          )}
+        </AnimatePresence>
       </div>
     </section>
   );
