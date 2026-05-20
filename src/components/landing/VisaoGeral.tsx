@@ -289,22 +289,32 @@ const VisaoGeral = ({ onCTA }: { onCTA?: () => void }) => {
             ))}
           </div>
 
-          <a href="#signup"
+          <button
+            onClick={onCTA}
             style={{
-              display: "inline-flex", alignItems: "center", gap: "0.5rem",
-              color: "#00e676", fontFamily: "'Sora',sans-serif",
-              fontWeight: 600, fontSize: "1rem",
-              textDecoration: "none", marginTop: "0.5rem",
+              display: "inline-flex",
+              alignItems: "center",
+              gap: "0.5rem",
+              color: "#00e676",
+              fontFamily: "'Sora',sans-serif",
+              fontWeight: 600,
+              fontSize: "1rem",
+              textDecoration: "none",
+              marginTop: "0.5rem",
               transition: "gap 0.2s ease",
+              background: "none",
+              border: "none",
+              cursor: "pointer",
+              padding: 0,
             }}
-            onMouseEnter={e => (e.currentTarget.style.gap = "0.9rem")}
-            onMouseLeave={e => (e.currentTarget.style.gap = "0.5rem")}
+            onMouseEnter={(e) => (e.currentTarget.style.gap = "0.9rem")}
+            onMouseLeave={(e) => (e.currentTarget.style.gap = "0.5rem")}
           >
             Ver o DinHub funcionando
             <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#00e676" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
               <line x1="5" y1="12" x2="19" y2="12"/><polyline points="12 5 19 12 12 19"/>
             </svg>
-          </a>
+          </button>
         </div>
 
         {/* ── MOCKUP IPHONE ── */}
