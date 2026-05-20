@@ -147,7 +147,7 @@ const Auth = () => {
   /* ── Reusable sub-sections ── */
 
   const SocialProofBadge = ({ className = "", mobile = false }: { className?: string; mobile?: boolean }) => (
-    <span className={`inline-flex items-center gap-1.5 bg-primary/10 text-primary font-medium rounded-full border border-primary/15 backdrop-blur-sm ${mobile ? "text-[8px] px-2.5 py-1 mx-auto" : "text-[10px] px-3 py-1.5"} ${className}`}>
+    <span className={`inline-flex items-center gap-1.5 bg-primary/10 text-primary font-medium rounded-full border border-primary/15 backdrop-blur-sm ${mobile ? "text-[8px] px-2.5 py-1 mx-auto" : "text-[10px] px-3 py-1.5 mx-auto"} ${className}`}>
       <span className="flex -space-x-1.5">
         {AVATAR_URLS.map((url, i) => (
           <img
@@ -163,30 +163,29 @@ const Auth = () => {
   );
 
   const HeadlineSection = ({ mobile = false }: { mobile?: boolean }) => (
-    <div className={mobile ? "text-center" : ""}>
-      <h1 className={`font-display font-bold leading-[1.1] text-foreground ${mobile ? "text-2xl" : "text-4xl xl:text-5xl"}`}>
+    <div className="text-center">
+      <h1 className={`font-display font-bold leading-[1.1] text-foreground ${mobile ? "text-2xl" : "text-4xl xl:text-6xl"}`}>
         Assuma o controle{" "}
-        {!mobile && <br className="hidden xl:block" />}
         total da sua{" "}
         <span className="text-transparent bg-clip-text bg-gradient-to-r from-primary to-emerald-300">
           vida financeira.
         </span>
       </h1>
-      <p className={`text-muted-foreground leading-relaxed ${mobile ? "mt-1.5 text-[11px]" : "mt-5 text-base max-w-2xl"}`}>
+      <p className={`text-muted-foreground leading-relaxed mx-auto ${mobile ? "mt-1.5 text-[11px]" : "mt-6 text-lg max-w-2xl"}`}>
         Organize suas finanças, entenda para onde seu dinheiro vai e acompanhe a evolução do seu patrimônio em tempo real.
       </p>
     </div>
   );
 
   const InputMethodsPill = ({ mobile = false }: { mobile?: boolean }) => (
-    <div className={`inline-flex items-center gap-1 bg-gradient-to-r from-primary/10 via-card/50 to-primary/5 border border-primary/15 rounded-full text-muted-foreground backdrop-blur-sm ${mobile ? "mx-auto text-[8px] px-2.5 py-1" : "text-[10px] px-3 py-1.5 gap-1.5"}`}>
+    <div className={`inline-flex items-center gap-1 bg-gradient-to-r from-primary/10 via-card/50 to-primary/5 border border-primary/15 rounded-full text-muted-foreground backdrop-blur-sm mx-auto ${mobile ? "text-[8px] px-2.5 py-1" : "text-[10px] px-4 py-2 gap-2"}`}>
       <span className="text-foreground/70 font-medium">Registre via</span>
-      <span className="flex items-center gap-0.5 text-primary font-semibold"><MessageCircle className={mobile ? "w-2 h-2" : "w-2.5 h-2.5"} /> texto</span>
+      <span className="flex items-center gap-0.5 text-primary font-semibold"><MessageCircle className={mobile ? "w-2 h-2" : "w-3 h-3"} /> texto</span>
       <span className="text-primary/30">|</span>
-      <span className="flex items-center gap-0.5 text-primary/80"><Mic className={mobile ? "w-2 h-2" : "w-2.5 h-2.5"} /> áudio</span>
+      <span className="flex items-center gap-0.5 text-primary/80"><Mic className={mobile ? "w-2 h-2" : "w-3 h-3"} /> áudio</span>
       <span className="text-primary/30">|</span>
-      <span className="flex items-center gap-0.5 text-primary/80"><Image className={mobile ? "w-2 h-2" : "w-2.5 h-2.5"} /> foto</span>
-      <Zap className={`${mobile ? "w-2 h-2" : "w-2.5 h-2.5"} text-primary ml-0.5`} />
+      <span className="flex items-center gap-0.5 text-primary/80"><Image className={mobile ? "w-2 h-2" : "w-3 h-3"} /> foto</span>
+      <Zap className={`${mobile ? "w-2 h-2" : "w-3 h-3"} text-primary ml-0.5`} />
     </div>
   );
 
