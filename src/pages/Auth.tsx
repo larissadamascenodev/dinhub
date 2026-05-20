@@ -10,6 +10,13 @@ import { Navigate } from "react-router-dom";
 import { useAuth } from "@/contexts/AuthContext";
 import { motion, AnimatePresence } from "framer-motion";
 import {
+  Dialog,
+  DialogContent,
+  DialogHeader,
+  DialogTitle,
+  DialogDescription,
+} from "@/components/ui/dialog";
+import {
   Eye, EyeOff, ArrowRight, Mail, Lock,
   PiggyBank, MessageCircle, Mic, Image, Zap, Shield, User, Check,
   Wallet, BarChart3, Bell, Brain
