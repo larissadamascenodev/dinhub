@@ -150,18 +150,18 @@ const Auth = () => {
 
 
   const SocialProofBadge = ({ className = "", mobile = false }: { className?: string; mobile?: boolean }) => (
-    <span className={`inline-flex items-center gap-1.5 bg-primary/10 text-primary font-medium rounded-full border border-primary/15 backdrop-blur-sm ${mobile ? "text-[8px] px-2.5 py-1 mx-auto" : "text-[10px] px-3 py-1.5 mx-auto"} ${className}`}>
-      <span className="flex -space-x-1.5">
+    <span className={`inline-flex items-center gap-2 bg-[#002414] text-primary font-semibold rounded-full border border-primary/20 backdrop-blur-md shadow-[0_0_20px_rgba(0,230,118,0.1)] ${mobile ? "text-[10px] px-3.5 py-1.5" : "text-xs px-5 py-2"} ${className}`}>
+      <span className="flex -space-x-2">
         {AVATAR_URLS.map((url, i) => (
           <img
             key={i}
             src={url}
             alt=""
-            className={`rounded-full border border-background object-cover ${mobile ? "w-3.5 h-3.5" : "w-4 h-4"}`}
+            className={`rounded-full border-2 border-[#002414] object-cover ${mobile ? "w-5 h-5" : "w-6 h-6"}`}
           />
         ))}
       </span>
-      +2.847 pessoas controlando suas finanças
+      <span className="ml-1 tracking-tight">+2.847 pessoas usando o DinHub</span>
     </span>
   );
 
