@@ -41,12 +41,6 @@ const AVATAR_URLS = [
   "https://images.unsplash.com/photo-1438761681033-6461ffad8d80?w=80&h=80&fit=crop&crop=face",
 ];
 
-/* ── Componente VisaoGeral ── */
-// ... [copy user code here, omit imports] ...
-// I will just add the component definition and insert it below main in Auth.
-
-const VisaoGeral = () => { ... }
-
 const Auth = () => {
   const { user, loading } = useAuth();
   const [isLogin, setIsLogin] = useState(true);
