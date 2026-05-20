@@ -19,7 +19,7 @@ import {
 import {
   Eye, EyeOff, ArrowRight, Mail, Lock,
   PiggyBank, MessageCircle, Mic, Image, Zap, Shield, User, Check,
-  Wallet, BarChart3, Bell, Brain
+  Wallet, BarChart3, Bell, Brain, Flame, Plus, LayoutGrid, Target, Trophy, Clock, PieChart, TrendingUp
 } from "lucide-react";
 import { Link } from "react-router-dom";
 
@@ -292,6 +292,386 @@ const Auth = () => {
     );
   };
 
+  const OverviewSection = () => {
+    return (
+      <section className="w-full bg-[#0a0a0a] py-20 lg:py-32 relative overflow-hidden">
+        {/* Glow verde radial */}
+        <div 
+          className="pointer-events-none absolute inset-0 z-0"
+          style={{
+            background: 'radial-gradient(ellipse at 70% 50%, rgba(0,230,118,0.08), transparent 60%)'
+          }}
+        />
+
+        <div className="container max-w-7xl mx-auto px-6 relative z-10">
+          <div className="grid grid-cols-1 lg:grid-cols-[45%_55%] gap-16 lg:gap-12 items-center">
+            
+            {/* Coluna Esquerda */}
+            <motion.div 
+              initial={{ opacity: 0, x: -30 }}
+              whileInView={{ opacity: 1, x: 0 }}
+              viewport={{ once: true }}
+              transition={{ duration: 0.6 }}
+              className="space-y-8"
+            >
+              <div className="inline-block px-4 py-1.5 rounded-full bg-primary/10 border border-primary/20 text-primary text-[10px] font-bold tracking-widest uppercase">
+                SUA CENTRAL FINANCEIRA
+              </div>
+              
+              <div className="space-y-4">
+                <h2 className="font-display font-extrabold text-foreground leading-tight tracking-tight" style={{ fontSize: 'clamp(2rem, 3.5vw, 3.2rem)' }}>
+                  Tudo que acontece com seu dinheiro, em um lugar só.
+                </h2>
+                <p className="text-[#a0a0a0] font-sans text-lg leading-relaxed max-w-xl">
+                  Chega de abrir mil apps, planilha e extrato do banco. O DinHub reúne tudo e te entrega uma visão clara do que está acontecendo — e do que você precisa fazer.
+                </p>
+              </div>
+
+              <div className="grid grid-cols-1 gap-6">
+                {[
+                  { icon: <Clock className="w-5 h-5" />, title: "Saldo sempre atualizado", desc: "Sem surpresa no final do mês." },
+                  { icon: <PieChart className="w-5 h-5" />, title: "Gastos organizados por categoria", desc: "Você vê onde o dinheiro some de verdade." },
+                  { icon: <Target className="w-5 h-5" />, title: "Metas que você acompanha", desc: "Sabe exatamente se está no caminho certo." },
+                  { icon: <Bell className="w-5 h-5" />, title: "Alertas antes de virar problema", desc: "A Huby fala antes, não depois." }
+                ].map((item, idx) => (
+                  <div key={idx} className="flex gap-4">
+                    <div className="w-10 h-10 rounded-full bg-primary/10 border border-primary/20 flex items-center justify-center text-primary shrink-0">
+                      {item.icon}
+                    </div>
+                    <div>
+                      <h4 className="font-bold text-foreground text-base">{item.title}</h4>
+                      <p className="text-[#a0a0a0] text-sm mt-0.5">{item.desc}</p>
+                    </div>
+                  </div>
+                ))}
+              </div>
+
+              <button 
+                onClick={() => openAuthModal(false)}
+                className="group flex items-center gap-2 text-primary font-bold text-lg hover:translate-x-1 transition-transform"
+              >
+                Ver o DinHub funcionando <ArrowRight className="w-5 h-5" />
+              </button>
+            </motion.div>
+
+            {/* Coluna Direita - iPhone Mockup */}
+            <div className="relative flex justify-center items-center">
+              {/* iPhone Mockup */}
+              <motion.div
+                initial={{ opacity: 0, y: 40, rotate: 2 }}
+                whileInView={{ opacity: 1, y: 0, rotate: 2 }}
+                viewport={{ once: true }}
+                transition={{ duration: 0.8 }}
+                className="relative z-20 shrink-0"
+                style={{
+                  width: 'clamp(260px, 23vw, 320px)',
+                  borderRadius: '46px',
+                  border: '9px solid #1c1c1c',
+                  background: '#1c1c1c',
+                  boxShadow: `
+                    0 0 0 1px #2a2a2a,
+                    0 30px 80px rgba(0,0,0,0.6),
+                    0 0 60px rgba(0,230,118,0.14)
+                  `
+                }}
+              >
+                {/* Tela Interna */}
+                <div 
+                  className="w-full overflow-hidden bg-[#070808] relative"
+                  style={{ borderRadius: '37px', aspectRatio: '9/19.5' }}
+                >
+                  {/* Notch */}
+                  <div className="absolute top-0 left-1/2 -translate-x-1/2 w-[90px] h-[22px] bg-black rounded-b-[18px] z-50 flex items-end justify-center pb-1">
+                    <div className="w-12 h-1 bg-[#1a1a1a] rounded-full" />
+                  </div>
+
+                  {/* Status Bar */}
+                  <div className="flex justify-between items-center px-8 pt-4 pb-2 text-[#888] text-[0.72rem] font-medium">
+                    <span>10:58</span>
+                    <div className="flex gap-1.5 items-center">
+                      <div className="flex gap-0.5 items-end h-2.5">
+                        <div className="w-[2px] h-1 bg-[#888] rounded-full" />
+                        <div className="w-[2px] h-1.5 bg-[#888] rounded-full" />
+                        <div className="w-[2px] h-2 bg-[#888] rounded-full" />
+                        <div className="w-[2px] h-2.5 bg-[#888] rounded-full" />
+                      </div>
+                      <Zap className="w-2.5 h-2.5" />
+                      <div className="w-5 h-2.5 border border-[#888] rounded-[2px] relative">
+                        <div className="absolute left-[1px] top-[1px] bottom-[1px] w-3 bg-[#888] rounded-[0.5px]" />
+                        <div className="absolute -right-[2px] top-1/2 -translate-y-1/2 w-[1px] h-[3px] bg-[#888]" />
+                      </div>
+                    </div>
+                  </div>
+
+                  {/* App Content */}
+                  <div className="px-5 space-y-4">
+                    {/* Header App */}
+                    <div className="flex justify-between items-center">
+                      <span className="font-display font-extrabold text-[1rem] tracking-tight">
+                        Din<span className="text-primary">Hub</span>
+                      </span>
+                      <div className="flex gap-3">
+                        <div className="relative">
+                          <Bell className="w-5 h-5 text-[#888]" />
+                          <span className="absolute -top-1 -right-1 w-3.5 h-3.5 bg-primary rounded-full text-[8px] flex items-center justify-center text-black font-bold">1</span>
+                        </div>
+                        <div className="relative">
+                          <Flame className="w-5 h-5 text-[#888]" />
+                          <span className="absolute -top-1 -right-1 w-3.5 h-3.5 bg-orange-500 rounded-full text-[8px] flex items-center justify-center text-white font-bold">2</span>
+                        </div>
+                      </div>
+                    </div>
+
+                    {/* Saudação */}
+                    <div>
+                      <h3 className="text-white font-bold text-base leading-tight">Bom dia, Larissa</h3>
+                      <p className="text-[#888] text-xs">Terça-feira, 12 de maio</p>
+                    </div>
+
+                    {/* Tabs */}
+                    <div className="flex gap-2">
+                      <span className="px-3 py-1 text-[10px] text-[#888]">Abr</span>
+                      <span className="px-3 py-1 bg-[#111] border border-[#1a1a1a] rounded-full text-[10px] text-white font-medium">Mai</span>
+                      <span className="px-3 py-1 text-[10px] text-[#888]">Jun</span>
+                    </div>
+
+                    {/* Card Saldo */}
+                    <div className="bg-[#111] border border-[#1a1a1a] rounded-[14px] p-4 space-y-2">
+                      <span className="text-[#666] text-[0.65rem] font-bold tracking-widest uppercase">SALDO DISPONÍVEL</span>
+                      <div className="text-white font-display font-extrabold text-2xl leading-none">R$ 713,30</div>
+                      <div className="text-primary text-[10px] flex items-center gap-1">
+                        <span className="w-1 h-1 rounded-full bg-primary" /> Previsto no final do mês R$ 341,87
+                      </div>
+                    </div>
+
+                    {/* Cards Receitas/Despesas */}
+                    <div className="grid grid-cols-2 gap-2">
+                      <div className="bg-primary/10 border border-primary/10 rounded-[12px] p-3">
+                        <span className="text-primary text-[8px] font-bold block mb-1">↗ RECEITAS</span>
+                        <span className="text-white font-bold text-xs">R$ 1.959,03</span>
+                      </div>
+                      <div className="bg-red-500/10 border border-red-500/10 rounded-[12px] p-3">
+                        <span className="text-red-500 text-[8px] font-bold block mb-1">↙ DESPESAS</span>
+                        <span className="text-white font-bold text-xs">R$ 1.782,16</span>
+                      </div>
+                    </div>
+
+                    {/* Icon Navigation */}
+                    <div className="grid grid-cols-5 gap-1 pt-1">
+                      {[
+                        { icon: <Wallet className="w-4 h-4" />, label: "Carteira" },
+                        { icon: <BarChart3 className="w-4 h-4" />, label: "Balanço" },
+                        { icon: <TrendingUp className="w-4 h-4" />, label: "Projeções" },
+                        { icon: <Target className="w-4 h-4" />, label: "Metas" },
+                        { icon: <Trophy className="w-4 h-4" />, label: "Desafios" }
+                      ].map((item, i) => (
+                        <div key={i} className="flex flex-col items-center gap-1">
+                          <div className="w-8 h-8 rounded-full bg-primary/10 border border-primary/20 flex items-center justify-center text-primary">
+                            {item.icon}
+                          </div>
+                          <span className="text-[#666] text-[0.55rem]">{item.label}</span>
+                        </div>
+                      ))}
+                    </div>
+
+                    {/* Gastos por Categoria */}
+                    <div className="space-y-3 pt-2">
+                      <div className="flex justify-between items-center">
+                        <span className="text-[#666] text-[0.7rem]">Gastos por categoria · Maio</span>
+                        <span className="text-primary text-[0.7rem] font-medium">Análise completa ›</span>
+                      </div>
+                      <div className="text-white font-display font-extrabold text-lg">R$ 1.654,62</div>
+                      
+                      <div className="space-y-2">
+                        {[
+                          { color: '#8b5cf6', label: 'Eletrônicos', val: 'R$ 442,49', pct: '27%' },
+                          { color: '#3b82f6', label: 'Consórcio', val: 'R$ 293,57', pct: '18%' },
+                          { color: '#f59e0b', label: 'Delivery', val: 'R$ 245,90', pct: '15%' },
+                          { color: '#10b981', label: 'Supermercado', val: 'R$ 211,30', pct: '13%' }
+                        ].map((item, i) => (
+                          <div key={i} className="flex items-center justify-between text-[10px]">
+                            <div className="flex items-center gap-2">
+                              <div className="w-1.5 h-1.5 rounded-full" style={{ background: item.color }} />
+                              <span className="text-[#888]">{item.label}</span>
+                            </div>
+                            <div className="flex items-center gap-3">
+                              <span className="text-white font-medium">{item.val}</span>
+                              <span className="text-[#666] w-6 text-right">{item.pct}</span>
+                            </div>
+                          </div>
+                        ))}
+                      </div>
+                    </div>
+
+                    {/* Bottom Nav App */}
+                    <div className="absolute bottom-0 left-0 right-0 h-16 bg-[#0a0a0a] border-t border-[#1a1a1a] px-6 flex items-center justify-between z-50">
+                      <LayoutGrid className="w-5 h-5 text-primary" />
+                      <TrendingUp className="w-5 h-5 text-[#444]" />
+                      <div className="w-11 h-11 bg-primary rounded-full flex items-center justify-center -translate-y-4 shadow-[0_0_20px_rgba(0,230,118,0.3)]">
+                        <Plus className="w-6 h-6 text-black font-bold" />
+                      </div>
+                      <Brain className="w-5 h-5 text-[#444]" />
+                      <User className="w-5 h-5 text-[#444]" />
+                    </div>
+                  </div>
+                </div>
+              </motion.div>
+
+              {/* Cards Flutuantes - Desktop */}
+              <div className="hidden lg:block">
+                {/* SVG Connecting Lines */}
+                <svg className="absolute inset-0 w-full h-full pointer-events-none overflow-visible z-10">
+                  {/* Card 1 Line */}
+                  <motion.path 
+                    d="M-80,40 Q-40,60 0,100" 
+                    fill="none" 
+                    stroke="rgba(0,230,118,0.4)" 
+                    strokeWidth="1.5" 
+                    strokeDasharray="4 4"
+                    initial={{ pathLength: 0 }}
+                    whileInView={{ pathLength: 1 }}
+                    viewport={{ once: true }}
+                    transition={{ duration: 1.5, repeat: Infinity, repeatType: "loop", ease: "linear" }}
+                  />
+                  {/* Card 2 Line */}
+                  <motion.path 
+                    d="M-100,240 Q-50,230 -20,230" 
+                    fill="none" 
+                    stroke="rgba(0,230,118,0.4)" 
+                    strokeWidth="1.5" 
+                    strokeDasharray="4 4"
+                    initial={{ pathLength: 0 }}
+                    whileInView={{ pathLength: 1 }}
+                    viewport={{ once: true }}
+                    transition={{ duration: 2, repeat: Infinity, repeatType: "loop", ease: "linear" }}
+                  />
+                  {/* Card 3 Line */}
+                  <motion.path 
+                    d="M380,80 Q340,100 310,120" 
+                    fill="none" 
+                    stroke="rgba(0,230,118,0.4)" 
+                    strokeWidth="1.5" 
+                    strokeDasharray="4 4"
+                    initial={{ pathLength: 0 }}
+                    whileInView={{ pathLength: 1 }}
+                    viewport={{ once: true }}
+                    transition={{ duration: 1.8, repeat: Infinity, repeatType: "loop", ease: "linear" }}
+                  />
+                  {/* Card 4 Line */}
+                  <motion.path 
+                    d="M380,360 Q340,370 310,380" 
+                    fill="none" 
+                    stroke="rgba(0,230,118,0.4)" 
+                    strokeWidth="1.5" 
+                    strokeDasharray="4 4"
+                    initial={{ pathLength: 0 }}
+                    whileInView={{ pathLength: 1 }}
+                    viewport={{ once: true }}
+                    transition={{ duration: 2.2, repeat: Infinity, repeatType: "loop", ease: "linear" }}
+                  />
+                </svg>
+
+                {/* Card 1 - Topo Esquerdo */}
+                <motion.div 
+                  initial={{ opacity: 0, x: -20 }}
+                  whileInView={{ opacity: 1, x: 0 }}
+                  viewport={{ once: true }}
+                  transition={{ delay: 0.3 }}
+                  className="absolute -left-20 top-10 z-30 bg-[#111] border border-[#1a1a1a] rounded-2xl p-4 shadow-[0_0_30px_rgba(0,230,118,0.1)] w-44"
+                >
+                  <div className="text-primary text-[10px] font-bold mb-1">↗ Receita no mês</div>
+                  <div className="text-white font-display font-extrabold text-lg">R$ 1.460,36</div>
+                  <div className="text-[#666] text-[10px] mt-1">+18% vs. Abril</div>
+                </motion.div>
+
+                {/* Card 2 - Meio Esquerdo */}
+                <motion.div 
+                  initial={{ opacity: 0, x: -20 }}
+                  whileInView={{ opacity: 1, x: 0 }}
+                  viewport={{ once: true }}
+                  transition={{ delay: 0.5 }}
+                  className="absolute -left-32 top-[240px] z-30 bg-[#111] border border-[#1a1a1a] rounded-2xl p-4 shadow-[0_0_30px_rgba(0,230,118,0.1)] w-52"
+                >
+                  <div className="flex items-center gap-3 mb-2">
+                    <div className="w-8 h-8 rounded-full bg-purple-500/10 border border-purple-500/20 flex items-center justify-center text-purple-500">
+                      <Target className="w-4 h-4" />
+                    </div>
+                    <span className="text-[#888] text-[10px] font-bold">Meta de economia</span>
+                  </div>
+                  <div className="text-white font-bold text-base mb-2">R$ 2.000,00</div>
+                  <div className="h-1.5 w-full bg-[#1a1a1a] rounded-full overflow-hidden mb-1">
+                    <div className="h-full bg-primary rounded-full" style={{ width: '68%' }} />
+                  </div>
+                  <div className="text-primary text-[10px] font-bold text-right">68%</div>
+                </motion.div>
+
+                {/* Card 3 - Direita Superior */}
+                <motion.div 
+                  initial={{ opacity: 0, x: 20 }}
+                  whileInView={{ opacity: 1, x: 0 }}
+                  viewport={{ once: true }}
+                  transition={{ delay: 0.4 }}
+                  className="absolute -right-24 top-20 z-30 bg-[#111] border border-[#1a1a1a] rounded-2xl p-4 shadow-[0_0_30px_rgba(0,230,118,0.1)] w-56"
+                >
+                  <div className="flex items-center gap-3 mb-2">
+                    <div className="w-8 h-8 rounded-full bg-primary/10 border border-primary/20 flex items-center justify-center text-primary">
+                      <Bell className="w-4 h-4" />
+                    </div>
+                    <span className="text-[#888] text-[10px] font-bold uppercase">Alerta de gasto</span>
+                  </div>
+                  <p className="text-[#888] text-[10px] leading-tight">
+                    Você ultrapassou o limite de <span className="text-primary font-bold">delivery</span> este mês.
+                  </p>
+                </motion.div>
+
+                {/* Card 4 - Direita Inferior */}
+                <motion.div 
+                  initial={{ opacity: 0, x: 20 }}
+                  whileInView={{ opacity: 1, x: 0 }}
+                  viewport={{ once: true }}
+                  transition={{ delay: 0.6 }}
+                  className="absolute -right-16 top-[380px] z-30 bg-[#111] border border-[#1a1a1a] rounded-2xl p-4 shadow-[0_0_30px_rgba(0,230,118,0.1)] w-48"
+                >
+                  <div className="flex items-center gap-3 mb-2">
+                    <div className="w-8 h-8 rounded-full bg-primary/10 border border-primary/20 flex items-center justify-center text-primary">
+                      <Wallet className="w-4 h-4" />
+                    </div>
+                    <span className="text-[#888] text-[10px] font-bold uppercase">Saldo atual</span>
+                  </div>
+                  <div className="text-primary font-display font-extrabold text-xl">R$ 713,30</div>
+                  <div className="text-[#666] text-[10px] mt-1">Atualizado agora</div>
+                </motion.div>
+              </div>
+            </div>
+
+            {/* Cards Grid - Mobile */}
+            <div className="lg:hidden grid grid-cols-2 gap-4 mt-12">
+              <div className="bg-[#111] border border-[#1a1a1a] rounded-2xl p-4 shadow-[0_0_30px_rgba(0,230,118,0.1)]">
+                <div className="text-primary text-[10px] font-bold mb-1 uppercase tracking-wider">↗ Receita</div>
+                <div className="text-white font-display font-bold text-lg leading-tight">R$ 1.460,36</div>
+              </div>
+              <div className="bg-[#111] border border-[#1a1a1a] rounded-2xl p-4 shadow-[0_0_30px_rgba(0,230,118,0.1)]">
+                <div className="text-[#888] text-[10px] font-bold mb-1 uppercase tracking-wider">Meta</div>
+                <div className="text-white font-bold text-base">R$ 2.000,00</div>
+                <div className="text-primary text-[10px] font-bold">68%</div>
+              </div>
+              <div className="bg-[#111] border border-[#1a1a1a] rounded-2xl p-4 shadow-[0_0_30px_rgba(0,230,118,0.1)] col-span-2">
+                <div className="flex items-center gap-3 mb-1">
+                  <div className="w-6 h-6 rounded-full bg-primary/10 flex items-center justify-center text-primary">
+                    <Bell className="w-3.5 h-3.5" />
+                  </div>
+                  <span className="text-[#888] text-[10px] font-bold uppercase tracking-wider">Alerta</span>
+                </div>
+                <p className="text-[#888] text-[11px]">Limite de <span className="text-primary font-bold">delivery</span> ultrapassado.</p>
+              </div>
+            </div>
+
+          </div>
+        </div>
+      </section>
+    );
+  };
+
   /* ── Auth form card ── */
   const renderAuthFormCard = () => (
     <motion.div
@@ -536,6 +916,8 @@ const Auth = () => {
             <ArrowRight className="ml-2 w-5 h-5 group-hover:translate-x-1 transition-transform" />
           </Button>
         </motion.div>
+
+        <OverviewSection />
 
         <motion.div custom={5} variants={fadeUp} initial="hidden" animate="visible" className="w-full max-w-lg">
           <TestimonialCard />
