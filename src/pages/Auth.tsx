@@ -147,29 +147,29 @@ const Auth = () => {
   /* ── Reusable sub-sections ── */
   const ScrollingBanner = () => {
     const items = [
-      "DASHBOARD COMPLETO",
-      "CATEGORIZAÇÃO COM IA",
-      "SCANNER DE COMPROVANTES",
-      "RADAR FINANCEIRO 24H",
-      "PROJEÇÃO DE 12 MESES",
-      "CONTROLE DE FATURAS",
-      "ASSISTENTE HUBY IA",
+      "LEITURA INTELIGENTE",
+      "CATEGORIZAÇÃO AUTOMÁTICA",
+      "ORGANIZAÇÃO IMEDIATA",
+      "RADAR FINANCEIRO",
+      "PROJEÇÃO FINANCEIRA",
       "SAÚDE FINANCEIRA",
-      "ALERTA DE GASTOS",
-      "METAS INTELIGENTES"
+      "DASHBOARD COMPLETO",
+      "ASSISTENTE HUBY IA",
+      "DADOS PROTEGIDOS",
+      "MAIS DE 2.800 USUÁRIOS"
     ];
     
     return (
-      <div className="w-full bg-[#001f13] py-4 overflow-hidden border-y border-primary/10 relative z-20 my-10 group">
+      <div className="w-full bg-[#001f13] py-5 overflow-hidden border-y border-primary/20 relative z-20 my-10 shadow-[0_0_30px_rgba(0,230,118,0.05)]">
         <motion.div 
           animate={{ x: ["0%", "-50%"] }}
-          transition={{ duration: 30, repeat: Infinity, ease: "linear" }}
-          className="flex whitespace-nowrap gap-12 items-center"
+          transition={{ duration: 35, repeat: Infinity, ease: "linear" }}
+          className="flex whitespace-nowrap gap-16 items-center"
         >
           {[...items, ...items].map((item, i) => (
-            <div key={i} className="flex items-center gap-3">
-              <Zap className="w-4 h-4 text-primary fill-primary/20 shadow-[0_0_10px_rgba(0,230,118,0.3)]" />
-              <span className="text-[11px] sm:text-xs font-black tracking-[0.25em] text-primary uppercase drop-shadow-[0_0_8px_rgba(0,230,118,0.2)]">
+            <div key={i} className="flex items-center gap-4">
+              <div className="w-1.5 h-1.5 rounded-full bg-primary animate-pulse" />
+              <span className="text-xs sm:text-sm font-black tracking-[0.35em] text-primary uppercase italic">
                 {item}
               </span>
             </div>
@@ -178,6 +178,7 @@ const Auth = () => {
       </div>
     );
   };
+
 
 
   const SocialProofBadge = ({ className = "", mobile = false }: { className?: string; mobile?: boolean }) => (
