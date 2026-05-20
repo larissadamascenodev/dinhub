@@ -22,9 +22,6 @@ import {
   Wallet, BarChart3, Bell, Brain
 } from "lucide-react";
 import { Link } from "react-router-dom";
-import HubySection from "@/components/landing/HubySection";
-import AppFeaturesCarousel from "@/components/landing/AppFeaturesCarousel";
-import IAToolsAnalysis from "@/components/landing/IAToolsAnalysis";
 
 const fadeUp = {
   hidden: { opacity: 0, y: 20 },
@@ -526,6 +523,9 @@ const Auth = () => {
           <InputMethodsPill />
         </motion.div>
 
+
+
+
         <motion.div custom={4} variants={fadeUp} initial="hidden" animate="visible" className="pt-6">
           <Button 
             size="lg" 
@@ -541,11 +541,6 @@ const Auth = () => {
           <TestimonialCard />
         </motion.div>
       </main>
-
-      {/* New Interactive Sections */}
-      <HubySection />
-      <AppFeaturesCarousel />
-      <IAToolsAnalysis />
 
       {/* Footer */}
       <motion.footer
