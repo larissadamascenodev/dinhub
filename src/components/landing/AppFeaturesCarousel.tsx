@@ -7,58 +7,60 @@ type TabType = "Dashboard" | "Categorias" | "Transações" | "Parcelamentos" | "
 const tabs: TabType[] = ["Dashboard", "Categorias", "Transações", "Parcelamentos", "Fatura", "Metas"];
 
 const AppScreen = ({ type }: { type: TabType }) => {
+  const commonGlass = "bg-black/40 backdrop-blur-xl border border-white/10 rounded-2xl p-4";
+  
   switch (type) {
     case "Dashboard":
       return (
-        <div className="bg-[#0a0a0a] h-full text-white p-4 space-y-4">
+        <div className="bg-gradient-to-b from-[#111] to-[#000] h-full text-white p-4 space-y-4 overflow-y-auto scrollbar-none">
           <div className="flex justify-between items-center mb-6">
             <div>
-              <p className="text-[10px] text-gray-500">Bom dia,</p>
-              <p className="text-sm font-bold">Larissa</p>
+              <p className="text-[10px] text-gray-500 font-medium">Bom dia,</p>
+              <p className="text-sm font-bold tracking-tight">Larissa</p>
             </div>
             <div className="flex gap-2">
-              <div className="w-8 h-8 rounded-full bg-[#111] flex items-center justify-center border border-[#1a1a1a]">
+              <div className="w-8 h-8 rounded-full bg-white/5 flex items-center justify-center border border-white/10 backdrop-blur-md">
                 <Bell className="w-4 h-4 text-gray-400" />
               </div>
-              <div className="px-2 py-1 rounded-full bg-orange-500/10 border border-orange-500/20 flex items-center gap-1">
+              <div className="px-2 py-1 rounded-full bg-orange-500/10 border border-orange-500/20 flex items-center gap-1 backdrop-blur-md">
                 <Flame className="w-3 h-3 text-orange-500" />
                 <span className="text-[10px] font-bold text-orange-500">12</span>
               </div>
             </div>
           </div>
           
-          <div className="flex gap-4 text-[10px] text-gray-500 border-b border-[#1a1a1a] pb-2">
-            <span>Abr</span>
-            <span className="text-primary font-bold border-b border-primary">Mai</span>
-            <span>Jun</span>
+          <div className="flex gap-4 text-[10px] text-gray-500 border-b border-white/5 pb-2">
+            <span className="opacity-40">Abr</span>
+            <span className="text-primary font-bold border-b-2 border-primary pb-2 px-1">Mai</span>
+            <span className="opacity-40">Jun</span>
           </div>
 
-          <div className="bg-gradient-to-br from-[#111] to-[#0a0a0a] border border-[#1a1a1a] rounded-2xl p-4 space-y-4">
+          <div className={`${commonGlass} shadow-[0_8px_32px_rgba(0,0,0,0.4)] space-y-4`}>
             <div>
-              <p className="text-[8px] text-gray-500 uppercase tracking-widest mb-1">SALDO DISPONÍVEL</p>
-              <p className="text-xl font-bold">R$ 713,30</p>
-              <p className="text-[10px] text-gray-400 mt-1">Previsto fim do mês: <span className="text-white">R$ 341,87</span></p>
+              <p className="text-[8px] text-primary font-bold uppercase tracking-[0.2em] mb-1">SALDO DISPONÍVEL</p>
+              <p className="text-2xl font-bold tracking-tight">R$ 713,30</p>
+              <p className="text-[10px] text-gray-500 mt-1">Previsto: <span className="text-white font-medium">R$ 341,87</span></p>
             </div>
             
             <div className="grid grid-cols-2 gap-2">
-              <div className="bg-[#1a1a1a] rounded-xl p-2">
-                <p className="text-[8px] text-gray-500">Receitas</p>
+              <div className="bg-white/5 rounded-xl p-2 border border-white/5">
+                <p className="text-[8px] text-gray-500 font-bold uppercase">Receitas</p>
                 <p className="text-xs font-bold text-primary">R$ 1.959,03</p>
               </div>
-              <div className="bg-[#1a1a1a] rounded-xl p-2">
-                <p className="text-[8px] text-gray-500">Despesas</p>
-                <p className="text-xs font-bold text-red-500">R$ 1.782,16</p>
+              <div className="bg-white/5 rounded-xl p-2 border border-white/5">
+                <p className="text-[8px] text-gray-500 font-bold uppercase">Despesas</p>
+                <p className="text-xs font-bold text-red-400">R$ 1.782,16</p>
               </div>
             </div>
           </div>
 
           <div className="grid grid-cols-3 gap-2">
             {["Carteira", "Balanço", "Projeção"].map(label => (
-              <div key={label} className="bg-[#111] border border-[#1a1a1a] rounded-xl p-2 flex flex-col items-center gap-1">
-                <div className="w-6 h-6 rounded-full bg-primary/10 flex items-center justify-center">
+              <div key={label} className="bg-white/5 border border-white/5 rounded-xl p-3 flex flex-col items-center gap-2 hover:bg-white/10 transition-colors">
+                <div className="w-7 h-7 rounded-full bg-primary/10 border border-primary/20 flex items-center justify-center">
                   <div className="w-3 h-3 text-primary" />
                 </div>
-                <span className="text-[8px] text-gray-400">{label}</span>
+                <span className="text-[8px] text-gray-400 font-medium uppercase tracking-wider">{label}</span>
               </div>
             ))}
           </div>
