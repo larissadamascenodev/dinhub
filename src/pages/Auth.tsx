@@ -526,15 +526,18 @@ const Auth = () => {
 
 
 
-        <motion.div custom={4} variants={fadeUp} initial="hidden" animate="visible" className="pt-6">
+        <motion.div custom={4} variants={fadeUp} initial="hidden" animate="visible" className="pt-4">
           <Button 
             size="lg" 
             onClick={() => openAuthModal(false)}
-            className="h-14 px-10 text-base font-bold rounded-full bg-primary/10 text-primary border border-primary/20 hover:bg-primary/20 transition-all duration-300 group"
+            className="h-16 px-12 text-lg font-bold rounded-full bg-primary/15 text-primary border-2 border-primary/20 hover:bg-primary/25 hover:scale-105 transition-all duration-300 group shadow-[0_0_30px_rgba(0,230,118,0.15)]"
           >
             Começar Agora Grátis
-            <ArrowRight className="ml-2 w-5 h-5 group-hover:translate-x-1 transition-transform" />
+            <ArrowRight className="ml-2 w-6 h-6 group-hover:translate-x-1.5 transition-transform" />
           </Button>
+          <p className="text-muted-foreground/60 text-[10px] mt-4 font-medium uppercase tracking-widest">
+            Sem cartão de crédito • Teste grátis
+          </p>
         </motion.div>
 
         <motion.div custom={5} variants={fadeUp} initial="hidden" animate="visible" className="w-full max-w-lg">
