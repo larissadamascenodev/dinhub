@@ -162,10 +162,11 @@ const Auth = () => {
     return (
       <div className="w-full bg-[#001f13] py-5 overflow-hidden border-y border-primary/20 relative z-20 my-10 shadow-[0_0_30px_rgba(0,230,118,0.05)]">
         <motion.div 
-          animate={{ x: [0, -1000] }}
-          transition={{ duration: 15, repeat: Infinity, ease: "linear" }}
-          className="flex whitespace-nowrap gap-16 items-center"
+          animate={{ x: ["0%", "-50%"] }}
+          transition={{ duration: 20, repeat: Infinity, ease: "linear" }}
+          className="flex whitespace-nowrap gap-16 items-center w-max"
         >
+
           {[...items, ...items, ...items, ...items].map((item, i) => (
             <div key={i} className="flex items-center gap-4">
               <div className="w-1.5 h-1.5 rounded-full bg-primary animate-pulse" />
