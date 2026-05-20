@@ -145,39 +145,6 @@ const Auth = () => {
   };
 
   /* ── Reusable sub-sections ── */
-  const ScrollingBanner = () => {
-    const items = [
-      "LEITURA INTELIGENTE",
-      "CATEGORIZAÇÃO AUTOMÁTICA",
-      "ORGANIZAÇÃO IMEDIATA",
-      "RADAR FINANCEIRO",
-      "PROJEÇÃO FINANCEIRA",
-      "SAÚDE FINANCEIRA",
-      "DASHBOARD COMPLETO",
-      "ASSISTENTE HUBY IA",
-      "DADOS PROTEGIDOS",
-      "MAIS DE 2.800 USUÁRIOS"
-    ];
-    
-    return (
-      <div className="w-full bg-[#001f13] py-3 sm:py-5 overflow-hidden border-y border-primary/20 relative z-20 my-6 sm:my-10 shadow-[0_0_30px_rgba(0,230,118,0.05)]">
-        <motion.div 
-          animate={{ x: ["0%", "-50%"] }}
-          transition={{ duration: 40, repeat: Infinity, ease: "linear" }}
-          className="flex whitespace-nowrap gap-8 sm:gap-16 items-center w-max"
-        >
-          {[...items, ...items, ...items, ...items].map((item, i) => (
-            <div key={i} className="flex items-center gap-2 sm:gap-4 px-2">
-              <div className="w-1 sm:w-1.5 h-1 sm:h-1.5 rounded-full bg-primary animate-pulse flex-shrink-0" />
-              <span className="text-[10px] sm:text-sm font-black tracking-[0.2em] sm:tracking-[0.35em] text-primary uppercase italic whitespace-nowrap">
-                {item}
-              </span>
-            </div>
-          ))}
-        </motion.div>
-      </div>
-    );
-  };
 
 
 
