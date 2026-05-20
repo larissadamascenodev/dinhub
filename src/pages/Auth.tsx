@@ -477,7 +477,6 @@ const Auth = () => {
         className="flex items-center justify-between px-6 lg:px-10 py-4 relative z-30"
       >
         <div className="flex items-center gap-2">
-          <PiggyBank className="w-6 h-6 text-primary" />
           <span className="font-display text-xl font-bold text-foreground tracking-tight">
             Din<span className="text-primary">Hub</span>
           </span>
