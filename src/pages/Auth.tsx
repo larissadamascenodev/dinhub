@@ -524,10 +524,6 @@ const Auth = () => {
           <InputMethodsPill />
         </motion.div>
 
-        <motion.div custom={3.5} variants={fadeUp} initial="hidden" animate="visible" className="w-screen relative left-1/2 right-1/2 -ml-[50vw] -mr-[50vw]">
-          <ScrollingBanner />
-        </motion.div>
-
 
 
 
