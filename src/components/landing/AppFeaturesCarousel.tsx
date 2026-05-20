@@ -344,8 +344,9 @@ export const AppFeaturesCarousel = () => {
         <div className="grid lg:grid-cols-2 gap-12 items-center min-h-[600px]">
           {/* Mockup */}
           <motion.div
-            initial={{ opacity: 1, scale: 1 }}
-            whileInView={{ opacity: 1, scale: 1 }}
+            key={activeTab}
+            initial={{ opacity: 0, scale: 0.95, y: 20 }}
+            animate={{ opacity: 1, scale: 1, y: 0 }}
             viewport={{ once: true }}
             className="order-1 lg:order-1"
           >
