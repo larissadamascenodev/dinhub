@@ -53,7 +53,6 @@ const Auth = () => {
   const [acceptedTerms, setAcceptedTerms] = useState(false);
   const [showContact, setShowContact] = useState(false);
   const [legalModal, setLegalModal] = useState<"terms" | "privacy" | null>(null);
-  const [activeMockupTab, setActiveMockupTab] = useState("dashboard");
 
   const openAuthModal = (loginMode: boolean) => {
     setIsLogin(loginMode);
