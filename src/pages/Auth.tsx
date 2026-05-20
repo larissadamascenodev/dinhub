@@ -566,6 +566,11 @@ const Auth = () => {
           <FeaturesGrid />
         </motion.div>
 
+        <motion.div custom={3.5} variants={fadeUp} initial="hidden" animate="visible" className="w-screen -mx-[50vw] left-1/2 relative">
+          <ScrollingBanner />
+        </motion.div>
+
+
         <motion.div custom={4} variants={fadeUp} initial="hidden" animate="visible" className="pt-6">
           <Button 
             size="lg" 
