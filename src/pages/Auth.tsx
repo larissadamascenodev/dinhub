@@ -522,9 +522,9 @@ const Auth = () => {
         <motion.div custom={2} variants={fadeUp} initial="hidden" animate="visible">
           <InputMethodsPill />
         </motion.div>
-
-
-
+        <motion.div custom={3} variants={fadeUp} initial="hidden" animate="visible" className="w-full">
+          <FeaturesGrid />
+        </motion.div>
 
         <motion.div custom={4} variants={fadeUp} initial="hidden" animate="visible" className="pt-6">
           <Button 
