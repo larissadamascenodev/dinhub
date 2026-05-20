@@ -1,7 +1,6 @@
-import React, { useState, useEffect } from "react";
+import React, { useState } from "react";
 import ContactModal from "@/components/shared/ContactModal";
 import LegalModal from "@/components/shared/LegalModal";
-import VisaoGeral from "@/components/landing/VisaoGeral";
 import { supabase } from "@/integrations/supabase/client";
 import { lovable } from "@/integrations/lovable/index";
 import { Button } from "@/components/ui/button";
@@ -68,9 +67,7 @@ const Auth = () => {
           animate={{ opacity: 1, scale: 1 }}
           className="flex flex-col items-center gap-3"
         >
-          <span className="font-display text-2xl font-bold text-foreground tracking-tight animate-pulse">
-            Din<span className="text-primary">Hub</span>
-          </span>
+          <PiggyBank className="w-8 h-8 text-primary animate-pulse" />
           <span className="text-muted-foreground text-sm">Carregando...</span>
         </motion.div>
       </div>
@@ -545,8 +542,6 @@ const Auth = () => {
         </motion.div>
       </main>
 
-      <VisaoGeral onCTA={() => openAuthModal(false)} />
-
       {/* Footer */}
       <motion.footer
         initial={{ opacity: 0 }}
@@ -555,6 +550,7 @@ const Auth = () => {
         className="flex flex-col sm:flex-row items-center justify-center gap-4 sm:gap-6 py-8 border-t border-border/10 text-[10px] sm:text-xs text-muted-foreground/50 relative z-10"
       >
         <span className="flex items-center gap-2">
+          <PiggyBank className="w-4 h-4 text-primary/60" />
           <span>DinHub © {new Date().getFullYear()}</span>
         </span>
         <div className="flex items-center gap-4 sm:gap-6">
