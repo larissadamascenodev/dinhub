@@ -340,8 +340,8 @@ export const AppFeaturesCarousel = () => {
               onClick={() => setActiveTab(tab)}
               className={`px-6 py-3 rounded-full border transition-all duration-300 text-sm font-medium whitespace-nowrap ${
                 activeTab === tab
-                  ? "bg-primary/5 border-primary text-primary"
-                  : "bg-transparent border-[#1a1a1a] text-gray-500 hover:border-gray-700"
+                ? "bg-primary/20 border-primary text-primary shadow-[0_0_20px_rgba(0,230,118,0.1)]"
+                : "bg-[#111] border-[#1a1a1a] text-gray-500 hover:border-gray-700"
               }`}
             >
               {tab}
