@@ -537,54 +537,126 @@ const Auth = () => {
           </Button>
         </motion.div>
 
-        {/* App Preview Card (Simpler version) */}
+        {/* Real-time Insights Preview Section */}
         <motion.div 
           custom={5} 
           variants={fadeUp} 
           initial="hidden" 
           animate="visible"
-          className="w-full max-w-5xl mx-auto pt-4 sm:pt-8"
+          className="w-full max-w-5xl mx-auto pt-8 sm:pt-16 pb-8 px-4"
         >
-          <div className="bg-[#0A0A0A] rounded-2xl sm:rounded-3xl border border-white/10 shadow-2xl overflow-hidden aspect-[16/10] sm:aspect-video relative group">
-            {/* Simple Dashboard Simulation */}
-            <div className="absolute inset-0 p-4 sm:p-10 flex flex-col gap-6 sm:gap-10">
-              <div className="flex justify-between items-center">
-                <div className="space-y-1 sm:space-y-2 text-left">
-                  <div className="h-4 sm:h-6 w-32 sm:w-48 bg-white/10 rounded-full" />
-                  <div className="text-xl sm:text-4xl font-bold text-primary">R$ 14.500,00</div>
+          <div className="bg-[#050C0A] rounded-[2.5rem] border border-white/5 shadow-[0_0_100px_rgba(0,0,0,0.5)] overflow-hidden relative group">
+            {/* Dark inner glow */}
+            <div className="absolute inset-0 bg-gradient-to-b from-transparent via-[#050C0A]/50 to-[#050C0A] pointer-events-none" />
+            
+            {/* Dashboard Content */}
+            <div className="relative z-10 p-6 sm:p-12 lg:p-16">
+              {/* Top Header Simulation */}
+              <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-6 mb-12 lg:mb-20">
+                <div className="space-y-2">
+                  <div className="text-primary/60 text-xs sm:text-sm font-medium tracking-[0.2em] uppercase">Patrimônio Atual</div>
+                  <div className="text-4xl sm:text-6xl lg:text-7xl font-bold tracking-tight flex items-baseline gap-2">
+                    <span className="text-white/40 text-2xl sm:text-4xl">R$</span>
+                    <span className="text-white">124.500</span>
+                    <span className="text-white/30 text-2xl sm:text-4xl">,00</span>
+                  </div>
                 </div>
-                <div className="w-10 h-10 sm:w-16 sm:h-16 rounded-full bg-primary/20 border border-primary/30 flex items-center justify-center">
-                  <BarChart3 className="w-5 h-5 sm:w-8 sm:h-8 text-primary" />
+                <div className="bg-white/5 border border-white/10 rounded-2xl px-6 py-4 backdrop-blur-xl flex items-center gap-4">
+                  <div className="w-10 h-10 rounded-full bg-primary/20 flex items-center justify-center border border-primary/30">
+                    <BarChart3 className="w-5 h-5 text-primary" />
+                  </div>
+                  <div className="text-left">
+                    <div className="text-white font-bold text-lg">+12.4%</div>
+                    <div className="text-white/40 text-[10px] uppercase font-bold tracking-wider">Este mês</div>
+                  </div>
                 </div>
               </div>
 
-              <div className="grid grid-cols-2 gap-4 sm:gap-8 flex-1">
-                <div className="bg-white/5 border border-white/10 rounded-xl sm:rounded-2xl p-4 sm:p-8 flex flex-col justify-center gap-2 sm:gap-4 relative overflow-hidden group/card hover:bg-white/10 transition-colors">
-                  <div className="text-xs sm:text-lg font-bold text-foreground">Fluxo Mensal</div>
-                  <div className="flex-1 flex items-end">
-                    <svg className="w-full h-16 sm:h-32 opacity-50" viewBox="0 0 100 40" preserveAspectRatio="none">
-                      <path d="M0,30 Q25,10 50,25 T100,15 L100,40 L0,40 Z" fill="hsl(var(--primary))" fillOpacity="0.2" />
-                      <path d="M0,30 Q25,10 50,25 T100,15" fill="none" stroke="currentColor" strokeWidth="2" className="text-primary" />
+              {/* Grid Section */}
+              <div className="grid grid-cols-1 lg:grid-cols-2 gap-6 lg:gap-10">
+                {/* Insights Card */}
+                <div className="bg-white/[0.02] border border-white/10 rounded-[2rem] p-8 lg:p-10 flex flex-col gap-8 relative overflow-hidden group/card hover:bg-white/[0.04] transition-all duration-500">
+                  <div className="flex justify-between items-center relative z-10">
+                    <div className="space-y-1">
+                      <h3 className="text-white font-bold text-xl lg:text-2xl tracking-tight">Análise de Fluxo</h3>
+                      <p className="text-white/40 text-sm">Projeção baseada nos últimos 90 dias</p>
+                    </div>
+                    <div className="h-10 w-10 rounded-xl bg-primary/10 border border-primary/20 flex items-center justify-center">
+                      <Zap className="w-5 h-5 text-primary" />
+                    </div>
+                  </div>
+                  
+                  <div className="flex-1 min-h-[160px] relative z-10 flex items-end">
+                    <svg className="w-full h-full opacity-60 group-hover/card:opacity-90 transition-opacity duration-700" viewBox="0 0 400 150" preserveAspectRatio="none">
+                      <defs>
+                        <linearGradient id="chartGradient" x1="0%" y1="0%" x2="0%" y2="100%">
+                          <stop offset="0%" stopColor="hsl(var(--primary))" stopOpacity="0.3" />
+                          <stop offset="100%" stopColor="hsl(var(--primary))" stopOpacity="0" />
+                        </linearGradient>
+                      </defs>
+                      <path d="M0,120 Q50,90 100,110 T200,60 T300,80 T400,30 L400,150 L0,150 Z" fill="url(#chartGradient)" />
+                      <path d="M0,120 Q50,90 100,110 T200,60 T300,80 T400,30" fill="none" stroke="currentColor" strokeWidth="4" className="text-primary shadow-[0_0_20px_rgba(0,230,118,0.3)]" />
+                      <circle cx="200" cy="60" r="6" className="fill-primary" />
+                      <circle cx="200" cy="60" r="12" className="stroke-primary/20 stroke-[2] fill-transparent animate-pulse" />
                     </svg>
                   </div>
                 </div>
-                <div className="bg-white/5 border border-white/10 rounded-xl sm:rounded-2xl p-4 sm:p-8 flex flex-col justify-center gap-2 sm:gap-4 hover:bg-white/10 transition-colors">
-                  <div className="text-xs sm:text-lg font-bold text-foreground">Economia</div>
-                  <div className="flex-1 flex items-center justify-center">
-                    <div className="w-16 h-16 sm:w-32 sm:h-32 rounded-full border-4 sm:border-8 border-primary/20 flex items-center justify-center relative">
-                      <div className="absolute inset-0 rounded-full border-4 sm:border-8 border-primary border-t-transparent -rotate-45" />
-                      <span className="text-[10px] sm:text-xl font-bold text-primary">75%</span>
+
+                {/* Right Column Grid */}
+                <div className="grid grid-cols-1 sm:grid-cols-2 gap-6">
+                  {/* Stats Card 1 */}
+                  <div className="bg-white/[0.02] border border-white/10 rounded-[2rem] p-8 flex flex-col justify-between group/stat hover:bg-white/[0.04] transition-all duration-500">
+                    <div className="h-12 w-12 rounded-2xl bg-emerald-500/10 border border-emerald-500/20 flex items-center justify-center mb-6">
+                      <Shield className="w-6 h-6 text-emerald-500" />
+                    </div>
+                    <div>
+                      <div className="text-white font-bold text-3xl mb-1">98.2%</div>
+                      <div className="text-white/40 text-xs font-bold uppercase tracking-widest">Score Financeiro</div>
+                    </div>
+                  </div>
+                  {/* Stats Card 2 */}
+                  <div className="bg-white/[0.02] border border-white/10 rounded-[2rem] p-8 flex flex-col justify-between group/stat hover:bg-white/[0.04] transition-all duration-500">
+                    <div className="h-12 w-12 rounded-2xl bg-blue-500/10 border border-blue-500/20 flex items-center justify-center mb-6">
+                      <Wallet className="w-6 h-6 text-blue-500" />
+                    </div>
+                    <div>
+                      <div className="text-white font-bold text-3xl mb-1">R$ 5.2k</div>
+                      <div className="text-white/40 text-xs font-bold uppercase tracking-widest">Economia Estimada</div>
+                    </div>
+                  </div>
+                  {/* Transaction History Simulation */}
+                  <div className="sm:col-span-2 bg-white/[0.02] border border-white/10 rounded-[2rem] p-8 flex flex-col gap-6">
+                    <div className="flex justify-between items-center">
+                      <h4 className="text-white font-bold text-lg">Radar de Gastos</h4>
+                      <div className="h-2 w-2 rounded-full bg-primary animate-pulse shadow-[0_0_10px_rgba(0,230,118,0.5)]" />
+                    </div>
+                    <div className="space-y-4">
+                      {[1, 2].map((i) => (
+                        <div key={i} className="flex items-center justify-between py-3 border-b border-white/5 last:border-0">
+                          <div className="flex items-center gap-4">
+                            <div className="w-10 h-10 rounded-xl bg-white/5 flex items-center justify-center border border-white/10">
+                              <div className="w-2 h-2 rounded-full bg-white/40" />
+                            </div>
+                            <div className="text-left">
+                              <div className="text-white text-sm font-bold">Investimento Diversificado</div>
+                              <div className="text-white/30 text-[10px] uppercase font-bold tracking-wider">Há 2 horas</div>
+                            </div>
+                          </div>
+                          <div className="text-primary font-bold text-sm">+ R$ 1.250,00</div>
+                        </div>
+                      ))}
                     </div>
                   </div>
                 </div>
               </div>
             </div>
 
-            {/* Subtle Overlay Glows */}
-            <div className="absolute -top-20 -right-20 w-40 sm:w-80 h-40 sm:h-80 bg-primary/10 blur-[100px] rounded-full" />
-            <div className="absolute -bottom-20 -left-20 w-40 sm:w-80 h-40 sm:h-80 bg-primary/5 blur-[100px] rounded-full" />
+            {/* Ambient Background Glows */}
+            <div className="absolute top-0 right-0 w-[600px] h-[600px] bg-primary/5 blur-[150px] rounded-full -translate-y-1/2 translate-x-1/2 pointer-events-none" />
+            <div className="absolute bottom-0 left-0 w-[500px] h-[500px] bg-primary/3 blur-[120px] rounded-full translate-y-1/2 -translate-x-1/2 pointer-events-none" />
           </div>
         </motion.div>
+
 
 
         <motion.div custom={6} variants={fadeUp} initial="hidden" animate="visible" className="w-full max-w-lg">
