@@ -59,7 +59,7 @@ const questions: Question[] = [
   },
   {
     id: 4,
-    text: "Onde estou gastando demais?",
+    text: "$ Onde estou gastando demais?",
     response: {
       header: "$ Análise de gastos",
       value: "Delivery representa 21,9% dos seus gastos",
