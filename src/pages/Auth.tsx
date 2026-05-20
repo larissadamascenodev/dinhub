@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import ContactModal from "@/components/shared/ContactModal";
 import LegalModal from "@/components/shared/LegalModal";
 import { supabase } from "@/integrations/supabase/client";
