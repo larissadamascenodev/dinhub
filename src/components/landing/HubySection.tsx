@@ -148,8 +148,8 @@ const Sphere3D = ({ pulse }: { pulse: boolean }) => {
 
       sortedParticles.forEach((p) => {
         const scale = (p.rotatedZ + radius) / (radius * 2);
-        const opacity = 0.2 + scale * 0.8;
-        const size = p.size * (0.5 + scale);
+        const opacity = 0.4 + scale * 0.6;
+        const size = p.size * (1 + scale);
         
         ctx.fillStyle = `rgba(0, 230, 118, ${opacity})`;
         ctx.beginPath();
