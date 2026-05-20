@@ -341,7 +341,7 @@ export const AppFeaturesCarousel = () => {
           ))}
         </div>
 
-        <div className="grid lg:grid-cols-2 gap-12 items-center">
+        <div className="grid lg:grid-cols-2 gap-12 items-center min-h-[600px]">
           {/* Mockup */}
           <motion.div
             initial={{ opacity: 1, scale: 1 }}
