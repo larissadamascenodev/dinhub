@@ -526,9 +526,6 @@ const Auth = () => {
           <InputMethodsPill />
         </motion.div>
 
-
-
-
         <motion.div custom={4} variants={fadeUp} initial="hidden" animate="visible" className="pt-6">
           <Button 
             size="lg" 
@@ -544,6 +541,11 @@ const Auth = () => {
           <TestimonialCard />
         </motion.div>
       </main>
+
+      {/* New Interactive Sections */}
+      <HubySection />
+      <AppFeaturesCarousel />
+      <IAToolsAnalysis />
 
       {/* Footer */}
       <motion.footer
