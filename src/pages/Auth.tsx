@@ -43,7 +43,8 @@ const AVATAR_URLS = [
 
 const Auth = () => {
   const { user, loading } = useAuth();
-  const [isLogin, setIsLogin] = useState(false);
+  const [isLogin, setIsLogin] = useState(true);
+  const [isAuthModalOpen, setIsAuthModalOpen] = useState(false);
   const [email, setEmail] = useState("");
   const [fullName, setFullName] = useState("");
   const [password, setPassword] = useState("");
@@ -52,6 +53,11 @@ const Auth = () => {
   const [acceptedTerms, setAcceptedTerms] = useState(false);
   const [showContact, setShowContact] = useState(false);
   const [legalModal, setLegalModal] = useState<"terms" | "privacy" | null>(null);
+
+  const openAuthModal = (loginMode: boolean) => {
+    setIsLogin(loginMode);
+    setIsAuthModalOpen(true);
+  };
 
   if (loading) {
     return (
