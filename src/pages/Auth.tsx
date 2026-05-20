@@ -181,14 +181,14 @@ const Auth = () => {
   );
 
   const InputMethodsPill = ({ mobile = false }: { mobile?: boolean }) => (
-    <div className={`inline-flex items-center gap-1 bg-gradient-to-r from-primary/10 via-card/50 to-primary/5 border border-primary/15 rounded-full text-muted-foreground backdrop-blur-sm mx-auto ${mobile ? "text-[8px] px-2.5 py-1" : "text-[10px] px-4 py-2 gap-2"}`}>
-      <span className="text-foreground/70 font-medium">Registre via</span>
-      <span className="flex items-center gap-0.5 text-primary font-semibold"><MessageCircle className={mobile ? "w-2 h-2" : "w-3 h-3"} /> texto</span>
-      <span className="text-primary/30">|</span>
-      <span className="flex items-center gap-0.5 text-primary/80"><Mic className={mobile ? "w-2 h-2" : "w-3 h-3"} /> áudio</span>
-      <span className="text-primary/30">|</span>
-      <span className="flex items-center gap-0.5 text-primary/80"><Image className={mobile ? "w-2 h-2" : "w-3 h-3"} /> foto</span>
-      <Zap className={`${mobile ? "w-2 h-2" : "w-3 h-3"} text-primary ml-0.5`} />
+    <div className={`inline-flex items-center gap-1.5 bg-[#001f13]/60 border border-primary/20 rounded-full text-muted-foreground backdrop-blur-md mx-auto shadow-sm ${mobile ? "text-[10px] px-3 py-1.5" : "text-[11px] px-5 py-2.5 gap-3"}`}>
+      <span className="text-foreground/80 font-medium">Controle por:</span>
+      <span className="flex items-center gap-1 text-primary/90 font-medium"><MessageCircle className={mobile ? "w-3 h-3" : "w-4 h-4"} /> Texto</span>
+      <span className="text-primary/20">|</span>
+      <span className="flex items-center gap-1 text-primary/90 font-medium"><Mic className={mobile ? "w-3 h-3" : "w-4 h-4"} /> Voz</span>
+      <span className="text-primary/20">|</span>
+      <span className="flex items-center gap-1 text-primary/90 font-medium"><Image className={mobile ? "w-3 h-3" : "w-4 h-4"} /> Comprovante</span>
+      <Zap className={`${mobile ? "w-3 h-3" : "w-4 h-4"} text-primary ml-1 animate-pulse`} />
     </div>
   );
 
