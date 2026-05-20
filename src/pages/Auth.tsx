@@ -564,13 +564,10 @@ const Auth = () => {
           <InputMethodsPill />
         </motion.div>
 
-        <motion.div custom={3} variants={fadeUp} initial="hidden" animate="visible" className="w-full">
-          <FeaturesGrid />
-        </motion.div>
-
-        <motion.div custom={3.5} variants={fadeUp} initial="hidden" animate="visible" className="w-screen -mx-[50vw] left-1/2 relative">
+        <motion.div custom={3.5} variants={fadeUp} initial="hidden" animate="visible" className="w-screen relative left-1/2 -translate-x-1/2 overflow-hidden">
           <ScrollingBanner />
         </motion.div>
+
 
 
         <motion.div custom={4} variants={fadeUp} initial="hidden" animate="visible" className="pt-6">
