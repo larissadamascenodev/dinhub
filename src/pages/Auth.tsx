@@ -543,7 +543,7 @@ const Auth = () => {
         </motion.div>
       </main>
 
-      <VisaoGeral />
+      <VisaoGeral onCTA={() => openAuthModal(false)} />
 
       {/* Footer */}
       <motion.footer
