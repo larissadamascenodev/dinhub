@@ -53,7 +53,6 @@ const Auth = () => {
   const [acceptedTerms, setAcceptedTerms] = useState(false);
   const [showContact, setShowContact] = useState(false);
   const [legalModal, setLegalModal] = useState<"terms" | "privacy" | null>(null);
-  const [activeMockupTab, setActiveMockupTab] = useState("dashboard");
 
   const openAuthModal = (loginMode: boolean) => {
     setIsLogin(loginMode);
@@ -538,7 +537,7 @@ const Auth = () => {
           </Button>
         </motion.div>
 
-        {/* Mock App Preview Section */}
+        {/* App Preview Card (Simpler version) */}
         <motion.div 
           custom={5} 
           variants={fadeUp} 
@@ -546,205 +545,47 @@ const Auth = () => {
           animate="visible"
           className="w-full max-w-5xl mx-auto pt-4 sm:pt-8"
         >
-          <div className="relative group">
-            {/* Main Mockup Container */}
-            <div className="relative z-10 bg-[#0A0A0A] rounded-[2rem] sm:rounded-[3rem] border border-white/5 shadow-2xl overflow-hidden aspect-[16/10] sm:aspect-video flex flex-col">
-              {/* Mock App Header */}
-              <div className="h-10 sm:h-16 border-b border-white/5 flex items-center justify-between px-4 sm:px-8 bg-black/40 backdrop-blur-md shrink-0">
-                <div className="flex items-center gap-1.5 sm:gap-4 overflow-x-auto no-scrollbar">
-                  <div className="flex items-center gap-1.5 sm:gap-2 mr-2 sm:mr-4 shrink-0">
-                    <div className="w-2 sm:w-2.5 h-2 sm:h-2.5 rounded-full bg-primary" />
-                    <div className="h-3 sm:h-4 w-12 sm:w-16 bg-white/10 rounded-full" />
-                  </div>
-                  {[
-                    { id: "dashboard", label: "Dashboard", icon: <BarChart3 className="w-3 h-3 sm:w-4 sm:h-4" /> },
-                    { id: "reports", label: "Relatórios", icon: <Image className="w-3 h-3 sm:w-4 sm:h-4" /> },
-                    { id: "radar", label: "Radar", icon: <Shield className="w-3 h-3 sm:w-4 sm:h-4" /> }
-                  ].map((tab) => (
-                    <button
-                      key={tab.id}
-                      onClick={() => setActiveMockupTab(tab.id)}
-                      className={`flex items-center gap-1.5 sm:gap-2 px-2.5 sm:px-4 py-1.5 sm:py-2 rounded-lg sm:rounded-xl transition-all duration-300 shrink-0 ${
-                        activeMockupTab === tab.id 
-                          ? "bg-primary/10 text-primary border border-primary/20" 
-                          : "text-muted-foreground hover:bg-white/5"
-                      }`}
-                    >
-                      {tab.icon}
-                      <span className="text-[10px] sm:text-xs font-semibold uppercase tracking-wider">{tab.label}</span>
-                    </button>
-                  ))}
+          <div className="bg-[#0A0A0A] rounded-2xl sm:rounded-3xl border border-white/10 shadow-2xl overflow-hidden aspect-[16/10] sm:aspect-video relative group">
+            {/* Simple Dashboard Simulation */}
+            <div className="absolute inset-0 p-4 sm:p-10 flex flex-col gap-6 sm:gap-10">
+              <div className="flex justify-between items-center">
+                <div className="space-y-1 sm:space-y-2 text-left">
+                  <div className="h-4 sm:h-6 w-32 sm:w-48 bg-white/10 rounded-full" />
+                  <div className="text-xl sm:text-4xl font-bold text-primary">R$ 14.500,00</div>
                 </div>
-                <div className="flex gap-2 sm:gap-3 shrink-0 ml-2">
-                  <div className="w-6 h-6 sm:w-10 sm:h-10 rounded-full bg-white/5 border border-white/10 flex items-center justify-center">
-                    <Bell className="w-3 h-3 sm:w-4 sm:h-4 text-muted-foreground" />
-                  </div>
-                  <div className="w-6 h-6 sm:w-10 sm:h-10 rounded-full bg-primary/20 border border-primary/30 flex items-center justify-center">
-                    <User className="w-3 h-3 sm:w-4 sm:h-4 text-primary" />
-                  </div>
+                <div className="w-10 h-10 sm:w-16 sm:h-16 rounded-full bg-primary/20 border border-primary/30 flex items-center justify-center">
+                  <BarChart3 className="w-5 h-5 sm:w-8 sm:h-8 text-primary" />
                 </div>
               </div>
 
-              {/* Mock App Body */}
-              <div className="flex-1 p-4 sm:p-8 flex flex-col gap-4 sm:gap-8 overflow-hidden relative">
-                <AnimatePresence mode="wait">
-                  <motion.div
-                    key={activeMockupTab}
-                    initial={{ opacity: 0, y: 10 }}
-                    animate={{ opacity: 1, y: 0 }}
-                    exit={{ opacity: 0, y: -10 }}
-                    transition={{ duration: 0.3 }}
-                    className="flex-1 flex flex-col gap-4 sm:gap-8"
-                  >
-                    {activeMockupTab === "dashboard" && (
-                      <>
-                        <div className="grid grid-cols-2 sm:grid-cols-4 gap-3 sm:gap-6 shrink-0">
-                          {[
-                            { label: "Saldo Total", value: "R$ 14.500,00", color: "text-primary" },
-                            { label: "Receitas", value: "R$ 8.240,00", color: "text-emerald-500" },
-                            { label: "Despesas", value: "R$ 3.120,00", color: "text-red-400" },
-                            { label: "Economia", value: "R$ 5.120,00", color: "text-primary" }
-                          ].map((stat, i) => (
-                            <div key={i} className="bg-white/[0.03] border border-white/5 rounded-xl sm:rounded-2xl p-3 sm:p-5 flex flex-col justify-between group/card hover:bg-white/[0.05] transition-colors">
-                              <div className="text-[9px] sm:text-xs text-muted-foreground font-medium uppercase tracking-wider">{stat.label}</div>
-                              <div className={`text-xs sm:text-lg font-bold mt-1 sm:mt-2 ${stat.color}`}>{stat.value}</div>
-                            </div>
-                          ))}
-                        </div>
-                        <div className="flex-1 bg-white/[0.02] border border-white/5 rounded-2xl sm:rounded-3xl p-4 sm:p-8 relative overflow-hidden group/chart">
-                          <div className="flex justify-between items-center mb-4 sm:mb-8">
-                            <div className="text-xs sm:text-lg font-bold text-foreground">Fluxo de Caixa Mensal</div>
-                            <div className="flex gap-1.5 sm:gap-2">
-                              <div className="h-6 sm:h-9 w-12 sm:w-20 bg-primary/10 text-primary text-[9px] sm:text-xs font-bold rounded-lg sm:rounded-xl flex items-center justify-center border border-primary/20">30 dias</div>
-                              <div className="h-6 sm:h-9 w-12 sm:w-20 bg-white/5 text-muted-foreground text-[9px] sm:text-xs font-bold rounded-lg sm:rounded-xl flex items-center justify-center border border-white/10">90 dias</div>
-                            </div>
-                          </div>
-                          <div className="absolute inset-x-8 bottom-8 top-24 sm:top-28">
-                            <svg className="w-full h-full opacity-40 group-hover/chart:opacity-60 transition-opacity" viewBox="0 0 400 100" preserveAspectRatio="none">
-                              <defs>
-                                <linearGradient id="gradient" x1="0%" y1="0%" x2="0%" y2="100%">
-                                  <stop offset="0%" stopColor="hsl(var(--primary))" stopOpacity="0.3" />
-                                  <stop offset="100%" stopColor="hsl(var(--primary))" stopOpacity="0" />
-                                </linearGradient>
-                              </defs>
-                              <path d="M0,80 Q50,60 100,75 T200,40 T300,55 T400,20 L400,100 L0,100 Z" fill="url(#gradient)" />
-                              <path d="M0,80 Q50,60 100,75 T200,40 T300,55 T400,20" fill="none" stroke="currentColor" strokeWidth="3" className="text-primary" />
-                              <path d="M0,90 Q50,85 100,92 T200,80 T300,88 T400,70" fill="none" stroke="currentColor" strokeWidth="1" className="text-white/20" strokeDasharray="4" />
-                            </svg>
-                          </div>
-                        </div>
-                      </>
-                    )}
-
-                    {activeMockupTab === "reports" && (
-                      <div className="flex-1 grid grid-cols-1 sm:grid-cols-2 gap-4 sm:gap-8">
-                        <div className="bg-white/[0.03] border border-white/5 rounded-2xl sm:rounded-3xl p-4 sm:p-8 flex flex-col">
-                          <div className="text-xs sm:text-lg font-bold text-foreground mb-4 sm:mb-8">Gastos por Categoria</div>
-                          <div className="flex-1 flex items-center justify-center relative">
-                            <div className="w-24 h-24 sm:w-48 sm:h-48 rounded-full border-[8px] sm:border-[16px] border-primary/20 flex items-center justify-center relative">
-                              <div className="absolute inset-[-8px] sm:inset-[-16px] rounded-full border-[8px] sm:border-[16px] border-primary border-t-transparent border-l-transparent rotate-45" />
-                              <div className="text-center">
-                                <div className="text-[8px] sm:text-xs text-muted-foreground uppercase">Total</div>
-                                <div className="text-xs sm:text-xl font-bold">R$ 3.120</div>
-                              </div>
-                            </div>
-                            <div className="absolute right-0 space-y-2 sm:space-y-4">
-                              {["Lazer", "Contas", "Alimentação"].map((cat, i) => (
-                                <div key={i} className="flex items-center gap-2">
-                                  <div className={`w-1.5 h-1.5 sm:w-2 sm:h-2 rounded-full ${i === 0 ? "bg-primary" : i === 1 ? "bg-emerald-400" : "bg-blue-400"}`} />
-                                  <div className="text-[10px] sm:text-xs text-muted-foreground">{cat}</div>
-                                </div>
-                              ))}
-                            </div>
-                          </div>
-                        </div>
-                        <div className="bg-white/[0.03] border border-white/5 rounded-2xl sm:rounded-3xl p-4 sm:p-8">
-                          <div className="text-xs sm:text-lg font-bold text-foreground mb-4 sm:mb-6">Histórico de Transações</div>
-                          <div className="space-y-3 sm:space-y-4">
-                            {[1, 2, 3, 4].map((i) => (
-                              <div key={i} className="flex items-center justify-between py-2 sm:py-3 border-b border-white/5 last:border-0">
-                                <div className="flex items-center gap-3">
-                                  <div className="w-8 h-8 sm:w-10 sm:h-10 rounded-xl bg-white/5 flex items-center justify-center">
-                                    <div className="w-3 h-3 sm:w-4 sm:h-4 bg-white/20 rounded-full" />
-                                  </div>
-                                  <div>
-                                    <div className="text-[10px] sm:text-sm font-bold text-foreground">Pagamento Uber</div>
-                                    <div className="text-[8px] sm:text-xs text-muted-foreground">Hoje, 14:30</div>
-                                  </div>
-                                </div>
-                                <div className="text-[10px] sm:text-sm font-bold text-red-400">- R$ 24,90</div>
-                              </div>
-                            ))}
-                          </div>
-                        </div>
-                      </div>
-                    )}
-
-                    {activeMockupTab === "radar" && (
-                      <div className="flex-1 flex flex-col items-center justify-center max-w-2xl mx-auto w-full">
-                        <div className="w-20 h-20 sm:w-32 sm:h-32 bg-primary/10 rounded-full flex items-center justify-center border border-primary/20 mb-4 sm:mb-8 relative">
-                          <div className="absolute inset-0 rounded-full border border-primary/40 animate-ping opacity-20" />
-                          <Shield className="w-10 h-10 sm:w-16 sm:h-16 text-primary" />
-                        </div>
-                        <div className="text-center space-y-2 sm:space-y-4">
-                          <div className="text-sm sm:text-2xl font-bold text-foreground">Monitoramento em Tempo Real</div>
-                          <p className="text-[10px] sm:text-sm text-muted-foreground max-w-md">Nosso algoritmo analisa cada centavo para garantir que você nunca perca o controle do seu patrimônio.</p>
-                        </div>
-                        <div className="grid grid-cols-2 gap-3 sm:gap-6 mt-6 sm:mt-12 w-full">
-                          <div className="bg-white/[0.03] border border-white/5 rounded-xl sm:rounded-2xl p-4 sm:p-6 text-center">
-                            <div className="text-primary text-xs sm:text-2xl font-bold mb-1">98%</div>
-                            <div className="text-[8px] sm:text-xs text-muted-foreground uppercase tracking-wider">Saúde Financeira</div>
-                          </div>
-                          <div className="bg-white/[0.03] border border-white/5 rounded-xl sm:rounded-2xl p-4 sm:p-6 text-center">
-                            <div className="text-emerald-500 text-xs sm:text-2xl font-bold mb-1">R$ 450</div>
-                            <div className="text-[8px] sm:text-xs text-muted-foreground uppercase tracking-wider">Economia Sugerida</div>
-                          </div>
-                        </div>
-                      </div>
-                    )}
-                  </motion.div>
-                </AnimatePresence>
+              <div className="grid grid-cols-2 gap-4 sm:gap-8 flex-1">
+                <div className="bg-white/5 border border-white/10 rounded-xl sm:rounded-2xl p-4 sm:p-8 flex flex-col justify-center gap-2 sm:gap-4 relative overflow-hidden group/card hover:bg-white/10 transition-colors">
+                  <div className="text-xs sm:text-lg font-bold text-foreground">Fluxo Mensal</div>
+                  <div className="flex-1 flex items-end">
+                    <svg className="w-full h-16 sm:h-32 opacity-50" viewBox="0 0 100 40" preserveAspectRatio="none">
+                      <path d="M0,30 Q25,10 50,25 T100,15 L100,40 L0,40 Z" fill="hsl(var(--primary))" fillOpacity="0.2" />
+                      <path d="M0,30 Q25,10 50,25 T100,15" fill="none" stroke="currentColor" strokeWidth="2" className="text-primary" />
+                    </svg>
+                  </div>
+                </div>
+                <div className="bg-white/5 border border-white/10 rounded-xl sm:rounded-2xl p-4 sm:p-8 flex flex-col justify-center gap-2 sm:gap-4 hover:bg-white/10 transition-colors">
+                  <div className="text-xs sm:text-lg font-bold text-foreground">Economia</div>
+                  <div className="flex-1 flex items-center justify-center">
+                    <div className="w-16 h-16 sm:w-32 sm:h-32 rounded-full border-4 sm:border-8 border-primary/20 flex items-center justify-center relative">
+                      <div className="absolute inset-0 rounded-full border-4 sm:border-8 border-primary border-t-transparent -rotate-45" />
+                      <span className="text-[10px] sm:text-xl font-bold text-primary">75%</span>
+                    </div>
+                  </div>
+                </div>
               </div>
             </div>
 
-            {/* Float Elements for Visual Interest */}
-            <div className="absolute -top-6 -right-6 z-20 w-24 sm:w-40 h-24 sm:h-40 bg-primary/10 blur-[60px] rounded-full animate-pulse" />
-            <div className="absolute -bottom-10 -left-10 z-20 w-32 sm:w-56 h-32 sm:h-56 bg-primary/5 blur-[80px] rounded-full" />
-            
-            {/* Small floating cards to mimic complexity */}
-            <motion.div 
-              animate={{ y: [0, -10, 0] }}
-              transition={{ duration: 4, repeat: Infinity, ease: "easeInOut" }}
-              className="absolute -right-4 sm:-right-8 top-1/4 z-30 p-3 sm:p-5 bg-card/80 border border-primary/20 rounded-xl sm:rounded-2xl shadow-2xl backdrop-blur-md hidden md:block"
-            >
-              <div className="flex items-center gap-3">
-                <div className="w-8 h-8 sm:w-10 sm:h-10 rounded-full bg-primary/20 flex items-center justify-center">
-                  <Zap className="w-4 h-4 sm:w-5 sm:h-5 text-primary" />
-                </div>
-                <div>
-                  <div className="text-[10px] sm:text-xs text-muted-foreground">Economia hoje</div>
-                  <div className="text-xs sm:text-sm font-bold text-foreground">+ R$ 124,50</div>
-                </div>
-              </div>
-            </motion.div>
-
-            <motion.div 
-              animate={{ y: [0, 10, 0] }}
-              transition={{ duration: 5, repeat: Infinity, ease: "easeInOut", delay: 1 }}
-              className="absolute -left-4 sm:-left-8 bottom-1/4 z-30 p-3 sm:p-5 bg-card/80 border border-primary/20 rounded-xl sm:rounded-2xl shadow-2xl backdrop-blur-md hidden md:block"
-            >
-              <div className="flex items-center gap-3">
-                <div className="w-8 h-8 sm:w-10 sm:h-10 rounded-full bg-emerald-500/20 flex items-center justify-center">
-                  <Check className="w-4 h-4 sm:w-5 sm:h-5 text-emerald-500" />
-                </div>
-                <div>
-                  <div className="text-[10px] sm:text-xs text-muted-foreground">Meta atingida</div>
-                  <div className="text-xs sm:text-sm font-bold text-foreground">Reserva de Emergência</div>
-                </div>
-              </div>
-            </motion.div>
+            {/* Subtle Overlay Glows */}
+            <div className="absolute -top-20 -right-20 w-40 sm:w-80 h-40 sm:h-80 bg-primary/10 blur-[100px] rounded-full" />
+            <div className="absolute -bottom-20 -left-20 w-40 sm:w-80 h-40 sm:h-80 bg-primary/5 blur-[100px] rounded-full" />
           </div>
         </motion.div>
+
 
         <motion.div custom={6} variants={fadeUp} initial="hidden" animate="visible" className="w-full max-w-lg">
           <TestimonialCard />
