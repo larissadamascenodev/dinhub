@@ -163,10 +163,11 @@ const Auth = () => {
       <div className="w-full bg-[#001f13] py-5 overflow-hidden border-y border-primary/20 relative z-20 my-10 shadow-[0_0_30px_rgba(0,230,118,0.05)]">
         <motion.div 
           animate={{ x: ["0%", "-50%"] }}
-          transition={{ duration: 35, repeat: Infinity, ease: "linear" }}
-          className="flex whitespace-nowrap gap-16 items-center"
+          transition={{ duration: 20, repeat: Infinity, ease: "linear" }}
+          className="flex whitespace-nowrap gap-16 items-center w-max"
         >
-          {[...items, ...items].map((item, i) => (
+
+          {[...items, ...items, ...items, ...items].map((item, i) => (
             <div key={i} className="flex items-center gap-4">
               <div className="w-1.5 h-1.5 rounded-full bg-primary animate-pulse" />
               <span className="text-xs sm:text-sm font-black tracking-[0.35em] text-primary uppercase italic">
@@ -178,6 +179,7 @@ const Auth = () => {
       </div>
     );
   };
+
 
 
 
@@ -563,13 +565,10 @@ const Auth = () => {
           <InputMethodsPill />
         </motion.div>
 
-        <motion.div custom={3} variants={fadeUp} initial="hidden" animate="visible" className="w-full">
-          <FeaturesGrid />
-        </motion.div>
-
-        <motion.div custom={3.5} variants={fadeUp} initial="hidden" animate="visible" className="w-screen -mx-[50vw] left-1/2 relative">
+        <motion.div custom={3.5} variants={fadeUp} initial="hidden" animate="visible" className="w-screen relative left-1/2 -translate-x-1/2 overflow-hidden">
           <ScrollingBanner />
         </motion.div>
+
 
 
         <motion.div custom={4} variants={fadeUp} initial="hidden" animate="visible" className="pt-6">
