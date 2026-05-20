@@ -145,6 +145,41 @@ const Auth = () => {
   };
 
   /* ── Reusable sub-sections ── */
+  const ScrollingBanner = () => {
+    const items = [
+      "LEITURA INTELIGENTE",
+      "CATEGORIZAÇÃO AUTOMÁTICA",
+      "ORGANIZAÇÃO IMEDIATA",
+      "RADAR FINANCEIRO",
+      "PROJEÇÃO FINANCEIRA",
+      "SAÚDE FINANCEIRA",
+      "DASHBOARD COMPLETO",
+      "ASSISTENTE HUBY IA",
+      "DADOS PROTEGIDOS",
+      "MAIS DE 2.800 USUÁRIOS"
+    ];
+    
+    return (
+      <div className="w-full bg-[#001f13] py-5 overflow-hidden border-y border-primary/20 relative z-20 my-10 shadow-[0_0_30px_rgba(0,230,118,0.05)]">
+        <motion.div 
+          animate={{ x: ["0%", "-50%"] }}
+          transition={{ duration: 35, repeat: Infinity, ease: "linear" }}
+          className="flex whitespace-nowrap gap-16 items-center"
+        >
+          {[...items, ...items].map((item, i) => (
+            <div key={i} className="flex items-center gap-4">
+              <div className="w-1.5 h-1.5 rounded-full bg-primary animate-pulse" />
+              <span className="text-xs sm:text-sm font-black tracking-[0.35em] text-primary uppercase italic">
+                {item}
+              </span>
+            </div>
+          ))}
+        </motion.div>
+      </div>
+    );
+  };
+
+
 
   const SocialProofBadge = ({ className = "", mobile = false }: { className?: string; mobile?: boolean }) => (
     <span className={`inline-flex items-center gap-1.5 bg-primary/10 text-primary font-medium rounded-full border border-primary/15 backdrop-blur-sm ${mobile ? "text-[8px] px-2.5 py-1 mx-auto" : "text-[10px] px-3 py-1.5 mx-auto"} ${className}`}>
@@ -531,6 +566,11 @@ const Auth = () => {
         <motion.div custom={3} variants={fadeUp} initial="hidden" animate="visible" className="w-full">
           <FeaturesGrid />
         </motion.div>
+
+        <motion.div custom={3.5} variants={fadeUp} initial="hidden" animate="visible" className="w-screen -mx-[50vw] left-1/2 relative">
+          <ScrollingBanner />
+        </motion.div>
+
 
         <motion.div custom={4} variants={fadeUp} initial="hidden" animate="visible" className="pt-6">
           <Button 
