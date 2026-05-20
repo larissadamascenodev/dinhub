@@ -108,35 +108,35 @@ const AppScreen = ({ type }: { type: TabType }) => {
       );
     case "Transações":
       return (
-        <div className="bg-[#0a0a0a] h-full text-white p-4 space-y-4">
-          <p className="text-xs font-bold mb-4">Transações recentes</p>
-          <div className="space-y-4">
+        <div className="bg-gradient-to-b from-[#111] to-[#000] h-full text-white p-4 space-y-4 overflow-y-auto scrollbar-none">
+          <p className="text-xs font-bold mb-4 tracking-tight">Transações recentes</p>
+          <div className="space-y-3">
             {[
-              { label: "DAS", time: "Hoje 14:32", val: "-R$ 51,89", type: "neg" },
-              { label: "Nubank PJ", time: "Hoje 10:35", val: "+R$ 610,36", type: "pos" },
-              { label: "Salário", time: "01 Mai", val: "+R$ 850,00", type: "pos" },
-              { label: "iFood", time: "Ontem", val: "-R$ 42,70", type: "neg" },
-              { label: "Parcela Auto", time: "05 Mai", val: "-R$ 293,57", type: "neg" },
+              { label: "DAS", time: "Hoje 14:32", val: "-R$ 51,89", type: "neg", icon: "⚡" },
+              { label: "Nubank PJ", time: "Hoje 10:35", val: "+R$ 610,36", type: "pos", icon: "🏢" },
+              { label: "Salário", time: "01 Mai", val: "+R$ 850,00", type: "pos", icon: "📊" },
+              { label: "iFood", time: "Ontem", val: "-R$ 42,70", type: "neg", icon: "🛒" },
+              { label: "Parcela Auto", time: "05 Mai", val: "-R$ 293,57", type: "neg", icon: "🚗" },
             ].map((t, i) => (
-              <div key={i} className="flex justify-between items-center border-b border-[#111] pb-2">
-                <div className="flex gap-2">
-                  <div className="w-8 h-8 rounded-lg bg-[#111] flex items-center justify-center text-[10px]">
-                    {t.label[0]}
+              <div key={i} className="flex justify-between items-center bg-white/5 border border-white/5 p-3 rounded-2xl hover:bg-white/10 transition-colors">
+                <div className="flex gap-3">
+                  <div className="w-9 h-9 rounded-xl bg-white/5 border border-white/10 flex items-center justify-center text-sm backdrop-blur-md">
+                    {t.icon}
                   </div>
                   <div>
                     <p className="text-[10px] font-bold">{t.label}</p>
-                    <p className="text-[8px] text-gray-500">{t.time}</p>
+                    <p className="text-[8px] text-gray-500 font-medium">{t.time}</p>
                   </div>
                 </div>
-                <div className={`text-[10px] font-bold ${t.type === "pos" ? "text-primary" : "text-gray-300"}`}>
+                <div className={`text-[10px] font-bold ${t.type === "pos" ? "text-primary" : "text-white"}`}>
                   {t.val}
                 </div>
               </div>
             ))}
           </div>
-          <div className="pt-4 border-t border-[#1a1a1a]">
-            <p className="text-[8px] text-gray-500 uppercase">Saldo atual</p>
-            <p className="text-sm font-bold">R$ 713,30</p>
+          <div className="pt-4 border-t border-white/5 flex justify-between items-center">
+            <p className="text-[8px] text-gray-500 font-bold uppercase tracking-widest">Saldo atual</p>
+            <p className="text-sm font-bold text-primary">R$ 713,30</p>
           </div>
         </div>
       );
