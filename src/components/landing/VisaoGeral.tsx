@@ -396,7 +396,6 @@ const VisaoGeral = () => {
               {/* App Header */}
               <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: "0.65rem" }}>
                 <div style={{ display: "flex", alignItems: "center", gap: 5 }}>
-                  <PigIcon size={20} color="#00e676" />
                   <span style={{ fontFamily: "'Sora',sans-serif", fontWeight: 800, fontSize: "0.88rem", color: "#fff", letterSpacing: "-0.01em" }}>
                     Din<span style={{ color: "#00e676" }}>Hub</span>
                   </span>
