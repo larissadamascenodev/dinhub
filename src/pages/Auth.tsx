@@ -386,15 +386,9 @@ const Auth = () => {
                   </div>
 
                   {/* Status Bar */}
-                  <div className="flex justify-between items-center px-8 pt-4 pb-2 text-[#888] text-[0.72rem] font-medium">
+                  <div className="flex justify-between items-center px-8 pt-4 pb-2 text-[#888] text-[0.72rem] font-medium absolute top-0 left-0 right-0 z-40 bg-gradient-to-b from-black/60 to-transparent">
                     <span>10:58</span>
                     <div className="flex gap-1.5 items-center">
-                      <div className="flex gap-0.5 items-end h-2.5">
-                        <div className="w-[2px] h-1 bg-[#888] rounded-full" />
-                        <div className="w-[2px] h-1.5 bg-[#888] rounded-full" />
-                        <div className="w-[2px] h-2 bg-[#888] rounded-full" />
-                        <div className="w-[2px] h-2.5 bg-[#888] rounded-full" />
-                      </div>
                       <Zap className="w-2.5 h-2.5" />
                       <div className="w-5 h-2.5 border border-[#888] rounded-[2px] relative">
                         <div className="absolute left-[1px] top-[1px] bottom-[1px] w-3 bg-[#888] rounded-[0.5px]" />
@@ -403,12 +397,124 @@ const Auth = () => {
                     </div>
                   </div>
 
-                  {/* App Screenshot */}
-                  <img 
-                    src="https://images.unsplash.com/photo-1611162617213-7d7a39e9b1d7?q=80&w=1974&auto=format&fit=crop" 
-                    alt="DinHub App Interface"
-                    className="w-full h-full object-cover"
-                  />
+                  {/* App Content */}
+                  <div className="px-5 pt-12 space-y-4">
+                    {/* Header App */}
+                    <div className="flex justify-between items-center">
+                      <span className="font-display font-extrabold text-[1rem] tracking-tight text-white">
+                        Din<span className="text-primary">Hub</span>
+                      </span>
+                      <div className="flex gap-3">
+                        <div className="relative">
+                          <Bell className="w-5 h-5 text-[#888]" />
+                          <span className="absolute -top-1 -right-1 w-3.5 h-3.5 bg-primary rounded-full text-[8px] flex items-center justify-center text-black font-bold">1</span>
+                        </div>
+                        <div className="relative">
+                          <Flame className="w-5 h-5 text-[#888]" />
+                          <span className="absolute -top-1 -right-1 w-3.5 h-3.5 bg-orange-500 rounded-full text-[8px] flex items-center justify-center text-white font-bold">2</span>
+                        </div>
+                      </div>
+                    </div>
+
+                    {/* Saudação */}
+                    <div>
+                      <h3 className="text-white font-bold text-base leading-tight">Bom dia, Larissa</h3>
+                      <p className="text-[#888] text-xs">Terça-feira, 12 de maio</p>
+                    </div>
+
+                    {/* Tabs */}
+                    <div className="flex gap-2">
+                      <span className="px-3 py-1 text-[10px] text-[#888]">Abr</span>
+                      <span className="px-3 py-1 bg-[#111] border border-[#1a1a1a] rounded-full text-[10px] text-white font-medium">Mai</span>
+                      <span className="px-3 py-1 text-[10px] text-[#888]">Jun</span>
+                    </div>
+
+                    {/* Card Saldo */}
+                    <div className="bg-gradient-to-br from-[#111] to-[#0a0a0a] border border-[#1a1a1a] rounded-[16px] p-4 space-y-2 shadow-xl relative overflow-hidden group">
+                      <div className="absolute top-0 right-0 w-24 h-24 bg-primary/5 blur-2xl rounded-full -mr-12 -mt-12" />
+                      <span className="text-[#666] text-[0.6rem] font-black tracking-[0.1em] uppercase">SALDO DISPONÍVEL</span>
+                      <div className="text-white font-display font-extrabold text-2xl leading-none tracking-tight">R$ 713,30</div>
+                      <div className="bg-primary/5 border border-primary/10 rounded-lg px-2 py-1.5 flex items-center gap-2">
+                        <div className="w-1.5 h-1.5 rounded-full bg-primary animate-pulse" /> 
+                        <span className="text-primary text-[9px] font-medium leading-none">Previsto no mês R$ 341,87</span>
+                      </div>
+                    </div>
+
+                    {/* Cards Receitas/Despesas */}
+                    <div className="grid grid-cols-2 gap-2">
+                      <div className="bg-primary/10 border border-primary/10 rounded-[12px] p-3 text-center">
+                        <span className="text-primary text-[8px] font-bold block mb-1">↗ RECEITAS</span>
+                        <span className="text-white font-bold text-[10px]">R$ 1.959,03</span>
+                      </div>
+                      <div className="bg-red-500/10 border border-red-500/10 rounded-[12px] p-3 text-center">
+                        <span className="text-red-500 text-[8px] font-bold block mb-1">↙ DESPESAS</span>
+                        <span className="text-white font-bold text-[10px]">R$ 1.782,16</span>
+                      </div>
+                    </div>
+
+                    {/* Icon Navigation */}
+                    <div className="bg-[#111]/30 border border-[#1a1a1a] rounded-[16px] p-2.5">
+                      <div className="grid grid-cols-5 gap-1">
+                        {[
+                          { icon: <Wallet className="w-3.5 h-3.5" />, label: "Carteira" },
+                          { icon: <BarChart3 className="w-3.5 h-3.5" />, label: "Balanço" },
+                          { icon: <TrendingUp className="w-3.5 h-3.5" />, label: "Projeções" },
+                          { icon: <Target className="w-3.5 h-3.5" />, label: "Metas" },
+                          { icon: <Trophy className="w-3.5 h-3.5" />, label: "Desafios" }
+                        ].map((item, i) => (
+                          <div key={i} className="flex flex-col items-center gap-1.5 py-1">
+                            <div className="w-7 h-7 rounded-xl bg-primary/10 border border-primary/20 flex items-center justify-center text-primary shadow-sm">
+                              {item.icon}
+                            </div>
+                            <span className="text-[#555] text-[0.45rem] font-bold uppercase tracking-tighter">{item.label}</span>
+                          </div>
+                        ))}
+                      </div>
+                    </div>
+
+                    {/* Gastos por Categoria */}
+                    <div className="bg-[#111]/50 border border-[#1a1a1a] rounded-[14px] p-4 space-y-3">
+                      <div className="flex justify-between items-center">
+                        <span className="text-[#666] text-[0.65rem] font-bold uppercase tracking-tighter">Gastos por categoria</span>
+                        <span className="text-primary text-[0.6rem] font-medium">Maio ›</span>
+                      </div>
+                      <div className="text-white font-display font-extrabold text-lg">R$ 1.654,62</div>
+                      
+                      <div className="space-y-2">
+                        {[
+                          { color: '#8b5cf6', label: 'Eletrônicos', val: 'R$ 442,49', pct: '27%', width: '27%' },
+                          { color: '#3b82f6', label: 'Consórcio', val: 'R$ 293,57', pct: '18%', width: '18%' },
+                          { color: '#f59e0b', label: 'Delivery', val: 'R$ 245,90', pct: '15%', width: '15%' }
+                        ].map((item, i) => (
+                          <div key={i} className="space-y-1">
+                            <div className="flex items-center justify-between text-[8px]">
+                              <div className="flex items-center gap-1.5">
+                                <div className="w-1 h-1 rounded-full" style={{ background: item.color }} />
+                                <span className="text-[#888]">{item.label}</span>
+                              </div>
+                              <div className="flex items-center gap-2">
+                                <span className="text-white font-medium">{item.val}</span>
+                              </div>
+                            </div>
+                            <div className="h-1 w-full bg-[#111] rounded-full overflow-hidden">
+                              <div className="h-full rounded-full" style={{ background: item.color, width: item.width }} />
+                            </div>
+                          </div>
+                        ))}
+                      </div>
+                    </div>
+
+                    {/* Bottom Nav App */}
+                    <div className="absolute inset-x-0 bottom-0 h-14 bg-[#0a0a0a] border-t border-[#1a1a1a] px-4 flex items-center justify-between z-50">
+                      <LayoutGrid className="w-4 h-4 text-primary" />
+                      <TrendingUp className="w-4 h-4 text-[#444]" />
+                      <div className="w-9 h-9 bg-primary rounded-full flex items-center justify-center -translate-y-5 shadow-[0_0_15px_rgba(0,230,118,0.3)] border-4 border-[#070808]">
+                        <Plus className="w-5 h-5 text-black font-bold" />
+                      </div>
+                      <Brain className="w-4 h-4 text-[#444]" />
+                      <User className="w-4 h-4 text-[#444]" />
+                    </div>
+                  </div>
                 </div>
               </motion.div>
 
