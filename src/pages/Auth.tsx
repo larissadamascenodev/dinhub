@@ -537,113 +537,58 @@ const Auth = () => {
           </Button>
         </motion.div>
 
-        {/* iPhone Style App Preview Section */}
+        {/* Simple Dashboard Card (Match reference) */}
         <motion.div 
           custom={5} 
           variants={fadeUp} 
           initial="hidden" 
           animate="visible"
-          className="w-full max-w-[320px] sm:max-w-[380px] mx-auto pt-8 sm:pt-12"
+          className="w-full max-w-4xl mx-auto pt-8 sm:pt-16 px-4"
         >
-          <div className="relative aspect-[9/19.5] w-full bg-[#080808] rounded-[3rem] border-[8px] border-[#1a1a1a] shadow-[0_0_80px_rgba(0,0,0,0.8),0_0_20px_rgba(0,230,118,0.1)] overflow-hidden">
-            {/* Dynamic Island */}
-            <div className="absolute top-4 left-1/2 -translate-x-1/2 w-24 h-6 bg-black rounded-full z-30" />
-            
-            {/* Inner Content */}
-            <div className="h-full w-full flex flex-col p-6 pt-16">
-              {/* Profile/Header */}
-              <div className="flex items-center justify-between mb-8">
-                <div className="flex items-center gap-3">
-                  <div className="w-10 h-10 rounded-full bg-primary/20 border border-primary/30 flex items-center justify-center">
-                    <User className="w-5 h-5 text-primary" />
-                  </div>
-                  <div className="text-left">
-                    <div className="text-[10px] text-muted-foreground font-medium uppercase tracking-wider">Bom dia,</div>
-                    <div className="text-sm font-bold text-white">Rafael M.</div>
+          <div className="bg-[#0A0A0A] rounded-3xl border border-white/10 shadow-2xl overflow-hidden relative">
+            <div className="p-8 sm:p-12">
+              {/* Card Header */}
+              <div className="flex justify-between items-start mb-12">
+                <div className="text-left">
+                  <div className="text-primary text-xs font-bold uppercase tracking-widest mb-2">Patrimônio Total</div>
+                  <div className="text-4xl sm:text-6xl font-bold text-white tracking-tight">
+                    R$ 124.500<span className="text-white/30">,00</span>
                   </div>
                 </div>
-                <div className="w-10 h-10 rounded-full bg-white/5 border border-white/10 flex items-center justify-center">
-                  <Bell className="w-4 h-4 text-white/60" />
+                <div className="bg-primary/10 border border-primary/20 rounded-2xl p-4">
+                  <BarChart3 className="w-6 h-6 sm:w-8 sm:h-8 text-primary" />
                 </div>
               </div>
 
-              {/* Main Balance Card */}
-              <div className="bg-gradient-to-br from-primary/20 to-primary/5 border border-primary/20 rounded-[2rem] p-6 mb-6 relative overflow-hidden group">
-                <div className="absolute top-0 right-0 p-4">
-                  <div className="w-8 h-8 rounded-full bg-primary/20 flex items-center justify-center">
-                    <Zap className="w-4 h-4 text-primary" />
-                  </div>
+              {/* Card Content Grid */}
+              <div className="grid grid-cols-1 sm:grid-cols-3 gap-6">
+                <div className="bg-white/5 border border-white/10 rounded-2xl p-6 text-left">
+                  <div className="text-white/40 text-[10px] font-bold uppercase mb-2">Receitas</div>
+                  <div className="text-xl font-bold text-emerald-500">R$ 12.450,00</div>
                 </div>
-                <div className="text-left space-y-1">
-                  <div className="text-[10px] text-primary font-bold uppercase tracking-[0.2em]">Saldo Disponível</div>
-                  <div className="text-3xl font-bold text-white tracking-tight">R$ 14.500,20</div>
-                  <div className="flex items-center gap-1.5 pt-2">
-                    <div className="px-2 py-0.5 rounded-full bg-emerald-500/20 text-emerald-500 text-[10px] font-bold">+12%</div>
-                    <div className="text-[10px] text-muted-foreground tracking-wide">em relação ao mês anterior</div>
-                  </div>
+                <div className="bg-white/5 border border-white/10 rounded-2xl p-6 text-left">
+                  <div className="text-white/40 text-[10px] font-bold uppercase mb-2">Despesas</div>
+                  <div className="text-xl font-bold text-red-400">R$ 4.120,00</div>
                 </div>
-              </div>
-
-              {/* Features Grid */}
-              <div className="grid grid-cols-2 gap-3 mb-8">
-                <div className="bg-white/5 border border-white/10 rounded-2xl p-4 flex flex-col items-center gap-2">
-                  <div className="w-10 h-10 rounded-xl bg-primary/10 flex items-center justify-center">
-                    <BarChart3 className="w-5 h-5 text-primary" />
-                  </div>
-                  <span className="text-[10px] font-bold text-white/80">Evolução</span>
-                </div>
-                <div className="bg-white/5 border border-white/10 rounded-2xl p-4 flex flex-col items-center gap-2">
-                  <div className="w-10 h-10 rounded-xl bg-emerald-500/10 flex items-center justify-center">
-                    <Shield className="w-5 h-5 text-emerald-500" />
-                  </div>
-                  <span className="text-[10px] font-bold text-white/80">Segurança</span>
+                <div className="bg-white/5 border border-white/10 rounded-2xl p-6 text-left">
+                  <div className="text-white/40 text-[10px] font-bold uppercase mb-2">Investimentos</div>
+                  <div className="text-xl font-bold text-primary">R$ 8.330,00</div>
                 </div>
               </div>
 
-              {/* Recent Transactions Section */}
-              <div className="flex-1 text-left">
-                <div className="flex justify-between items-center mb-4 px-1">
-                  <h3 className="text-sm font-bold text-white">Transações Recentes</h3>
-                  <span className="text-[10px] text-primary font-bold">Ver tudo</span>
-                </div>
-                <div className="space-y-3">
-                  {[
-                    { title: "Mercado Livre", desc: "Eletrônicos", price: "- R$ 450,00", time: "Há 2h" },
-                    { title: "Salário Dinhub", desc: "Pagamento", price: "+ R$ 8.240,00", time: "Ontem" },
-                    { title: "Starbucks", desc: "Alimentação", price: "- R$ 24,90", time: "Ontem" }
-                  ].map((item, i) => (
-                    <div key={i} className="bg-white/[0.03] border border-white/5 rounded-2xl p-3 flex items-center justify-between">
-                      <div className="flex items-center gap-3">
-                        <div className="w-8 h-8 rounded-lg bg-white/5 border border-white/10 flex items-center justify-center" />
-                        <div>
-                          <div className="text-[11px] font-bold text-white">{item.title}</div>
-                          <div className="text-[9px] text-muted-foreground">{item.desc}</div>
-                        </div>
-                      </div>
-                      <div className="text-right">
-                        <div className={`text-[11px] font-bold ${item.price.startsWith("+") ? "text-primary" : "text-white"}`}>
-                          {item.price}
-                        </div>
-                        <div className="text-[8px] text-muted-foreground uppercase">{item.time}</div>
-                      </div>
-                    </div>
-                  ))}
-                </div>
-              </div>
-
-              {/* Bottom Nav Simulation */}
-              <div className="mt-auto h-16 bg-black/40 backdrop-blur-md rounded-2xl border border-white/5 flex items-center justify-around px-4">
-                <div className="text-primary"><Wallet className="w-5 h-5" /></div>
-                <div className="text-white/40"><BarChart3 className="w-5 h-5" /></div>
-                <div className="text-white/40"><Shield className="w-5 h-5" /></div>
-                <div className="text-white/40"><User className="w-5 h-5" /></div>
+              {/* Subtle Chart Line at Bottom */}
+              <div className="mt-12 h-24 w-full relative">
+                <svg className="w-full h-full opacity-30" viewBox="0 0 400 100" preserveAspectRatio="none">
+                  <path d="M0,80 Q50,70 100,85 T200,40 T300,75 T400,20" fill="none" stroke="currentColor" strokeWidth="3" className="text-primary" />
+                </svg>
               </div>
             </div>
-
-            {/* Reflection Effect */}
-            <div className="absolute top-0 left-0 w-full h-1/2 bg-gradient-to-b from-white/5 to-transparent skew-y-12 -translate-y-full animate-[shimmer_10s_infinite]" />
+            
+            {/* Background Glow */}
+            <div className="absolute top-0 right-0 w-64 h-64 bg-primary/10 blur-[100px] rounded-full -translate-y-1/2 translate-x-1/2" />
           </div>
         </motion.div>
+
 
 
 
