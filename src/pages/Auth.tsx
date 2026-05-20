@@ -150,45 +150,45 @@ const Auth = () => {
 
 
   const SocialProofBadge = ({ className = "", mobile = false }: { className?: string; mobile?: boolean }) => (
-    <span className={`inline-flex items-center gap-1.5 bg-primary/10 text-primary font-medium rounded-full border border-primary/15 backdrop-blur-sm ${mobile ? "text-[8px] px-2.5 py-1 mx-auto" : "text-[10px] px-3 py-1.5 mx-auto"} ${className}`}>
-      <span className="flex -space-x-1.5">
+    <span className={`inline-flex items-center gap-2 bg-[#002414] text-primary font-semibold rounded-full border border-primary/20 backdrop-blur-md shadow-[0_0_20px_rgba(0,230,118,0.1)] ${mobile ? "text-[10px] px-3.5 py-1.5" : "text-xs px-5 py-2"} ${className}`}>
+      <span className="flex -space-x-2">
         {AVATAR_URLS.map((url, i) => (
           <img
             key={i}
             src={url}
             alt=""
-            className={`rounded-full border border-background object-cover ${mobile ? "w-3.5 h-3.5" : "w-4 h-4"}`}
+            className={`rounded-full border-2 border-[#002414] object-cover ${mobile ? "w-5 h-5" : "w-6 h-6"}`}
           />
         ))}
       </span>
-      +2.847 pessoas controlando suas finanças
+      <span className="ml-1 tracking-tight">+2.847 pessoas usando o DinHub</span>
     </span>
   );
 
   const HeadlineSection = ({ mobile = false }: { mobile?: boolean }) => (
     <div className="text-center">
-      <h1 className={`font-display font-bold leading-[1.1] text-foreground ${mobile ? "text-2xl" : "text-4xl xl:text-6xl"}`}>
-        Assuma o controle{" "}
-        total da sua{" "}
-        <span className="text-transparent bg-clip-text bg-gradient-to-r from-primary to-emerald-300">
-          vida financeira.
+      <h1 className={`font-display font-bold leading-[1.05] tracking-tight text-foreground ${mobile ? "text-4xl" : "text-5xl lg:text-7xl"}`}>
+        Domine suas finanças <br className="hidden sm:block" /> de um jeito{" "}
+        <span className="text-transparent bg-clip-text bg-gradient-to-r from-primary via-emerald-400 to-primary">
+          realmente simples.
         </span>
       </h1>
-      <p className={`text-muted-foreground leading-relaxed mx-auto ${mobile ? "mt-1.5 text-[11px]" : "mt-6 text-lg max-w-2xl"}`}>
-        Organize suas finanças, entenda para onde seu dinheiro vai e acompanhe a evolução do seu patrimônio em tempo real.
+      <p className={`text-muted-foreground leading-relaxed mx-auto font-medium ${mobile ? "mt-4 text-sm px-4" : "mt-8 text-xl max-w-2xl opacity-80"}`}>
+        A ferramenta completa para quem quer organizar gastos, <br className="hidden sm:block" />
+        planejar o futuro e ver o patrimônio crescer todo mês.
       </p>
     </div>
   );
 
   const InputMethodsPill = ({ mobile = false }: { mobile?: boolean }) => (
-    <div className={`inline-flex items-center gap-1 bg-gradient-to-r from-primary/10 via-card/50 to-primary/5 border border-primary/15 rounded-full text-muted-foreground backdrop-blur-sm mx-auto ${mobile ? "text-[8px] px-2.5 py-1" : "text-[10px] px-4 py-2 gap-2"}`}>
-      <span className="text-foreground/70 font-medium">Registre via</span>
-      <span className="flex items-center gap-0.5 text-primary font-semibold"><MessageCircle className={mobile ? "w-2 h-2" : "w-3 h-3"} /> texto</span>
-      <span className="text-primary/30">|</span>
-      <span className="flex items-center gap-0.5 text-primary/80"><Mic className={mobile ? "w-2 h-2" : "w-3 h-3"} /> áudio</span>
-      <span className="text-primary/30">|</span>
-      <span className="flex items-center gap-0.5 text-primary/80"><Image className={mobile ? "w-2 h-2" : "w-3 h-3"} /> foto</span>
-      <Zap className={`${mobile ? "w-2 h-2" : "w-3 h-3"} text-primary ml-0.5`} />
+    <div className={`inline-flex items-center gap-1.5 bg-[#001f13]/60 border border-primary/20 rounded-full text-muted-foreground backdrop-blur-md mx-auto shadow-sm ${mobile ? "text-[10px] px-3 py-1.5" : "text-[11px] px-5 py-2.5 gap-3"}`}>
+      <span className="text-foreground/80 font-medium">Controle por:</span>
+      <span className="flex items-center gap-1 text-primary/90 font-medium"><MessageCircle className={mobile ? "w-3 h-3" : "w-4 h-4"} /> Texto</span>
+      <span className="text-primary/20">|</span>
+      <span className="flex items-center gap-1 text-primary/90 font-medium"><Mic className={mobile ? "w-3 h-3" : "w-4 h-4"} /> Voz</span>
+      <span className="text-primary/20">|</span>
+      <span className="flex items-center gap-1 text-primary/90 font-medium"><Image className={mobile ? "w-3 h-3" : "w-4 h-4"} /> Comprovante</span>
+      <Zap className={`${mobile ? "w-3 h-3" : "w-4 h-4"} text-primary ml-1 animate-pulse`} />
     </div>
   );
 
@@ -526,15 +526,18 @@ const Auth = () => {
 
 
 
-        <motion.div custom={4} variants={fadeUp} initial="hidden" animate="visible" className="pt-6">
+        <motion.div custom={4} variants={fadeUp} initial="hidden" animate="visible" className="pt-4">
           <Button 
             size="lg" 
             onClick={() => openAuthModal(false)}
-            className="h-14 px-10 text-base font-bold rounded-full bg-primary/10 text-primary border border-primary/20 hover:bg-primary/20 transition-all duration-300 group"
+            className="h-16 px-12 text-lg font-bold rounded-full bg-primary/15 text-primary border-2 border-primary/20 hover:bg-primary/25 hover:scale-105 transition-all duration-300 group shadow-[0_0_30px_rgba(0,230,118,0.15)]"
           >
             Começar Agora Grátis
-            <ArrowRight className="ml-2 w-5 h-5 group-hover:translate-x-1 transition-transform" />
+            <ArrowRight className="ml-2 w-6 h-6 group-hover:translate-x-1.5 transition-transform" />
           </Button>
+          <p className="text-muted-foreground/60 text-[10px] mt-4 font-medium uppercase tracking-widest">
+            Sem cartão de crédito • Teste grátis
+          </p>
         </motion.div>
 
         <motion.div custom={5} variants={fadeUp} initial="hidden" animate="visible" className="w-full max-w-lg">
