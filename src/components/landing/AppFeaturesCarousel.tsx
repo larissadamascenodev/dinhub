@@ -68,19 +68,19 @@ const AppScreen = ({ type }: { type: TabType }) => {
       );
     case "Categorias":
       return (
-        <div className="bg-[#0a0a0a] h-full text-white p-4 space-y-4">
-          <p className="text-xs font-bold">Gastos por categoria · Maio</p>
-          <div className="text-xl font-bold">R$ 3.847,90</div>
+        <div className="bg-gradient-to-b from-[#111] to-[#000] h-full text-white p-4 space-y-4 overflow-y-auto scrollbar-none">
+          <p className="text-xs font-bold tracking-tight">Gastos por categoria · Maio</p>
+          <div className="text-2xl font-bold tracking-tight">R$ 3.847,90</div>
           
-          <div className="flex h-2 rounded-full overflow-hidden bg-[#1a1a1a]">
-            <div className="bg-red-500 w-[22%]" />
-            <div className="bg-purple-500 w-[19%]" />
-            <div className="bg-blue-500 w-[14%]" />
-            <div className="bg-orange-500 w-[11%]" />
-            <div className="bg-gray-700 flex-1" />
+          <div className="flex h-3 rounded-full overflow-hidden bg-white/5 p-0.5 border border-white/5">
+            <div className="bg-red-500 w-[22%] rounded-full" />
+            <div className="bg-purple-500 w-[19%] rounded-full -ml-1" />
+            <div className="bg-blue-500 w-[14%] rounded-full -ml-1" />
+            <div className="bg-orange-500 w-[11%] rounded-full -ml-1" />
+            <div className="bg-white/10 flex-1 rounded-full -ml-1" />
           </div>
 
-          <div className="space-y-3">
+          <div className="space-y-2">
             {[
               { name: "Delivery", val: "R$ 842,90", pct: "21,9%", color: "bg-red-500" },
               { name: "Compras online", val: "R$ 731,20", pct: "19%", color: "bg-purple-500" },
@@ -88,21 +88,21 @@ const AppScreen = ({ type }: { type: TabType }) => {
               { name: "Assinaturas", val: "R$ 184,70", pct: "4,8%", color: "bg-green-500" },
               { name: "Apostas", val: "R$ 427,00", pct: "11,1%", color: "bg-orange-500" },
             ].map(cat => (
-              <div key={cat.name} className="flex items-center justify-between">
+              <div key={cat.name} className="flex items-center justify-between p-2 bg-white/5 rounded-xl border border-white/5">
                 <div className="flex items-center gap-2">
-                  <div className={`w-1.5 h-1.5 rounded-full ${cat.color}`} />
-                  <span className="text-[10px] text-gray-400">{cat.name}</span>
+                  <div className={`w-2 h-2 rounded-full ${cat.color} shadow-[0_0_8px_rgba(255,255,255,0.2)]`} />
+                  <span className="text-[10px] text-gray-400 font-medium">{cat.name}</span>
                 </div>
                 <div className="text-right">
-                  <p className="text-[10px] font-bold">{cat.val}</p>
-                  <p className="text-[8px] text-gray-600">{cat.pct}</p>
+                  <p className="text-[10px] font-bold tracking-tight">{cat.val}</p>
+                  <p className="text-[8px] text-primary/60 font-bold">{cat.pct}</p>
                 </div>
               </div>
             ))}
           </div>
           
-          <div className="mt-auto bg-primary/10 border border-primary/20 rounded-xl p-3">
-            <p className="text-[9px] text-primary leading-tight">Você gastou R$ 180 a mais em delivery comparado ao mês passado.</p>
+          <div className="mt-auto bg-primary/10 border border-primary/20 rounded-2xl p-4 backdrop-blur-md">
+            <p className="text-[9px] text-primary font-medium leading-relaxed">Você gastou R$ 180 a mais em delivery comparado ao mês passado. <span className="font-bold">Hora de economizar!</span></p>
           </div>
         </div>
       );
