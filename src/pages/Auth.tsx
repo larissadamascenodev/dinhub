@@ -537,125 +537,114 @@ const Auth = () => {
           </Button>
         </motion.div>
 
-        {/* Real-time Insights Preview Section */}
+        {/* iPhone Style App Preview Section */}
         <motion.div 
           custom={5} 
           variants={fadeUp} 
           initial="hidden" 
           animate="visible"
-          className="w-full max-w-5xl mx-auto pt-8 sm:pt-16 pb-8 px-4"
+          className="w-full max-w-[320px] sm:max-w-[380px] mx-auto pt-8 sm:pt-12"
         >
-          <div className="bg-[#050C0A] rounded-[2.5rem] border border-white/5 shadow-[0_0_100px_rgba(0,0,0,0.5)] overflow-hidden relative group">
-            {/* Dark inner glow */}
-            <div className="absolute inset-0 bg-gradient-to-b from-transparent via-[#050C0A]/50 to-[#050C0A] pointer-events-none" />
+          <div className="relative aspect-[9/19.5] w-full bg-[#080808] rounded-[3rem] border-[8px] border-[#1a1a1a] shadow-[0_0_80px_rgba(0,0,0,0.8),0_0_20px_rgba(0,230,118,0.1)] overflow-hidden">
+            {/* Dynamic Island */}
+            <div className="absolute top-4 left-1/2 -translate-x-1/2 w-24 h-6 bg-black rounded-full z-30" />
             
-            {/* Dashboard Content */}
-            <div className="relative z-10 p-6 sm:p-12 lg:p-16">
-              {/* Top Header Simulation */}
-              <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-6 mb-12 lg:mb-20">
-                <div className="space-y-2">
-                  <div className="text-primary/60 text-xs sm:text-sm font-medium tracking-[0.2em] uppercase">Patrimônio Atual</div>
-                  <div className="text-4xl sm:text-6xl lg:text-7xl font-bold tracking-tight flex items-baseline gap-2">
-                    <span className="text-white/40 text-2xl sm:text-4xl">R$</span>
-                    <span className="text-white">124.500</span>
-                    <span className="text-white/30 text-2xl sm:text-4xl">,00</span>
-                  </div>
-                </div>
-                <div className="bg-white/5 border border-white/10 rounded-2xl px-6 py-4 backdrop-blur-xl flex items-center gap-4">
-                  <div className="w-10 h-10 rounded-full bg-primary/20 flex items-center justify-center border border-primary/30">
-                    <BarChart3 className="w-5 h-5 text-primary" />
+            {/* Inner Content */}
+            <div className="h-full w-full flex flex-col p-6 pt-16">
+              {/* Profile/Header */}
+              <div className="flex items-center justify-between mb-8">
+                <div className="flex items-center gap-3">
+                  <div className="w-10 h-10 rounded-full bg-primary/20 border border-primary/30 flex items-center justify-center">
+                    <User className="w-5 h-5 text-primary" />
                   </div>
                   <div className="text-left">
-                    <div className="text-white font-bold text-lg">+12.4%</div>
-                    <div className="text-white/40 text-[10px] uppercase font-bold tracking-wider">Este mês</div>
+                    <div className="text-[10px] text-muted-foreground font-medium uppercase tracking-wider">Bom dia,</div>
+                    <div className="text-sm font-bold text-white">Rafael M.</div>
+                  </div>
+                </div>
+                <div className="w-10 h-10 rounded-full bg-white/5 border border-white/10 flex items-center justify-center">
+                  <Bell className="w-4 h-4 text-white/60" />
+                </div>
+              </div>
+
+              {/* Main Balance Card */}
+              <div className="bg-gradient-to-br from-primary/20 to-primary/5 border border-primary/20 rounded-[2rem] p-6 mb-6 relative overflow-hidden group">
+                <div className="absolute top-0 right-0 p-4">
+                  <div className="w-8 h-8 rounded-full bg-primary/20 flex items-center justify-center">
+                    <Zap className="w-4 h-4 text-primary" />
+                  </div>
+                </div>
+                <div className="text-left space-y-1">
+                  <div className="text-[10px] text-primary font-bold uppercase tracking-[0.2em]">Saldo Disponível</div>
+                  <div className="text-3xl font-bold text-white tracking-tight">R$ 14.500,20</div>
+                  <div className="flex items-center gap-1.5 pt-2">
+                    <div className="px-2 py-0.5 rounded-full bg-emerald-500/20 text-emerald-500 text-[10px] font-bold">+12%</div>
+                    <div className="text-[10px] text-muted-foreground tracking-wide">em relação ao mês anterior</div>
                   </div>
                 </div>
               </div>
 
-              {/* Grid Section */}
-              <div className="grid grid-cols-1 lg:grid-cols-2 gap-6 lg:gap-10">
-                {/* Insights Card */}
-                <div className="bg-white/[0.02] border border-white/10 rounded-[2rem] p-8 lg:p-10 flex flex-col gap-8 relative overflow-hidden group/card hover:bg-white/[0.04] transition-all duration-500">
-                  <div className="flex justify-between items-center relative z-10">
-                    <div className="space-y-1">
-                      <h3 className="text-white font-bold text-xl lg:text-2xl tracking-tight">Análise de Fluxo</h3>
-                      <p className="text-white/40 text-sm">Projeção baseada nos últimos 90 dias</p>
-                    </div>
-                    <div className="h-10 w-10 rounded-xl bg-primary/10 border border-primary/20 flex items-center justify-center">
-                      <Zap className="w-5 h-5 text-primary" />
-                    </div>
+              {/* Features Grid */}
+              <div className="grid grid-cols-2 gap-3 mb-8">
+                <div className="bg-white/5 border border-white/10 rounded-2xl p-4 flex flex-col items-center gap-2">
+                  <div className="w-10 h-10 rounded-xl bg-primary/10 flex items-center justify-center">
+                    <BarChart3 className="w-5 h-5 text-primary" />
                   </div>
-                  
-                  <div className="flex-1 min-h-[160px] relative z-10 flex items-end">
-                    <svg className="w-full h-full opacity-60 group-hover/card:opacity-90 transition-opacity duration-700" viewBox="0 0 400 150" preserveAspectRatio="none">
-                      <defs>
-                        <linearGradient id="chartGradient" x1="0%" y1="0%" x2="0%" y2="100%">
-                          <stop offset="0%" stopColor="hsl(var(--primary))" stopOpacity="0.3" />
-                          <stop offset="100%" stopColor="hsl(var(--primary))" stopOpacity="0" />
-                        </linearGradient>
-                      </defs>
-                      <path d="M0,120 Q50,90 100,110 T200,60 T300,80 T400,30 L400,150 L0,150 Z" fill="url(#chartGradient)" />
-                      <path d="M0,120 Q50,90 100,110 T200,60 T300,80 T400,30" fill="none" stroke="currentColor" strokeWidth="4" className="text-primary shadow-[0_0_20px_rgba(0,230,118,0.3)]" />
-                      <circle cx="200" cy="60" r="6" className="fill-primary" />
-                      <circle cx="200" cy="60" r="12" className="stroke-primary/20 stroke-[2] fill-transparent animate-pulse" />
-                    </svg>
-                  </div>
+                  <span className="text-[10px] font-bold text-white/80">Evolução</span>
                 </div>
+                <div className="bg-white/5 border border-white/10 rounded-2xl p-4 flex flex-col items-center gap-2">
+                  <div className="w-10 h-10 rounded-xl bg-emerald-500/10 flex items-center justify-center">
+                    <Shield className="w-5 h-5 text-emerald-500" />
+                  </div>
+                  <span className="text-[10px] font-bold text-white/80">Segurança</span>
+                </div>
+              </div>
 
-                {/* Right Column Grid */}
-                <div className="grid grid-cols-1 sm:grid-cols-2 gap-6">
-                  {/* Stats Card 1 */}
-                  <div className="bg-white/[0.02] border border-white/10 rounded-[2rem] p-8 flex flex-col justify-between group/stat hover:bg-white/[0.04] transition-all duration-500">
-                    <div className="h-12 w-12 rounded-2xl bg-emerald-500/10 border border-emerald-500/20 flex items-center justify-center mb-6">
-                      <Shield className="w-6 h-6 text-emerald-500" />
-                    </div>
-                    <div>
-                      <div className="text-white font-bold text-3xl mb-1">98.2%</div>
-                      <div className="text-white/40 text-xs font-bold uppercase tracking-widest">Score Financeiro</div>
-                    </div>
-                  </div>
-                  {/* Stats Card 2 */}
-                  <div className="bg-white/[0.02] border border-white/10 rounded-[2rem] p-8 flex flex-col justify-between group/stat hover:bg-white/[0.04] transition-all duration-500">
-                    <div className="h-12 w-12 rounded-2xl bg-blue-500/10 border border-blue-500/20 flex items-center justify-center mb-6">
-                      <Wallet className="w-6 h-6 text-blue-500" />
-                    </div>
-                    <div>
-                      <div className="text-white font-bold text-3xl mb-1">R$ 5.2k</div>
-                      <div className="text-white/40 text-xs font-bold uppercase tracking-widest">Economia Estimada</div>
-                    </div>
-                  </div>
-                  {/* Transaction History Simulation */}
-                  <div className="sm:col-span-2 bg-white/[0.02] border border-white/10 rounded-[2rem] p-8 flex flex-col gap-6">
-                    <div className="flex justify-between items-center">
-                      <h4 className="text-white font-bold text-lg">Radar de Gastos</h4>
-                      <div className="h-2 w-2 rounded-full bg-primary animate-pulse shadow-[0_0_10px_rgba(0,230,118,0.5)]" />
-                    </div>
-                    <div className="space-y-4">
-                      {[1, 2].map((i) => (
-                        <div key={i} className="flex items-center justify-between py-3 border-b border-white/5 last:border-0">
-                          <div className="flex items-center gap-4">
-                            <div className="w-10 h-10 rounded-xl bg-white/5 flex items-center justify-center border border-white/10">
-                              <div className="w-2 h-2 rounded-full bg-white/40" />
-                            </div>
-                            <div className="text-left">
-                              <div className="text-white text-sm font-bold">Investimento Diversificado</div>
-                              <div className="text-white/30 text-[10px] uppercase font-bold tracking-wider">Há 2 horas</div>
-                            </div>
-                          </div>
-                          <div className="text-primary font-bold text-sm">+ R$ 1.250,00</div>
-                        </div>
-                      ))}
-                    </div>
-                  </div>
+              {/* Recent Transactions Section */}
+              <div className="flex-1 text-left">
+                <div className="flex justify-between items-center mb-4 px-1">
+                  <h3 className="text-sm font-bold text-white">Transações Recentes</h3>
+                  <span className="text-[10px] text-primary font-bold">Ver tudo</span>
                 </div>
+                <div className="space-y-3">
+                  {[
+                    { title: "Mercado Livre", desc: "Eletrônicos", price: "- R$ 450,00", time: "Há 2h" },
+                    { title: "Salário Dinhub", desc: "Pagamento", price: "+ R$ 8.240,00", time: "Ontem" },
+                    { title: "Starbucks", desc: "Alimentação", price: "- R$ 24,90", time: "Ontem" }
+                  ].map((item, i) => (
+                    <div key={i} className="bg-white/[0.03] border border-white/5 rounded-2xl p-3 flex items-center justify-between">
+                      <div className="flex items-center gap-3">
+                        <div className="w-8 h-8 rounded-lg bg-white/5 border border-white/10 flex items-center justify-center" />
+                        <div>
+                          <div className="text-[11px] font-bold text-white">{item.title}</div>
+                          <div className="text-[9px] text-muted-foreground">{item.desc}</div>
+                        </div>
+                      </div>
+                      <div className="text-right">
+                        <div className={`text-[11px] font-bold ${item.price.startsWith("+") ? "text-primary" : "text-white"}`}>
+                          {item.price}
+                        </div>
+                        <div className="text-[8px] text-muted-foreground uppercase">{item.time}</div>
+                      </div>
+                    </div>
+                  ))}
+                </div>
+              </div>
+
+              {/* Bottom Nav Simulation */}
+              <div className="mt-auto h-16 bg-black/40 backdrop-blur-md rounded-2xl border border-white/5 flex items-center justify-around px-4">
+                <div className="text-primary"><Wallet className="w-5 h-5" /></div>
+                <div className="text-white/40"><BarChart3 className="w-5 h-5" /></div>
+                <div className="text-white/40"><Shield className="w-5 h-5" /></div>
+                <div className="text-white/40"><User className="w-5 h-5" /></div>
               </div>
             </div>
 
-            {/* Ambient Background Glows */}
-            <div className="absolute top-0 right-0 w-[600px] h-[600px] bg-primary/5 blur-[150px] rounded-full -translate-y-1/2 translate-x-1/2 pointer-events-none" />
-            <div className="absolute bottom-0 left-0 w-[500px] h-[500px] bg-primary/3 blur-[120px] rounded-full translate-y-1/2 -translate-x-1/2 pointer-events-none" />
+            {/* Reflection Effect */}
+            <div className="absolute top-0 left-0 w-full h-1/2 bg-gradient-to-b from-white/5 to-transparent skew-y-12 -translate-y-full animate-[shimmer_10s_infinite]" />
           </div>
         </motion.div>
+
 
 
 
