@@ -145,6 +145,40 @@ const Auth = () => {
   };
 
   /* ── Reusable sub-sections ── */
+  const ScrollingBanner = () => {
+    const items = [
+      "DASHBOARD COMPLETO",
+      "CATEGORIZAÇÃO COM IA",
+      "SCANNER DE COMPROVANTES",
+      "RADAR FINANCEIRO 24H",
+      "PROJEÇÃO DE 12 MESES",
+      "CONTROLE DE FATURAS",
+      "ASSISTENTE HUBY IA",
+      "SAÚDE FINANCEIRA",
+      "ALERTA DE GASTOS",
+      "METAS INTELIGENTES"
+    ];
+    
+    return (
+      <div className="w-full bg-[#001f13] py-4 overflow-hidden border-y border-primary/10 relative z-20 my-10 group">
+        <motion.div 
+          animate={{ x: ["0%", "-50%"] }}
+          transition={{ duration: 30, repeat: Infinity, ease: "linear" }}
+          className="flex whitespace-nowrap gap-12 items-center"
+        >
+          {[...items, ...items].map((item, i) => (
+            <div key={i} className="flex items-center gap-3">
+              <Zap className="w-4 h-4 text-primary fill-primary/20 shadow-[0_0_10px_rgba(0,230,118,0.3)]" />
+              <span className="text-[11px] sm:text-xs font-black tracking-[0.25em] text-primary uppercase drop-shadow-[0_0_8px_rgba(0,230,118,0.2)]">
+                {item}
+              </span>
+            </div>
+          ))}
+        </motion.div>
+      </div>
+    );
+  };
+
 
   const SocialProofBadge = ({ className = "", mobile = false }: { className?: string; mobile?: boolean }) => (
     <span className={`inline-flex items-center gap-1.5 bg-primary/10 text-primary font-medium rounded-full border border-primary/15 backdrop-blur-sm ${mobile ? "text-[8px] px-2.5 py-1 mx-auto" : "text-[10px] px-3 py-1.5 mx-auto"} ${className}`}>
