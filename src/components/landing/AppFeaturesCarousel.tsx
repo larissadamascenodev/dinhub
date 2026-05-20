@@ -304,25 +304,33 @@ export const AppFeaturesCarousel = () => {
   return (
     <section className="w-full bg-[#0a0a0a] pt-10 pb-20 px-6 relative overflow-hidden">
       <div className="max-w-6xl mx-auto">
-        <div className="text-center mb-16">
-          <motion.div
-            initial={{ opacity: 0, y: 10 }}
-            whileInView={{ opacity: 1, y: 0 }}
-            viewport={{ once: true }}
-            className="inline-flex items-center px-4 py-1.5 rounded-full bg-primary/10 border border-primary/20 mb-6"
-          >
-            <span className="text-[10px] md:text-xs font-bold text-primary tracking-widest uppercase">
-              FUNCIONALIDADES
-            </span>
-          </motion.div>
-          
-          <h2 className="font-display text-3xl md:text-5xl font-bold text-white mb-6">
-            Tudo que você precisa em um lugar só.
-          </h2>
-          <p className="text-gray-400 text-base md:text-lg">
-            Veja como o DinHub funciona na prática.
-          </p>
-        </div>
+        <AnimatePresence>
+          {!activeTab && (
+            <motion.div 
+              initial={{ opacity: 1, height: "auto" }}
+              exit={{ opacity: 0, height: 0 }}
+              className="text-center mb-16 overflow-hidden"
+            >
+              <motion.div
+                initial={{ opacity: 0, y: 10 }}
+                whileInView={{ opacity: 1, y: 0 }}
+                viewport={{ once: true }}
+                className="inline-flex items-center px-4 py-1.5 rounded-full bg-primary/10 border border-primary/20 mb-6"
+              >
+                <span className="text-[10px] md:text-xs font-bold text-primary tracking-widest uppercase">
+                  FUNCIONALIDADES
+                </span>
+              </motion.div>
+              
+              <h2 className="font-display text-3xl md:text-5xl font-bold text-white mb-6">
+                Tudo que você precisa em um lugar só.
+              </h2>
+              <p className="text-gray-400 text-base md:text-lg">
+                Veja como o DinHub funciona na prática.
+              </p>
+            </motion.div>
+          )}
+        </AnimatePresence>
 
         {/* Tabs */}
         <div className="flex overflow-x-auto scrollbar-none gap-3 mb-16 justify-start lg:justify-center px-4 -mx-4">
