@@ -436,11 +436,13 @@ const Auth = () => {
                     </div>
 
                     {/* Card Saldo */}
-                    <div className="bg-[#111] border border-[#1a1a1a] rounded-[14px] p-4 space-y-2">
-                      <span className="text-[#666] text-[0.65rem] font-bold tracking-widest uppercase">SALDO DISPONÍVEL</span>
-                      <div className="text-white font-display font-extrabold text-2xl leading-none">R$ 713,30</div>
-                      <div className="text-primary text-[10px] flex items-center gap-1">
-                        <span className="w-1 h-1 rounded-full bg-primary" /> Previsto no final do mês R$ 341,87
+                    <div className="bg-gradient-to-br from-[#111] to-[#0a0a0a] border border-[#1a1a1a] rounded-[16px] p-4 space-y-2 shadow-xl relative overflow-hidden group">
+                      <div className="absolute top-0 right-0 w-24 h-24 bg-primary/5 blur-2xl rounded-full -mr-12 -mt-12" />
+                      <span className="text-[#666] text-[0.6rem] font-black tracking-[0.1em] uppercase">SALDO DISPONÍVEL</span>
+                      <div className="text-white font-display font-extrabold text-2xl leading-none tracking-tight">R$ 713,30</div>
+                      <div className="bg-primary/5 border border-primary/10 rounded-lg px-2 py-1.5 flex items-center gap-2">
+                        <div className="w-1.5 h-1.5 rounded-full bg-primary animate-pulse" /> 
+                        <span className="text-primary text-[9px] font-medium leading-none">Previsto no mês R$ 341,87</span>
                       </div>
                     </div>
 
