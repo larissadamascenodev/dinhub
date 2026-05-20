@@ -475,10 +475,10 @@ const Auth = () => {
                     </div>
 
                     {/* Gastos por Categoria */}
-                    <div className="space-y-3 pt-2">
+                    <div className="bg-[#111]/50 border border-[#1a1a1a] rounded-[14px] p-4 space-y-3">
                       <div className="flex justify-between items-center">
-                        <span className="text-[#666] text-[0.7rem]">Gastos por categoria · Maio</span>
-                        <span className="text-primary text-[0.7rem] font-medium">Análise completa ›</span>
+                        <span className="text-[#666] text-[0.7rem] font-bold">GASTOS POR CATEGORIA</span>
+                        <span className="text-primary text-[0.65rem] font-medium">Maio ›</span>
                       </div>
                       <div className="text-white font-display font-extrabold text-lg">R$ 1.654,62</div>
                       
