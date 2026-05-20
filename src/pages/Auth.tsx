@@ -573,5 +573,6 @@ const Auth = () => {
       <LegalModal open={!!legalModal} onClose={() => setLegalModal(null)} type={legalModal || "terms"} />
     </div>
   );
+};
 
 export default Auth;
