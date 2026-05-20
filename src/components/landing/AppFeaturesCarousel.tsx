@@ -7,58 +7,60 @@ type TabType = "Dashboard" | "Categorias" | "Transações" | "Parcelamentos" | "
 const tabs: TabType[] = ["Dashboard", "Categorias", "Transações", "Parcelamentos", "Fatura", "Metas"];
 
 const AppScreen = ({ type }: { type: TabType }) => {
+  const commonGlass = "bg-black/40 backdrop-blur-xl border border-white/10 rounded-2xl p-4";
+  
   switch (type) {
     case "Dashboard":
       return (
-        <div className="bg-[#0a0a0a] h-full text-white p-4 space-y-4">
+        <div className="bg-gradient-to-b from-[#111] to-[#000] h-full text-white p-4 space-y-4 overflow-y-auto scrollbar-none">
           <div className="flex justify-between items-center mb-6">
             <div>
-              <p className="text-[10px] text-gray-500">Bom dia,</p>
-              <p className="text-sm font-bold">Larissa</p>
+              <p className="text-[10px] text-gray-500 font-medium">Bom dia,</p>
+              <p className="text-sm font-bold tracking-tight">Larissa</p>
             </div>
             <div className="flex gap-2">
-              <div className="w-8 h-8 rounded-full bg-[#111] flex items-center justify-center border border-[#1a1a1a]">
+              <div className="w-8 h-8 rounded-full bg-white/5 flex items-center justify-center border border-white/10 backdrop-blur-md">
                 <Bell className="w-4 h-4 text-gray-400" />
               </div>
-              <div className="px-2 py-1 rounded-full bg-orange-500/10 border border-orange-500/20 flex items-center gap-1">
+              <div className="px-2 py-1 rounded-full bg-orange-500/10 border border-orange-500/20 flex items-center gap-1 backdrop-blur-md">
                 <Flame className="w-3 h-3 text-orange-500" />
                 <span className="text-[10px] font-bold text-orange-500">12</span>
               </div>
             </div>
           </div>
           
-          <div className="flex gap-4 text-[10px] text-gray-500 border-b border-[#1a1a1a] pb-2">
-            <span>Abr</span>
-            <span className="text-primary font-bold border-b border-primary">Mai</span>
-            <span>Jun</span>
+          <div className="flex gap-4 text-[10px] text-gray-500 border-b border-white/5 pb-2">
+            <span className="opacity-40">Abr</span>
+            <span className="text-primary font-bold border-b-2 border-primary pb-2 px-1">Mai</span>
+            <span className="opacity-40">Jun</span>
           </div>
 
-          <div className="bg-gradient-to-br from-[#111] to-[#0a0a0a] border border-[#1a1a1a] rounded-2xl p-4 space-y-4">
+          <div className={`${commonGlass} shadow-[0_8px_32px_rgba(0,0,0,0.4)] space-y-4`}>
             <div>
-              <p className="text-[8px] text-gray-500 uppercase tracking-widest mb-1">SALDO DISPONÍVEL</p>
-              <p className="text-xl font-bold">R$ 713,30</p>
-              <p className="text-[10px] text-gray-400 mt-1">Previsto fim do mês: <span className="text-white">R$ 341,87</span></p>
+              <p className="text-[8px] text-primary font-bold uppercase tracking-[0.2em] mb-1">SALDO DISPONÍVEL</p>
+              <p className="text-2xl font-bold tracking-tight">R$ 713,30</p>
+              <p className="text-[10px] text-gray-500 mt-1">Previsto: <span className="text-white font-medium">R$ 341,87</span></p>
             </div>
             
             <div className="grid grid-cols-2 gap-2">
-              <div className="bg-[#1a1a1a] rounded-xl p-2">
-                <p className="text-[8px] text-gray-500">Receitas</p>
+              <div className="bg-white/5 rounded-xl p-2 border border-white/5">
+                <p className="text-[8px] text-gray-500 font-bold uppercase">Receitas</p>
                 <p className="text-xs font-bold text-primary">R$ 1.959,03</p>
               </div>
-              <div className="bg-[#1a1a1a] rounded-xl p-2">
-                <p className="text-[8px] text-gray-500">Despesas</p>
-                <p className="text-xs font-bold text-red-500">R$ 1.782,16</p>
+              <div className="bg-white/5 rounded-xl p-2 border border-white/5">
+                <p className="text-[8px] text-gray-500 font-bold uppercase">Despesas</p>
+                <p className="text-xs font-bold text-red-400">R$ 1.782,16</p>
               </div>
             </div>
           </div>
 
           <div className="grid grid-cols-3 gap-2">
             {["Carteira", "Balanço", "Projeção"].map(label => (
-              <div key={label} className="bg-[#111] border border-[#1a1a1a] rounded-xl p-2 flex flex-col items-center gap-1">
-                <div className="w-6 h-6 rounded-full bg-primary/10 flex items-center justify-center">
+              <div key={label} className="bg-white/5 border border-white/5 rounded-xl p-3 flex flex-col items-center gap-2 hover:bg-white/10 transition-colors">
+                <div className="w-7 h-7 rounded-full bg-primary/10 border border-primary/20 flex items-center justify-center">
                   <div className="w-3 h-3 text-primary" />
                 </div>
-                <span className="text-[8px] text-gray-400">{label}</span>
+                <span className="text-[8px] text-gray-400 font-medium uppercase tracking-wider">{label}</span>
               </div>
             ))}
           </div>
@@ -66,19 +68,19 @@ const AppScreen = ({ type }: { type: TabType }) => {
       );
     case "Categorias":
       return (
-        <div className="bg-[#0a0a0a] h-full text-white p-4 space-y-4">
-          <p className="text-xs font-bold">Gastos por categoria · Maio</p>
-          <div className="text-xl font-bold">R$ 3.847,90</div>
+        <div className="bg-gradient-to-b from-[#111] to-[#000] h-full text-white p-4 space-y-4 overflow-y-auto scrollbar-none">
+          <p className="text-xs font-bold tracking-tight">Gastos por categoria · Maio</p>
+          <div className="text-2xl font-bold tracking-tight">R$ 3.847,90</div>
           
-          <div className="flex h-2 rounded-full overflow-hidden bg-[#1a1a1a]">
-            <div className="bg-red-500 w-[22%]" />
-            <div className="bg-purple-500 w-[19%]" />
-            <div className="bg-blue-500 w-[14%]" />
-            <div className="bg-orange-500 w-[11%]" />
-            <div className="bg-gray-700 flex-1" />
+          <div className="flex h-3 rounded-full overflow-hidden bg-white/5 p-0.5 border border-white/5">
+            <div className="bg-red-500 w-[22%] rounded-full" />
+            <div className="bg-purple-500 w-[19%] rounded-full -ml-1" />
+            <div className="bg-blue-500 w-[14%] rounded-full -ml-1" />
+            <div className="bg-orange-500 w-[11%] rounded-full -ml-1" />
+            <div className="bg-white/10 flex-1 rounded-full -ml-1" />
           </div>
 
-          <div className="space-y-3">
+          <div className="space-y-2">
             {[
               { name: "Delivery", val: "R$ 842,90", pct: "21,9%", color: "bg-red-500" },
               { name: "Compras online", val: "R$ 731,20", pct: "19%", color: "bg-purple-500" },
@@ -86,55 +88,55 @@ const AppScreen = ({ type }: { type: TabType }) => {
               { name: "Assinaturas", val: "R$ 184,70", pct: "4,8%", color: "bg-green-500" },
               { name: "Apostas", val: "R$ 427,00", pct: "11,1%", color: "bg-orange-500" },
             ].map(cat => (
-              <div key={cat.name} className="flex items-center justify-between">
+              <div key={cat.name} className="flex items-center justify-between p-2 bg-white/5 rounded-xl border border-white/5">
                 <div className="flex items-center gap-2">
-                  <div className={`w-1.5 h-1.5 rounded-full ${cat.color}`} />
-                  <span className="text-[10px] text-gray-400">{cat.name}</span>
+                  <div className={`w-2 h-2 rounded-full ${cat.color} shadow-[0_0_8px_rgba(255,255,255,0.2)]`} />
+                  <span className="text-[10px] text-gray-400 font-medium">{cat.name}</span>
                 </div>
                 <div className="text-right">
-                  <p className="text-[10px] font-bold">{cat.val}</p>
-                  <p className="text-[8px] text-gray-600">{cat.pct}</p>
+                  <p className="text-[10px] font-bold tracking-tight">{cat.val}</p>
+                  <p className="text-[8px] text-primary/60 font-bold">{cat.pct}</p>
                 </div>
               </div>
             ))}
           </div>
           
-          <div className="mt-auto bg-primary/10 border border-primary/20 rounded-xl p-3">
-            <p className="text-[9px] text-primary leading-tight">Você gastou R$ 180 a mais em delivery comparado ao mês passado.</p>
+          <div className="mt-auto bg-primary/10 border border-primary/20 rounded-2xl p-4 backdrop-blur-md">
+            <p className="text-[9px] text-primary font-medium leading-relaxed">Você gastou R$ 180 a mais em delivery comparado ao mês passado. <span className="font-bold">Hora de economizar!</span></p>
           </div>
         </div>
       );
     case "Transações":
       return (
-        <div className="bg-[#0a0a0a] h-full text-white p-4 space-y-4">
-          <p className="text-xs font-bold mb-4">Transações recentes</p>
-          <div className="space-y-4">
+        <div className="bg-gradient-to-b from-[#111] to-[#000] h-full text-white p-4 space-y-4 overflow-y-auto scrollbar-none">
+          <p className="text-xs font-bold mb-4 tracking-tight">Transações recentes</p>
+          <div className="space-y-3">
             {[
-              { label: "DAS", time: "Hoje 14:32", val: "-R$ 51,89", type: "neg" },
-              { label: "Nubank PJ", time: "Hoje 10:35", val: "+R$ 610,36", type: "pos" },
-              { label: "Salário", time: "01 Mai", val: "+R$ 850,00", type: "pos" },
-              { label: "iFood", time: "Ontem", val: "-R$ 42,70", type: "neg" },
-              { label: "Parcela Auto", time: "05 Mai", val: "-R$ 293,57", type: "neg" },
+              { label: "DAS", time: "Hoje 14:32", val: "-R$ 51,89", type: "neg", icon: "⚡" },
+              { label: "Nubank PJ", time: "Hoje 10:35", val: "+R$ 610,36", type: "pos", icon: "🏢" },
+              { label: "Salário", time: "01 Mai", val: "+R$ 850,00", type: "pos", icon: "📊" },
+              { label: "iFood", time: "Ontem", val: "-R$ 42,70", type: "neg", icon: "🛒" },
+              { label: "Parcela Auto", time: "05 Mai", val: "-R$ 293,57", type: "neg", icon: "🚗" },
             ].map((t, i) => (
-              <div key={i} className="flex justify-between items-center border-b border-[#111] pb-2">
-                <div className="flex gap-2">
-                  <div className="w-8 h-8 rounded-lg bg-[#111] flex items-center justify-center text-[10px]">
-                    {t.label[0]}
+              <div key={i} className="flex justify-between items-center bg-white/5 border border-white/5 p-3 rounded-2xl hover:bg-white/10 transition-colors">
+                <div className="flex gap-3">
+                  <div className="w-9 h-9 rounded-xl bg-white/5 border border-white/10 flex items-center justify-center text-sm backdrop-blur-md">
+                    {t.icon}
                   </div>
                   <div>
                     <p className="text-[10px] font-bold">{t.label}</p>
-                    <p className="text-[8px] text-gray-500">{t.time}</p>
+                    <p className="text-[8px] text-gray-500 font-medium">{t.time}</p>
                   </div>
                 </div>
-                <div className={`text-[10px] font-bold ${t.type === "pos" ? "text-primary" : "text-gray-300"}`}>
+                <div className={`text-[10px] font-bold ${t.type === "pos" ? "text-primary" : "text-white"}`}>
                   {t.val}
                 </div>
               </div>
             ))}
           </div>
-          <div className="pt-4 border-t border-[#1a1a1a]">
-            <p className="text-[8px] text-gray-500 uppercase">Saldo atual</p>
-            <p className="text-sm font-bold">R$ 713,30</p>
+          <div className="pt-4 border-t border-white/5 flex justify-between items-center">
+            <p className="text-[8px] text-gray-500 font-bold uppercase tracking-widest">Saldo atual</p>
+            <p className="text-sm font-bold text-primary">R$ 713,30</p>
           </div>
         </div>
       );
@@ -297,30 +299,38 @@ const IPhoneMockup = ({ activeTab }: { activeTab: TabType }) => {
 };
 
 export const AppFeaturesCarousel = () => {
-  const [activeTab, setActiveTab] = useState<TabType>("Dashboard");
+  const [activeTab, setActiveTab] = useState<TabType | null>(null);
 
   return (
-    <section className="w-full bg-[#0a0a0a] py-20 px-6 relative overflow-hidden">
+    <section className="w-full bg-[#0a0a0a] pt-10 pb-20 px-6 relative overflow-hidden">
       <div className="max-w-6xl mx-auto">
-        <div className="text-center mb-16">
-          <motion.div
-            initial={{ opacity: 0, y: 10 }}
-            whileInView={{ opacity: 1, y: 0 }}
-            viewport={{ once: true }}
-            className="inline-flex items-center px-4 py-1.5 rounded-full bg-primary/10 border border-primary/20 mb-6"
-          >
-            <span className="text-[10px] md:text-xs font-bold text-primary tracking-widest uppercase">
-              FUNCIONALIDADES
-            </span>
-          </motion.div>
-          
-          <h2 className="font-display text-3xl md:text-5xl font-bold text-white mb-6">
-            Tudo que você precisa em um lugar só.
-          </h2>
-          <p className="text-gray-400 text-base md:text-lg">
-            Veja como o DinHub funciona na prática.
-          </p>
-        </div>
+        <AnimatePresence>
+          {!activeTab && (
+            <motion.div 
+              initial={{ opacity: 1, height: "auto" }}
+              exit={{ opacity: 0, height: 0 }}
+              className="text-center mb-16 overflow-hidden"
+            >
+              <motion.div
+                initial={{ opacity: 0, y: 10 }}
+                whileInView={{ opacity: 1, y: 0 }}
+                viewport={{ once: true }}
+                className="inline-flex items-center px-4 py-1.5 rounded-full bg-primary/10 border border-primary/20 mb-6"
+              >
+                <span className="text-[10px] md:text-xs font-bold text-primary tracking-widest uppercase">
+                  FUNCIONALIDADES
+                </span>
+              </motion.div>
+              
+              <h2 className="font-display text-3xl md:text-5xl font-bold text-white mb-6">
+                Tudo que você precisa em um lugar só.
+              </h2>
+              <p className="text-gray-400 text-base md:text-lg">
+                Veja como o DinHub funciona na prática.
+              </p>
+            </motion.div>
+          )}
+        </AnimatePresence>
 
         {/* Tabs */}
         <div className="flex overflow-x-auto scrollbar-none gap-3 mb-16 justify-start lg:justify-center px-4 -mx-4">
@@ -330,8 +340,8 @@ export const AppFeaturesCarousel = () => {
               onClick={() => setActiveTab(tab)}
               className={`px-6 py-3 rounded-full border transition-all duration-300 text-sm font-medium whitespace-nowrap ${
                 activeTab === tab
-                  ? "bg-primary/5 border-primary text-primary"
-                  : "bg-transparent border-[#1a1a1a] text-gray-500 hover:border-gray-700"
+                ? "bg-primary/20 border-primary text-primary shadow-[0_0_20px_rgba(0,230,118,0.1)]"
+                : "bg-[#111] border-[#1a1a1a] text-gray-500 hover:border-gray-700"
               }`}
             >
               {tab}
@@ -339,54 +349,63 @@ export const AppFeaturesCarousel = () => {
           ))}
         </div>
 
-        <div className="grid lg:grid-cols-2 gap-12 items-center">
-          {/* Mockup */}
-          <motion.div
-            initial={{ opacity: 1, scale: 1 }}
-            whileInView={{ opacity: 1, scale: 1 }}
-            viewport={{ once: true }}
-            className="order-1 lg:order-1"
-          >
-            <IPhoneMockup activeTab={activeTab} />
-          </motion.div>
+        <AnimatePresence>
+          {activeTab && (
+            <motion.div 
+              initial={{ opacity: 0, height: 0 }}
+              animate={{ opacity: 1, height: "auto" }}
+              exit={{ opacity: 0, height: 0 }}
+              className="grid lg:grid-cols-2 gap-12 items-center overflow-hidden"
+            >
+              {/* Mockup */}
+              <motion.div
+                key={activeTab}
+                initial={{ opacity: 0, scale: 0.95, y: 20 }}
+                animate={{ opacity: 1, scale: 1, y: 0 }}
+                className="order-1 lg:order-1"
+              >
+                <IPhoneMockup activeTab={activeTab} />
+              </motion.div>
 
-          {/* Text content */}
-          <div className="order-2 lg:order-2 space-y-8">
-            <div className="hidden lg:block space-y-8">
-               <AnimatePresence mode="wait">
-                  <motion.div
-                    key={activeTab}
-                    initial={{ opacity: 0, x: 20 }}
-                    animate={{ opacity: 1, x: 0 }}
-                    exit={{ opacity: 0, x: -20 }}
-                    className="space-y-4"
-                  >
-                    <h3 className="text-3xl font-bold text-white">{activeTab}</h3>
-                    <p className="text-gray-400 text-lg leading-relaxed">
+              {/* Text content */}
+              <div className="order-2 lg:order-2 space-y-8">
+                <div className="hidden lg:block space-y-8">
+                  <AnimatePresence mode="wait">
+                      <motion.div
+                        key={activeTab}
+                        initial={{ opacity: 0, x: 20 }}
+                        animate={{ opacity: 1, x: 0 }}
+                        exit={{ opacity: 0, x: -20 }}
+                        className="space-y-4"
+                      >
+                        <h3 className="text-3xl font-bold text-white">{activeTab}</h3>
+                        <p className="text-gray-400 text-lg leading-relaxed">
+                          {activeTab === "Dashboard" && "Tenha uma visão clara do seu saldo, previsto e fluxo de caixa mensal em segundos."}
+                          {activeTab === "Categorias" && "Descubra exatamente onde seu dinheiro está indo com gráficos intuitivos e insights automáticos."}
+                          {activeTab === "Transações" && "Acompanhe cada centavo que entra e sai com uma lista organizada e detalhada."}
+                          {activeTab === "Parcelamentos" && "Saiba quando cada parcela termina e quanto do seu orçamento futuro já está comprometido."}
+                          {activeTab === "Fatura" && "Gerencie seus cartões de crédito em um só lugar. Visualize limites, gastos e das de fechamento."}
+                          {activeTab === "Metas" && "Crie objetivos financeiros, acompanhe o progresso e participe de desafios para economizar mais."}
+                        </p>
+                      </motion.div>
+                  </AnimatePresence>
+                </div>
+                
+                <div className="lg:hidden text-center space-y-4">
+                  <h3 className="text-2xl font-bold text-white">{activeTab}</h3>
+                  <p className="text-gray-400 text-sm">
                       {activeTab === "Dashboard" && "Tenha uma visão clara do seu saldo, previsto e fluxo de caixa mensal em segundos."}
-                      {activeTab === "Categorias" && "Descubra exatamente onde seu dinheiro está indo com gráficos intuitivos e insights automáticos."}
-                      {activeTab === "Transações" && "Acompanhe cada centavo que entra e sai com uma lista organizada e detalhada."}
-                      {activeTab === "Parcelamentos" && "Saiba quando cada parcela termina e quanto do seu orçamento futuro já está comprometido."}
-                      {activeTab === "Fatura" && "Gerencie seus cartões de crédito em um só lugar. Visualize limites, gastos e datas de fechamento."}
-                      {activeTab === "Metas" && "Crie objetivos financeiros, acompanhe o progresso e participe de desafios para economizar mais."}
-                    </p>
-                  </motion.div>
-               </AnimatePresence>
-            </div>
-            
-            <div className="lg:hidden text-center space-y-4">
-               <h3 className="text-2xl font-bold text-white">{activeTab}</h3>
-               <p className="text-gray-400 text-sm">
-                  {activeTab === "Dashboard" && "Tenha uma visão clara do seu saldo, previsto e fluxo de caixa mensal em segundos."}
-                  {activeTab === "Categorias" && "Descubra exatamente onde seu dinheiro está indo com gráficos intuitivos."}
-                  {activeTab === "Transações" && "Acompanhe cada centavo que entra e sai com uma lista organizada."}
-                  {activeTab === "Parcelamentos" && "Saiba quando cada parcela termina e o comprometimento do seu orçamento."}
-                  {activeTab === "Fatura" && "Gerencie seus cartões de crédito em um só lugar."}
-                  {activeTab === "Metas" && "Crie objetivos financeiros e acompanhe o progresso."}
-               </p>
-            </div>
-          </div>
-        </div>
+                      {activeTab === "Categorias" && "Descubra exatamente onde seu dinheiro está indo com gráficos intuitivos."}
+                      {activeTab === "Transações" && "Acompanhe cada centavo que entra e sai com uma lista organizada."}
+                      {activeTab === "Parcelamentos" && "Saiba quando cada parcela termina e o comprometimento do seu orçamento."}
+                      {activeTab === "Fatura" && "Gerencie seus cartões de crédito em um só lugar."}
+                      {activeTab === "Metas" && "Crie objetivos financeiros e acompanhe o progresso."}
+                  </p>
+                </div>
+              </div>
+            </motion.div>
+          )}
+        </AnimatePresence>
       </div>
     </section>
   );
