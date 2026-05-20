@@ -1,50 +1,26 @@
-## Problema
+As mudanças solicitadas na landing page foram implementadas com foco em interatividade e design responsivo.
 
-Ao escanear comprovantes, a edge function `process-invoice` retorna erro 500:
+### 1. Seção Huby Reformulada
+- **Esfera 3D de Partículas**: Desenvolvida em Canvas para performance, com rotação suave e conexões dinâmicas entre as partículas verdes (#00e676). A esfera pulsa ao interagir com as perguntas.
+- **Carrossel de Perguntas**: 4 perguntas clicáveis em formato de pill, com scroll horizontal no mobile.
+- **Respostas Interativas**: Ao clicar em uma pergunta, um card detalhado surge abaixo da esfera com animações de fade e slide, apresentando dados financeiros (saldo, parcelas, projeção e análise de gastos) e insights personalizados da Huby.
 
-```
-TypeError: userClient.auth.getClaims is not a function
-```
+### 2. Funcionalidades do App
+- **Carrossel de Mockup**: Um iPhone realista centralizado que alterna entre 6 telas do aplicativo (Dashboard, Categorias, Transações, Parcelamentos, Fatura e Metas).
+- **Abas Navegáveis**: Sistema de abas horizontais com scroll lateral no mobile para alternar as visualizações do mockup.
+- **Telas Dinâmicas**: Cada tela do app foi recriada fielmente em HTML/CSS para garantir nitidez e transições suaves.
 
-O método `auth.getClaims` não existe na versão do SDK Supabase usada na função. A autenticação do usuário falha antes mesmo da imagem ser processada, e o frontend mostra "Edge Function returned a non-2xx status code".
+### 3. Ferramentas IA com Análise
+- **Painel de Análise Lateral**: Os cards de Radar, Projeção e Saúde agora possuem um painel dinâmico ao lado (no desktop) ou abaixo (no mobile).
+- **Conteúdo Dinâmico**: 
+  - **Radar**: Exibe alertas de gastos e insights de economia.
+  - **Projeção**: Gráfico animado com diferentes cenários financeiros.
+  - **Saúde**: Medidor de score (82/100) com detalhamento dos fatores que influenciam a saúde financeira.
 
-## Causa raiz
+### Detalhes Técnicos
+- **Fundo**: #0a0a0a para todas as novas seções.
+- **Tipografia**: Mantido o uso de Sora e Inter.
+- **Responsividade**: Layouts otimizados para telas de 390px até desktops grandes, garantindo que nenhum conteúdo seja cortado.
+- **Animações**: Uso de Framer Motion para transições suaves de 0.3s.
 
-Em `supabase/functions/process-invoice/index.ts` (linha 174) usamos:
-
-```ts
-const { data: claimsData, error: claimsError } = await userClient.auth.getClaims(...)
-```
-
-Esse método não está disponível. O padrão correto (e usado nas outras edge functions do projeto) é `auth.getUser()`.
-
-## Correção
-
-Substituir o bloco de validação de auth (linhas 169–180) por:
-
-```ts
-const userClient = createClient(
-  Deno.env.get("SUPABASE_URL")!,
-  Deno.env.get("SUPABASE_ANON_KEY")!,
-  { global: { headers: { Authorization: authHeader } } }
-);
-const { data: userData, error: userError } = await userClient.auth.getUser();
-if (userError || !userData?.user) {
-  return new Response(JSON.stringify({ error: "Unauthorized" }), {
-    status: 401,
-    headers: { ...corsHeaders, "Content-Type": "application/json" },
-  });
-}
-```
-
-Se mais abaixo no arquivo o código referenciar `claimsData.claims.sub`, ajustar para `userData.user.id`.
-
-## Validação
-
-1. Edge function é re-deployada automaticamente.
-2. Verificar logs de `process-invoice` após novo upload — não deve aparecer mais o `TypeError`.
-3. Testar fluxo: subir foto de comprovante → modal de revisão deve abrir com dados extraídos.
-
-## Escopo
-
-Apenas a edge function `process-invoice`. Nenhuma alteração de UI ou de outras funções.
+As seções foram integradas na `src/pages/Auth.tsx` respeitando o posicionamento original e a identidade visual da marca.
