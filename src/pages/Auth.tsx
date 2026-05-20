@@ -22,6 +22,9 @@ import {
   Wallet, BarChart3, Bell, Brain
 } from "lucide-react";
 import { Link } from "react-router-dom";
+import HubySection from "@/components/landing/HubySection";
+import AppFeaturesCarousel from "@/components/landing/AppFeaturesCarousel";
+import IAToolsAnalysis from "@/components/landing/IAToolsAnalysis";
 
 const fadeUp = {
   hidden: { opacity: 0, y: 20 },
