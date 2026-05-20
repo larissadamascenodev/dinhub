@@ -19,7 +19,7 @@ import {
 import {
   Eye, EyeOff, ArrowRight, Mail, Lock,
   PiggyBank, MessageCircle, Mic, Image, Zap, Shield, User, Check,
-  Wallet, BarChart3, Bell, Brain
+  Wallet, BarChart3, Bell, Brain, Flame, Plus, LayoutGrid, Target, Trophy, Clock, PieChart, TrendingUp
 } from "lucide-react";
 import { Link } from "react-router-dom";
 
