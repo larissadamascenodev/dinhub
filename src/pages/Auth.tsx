@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import ContactModal from "@/components/shared/ContactModal";
 import LegalModal from "@/components/shared/LegalModal";
 import { supabase } from "@/integrations/supabase/client";
@@ -550,7 +550,6 @@ const Auth = () => {
         className="flex flex-col sm:flex-row items-center justify-center gap-4 sm:gap-6 py-8 border-t border-border/10 text-[10px] sm:text-xs text-muted-foreground/50 relative z-10"
       >
         <span className="flex items-center gap-2">
-          <PiggyBank className="w-4 h-4 text-primary/60" />
           <span>DinHub © {new Date().getFullYear()}</span>
         </span>
         <div className="flex items-center gap-4 sm:gap-6">
