@@ -459,21 +459,23 @@ const Auth = () => {
                     </div>
 
                     {/* Icon Navigation */}
-                    <div className="grid grid-cols-5 gap-1 pt-1">
-                      {[
-                        { icon: <Wallet className="w-4 h-4" />, label: "Carteira" },
-                        { icon: <BarChart3 className="w-4 h-4" />, label: "Balanço" },
-                        { icon: <TrendingUp className="w-4 h-4" />, label: "Projeções" },
-                        { icon: <Target className="w-4 h-4" />, label: "Metas" },
-                        { icon: <Trophy className="w-4 h-4" />, label: "Desafios" }
-                      ].map((item, i) => (
-                        <div key={i} className="flex flex-col items-center gap-1">
-                          <div className="w-8 h-8 rounded-full bg-primary/10 border border-primary/20 flex items-center justify-center text-primary">
-                            {item.icon}
+                    <div className="bg-[#111]/30 border border-[#1a1a1a] rounded-[16px] p-2.5">
+                      <div className="grid grid-cols-5 gap-1">
+                        {[
+                          { icon: <Wallet className="w-3.5 h-3.5" />, label: "Carteira" },
+                          { icon: <BarChart3 className="w-3.5 h-3.5" />, label: "Balanço" },
+                          { icon: <TrendingUp className="w-3.5 h-3.5" />, label: "Projeções" },
+                          { icon: <Target className="w-3.5 h-3.5" />, label: "Metas" },
+                          { icon: <Trophy className="w-3.5 h-3.5" />, label: "Desafios" }
+                        ].map((item, i) => (
+                          <div key={i} className="flex flex-col items-center gap-1.5 py-1">
+                            <div className="w-8 h-8 rounded-xl bg-primary/10 border border-primary/20 flex items-center justify-center text-primary shadow-sm">
+                              {item.icon}
+                            </div>
+                            <span className="text-[#555] text-[0.5rem] font-bold uppercase tracking-tighter">{item.label}</span>
                           </div>
-                          <span className="text-[#666] text-[0.55rem]">{item.label}</span>
-                        </div>
-                      ))}
+                        ))}
+                      </div>
                     </div>
 
                     {/* Gastos por Categoria */}
