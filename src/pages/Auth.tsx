@@ -482,21 +482,26 @@ const Auth = () => {
                       </div>
                       <div className="text-white font-display font-extrabold text-lg">R$ 1.654,62</div>
                       
-                      <div className="space-y-2">
+                      <div className="space-y-2.5">
                         {[
-                          { color: '#8b5cf6', label: 'Eletrônicos', val: 'R$ 442,49', pct: '27%' },
-                          { color: '#3b82f6', label: 'Consórcio', val: 'R$ 293,57', pct: '18%' },
-                          { color: '#f59e0b', label: 'Delivery', val: 'R$ 245,90', pct: '15%' },
-                          { color: '#10b981', label: 'Supermercado', val: 'R$ 211,30', pct: '13%' }
+                          { color: '#8b5cf6', label: 'Eletrônicos', val: 'R$ 442,49', pct: '27%', width: '27%' },
+                          { color: '#3b82f6', label: 'Consórcio', val: 'R$ 293,57', pct: '18%', width: '18%' },
+                          { color: '#f59e0b', label: 'Delivery', val: 'R$ 245,90', pct: '15%', width: '15%' },
+                          { color: '#10b981', label: 'Supermercado', val: 'R$ 211,30', pct: '13%', width: '13%' }
                         ].map((item, i) => (
-                          <div key={i} className="flex items-center justify-between text-[10px]">
-                            <div className="flex items-center gap-2">
-                              <div className="w-1.5 h-1.5 rounded-full" style={{ background: item.color }} />
-                              <span className="text-[#888]">{item.label}</span>
+                          <div key={i} className="space-y-1">
+                            <div className="flex items-center justify-between text-[9px]">
+                              <div className="flex items-center gap-2">
+                                <div className="w-1.5 h-1.5 rounded-full" style={{ background: item.color }} />
+                                <span className="text-[#888]">{item.label}</span>
+                              </div>
+                              <div className="flex items-center gap-3">
+                                <span className="text-white font-medium">{item.val}</span>
+                                <span className="text-[#666] w-6 text-right">{item.pct}</span>
+                              </div>
                             </div>
-                            <div className="flex items-center gap-3">
-                              <span className="text-white font-medium">{item.val}</span>
-                              <span className="text-[#666] w-6 text-right">{item.pct}</span>
+                            <div className="h-1 w-full bg-[#111] rounded-full overflow-hidden">
+                              <div className="h-full rounded-full" style={{ background: item.color, width: item.width }} />
                             </div>
                           </div>
                         ))}
