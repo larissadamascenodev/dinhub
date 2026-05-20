@@ -477,7 +477,6 @@ const Auth = () => {
         className="flex items-center justify-between px-6 lg:px-10 py-4 relative z-30"
       >
         <div className="flex items-center gap-2">
-          <PiggyBank className="w-6 h-6 text-primary" />
           <span className="font-display text-xl font-bold text-foreground tracking-tight">
             Din<span className="text-primary">Hub</span>
           </span>
@@ -531,7 +530,7 @@ const Auth = () => {
           <Button 
             size="lg" 
             onClick={() => openAuthModal(false)}
-            className="h-14 px-10 text-base font-bold rounded-full bg-primary hover:bg-primary/90 text-primary-foreground shadow-lg shadow-primary/20 group"
+            className="h-14 px-10 text-base font-bold rounded-full bg-primary/10 text-primary border border-primary/20 hover:bg-primary/20 transition-all duration-300 group"
           >
             Começar Agora Grátis
             <ArrowRight className="ml-2 w-5 h-5 group-hover:translate-x-1 transition-transform" />
