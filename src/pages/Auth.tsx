@@ -41,9 +41,7 @@ const AVATAR_URLS = [
   "https://images.unsplash.com/photo-1438761681033-6461ffad8d80?w=80&h=80&fit=crop&crop=face",
 ];
 
-// ... insert user code here, omit imports ...
-
-const VisaoGeral = () => { ... }
+const Auth = () => {
 
 const Auth = () => {
   const { user, loading } = useAuth();
