@@ -543,6 +543,8 @@ const Auth = () => {
         </motion.div>
       </main>
 
+      <VisaoGeral />
+
       {/* Footer */}
       <motion.footer
         initial={{ opacity: 0 }}
