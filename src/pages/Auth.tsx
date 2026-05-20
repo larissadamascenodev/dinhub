@@ -509,7 +509,7 @@ const Auth = () => {
             onClick={() => openAuthModal(true)}
             className="text-xs font-medium text-muted-foreground sm:hidden"
           >
-            Login
+            Entrar
           </Button>
         </div>
       </motion.header>
