@@ -68,7 +68,9 @@ const Auth = () => {
           animate={{ opacity: 1, scale: 1 }}
           className="flex flex-col items-center gap-3"
         >
-          <PiggyBank className="w-8 h-8 text-primary animate-pulse" />
+          <span className="font-display text-2xl font-bold text-foreground tracking-tight animate-pulse">
+            Din<span className="text-primary">Hub</span>
+          </span>
           <span className="text-muted-foreground text-sm">Carregando...</span>
         </motion.div>
       </div>
