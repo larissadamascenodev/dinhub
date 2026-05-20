@@ -436,11 +436,13 @@ const Auth = () => {
                     </div>
 
                     {/* Card Saldo */}
-                    <div className="bg-[#111] border border-[#1a1a1a] rounded-[14px] p-4 space-y-2">
-                      <span className="text-[#666] text-[0.65rem] font-bold tracking-widest uppercase">SALDO DISPONÍVEL</span>
-                      <div className="text-white font-display font-extrabold text-2xl leading-none">R$ 713,30</div>
-                      <div className="text-primary text-[10px] flex items-center gap-1">
-                        <span className="w-1 h-1 rounded-full bg-primary" /> Previsto no final do mês R$ 341,87
+                    <div className="bg-gradient-to-br from-[#111] to-[#0a0a0a] border border-[#1a1a1a] rounded-[16px] p-4 space-y-2 shadow-xl relative overflow-hidden group">
+                      <div className="absolute top-0 right-0 w-24 h-24 bg-primary/5 blur-2xl rounded-full -mr-12 -mt-12" />
+                      <span className="text-[#666] text-[0.6rem] font-black tracking-[0.1em] uppercase">SALDO DISPONÍVEL</span>
+                      <div className="text-white font-display font-extrabold text-2xl leading-none tracking-tight">R$ 713,30</div>
+                      <div className="bg-primary/5 border border-primary/10 rounded-lg px-2 py-1.5 flex items-center gap-2">
+                        <div className="w-1.5 h-1.5 rounded-full bg-primary animate-pulse" /> 
+                        <span className="text-primary text-[9px] font-medium leading-none">Previsto no mês R$ 341,87</span>
                       </div>
                     </div>
 
@@ -457,57 +459,63 @@ const Auth = () => {
                     </div>
 
                     {/* Icon Navigation */}
-                    <div className="grid grid-cols-5 gap-1 pt-1">
-                      {[
-                        { icon: <Wallet className="w-4 h-4" />, label: "Carteira" },
-                        { icon: <BarChart3 className="w-4 h-4" />, label: "Balanço" },
-                        { icon: <TrendingUp className="w-4 h-4" />, label: "Projeções" },
-                        { icon: <Target className="w-4 h-4" />, label: "Metas" },
-                        { icon: <Trophy className="w-4 h-4" />, label: "Desafios" }
-                      ].map((item, i) => (
-                        <div key={i} className="flex flex-col items-center gap-1">
-                          <div className="w-8 h-8 rounded-full bg-primary/10 border border-primary/20 flex items-center justify-center text-primary">
-                            {item.icon}
+                    <div className="bg-[#111]/30 border border-[#1a1a1a] rounded-[16px] p-2.5">
+                      <div className="grid grid-cols-5 gap-1">
+                        {[
+                          { icon: <Wallet className="w-3.5 h-3.5" />, label: "Carteira" },
+                          { icon: <BarChart3 className="w-3.5 h-3.5" />, label: "Balanço" },
+                          { icon: <TrendingUp className="w-3.5 h-3.5" />, label: "Projeções" },
+                          { icon: <Target className="w-3.5 h-3.5" />, label: "Metas" },
+                          { icon: <Trophy className="w-3.5 h-3.5" />, label: "Desafios" }
+                        ].map((item, i) => (
+                          <div key={i} className="flex flex-col items-center gap-1.5 py-1">
+                            <div className="w-8 h-8 rounded-xl bg-primary/10 border border-primary/20 flex items-center justify-center text-primary shadow-sm">
+                              {item.icon}
+                            </div>
+                            <span className="text-[#555] text-[0.5rem] font-bold uppercase tracking-tighter">{item.label}</span>
                           </div>
-                          <span className="text-[#666] text-[0.55rem]">{item.label}</span>
-                        </div>
-                      ))}
+                        ))}
+                      </div>
                     </div>
 
                     {/* Gastos por Categoria */}
-                    <div className="space-y-3 pt-2">
+                    <div className="bg-[#111]/50 border border-[#1a1a1a] rounded-[14px] p-4 space-y-3">
                       <div className="flex justify-between items-center">
-                        <span className="text-[#666] text-[0.7rem]">Gastos por categoria · Maio</span>
-                        <span className="text-primary text-[0.7rem] font-medium">Análise completa ›</span>
+                        <span className="text-[#666] text-[0.7rem] font-bold">GASTOS POR CATEGORIA</span>
+                        <span className="text-primary text-[0.65rem] font-medium">Maio ›</span>
                       </div>
                       <div className="text-white font-display font-extrabold text-lg">R$ 1.654,62</div>
                       
-                      <div className="space-y-2">
+                      <div className="space-y-2.5">
                         {[
-                          { color: '#8b5cf6', label: 'Eletrônicos', val: 'R$ 442,49', pct: '27%' },
-                          { color: '#3b82f6', label: 'Consórcio', val: 'R$ 293,57', pct: '18%' },
-                          { color: '#f59e0b', label: 'Delivery', val: 'R$ 245,90', pct: '15%' },
-                          { color: '#10b981', label: 'Supermercado', val: 'R$ 211,30', pct: '13%' }
+                          { color: '#8b5cf6', label: 'Eletrônicos', val: 'R$ 442,49', pct: '27%', width: '27%' },
+                          { color: '#3b82f6', label: 'Consórcio', val: 'R$ 293,57', pct: '18%', width: '18%' },
+                          { color: '#f59e0b', label: 'Delivery', val: 'R$ 245,90', pct: '15%', width: '15%' },
+                          { color: '#10b981', label: 'Supermercado', val: 'R$ 211,30', pct: '13%', width: '13%' }
                         ].map((item, i) => (
-                          <div key={i} className="flex items-center justify-between text-[10px]">
-                            <div className="flex items-center gap-2">
-                              <div className="w-1.5 h-1.5 rounded-full" style={{ background: item.color }} />
-                              <span className="text-[#888]">{item.label}</span>
+                          <div key={i} className="space-y-1">
+                            <div className="flex items-center justify-between text-[9px]">
+                              <div className="flex items-center gap-2">
+                                <div className="w-1.5 h-1.5 rounded-full" style={{ background: item.color }} />
+                                <span className="text-[#888]">{item.label}</span>
+                              </div>
+                              <div className="flex items-center gap-3">
+                                <span className="text-white font-medium">{item.val}</span>
+                                <span className="text-[#666] w-6 text-right">{item.pct}</span>
+                              </div>
                             </div>
-                            <div className="flex items-center gap-3">
-                              <span className="text-white font-medium">{item.val}</span>
-                              <span className="text-[#666] w-6 text-right">{item.pct}</span>
+                            <div className="h-1 w-full bg-[#111] rounded-full overflow-hidden">
+                              <div className="h-full rounded-full" style={{ background: item.color, width: item.width }} />
                             </div>
                           </div>
                         ))}
                       </div>
                     </div>
 
-                    {/* Bottom Nav App */}
-                    <div className="absolute bottom-0 left-0 right-0 h-16 bg-[#0a0a0a] border-t border-[#1a1a1a] px-6 flex items-center justify-between z-50">
+                <div className="absolute inset-x-0 bottom-0 h-16 bg-[#0a0a0a] border-t border-[#1a1a1a] px-4 flex items-center justify-between z-50">
                       <LayoutGrid className="w-5 h-5 text-primary" />
                       <TrendingUp className="w-5 h-5 text-[#444]" />
-                      <div className="w-11 h-11 bg-primary rounded-full flex items-center justify-center -translate-y-4 shadow-[0_0_20px_rgba(0,230,118,0.3)]">
+                      <div className="w-11 h-11 bg-primary rounded-full flex items-center justify-center -translate-y-6 shadow-[0_0_20px_rgba(0,230,118,0.3)] border-4 border-[#070808]">
                         <Plus className="w-6 h-6 text-black font-bold" />
                       </div>
                       <Brain className="w-5 h-5 text-[#444]" />
