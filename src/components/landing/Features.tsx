@@ -2,7 +2,8 @@ import React from 'react';
 import { motion, Variants } from 'framer-motion';
 import { 
   Sparkles, Radar, TrendingUp, CreditCard, 
-  Camera, ShieldCheck, CheckCircle2, AlertCircle
+  Camera, ShieldCheck, CheckCircle2, AlertCircle,
+  TrendingDown, Zap, ArrowRight, Wallet, PieChart
 } from 'lucide-react';
 
 const Features = () => {
@@ -58,7 +59,7 @@ const Features = () => {
           viewport={{ once: true, margin: "-100px" }}
           className="space-y-32 md:space-y-48"
         >
-          {/* 1. RADAR FINANCEIRO */}
+          {/* 1. RADAR FINANCEIRO (HUB INSIGHTS STYLE) */}
           <motion.div variants={itemVariants} className="grid grid-cols-1 md:grid-cols-2 gap-12 md:gap-24 items-center">
             <div className="space-y-6">
               <div className="w-14 h-14 rounded-2xl bg-[#00e676]/10 border border-[#00e676]/20 flex items-center justify-center">
@@ -66,13 +67,13 @@ const Features = () => {
               </div>
               <h3 className="text-3xl md:text-4xl font-sora font-bold text-white tracking-tight">Radar Financeiro</h3>
               <p className="text-white/50 text-lg leading-relaxed font-light">
-                "Ei, percebi que você deu uma exagerada no iFood essa semana... Se continuar assim, o final de semana vai ser de miojo! 😅"
+                O Radar não apenas vigia; ele interpreta. Identifica padrões perigosos e sugere ações imediatas para manter você no topo.
               </p>
               <ul className="space-y-4 pt-4">
                 {[
-                  'Detecção de gastos atípicos em tempo real',
-                  'Alertas inteligentes sobre metas semanais',
-                  'Linguagem direta, sem "financês" chato'
+                  'Insights preditivos baseados em IA',
+                  'Ações corretivas sugeridas na hora',
+                  'Gestão proativa de fluxo de caixa'
                 ].map((item, i) => (
                   <li key={i} className="flex items-center gap-3 text-sm text-white/70">
                     <CheckCircle2 className="w-4 h-4 text-[#00e676]" />
@@ -81,27 +82,82 @@ const Features = () => {
                 ))}
               </ul>
             </div>
+            
             <div className="relative group">
               <div className="absolute inset-0 bg-[#00e676]/10 blur-[100px] rounded-full group-hover:bg-[#00e676]/20 transition-all duration-1000" />
-              <div className="relative bg-[#0f0f0f] border border-white/10 rounded-[32px] p-8 shadow-2xl backdrop-blur-xl overflow-hidden">
-                <div className="flex items-center justify-between mb-8">
-                  <span className="text-[10px] font-bold text-white/30 uppercase tracking-widest">Alerta de Inteligência</span>
-                  <span className="px-2 py-1 rounded bg-orange-500/10 text-orange-500 text-[9px] font-bold uppercase tracking-wider">Atenção</span>
+              
+              {/* Reference-style Hub Insights Screen */}
+              <div className="relative bg-[#0d0d0d] border border-white/10 rounded-[32px] p-6 shadow-2xl backdrop-blur-xl overflow-hidden min-h-[400px]">
+                <div className="flex items-center justify-between mb-8 pb-4 border-b border-white/5">
+                  <div className="flex items-center gap-2">
+                    <div className="w-2 h-2 rounded-full bg-[#00e676] animate-pulse" />
+                    <span className="text-[10px] font-bold text-white/60 uppercase tracking-widest">Hub Insights</span>
+                  </div>
+                  <div className="flex gap-1.5">
+                    <div className="w-2 h-2 rounded-full bg-white/5" />
+                    <div className="w-2 h-2 rounded-full bg-white/5" />
+                    <div className="w-2 h-2 rounded-full bg-white/5" />
+                  </div>
                 </div>
-                <div className="space-y-4">
-                  <div className="p-4 bg-white/[0.03] border border-white/5 rounded-2xl flex gap-4 items-start animate-pulse">
-                    <div className="w-10 h-10 rounded-full bg-orange-500/20 flex items-center justify-center flex-shrink-0">
-                      <AlertCircle className="w-5 h-5 text-orange-500" />
+
+                <div className="space-y-6">
+                  {/* Insight 1 */}
+                  <div className="space-y-3">
+                    <div className="flex items-center gap-2">
+                      <TrendingDown className="w-4 h-4 text-orange-400" />
+                      <span className="text-xs font-bold text-orange-400 uppercase tracking-wider">Detecção de Padrão</span>
                     </div>
-                    <div>
-                      <div className="text-sm font-bold text-white mb-1">Gasto fora do padrão</div>
-                      <div className="text-xs text-white/40">iFood • R$ 187,00 • Acima da média</div>
+                    <div className="bg-white/[0.02] border border-white/5 p-4 rounded-2xl">
+                      <p className="text-xs text-white/80 leading-relaxed mb-3">
+                        Seu gasto com <span className="text-white font-bold">Lazer</span> cresceu 28% nos últimos 15 dias. Isso pode comprometer sua meta de investimento de Junho.
+                      </p>
+                      <div className="flex gap-2">
+                        <button className="flex-1 py-2 rounded-lg bg-[#00e676]/10 border border-[#00e676]/20 text-[9px] font-bold text-[#00e676] uppercase tracking-wider hover:bg-[#00e676]/20 transition-all">
+                          Ver Detalhes
+                        </button>
+                        <button className="flex-1 py-2 rounded-lg bg-white/5 border border-white/10 text-[9px] font-bold text-white/40 uppercase tracking-wider">
+                          Ignorar
+                        </button>
+                      </div>
                     </div>
                   </div>
-                  <div className="p-4 bg-[#00e676]/5 border border-[#00e676]/20 rounded-2xl flex gap-4 items-start translate-x-4">
-                    <div className="w-10 h-10 rounded-full bg-[#00e676]/20 flex items-center justify-center flex-shrink-0 text-[10px] font-bold text-[#00e676]">HB</div>
-                    <div className="text-xs text-white/90 leading-relaxed">
-                      "Vi que o delivery subiu 42% este mês. Quer que eu te ajude a definir um limite pra gente não furar o balanço?"
+
+                  {/* Insight 2 - Sugestão de Ação */}
+                  <div className="space-y-3">
+                    <div className="flex items-center gap-2">
+                      <Zap className="w-4 h-4 text-[#00e676]" />
+                      <span className="text-xs font-bold text-[#00e676] uppercase tracking-wider">Ação Sugerida</span>
+                    </div>
+                    <div className="bg-[#00e676]/5 border border-[#00e676]/20 p-4 rounded-2xl">
+                      <p className="text-xs text-white/90 font-medium leading-relaxed mb-4">
+                        Identificamos 3 assinaturas inativas. Cancelá-las economiza <span className="text-[#00e676] font-bold">R$ 89,90/mês</span> imediatamente.
+                      </p>
+                      <button className="w-full py-2.5 rounded-xl bg-[#00e676] text-[#0a0a0a] text-[10px] font-bold uppercase tracking-wider flex items-center justify-center gap-2 hover:bg-[#00ff88] transition-all">
+                        Executar agora
+                        <ArrowRight className="w-3 h-3" />
+                      </button>
+                    </div>
+                  </div>
+
+                  {/* Micro Insight Bottom */}
+                  <div className="pt-4 border-t border-white/5 flex items-center justify-between">
+                    <div className="flex items-center gap-3">
+                      <div className="w-8 h-8 rounded-full bg-white/5 flex items-center justify-center">
+                        <Wallet className="w-4 h-4 text-white/40" />
+                      </div>
+                      <div>
+                        <div className="text-[9px] text-white/30 uppercase font-bold tracking-widest">Saldo Protegido</div>
+                        <div className="text-xs font-bold text-white">R$ 4.250,00</div>
+                      </div>
+                    </div>
+                    <div className="flex items-center gap-3">
+                      <div className="w-8 h-8 rounded-full bg-white/5 flex items-center justify-center">
+                        <PieChart className="w-4 h-4 text-white/40" />
+                      </div>
+                      <div className="text-right">
+                        <div className="text-[9px] text-white/30 uppercase font-bold tracking-widest">Saúde Mensal</div>
+                        <div className="text-xs font-bold text-[#00e676]">94%</div>
+                      </div>
                     </div>
                   </div>
                 </div>
