@@ -310,24 +310,20 @@ const VisaoGeral = () => {
             Chega de abrir mil apps, planilha e extrato do banco. O DinHub reúne tudo e te entrega uma visão clara do que está acontecendo — e do que você precisa fazer agora.
           </p>
 
-          <div style={{ display: "flex", flexDirection: "column", gap: "1.2rem", marginTop: "0.3rem" }}>
+          <div className="grid grid-cols-2 sm:flex sm:flex-col gap-4 sm:gap-[1.2rem] mt-[0.3rem]">
             {bullets.map(({ Icon, title, sub }, i) => (
-              <div key={i} style={{ display: "flex", gap: "0.9rem", alignItems: "flex-start" }}>
-                <div style={{
-                  width: 44, height: 44, borderRadius: 12, flexShrink: 0,
-                  background: "rgba(0,230,118,0.07)",
-                  border: "1px solid rgba(0,230,118,0.18)",
-                  display: "flex", alignItems: "center", justifyContent: "center",
-                }}>
-                  <Icon size={20} />
+              <div key={i} className="flex flex-col sm:flex-row gap-2 sm:gap-[0.9rem] items-start">
+                <div className="w-10 h-10 sm:w-[44px] sm:h-[44px] rounded-lg sm:rounded-xl shrink-0 bg-[#00e676]/5 border border-[#00e676]/20 flex items-center justify-center">
+                  <Icon size={18} />
                 </div>
-                <div>
-                  <b style={{ fontFamily: "'Sora',sans-serif", fontSize: "0.98rem", fontWeight: 600, color: "#fff", display: "block", marginBottom: "0.15rem" }}>{title}</b>
-                  <span style={{ fontFamily: "'Inter',sans-serif", fontSize: "0.86rem", color: "#a0a0a0", lineHeight: 1.5 }}>{sub}</span>
+                <div className="min-w-0">
+                  <b className="font-display text-[0.8rem] sm:text-[0.98rem] font-semibold text-white block mb-0.5 sm:mb-[0.15rem] leading-tight truncate sm:whitespace-normal">{title}</b>
+                  <span className="font-sans text-[0.7rem] sm:text-[0.86rem] color-[#a0a0a0] leading-snug sm:lineHeight-[1.5] block line-clamp-2 sm:line-clamp-none opacity-60">{sub}</span>
                 </div>
               </div>
             ))}
           </div>
+
 
           <a href="#signup"
             style={{
