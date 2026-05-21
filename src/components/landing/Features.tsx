@@ -26,13 +26,13 @@ const Features = () => {
            style={{ backgroundImage: 'radial-gradient(circle at center, rgba(0,230,118,0.05) 0%, transparent 70%)' }} />
 
       <div className="max-w-7xl mx-auto relative z-10">
-        <div className="text-center mb-24 space-y-6">
+        <div className="text-center mb-32 space-y-8">
           <motion.div 
             initial={{ opacity: 0, scale: 0.9 }}
             whileInView={{ opacity: 1, scale: 1 }}
-            className="inline-flex items-center gap-2 px-4 py-1.5 rounded-full border border-white/10 bg-white/5 backdrop-blur-md"
+            className="inline-flex items-center gap-2 px-4 py-2 rounded-xl border border-white/5 bg-white/[0.03] backdrop-blur-md"
           >
-            <span className="text-[10px] font-black tracking-widest text-[#00e676] uppercase">O Poder do DinHub</span>
+            <span className="text-[10px] font-black tracking-[0.3em] text-[#00e676] uppercase">The Architecture of Control</span>
           </motion.div>
           
           <h2 className="font-sora font-bold text-white text-3xl md:text-5xl lg:text-7xl leading-tight tracking-tight">
