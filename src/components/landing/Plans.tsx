@@ -21,7 +21,7 @@ const Plans = () => {
       <div className="max-w-5xl mx-auto">
         <div className="text-center mb-16 space-y-4">
           <span className="text-[10px] font-bold tracking-[0.2em] text-[#00e676] uppercase">Planos</span>
-          <h2 className="font-sora font-extrabold text-white text-4xl md:text-5xl">
+          <h2 className="font-sora font-extrabold text-white text-3xl md:text-5xl">
             Quanto custa ter a Huby do seu lado?
           </h2>
           <p className="text-[#a0a0a0] max-w-2xl mx-auto">

@@ -35,7 +35,7 @@ const Features = () => {
             <span className="text-[10px] font-black tracking-widest text-[#00e676] uppercase">O Poder do DinHub</span>
           </motion.div>
           
-          <h2 className="font-sora font-bold text-white text-4xl md:text-5xl lg:text-7xl leading-tight tracking-tight">
+          <h2 className="font-sora font-bold text-white text-3xl md:text-5xl lg:text-7xl leading-tight tracking-tight">
             Enquanto você vive,<br />
             <span className="bg-gradient-to-r from-white/40 to-white bg-clip-text text-transparent italic">
               a Huby organiza.

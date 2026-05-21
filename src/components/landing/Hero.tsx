@@ -4,7 +4,7 @@ import { ArrowRight, Play } from 'lucide-react';
 
 const Hero = () => {
   return (
-    <section className="relative min-h-screen flex flex-col items-center justify-start pt-32 pb-20 px-5 overflow-hidden">
+    <section className="relative min-h-screen flex flex-col items-center justify-start pt-24 md:pt-32 pb-12 md:pb-20 px-5 overflow-hidden">
       {/* Background Mesh Grid - Inspired by Nectar */}
       <div className="absolute inset-0 z-0 opacity-20" 
            style={{ backgroundImage: 'radial-gradient(circle at 1px 1px, rgba(255,255,255,0.05) 1px, transparent 0)', backgroundSize: '40px 40px' }} />
@@ -30,8 +30,8 @@ const Hero = () => {
           initial={{ opacity: 0, y: 20 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ duration: 0.8, ease: [0.22, 1, 0.36, 1] }}
-          className="font-sora font-bold leading-[1.1] mb-6 text-white"
-          style={{ fontSize: "clamp(2.5rem, 8vw, 5.5rem)" }}
+          className="font-sora font-bold leading-[1.1] mb-6 text-white text-center"
+          style={{ fontSize: "clamp(2rem, 10vw, 5.5rem)" }}
         >
           Tony Stark tem o Jarvis.<br />
           <span className="bg-gradient-to-r from-[#00e676] to-[#00ff88] bg-clip-text text-transparent">
@@ -98,9 +98,9 @@ const Hero = () => {
         transition={{ delay: 0.8, duration: 1, ease: [0.22, 1, 0.36, 1] }}
         className="relative z-10 mt-20 w-full max-w-6xl mx-auto px-4"
       >
-        <div className="relative rounded-[2rem] border border-white/10 bg-[#0d0d0d] shadow-2xl overflow-hidden aspect-[16/10] md:aspect-[16/9]">
+        <div className="relative rounded-[1.5rem] md:rounded-[2rem] border border-white/10 bg-[#0d0d0d] shadow-2xl overflow-hidden aspect-[4/5] sm:aspect-[16/10] md:aspect-[16/9]">
           {/* Top Bar */}
-          <div className="absolute top-0 inset-x-0 h-10 border-b border-white/5 bg-white/[0.02] flex items-center px-6 gap-1.5">
+          <div className="absolute top-0 inset-x-0 h-8 md:h-10 border-b border-white/5 bg-white/[0.02] flex items-center px-4 md:px-6 gap-1.5">
             <div className="w-2.5 h-2.5 rounded-full bg-white/10" />
             <div className="w-2.5 h-2.5 rounded-full bg-white/10" />
             <div className="w-2.5 h-2.5 rounded-full bg-white/10" />
@@ -110,16 +110,16 @@ const Hero = () => {
           </div>
           
           {/* Mockup Content - Chatting with Huby */}
-          <div className="pt-20 px-8 flex flex-col items-center justify-center h-full">
-            <div className="max-w-xl w-full space-y-4">
-              <div className="bg-white/5 border border-white/10 p-5 rounded-2xl rounded-tr-none ml-auto text-sm text-white/80 leading-relaxed">
+          <div className="pt-12 md:pt-20 px-4 md:px-8 flex flex-col items-center justify-center h-full">
+            <div className="max-w-xl w-full space-y-3 md:space-y-4">
+              <div className="bg-white/5 border border-white/10 p-3 md:p-5 rounded-2xl rounded-tr-none ml-auto text-xs md:text-sm text-white/80 leading-relaxed">
                 Huby, quanto eu gastei com delivery essa semana? E me diz se ainda estou dentro da meta.
               </div>
-              <div className="flex gap-4">
-                <div className="w-10 h-10 rounded-full bg-[#00e676]/20 border border-[#00e676]/20 flex items-center justify-center flex-shrink-0">
-                  <span className="text-[10px] font-bold text-[#00e676]">HB</span>
+              <div className="flex gap-2 md:gap-4">
+                <div className="w-8 h-8 md:w-10 md:h-10 rounded-full bg-[#00e676]/20 border border-[#00e676]/20 flex items-center justify-center flex-shrink-0">
+                  <span className="text-[8px] md:text-[10px] font-bold text-[#00e676]">HB</span>
                 </div>
-                <div className="bg-[#00e676]/10 border border-[#00e676]/20 p-5 rounded-2xl rounded-tl-none text-sm text-white/90 leading-relaxed">
+                <div className="bg-[#00e676]/10 border border-[#00e676]/20 p-3 md:p-5 rounded-2xl rounded-tl-none text-xs md:text-sm text-white/90 leading-relaxed">
                   Você gastou <span className="text-[#00e676] font-bold">R$ 247,00</span> com delivery. 
                   Isso representa 82% da sua meta semanal de R$ 300. 
                   Sugiro segurar um pouco o iFood no final de semana para não ultrapassar! 😉

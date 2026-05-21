@@ -292,7 +292,7 @@ const HubySection = () => {
         </AnimatePresence>
 
         {/* Explore Tabs */}
-        <div className="mt-32 w-full text-center">
+        <div className="mt-20 md:mt-32 w-full text-center">
             <h3 className="text-[#a0a0a0] text-sm font-medium mb-8">Ou explore o que a Huby vê sobre você:</h3>
             <div className="flex overflow-x-auto no-scrollbar gap-3 pb-8 md:justify-center">
                 {APP_SCREENS.map((s) => (

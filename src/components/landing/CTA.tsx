@@ -15,7 +15,7 @@ const CTA = () => {
             viewport={{ once: true }}
             className="space-y-8"
         >
-            <h2 className="font-sora font-bold text-white text-4xl md:text-7xl mb-6 leading-tight tracking-tight">
+            <h2 className="font-sora font-bold text-white text-3xl md:text-7xl mb-6 leading-tight tracking-tight">
                 Um dia com a Huby<br />
                 <span className="bg-gradient-to-r from-[#00e676] to-[#00ff88] bg-clip-text text-transparent italic">
                   muda tudo.
