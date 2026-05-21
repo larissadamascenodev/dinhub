@@ -110,9 +110,9 @@ const Hero = () => {
           </div>
           
           {/* Mockup Content - Chatting with Huby */}
-          <div className="pt-20 px-8 flex flex-col items-center justify-center h-full">
-            <div className="max-w-xl w-full space-y-4">
-              <div className="bg-white/5 border border-white/10 p-5 rounded-2xl rounded-tr-none ml-auto text-sm text-white/80 leading-relaxed">
+          <div className="pt-12 md:pt-20 px-4 md:px-8 flex flex-col items-center justify-center h-full">
+            <div className="max-w-xl w-full space-y-3 md:space-y-4">
+              <div className="bg-white/5 border border-white/10 p-3 md:p-5 rounded-2xl rounded-tr-none ml-auto text-xs md:text-sm text-white/80 leading-relaxed">
                 Huby, quanto eu gastei com delivery essa semana? E me diz se ainda estou dentro da meta.
               </div>
               <div className="flex gap-4">
