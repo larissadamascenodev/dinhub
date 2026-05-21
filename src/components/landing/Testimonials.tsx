@@ -65,13 +65,18 @@ const Testimonials = () => {
           </div>
         </div>
 
-        <div className="relative overflow-hidden h-[400px] flex items-center justify-center">
-            <div className="flex gap-6 transition-all duration-700 ease-in-out" style={{ transform: `translateX(calc(-${index * (100 / (window.innerWidth < 768 ? 1 : 3))}%))` }}>
+        <div className="relative overflow-hidden h-[350px] md:h-[400px] flex items-center justify-center">
+            <div 
+                className="flex gap-6 transition-all duration-700 ease-in-out" 
+                style={{ 
+                    transform: `translateX(calc(-${index * 100}% - ${index * 24}px))` 
+                }}
+            >
                 {testimonials.map((t, i) => (
                     <div 
                         key={i} 
-                        className={`shrink-0 w-full md:w-[calc(33.333%-16px)] p-8 bg-[#0f0f0f] border rounded-[24px] transition-all duration-500 ${
-                            index === i ? 'border-[#00e676] scale-105 shadow-[0_0_30px_rgba(0,230,118,0.1)]' : 'border-[#1a1a1a] scale-100 opacity-40'
+                        className={`shrink-0 w-[calc(100vw-40px)] md:w-[400px] p-8 bg-[#0f0f0f] border rounded-[24px] transition-all duration-500 ${
+                            index === i ? 'border-[#00e676] scale-100 md:scale-105 shadow-[0_0_30px_rgba(0,230,118,0.1)]' : 'border-[#1a1a1a] scale-95 opacity-40'
                         }`}
                     >
                         <div className="flex items-center gap-4 mb-6">
@@ -81,7 +86,7 @@ const Testimonials = () => {
                                 <p className="text-[#444] text-[10px] font-bold uppercase tracking-widest">{t.role}</p>
                             </div>
                         </div>
-                        <p className="text-[#a0a0a0] leading-relaxed italic">"{t.text}"</p>
+                        <p className="text-[#a0a0a0] leading-relaxed italic text-sm md:text-base">"{t.text}"</p>
                     </div>
                 ))}
             </div>
