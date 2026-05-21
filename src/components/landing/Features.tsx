@@ -117,7 +117,7 @@ const Features = () => {
             <span className="text-[10px] font-black tracking-[0.3em] text-[#00e676] uppercase">The Architecture of Control</span>
           </motion.div>
           
-          <h2 className="font-sora font-extrabold text-white text-4xl md:text-7xl tracking-tighter leading-[1.05]">
+          <h2 className="font-sora font-extrabold text-white text-3xl md:text-7xl tracking-tighter leading-[1.1] md:leading-[1.05]">
             Enquanto você vive,<br />
             <span className="bg-gradient-to-r from-white/20 to-white bg-clip-text text-transparent italic font-light">
               a Huby organiza.
