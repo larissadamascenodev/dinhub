@@ -137,7 +137,7 @@ const Features = () => {
           className="space-y-20 md:space-y-48"
         >
           {/* 1. RADAR FINANCEIRO - STATIC HUB INSIGHTS PANEL */}
-          <motion.div variants={itemVariants} className="grid grid-cols-1 md:grid-cols-2 gap-12 md:gap-24 items-center">
+          <motion.div id="radar-section" variants={itemVariants} className="grid grid-cols-1 md:grid-cols-2 gap-12 md:gap-24 items-center">
             <div className="space-y-6">
               <div className="w-14 h-14 rounded-2xl bg-[#00e676]/10 border border-[#00e676]/20 flex items-center justify-center">
                 <Radar className="w-7 h-7 text-[#00e676]" />
