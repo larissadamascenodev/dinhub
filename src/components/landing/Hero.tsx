@@ -55,19 +55,19 @@ const Hero = () => {
         initial={{ opacity: 0, y: 20 }}
         animate={{ opacity: 1, y: 0 }}
         transition={{ delay: 0.4 }}
-        className="relative z-10 flex flex-col sm:flex-row items-center gap-4 mb-16"
+        className="relative z-10 flex flex-col sm:flex-row items-center gap-6 mb-20"
       >
         <a 
           href="/auth"
-          className="group relative flex items-center gap-2 px-10 py-4 rounded-full bg-white text-[#0a0a0a] font-sora font-bold text-lg hover:scale-105 transition-all duration-300"
+          className="group relative flex items-center gap-3 px-12 py-5 rounded-2xl bg-[#00e676] text-[#0a0a0a] font-sora font-extrabold text-lg hover:bg-[#00ff88] hover:shadow-[0_0_30px_rgba(0,230,118,0.5)] transition-all duration-500 hover:-translate-y-1"
         >
-          Começar agora
-          <ArrowRight className="w-5 h-5 group-hover:translate-x-1 transition-transform" />
+          Eleve suas finanças
+          <ArrowRight className="w-5 h-5 group-hover:translate-x-1.5 transition-transform duration-500" />
         </a>
         
-        <button className="flex items-center gap-2 px-10 py-4 rounded-full border border-white/10 bg-white/5 backdrop-blur-sm text-white font-sora font-bold text-lg hover:bg-white/10 transition-all duration-300 group">
-          <Play className="w-4 h-4 fill-current group-hover:scale-110 transition-transform" />
-          Ver demo
+        <button className="flex items-center gap-3 px-12 py-5 rounded-2xl border border-white/5 bg-white/[0.03] backdrop-blur-xl text-white font-sora font-extrabold text-lg hover:bg-white/[0.08] transition-all duration-500 group border-b-white/10">
+          <Play className="w-4 h-4 fill-current group-hover:scale-110 transition-transform duration-500" />
+          Ver Experiência
         </button>
       </motion.div>
 
