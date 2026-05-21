@@ -54,8 +54,8 @@ const Plans = () => {
         <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
           {/* MENSAL CARD */}
           <motion.div 
-            whileHover={{ y: -10 }}
-            className={`p-8 md:p-12 rounded-[24px] border transition-all ${billing === 'monthly' ? 'bg-[#0f0f0f] border-[#1a1a1a]' : 'bg-transparent border-[#1a1a1a]/50 opacity-60'}`}
+            whileHover={{ y: -8, transition: { duration: 0.4 } }}
+            className={`p-10 md:p-14 rounded-[40px] border transition-all duration-500 shadow-2xl ${billing === 'monthly' ? 'bg-[#0f0f0f] border-white/[0.08]' : 'bg-transparent border-white/[0.03] opacity-40'}`}
           >
             <h3 className="font-sora font-extrabold text-white text-2xl mb-2">Mensal</h3>
             <div className="flex items-baseline gap-1 mb-8">
