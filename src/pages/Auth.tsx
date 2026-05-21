@@ -251,21 +251,21 @@ const VisaoGeral = () => {
   });
 
   return (
-    <section style={{
-      background: "#0a0a0a",
-      padding: "clamp(4.5rem,9vw,8rem) 0",
-      position: "relative",
-      overflow: "hidden",
-      textAlign: "left" as const,
-    }}>
+    <section className="relative overflow-hidden py-16 sm:py-24 text-left">
       {/* Glow fundo */}
-      <div style={{
-        position: "absolute", top: "50%", right: 0,
-        transform: "translateY(-50%)",
-        width: "55vw", height: "55vw",
-        background: "radial-gradient(ellipse,rgba(0,230,118,0.07),transparent 65%)",
-        pointerEvents: "none",
-      }} />
+      <div 
+        style={{
+          position: "absolute",
+          top: "50%",
+          right: 0,
+          transform: "translateY(-50%)",
+          width: "55vw",
+          height: "55vw",
+          background: "radial-gradient(ellipse, rgba(0, 230, 118, 0.07), transparent 65%)",
+          pointerEvents: "none",
+        }} 
+      />
+
 
       <div style={{
         width: "min(92vw,1320px)", margin: "0 auto",
@@ -1016,8 +1016,8 @@ const Auth = () => {
   );
 
   return (
+    <div className="dark min-h-screen bg-neutral-950 flex flex-col relative overflow-hidden">
 
-    <div className="dark min-h-screen bg-background flex flex-col relative overflow-hidden">
 
       {/* Ambient glow */}
       <div className="pointer-events-none absolute -top-40 -left-40 w-[500px] h-[500px] rounded-full bg-primary/5 blur-[120px]" />
