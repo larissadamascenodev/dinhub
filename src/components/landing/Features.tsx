@@ -418,7 +418,7 @@ const HubyInsightsPanel: React.FC = () => {
                     {insight.tag}
                   </span>
                 </div>
-                <p className="text-base md:text-lg text-white/90 leading-relaxed font-medium">
+                <p className="text-sm md:text-lg text-white/90 leading-relaxed font-medium">
                   {insight.text}
                 </p>
               </div>
