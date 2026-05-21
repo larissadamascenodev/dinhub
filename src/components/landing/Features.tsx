@@ -291,8 +291,8 @@ const Features = () => {
               <div className="w-14 h-14 rounded-2xl bg-[#00e676]/10 border border-[#00e676]/20 flex items-center justify-center">
                 <Camera className="w-7 h-7 text-[#00e676]" />
               </div>
-              <h3 className="text-3xl md:text-4xl font-sora font-bold text-white tracking-tight">Scanner Mágico</h3>
-              <p className="text-white/50 text-lg leading-relaxed font-light">
+              <h3 className="text-2xl md:text-4xl font-sora font-bold text-white tracking-tight">Scanner Mágico</h3>
+              <p className="text-white/50 text-base md:text-lg leading-relaxed font-light">
                 "Escaneou, registrou. A Huby lê o papel, identifica a categoria e já abate do seu orçamento. Sem esforço. ✨"
               </p>
               <p className="text-white/40 text-sm">
