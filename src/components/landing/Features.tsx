@@ -396,7 +396,7 @@ const HubyInsightsPanel: React.FC = () => {
           animate={{ opacity: 1, x: 0 }}
           exit={{ opacity: 0, x: -20 }}
           transition={{ duration: 0.6, ease: [0.22, 1, 0.36, 1] }}
-          className="flex-1 flex flex-col space-y-8"
+          className="flex-1 flex flex-col space-y-6 md:space-y-8"
         >
           {/* Insights da Huby */}
           <div className="space-y-4">
