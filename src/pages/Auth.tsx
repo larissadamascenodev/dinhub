@@ -1064,39 +1064,57 @@ const Auth = () => {
       </motion.header>
 
       {/* Main content - Centered marketing */}
-      <main className="flex-1 flex flex-col items-center justify-center px-6 py-12 lg:py-20 relative z-10 max-w-4xl mx-auto text-center space-y-8 lg:space-y-10">
-        <motion.div custom={0} variants={fadeUp} initial="hidden" animate="visible">
-          <SocialProofBadge />
-        </motion.div>
-        
-        <motion.div custom={1} variants={fadeUp} initial="hidden" animate="visible">
-          <HeadlineSection />
-        </motion.div>
+      <main className="flex-1 flex flex-col items-center justify-center relative z-10">
+        <div className="w-full max-w-7xl mx-auto px-6 py-12 lg:py-20 flex flex-col items-center space-y-12 lg:space-y-24">
+          <div className="flex flex-col items-center space-y-8 lg:space-y-10 text-center max-w-4xl mx-auto">
+            <motion.div custom={0} variants={fadeUp} initial="hidden" animate="visible">
+              <SocialProofBadge />
+            </motion.div>
+            
+            <motion.div custom={1} variants={fadeUp} initial="hidden" animate="visible">
+              <HeadlineSection />
+            </motion.div>
 
-        <motion.div custom={2} variants={fadeUp} initial="hidden" animate="visible">
-          <InputMethodsPill />
-        </motion.div>
+            <motion.div custom={2} variants={fadeUp} initial="hidden" animate="visible">
+              <InputMethodsPill />
+            </motion.div>
 
-        <motion.div custom={3} variants={fadeUp} initial="hidden" animate="visible" className="w-full">
-          <VisaoGeral />
-        </motion.div>
+            <motion.div custom={4} variants={fadeUp} initial="hidden" animate="visible" className="pt-2">
+              <Button 
+                size="lg" 
+                onClick={() => openAuthModal(false)}
+                className="h-14 px-10 text-base font-bold rounded-full bg-primary/10 text-primary border border-primary/20 hover:bg-primary/20 transition-all duration-300 group shadow-[0_0_20px_rgba(0,230,118,0.1)]"
+              >
+                Começar Agora Grátis
+                <ArrowRight className="ml-2 w-5 h-5 group-hover:translate-x-1 transition-transform" />
+              </Button>
+            </motion.div>
+          </div>
 
-        <motion.div custom={4} variants={fadeUp} initial="hidden" animate="visible" className="pt-6">
+          <motion.div custom={3} variants={fadeUp} initial="hidden" animate="visible" className="w-full">
+            <VisaoGeral />
+          </motion.div>
 
-          <Button 
-            size="lg" 
-            onClick={() => openAuthModal(false)}
-            className="h-14 px-10 text-base font-bold rounded-full bg-primary/10 text-primary border border-primary/20 hover:bg-primary/20 transition-all duration-300 group"
-          >
-            Começar Agora Grátis
-            <ArrowRight className="ml-2 w-5 h-5 group-hover:translate-x-1 transition-transform" />
-          </Button>
-        </motion.div>
+          <div className="w-full grid grid-cols-1 lg:grid-cols-2 gap-12 items-center">
+            <motion.div custom={5} variants={fadeUp} initial="hidden" animate="visible" className="flex flex-col space-y-8">
+              <div className="space-y-4">
+                <h3 className="text-2xl lg:text-3xl font-display font-bold text-foreground leading-tight">
+                  A inteligência que seu <span className="text-primary">bolso precisava.</span>
+                </h3>
+                <p className="text-muted-foreground text-lg leading-relaxed">
+                  Não é apenas sobre anotar gastos. É sobre ter um assistente pessoal que entende seus hábitos e ajuda você a conquistar seus maiores sonhos.
+                </p>
+              </div>
+              <FeaturesGrid />
+            </motion.div>
 
-        <motion.div custom={5} variants={fadeUp} initial="hidden" animate="visible" className="w-full max-w-lg">
-          <TestimonialCard />
-        </motion.div>
+            <motion.div custom={6} variants={fadeUp} initial="hidden" animate="visible" className="w-full">
+              <TestimonialCard />
+            </motion.div>
+          </div>
+        </div>
       </main>
+
 
       {/* Footer */}
       <motion.footer
