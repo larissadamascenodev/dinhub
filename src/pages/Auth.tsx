@@ -1,6 +1,8 @@
 import React, { useState, useEffect } from "react";
 import ContactModal from "@/components/shared/ContactModal";
+import Huby from "@/components/Huby";
 import LegalModal from "@/components/shared/LegalModal";
+
 import { supabase } from "@/integrations/supabase/client";
 import { lovable } from "@/integrations/lovable/index";
 import { Button } from "@/components/ui/button";
@@ -1097,6 +1099,11 @@ const Auth = () => {
           <motion.div custom={3} variants={fadeUp} initial="hidden" animate="visible" className="w-full">
             <VisaoGeral />
           </motion.div>
+
+          <motion.div custom={4} variants={fadeUp} initial="hidden" animate="visible" className="w-full">
+            <Huby />
+          </motion.div>
+
 
           <div className="w-full grid grid-cols-1 lg:grid-cols-2 gap-12 items-center">
             <motion.div custom={5} variants={fadeUp} initial="hidden" animate="visible" className="flex flex-col space-y-8">
