@@ -311,19 +311,20 @@ const VisaoGeral = () => {
             Chega de abrir mil apps, planilha e extrato do banco. O DinHub reúne tudo e te entrega uma visão clara do que está acontecendo — e do que você precisa fazer agora.
           </p>
 
-          <div className="grid grid-cols-2 sm:flex sm:flex-col gap-3 sm:gap-4 mt-2">
+          <div className="grid grid-cols-2 sm:grid-cols-2 gap-2 mt-2">
             {bullets.map(({ Icon, title, sub }, i) => (
-              <div key={i} className="flex flex-col sm:flex-row gap-3 p-3 sm:p-4 rounded-2xl bg-white/[0.03] border border-white/[0.06] backdrop-blur-md hover:bg-white/[0.05] hover:border-white/[0.1] transition-all duration-300">
-                <div className="w-10 h-10 sm:w-11 sm:h-11 rounded-xl shrink-0 bg-primary/10 border border-primary/20 flex items-center justify-center text-primary">
-                  <Icon size={20} />
+              <div key={i} className="flex items-center gap-2 p-2 rounded-xl bg-white/[0.02] border border-white/[0.05] backdrop-blur-sm">
+                <div className="w-8 h-8 rounded-lg shrink-0 bg-primary/10 border border-primary/20 flex items-center justify-center text-primary">
+                  <Icon size={16} />
                 </div>
                 <div className="min-w-0">
-                  <b className="font-display text-[0.85rem] sm:text-[0.98rem] font-bold text-white block mb-1 leading-tight">{title}</b>
-                  <span className="font-sans text-[0.72rem] sm:text-[0.86rem] text-muted-foreground leading-relaxed block line-clamp-2 sm:line-clamp-none">{sub}</span>
+                  <b className="font-display text-[0.75rem] font-bold text-white block leading-none">{title}</b>
+                  <span className="font-sans text-[0.65rem] text-muted-foreground truncate block">{sub}</span>
                 </div>
               </div>
             ))}
           </div>
+
 
 
 
