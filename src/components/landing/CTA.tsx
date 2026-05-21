@@ -4,47 +4,48 @@ import { ArrowRight } from 'lucide-react';
 
 const CTA = () => {
   return (
-    <section className="py-32 px-5 relative overflow-hidden">
-      {/* Background Glow */}
-      <div className="absolute bottom-0 left-1/2 -translate-x-1/2 w-[200%] aspect-square bg-[#00e676]/10 rounded-full blur-[150px] pointer-events-none" />
+    <section className="py-32 px-5 relative overflow-hidden bg-[#0a0a0a]">
+      {/* Nectar style background accents */}
+      <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-full max-w-[800px] aspect-square bg-[#00e676]/10 rounded-full blur-[180px] pointer-events-none opacity-40" />
 
-      <div className="max-w-4xl mx-auto text-center relative z-10">
-        <h2 className="font-sora font-extrabold text-white text-4xl md:text-6xl mb-6 leading-tight">
-          Seu dinheiro merece mais atenção do que está recebendo.
-        </h2>
-        <p className="text-[#00e676] text-xl md:text-2xl font-medium mb-16">
-          Comece hoje. Veja a diferença esta semana.
-        </p>
-
-        <div className="grid grid-cols-1 md:grid-cols-3 gap-8 mb-20">
-          {[
-            { t: "Você lança.", s: "A Huby organiza." },
-            { t: "Você pergunta.", s: "A Huby responde." },
-            { t: "Você decide.", s: "Com dados reais." },
-          ].map((item, i) => (
-            <div key={i} className="space-y-1">
-              <div className="text-[#a0a0a0] text-sm">{item.t}</div>
-              <div className="text-white font-bold">{item.s}</div>
-            </div>
-          ))}
-        </div>
-
-        <motion.div
-            whileHover={{ scale: 1.05 }}
-            className="inline-block"
+      <div className="max-w-5xl mx-auto text-center relative z-10">
+        <motion.div 
+            initial={{ opacity: 0, y: 20 }}
+            whileInView={{ opacity: 1, y: 0 }}
+            viewport={{ once: true }}
+            className="space-y-8"
         >
-            <a 
-            href="/auth"
-            className="flex items-center gap-2 px-10 py-6 rounded-full bg-[#00e676] text-[#0a0a0a] font-sora font-bold text-xl shadow-[0_0_40px_rgba(0,230,118,0.4)] hover:shadow-[0_0_60px_rgba(0,230,118,0.6)] transition-all"
-            >
-            Conversar com a Huby
-            <ArrowRight className="w-6 h-6" />
-            </a>
+            <h2 className="font-sora font-bold text-white text-4xl md:text-7xl mb-6 leading-tight tracking-tight">
+                Um dia com a Huby<br />
+                <span className="bg-gradient-to-r from-[#00e676] to-[#00ff88] bg-clip-text text-transparent italic">
+                  muda tudo.
+                </span>
+            </h2>
+            
+            <p className="text-white/50 text-xl md:text-2xl max-w-2xl mx-auto font-medium mb-12">
+                Comece agora e veja seu dinheiro trabalhar para você em vez de sumir da sua conta.
+            </p>
+
+            <div className="flex flex-col items-center gap-6">
+                <motion.div
+                    whileHover={{ scale: 1.05 }}
+                    className="inline-block"
+                >
+                    <a 
+                    href="/auth"
+                    className="flex items-center gap-3 px-12 py-6 rounded-full bg-white text-[#0a0a0a] font-sora font-bold text-xl hover:bg-[#00e676] transition-all duration-300"
+                    >
+                    Começar agora
+                    <ArrowRight className="w-6 h-6" />
+                    </a>
+                </motion.div>
+                
+                <div className="flex items-center gap-8 text-[11px] font-bold text-white/30 uppercase tracking-[0.2em]">
+                    <span>3 dias de teste grátis</span>
+                    <span>Multiplataforma</span>
+                </div>
+            </div>
         </motion.div>
-        
-        <p className="mt-8 text-sm text-[#444] font-medium">
-            3 dias grátis · Sem cartão · Cancele quando quiser
-        </p>
       </div>
     </section>
   );
