@@ -59,7 +59,7 @@ const Features = () => {
           viewport={{ once: true, margin: "-100px" }}
           className="space-y-32 md:space-y-48"
         >
-          {/* 1. RADAR FINANCEIRO (HUB INSIGHTS STYLE) */}
+          {/* 1. RADAR FINANCEIRO - STATIC HUB INSIGHTS PANEL */}
           <motion.div variants={itemVariants} className="grid grid-cols-1 md:grid-cols-2 gap-12 md:gap-24 items-center">
             <div className="space-y-6">
               <div className="w-14 h-14 rounded-2xl bg-[#00e676]/10 border border-[#00e676]/20 flex items-center justify-center">
@@ -67,13 +67,13 @@ const Features = () => {
               </div>
               <h3 className="text-3xl md:text-4xl font-sora font-bold text-white tracking-tight">Radar Financeiro</h3>
               <p className="text-white/50 text-lg leading-relaxed font-light">
-                O Radar não apenas vigia; ele interpreta. Identifica padrões perigosos e sugere ações imediatas para manter você no topo.
+                O Radar identifica padrões perigosos e indica exatamente o que você deve fazer. Tudo visual, direto e automático.
               </p>
               <ul className="space-y-4 pt-4">
                 {[
-                  'Insights preditivos baseados em IA',
-                  'Ações corretivas sugeridas na hora',
-                  'Gestão proativa de fluxo de caixa'
+                  'Insights preditivos de inteligência',
+                  'Indicação de ações corretivas imediatas',
+                  'Monitoramento de padrões de consumo'
                 ].map((item, i) => (
                   <li key={i} className="flex items-center gap-3 text-sm text-white/70">
                     <CheckCircle2 className="w-4 h-4 text-[#00e676]" />
@@ -86,79 +86,54 @@ const Features = () => {
             <div className="relative group">
               <div className="absolute inset-0 bg-[#00e676]/10 blur-[100px] rounded-full group-hover:bg-[#00e676]/20 transition-all duration-1000" />
               
-              {/* Reference-style Hub Insights Screen */}
-              <div className="relative bg-[#0d0d0d] border border-white/10 rounded-[32px] p-6 shadow-2xl backdrop-blur-xl overflow-hidden min-h-[400px]">
-                <div className="flex items-center justify-between mb-8 pb-4 border-b border-white/5">
-                  <div className="flex items-center gap-2">
-                    <div className="w-2 h-2 rounded-full bg-[#00e676] animate-pulse" />
-                    <span className="text-[10px] font-bold text-white/60 uppercase tracking-widest">Hub Insights</span>
+              {/* Static Insights Panel - Square Translucent Design */}
+              <div className="relative bg-white/[0.03] border border-white/10 rounded-3xl p-8 shadow-2xl backdrop-blur-xl overflow-hidden min-h-[400px] flex flex-col justify-between">
+                <div className="space-y-8">
+                  <div className="flex items-center justify-between">
+                    <div className="flex items-center gap-3">
+                      <div className="w-1.5 h-1.5 rounded-full bg-[#00e676]" />
+                      <span className="text-[11px] font-black text-white/40 uppercase tracking-[0.2em]">Hub Neural Insights</span>
+                    </div>
                   </div>
-                  <div className="flex gap-1.5">
-                    <div className="w-2 h-2 rounded-full bg-white/5" />
-                    <div className="w-2 h-2 rounded-full bg-white/5" />
-                    <div className="w-2 h-2 rounded-full bg-white/5" />
+
+                  {/* Insight Content 1 */}
+                  <div className="space-y-4">
+                    <div className="flex items-center gap-2">
+                      <TrendingDown className="w-4 h-4 text-orange-400" />
+                      <span className="text-[10px] font-bold text-orange-400 uppercase tracking-widest">Alerta de Padrão</span>
+                    </div>
+                    <div className="space-y-2">
+                      <h4 className="text-lg font-bold text-white">Desvio no Lazer</h4>
+                      <p className="text-sm text-white/50 leading-relaxed">
+                        Seu gasto nesta categoria cresceu 28% nos últimos 15 dias, impactando sua projeção de reserva para Agosto em R$ 450,00.
+                      </p>
+                    </div>
+                  </div>
+
+                  {/* Insight Content 2 - Suggested Action */}
+                  <div className="space-y-4">
+                    <div className="flex items-center gap-2">
+                      <Zap className="w-4 h-4 text-[#00e676]" />
+                      <span className="text-[10px] font-bold text-[#00e676] uppercase tracking-widest">Ação Corretiva</span>
+                    </div>
+                    <div className="bg-[#00e676]/5 border border-[#00e676]/20 rounded-2xl p-5">
+                      <div className="text-sm font-bold text-white mb-2 tracking-tight">Otimização de Assinaturas</div>
+                      <p className="text-xs text-white/60 leading-relaxed">
+                        Identificamos 3 serviços (Streamings) sem uso há 60 dias. Cancelá-los agora gera uma economia imediata de R$ 89,90/mês.
+                      </p>
+                    </div>
                   </div>
                 </div>
 
-                <div className="space-y-6">
-                  {/* Insight 1 */}
-                  <div className="space-y-3">
-                    <div className="flex items-center gap-2">
-                      <TrendingDown className="w-4 h-4 text-orange-400" />
-                      <span className="text-xs font-bold text-orange-400 uppercase tracking-wider">Detecção de Padrão</span>
-                    </div>
-                    <div className="bg-white/[0.02] border border-white/5 p-4 rounded-2xl">
-                      <p className="text-xs text-white/80 leading-relaxed mb-3">
-                        Seu gasto com <span className="text-white font-bold">Lazer</span> cresceu 28% nos últimos 15 dias. Isso pode comprometer sua meta de investimento de Junho.
-                      </p>
-                      <div className="flex gap-2">
-                        <button className="flex-1 py-2 rounded-lg bg-[#00e676]/10 border border-[#00e676]/20 text-[9px] font-bold text-[#00e676] uppercase tracking-wider hover:bg-[#00e676]/20 transition-all">
-                          Ver Detalhes
-                        </button>
-                        <button className="flex-1 py-2 rounded-lg bg-white/5 border border-white/10 text-[9px] font-bold text-white/40 uppercase tracking-wider">
-                          Ignorar
-                        </button>
-                      </div>
-                    </div>
+                {/* Bottom Footer Stats */}
+                <div className="pt-8 border-t border-white/5 grid grid-cols-2 gap-8">
+                  <div className="space-y-1">
+                    <div className="text-[9px] font-bold text-white/30 uppercase tracking-[0.15em]">Saúde Financeira</div>
+                    <div className="text-xl font-bold text-[#00e676]">94.2%</div>
                   </div>
-
-                  {/* Insight 2 - Sugestão de Ação */}
-                  <div className="space-y-3">
-                    <div className="flex items-center gap-2">
-                      <Zap className="w-4 h-4 text-[#00e676]" />
-                      <span className="text-xs font-bold text-[#00e676] uppercase tracking-wider">Ação Sugerida</span>
-                    </div>
-                    <div className="bg-[#00e676]/5 border border-[#00e676]/20 p-4 rounded-2xl">
-                      <p className="text-xs text-white/90 font-medium leading-relaxed mb-4">
-                        Identificamos 3 assinaturas inativas. Cancelá-las economiza <span className="text-[#00e676] font-bold">R$ 89,90/mês</span> imediatamente.
-                      </p>
-                      <button className="w-full py-2.5 rounded-xl bg-[#00e676] text-[#0a0a0a] text-[10px] font-bold uppercase tracking-wider flex items-center justify-center gap-2 hover:bg-[#00ff88] transition-all">
-                        Executar agora
-                        <ArrowRight className="w-3 h-3" />
-                      </button>
-                    </div>
-                  </div>
-
-                  {/* Micro Insight Bottom */}
-                  <div className="pt-4 border-t border-white/5 flex items-center justify-between">
-                    <div className="flex items-center gap-3">
-                      <div className="w-8 h-8 rounded-full bg-white/5 flex items-center justify-center">
-                        <Wallet className="w-4 h-4 text-white/40" />
-                      </div>
-                      <div>
-                        <div className="text-[9px] text-white/30 uppercase font-bold tracking-widest">Saldo Protegido</div>
-                        <div className="text-xs font-bold text-white">R$ 4.250,00</div>
-                      </div>
-                    </div>
-                    <div className="flex items-center gap-3">
-                      <div className="w-8 h-8 rounded-full bg-white/5 flex items-center justify-center">
-                        <PieChart className="w-4 h-4 text-white/40" />
-                      </div>
-                      <div className="text-right">
-                        <div className="text-[9px] text-white/30 uppercase font-bold tracking-widest">Saúde Mensal</div>
-                        <div className="text-xs font-bold text-[#00e676]">94%</div>
-                      </div>
-                    </div>
+                  <div className="space-y-1 text-right">
+                    <div className="text-[9px] font-bold text-white/30 uppercase tracking-[0.15em]">Proteção de Caixa</div>
+                    <div className="text-xl font-bold text-white">Ativa</div>
                   </div>
                 </div>
               </div>
