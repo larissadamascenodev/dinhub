@@ -80,7 +80,7 @@ const Features = () => {
           {/* CARD 2 - MÉDIO */}
           <motion.div 
             variants={itemVariants}
-            className="md:col-span-1 md:row-span-2 bg-[#0f0f0f] border border-[#1a1a1a] rounded-[24px] p-8 flex flex-col justify-between group hover:border-[#00e676]/40 transition-all"
+            className="md:col-span-4 md:row-span-2 bg-[#0f0f0f] border border-white/[0.05] rounded-[32px] p-10 flex flex-col justify-between group hover:border-[#00e676]/30 transition-all duration-700 shadow-2xl"
           >
             <div>
               <LayoutGrid className="w-8 h-8 text-[#00e676] mb-6" />
