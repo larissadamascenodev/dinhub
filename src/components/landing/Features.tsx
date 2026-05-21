@@ -455,8 +455,8 @@ const HubyInsightsPanel: React.FC = () => {
                     </div>
                     <div className="flex items-center gap-2 shrink-0">
                       <div className="text-right">
-                        <div className={`text-[11px] md:text-[13px] font-bold ${a.valueColor}`}>{a.value}</div>
-                        <div className="text-[9px] text-white/20 font-bold uppercase tracking-tighter">Sugestão</div>
+                        <div className={`text-[11px] md:text-[13px] font-bold ${a.valueColor} whitespace-nowrap`}>{a.value}</div>
+                        <div className="text-[8px] md:text-[9px] text-white/20 font-bold uppercase tracking-tighter">Sugestão</div>
                       </div>
                       <ChevronRight className="w-4 h-4 text-white/20 group-hover:text-[#00e676] group-hover:translate-x-1 transition-all" />
                     </div>
