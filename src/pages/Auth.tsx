@@ -396,13 +396,15 @@ const VisaoGeral = () => {
 
           {/* ── IPHONE ── */}
           <div style={{
-            width: "clamp(248px,21vw,292px)",
+            width: "clamp(248px, 21vw, 292px)",
+            height: "clamp(500px, 45vw, 600px)",
             background: "#050505",
             border: "9px solid #181818",
             borderRadius: 48,
             boxShadow: "0 0 0 1px #222, 0 40px 100px rgba(0,0,0,0.7), 0 0 70px rgba(0,230,118,0.12)",
             position: "relative", overflow: "hidden", zIndex: 2,
           }}>
+
             {/* Notch */}
             <div style={{ position: "absolute", top: 12, left: "50%", transform: "translateX(-50%)", width: 90, height: 22, background: "#000", borderRadius: 99, zIndex: 5 }} />
 
