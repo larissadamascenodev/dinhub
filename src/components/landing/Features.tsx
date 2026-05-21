@@ -155,7 +155,7 @@ const Features = () => {
                   </div>
                 </div>
               </div>
-              <h3 className="text-3xl md:text-5xl font-sora font-bold text-white tracking-tight">O Radar Financeiro da Huby</h3>
+              <h3 className="text-3xl md:text-5xl font-sora font-bold text-white tracking-tight">O Radar Financeiro</h3>
               <p className="text-white/50 text-lg md:text-xl font-light max-w-2xl mx-auto">
                 Uma visão 360° do seu dinheiro em tempo real. Identificamos padrões, alertamos riscos e sugerimos ações imediatas.
               </p>
@@ -464,6 +464,12 @@ const HubyInsightsPanel: React.FC = () => {
           }}
           className="flex-1 flex flex-col space-y-6 md:space-y-8"
         >
+          {/* Cabeçalho Radar Financeiro dentro do quadro */}
+          <div className="flex items-center justify-center gap-2 mb-2">
+            <Radar className="w-5 h-5 text-[#00e676]" />
+            <span className="text-xs font-black tracking-[0.2em] text-[#00e676] uppercase">Radar Financeiro</span>
+          </div>
+
           {/* Insights da Huby */}
           <div className="space-y-4">
             <div className="flex items-center gap-2">
