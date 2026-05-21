@@ -152,6 +152,7 @@ const Features = () => {
                   <div className="w-14 h-14 rounded-2xl bg-[#00e676]/10 border border-[#00e676]/20 flex items-center justify-center">
                     <Radar className="w-7 h-7 text-[#00e676]" />
                   </div>
+                  <h3 className="text-3xl md:text-5xl font-sora font-bold text-white tracking-tight">Radar Financeiro</h3>
                   <p className="text-white/50 text-base md:text-lg leading-relaxed font-light">
                     O Radar identifica padrões perigosos e indica exatamente o que você deve fazer. Tudo visual, direto e automático.
                   </p>
