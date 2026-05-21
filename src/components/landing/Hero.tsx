@@ -10,7 +10,8 @@ const Hero = () => {
            style={{ backgroundImage: 'radial-gradient(circle at 1px 1px, rgba(255,255,255,0.05) 1px, transparent 0)', backgroundSize: '40px 40px' }} />
       
       {/* Background Glows */}
-      <div className="absolute top-[-10%] left-1/2 -translate-x-1/2 w-[100%] aspect-square max-w-[800px] rounded-full bg-[#00e676]/5 blur-[120px] pointer-events-none z-0" />
+      <div className="absolute top-[-10%] left-1/2 -translate-x-1/2 w-[120%] aspect-square max-w-[1000px] rounded-full bg-[#00e676]/10 blur-[150px] pointer-events-none z-0" />
+      <div className="absolute bottom-[-10%] left-0 w-[50%] aspect-square bg-[#00e676]/5 blur-[120px] pointer-events-none z-0" />
 
       {/* Badge */}
       <motion.div 
