@@ -210,8 +210,9 @@ const HubySection = () => {
   };
 
   return (
-    <section className="py-20 px-5 flex flex-col items-center">
-      <div className="w-full max-w-4xl flex flex-col items-center">
+    <section className="py-40 px-5 flex flex-col items-center relative overflow-hidden">
+      <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-full max-w-[1000px] aspect-square bg-[#00e676]/5 blur-[150px] pointer-events-none rounded-full" />
+      <div className="w-full max-w-5xl flex flex-col items-center relative z-10">
         
         {/* Carrossel de Perguntas */}
         <div className="w-full flex overflow-x-auto no-scrollbar gap-3 pb-8 justify-start md:justify-center">
@@ -219,10 +220,10 @@ const HubySection = () => {
             <button
               key={q.id}
               onClick={() => handleQuestionClick(q)}
-              className={`whitespace-nowrap px-5 py-3 rounded-full border transition-all duration-300 text-sm font-medium ${
+              className={`whitespace-nowrap px-6 py-3 rounded-xl border transition-all duration-500 text-xs font-bold tracking-widest uppercase ${
                 activeQuestion === q.id 
-                  ? "bg-[#00e676]/10 border-[#00e676] text-[#00e676]" 
-                  : "bg-[#111] border-[#1a1a1a] text-[#777] hover:border-[#00e676]/30 hover:text-[#ccc]"
+                  ? "bg-[#00e676]/10 border-[#00e676]/40 text-[#00e676] shadow-[0_0_20px_rgba(0,230,118,0.2)]" 
+                  : "bg-white/[0.03] border-white/[0.05] text-white/40 hover:border-[#00e676]/30 hover:text-white"
               }`}
             >
               {q.text}
@@ -233,10 +234,10 @@ const HubySection = () => {
         {/* Esfera */}
         <div className="relative mb-12">
             <ParticleSphere state={status} />
-            <div className="absolute -bottom-4 left-1/2 -translate-x-1/2 flex items-center gap-2 whitespace-nowrap">
-                <div className={`w-2 h-2 rounded-full ${status === 'responding' ? 'bg-[#00e676] animate-pulse' : 'bg-[#777]'}`} />
-                <span className="text-[10px] font-bold text-[#a0a0a0] uppercase tracking-widest">
-                    {status === 'responding' ? 'Huby está analisando...' : 'Huby online'}
+            <div className="absolute -bottom-8 left-1/2 -translate-x-1/2 flex items-center gap-3 whitespace-nowrap bg-white/[0.03] px-4 py-2 rounded-xl border border-white/[0.05] backdrop-blur-xl">
+                <div className={`w-2 h-2 rounded-full ${status === 'responding' ? 'bg-[#00e676] animate-pulse shadow-[0_0_10px_#00e676]' : 'bg-white/20'}`} />
+                <span className="text-[9px] font-black text-white/40 uppercase tracking-[0.2em]">
+                    {status === 'responding' ? 'Huby está processando...' : 'Huby Neural Core Active'}
                 </span>
             </div>
         </div>
@@ -266,10 +267,10 @@ const HubySection = () => {
                                 )}
                             </div>
                             
-                            <div className={`p-4 max-w-[85%] ${
+                            <div className={`p-6 max-w-[85%] shadow-2xl ${
                                 msg.role === 'user' 
-                                    ? "bg-[#1a1a1a] rounded-[18px_18px_4px_18px] text-white" 
-                                    : "bg-[#00e676]/8 rounded-[4px_18px_18px_18px] text-white border border-[#00e676]/10"
+                                    ? "bg-white/[0.03] border border-white/10 rounded-[24px_24px_4px_24px] text-white/90" 
+                                    : "bg-white/[0.05] rounded-[4px_24px_24px_24px] text-white border border-white/10 backdrop-blur-xl"
                             }`}>
                                 <p className="text-sm leading-relaxed">
                                     {msg.text}
@@ -305,7 +306,7 @@ const HubySection = () => {
                             if (element) element.scrollIntoView({ behavior: 'smooth', block: 'start' });
                             setTimeout(() => setStatus('idle'), 1000);
                         }}
-                        className="whitespace-nowrap px-4 py-2 rounded-full border border-[#1a1a1a] bg-[#0a0a0a] text-[#a0a0a0] text-xs hover:border-[#00e676]/30 hover:text-white transition-all"
+                        className="whitespace-nowrap px-6 py-3 rounded-xl border border-white/[0.05] bg-white/[0.02] text-white/40 text-[10px] font-bold uppercase tracking-widest hover:border-[#00e676]/30 hover:text-white transition-all duration-500 hover:-translate-y-1"
                     >
                         {s.label}
                     </button>

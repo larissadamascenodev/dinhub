@@ -15,9 +15,9 @@ const CTA = () => {
             viewport={{ once: true }}
             className="space-y-8"
         >
-            <h2 className="font-sora font-bold text-white text-3xl md:text-7xl mb-6 leading-tight tracking-tight">
+            <h2 className="font-sora font-extrabold text-white text-3xl md:text-8xl tracking-tighter leading-[1.05] mb-8">
                 Um dia com a Huby<br />
-                <span className="bg-gradient-to-r from-[#00e676] to-[#00ff88] bg-clip-text text-transparent italic">
+                <span className="bg-gradient-to-r from-[#00e676] to-[#00ff88] bg-clip-text text-transparent italic font-light">
                   muda tudo.
                 </span>
             </h2>
@@ -33,10 +33,10 @@ const CTA = () => {
                 >
                     <a 
                     href="/auth"
-                    className="flex items-center gap-3 px-12 py-6 rounded-full bg-white text-[#0a0a0a] font-sora font-bold text-xl hover:bg-[#00e676] transition-all duration-300"
+                    className="flex items-center gap-4 px-14 py-6 rounded-2xl bg-[#00e676] text-[#0a0a0a] font-sora font-extrabold text-2xl hover:bg-[#00ff88] hover:shadow-[0_0_40px_rgba(0,230,118,0.6)] transition-all duration-500 hover:-translate-y-1.5"
                     >
-                    Começar agora
-                    <ArrowRight className="w-6 h-6" />
+                    Iniciar Ascensão
+                    <ArrowRight className="w-7 h-7" />
                     </a>
                 </motion.div>
                 
