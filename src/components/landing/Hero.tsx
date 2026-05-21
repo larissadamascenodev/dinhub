@@ -98,9 +98,9 @@ const Hero = () => {
         transition={{ delay: 0.8, duration: 1, ease: [0.22, 1, 0.36, 1] }}
         className="relative z-10 mt-20 w-full max-w-6xl mx-auto px-4"
       >
-        <div className="relative rounded-[2rem] border border-white/10 bg-[#0d0d0d] shadow-2xl overflow-hidden aspect-[16/10] md:aspect-[16/9]">
+        <div className="relative rounded-[1.5rem] md:rounded-[2rem] border border-white/10 bg-[#0d0d0d] shadow-2xl overflow-hidden aspect-[4/5] sm:aspect-[16/10] md:aspect-[16/9]">
           {/* Top Bar */}
-          <div className="absolute top-0 inset-x-0 h-10 border-b border-white/5 bg-white/[0.02] flex items-center px-6 gap-1.5">
+          <div className="absolute top-0 inset-x-0 h-8 md:h-10 border-b border-white/5 bg-white/[0.02] flex items-center px-4 md:px-6 gap-1.5">
             <div className="w-2.5 h-2.5 rounded-full bg-white/10" />
             <div className="w-2.5 h-2.5 rounded-full bg-white/10" />
             <div className="w-2.5 h-2.5 rounded-full bg-white/10" />
