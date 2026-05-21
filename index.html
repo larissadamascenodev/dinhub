@@ -28,14 +28,18 @@
         footer { padding: 40px 20px; border-top: 1px solid var(--border); text-align: center; color: var(--text-sec); }
         #huby-canvas { display: block; margin: 0 auto; cursor: pointer; }
         .chat-container { max-width: 600px; margin: 20px auto; background: var(--card); border: 1px solid var(--border); border-radius: 20px; padding: 20px; text-align: left; }
-        .chat-message { margin-bottom: 15px; padding: 12px 16px; border-radius: 12px; font-size: 0.95rem; line-height: 1.4; max-width: 85%; }
-        .msg-user { background: #1a1a1a; color: var(--text-sec); margin-left: auto; border-bottom-right-radius: 4px; }
-        .msg-huby { background: rgba(0, 230, 118, 0.1); color: var(--text); border-bottom-left-radius: 4px; border: 1px solid rgba(0, 230, 118, 0.2); }
-        .typing { display: flex; gap: 4px; padding: 10px; }
+        .chat-message { margin-bottom: 12px; padding: 12px 16px; border-radius: 12px; font-size: 0.95rem; line-height: 1.4; max-width: 85%; animation: fadeIn 0.3s ease-out; }
+        .msg-user { background: #1a1a1a; color: var(--text-sec); margin-left: auto; border-bottom-right-radius: 4px; border: 1px solid #2a2a2a; }
+        .msg-huby { background: rgba(0, 230, 118, 0.08); color: var(--text); border-bottom-left-radius: 4px; border: 1px solid rgba(0, 230, 118, 0.15); }
+        .typing { display: flex; gap: 4px; padding: 8px 12px; background: rgba(0, 230, 118, 0.05); border-radius: 12px; width: fit-content; margin-bottom: 12px; }
         .dot { width: 6px; height: 6px; background: var(--primary); border-radius: 50%; animation: pulse 1.5s infinite; }
         .dot:nth-child(2) { animation-delay: 0.2s; }
         .dot:nth-child(3) { animation-delay: 0.4s; }
+        .suggested-questions { display: flex; flex-wrap: wrap; gap: 8px; margin-top: 15px; }
+        .question-btn { background: #111; border: 1px solid var(--border); color: var(--text-sec); padding: 8px 14px; border-radius: 99px; font-size: 0.85rem; cursor: pointer; transition: all 0.3s ease; }
+        .question-btn:hover { border-color: var(--primary); color: var(--primary); background: rgba(0, 230, 118, 0.05); }
         @keyframes pulse { 0%, 100% { opacity: 0.3; transform: scale(0.8); } 50% { opacity: 1; transform: scale(1.1); } }
+        @keyframes fadeIn { from { opacity: 0; transform: translateY(5px); } to { opacity: 1; transform: translateY(0); } }
     </style>
 </head>
 <body>
@@ -67,11 +71,17 @@
                 </div>
                 
                 <div class="chat-container">
-                    <div id="chat-box" style="height: 180px; overflow-y: auto; margin-bottom: 10px; scroll-behavior: smooth; padding-right: 5px;">
-                        <div class="chat-message msg-huby">Olá! Sou a Huby. Percebi que você gastou 15% a mais com iFood esta semana. Quer que eu te mostre como economizar R$ 200 no próximo mês?</div>
+                    <div id="chat-box" style="height: 220px; overflow-y: auto; margin-bottom: 10px; scroll-behavior: smooth; padding-right: 5px;">
+                        <div class="chat-message msg-huby">Olá! Sou a Huby, sua inteligência financeira. Como posso ajudar você a economizar hoje?</div>
+                    </div>
+                    <div id="suggestions" class="suggested-questions">
+                        <button class="question-btn" onclick="handleSuggestion(this)">Quanto gastei com iFood este mês?</button>
+                        <button class="question-btn" onclick="handleSuggestion(this)">Como posso economizar R$ 200?</button>
+                        <button class="question-btn" onclick="handleSuggestion(this)">Analise minhas assinaturas</button>
+                        <button class="question-btn" onclick="handleSuggestion(this)">Quanto sobra se eu investir R$ 500?</button>
                     </div>
                     <div style="display: flex; gap: 10px; margin-top: 15px;">
-                        <input type="text" id="chat-input" placeholder="Pergunte sobre seus gastos..." style="flex: 1; background: #050505; border: 1px solid var(--border); border-radius: 12px; padding: 12px 16px; color: white; outline: none; transition: border-color 0.3s;" onfocus="this.style.borderColor='var(--primary)'" onblur="this.style.borderColor='var(--border)'" onkeypress="if(event.key === 'Enter') sendMessage()">
+                        <input type="text" id="chat-input" placeholder="Pergunte algo à Huby..." style="flex: 1; background: #050505; border: 1px solid var(--border); border-radius: 12px; padding: 12px 16px; color: white; outline: none; transition: border-color 0.3s;" onfocus="this.style.borderColor='var(--primary)'" onblur="this.style.borderColor='var(--border)'" onkeypress="if(event.key === 'Enter') sendMessage()">
                         <button onclick="sendMessage()" style="background: var(--primary); border: none; border-radius: 12px; width: 45px; height: 45px; display: flex; align-items: center; justify-content: center; cursor: pointer;">
                             <i data-lucide="send" style="width: 20px; height: 20px; color: black;"></i>
                         </button>
@@ -220,36 +230,54 @@
         }
 
         // --- CHAT INTERACTION ---
+        const responses = {
+            "Quanto gastei com iFood este mês?": "Você gastou R$ 482,50 com iFood este mês. Isso representa 12% do seu orçamento mensal. Gostaria de definir um limite para delivery?",
+            "Como posso economizar R$ 200?": "Identifiquei 3 assinaturas que você não usa há 2 meses e que somam R$ 115. Além disso, se reduzir gastos com transporte em 10%, chegamos aos R$ 200!",
+            "Analise minhas assinaturas": "Você possui 8 assinaturas ativas totalizando R$ 345/mês. Notei que você tem dois streamings de música. Posso sugerir qual cancelar?",
+            "Quanto sobra se eu investir R$ 500?": "Com base na sua renda e gastos fixos, ainda sobrariam R$ 850 para lazer e emergências. É uma ótima decisão financeira!"
+        };
+
+        function addMessage(text, side) {
+            const chatBox = document.getElementById('chat-box');
+            const msg = document.createElement('div');
+            msg.className = `chat-message msg-${side}`;
+            msg.textContent = text;
+            chatBox.appendChild(msg);
+            chatBox.scrollTop = chatBox.scrollHeight;
+        }
+
+        function handleSuggestion(btn) {
+            const text = btn.textContent;
+            addMessage(text, 'user');
+            processResponse(text);
+        }
+
         function sendMessage() {
             const input = document.getElementById('chat-input');
-            const chatBox = document.getElementById('chat-box');
-            if (!input.value.trim()) return;
+            const text = input.value.trim();
+            if (!text) return;
 
-            // User message
-            const userMsg = document.createElement('div');
-            userMsg.className = 'chat-message msg-user';
-            userMsg.textContent = input.value;
-            chatBox.appendChild(userMsg);
+            addMessage(text, 'user');
             input.value = '';
-            
-            // Scroll to bottom
-            chatBox.scrollTop = chatBox.scrollHeight;
+            processResponse(text);
+        }
 
+        function processResponse(userText) {
+            const chatBox = document.getElementById('chat-box');
+            
             // Huby typing
             const typing = document.createElement('div');
             typing.className = 'typing';
             typing.innerHTML = '<div class="dot"></div><div class="dot"></div><div class="dot"></div>';
             chatBox.appendChild(typing);
+            chatBox.scrollTop = chatBox.scrollHeight;
 
             setTimeout(() => {
                 chatBox.removeChild(typing);
-                const hubyMsg = document.createElement('div');
-                hubyMsg.className = 'chat-message msg-huby';
-                hubyMsg.textContent = "Com base nos seus dados, se você reduzir 10% do lazer este mês, terá R$ 450 extras para investir. Posso agendar esse lembrete?";
-                chatBox.appendChild(hubyMsg);
-                chatBox.scrollTop = chatBox.scrollHeight;
+                const reply = responses[userText] || "Interessante! Estou analisando seus dados para te dar a melhor resposta sobre isso. Posso te enviar um alerta assim que terminar?";
+                addMessage(reply, 'huby');
                 triggerResponse();
-            }, 1500);
+            }, 1200 + Math.random() * 800);
         }
 
         initCanvas();
