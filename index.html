@@ -119,6 +119,7 @@
         let targetRotationSpeed = 0.005;
         let currentRotationSpeed = 0.005;
         let hubyEnergy = 0; // 0 to 1
+        let noiseOffset = 0;
 
         function initCanvas() {
             width = canvas.width = 350;
@@ -160,15 +161,17 @@
             currentRotationSpeed += (targetRotationSpeed - currentRotationSpeed) * 0.05;
             rotationY += currentRotationSpeed;
             rotationX += currentRotationSpeed * 0.5;
+            noiseOffset += 0.01;
             
-            const projectedParticles = particles.map(p => {
+            const projectedParticles = particles.map((p, i) => {
                 const rot = rotate(p, rotationX, rotationY);
-                // Pulse effect
-                const pulse = 1 + Math.sin(Date.now() * 0.002) * 0.05 * hubyEnergy;
+                // Pulse effect + organic jitter
+                const jitter = Math.sin(noiseOffset + i) * 2 * hubyEnergy;
+                const pulse = 1 + Math.sin(Date.now() * 0.002 + i * 0.1) * 0.05 * hubyEnergy;
                 const scale = (rot.z + sphereRadius * 2) / (sphereRadius * 3);
                 return {
-                    x: rot.x * pulse + width / 2,
-                    y: rot.y * pulse + height / 2,
+                    x: rot.x * pulse + width / 2 + jitter,
+                    y: rot.y * pulse + height / 2 + jitter,
                     z: rot.z,
                     scale: scale
                 };
