@@ -146,48 +146,40 @@ const Features = () => {
         >
           {/* 1. RADAR FINANCEIRO - STATIC HUB INSIGHTS PANEL */}
           <div id="radar-section" className="space-y-12 md:space-y-16">
-            <motion.div variants={itemVariants} className="max-w-3xl mx-auto text-center space-y-4">
-              <div className="flex justify-center mb-6">
-                <div className="relative">
-                  <div className="absolute inset-0 bg-[#00e676]/20 blur-xl rounded-full animate-pulse" />
-                  <div className="relative w-16 h-16 rounded-2xl bg-[#00e676]/10 border border-[#00e676]/20 flex items-center justify-center">
-                    <Radar className="w-8 h-8 text-[#00e676]" />
+            <motion.div variants={itemVariants} className="grid grid-cols-1 md:grid-cols-2 gap-12 md:gap-24 items-center">
+              <div className="space-y-8">
+                <div className="space-y-6">
+                  <div className="w-14 h-14 rounded-2xl bg-[#00e676]/10 border border-[#00e676]/20 flex items-center justify-center">
+                    <Radar className="w-7 h-7 text-[#00e676]" />
                   </div>
+                  <p className="text-white/50 text-base md:text-lg leading-relaxed font-light">
+                    O Radar identifica padrões perigosos e indica exatamente o que você deve fazer. Tudo visual, direto e automático.
+                  </p>
+                  <ul className="space-y-4 pt-4">
+                    {[
+                      'Insights preditivos de inteligência',
+                      'Indicação de ações corretivas imediatas',
+                      'Monitoramento de padrões de consumo'
+                    ].map((item, i) => (
+                      <li key={i} className="flex items-center gap-3 text-sm text-white/70">
+                        <CheckCircle2 className="w-4 h-4 text-[#00e676]" />
+                        {item}
+                      </li>
+                    ))}
+                  </ul>
+                </div>
+
+                <div className="pt-8 border-t border-white/5">
+                  <p className="text-white/50 text-lg md:text-xl font-light leading-relaxed">
+                    Uma visão 360° do seu dinheiro em tempo real. Identificamos padrões, alertamos riscos e sugerimos ações imediatas.
+                  </p>
                 </div>
               </div>
               
-              <p className="text-white/50 text-lg md:text-xl font-light max-w-2xl mx-auto">
-                Uma visão 360° do seu dinheiro em tempo real. Identificamos padrões, alertamos riscos e sugerimos ações imediatas.
-              </p>
-            </motion.div>
-
-            <motion.div variants={itemVariants} className="grid grid-cols-1 md:grid-cols-2 gap-12 md:gap-24 items-center">
-            <div className="space-y-6">
-              <div className="w-14 h-14 rounded-2xl bg-[#00e676]/10 border border-[#00e676]/20 flex items-center justify-center">
-                <Radar className="w-7 h-7 text-[#00e676]" />
+              <div className="relative group">
+                <div className="absolute inset-0 bg-[#00e676]/10 blur-[100px] rounded-full group-hover:bg-[#00e676]/20 transition-all duration-1000" />
+                <HubyInsightsPanel />
               </div>
-              
-              <p className="text-white/50 text-base md:text-lg leading-relaxed font-light">
-                O Radar identifica padrões perigosos e indica exatamente o que você deve fazer. Tudo visual, direto e automático.
-              </p>
-              <ul className="space-y-4 pt-4">
-                {[
-                  'Insights preditivos de inteligência',
-                  'Indicação de ações corretivas imediatas',
-                  'Monitoramento de padrões de consumo'
-                ].map((item, i) => (
-                  <li key={i} className="flex items-center gap-3 text-sm text-white/70">
-                    <CheckCircle2 className="w-4 h-4 text-[#00e676]" />
-                    {item}
-                  </li>
-                ))}
-              </ul>
-            </div>
-            
-            <div className="relative group">
-              <div className="absolute inset-0 bg-[#00e676]/10 blur-[100px] rounded-full group-hover:bg-[#00e676]/20 transition-all duration-1000" />
-              <HubyInsightsPanel />
-            </div>
             </motion.div>
           </div>
 
