@@ -9,27 +9,26 @@ const Navbar = () => {
   };
 
   return (
-    <nav className="fixed top-6 left-1/2 -translate-x-1/2 z-[100] w-[92%] max-w-5xl">
-      <div className="flex items-center justify-between gap-8 px-6 py-3 rounded-2xl border border-white/5 bg-[#0a0a0a]/70 backdrop-blur-[20px] shadow-[0_4px_20px_rgba(0,0,0,0.3)]">
+    <nav className="fixed top-4 left-1/2 -translate-x-1/2 z-[100] w-[92%] max-w-5xl">
+      <div className="flex items-center justify-between gap-8 px-5 py-2.5 rounded-full border border-[#1e1e1e] bg-[#0a0a0a]/88 backdrop-blur-[24px]">
         {/* Logo */}
         <div className="flex items-center gap-2 cursor-pointer" onClick={() => window.scrollTo({ top: 0, behavior: 'smooth' })}>
-          {/* Icon removed by user request */}
           <span className="font-sora font-extrabold text-lg text-white">
             Din<span className="text-[#00e676]">Hub</span>
           </span>
         </div>
 
         {/* Desktop Links */}
-        <div className="hidden md:flex items-center gap-6">
+        <div className="hidden md:flex items-center gap-8">
           <button 
             onClick={() => scrollTo('funcionalidades')}
-            className="text-xs font-semibold text-white/50 hover:text-[#00e676] tracking-widest uppercase transition-all duration-300"
+            className="text-sm font-medium text-[#a0a0a0] hover:text-[#00e676] transition-colors"
           >
             Funcionalidades
           </button>
           <button 
             onClick={() => scrollTo('planos')}
-            className="text-xs font-semibold text-white/50 hover:text-[#00e676] tracking-widest uppercase transition-all duration-300"
+            className="text-sm font-medium text-[#a0a0a0] hover:text-[#00e676] transition-colors"
           >
             Planos
           </button>
@@ -38,9 +37,9 @@ const Navbar = () => {
         {/* CTA */}
         <a 
           href="/auth"
-          className="px-6 py-2.5 rounded-xl bg-[#00e676] text-[#0a0a0a] font-sora font-bold text-xs hover:bg-[#00ff88] hover:shadow-[0_0_20px_rgba(0,230,118,0.4)] transition-all duration-300 whitespace-nowrap"
+          className="px-5 py-2.5 rounded-full bg-[#00e676] text-[#0a0a0a] font-sora font-bold text-sm hover:bg-[#00ff88] transition-all whitespace-nowrap"
         >
-          Acessar Plataforma
+          Começar grátis
         </a>
       </div>
     </nav>
