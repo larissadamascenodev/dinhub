@@ -565,7 +565,7 @@ const VisaoGeral = () => {
               </div>
 
               {/* Bottom Nav */}
-              <div style={{ display: "flex", justifyContent: "space-around", alignItems: "center", marginTop: "0.7rem", paddingTop: "0.6rem", borderTop: "1px solid #111" }}>
+              <div style={{ display: "flex", justifyContent: "space-around", alignItems: "center", marginTop: "0.7rem", paddingTop: "0.6rem" }}>
                 {[
                   { label: "Início",     I: HomeIcon,    active: true },
                   { label: "Transações", I: ShuffleIcon, active: false },
