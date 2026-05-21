@@ -407,7 +407,7 @@ const HubyInsightsPanel: React.FC = () => {
               <span className="text-sm font-semibold text-white">Insights da Huby</span>
             </div>
 
-            <div className="flex items-start gap-3 md:gap-4 p-4 md:p-5 rounded-2xl bg-white/[0.04] border border-white/10 shadow-inner">
+            <div className="flex items-start gap-3 md:gap-4 p-3 md:p-5 rounded-2xl bg-white/[0.04] border border-white/10 shadow-inner">
               <div className={`w-10 h-10 md:w-12 md:h-12 rounded-xl ${insight.iconBg} flex items-center justify-center shrink-0`}>
                 <InsightIcon className={`w-5 h-5 md:w-6 md:h-6 ${insight.iconColor}`} />
               </div>
