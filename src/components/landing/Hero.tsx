@@ -126,12 +126,12 @@ const Hero = () => {
                 </div>
               </div>
             </div>
-            
-            {/* Ambient Glow behind mockup */}
-            <div className="absolute -bottom-1/2 left-1/2 -translate-x-1/2 w-full aspect-square bg-[#00e676]/10 blur-[100px] rounded-full" />
           </div>
+          
+          {/* Ambient Glow behind mockup */}
+          <div className="absolute -bottom-1/2 left-1/2 -translate-x-1/2 w-full aspect-square bg-[#00e676]/10 blur-[100px] rounded-full" />
         </div>
-      </div>
+      </motion.div>
     </section>
   );
 };
