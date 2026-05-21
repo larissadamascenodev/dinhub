@@ -44,9 +44,9 @@ const Hero = () => {
           initial={{ opacity: 0, y: 20 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ delay: 0.2, duration: 0.8 }}
-          className="text-white/60 text-lg md:text-xl max-w-2xl mx-auto mb-10 leading-relaxed font-inter"
+          className="text-white/50 text-lg md:text-2xl max-w-2xl mx-auto mb-12 leading-relaxed font-inter font-light tracking-tight"
         >
-          O assistente financeiro que te ajuda organizar sua vida inteira.
+          O assistente financeiro de elite que organiza sua vida inteira — <span className="text-white/80 font-medium">com precisão absoluta.</span>
         </motion.p>
       </div>
 
