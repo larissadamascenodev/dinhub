@@ -88,16 +88,24 @@ const Features = () => {
     hidden: { opacity: 0 },
     visible: {
       opacity: 1,
-      transition: { staggerChildren: 0.2 }
+      transition: { 
+        staggerChildren: 0.15,
+        delayChildren: 0.2
+      }
     }
   };
 
   const itemVariants: Variants = {
-    hidden: { opacity: 0, y: 40 },
+    hidden: { opacity: 0, y: 30, scale: 0.98, filter: 'blur(10px)' },
     visible: { 
       opacity: 1, 
       y: 0,
-      transition: { duration: 0.8, ease: [0.22, 1, 0.36, 1] }
+      scale: 1,
+      filter: 'blur(0px)',
+      transition: { 
+        duration: 0.8, 
+        ease: [0.16, 1, 0.3, 1] 
+      }
     }
   };
 
@@ -137,7 +145,23 @@ const Features = () => {
           className="space-y-20 md:space-y-48"
         >
           {/* 1. RADAR FINANCEIRO - STATIC HUB INSIGHTS PANEL */}
-          <motion.div id="radar-section" variants={itemVariants} className="grid grid-cols-1 md:grid-cols-2 gap-12 md:gap-24 items-center">
+          <div id="radar-section" className="space-y-12 md:space-y-16">
+            <motion.div variants={itemVariants} className="max-w-3xl mx-auto text-center space-y-4">
+              <div className="flex justify-center mb-6">
+                <div className="relative">
+                  <div className="absolute inset-0 bg-[#00e676]/20 blur-xl rounded-full animate-pulse" />
+                  <div className="relative w-16 h-16 rounded-2xl bg-[#00e676]/10 border border-[#00e676]/20 flex items-center justify-center">
+                    <Radar className="w-8 h-8 text-[#00e676]" />
+                  </div>
+                </div>
+              </div>
+              <h3 className="text-3xl md:text-5xl font-sora font-bold text-white tracking-tight">O Radar Financeiro da Huby</h3>
+              <p className="text-white/50 text-lg md:text-xl font-light max-w-2xl mx-auto">
+                Uma visão 360° do seu dinheiro em tempo real. Identificamos padrões, alertamos riscos e sugerimos ações imediatas.
+              </p>
+            </motion.div>
+
+            <motion.div variants={itemVariants} className="grid grid-cols-1 md:grid-cols-2 gap-12 md:gap-24 items-center">
             <div className="space-y-6">
               <div className="w-14 h-14 rounded-2xl bg-[#00e676]/10 border border-[#00e676]/20 flex items-center justify-center">
                 <Radar className="w-7 h-7 text-[#00e676]" />
@@ -164,7 +188,8 @@ const Features = () => {
               <div className="absolute inset-0 bg-[#00e676]/10 blur-[100px] rounded-full group-hover:bg-[#00e676]/20 transition-all duration-1000" />
               <HubyInsightsPanel />
             </div>
-          </motion.div>
+            </motion.div>
+          </div>
 
           {/* 2. SCORE FINANCEIRO */}
           <motion.div variants={itemVariants} className="grid grid-cols-1 md:grid-cols-2 gap-12 md:gap-24 items-center">
