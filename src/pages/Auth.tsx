@@ -253,15 +253,19 @@ const VisaoGeral = () => {
   return (
     <section className="relative overflow-hidden py-16 sm:py-24 text-left">
       {/* Glow fundo */}
-      <div className="absolute top-1/2 right-0 -translate-y-1/2 w-[55vw] h-[55vw] bg-radial-gradient(ellipse,rgba(0,230,118,0.07),transparent 65%) pointer-events-none" />
+      <div 
+        style={{
+          position: "absolute",
+          top: "50%",
+          right: 0,
+          transform: "translateY(-50%)",
+          width: "55vw",
+          height: "55vw",
+          background: "radial-gradient(ellipse, rgba(0, 230, 118, 0.07), transparent 65%)",
+          pointerEvents: "none",
+        }} 
+      />
 
-      <div style={{
-        position: "absolute", top: "50%", right: 0,
-        transform: "translateY(-50%)",
-        width: "55vw", height: "55vw",
-        background: "radial-gradient(ellipse,rgba(0,230,118,0.07),transparent 65%)",
-        pointerEvents: "none",
-      }} />
 
       <div style={{
         width: "min(92vw,1320px)", margin: "0 auto",
