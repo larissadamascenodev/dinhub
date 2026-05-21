@@ -450,8 +450,8 @@ const HubyInsightsPanel: React.FC = () => {
                       <ActionIcon className={`w-4 h-4 md:w-5 md:h-5 ${a.iconColor}`} />
                     </div>
                     <div className="flex-1 min-w-0">
-                      <div className="text-[14px] font-semibold text-white group-hover:text-[#00e676] transition-colors">{a.title}</div>
-                      <div className="text-[11px] text-white/40 truncate">{a.sub}</div>
+                      <div className="text-[12px] md:text-[14px] font-semibold text-white group-hover:text-[#00e676] transition-colors">{a.title}</div>
+                      <div className="text-[10px] md:text-[11px] text-white/40 truncate">{a.sub}</div>
                     </div>
                     <div className="flex items-center gap-2 shrink-0">
                       <div className="text-right">
