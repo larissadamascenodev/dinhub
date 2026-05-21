@@ -184,9 +184,13 @@ const Features = () => {
               </div>
               
               <div className="relative group">
+                <div className="hidden md:block absolute -top-16 left-1/2 -translate-x-1/2 whitespace-nowrap">
+                  <h3 className="text-5xl font-sora font-bold text-white tracking-tight opacity-50">Radar Financeiro</h3>
+                </div>
                 <div className="absolute inset-0 bg-[#00e676]/10 blur-[100px] rounded-full group-hover:bg-[#00e676]/20 transition-all duration-1000" />
                 <HubyInsightsPanel />
               </div>
+            </div>
             </motion.div>
           </div>
 
