@@ -242,6 +242,7 @@ const HubySection = () => {
         </div>
 
         {/* Chat Area */}
+        <div id="chat-anchor" className="scroll-mt-32" />
         <AnimatePresence>
             {chatHistory.length > 0 && (
                 <motion.div 
