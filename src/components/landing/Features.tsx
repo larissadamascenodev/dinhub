@@ -1,10 +1,79 @@
-import React from 'react';
-import { motion, Variants } from 'framer-motion';
+import React, { useState, useEffect } from 'react';
+import { motion, AnimatePresence, Variants } from 'framer-motion';
 import { 
   Sparkles, Radar, TrendingUp, CreditCard, 
   Camera, ShieldCheck, CheckCircle2, AlertCircle,
-  TrendingDown, Zap, ArrowRight, Wallet, PieChart
+  TrendingDown, Zap, ArrowRight, Wallet, PieChart,
+  ArrowUpRight, BarChart3, FileText, Repeat,
+  AlertOctagon, Coins, ChevronRight, Utensils,
+  ShoppingBag, Car, Home, Plane, Heart
 } from 'lucide-react';
+
+const HUBY_INSIGHTS = [
+  {
+    icon: ArrowUpRight,
+    iconColor: 'text-orange-400',
+    iconBg: 'bg-orange-500/10',
+    text: <>Você gastou <span className="text-orange-400 font-semibold">18% a mais com delivery</span> do que no mês passado.</>,
+    tag: 'Alimentação',
+  },
+  {
+    icon: AlertOctagon,
+    iconColor: 'text-yellow-400',
+    iconBg: 'bg-yellow-500/10',
+    text: <>3 assinaturas somam <span className="text-yellow-400 font-semibold">R$ 79,90/mês</span> e quase não são usadas.</>,
+    tag: 'Assinaturas',
+  },
+  {
+    icon: BarChart3,
+    iconColor: 'text-purple-400',
+    iconBg: 'bg-purple-500/10',
+    text: <>Se investir R$ 300/mês, pode acumular <span className="text-[#00e676] font-semibold">R$ 31.723,41 em 5 anos.</span></>,
+    tag: 'Investimentos',
+  },
+  {
+    icon: CreditCard,
+    iconColor: 'text-red-400',
+    iconBg: 'bg-red-500/10',
+    text: <>Sua fatura do Nubank atingiu <span className="text-red-400 font-semibold">80% do limite</span> antes do fechamento.</>,
+    tag: 'Cartão',
+  },
+  {
+    icon: TrendingUp,
+    iconColor: 'text-[#00e676]',
+    iconBg: 'bg-[#00e676]/10',
+    text: <>Sua reserva cresceu <span className="text-[#00e676] font-semibold">+12% este mês</span>, melhor ritmo do trimestre.</>,
+    tag: 'Reserva',
+  },
+  {
+    icon: Repeat,
+    iconColor: 'text-blue-400',
+    iconBg: 'bg-blue-500/10',
+    text: <>Detectamos <span className="text-blue-400 font-semibold">cobrança duplicada</span> de R$ 49,90 no seu cartão.</>,
+    tag: 'Alerta',
+  },
+  {
+    icon: Utensils,
+    iconColor: 'text-pink-400',
+    iconBg: 'bg-pink-500/10',
+    text: <>Restaurantes representam <span className="text-pink-400 font-semibold">34% dos seus gastos</span> variáveis.</>,
+    tag: 'Categoria',
+  },
+  {
+    icon: Coins,
+    iconColor: 'text-amber-400',
+    iconBg: 'bg-amber-500/10',
+    text: <>Você pode economizar <span className="text-amber-400 font-semibold">R$ 220/mês</span> renegociando 2 contas fixas.</>,
+    tag: 'Economia',
+  },
+];
+
+const HUBY_ACTIONS = [
+  { icon: FileText, iconColor: 'text-emerald-400', iconBg: 'bg-emerald-500/10', title: 'Cancelar assinaturas não utilizadas', sub: 'Economize até R$ 79,90/mês', value: 'R$ 79,90', valueColor: 'text-[#00e676]' },
+  { icon: ShoppingBag, iconColor: 'text-emerald-400', iconBg: 'bg-emerald-500/10', title: 'Reduzir gastos com delivery', sub: 'Meta sugerida: R$ 250,00/mês', value: 'R$ 180,00', valueColor: 'text-[#00e676]' },
+  { icon: CreditCard, iconColor: 'text-orange-400', iconBg: 'bg-orange-500/10', title: 'Quitar dívida do cartão', sub: 'Reduza juros e libere limite', value: 'R$ 1.247,36', valueColor: 'text-orange-400' },
+  { icon: BarChart3, iconColor: 'text-[#00e676]', iconBg: 'bg-[#00e676]/10', title: 'Investir com recorrência', sub: 'Comece com R$ 300,00/mês', value: 'R$ 300,00', valueColor: 'text-[#00e676]' },
+];
 
 const Features = () => {
   const containerVariants = {
