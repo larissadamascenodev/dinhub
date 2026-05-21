@@ -26,6 +26,16 @@
         section { padding: 80px 0; }
         .card { background: var(--card); border: 1px solid var(--border); padding: 30px; border-radius: 20px; }
         footer { padding: 40px 20px; border-top: 1px solid var(--border); text-align: center; color: var(--text-sec); }
+        #huby-canvas { display: block; margin: 0 auto; cursor: pointer; }
+        .chat-container { max-width: 600px; margin: 20px auto; background: var(--card); border: 1px solid var(--border); border-radius: 20px; padding: 20px; text-align: left; }
+        .chat-message { margin-bottom: 15px; padding: 12px 16px; border-radius: 12px; font-size: 0.95rem; line-height: 1.4; max-width: 85%; }
+        .msg-user { background: #1a1a1a; color: var(--text-sec); margin-left: auto; border-bottom-right-radius: 4px; }
+        .msg-huby { background: rgba(0, 230, 118, 0.1); color: var(--text); border-bottom-left-radius: 4px; border: 1px solid rgba(0, 230, 118, 0.2); }
+        .typing { display: flex; gap: 4px; padding: 10px; }
+        .dot { width: 6px; height: 6px; background: var(--primary); border-radius: 50%; animation: pulse 1.5s infinite; }
+        .dot:nth-child(2) { animation-delay: 0.2s; }
+        .dot:nth-child(3) { animation-delay: 0.4s; }
+        @keyframes pulse { 0%, 100% { opacity: 0.3; transform: scale(0.8); } 50% { opacity: 1; transform: scale(1.1); } }
     </style>
 </head>
 <body>
@@ -47,11 +57,26 @@
         </section>
 
         <!-- Seção HUBY -->
-        <section style="background: rgba(0, 230, 118, 0.03);">
+        <section style="background: radial-gradient(circle at center, rgba(0, 230, 118, 0.05) 0%, transparent 70%);">
             <div class="container" style="text-align: center;">
-                <span class="pill" style="background: var(--primary); color: #000; padding: 4px 12px; font-size: 0.8rem; font-weight: 700;">HUBY · SUA ASSISTENTE</span>
-                <h2 style="margin: 20px 0;">Converse com o seu dinheiro.</h2>
-                <div id="esfera" style="width: 250px; height: 250px; background: var(--primary); border-radius: 50%; margin: 40px auto; filter: blur(40px); opacity: 0.5;"></div>
+                <span class="pill" style="background: var(--primary); color: #000; padding: 4px 12px; font-size: 0.8rem; font-weight: 700;">HUBY · INTELIGÊNCIA ARTIFICIAL</span>
+                <h2 style="margin: 20px 0; font-size: 2.5rem;">Pergunte qualquer coisa à Huby.</h2>
+                <div style="position: relative; height: 350px; display: flex; align-items: center; justify-content: center;">
+                    <canvas id="huby-canvas"></canvas>
+                    <div id="glow-overlay" style="position: absolute; width: 200px; height: 200px; background: var(--primary); filter: blur(100px); opacity: 0.15; border-radius: 50%; pointer-events: none; transition: all 0.5s ease;"></div>
+                </div>
+                
+                <div class="chat-container">
+                    <div id="chat-box" style="height: 180px; overflow-y: auto; margin-bottom: 10px; scroll-behavior: smooth; padding-right: 5px;">
+                        <div class="chat-message msg-huby">Olá! Sou a Huby. Percebi que você gastou 15% a mais com iFood esta semana. Quer que eu te mostre como economizar R$ 200 no próximo mês?</div>
+                    </div>
+                    <div style="display: flex; gap: 10px; margin-top: 15px;">
+                        <input type="text" id="chat-input" placeholder="Pergunte sobre seus gastos..." style="flex: 1; background: #050505; border: 1px solid var(--border); border-radius: 12px; padding: 12px 16px; color: white; outline: none; transition: border-color 0.3s;" onfocus="this.style.borderColor='var(--primary)'" onblur="this.style.borderColor='var(--border)'" onkeypress="if(event.key === 'Enter') sendMessage()">
+                        <button onclick="sendMessage()" style="background: var(--primary); border: none; border-radius: 12px; width: 45px; height: 45px; display: flex; align-items: center; justify-content: center; cursor: pointer;">
+                            <i data-lucide="send" style="width: 20px; height: 20px; color: black;"></i>
+                        </button>
+                    </div>
+                </div>
             </div>
         </section>
 
@@ -81,6 +106,154 @@
 
     <script>
         lucide.createIcons();
+
+        // --- HUBY PARTICLE SPHERE ---
+        const canvas = document.getElementById('huby-canvas');
+        const ctx = canvas.getContext('2d');
+        const glowOverlay = document.getElementById('glow-overlay');
+        
+        let width, height, particles = [];
+        const particleCount = 200;
+        const sphereRadius = 120;
+        let rotationX = 0, rotationY = 0;
+        let targetRotationSpeed = 0.005;
+        let currentRotationSpeed = 0.005;
+        let hubyEnergy = 0; // 0 to 1
+        let noiseOffset = 0;
+
+        function initCanvas() {
+            width = canvas.width = 350;
+            height = canvas.height = 350;
+            particles = [];
+            for (let i = 0; i < particleCount; i++) {
+                const theta = Math.acos(1 - 2 * (i + 0.5) / particleCount);
+                const phi = Math.PI * (1 + Math.sqrt(5)) * (i + 0.5);
+                particles.push({
+                    x: sphereRadius * Math.sin(theta) * Math.cos(phi),
+                    y: sphereRadius * Math.sin(theta) * Math.sin(phi),
+                    z: sphereRadius * Math.cos(theta),
+                    baseX: sphereRadius * Math.sin(theta) * Math.cos(phi),
+                    baseY: sphereRadius * Math.sin(theta) * Math.sin(phi),
+                    baseZ: sphereRadius * Math.cos(theta)
+                });
+            }
+        }
+
+        function rotate(p, angleX, angleY) {
+            // Rotate Y
+            let cosY = Math.cos(angleY);
+            let sinY = Math.sin(angleY);
+            let x = p.x * cosY - p.z * sinY;
+            let z = p.x * sinY + p.z * cosY;
+            
+            // Rotate X
+            let cosX = Math.cos(angleX);
+            let sinX = Math.sin(angleX);
+            let y = p.y * cosX - z * sinX;
+            z = p.y * sinX + z * cosX;
+            
+            return { x, y, z };
+        }
+
+        function draw() {
+            ctx.clearRect(0, 0, width, height);
+            
+            currentRotationSpeed += (targetRotationSpeed - currentRotationSpeed) * 0.05;
+            rotationY += currentRotationSpeed;
+            rotationX += currentRotationSpeed * 0.5;
+            noiseOffset += 0.01;
+            
+            const projectedParticles = particles.map((p, i) => {
+                const rot = rotate(p, rotationX, rotationY);
+                // Pulse effect + organic jitter
+                const jitter = Math.sin(noiseOffset + i) * 2 * hubyEnergy;
+                const pulse = 1 + Math.sin(Date.now() * 0.002 + i * 0.1) * 0.05 * hubyEnergy;
+                const scale = (rot.z + sphereRadius * 2) / (sphereRadius * 3);
+                return {
+                    x: rot.x * pulse + width / 2 + jitter,
+                    y: rot.y * pulse + height / 2 + jitter,
+                    z: rot.z,
+                    scale: scale
+                };
+            });
+
+            // Draw connections
+            ctx.beginPath();
+            ctx.strokeStyle = `rgba(0, 230, 118, ${0.1 + hubyEnergy * 0.2})`;
+            ctx.lineWidth = 0.5;
+            for (let i = 0; i < projectedParticles.length; i++) {
+                for (let j = i + 1; j < projectedParticles.length; j++) {
+                    const p1 = projectedParticles[i];
+                    const p2 = projectedParticles[j];
+                    const dist = Math.hypot(p1.x - p2.x, p1.y - p2.y);
+                    if (dist < 50) {
+                        ctx.moveTo(p1.x, p1.y);
+                        ctx.lineTo(p2.x, p2.y);
+                    }
+                }
+            }
+            ctx.stroke();
+
+            // Draw particles
+            projectedParticles.forEach(p => {
+                const opacity = p.scale * (0.3 + hubyEnergy * 0.7);
+                ctx.fillStyle = `rgba(0, 230, 118, ${opacity})`;
+                ctx.beginPath();
+                ctx.arc(p.x, p.y, p.scale * (1.5 + hubyEnergy * 2), 0, Math.PI * 2);
+                ctx.fill();
+            });
+
+            // Energy decay
+            if (hubyEnergy > 0) hubyEnergy -= 0.01;
+            if (hubyEnergy < 0) hubyEnergy = 0;
+            
+            // Update glow
+            glowOverlay.style.opacity = 0.15 + hubyEnergy * 0.4;
+            glowOverlay.style.transform = `scale(${1 + hubyEnergy * 0.5})`;
+
+            requestAnimationFrame(draw);
+        }
+
+        function triggerResponse() {
+            hubyEnergy = 1.0;
+            currentRotationSpeed = 0.05;
+        }
+
+        // --- CHAT INTERACTION ---
+        function sendMessage() {
+            const input = document.getElementById('chat-input');
+            const chatBox = document.getElementById('chat-box');
+            if (!input.value.trim()) return;
+
+            // User message
+            const userMsg = document.createElement('div');
+            userMsg.className = 'chat-message msg-user';
+            userMsg.textContent = input.value;
+            chatBox.appendChild(userMsg);
+            input.value = '';
+            
+            // Scroll to bottom
+            chatBox.scrollTop = chatBox.scrollHeight;
+
+            // Huby typing
+            const typing = document.createElement('div');
+            typing.className = 'typing';
+            typing.innerHTML = '<div class="dot"></div><div class="dot"></div><div class="dot"></div>';
+            chatBox.appendChild(typing);
+
+            setTimeout(() => {
+                chatBox.removeChild(typing);
+                const hubyMsg = document.createElement('div');
+                hubyMsg.className = 'chat-message msg-huby';
+                hubyMsg.textContent = "Com base nos seus dados, se você reduzir 10% do lazer este mês, terá R$ 450 extras para investir. Posso agendar esse lembrete?";
+                chatBox.appendChild(hubyMsg);
+                chatBox.scrollTop = chatBox.scrollHeight;
+                triggerResponse();
+            }, 1500);
+        }
+
+        initCanvas();
+        draw();
     </script>
 </body>
 </html>
