@@ -593,7 +593,9 @@ const VisaoGeral = () => {
   );
 };
 
+const Auth = () => {
   const { user, loading } = useAuth();
+
   const [isLogin, setIsLogin] = useState(true);
   const [isAuthModalOpen, setIsAuthModalOpen] = useState(false);
   const [email, setEmail] = useState("");
