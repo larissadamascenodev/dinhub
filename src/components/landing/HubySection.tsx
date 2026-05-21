@@ -220,10 +220,10 @@ const HubySection = () => {
             <button
               key={q.id}
               onClick={() => handleQuestionClick(q)}
-              className={`whitespace-nowrap px-5 py-3 rounded-full border transition-all duration-300 text-sm font-medium ${
+              className={`whitespace-nowrap px-6 py-3 rounded-xl border transition-all duration-500 text-xs font-bold tracking-widest uppercase ${
                 activeQuestion === q.id 
-                  ? "bg-[#00e676]/10 border-[#00e676] text-[#00e676]" 
-                  : "bg-[#111] border-[#1a1a1a] text-[#777] hover:border-[#00e676]/30 hover:text-[#ccc]"
+                  ? "bg-[#00e676]/10 border-[#00e676]/40 text-[#00e676] shadow-[0_0_20px_rgba(0,230,118,0.2)]" 
+                  : "bg-white/[0.03] border-white/[0.05] text-white/40 hover:border-[#00e676]/30 hover:text-white"
               }`}
             >
               {q.text}
