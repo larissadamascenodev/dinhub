@@ -85,8 +85,8 @@ const Plans = () => {
 
           {/* ANUAL CARD */}
           <motion.div 
-            whileHover={{ y: -10 }}
-            className={`p-8 md:p-12 rounded-[24px] border relative transition-all shadow-[0_0_50px_rgba(0,230,118,0.1)] ${billing === 'annually' ? 'bg-[#0f0f0f] border-[#00e676]' : 'bg-transparent border-[#1a1a1a]/50 opacity-60'}`}
+            whileHover={{ y: -8, transition: { duration: 0.4 } }}
+            className={`p-10 md:p-14 rounded-[40px] border relative transition-all duration-500 shadow-[0_0_80px_rgba(0,230,118,0.15)] ${billing === 'annually' ? 'bg-[#0f0f0f] border-[#00e676]/30' : 'bg-transparent border-white/[0.03] opacity-40'}`}
           >
             <div className="absolute -top-4 left-1/2 -translate-x-1/2 px-4 py-1 rounded-full bg-[#00e676] text-[#0a0a0a] text-[10px] font-bold uppercase tracking-wider">
                 + MAIS ECONÔMICO
