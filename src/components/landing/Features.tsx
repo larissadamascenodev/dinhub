@@ -147,7 +147,11 @@ const Features = () => {
           {/* 1. RADAR FINANCEIRO - STATIC HUB INSIGHTS PANEL */}
           <div id="radar-section" className="space-y-12 md:space-y-16">
             <motion.div variants={itemVariants} className="grid grid-cols-1 md:grid-cols-2 gap-12 md:gap-24 items-center">
-              <div className="space-y-8">
+              <div className="space-y-12 md:space-y-16">
+                <div className="text-center md:hidden">
+                  <h3 className="text-4xl font-sora font-bold text-white tracking-tight">Radar Financeiro</h3>
+                </div>
+                <div className="space-y-8">
                 <div className="space-y-6">
                   <div className="flex items-center gap-4">
                     <div className="w-14 h-14 rounded-2xl bg-[#00e676]/10 border border-[#00e676]/20 flex items-center justify-center shrink-0">
@@ -180,9 +184,13 @@ const Features = () => {
               </div>
               
               <div className="relative group">
+                <div className="hidden md:block absolute -top-16 left-1/2 -translate-x-1/2 whitespace-nowrap">
+                  <h3 className="text-5xl font-sora font-bold text-white tracking-tight opacity-50">Radar Financeiro</h3>
+                </div>
                 <div className="absolute inset-0 bg-[#00e676]/10 blur-[100px] rounded-full group-hover:bg-[#00e676]/20 transition-all duration-1000" />
                 <HubyInsightsPanel />
               </div>
+            </div>
             </motion.div>
           </div>
 
