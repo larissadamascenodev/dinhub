@@ -9,7 +9,7 @@ const Navbar = () => {
   };
 
   return (
-    <nav className="fixed top-4 left-1/2 -translate-x-1/2 z-[100] w-[92%] max-w-5xl">
+    <nav className="fixed top-4 left-1/2 -translate-x-1/2 z-[100] w-[90%] max-w-3xl">
       <div className="flex items-center justify-between gap-8 px-5 py-2.5 rounded-full border border-[#1e1e1e] bg-[#0a0a0a]/88 backdrop-blur-[24px]">
         {/* Logo */}
         <div className="flex items-center gap-2 cursor-pointer" onClick={() => window.scrollTo({ top: 0, behavior: 'smooth' })}>
