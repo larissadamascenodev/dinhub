@@ -114,9 +114,6 @@ const Hero = () => {
           {/* Mockup Content - Chatting with Huby */}
           <div className="pt-12 md:pt-20 px-4 md:px-8 flex flex-col items-center justify-center h-full">
             <div className="max-w-xl w-full space-y-3 md:space-y-4">
-              <div className="bg-white/[0.03] border border-white/[0.05] p-4 md:p-8 rounded-[32px] rounded-tr-none ml-auto text-[10px] md:text-sm text-white/70 leading-relaxed backdrop-blur-xl shadow-2xl">
-                Huby, quanto eu gastei com delivery essa semana? E me diz se ainda estou dentro da meta.
-              </div>
               <div className="flex gap-2 md:gap-4">
                 <div className="w-8 h-8 md:w-10 md:h-10 rounded-full bg-[#00e676]/20 border border-[#00e676]/20 flex items-center justify-center flex-shrink-0">
                   <span className="text-[8px] md:text-[10px] font-bold text-[#00e676]">HB</span>
