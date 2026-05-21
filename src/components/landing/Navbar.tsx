@@ -23,13 +23,13 @@ const Navbar = () => {
         <div className="hidden md:flex items-center gap-6">
           <button 
             onClick={() => scrollTo('funcionalidades')}
-            className="text-sm font-medium text-[#a0a0a0] hover:text-[#00e676] transition-colors"
+            className="text-xs font-semibold text-white/50 hover:text-[#00e676] tracking-widest uppercase transition-all duration-300"
           >
             Funcionalidades
           </button>
           <button 
             onClick={() => scrollTo('planos')}
-            className="text-sm font-medium text-[#a0a0a0] hover:text-[#00e676] transition-colors"
+            className="text-xs font-semibold text-white/50 hover:text-[#00e676] tracking-widest uppercase transition-all duration-300"
           >
             Planos
           </button>
