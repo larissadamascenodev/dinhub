@@ -366,4 +366,94 @@ const Features = () => {
   );
 };
 
+const HubyInsightsPanel: React.FC = () => {
+  const [idx, setIdx] = useState(0);
+  useEffect(() => {
+    const t = setInterval(() => setIdx((p) => (p + 1) % HUBY_INSIGHTS.length), 3500);
+    return () => clearInterval(t);
+  }, []);
+
+  const current = HUBY_INSIGHTS[idx];
+  const Icon = current.icon;
+
+  return (
+    <div className="relative bg-white/[0.02] border border-white/10 rounded-3xl p-6 shadow-2xl backdrop-blur-xl space-y-6">
+      {/* Insights da Huby */}
+      <div className="space-y-3">
+        <div className="flex items-center gap-2">
+          <div className="w-5 h-5 rounded-full bg-[#00e676]/15 flex items-center justify-center">
+            <div className="w-1.5 h-1.5 rounded-full bg-[#00e676]" />
+          </div>
+          <span className="text-sm font-semibold text-white">Insights da Huby</span>
+        </div>
+
+        <div className="relative h-[88px]">
+          <AnimatePresence mode="wait">
+            <motion.div
+              key={idx}
+              initial={{ opacity: 0, y: 10 }}
+              animate={{ opacity: 1, y: 0 }}
+              exit={{ opacity: 0, y: -10 }}
+              transition={{ duration: 0.4, ease: [0.22, 1, 0.36, 1] }}
+              className="absolute inset-0 flex items-center gap-3 p-4 rounded-2xl bg-white/[0.03] border border-white/5"
+            >
+              <div className={`w-9 h-9 rounded-xl ${current.iconBg} flex items-center justify-center shrink-0`}>
+                <Icon className={`w-4 h-4 ${current.iconColor}`} />
+              </div>
+              <p className="text-[13px] text-white/80 leading-snug flex-1">{current.text}</p>
+              <span className="text-[10px] text-white/50 px-2.5 py-1 rounded-full border border-white/10 bg-white/[0.03] whitespace-nowrap">
+                {current.tag}
+              </span>
+            </motion.div>
+          </AnimatePresence>
+        </div>
+
+        {/* Dots */}
+        <div className="flex items-center justify-center gap-1.5 pt-1">
+          {HUBY_INSIGHTS.map((_, i) => (
+            <div
+              key={i}
+              className={`h-1 rounded-full transition-all duration-500 ${
+                i === idx ? 'w-5 bg-[#00e676]' : 'w-1 bg-white/15'
+              }`}
+            />
+          ))}
+        </div>
+      </div>
+
+      {/* Ações sugeridas pela Huby */}
+      <div className="space-y-3 pt-2">
+        <div className="flex items-center justify-between">
+          <span className="text-sm font-semibold text-white">Ações sugeridas pela Huby</span>
+          <span className="text-[11px] text-white/40 hover:text-[#00e676] cursor-pointer transition">Ver todas</span>
+        </div>
+
+        <div className="space-y-2">
+          {HUBY_ACTIONS.map((a, i) => {
+            const AIcon = a.icon;
+            return (
+              <div
+                key={i}
+                className="flex items-center gap-3 p-3 rounded-2xl bg-white/[0.03] border border-white/5 hover:border-white/15 transition"
+              >
+                <div className={`w-9 h-9 rounded-xl ${a.iconBg} flex items-center justify-center shrink-0`}>
+                  <AIcon className={`w-4 h-4 ${a.iconColor}`} />
+                </div>
+                <div className="flex-1 min-w-0">
+                  <div className="text-[13px] font-medium text-white truncate">{a.title}</div>
+                  <div className="text-[11px] text-white/40 truncate">{a.sub}</div>
+                </div>
+                <div className="flex items-center gap-1 shrink-0">
+                  <span className={`text-[13px] font-semibold ${a.valueColor}`}>{a.value}</span>
+                  <ChevronRight className="w-3.5 h-3.5 text-white/30" />
+                </div>
+              </div>
+            );
+          })}
+        </div>
+      </div>
+    </div>
+  );
+};
+
 export default Features;
