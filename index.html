@@ -40,6 +40,21 @@
         .question-btn:hover { border-color: var(--primary); color: var(--primary); background: rgba(0, 230, 118, 0.05); }
         @keyframes pulse { 0%, 100% { opacity: 0.3; transform: scale(0.8); } 50% { opacity: 1; transform: scale(1.1); } }
         @keyframes fadeIn { from { opacity: 0; transform: translateY(5px); } to { opacity: 1; transform: translateY(0); } }
+
+        .feature-tabs { display: flex; justify-content: center; gap: 10px; margin-bottom: 40px; flex-wrap: wrap; }
+        .tab-btn { background: transparent; border: 1px solid var(--border); color: var(--text-sec); padding: 12px 24px; border-radius: 99px; cursor: pointer; transition: all 0.3s ease; font-weight: 500; }
+        .tab-btn.active { background: var(--primary); color: #000; border-color: var(--primary); }
+        .feature-content { display: grid; grid-template-columns: 1fr 1fr; gap: 40px; align-items: center; min-height: 500px; }
+        .feature-text { transition: opacity 0.4s ease, transform 0.4s ease; }
+        .feature-text.fade-out { opacity: 0; transform: translateX(-20px); }
+        .iphone-mockup { position: relative; width: 280px; height: 580px; background: #000; border: 8px solid #1a1a1a; border-radius: 40px; margin: 0 auto; overflow: hidden; box-shadow: 0 0 50px rgba(0,230,118,0.1); }
+        .iphone-screen { width: 100%; height: 100%; position: relative; transition: opacity 0.4s ease; }
+        .iphone-screen.fade-out { opacity: 0; }
+        .iphone-notch { position: absolute; top: 0; left: 50%; transform: translateX(-50%); width: 120px; height: 25px; background: #1a1a1a; border-bottom-left-radius: 15px; border-bottom-right-radius: 15px; z-index: 10; }
+        @media (max-width: 768px) {
+            .feature-content { grid-template-columns: 1fr; text-align: center; }
+            .iphone-mockup { width: 240px; height: 500px; order: -1; }
+        }
     </style>
 </head>
 <body>
@@ -85,6 +100,51 @@
                         <button onclick="sendMessage()" style="background: var(--primary); border: none; border-radius: 12px; width: 45px; height: 45px; display: flex; align-items: center; justify-content: center; cursor: pointer;">
                             <i data-lucide="send" style="width: 20px; height: 20px; color: black;"></i>
                         </button>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- Funcionalidades em Abas -->
+        <section id="funcionalidades" style="background: #080808;">
+            <div class="container">
+                <div style="text-align: center; margin-bottom: 60px;">
+                    <h2 style="font-size: 2.5rem; margin-bottom: 20px;">Tudo o que você precisa.</h2>
+                    <p style="color: var(--text-sec);">Uma experiência completa para o seu controle financeiro.</p>
+                </div>
+
+                <div class="feature-tabs">
+                    <button class="tab-btn active" onclick="switchTab(0)">Conexão Bancária</button>
+                    <button class="tab-btn" onclick="switchTab(1)">Categorização IA</button>
+                    <button class="tab-btn" onclick="switchTab(2)">Metas Reais</button>
+                    <button class="tab-btn" onclick="switchTab(3)">Relatórios</button>
+                </div>
+
+                <div class="feature-content">
+                    <div class="feature-text" id="feature-text">
+                        <h3 style="font-size: 2rem; margin-bottom: 20px; color: var(--primary);">Sincronização Automática</h3>
+                        <p style="font-size: 1.1rem; line-height: 1.6; color: var(--text-sec); margin-bottom: 30px;">Conecte suas contas via Open Banking com segurança total. Chega de planilhas manuais ou notas fiscais perdidas.</p>
+                        <ul style="list-style: none; color: var(--text-sec); display: grid; gap: 15px;">
+                            <li style="display: flex; align-items: center; gap: 10px;"><i data-lucide="check-circle" style="color: var(--primary); width: 20px;"></i> Segurança nível bancário</li>
+                            <li style="display: flex; align-items: center; gap: 10px;"><i data-lucide="check-circle" style="color: var(--primary); width: 20px;"></i> Atualização em tempo real</li>
+                            <li style="display: flex; align-items: center; gap: 10px;"><i data-lucide="check-circle" style="color: var(--primary); width: 20px;"></i> Todos os bancos em um só lugar</li>
+                        </ul>
+                    </div>
+                    <div class="iphone-mockup">
+                        <div class="iphone-notch"></div>
+                        <div class="iphone-screen" id="feature-screen" style="background: linear-gradient(180deg, #111 0%, #050505 100%); padding: 40px 20px; display: flex; flex-direction: column; gap: 15px;">
+                            <!-- Mockup Content 0 -->
+                            <div style="background: #1a1a1a; padding: 15px; border-radius: 15px; border: 1px solid #333; display: flex; align-items: center; gap: 12px;">
+                                <div style="width: 40px; height: 40px; background: #3b82f6; border-radius: 10px; display: flex; align-items: center; justify-content: center; font-weight: 800; color: white;">I</div>
+                                <div style="flex: 1;"><div style="width: 60px; height: 8px; background: #333; border-radius: 4px; margin-bottom: 6px;"></div><div style="width: 40px; height: 6px; background: #222; border-radius: 3px;"></div></div>
+                                <div style="color: var(--primary); font-size: 0.8rem; font-weight: 600;">CONECTADO</div>
+                            </div>
+                            <div style="background: #1a1a1a; padding: 15px; border-radius: 15px; border: 1px solid #333; display: flex; align-items: center; gap: 12px;">
+                                <div style="width: 40px; height: 40px; background: #8b5cf6; border-radius: 10px; display: flex; align-items: center; justify-content: center; font-weight: 800; color: white;">N</div>
+                                <div style="flex: 1;"><div style="width: 70px; height: 8px; background: #333; border-radius: 4px; margin-bottom: 6px;"></div><div style="width: 50px; height: 6px; background: #222; border-radius: 3px;"></div></div>
+                                <div style="color: var(--primary); font-size: 0.8rem; font-weight: 600;">CONECTADO</div>
+                            </div>
+                        </div>
                     </div>
                 </div>
             </div>
@@ -278,6 +338,87 @@
                 addMessage(reply, 'huby');
                 triggerResponse();
             }, 1200 + Math.random() * 800);
+        }
+
+        // --- FEATURE TABS ---
+        const featureData = [
+            {
+                title: "Sincronização Automática",
+                desc: "Conecte suas contas via Open Banking com segurança total. Chega de planilhas manuais ou notas fiscais perdidas.",
+                items: ["Segurança nível bancário", "Atualização em tempo real", "Todos os bancos em um só lugar"],
+                screen: `
+                    <div style="background: #1a1a1a; padding: 15px; border-radius: 15px; border: 1px solid #333; display: flex; align-items: center; gap: 12px;">
+                        <div style="width: 40px; height: 40px; background: #3b82f6; border-radius: 10px; display: flex; align-items: center; justify-content: center; font-weight: 800; color: white;">I</div>
+                        <div style="flex: 1;"><div style="width: 60px; height: 8px; background: #333; border-radius: 4px; margin-bottom: 6px;"></div><div style="width: 40px; height: 6px; background: #222; border-radius: 3px;"></div></div>
+                        <div style="color: var(--primary); font-size: 0.8rem; font-weight: 600;">CONECTADO</div>
+                    </div>
+                    <div style="background: #1a1a1a; padding: 15px; border-radius: 15px; border: 1px solid #333; display: flex; align-items: center; gap: 12px;">
+                        <div style="width: 40px; height: 40px; background: #8b5cf6; border-radius: 10px; display: flex; align-items: center; justify-content: center; font-weight: 800; color: white;">N</div>
+                        <div style="flex: 1;"><div style="width: 70px; height: 8px; background: #333; border-radius: 4px; margin-bottom: 6px;"></div><div style="width: 50px; height: 6px; background: #222; border-radius: 3px;"></div></div>
+                        <div style="color: var(--primary); font-size: 0.8rem; font-weight: 600;">CONECTADO</div>
+                    </div>
+                `
+            },
+            {
+                title: "Categorização Inteligente",
+                desc: "Nossa IA aprende com seus hábitos e organiza cada centavo automaticamente em categorias inteligentes.",
+                items: ["Categorização por IA", "Detecção de padrões", "Identificação de gastos fantasmas"],
+                screen: `
+                    <div style="text-align: center; margin-bottom: 20px;"><div style="width: 100px; height: 100px; border-radius: 50%; border: 4px solid var(--primary); margin: 0 auto; display: flex; align-items: center; justify-content: center; color: white; font-weight: 700;">85%</div></div>
+                    <div style="background: rgba(0,230,118,0.1); padding: 10px; border-radius: 10px; margin-bottom: 10px; font-size: 0.7rem; color: var(--primary); text-align: center;">IA: Gasto de R$ 45,00 em 'Lazer' detectado</div>
+                `
+            },
+            {
+                title: "Metas Alcançáveis",
+                desc: "Defina objetivos claros. A Huby calcula quanto você precisa guardar por dia para realizar seus sonhos.",
+                items: ["Simulador de investimentos", "Progresso visual", "Dicas para poupar mais"],
+                screen: `
+                    <div style="color: white; font-weight: 600; font-size: 0.9rem; margin-bottom: 10px;">Novo iPhone</div>
+                    <div style="width: 100%; height: 10px; background: #222; border-radius: 5px; overflow: hidden;"><div style="width: 65%; height: 100%; background: var(--primary);"></div></div>
+                    <div style="display: flex; justify-content: space-between; font-size: 0.7rem; color: #666; margin-top: 5px;"><span>R$ 3.500</span><span>65%</span></div>
+                `
+            },
+            {
+                title: "Relatórios Dinâmicos",
+                desc: "Visualize sua saúde financeira com gráficos que fazem sentido. Sem complexidade, apenas clareza.",
+                items: ["Gráficos interativos", "Exportação simplificada", "Comparativo mensal"],
+                screen: `
+                    <div style="display: flex; align-items: flex-end; gap: 10px; height: 100px; justify-content: center;">
+                        <div style="width: 20px; height: 40px; background: #333; border-radius: 4px;"></div>
+                        <div style="width: 20px; height: 70px; background: #333; border-radius: 4px;"></div>
+                        <div style="width: 20px; height: 90px; background: var(--primary); border-radius: 4px;"></div>
+                    </div>
+                `
+            }
+        ];
+
+        function switchTab(index) {
+            const btns = document.querySelectorAll('.tab-btn');
+            const textField = document.getElementById('feature-text');
+            const screenField = document.getElementById('feature-screen');
+            
+            btns.forEach((btn, i) => {
+                btn.classList.toggle('active', i === index);
+            });
+
+            textField.classList.add('fade-out');
+            screenField.classList.add('fade-out');
+
+            setTimeout(() => {
+                const data = featureData[index];
+                textField.innerHTML = `
+                    <h3 style="font-size: 2rem; margin-bottom: 20px; color: var(--primary);">${data.title}</h3>
+                    <p style="font-size: 1.1rem; line-height: 1.6; color: var(--text-sec); margin-bottom: 30px;">${data.desc}</p>
+                    <ul style="list-style: none; color: var(--text-sec); display: grid; gap: 15px;">
+                        ${data.items.map(item => `<li style="display: flex; align-items: center; gap: 10px;"><i data-lucide="check-circle" style="color: var(--primary); width: 20px;"></i> ${item}</li>`).join('')}
+                    </ul>
+                `;
+                screenField.innerHTML = data.screen;
+                lucide.createIcons();
+                
+                textField.classList.remove('fade-out');
+                screenField.classList.remove('fade-out');
+            }, 400);
         }
 
         initCanvas();
