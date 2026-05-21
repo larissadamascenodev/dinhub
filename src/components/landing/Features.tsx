@@ -108,7 +108,7 @@ const Features = () => {
            style={{ backgroundImage: 'radial-gradient(circle at center, rgba(0,230,118,0.08) 0%, transparent 70%)' }} />
 
       <div className="max-w-6xl mx-auto relative z-10">
-        <div className="text-center mb-24 md:mb-40 space-y-8">
+        <div className="text-center mb-16 md:mb-40 space-y-6 md:space-y-8">
           <motion.div 
             initial={{ opacity: 0, scale: 0.9 }}
             whileInView={{ opacity: 1, scale: 1 }}
