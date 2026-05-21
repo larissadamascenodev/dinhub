@@ -20,15 +20,30 @@ const Features = () => {
   };
 
   return (
-    <section id="funcionalidades" className="py-32 px-5">
-      <div className="max-w-7xl mx-auto">
-        <div className="text-center mb-20 space-y-4">
-          <span className="text-[10px] font-bold tracking-[0.2em] text-[#00e676] uppercase">Funcionalidades</span>
-          <h2 className="font-sora font-extrabold text-white text-4xl md:text-5xl lg:text-6xl">
-            Tudo que a Huby faz por você.
+    <section id="funcionalidades" className="py-32 px-5 bg-[#0a0a0a] relative overflow-hidden">
+      {/* Background decoration like Nectar */}
+      <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-full h-full opacity-30 pointer-events-none" 
+           style={{ backgroundImage: 'radial-gradient(circle at center, rgba(0,230,118,0.05) 0%, transparent 70%)' }} />
+
+      <div className="max-w-7xl mx-auto relative z-10">
+        <div className="text-center mb-24 space-y-6">
+          <motion.div 
+            initial={{ opacity: 0, scale: 0.9 }}
+            whileInView={{ opacity: 1, scale: 1 }}
+            className="inline-flex items-center gap-2 px-4 py-1.5 rounded-full border border-white/10 bg-white/5 backdrop-blur-md"
+          >
+            <span className="text-[10px] font-black tracking-widest text-[#00e676] uppercase">O Poder do DinHub</span>
+          </motion.div>
+          
+          <h2 className="font-sora font-bold text-white text-4xl md:text-5xl lg:text-7xl leading-tight tracking-tight">
+            Enquanto você vive,<br />
+            <span className="bg-gradient-to-r from-white/40 to-white bg-clip-text text-transparent italic">
+              a Huby organiza.
+            </span>
           </h2>
-          <p className="text-[#a0a0a0] max-w-2xl mx-auto text-lg">
-            Inteligência financeira real, trabalhando 24h enquanto você vive sua vida.
+          
+          <p className="text-white/40 max-w-2xl mx-auto text-lg font-medium leading-relaxed">
+            Num simples áudio ou mensagem, você organiza o mês inteiro. Sem planilhas, sem esforço.
           </p>
         </div>
 
