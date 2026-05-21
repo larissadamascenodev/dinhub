@@ -114,14 +114,11 @@ const Hero = () => {
           {/* Mockup Content - Chatting with Huby */}
           <div className="pt-12 md:pt-20 px-4 md:px-8 flex flex-col items-center justify-center h-full">
             <div className="max-w-xl w-full space-y-3 md:space-y-4">
-              <div className="bg-white/[0.03] border border-white/[0.05] p-4 md:p-8 rounded-[32px] rounded-tr-none ml-auto text-[10px] md:text-sm text-white/70 leading-relaxed backdrop-blur-xl shadow-2xl">
-                Huby, quanto eu gastei com delivery essa semana? E me diz se ainda estou dentro da meta.
-              </div>
               <div className="flex gap-2 md:gap-4">
                 <div className="w-8 h-8 md:w-10 md:h-10 rounded-full bg-[#00e676]/20 border border-[#00e676]/20 flex items-center justify-center flex-shrink-0">
                   <span className="text-[8px] md:text-[10px] font-bold text-[#00e676]">HB</span>
                 </div>
-                <div className="bg-[#00e676]/5 border border-[#00e676]/20 p-4 md:p-8 rounded-[32px] rounded-tl-none text-[10px] md:text-sm text-white/90 leading-relaxed backdrop-blur-xl shadow-2xl">
+                <div className="bg-[#00e676]/5 border border-[#00e676]/20 p-4 md:p-8 rounded-[32px] text-[10px] md:text-sm text-white/90 leading-relaxed backdrop-blur-xl shadow-2xl">
                   Você gastou <span className="text-[#00e676] font-extrabold tracking-tight">R$ 247,00</span> com delivery. 
                   Isso representa 82% da sua meta semanal. 
                   Sugiro segurar o iFood no final de semana para manter o <span className="text-[#00e676] font-bold">fluxo positivo</span>. 😉
