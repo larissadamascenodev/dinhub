@@ -38,9 +38,9 @@ const Navbar = () => {
         {/* CTA */}
         <a 
           href="/auth"
-          className="px-5 py-2 rounded-full bg-[#00e676] text-[#0a0a0a] font-sora font-bold text-sm hover:brightness-110 transition-all whitespace-nowrap"
+          className="px-6 py-2.5 rounded-xl bg-[#00e676] text-[#0a0a0a] font-sora font-bold text-xs hover:bg-[#00ff88] hover:shadow-[0_0_20px_rgba(0,230,118,0.4)] transition-all duration-300 whitespace-nowrap"
         >
-          Começar grátis
+          Acessar Plataforma
         </a>
       </div>
     </nav>
