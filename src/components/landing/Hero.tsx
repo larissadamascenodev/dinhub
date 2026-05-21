@@ -91,7 +91,7 @@ const Hero = () => {
           Multiplataforma
         </div>
       </motion.div>
-
+    </section>
   );
 };
 
