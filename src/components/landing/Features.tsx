@@ -328,7 +328,7 @@ const Features = () => {
             </div>
             <div className="relative">
               <div className="absolute inset-0 bg-[#00e676]/10 blur-[100px] rounded-full" />
-              <div className="relative bg-[#0f0f0f] border border-white/10 rounded-[32px] p-8 shadow-2xl backdrop-blur-xl">
+              <div className="relative bg-[#0f0f0f] border border-white/10 rounded-[32px] p-6 md:p-8 shadow-2xl backdrop-blur-xl">
                 <div className="flex items-center gap-4 mb-6">
                   <div className="w-10 h-10 rounded-full bg-[#820ad1] flex items-center justify-center font-bold text-white text-xs">Nu</div>
                   <div className="flex-1">
