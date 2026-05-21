@@ -1,30 +1,48 @@
-<!doctype html>
+<!DOCTYPE html>
 <html lang="pt-BR">
-  <head>
-    <meta charset="UTF-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no" />
-    <!-- TODO: Set the document title to the name of your application -->
-    <title>DinHub</title>
-    <meta name="description" content="Controle das finanças na palma da mão">
-    <meta name="author" content="Lovable" />
-
-    <!-- TODO: Update og:title to match your application name -->
-    
-    
-    <meta property="og:type" content="website" />
-    <meta property="og:image" content="https://pub-bb2e103a32db4e198524a2e9ed8f35b4.r2.dev/ae302b66-5ff0-4ecb-b876-15c3a7b20626/id-preview-52ce2c26--11a2202d-5496-46f3-95b7-aec398c9eabf.lovable.app-1774911401489.png">
-
-    <meta name="twitter:card" content="summary_large_image" />
-    <meta name="twitter:site" content="@Lovable" />
-    <meta name="twitter:image" content="https://pub-bb2e103a32db4e198524a2e9ed8f35b4.r2.dev/ae302b66-5ff0-4ecb-b876-15c3a7b20626/id-preview-52ce2c26--11a2202d-5496-46f3-95b7-aec398c9eabf.lovable.app-1774911401489.png">
-    <meta property="og:title" content="DinHub">
-  <meta name="twitter:title" content="DinHub">
-  <meta property="og:description" content="Controle das finanças na palma da mão">
-  <meta name="twitter:description" content="Controle das finanças na palma da mão">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>DinHub | Inteligência Financeira Brasileira</title>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&family=Sora:wght@700;800&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            --bg: #0a0a0a;
+            --primary: #00e676;
+            --glow: #00ff88;
+            --text: #ffffff;
+            --text-sec: #a0a0a0;
+            --card: #0f0f0f;
+            --border: #1a1a1a;
+        }
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body { background: var(--bg); color: var(--text); font-family: 'Inter', sans-serif; overflow-x: hidden; scroll-behavior: smooth; }
+        h1, h2, h3 { font-family: 'Sora', sans-serif; }
+        .pill { border-radius: 999px; }
+        nav { position: fixed; top: 16px; left: 50%; transform: translateX(-50%); z-index: 1000; background: rgba(10,10,10,0.85); backdrop-filter: blur(10px); border: 1px solid var(--border); padding: 10px 10px 10px 20px; display: flex; gap: 20px; align-items: center; width: auto; max-width: 90%; }
+        .hero { padding: 180px 20px 100px; text-align: center; }
+        .btn-primary { background: var(--primary); color: #000; padding: 16px 32px; border: none; font-weight: 600; cursor: pointer; display: inline-block; text-decoration: none; font-size: 1rem; }
+    </style>
 </head>
-
-  <body>
-    <div id="root"></div>
-    <script type="module" src="/src/main.tsx"></script>
-  </body>
+<body>
+    <nav class="pill">
+        <div style="font-family: 'Sora', sans-serif; font-weight: 800; font-size: 1.2rem;">
+            <span style="color: white">Din</span><span style="color: var(--primary)">Hub</span>
+        </div>
+        <a href="#signup" class="btn-primary pill" style="padding: 8px 16px; font-size: 0.9rem;">Começar grátis</a>
+    </nav>
+    <main>
+        <section class="hero">
+            <h1 style="font-size: clamp(2.4rem, 6vw, 5rem); margin-bottom: 20px; line-height: 1.1;">
+                Seu dinheiro some todo mês<br>
+                <span style="color: var(--primary)">e você não sabe por quê.</span>
+            </h1>
+            <p style="color: var(--text-sec); font-size: 1.2rem; max-width: 600px; margin: 0 auto 30px;">
+                O DinHub encontra para onde seu dinheiro vai, te avisa antes de estourar o limite e te mostra exatamente o que cortar.
+            </p>
+            <a href="#signup" class="btn-primary pill">Descobrir para onde vai meu dinheiro →</a>
+            <p style="margin-top: 15px; color: var(--text-sec);">3 dias grátis · Sem cartão</p>
+        </section>
+    </main>
+</body>
 </html>
