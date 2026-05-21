@@ -177,11 +177,12 @@ const WalletIconSvg = ({ size = 16, color = "#00e676" }: { size?: number; color?
 
 // ── DADOS ───────────────────────────────────────────────────
 const bullets = [
-  { Icon: ClockIcon, title: "Saldo atualizado em tempo real", sub: "Sem precisar abrir o banco. Você sabe exatamente quanto tem agora." },
-  { Icon: GridIcon, title: "Cada real no lugar certo", sub: "Delivery, assinatura, mercado — tudo categorizado automaticamente." },
-  { Icon: TargetIcon, title: "Metas que você realmente segue", sub: "Acompanhe o progresso e saiba se está no caminho antes do fim do mês." },
-  { Icon: BellIconSvg, title: "Alerta antes de virar problema", sub: "A Huby te avisa quando algo sai do padrão. Não depois que já foi." },
+  { Icon: ClockIcon, title: "Tempo real", sub: "Saldo sempre atualizado." },
+  { Icon: GridIcon, title: "Categorias", sub: "Gastos organizados." },
+  { Icon: TargetIcon, title: "Metas", sub: "Foque no progresso." },
+  { Icon: BellIconSvg, title: "Alertas", sub: "Evite surpresas." },
 ];
+
 
 const categories = [
   { name: "Eletrônicos", value: "R$ 442,49", pct: "24%", barW: "60%", color: "#9b6bff", Icon: GamepadIcon },
