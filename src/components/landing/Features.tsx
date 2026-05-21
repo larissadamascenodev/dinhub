@@ -147,7 +147,11 @@ const Features = () => {
           {/* 1. RADAR FINANCEIRO - STATIC HUB INSIGHTS PANEL */}
           <div id="radar-section" className="space-y-12 md:space-y-16">
             <motion.div variants={itemVariants} className="grid grid-cols-1 md:grid-cols-2 gap-12 md:gap-24 items-center">
-              <div className="space-y-8">
+              <div className="space-y-12 md:space-y-16">
+                <div className="text-center md:hidden">
+                  <h3 className="text-4xl font-sora font-bold text-white tracking-tight">Radar Financeiro</h3>
+                </div>
+                <div className="space-y-8">
                 <div className="space-y-6">
                   <div className="flex items-center gap-4">
                     <div className="w-14 h-14 rounded-2xl bg-[#00e676]/10 border border-[#00e676]/20 flex items-center justify-center shrink-0">
