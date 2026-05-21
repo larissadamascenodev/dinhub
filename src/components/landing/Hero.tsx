@@ -66,7 +66,7 @@ const Hero = () => {
         </a>
         
         <button 
-          onClick={() => document.getElementById('radar')?.scrollIntoView({ behavior: 'smooth' })}
+          onClick={() => document.getElementById('radar-section')?.scrollIntoView({ behavior: 'smooth' })}
           className="flex items-center gap-3 px-12 py-5 rounded-2xl border border-white/5 bg-white/[0.03] backdrop-blur-xl text-white font-sora font-extrabold text-lg hover:bg-white/[0.08] transition-all duration-500 group border-b-white/10"
         >
           <Play className="w-4 h-4 fill-current group-hover:scale-110 transition-transform duration-500" />
