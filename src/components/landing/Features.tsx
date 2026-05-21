@@ -449,9 +449,9 @@ const HubyInsightsPanel: React.FC = () => {
                     <div className={`w-9 h-9 md:w-10 md:h-10 rounded-xl ${a.iconBg} flex items-center justify-center shrink-0 transition-transform group-hover:scale-110`}>
                       <ActionIcon className={`w-4 h-4 md:w-5 md:h-5 ${a.iconColor}`} />
                     </div>
-                    <div className="flex-1 min-w-0">
-                      <div className="text-[12px] md:text-[14px] font-semibold text-white group-hover:text-[#00e676] transition-colors">{a.title}</div>
-                      <div className="text-[10px] md:text-[11px] text-white/40 truncate">{a.sub}</div>
+                    <div className="flex-1 min-w-0 pr-1">
+                      <div className="text-[12px] md:text-[14px] font-semibold text-white group-hover:text-[#00e676] transition-colors leading-tight">{a.title}</div>
+                      <div className="text-[10px] md:text-[11px] text-white/40 truncate mt-0.5">{a.sub}</div>
                     </div>
                     <div className="flex items-center gap-2 shrink-0">
                       <div className="text-right">
