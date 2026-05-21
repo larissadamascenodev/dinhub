@@ -59,7 +59,7 @@ const Hero = () => {
       >
         <a 
           href="/auth"
-          className="group relative flex items-center gap-3 px-12 py-5 rounded-2xl bg-[#00e676] text-[#0a0a0a] font-sora font-extrabold text-lg hover:bg-[#00ff88] hover:shadow-[0_0_30px_rgba(0,230,118,0.5)] transition-all duration-500 hover:-translate-y-1"
+          className="group relative flex items-center gap-3 px-12 py-5 rounded-2xl bg-[#00e676]/10 border border-[#00e676]/20 text-[#00e676] backdrop-blur-md font-sora font-extrabold text-lg hover:bg-[#00e676]/20 hover:shadow-[0_0_30px_rgba(0,230,118,0.1)] transition-all duration-500 hover:-translate-y-1"
         >
           Eleve suas finanças
           <ArrowRight className="w-5 h-5 group-hover:translate-x-1.5 transition-transform duration-500" />
