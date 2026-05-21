@@ -154,58 +154,7 @@ const Features = () => {
             
             <div className="relative group">
               <div className="absolute inset-0 bg-[#00e676]/10 blur-[100px] rounded-full group-hover:bg-[#00e676]/20 transition-all duration-1000" />
-              
-              {/* Static Insights Panel - Square Translucent Design */}
-              <div className="relative bg-white/[0.03] border border-white/10 rounded-3xl p-8 shadow-2xl backdrop-blur-xl overflow-hidden min-h-[400px] flex flex-col justify-between">
-                <div className="space-y-8">
-                  <div className="flex items-center justify-between">
-                    <div className="flex items-center gap-3">
-                      <div className="w-1.5 h-1.5 rounded-full bg-[#00e676]" />
-                      <span className="text-[11px] font-black text-white/40 uppercase tracking-[0.2em]">Hub Neural Insights</span>
-                    </div>
-                  </div>
-
-                  {/* Insight Content 1 */}
-                  <div className="space-y-4">
-                    <div className="flex items-center gap-2">
-                      <TrendingDown className="w-4 h-4 text-orange-400" />
-                      <span className="text-[10px] font-bold text-orange-400 uppercase tracking-widest">Alerta de Padrão</span>
-                    </div>
-                    <div className="space-y-2">
-                      <h4 className="text-lg font-bold text-white">Desvio no Lazer</h4>
-                      <p className="text-sm text-white/50 leading-relaxed">
-                        Seu gasto nesta categoria cresceu 28% nos últimos 15 dias, impactando sua projeção de reserva para Agosto em R$ 450,00.
-                      </p>
-                    </div>
-                  </div>
-
-                  {/* Insight Content 2 - Suggested Action */}
-                  <div className="space-y-4">
-                    <div className="flex items-center gap-2">
-                      <Zap className="w-4 h-4 text-[#00e676]" />
-                      <span className="text-[10px] font-bold text-[#00e676] uppercase tracking-widest">Ação Corretiva</span>
-                    </div>
-                    <div className="bg-[#00e676]/5 border border-[#00e676]/20 rounded-2xl p-5">
-                      <div className="text-sm font-bold text-white mb-2 tracking-tight">Otimização de Assinaturas</div>
-                      <p className="text-xs text-white/60 leading-relaxed">
-                        Identificamos 3 serviços (Streamings) sem uso há 60 dias. Cancelá-los agora gera uma economia imediata de R$ 89,90/mês.
-                      </p>
-                    </div>
-                  </div>
-                </div>
-
-                {/* Bottom Footer Stats */}
-                <div className="pt-8 border-t border-white/5 grid grid-cols-2 gap-8">
-                  <div className="space-y-1">
-                    <div className="text-[9px] font-bold text-white/30 uppercase tracking-[0.15em]">Saúde Financeira</div>
-                    <div className="text-xl font-bold text-[#00e676]">94.2%</div>
-                  </div>
-                  <div className="space-y-1 text-right">
-                    <div className="text-[9px] font-bold text-white/30 uppercase tracking-[0.15em]">Proteção de Caixa</div>
-                    <div className="text-xl font-bold text-white">Ativa</div>
-                  </div>
-                </div>
-              </div>
+              <HubyInsightsPanel />
             </div>
           </motion.div>
 
