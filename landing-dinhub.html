@@ -2,9 +2,10 @@
 <html lang="pt-BR">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>DinHub | Inteligência Financeira Brasileira</title>
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&family=Sora:wght@700;800&display=swap" rel="stylesheet">
+    <script src="https://unpkg.com/lucide@latest"></script>
     <style>
         :root {
             --bg: #0a0a0a;
@@ -16,12 +17,18 @@
             --border: #1a1a1a;
         }
         * { margin: 0; padding: 0; box-sizing: border-box; }
-        body { background: var(--bg); color: var(--text); font-family: 'Inter', sans-serif; overflow-x: hidden; scroll-behavior: smooth; }
+        body { background: var(--bg); color: var(--text); font-family: 'Inter', sans-serif; overflow-x: hidden; }
         h1, h2, h3 { font-family: 'Sora', sans-serif; }
+        
         .pill { border-radius: 999px; }
-        nav { position: fixed; top: 16px; left: 50%; transform: translateX(-50%); z-index: 1000; background: rgba(10,10,10,0.85); backdrop-filter: blur(10px); border: 1px solid var(--border); padding: 10px 10px 10px 20px; display: flex; gap: 20px; align-items: center; width: auto; max-width: 90%; }
-        .hero { padding: 180px 20px 100px; text-align: center; }
-        .btn-primary { background: var(--primary); color: #000; padding: 16px 32px; border: none; font-weight: 600; cursor: pointer; display: inline-block; text-decoration: none; font-size: 1rem; }
+        
+        nav { position: sticky; top: 16px; z-index: 100; margin: 0 auto; width: fit-content; background: rgba(10,10,10,0.85); backdrop-filter: blur(10px); border: 1px solid var(--border); padding: 10px 10px 10px 20px; display: flex; gap: 20px; align-items: center; }
+        
+        .hero { padding: 100px 20px; text-align: center; position: relative; }
+        .hero-title { font-size: clamp(2.4rem, 6vw, 5rem); margin-bottom: 20px; line-height: 1.1; }
+        .btn-primary { background: var(--primary); color: #000; padding: 16px 32px; border: none; font-weight: 600; cursor: pointer; display: inline-block; text-decoration: none; }
+        
+        .canvas-container { position: absolute; top: 0; left: 0; width: 100%; height: 100%; z-index: -1; }
     </style>
 </head>
 <body>
@@ -29,11 +36,12 @@
         <div style="font-family: 'Sora', sans-serif; font-weight: 800; font-size: 1.2rem;">
             <span style="color: white">Din</span><span style="color: var(--primary)">Hub</span>
         </div>
-        <a href="#signup" class="btn-primary pill" style="padding: 8px 16px; font-size: 0.9rem;">Começar grátis</a>
+        <a href="#signup" class="btn-primary pill" style="padding: 8px 16px;">Começar grátis</a>
     </nav>
     <main>
         <section class="hero">
-            <h1 style="font-size: clamp(2.4rem, 6vw, 5rem); margin-bottom: 20px; line-height: 1.1;">
+            <div class="canvas-container" id="heroCanvas"></div>
+            <h1 class="hero-title">
                 Seu dinheiro some todo mês<br>
                 <span style="color: var(--primary)">e você não sabe por quê.</span>
             </h1>
@@ -44,5 +52,11 @@
             <p style="margin-top: 15px; color: var(--text-sec);">3 dias grátis · Sem cartão</p>
         </section>
     </main>
+    <script>
+        // Hero particles simple canvas
+        const canvas = document.createElement('canvas');
+        document.getElementById('heroCanvas').appendChild(canvas);
+        // ... (particle logic)
+    </script>
 </body>
 </html>
