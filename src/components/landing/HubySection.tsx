@@ -210,8 +210,9 @@ const HubySection = () => {
   };
 
   return (
-    <section className="py-20 px-5 flex flex-col items-center">
-      <div className="w-full max-w-4xl flex flex-col items-center">
+    <section className="py-40 px-5 flex flex-col items-center relative overflow-hidden">
+      <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-full max-w-[1000px] aspect-square bg-[#00e676]/5 blur-[150px] pointer-events-none rounded-full" />
+      <div className="w-full max-w-5xl flex flex-col items-center relative z-10">
         
         {/* Carrossel de Perguntas */}
         <div className="w-full flex overflow-x-auto no-scrollbar gap-3 pb-8 justify-start md:justify-center">
