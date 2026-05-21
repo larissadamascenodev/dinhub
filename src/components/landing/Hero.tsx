@@ -30,8 +30,8 @@ const Hero = () => {
           initial={{ opacity: 0, y: 20 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ duration: 0.8, ease: [0.22, 1, 0.36, 1] }}
-          className="font-sora font-bold leading-[1.1] mb-6 text-white"
-          style={{ fontSize: "clamp(2.5rem, 8vw, 5.5rem)" }}
+          className="font-sora font-bold leading-[1.1] mb-6 text-white text-center"
+          style={{ fontSize: "clamp(2rem, 10vw, 5.5rem)" }}
         >
           Tony Stark tem o Jarvis.<br />
           <span className="bg-gradient-to-r from-[#00e676] to-[#00ff88] bg-clip-text text-transparent">
