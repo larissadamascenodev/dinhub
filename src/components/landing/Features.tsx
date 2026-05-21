@@ -469,7 +469,7 @@ const HubyInsightsPanel: React.FC = () => {
       </AnimatePresence>
 
       {/* Dots moved to bottom */}
-      <div className="flex items-center justify-center gap-2 mt-8">
+      <div className="flex items-center justify-center gap-2 mt-auto pt-6">
         {RADAR_SLIDES.map((_, i) => (
           <button
             key={i}
