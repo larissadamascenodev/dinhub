@@ -315,7 +315,7 @@ const DashboardHeader = memo(({ profile, streak = 0, streakDates = [] }: { profi
       <header className="sticky top-0 z-40 bg-background/80 backdrop-blur-xl px-4 py-3 md:hidden -mx-4 mb-2">
         <div className="flex items-center justify-between">
           <div className="flex items-center gap-1.5">
-            <PiggyBank className="w-7 h-7 text-primary" />
+            {/* Icon removed by user request */}
             <span className="font-display font-bold text-xl">
               <span className="text-foreground">Din</span>
               <span className="text-primary">Hub</span>
