@@ -116,24 +116,24 @@ const Features = () => {
            style={{ backgroundImage: 'radial-gradient(circle at center, rgba(0,230,118,0.08) 0%, transparent 70%)' }} />
 
       <div className="max-w-6xl mx-auto relative z-10">
-        <div id="radar-header" className="text-center mb-16 md:mb-40 space-y-6 md:space-y-8">
+        <div id="radar-header" className="text-center mb-16 md:mb-32 space-y-6 md:space-y-8">
           <motion.div 
             initial={{ opacity: 0, scale: 0.9 }}
             whileInView={{ opacity: 1, scale: 1 }}
             className="inline-flex items-center gap-2 px-4 py-2 rounded-xl border border-white/5 bg-white/[0.03] backdrop-blur-md"
           >
-            <span className="text-[10px] font-black tracking-[0.3em] text-[#00e676] uppercase">The Architecture of Control</span>
+            <span className="text-[10px] font-black tracking-[0.3em] text-[#00e676] uppercase">Huby Experience</span>
           </motion.div>
           
-          <h2 className="font-sora font-extrabold text-white text-3xl md:text-7xl tracking-tighter leading-[1.1] md:leading-[1.05]">
-            Enquanto você vive,<br />
+          <h2 className="font-sora font-extrabold text-white text-4xl md:text-7xl tracking-tighter leading-[1.1] md:leading-[1.05]">
+            Huby<br />
             <span className="bg-gradient-to-r from-white/20 to-white bg-clip-text text-transparent italic font-light">
-              a Huby organiza.
+              Domine seu dinheiro.
             </span>
           </h2>
           
           <p className="text-white/60 max-w-2xl mx-auto text-lg md:text-xl font-inter font-light leading-relaxed px-2">
-            Esqueça as planilhas. A Huby é sua inteligência de elite que <span className="text-white font-medium">antecipa movimentos</span> e blinda seu patrimônio com precisão cirúrgica.
+            A inteligência financeira de elite que <span className="text-white font-medium">antecipa movimentos</span> e blinda seu patrimônio com precisão cirúrgica.
           </p>
         </div>
 
