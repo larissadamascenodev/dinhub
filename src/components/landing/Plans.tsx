@@ -17,16 +17,20 @@ const Plans = () => {
   ];
 
   return (
-    <section id="planos" className="py-32 px-5">
-      <div className="max-w-5xl mx-auto">
-        <div className="text-center mb-16 space-y-4">
-          <span className="text-[10px] font-bold tracking-[0.2em] text-[#00e676] uppercase">Planos</span>
-          <h2 className="font-sora font-extrabold text-white text-3xl md:text-5xl">
-            Quanto custa ter a Huby do seu lado?
+    <section id="planos" className="py-40 px-5">
+      <div className="max-w-6xl mx-auto">
+        <div className="text-center mb-24 space-y-6">
+          <motion.div 
+            initial={{ opacity: 0, scale: 0.9 }}
+            whileInView={{ opacity: 1, scale: 1 }}
+            className="inline-flex items-center gap-2 px-4 py-2 rounded-xl border border-white/5 bg-white/[0.03] backdrop-blur-md"
+          >
+            <span className="text-[10px] font-black tracking-[0.3em] text-[#00e676] uppercase">Elite Membership</span>
+          </motion.div>
+          <h2 className="font-sora font-extrabold text-white text-3xl md:text-6xl tracking-tighter leading-tight">
+            O investimento no seu<br />
+            <span className="bg-gradient-to-r from-[#00e676] to-[#00ff88] bg-clip-text text-transparent italic">sucesso financeiro.</span>
           </h2>
-          <p className="text-[#a0a0a0] max-w-2xl mx-auto">
-            Comece grátis. A maioria dos usuários recupera o valor em menos de uma semana.
-          </p>
 
           {/* Toggle */}
           <div className="flex items-center justify-center pt-8">
