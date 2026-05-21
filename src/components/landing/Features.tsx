@@ -102,13 +102,13 @@ const Features = () => {
   };
 
   return (
-    <section id="funcionalidades" className="py-32 md:py-48 px-5 bg-[#0a0a0a] relative overflow-hidden">
+    <section id="funcionalidades" className="py-20 md:py-48 px-5 bg-[#0a0a0a] relative overflow-hidden">
       {/* Background decoration */}
       <div className="absolute top-0 left-1/2 -translate-x-1/2 w-full h-full opacity-20 pointer-events-none" 
            style={{ backgroundImage: 'radial-gradient(circle at center, rgba(0,230,118,0.08) 0%, transparent 70%)' }} />
 
       <div className="max-w-6xl mx-auto relative z-10">
-        <div className="text-center mb-24 md:mb-40 space-y-8">
+        <div className="text-center mb-16 md:mb-40 space-y-6 md:space-y-8">
           <motion.div 
             initial={{ opacity: 0, scale: 0.9 }}
             whileInView={{ opacity: 1, scale: 1 }}
@@ -117,14 +117,14 @@ const Features = () => {
             <span className="text-[10px] font-black tracking-[0.3em] text-[#00e676] uppercase">The Architecture of Control</span>
           </motion.div>
           
-          <h2 className="font-sora font-extrabold text-white text-4xl md:text-7xl tracking-tighter leading-[1.05]">
+          <h2 className="font-sora font-extrabold text-white text-3xl md:text-7xl tracking-tighter leading-[1.1] md:leading-[1.05]">
             Enquanto você vive,<br />
             <span className="bg-gradient-to-r from-white/20 to-white bg-clip-text text-transparent italic font-light">
               a Huby organiza.
             </span>
           </h2>
           
-          <p className="text-white/60 max-w-2xl mx-auto text-xl font-inter font-light leading-relaxed">
+          <p className="text-white/60 max-w-2xl mx-auto text-lg md:text-xl font-inter font-light leading-relaxed px-2">
             Esqueça as planilhas. A Huby é sua inteligência de elite que <span className="text-white font-medium">antecipa movimentos</span> e blinda seu patrimônio com precisão cirúrgica.
           </p>
         </div>
@@ -134,7 +134,7 @@ const Features = () => {
           initial="hidden"
           whileInView="visible"
           viewport={{ once: true, margin: "-100px" }}
-          className="space-y-24 md:space-y-48"
+          className="space-y-20 md:space-y-48"
         >
           {/* 1. RADAR FINANCEIRO - STATIC HUB INSIGHTS PANEL */}
           <motion.div variants={itemVariants} className="grid grid-cols-1 md:grid-cols-2 gap-12 md:gap-24 items-center">
@@ -142,8 +142,8 @@ const Features = () => {
               <div className="w-14 h-14 rounded-2xl bg-[#00e676]/10 border border-[#00e676]/20 flex items-center justify-center">
                 <Radar className="w-7 h-7 text-[#00e676]" />
               </div>
-              <h3 className="text-3xl md:text-4xl font-sora font-bold text-white tracking-tight">Radar Financeiro</h3>
-              <p className="text-white/50 text-lg leading-relaxed font-light">
+              <h3 className="text-2xl md:text-4xl font-sora font-bold text-white tracking-tight">Radar Financeiro</h3>
+              <p className="text-white/50 text-base md:text-lg leading-relaxed font-light">
                 O Radar identifica padrões perigosos e indica exatamente o que você deve fazer. Tudo visual, direto e automático.
               </p>
               <ul className="space-y-4 pt-4">
@@ -195,8 +195,8 @@ const Features = () => {
               <div className="w-14 h-14 rounded-2xl bg-[#00e676]/10 border border-[#00e676]/20 flex items-center justify-center">
                 <ShieldCheck className="w-7 h-7 text-[#00e676]" />
               </div>
-              <h3 className="text-3xl md:text-4xl font-sora font-bold text-white tracking-tight">Score Huby</h3>
-              <p className="text-white/50 text-lg leading-relaxed font-light">
+              <h3 className="text-2xl md:text-4xl font-sora font-bold text-white tracking-tight">Score Huby</h3>
+              <p className="text-white/50 text-base md:text-lg leading-relaxed font-light">
                 "Opa, esqueceu de pagar a Vivo? Seu score caiu 3 pontos. Paga logo antes que isso vire uma bola de neve! 📉"
               </p>
               <p className="text-white/40 text-sm">
@@ -211,8 +211,8 @@ const Features = () => {
               <div className="w-14 h-14 rounded-2xl bg-[#00e676]/10 border border-[#00e676]/20 flex items-center justify-center">
                 <TrendingUp className="w-7 h-7 text-[#00e676]" />
               </div>
-              <h3 className="text-3xl md:text-4xl font-sora font-bold text-white tracking-tight">Projeções de Elite</h3>
-              <p className="text-white/50 text-lg leading-relaxed font-light">
+              <h3 className="text-2xl md:text-4xl font-sora font-bold text-white tracking-tight">Projeções de Elite</h3>
+              <p className="text-white/50 text-base md:text-lg leading-relaxed font-light">
                 "No ritmo atual, você chega aos R$ 10k investidos em Outubro. Se cortar o café gourmet, chega em Agosto! 🚀"
               </p>
               <div className="grid grid-cols-2 gap-4 pt-4">
@@ -291,8 +291,8 @@ const Features = () => {
               <div className="w-14 h-14 rounded-2xl bg-[#00e676]/10 border border-[#00e676]/20 flex items-center justify-center">
                 <Camera className="w-7 h-7 text-[#00e676]" />
               </div>
-              <h3 className="text-3xl md:text-4xl font-sora font-bold text-white tracking-tight">Scanner Mágico</h3>
-              <p className="text-white/50 text-lg leading-relaxed font-light">
+              <h3 className="text-2xl md:text-4xl font-sora font-bold text-white tracking-tight">Scanner Mágico</h3>
+              <p className="text-white/50 text-base md:text-lg leading-relaxed font-light">
                 "Escaneou, registrou. A Huby lê o papel, identifica a categoria e já abate do seu orçamento. Sem esforço. ✨"
               </p>
               <p className="text-white/40 text-sm">
@@ -307,8 +307,8 @@ const Features = () => {
               <div className="w-14 h-14 rounded-2xl bg-[#00e676]/10 border border-[#00e676]/20 flex items-center justify-center">
                 <CreditCard className="w-7 h-7 text-[#00e676]" />
               </div>
-              <h3 className="text-3xl md:text-4xl font-sora font-bold text-white tracking-tight">Faturas em Tempo Real</h3>
-              <p className="text-white/50 text-lg leading-relaxed font-light">
+              <h3 className="text-2xl md:text-4xl font-sora font-bold text-white tracking-tight">Faturas em Tempo Real</h3>
+              <p className="text-white/50 text-base md:text-lg leading-relaxed font-light">
                 "Sua fatura do Nubank chegou em 80% do limite. Cuidado pra não ter o cartão recusado no jantar de hoje! 💳"
               </p>
               <div className="space-y-3">
@@ -388,7 +388,7 @@ const HubyInsightsPanel: React.FC = () => {
   const InsightIcon = insight.icon;
 
   return (
-    <div className="relative bg-white/[0.02] border border-white/10 rounded-[32px] p-4 md:p-8 shadow-2xl backdrop-blur-xl flex flex-col min-h-[520px] md:min-h-[500px]">
+    <div className="relative bg-white/[0.02] border border-white/10 rounded-[32px] p-4 md:p-8 shadow-2xl backdrop-blur-xl flex flex-col min-h-[500px] md:min-h-[500px]">
       <AnimatePresence mode="wait">
         <motion.div
           key={idx}
