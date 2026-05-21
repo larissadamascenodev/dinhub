@@ -52,12 +52,12 @@ const Features = () => {
           initial="hidden"
           whileInView="visible"
           viewport={{ once: true, margin: "-100px" }}
-          className="grid grid-cols-1 md:grid-cols-3 lg:grid-cols-4 gap-5 auto-rows-[240px]"
+          className="grid grid-cols-1 md:grid-cols-12 gap-6 auto-rows-[280px]"
         >
-          {/* CARD 1 - GRANDE */}
+          {/* CARD 1 - GRANDE (BENTO STYLE) */}
           <motion.div 
             variants={itemVariants}
-            className="md:col-span-2 md:row-span-2 bg-gradient-to-br from-[#0f0f0f] to-[#00e676]/5 border border-[#1a1a1a] rounded-[24px] p-8 flex flex-col justify-between group hover:border-[#00e676]/40 transition-all overflow-hidden relative"
+            className="md:col-span-8 md:row-span-2 bg-gradient-to-br from-[#111] to-[#0a0a0a] border border-white/[0.05] rounded-[32px] p-12 flex flex-col justify-between group hover:border-[#00e676]/30 transition-all duration-700 overflow-hidden relative shadow-2xl"
           >
             <div className="relative z-10">
               <Sparkles className="w-12 h-12 text-[#00e676] mb-6" />
