@@ -324,21 +324,6 @@ const HubySection = () => {
       <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-full max-w-[1000px] aspect-square bg-[#00e676]/5 blur-[150px] pointer-events-none rounded-full" />
 
       <div className="w-full max-w-5xl flex flex-col items-center relative z-10">
-        {/* Header */}
-        <div className="text-center mb-10 space-y-3">
-          <div className="inline-flex items-center gap-2 px-4 py-1.5 rounded-full border border-white/5 bg-white/[0.03] backdrop-blur-md">
-            <Sparkles className="w-3 h-3 text-[#00e676]" />
-            <span className="text-[10px] font-black tracking-[0.25em] text-[#00e676] uppercase">
-              Huby Neural Core
-            </span>
-          </div>
-          <h2 className="font-sora font-extrabold text-white text-2xl md:text-4xl tracking-tight">
-            Explore o que a Huby vê sobre você
-          </h2>
-          <p className="text-white/40 text-sm max-w-md mx-auto">
-            Escolha um tema. A Huby mostra os dados — e conversa com você sobre eles.
-          </p>
-        </div>
 
         {/* Screens (former bottom row, now main entry point) */}
         <div className="w-full flex overflow-x-auto no-scrollbar gap-3 pb-8 md:justify-center mb-4">
