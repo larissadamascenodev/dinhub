@@ -66,14 +66,6 @@ const Features = () => {
                 Converse com seus dados. Pergunte qualquer coisa, receba respostas práticas em segundos.
               </p>
             </div>
-            <div className="relative z-10 mt-8 space-y-3">
-               <div className="bg-[#1a1a1a] p-3 rounded-xl rounded-bl-none max-w-[200px] text-[10px] text-white animate-pulse">
-                "Huby, quanto gastei no mercado?"
-               </div>
-               <div className="bg-[#00e676]/10 p-3 rounded-xl rounded-br-none max-w-[200px] text-[10px] text-[#00e676] self-end ml-auto [animation-delay:1s] animate-pulse">
-                "Foram R$ 432,50 este mês."
-               </div>
-            </div>
             <div className="absolute top-0 right-0 w-64 h-64 bg-[#00e676]/10 rounded-full blur-[100px] pointer-events-none" />
           </motion.div>
 
