@@ -22,10 +22,10 @@
         .container { max-width: 1100px; margin: 0 auto; padding: 0 20px; }
         nav { position: fixed; top: 16px; left: 50%; transform: translateX(-50%); z-index: 1000; background: rgba(10,10,10,0.85); backdrop-filter: blur(10px); border: 1px solid var(--border); padding: 10px 10px 10px 20px; display: flex; gap: 20px; align-items: center; width: auto; max-width: 90%; }
         .hero { padding: 180px 20px 100px; text-align: center; }
-        .btn-primary { background: var(--primary); color: #000; padding: 16px 32px; border: none; font-weight: 600; cursor: pointer; display: inline-block; text-decoration: none; font-size: 1rem; }
+        .btn-primary { background: var(--primary); color: #000; padding: 16px 32px; border: none; font-weight: 600; cursor: pointer; display: inline-block; text-decoration: none; }
         section { padding: 80px 0; }
-        .grid-3 { display: grid; grid-template-columns: repeat(auto-fit, minmax(300px, 1fr)); gap: 20px; }
         .card { background: var(--card); border: 1px solid var(--border); padding: 30px; border-radius: 20px; }
+        footer { padding: 40px 20px; border-top: 1px solid var(--border); text-align: center; color: var(--text-sec); }
     </style>
 </head>
 <body>
@@ -35,39 +35,50 @@
         </div>
         <a href="#signup" class="btn-primary pill" style="padding: 8px 16px; font-size: 0.9rem;">Começar grátis</a>
     </nav>
+
     <main>
         <section class="hero">
             <h1 style="font-size: clamp(2.4rem, 6vw, 5rem); margin-bottom: 20px; line-height: 1.1;">
                 Seu dinheiro some todo mês<br>
                 <span style="color: var(--primary)">e você não sabe por quê.</span>
             </h1>
-            <p style="color: var(--text-sec); font-size: 1.2rem; max-width: 600px; margin: 0 auto 30px;">
-                O DinHub encontra para onde seu dinheiro vai, te avisa antes de estourar o limite e te mostra exatamente o que cortar.
-            </p>
+            <p style="color: var(--text-sec); font-size: 1.2rem; max-width: 600px; margin: 0 auto 30px;">O DinHub encontra para onde seu dinheiro vai, te avisa antes de estourar o limite e te mostra exatamente o que cortar.</p>
             <a href="#signup" class="btn-primary pill">Descobrir para onde vai meu dinheiro →</a>
         </section>
 
+        <!-- Seção HUBY -->
+        <section style="background: rgba(0, 230, 118, 0.03);">
+            <div class="container" style="text-align: center;">
+                <span class="pill" style="background: var(--primary); color: #000; padding: 4px 12px; font-size: 0.8rem; font-weight: 700;">HUBY · SUA ASSISTENTE</span>
+                <h2 style="margin: 20px 0;">Converse com o seu dinheiro.</h2>
+                <div id="esfera" style="width: 250px; height: 250px; background: var(--primary); border-radius: 50%; margin: 40px auto; filter: blur(40px); opacity: 0.5;"></div>
+            </div>
+        </section>
+
+        <!-- Antes / Durante / Depois -->
         <section class="container">
-            <h2 style="text-align: center; margin-bottom: 50px;">Tudo que você precisa em um lugar só.</h2>
-            <div class="grid-3">
-                <div class="card">
-                    <i data-lucide="target" style="color: var(--primary); margin-bottom: 15px;"></i>
-                    <h3>Rastreia cada centavo</h3>
-                    <p style="color: var(--text-sec)">Sem você precisar fazer nada.</p>
+            <h2 style="text-align: center; margin-bottom: 50px;">A diferença entre o caos e o controle.</h2>
+            <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(280px, 1fr)); gap: 20px;">
+                <div class="card" style="border-top: 4px solid #ff4444;">
+                    <h3>ANTES</h3>
+                    <p style="color: var(--text-sec); margin-top: 10px;">Você não sabe para onde o dinheiro vai. Sensação constante de falta.</p>
                 </div>
-                <div class="card">
-                    <i data-lucide="bell" style="color: var(--primary); margin-bottom: 15px;"></i>
-                    <h3>Te avisa antes de doer</h3>
-                    <p style="color: var(--text-sec)">Alertas antes de virar problema.</p>
+                <div class="card" style="border-top: 4px solid var(--primary);">
+                    <h3>DURANTE</h3>
+                    <p style="color: var(--text-sec); margin-top: 10px;">IA trabalhando por você. Alertas antes de estourar o limite.</p>
                 </div>
-                <div class="card">
-                    <i data-lucide="scissors" style="color: var(--primary); margin-bottom: 15px;"></i>
-                    <h3>Te diz o que cortar</h3>
-                    <p style="color: var(--text-sec)">Decisões claras, resultado rápido.</p>
+                <div class="card" style="border-top: 4px solid var(--primary);">
+                    <h3>DEPOIS</h3>
+                    <p style="color: var(--text-sec); margin-top: 10px;">Controle real. Você guarda dinheiro todo mês e dorme tranquilo.</p>
                 </div>
             </div>
         </section>
     </main>
+
+    <footer>
+        <p>DinHub © 2026. Inteligência financeira que trabalha por você.</p>
+    </footer>
+
     <script>
         lucide.createIcons();
     </script>
