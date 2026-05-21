@@ -17,7 +17,7 @@ const Hero = () => {
       <motion.div 
         initial={{ opacity: 0, y: -20 }}
         animate={{ opacity: 1, y: 0 }}
-        className="relative z-10 inline-flex items-center gap-2 px-4 py-1.5 rounded-full border border-white/10 bg-white/5 backdrop-blur-md mb-8"
+        className="relative z-10 inline-flex items-center gap-2 px-4 py-2 rounded-xl border border-white/5 bg-white/[0.03] backdrop-blur-xl mb-12 shadow-2xl shadow-black"
       >
         <span className="w-1.5 h-1.5 rounded-full bg-[#00e676] animate-pulse" />
         <span className="text-[11px] font-bold text-white/60 tracking-widest uppercase">
