@@ -1100,6 +1100,11 @@ const Auth = () => {
             <VisaoGeral />
           </motion.div>
 
+          <motion.div custom={4} variants={fadeUp} initial="hidden" animate="visible" className="w-full">
+            <Huby />
+          </motion.div>
+
+
           <div className="w-full grid grid-cols-1 lg:grid-cols-2 gap-12 items-center">
             <motion.div custom={5} variants={fadeUp} initial="hidden" animate="visible" className="flex flex-col space-y-8">
               <div className="space-y-4">
