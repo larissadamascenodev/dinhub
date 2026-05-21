@@ -35,9 +35,9 @@ const Features = () => {
             <span className="text-[10px] font-black tracking-[0.3em] text-[#00e676] uppercase">The Architecture of Control</span>
           </motion.div>
           
-          <h2 className="font-sora font-bold text-white text-3xl md:text-5xl lg:text-7xl leading-tight tracking-tight">
+          <h2 className="font-sora font-extrabold text-white text-3xl md:text-7xl tracking-tighter leading-[1.05]">
             Enquanto você vive,<br />
-            <span className="bg-gradient-to-r from-white/40 to-white bg-clip-text text-transparent italic">
+            <span className="bg-gradient-to-r from-white/20 to-white bg-clip-text text-transparent italic font-light">
               a Huby organiza.
             </span>
           </h2>
