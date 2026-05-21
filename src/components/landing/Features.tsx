@@ -388,7 +388,7 @@ const HubyInsightsPanel: React.FC = () => {
   const InsightIcon = insight.icon;
 
   return (
-    <div className="relative bg-white/[0.02] border border-white/10 rounded-[32px] p-5 md:p-8 shadow-2xl backdrop-blur-xl flex flex-col min-h-[480px] md:min-h-[500px]">
+    <div className="relative bg-white/[0.02] border border-white/10 rounded-[32px] p-4 md:p-8 shadow-2xl backdrop-blur-xl flex flex-col min-h-[520px] md:min-h-[500px]">
       <AnimatePresence mode="wait">
         <motion.div
           key={idx}
@@ -396,7 +396,7 @@ const HubyInsightsPanel: React.FC = () => {
           animate={{ opacity: 1, x: 0 }}
           exit={{ opacity: 0, x: -20 }}
           transition={{ duration: 0.6, ease: [0.22, 1, 0.36, 1] }}
-          className="flex-1 flex flex-col space-y-8"
+          className="flex-1 flex flex-col space-y-6 md:space-y-8"
         >
           {/* Insights da Huby */}
           <div className="space-y-4">
@@ -407,7 +407,7 @@ const HubyInsightsPanel: React.FC = () => {
               <span className="text-sm font-semibold text-white">Insights da Huby</span>
             </div>
 
-            <div className="flex items-start gap-3 md:gap-4 p-4 md:p-5 rounded-2xl bg-white/[0.04] border border-white/10 shadow-inner">
+            <div className="flex items-start gap-3 md:gap-4 p-3 md:p-5 rounded-2xl bg-white/[0.04] border border-white/10 shadow-inner">
               <div className={`w-10 h-10 md:w-12 md:h-12 rounded-xl ${insight.iconBg} flex items-center justify-center shrink-0`}>
                 <InsightIcon className={`w-5 h-5 md:w-6 md:h-6 ${insight.iconColor}`} />
               </div>
@@ -449,14 +449,14 @@ const HubyInsightsPanel: React.FC = () => {
                     <div className={`w-9 h-9 md:w-10 md:h-10 rounded-xl ${a.iconBg} flex items-center justify-center shrink-0 transition-transform group-hover:scale-110`}>
                       <ActionIcon className={`w-4 h-4 md:w-5 md:h-5 ${a.iconColor}`} />
                     </div>
-                    <div className="flex-1 min-w-0">
-                      <div className="text-[12px] md:text-[14px] font-semibold text-white group-hover:text-[#00e676] transition-colors">{a.title}</div>
-                      <div className="text-[10px] md:text-[11px] text-white/40 truncate">{a.sub}</div>
+                    <div className="flex-1 min-w-0 pr-1">
+                      <div className="text-[12px] md:text-[14px] font-semibold text-white group-hover:text-[#00e676] transition-colors leading-tight">{a.title}</div>
+                      <div className="text-[10px] md:text-[11px] text-white/40 truncate mt-0.5">{a.sub}</div>
                     </div>
                     <div className="flex items-center gap-2 shrink-0">
                       <div className="text-right">
-                        <div className={`text-[11px] md:text-[13px] font-bold ${a.valueColor}`}>{a.value}</div>
-                        <div className="text-[9px] text-white/20 font-bold uppercase tracking-tighter">Sugestão</div>
+                        <div className={`text-[11px] md:text-[13px] font-bold ${a.valueColor} whitespace-nowrap`}>{a.value}</div>
+                        <div className="text-[8px] md:text-[9px] text-white/20 font-bold uppercase tracking-tighter">Sugestão</div>
                       </div>
                       <ChevronRight className="w-4 h-4 text-white/20 group-hover:text-[#00e676] group-hover:translate-x-1 transition-all" />
                     </div>
@@ -469,7 +469,7 @@ const HubyInsightsPanel: React.FC = () => {
       </AnimatePresence>
 
       {/* Dots moved to bottom */}
-      <div className="flex items-center justify-center gap-2 mt-8">
+      <div className="flex items-center justify-center gap-2 mt-auto pt-6">
         {RADAR_SLIDES.map((_, i) => (
           <button
             key={i}
