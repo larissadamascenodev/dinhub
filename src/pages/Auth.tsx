@@ -310,19 +310,20 @@ const VisaoGeral = () => {
             Chega de abrir mil apps, planilha e extrato do banco. O DinHub reúne tudo e te entrega uma visão clara do que está acontecendo — e do que você precisa fazer agora.
           </p>
 
-          <div className="grid grid-cols-2 sm:flex sm:flex-col gap-4 sm:gap-[1.2rem] mt-[0.3rem]">
+          <div className="grid grid-cols-2 sm:flex sm:flex-col gap-3 sm:gap-4 mt-2">
             {bullets.map(({ Icon, title, sub }, i) => (
-              <div key={i} className="flex flex-col sm:flex-row gap-2 sm:gap-[0.9rem] items-start">
-                <div className="w-10 h-10 sm:w-[44px] sm:h-[44px] rounded-lg sm:rounded-xl shrink-0 bg-[#00e676]/5 border border-[#00e676]/20 flex items-center justify-center">
-                  <Icon size={18} />
+              <div key={i} className="flex flex-col sm:flex-row gap-3 p-3 sm:p-4 rounded-2xl bg-white/[0.03] border border-white/[0.06] backdrop-blur-md hover:bg-white/[0.05] hover:border-white/[0.1] transition-all duration-300">
+                <div className="w-10 h-10 sm:w-11 sm:h-11 rounded-xl shrink-0 bg-primary/10 border border-primary/20 flex items-center justify-center text-primary">
+                  <Icon size={20} />
                 </div>
                 <div className="min-w-0">
-                  <b className="font-display text-[0.8rem] sm:text-[0.98rem] font-semibold text-white block mb-0.5 sm:mb-[0.15rem] leading-tight truncate sm:whitespace-normal">{title}</b>
-                  <span className="font-sans text-[0.7rem] sm:text-[0.86rem] color-[#a0a0a0] leading-snug sm:lineHeight-[1.5] block line-clamp-2 sm:line-clamp-none opacity-60">{sub}</span>
+                  <b className="font-display text-[0.85rem] sm:text-[0.98rem] font-bold text-white block mb-1 leading-tight">{title}</b>
+                  <span className="font-sans text-[0.72rem] sm:text-[0.86rem] text-muted-foreground leading-relaxed block line-clamp-2 sm:line-clamp-none">{sub}</span>
                 </div>
               </div>
             ))}
           </div>
+
 
 
           <a href="#signup"
