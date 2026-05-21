@@ -300,6 +300,8 @@ const HubySection = () => {
                         onClick={() => {
                             setChatHistory([{ role: 'huby', text: `Aqui está seu resumo:`, card: renderAppScreen(s.id) }]);
                             setStatus('responding');
+                            const element = document.getElementById('chat-anchor');
+                            if (element) element.scrollIntoView({ behavior: 'smooth', block: 'start' });
                             setTimeout(() => setStatus('idle'), 1000);
                         }}
                         className="whitespace-nowrap px-4 py-2 rounded-full border border-[#1a1a1a] bg-[#0a0a0a] text-[#a0a0a0] text-xs hover:border-[#00e676]/30 hover:text-white transition-all"
