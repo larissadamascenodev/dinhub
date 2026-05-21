@@ -227,7 +227,7 @@ const Features = () => {
               </div>
             </div>
             <div className="relative">
-              <div className="bg-[#0f0f0f] border border-white/10 rounded-[32px] p-8 shadow-2xl">
+              <div className="bg-[#0f0f0f] border border-white/10 rounded-[32px] p-6 md:p-8 shadow-2xl">
                 <div className="h-48 w-full flex items-end gap-3">
                   {[30, 45, 35, 65, 85, 100].map((h, i) => (
                     <motion.div 
