@@ -388,7 +388,7 @@ const HubyInsightsPanel: React.FC = () => {
   const InsightIcon = insight.icon;
 
   return (
-    <div className="relative bg-white/[0.02] border border-white/10 rounded-[32px] p-6 md:p-8 shadow-2xl backdrop-blur-xl flex flex-col min-h-[500px]">
+    <div className="relative bg-white/[0.02] border border-white/10 rounded-[32px] p-5 md:p-8 shadow-2xl backdrop-blur-xl flex flex-col min-h-[480px] md:min-h-[500px]">
       <AnimatePresence mode="wait">
         <motion.div
           key={idx}
