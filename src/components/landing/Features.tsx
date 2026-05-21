@@ -103,7 +103,7 @@ const Features = () => {
           {/* CARD 3 - MÉDIO */}
           <motion.div 
             variants={itemVariants}
-            className="md:col-span-1 md:row-span-2 bg-[#0f0f0f] border border-[#1a1a1a] rounded-[24px] p-8 flex flex-col justify-between group hover:border-[#00e676]/40 transition-all relative overflow-hidden"
+            className="md:col-span-4 md:row-span-1 bg-[#0f0f0f] border border-white/[0.05] rounded-[32px] p-8 flex flex-col justify-between group hover:border-[#00e676]/30 transition-all duration-700 relative overflow-hidden shadow-2xl"
           >
             <div>
               <Camera className="w-8 h-8 text-[#00e676] mb-6 shadow-[0_0_15px_rgba(0,230,118,0.3)]" />
