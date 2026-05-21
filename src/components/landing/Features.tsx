@@ -116,24 +116,24 @@ const Features = () => {
            style={{ backgroundImage: 'radial-gradient(circle at center, rgba(0,230,118,0.08) 0%, transparent 70%)' }} />
 
       <div className="max-w-6xl mx-auto relative z-10">
-        <div id="radar-header" className="text-center mb-16 md:mb-32 space-y-6 md:space-y-8">
+        <div id="radar-header" className="text-center mb-16 md:mb-40 space-y-6 md:space-y-8">
           <motion.div 
             initial={{ opacity: 0, scale: 0.9 }}
             whileInView={{ opacity: 1, scale: 1 }}
             className="inline-flex items-center gap-2 px-4 py-2 rounded-xl border border-white/5 bg-white/[0.03] backdrop-blur-md"
           >
-            <span className="text-[10px] font-black tracking-[0.3em] text-[#00e676] uppercase">Huby Experience</span>
+            <span className="text-[10px] font-black tracking-[0.3em] text-[#00e676] uppercase">The Architecture of Control</span>
           </motion.div>
           
-          <h2 className="font-sora font-extrabold text-white text-4xl md:text-7xl tracking-tighter leading-[1.1] md:leading-[1.05]">
-            Huby<br />
+          <h2 className="font-sora font-extrabold text-white text-3xl md:text-7xl tracking-tighter leading-[1.1] md:leading-[1.05]">
+            Enquanto você vive,<br />
             <span className="bg-gradient-to-r from-white/20 to-white bg-clip-text text-transparent italic font-light">
-              Domine seu dinheiro.
+              a Huby organiza.
             </span>
           </h2>
           
           <p className="text-white/60 max-w-2xl mx-auto text-lg md:text-xl font-inter font-light leading-relaxed px-2">
-            A inteligência financeira de elite que <span className="text-white font-medium">antecipa movimentos</span> e blinda seu patrimônio com precisão cirúrgica.
+            Esqueça as planilhas. A Huby é sua inteligência de elite que <span className="text-white font-medium">antecipa movimentos</span> e blinda seu patrimônio com precisão cirúrgica.
           </p>
         </div>
 
@@ -147,11 +147,7 @@ const Features = () => {
           {/* 1. RADAR FINANCEIRO - STATIC HUB INSIGHTS PANEL */}
           <div id="radar-section" className="space-y-12 md:space-y-16">
             <motion.div variants={itemVariants} className="grid grid-cols-1 md:grid-cols-2 gap-12 md:gap-24 items-center">
-              <div className="space-y-12 md:space-y-16">
-                <div className="text-center md:hidden">
-                  <h3 className="text-4xl font-sora font-bold text-white tracking-tight">Radar Financeiro</h3>
-                </div>
-                <div className="space-y-8">
+              <div className="space-y-8">
                 <div className="space-y-6">
                   <div className="flex items-center gap-4">
                     <div className="w-14 h-14 rounded-2xl bg-[#00e676]/10 border border-[#00e676]/20 flex items-center justify-center shrink-0">
@@ -184,13 +180,9 @@ const Features = () => {
               </div>
               
               <div className="relative group">
-                <div className="hidden md:block absolute -top-16 left-1/2 -translate-x-1/2 whitespace-nowrap">
-                  <h3 className="text-5xl font-sora font-bold text-white tracking-tight opacity-50">Radar Financeiro</h3>
-                </div>
                 <div className="absolute inset-0 bg-[#00e676]/10 blur-[100px] rounded-full group-hover:bg-[#00e676]/20 transition-all duration-1000" />
                 <HubyInsightsPanel />
               </div>
-            </div>
             </motion.div>
           </div>
 
