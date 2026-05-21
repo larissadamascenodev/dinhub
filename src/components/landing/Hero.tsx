@@ -115,11 +115,11 @@ const Hero = () => {
               <div className="bg-white/5 border border-white/10 p-3 md:p-5 rounded-2xl rounded-tr-none ml-auto text-xs md:text-sm text-white/80 leading-relaxed">
                 Huby, quanto eu gastei com delivery essa semana? E me diz se ainda estou dentro da meta.
               </div>
-              <div className="flex gap-4">
-                <div className="w-10 h-10 rounded-full bg-[#00e676]/20 border border-[#00e676]/20 flex items-center justify-center flex-shrink-0">
-                  <span className="text-[10px] font-bold text-[#00e676]">HB</span>
+              <div className="flex gap-2 md:gap-4">
+                <div className="w-8 h-8 md:w-10 md:h-10 rounded-full bg-[#00e676]/20 border border-[#00e676]/20 flex items-center justify-center flex-shrink-0">
+                  <span className="text-[8px] md:text-[10px] font-bold text-[#00e676]">HB</span>
                 </div>
-                <div className="bg-[#00e676]/10 border border-[#00e676]/20 p-5 rounded-2xl rounded-tl-none text-sm text-white/90 leading-relaxed">
+                <div className="bg-[#00e676]/10 border border-[#00e676]/20 p-3 md:p-5 rounded-2xl rounded-tl-none text-xs md:text-sm text-white/90 leading-relaxed">
                   Você gastou <span className="text-[#00e676] font-bold">R$ 247,00</span> com delivery. 
                   Isso representa 82% da sua meta semanal de R$ 300. 
                   Sugiro segurar um pouco o iFood no final de semana para não ultrapassar! 😉
