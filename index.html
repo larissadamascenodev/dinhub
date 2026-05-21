@@ -67,11 +67,11 @@
                 </div>
                 
                 <div class="chat-container">
-                    <div id="chat-box">
+                    <div id="chat-box" style="height: 180px; overflow-y: auto; margin-bottom: 10px; scroll-behavior: smooth; padding-right: 5px;">
                         <div class="chat-message msg-huby">Olá! Sou a Huby. Percebi que você gastou 15% a mais com iFood esta semana. Quer que eu te mostre como economizar R$ 200 no próximo mês?</div>
                     </div>
                     <div style="display: flex; gap: 10px; margin-top: 15px;">
-                        <input type="text" id="chat-input" placeholder="Pergunte sobre seus gastos..." style="flex: 1; background: #050505; border: 1px solid var(--border); border-radius: 12px; padding: 12px 16px; color: white; outline: none; transition: border-color 0.3s;" onfocus="this.style.borderColor='var(--primary)'" onblur="this.style.borderColor='var(--border)'">
+                        <input type="text" id="chat-input" placeholder="Pergunte sobre seus gastos..." style="flex: 1; background: #050505; border: 1px solid var(--border); border-radius: 12px; padding: 12px 16px; color: white; outline: none; transition: border-color 0.3s;" onfocus="this.style.borderColor='var(--primary)'" onblur="this.style.borderColor='var(--border)'" onkeypress="if(event.key === 'Enter') sendMessage()">
                         <button onclick="sendMessage()" style="background: var(--primary); border: none; border-radius: 12px; width: 45px; height: 45px; display: flex; align-items: center; justify-content: center; cursor: pointer;">
                             <i data-lucide="send" style="width: 20px; height: 20px; color: black;"></i>
                         </button>
