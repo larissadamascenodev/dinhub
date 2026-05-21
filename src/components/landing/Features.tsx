@@ -376,26 +376,67 @@ const Features = () => {
 
 const HubyInsightsPanel: React.FC = () => {
   const [idx, setIdx] = useState(0);
+  const [direction, setDirection] = useState(0);
   
-  // Aumentar o tempo de troca (6 segundos)
   useEffect(() => {
-    const t = setInterval(() => setIdx((p) => (p + 1) % RADAR_SLIDES.length), 6000);
+    const t = setInterval(() => {
+      setDirection(1);
+      setIdx((p) => (p + 1) % RADAR_SLIDES.length);
+    }, 5000); // 5 segundos como solicitado
     return () => clearInterval(t);
   }, []);
+
+  const handleDotClick = (newIdx: number) => {
+    setDirection(newIdx > idx ? 1 : -1);
+    setIdx(newIdx);
+  };
 
   const currentSlide = RADAR_SLIDES[idx];
   const insight = currentSlide.insight;
   const InsightIcon = insight.icon;
 
+  const slideVariants = {
+    enter: (direction: number) => ({
+      x: direction > 0 ? 1000 : -1000,
+      opacity: 0,
+      scale: 0.95,
+      filter: 'blur(10px)',
+    }),
+    center: {
+      zIndex: 1,
+      x: 0,
+      opacity: 1,
+      scale: 1,
+      filter: 'blur(0px)',
+    },
+    exit: (direction: number) => ({
+      zIndex: 0,
+      x: direction < 0 ? 1000 : -1000,
+      opacity: 0,
+      scale: 0.95,
+      filter: 'blur(10px)',
+    })
+  };
+
   return (
-    <div className="relative bg-white/[0.02] border border-white/10 rounded-[32px] p-4 md:p-8 shadow-2xl backdrop-blur-xl flex flex-col min-h-[500px] md:min-h-[500px]">
-      <AnimatePresence mode="wait">
+    <div className="relative bg-[#0a0a0a]/40 border border-white/10 rounded-[40px] p-4 md:p-8 shadow-[0_0_50px_-12px_rgba(0,230,118,0.2)] backdrop-blur-2xl flex flex-col min-h-[540px] md:min-h-[520px] overflow-hidden group/panel transition-all duration-500 hover:border-[#00e676]/30">
+      {/* Glow effect decorative elements */}
+      <div className="absolute -top-20 -right-20 w-40 h-40 bg-[#00e676]/10 blur-[80px] rounded-full pointer-events-none" />
+      <div className="absolute -bottom-20 -left-20 w-40 h-40 bg-blue-500/10 blur-[80px] rounded-full pointer-events-none" />
+      
+      <AnimatePresence mode="wait" custom={direction} initial={false}>
         <motion.div
           key={idx}
-          initial={{ opacity: 0, x: 20 }}
-          animate={{ opacity: 1, x: 0 }}
-          exit={{ opacity: 0, x: -20 }}
-          transition={{ duration: 0.6, ease: [0.22, 1, 0.36, 1] }}
+          custom={direction}
+          variants={slideVariants}
+          initial="enter"
+          animate="center"
+          exit="exit"
+          transition={{
+            x: { type: "spring", stiffness: 300, damping: 30 },
+            opacity: { duration: 0.4 },
+            filter: { duration: 0.4 }
+          }}
           className="flex-1 flex flex-col space-y-6 md:space-y-8"
         >
           {/* Insights da Huby */}
@@ -469,16 +510,25 @@ const HubyInsightsPanel: React.FC = () => {
       </AnimatePresence>
 
       {/* Dots moved to bottom */}
-      <div className="flex items-center justify-center gap-2 mt-auto pt-6">
+      <div className="flex items-center justify-center gap-3 mt-auto pt-8 pb-2">
         {RADAR_SLIDES.map((_, i) => (
           <button
             key={i}
-            onClick={() => setIdx(i)}
-            className={`h-1.5 rounded-full transition-all duration-500 cursor-pointer ${
-              i === idx ? 'w-8 bg-[#00e676]' : 'w-2 bg-white/10 hover:bg-white/20'
-            }`}
+            onClick={() => handleDotClick(i)}
+            className={`group/dot relative h-1.5 transition-all duration-500 cursor-pointer overflow-hidden ${
+              i === idx ? 'w-10 bg-[#00e676]' : 'w-2 bg-white/10 hover:bg-white/30'
+            } rounded-full`}
             aria-label={`Ir para slide ${i + 1}`}
-          />
+          >
+            {i === idx && (
+              <motion.div 
+                initial={{ left: '-100%' }}
+                animate={{ left: '0%' }}
+                transition={{ duration: 5, ease: "linear" }}
+                className="absolute top-0 bottom-0 w-full bg-white/40"
+              />
+            )}
+          </button>
         ))}
       </div>
     </div>
