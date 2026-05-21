@@ -1,10 +1,79 @@
-import React from 'react';
-import { motion, Variants } from 'framer-motion';
+import React, { useState, useEffect } from 'react';
+import { motion, AnimatePresence, Variants } from 'framer-motion';
 import { 
   Sparkles, Radar, TrendingUp, CreditCard, 
   Camera, ShieldCheck, CheckCircle2, AlertCircle,
-  TrendingDown, Zap, ArrowRight, Wallet, PieChart
+  TrendingDown, Zap, ArrowRight, Wallet, PieChart,
+  ArrowUpRight, BarChart3, FileText, Repeat,
+  AlertOctagon, Coins, ChevronRight, Utensils,
+  ShoppingBag, Car, Home, Plane, Heart
 } from 'lucide-react';
+
+const HUBY_INSIGHTS = [
+  {
+    icon: ArrowUpRight,
+    iconColor: 'text-orange-400',
+    iconBg: 'bg-orange-500/10',
+    text: <>Você gastou <span className="text-orange-400 font-semibold">18% a mais com delivery</span> do que no mês passado.</>,
+    tag: 'Alimentação',
+  },
+  {
+    icon: AlertOctagon,
+    iconColor: 'text-yellow-400',
+    iconBg: 'bg-yellow-500/10',
+    text: <>3 assinaturas somam <span className="text-yellow-400 font-semibold">R$ 79,90/mês</span> e quase não são usadas.</>,
+    tag: 'Assinaturas',
+  },
+  {
+    icon: BarChart3,
+    iconColor: 'text-purple-400',
+    iconBg: 'bg-purple-500/10',
+    text: <>Se investir R$ 300/mês, pode acumular <span className="text-[#00e676] font-semibold">R$ 31.723,41 em 5 anos.</span></>,
+    tag: 'Investimentos',
+  },
+  {
+    icon: CreditCard,
+    iconColor: 'text-red-400',
+    iconBg: 'bg-red-500/10',
+    text: <>Sua fatura do Nubank atingiu <span className="text-red-400 font-semibold">80% do limite</span> antes do fechamento.</>,
+    tag: 'Cartão',
+  },
+  {
+    icon: TrendingUp,
+    iconColor: 'text-[#00e676]',
+    iconBg: 'bg-[#00e676]/10',
+    text: <>Sua reserva cresceu <span className="text-[#00e676] font-semibold">+12% este mês</span>, melhor ritmo do trimestre.</>,
+    tag: 'Reserva',
+  },
+  {
+    icon: Repeat,
+    iconColor: 'text-blue-400',
+    iconBg: 'bg-blue-500/10',
+    text: <>Detectamos <span className="text-blue-400 font-semibold">cobrança duplicada</span> de R$ 49,90 no seu cartão.</>,
+    tag: 'Alerta',
+  },
+  {
+    icon: Utensils,
+    iconColor: 'text-pink-400',
+    iconBg: 'bg-pink-500/10',
+    text: <>Restaurantes representam <span className="text-pink-400 font-semibold">34% dos seus gastos</span> variáveis.</>,
+    tag: 'Categoria',
+  },
+  {
+    icon: Coins,
+    iconColor: 'text-amber-400',
+    iconBg: 'bg-amber-500/10',
+    text: <>Você pode economizar <span className="text-amber-400 font-semibold">R$ 220/mês</span> renegociando 2 contas fixas.</>,
+    tag: 'Economia',
+  },
+];
+
+const HUBY_ACTIONS = [
+  { icon: FileText, iconColor: 'text-emerald-400', iconBg: 'bg-emerald-500/10', title: 'Cancelar assinaturas não utilizadas', sub: 'Economize até R$ 79,90/mês', value: 'R$ 79,90', valueColor: 'text-[#00e676]' },
+  { icon: ShoppingBag, iconColor: 'text-emerald-400', iconBg: 'bg-emerald-500/10', title: 'Reduzir gastos com delivery', sub: 'Meta sugerida: R$ 250,00/mês', value: 'R$ 180,00', valueColor: 'text-[#00e676]' },
+  { icon: CreditCard, iconColor: 'text-orange-400', iconBg: 'bg-orange-500/10', title: 'Quitar dívida do cartão', sub: 'Reduza juros e libere limite', value: 'R$ 1.247,36', valueColor: 'text-orange-400' },
+  { icon: BarChart3, iconColor: 'text-[#00e676]', iconBg: 'bg-[#00e676]/10', title: 'Investir com recorrência', sub: 'Comece com R$ 300,00/mês', value: 'R$ 300,00', valueColor: 'text-[#00e676]' },
+];
 
 const Features = () => {
   const containerVariants = {
@@ -85,58 +154,7 @@ const Features = () => {
             
             <div className="relative group">
               <div className="absolute inset-0 bg-[#00e676]/10 blur-[100px] rounded-full group-hover:bg-[#00e676]/20 transition-all duration-1000" />
-              
-              {/* Static Insights Panel - Square Translucent Design */}
-              <div className="relative bg-white/[0.03] border border-white/10 rounded-3xl p-8 shadow-2xl backdrop-blur-xl overflow-hidden min-h-[400px] flex flex-col justify-between">
-                <div className="space-y-8">
-                  <div className="flex items-center justify-between">
-                    <div className="flex items-center gap-3">
-                      <div className="w-1.5 h-1.5 rounded-full bg-[#00e676]" />
-                      <span className="text-[11px] font-black text-white/40 uppercase tracking-[0.2em]">Hub Neural Insights</span>
-                    </div>
-                  </div>
-
-                  {/* Insight Content 1 */}
-                  <div className="space-y-4">
-                    <div className="flex items-center gap-2">
-                      <TrendingDown className="w-4 h-4 text-orange-400" />
-                      <span className="text-[10px] font-bold text-orange-400 uppercase tracking-widest">Alerta de Padrão</span>
-                    </div>
-                    <div className="space-y-2">
-                      <h4 className="text-lg font-bold text-white">Desvio no Lazer</h4>
-                      <p className="text-sm text-white/50 leading-relaxed">
-                        Seu gasto nesta categoria cresceu 28% nos últimos 15 dias, impactando sua projeção de reserva para Agosto em R$ 450,00.
-                      </p>
-                    </div>
-                  </div>
-
-                  {/* Insight Content 2 - Suggested Action */}
-                  <div className="space-y-4">
-                    <div className="flex items-center gap-2">
-                      <Zap className="w-4 h-4 text-[#00e676]" />
-                      <span className="text-[10px] font-bold text-[#00e676] uppercase tracking-widest">Ação Corretiva</span>
-                    </div>
-                    <div className="bg-[#00e676]/5 border border-[#00e676]/20 rounded-2xl p-5">
-                      <div className="text-sm font-bold text-white mb-2 tracking-tight">Otimização de Assinaturas</div>
-                      <p className="text-xs text-white/60 leading-relaxed">
-                        Identificamos 3 serviços (Streamings) sem uso há 60 dias. Cancelá-los agora gera uma economia imediata de R$ 89,90/mês.
-                      </p>
-                    </div>
-                  </div>
-                </div>
-
-                {/* Bottom Footer Stats */}
-                <div className="pt-8 border-t border-white/5 grid grid-cols-2 gap-8">
-                  <div className="space-y-1">
-                    <div className="text-[9px] font-bold text-white/30 uppercase tracking-[0.15em]">Saúde Financeira</div>
-                    <div className="text-xl font-bold text-[#00e676]">94.2%</div>
-                  </div>
-                  <div className="space-y-1 text-right">
-                    <div className="text-[9px] font-bold text-white/30 uppercase tracking-[0.15em]">Proteção de Caixa</div>
-                    <div className="text-xl font-bold text-white">Ativa</div>
-                  </div>
-                </div>
-              </div>
+              <HubyInsightsPanel />
             </div>
           </motion.div>
 
@@ -345,6 +363,96 @@ const Features = () => {
         }
       `}</style>
     </section>
+  );
+};
+
+const HubyInsightsPanel: React.FC = () => {
+  const [idx, setIdx] = useState(0);
+  useEffect(() => {
+    const t = setInterval(() => setIdx((p) => (p + 1) % HUBY_INSIGHTS.length), 3500);
+    return () => clearInterval(t);
+  }, []);
+
+  const current = HUBY_INSIGHTS[idx];
+  const Icon = current.icon;
+
+  return (
+    <div className="relative bg-white/[0.02] border border-white/10 rounded-3xl p-6 shadow-2xl backdrop-blur-xl space-y-6">
+      {/* Insights da Huby */}
+      <div className="space-y-3">
+        <div className="flex items-center gap-2">
+          <div className="w-5 h-5 rounded-full bg-[#00e676]/15 flex items-center justify-center">
+            <div className="w-1.5 h-1.5 rounded-full bg-[#00e676]" />
+          </div>
+          <span className="text-sm font-semibold text-white">Insights da Huby</span>
+        </div>
+
+        <div className="relative h-[88px]">
+          <AnimatePresence mode="wait">
+            <motion.div
+              key={idx}
+              initial={{ opacity: 0, y: 10 }}
+              animate={{ opacity: 1, y: 0 }}
+              exit={{ opacity: 0, y: -10 }}
+              transition={{ duration: 0.4, ease: [0.22, 1, 0.36, 1] }}
+              className="absolute inset-0 flex items-center gap-3 p-4 rounded-2xl bg-white/[0.03] border border-white/5"
+            >
+              <div className={`w-9 h-9 rounded-xl ${current.iconBg} flex items-center justify-center shrink-0`}>
+                <Icon className={`w-4 h-4 ${current.iconColor}`} />
+              </div>
+              <p className="text-[13px] text-white/80 leading-snug flex-1">{current.text}</p>
+              <span className="text-[10px] text-white/50 px-2.5 py-1 rounded-full border border-white/10 bg-white/[0.03] whitespace-nowrap">
+                {current.tag}
+              </span>
+            </motion.div>
+          </AnimatePresence>
+        </div>
+
+        {/* Dots */}
+        <div className="flex items-center justify-center gap-1.5 pt-1">
+          {HUBY_INSIGHTS.map((_, i) => (
+            <div
+              key={i}
+              className={`h-1 rounded-full transition-all duration-500 ${
+                i === idx ? 'w-5 bg-[#00e676]' : 'w-1 bg-white/15'
+              }`}
+            />
+          ))}
+        </div>
+      </div>
+
+      {/* Ações sugeridas pela Huby */}
+      <div className="space-y-3 pt-2">
+        <div className="flex items-center justify-between">
+          <span className="text-sm font-semibold text-white">Ações sugeridas pela Huby</span>
+          <span className="text-[11px] text-white/40 hover:text-[#00e676] cursor-pointer transition">Ver todas</span>
+        </div>
+
+        <div className="space-y-2">
+          {HUBY_ACTIONS.map((a, i) => {
+            const AIcon = a.icon;
+            return (
+              <div
+                key={i}
+                className="flex items-center gap-3 p-3 rounded-2xl bg-white/[0.03] border border-white/5 hover:border-white/15 transition"
+              >
+                <div className={`w-9 h-9 rounded-xl ${a.iconBg} flex items-center justify-center shrink-0`}>
+                  <AIcon className={`w-4 h-4 ${a.iconColor}`} />
+                </div>
+                <div className="flex-1 min-w-0">
+                  <div className="text-[13px] font-medium text-white truncate">{a.title}</div>
+                  <div className="text-[11px] text-white/40 truncate">{a.sub}</div>
+                </div>
+                <div className="flex items-center gap-1 shrink-0">
+                  <span className={`text-[13px] font-semibold ${a.valueColor}`}>{a.value}</span>
+                  <ChevronRight className="w-3.5 h-3.5 text-white/30" />
+                </div>
+              </div>
+            );
+          })}
+        </div>
+      </div>
+    </div>
   );
 };
 
