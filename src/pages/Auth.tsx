@@ -1,6 +1,8 @@
 import React, { useState, useEffect } from "react";
 import ContactModal from "@/components/shared/ContactModal";
+import Huby from "@/components/Huby";
 import LegalModal from "@/components/shared/LegalModal";
+
 import { supabase } from "@/integrations/supabase/client";
 import { lovable } from "@/integrations/lovable/index";
 import { Button } from "@/components/ui/button";
