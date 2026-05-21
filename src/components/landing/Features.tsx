@@ -124,7 +124,7 @@ const Features = () => {
             </span>
           </h2>
           
-          <p className="text-white/60 max-w-2xl mx-auto text-xl font-inter font-light leading-relaxed">
+          <p className="text-white/60 max-w-2xl mx-auto text-lg md:text-xl font-inter font-light leading-relaxed px-2">
             Esqueça as planilhas. A Huby é sua inteligência de elite que <span className="text-white font-medium">antecipa movimentos</span> e blinda seu patrimônio com precisão cirúrgica.
           </p>
         </div>
