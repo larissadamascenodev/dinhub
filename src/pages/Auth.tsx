@@ -251,14 +251,10 @@ const VisaoGeral = () => {
   });
 
   return (
-    <section style={{
-      background: "#0a0a0a",
-      padding: "clamp(4.5rem,9vw,8rem) 0",
-      position: "relative",
-      overflow: "hidden",
-      textAlign: "left" as const,
-    }}>
+    <section className="relative overflow-hidden py-16 sm:py-24 text-left">
       {/* Glow fundo */}
+      <div className="absolute top-1/2 right-0 -translate-y-1/2 w-[55vw] h-[55vw] bg-radial-gradient(ellipse,rgba(0,230,118,0.07),transparent 65%) pointer-events-none" />
+
       <div style={{
         position: "absolute", top: "50%", right: 0,
         transform: "translateY(-50%)",
