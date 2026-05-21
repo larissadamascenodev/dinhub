@@ -457,9 +457,6 @@ const Auth = () => {
           </Button>
         </motion.div>
 
-        <motion.div custom={5} variants={fadeUp} initial="hidden" animate="visible" className="w-full max-w-lg">
-          <TestimonialCard />
-        </motion.div>
       </main>
 
       {/* Footer */}
