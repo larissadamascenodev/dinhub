@@ -108,7 +108,7 @@ const Features = () => {
            style={{ backgroundImage: 'radial-gradient(circle at center, rgba(0,230,118,0.08) 0%, transparent 70%)' }} />
 
       <div className="max-w-6xl mx-auto relative z-10">
-        <div className="text-center mb-40 space-y-8">
+        <div className="text-center mb-24 md:mb-40 space-y-8">
           <motion.div 
             initial={{ opacity: 0, scale: 0.9 }}
             whileInView={{ opacity: 1, scale: 1 }}
@@ -134,7 +134,7 @@ const Features = () => {
           initial="hidden"
           whileInView="visible"
           viewport={{ once: true, margin: "-100px" }}
-          className="space-y-32 md:space-y-48"
+          className="space-y-24 md:space-y-48"
         >
           {/* 1. RADAR FINANCEIRO - STATIC HUB INSIGHTS PANEL */}
           <motion.div variants={itemVariants} className="grid grid-cols-1 md:grid-cols-2 gap-12 md:gap-24 items-center">
@@ -170,9 +170,9 @@ const Features = () => {
           <motion.div variants={itemVariants} className="grid grid-cols-1 md:grid-cols-2 gap-12 md:gap-24 items-center">
             <div className="order-2 md:order-1 relative group">
               <div className="absolute inset-0 bg-blue-500/10 blur-[100px] rounded-full group-hover:bg-blue-500/20 transition-all duration-1000" />
-              <div className="relative bg-[#0f0f0f] border border-white/10 rounded-[32px] p-10 shadow-2xl backdrop-blur-xl text-center">
+              <div className="relative bg-[#0f0f0f] border border-white/10 rounded-[32px] p-6 md:p-10 shadow-2xl backdrop-blur-xl text-center">
                 <div className="inline-block relative mb-6">
-                  <svg className="w-40 h-40 transform -rotate-90">
+                  <svg className="w-32 h-32 md:w-40 md:h-40 transform -rotate-90">
                     <circle cx="80" cy="80" r="70" stroke="currentColor" strokeWidth="8" fill="transparent" className="text-white/5" />
                     <circle cx="80" cy="80" r="70" stroke="currentColor" strokeWidth="8" fill="transparent" 
                             strokeDasharray="440" strokeDashoffset="88" className="text-[#00e676]" />
@@ -227,7 +227,7 @@ const Features = () => {
               </div>
             </div>
             <div className="relative">
-              <div className="bg-[#0f0f0f] border border-white/10 rounded-[32px] p-8 shadow-2xl">
+              <div className="bg-[#0f0f0f] border border-white/10 rounded-[32px] p-6 md:p-8 shadow-2xl">
                 <div className="h-48 w-full flex items-end gap-3">
                   {[30, 45, 35, 65, 85, 100].map((h, i) => (
                     <motion.div 
@@ -328,7 +328,7 @@ const Features = () => {
             </div>
             <div className="relative">
               <div className="absolute inset-0 bg-[#00e676]/10 blur-[100px] rounded-full" />
-              <div className="relative bg-[#0f0f0f] border border-white/10 rounded-[32px] p-8 shadow-2xl backdrop-blur-xl">
+              <div className="relative bg-[#0f0f0f] border border-white/10 rounded-[32px] p-6 md:p-8 shadow-2xl backdrop-blur-xl">
                 <div className="flex items-center gap-4 mb-6">
                   <div className="w-10 h-10 rounded-full bg-[#820ad1] flex items-center justify-center font-bold text-white text-xs">Nu</div>
                   <div className="flex-1">
@@ -388,7 +388,7 @@ const HubyInsightsPanel: React.FC = () => {
   const InsightIcon = insight.icon;
 
   return (
-    <div className="relative bg-white/[0.02] border border-white/10 rounded-[32px] p-6 md:p-8 shadow-2xl backdrop-blur-xl flex flex-col min-h-[500px]">
+    <div className="relative bg-white/[0.02] border border-white/10 rounded-[32px] p-5 md:p-8 shadow-2xl backdrop-blur-xl flex flex-col min-h-[480px] md:min-h-[500px]">
       <AnimatePresence mode="wait">
         <motion.div
           key={idx}
@@ -407,9 +407,9 @@ const HubyInsightsPanel: React.FC = () => {
               <span className="text-sm font-semibold text-white">Insights da Huby</span>
             </div>
 
-            <div className="flex items-start gap-4 p-5 rounded-2xl bg-white/[0.04] border border-white/10 shadow-inner">
-              <div className={`w-12 h-12 rounded-xl ${insight.iconBg} flex items-center justify-center shrink-0`}>
-                <InsightIcon className={`w-6 h-6 ${insight.iconColor}`} />
+            <div className="flex items-start gap-3 md:gap-4 p-4 md:p-5 rounded-2xl bg-white/[0.04] border border-white/10 shadow-inner">
+              <div className={`w-10 h-10 md:w-12 md:h-12 rounded-xl ${insight.iconBg} flex items-center justify-center shrink-0`}>
+                <InsightIcon className={`w-5 h-5 md:w-6 md:h-6 ${insight.iconColor}`} />
               </div>
               <div className="flex-1 space-y-2">
                 <div className="flex items-center justify-between">
@@ -418,7 +418,7 @@ const HubyInsightsPanel: React.FC = () => {
                     {insight.tag}
                   </span>
                 </div>
-                <p className="text-base md:text-lg text-white/90 leading-relaxed font-medium">
+                <p className="text-sm md:text-lg text-white/90 leading-relaxed font-medium">
                   {insight.text}
                 </p>
               </div>
@@ -444,18 +444,18 @@ const HubyInsightsPanel: React.FC = () => {
                     initial={{ opacity: 0, y: 10 }}
                     animate={{ opacity: 1, y: 0 }}
                     transition={{ delay: 0.1 * i }}
-                    className="flex items-center gap-4 p-4 rounded-2xl bg-white/[0.03] border border-white/5 hover:border-[#00e676]/30 hover:bg-[#00e676]/5 transition-all duration-300 cursor-pointer group"
+                    className="flex items-center gap-3 md:gap-4 p-3 md:p-4 rounded-2xl bg-white/[0.03] border border-white/5 hover:border-[#00e676]/30 hover:bg-[#00e676]/5 transition-all duration-300 cursor-pointer group"
                   >
-                    <div className={`w-10 h-10 rounded-xl ${a.iconBg} flex items-center justify-center shrink-0 transition-transform group-hover:scale-110`}>
-                      <ActionIcon className={`w-5 h-5 ${a.iconColor}`} />
+                    <div className={`w-9 h-9 md:w-10 md:h-10 rounded-xl ${a.iconBg} flex items-center justify-center shrink-0 transition-transform group-hover:scale-110`}>
+                      <ActionIcon className={`w-4 h-4 md:w-5 md:h-5 ${a.iconColor}`} />
                     </div>
                     <div className="flex-1 min-w-0">
-                      <div className="text-[14px] font-semibold text-white group-hover:text-[#00e676] transition-colors">{a.title}</div>
-                      <div className="text-[11px] text-white/40 truncate">{a.sub}</div>
+                      <div className="text-[12px] md:text-[14px] font-semibold text-white group-hover:text-[#00e676] transition-colors">{a.title}</div>
+                      <div className="text-[10px] md:text-[11px] text-white/40 truncate">{a.sub}</div>
                     </div>
                     <div className="flex items-center gap-2 shrink-0">
                       <div className="text-right">
-                        <div className={`text-[13px] font-bold ${a.valueColor}`}>{a.value}</div>
+                        <div className={`text-[11px] md:text-[13px] font-bold ${a.valueColor}`}>{a.value}</div>
                         <div className="text-[9px] text-white/20 font-bold uppercase tracking-tighter">Sugestão</div>
                       </div>
                       <ChevronRight className="w-4 h-4 text-white/20 group-hover:text-[#00e676] group-hover:translate-x-1 transition-all" />
