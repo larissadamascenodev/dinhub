@@ -311,19 +311,20 @@ const VisaoGeral = () => {
             Chega de abrir mil apps, planilha e extrato do banco. O DinHub reúne tudo e te entrega uma visão clara do que está acontecendo — e do que você precisa fazer agora.
           </p>
 
-          <div className="grid grid-cols-2 sm:grid-cols-2 gap-2 mt-2">
+          <div className="grid grid-cols-2 gap-3 mt-4">
             {bullets.map(({ Icon, title, sub }, i) => (
-              <div key={i} className="flex items-center gap-2 p-2 rounded-xl bg-white/[0.02] border border-white/[0.05] backdrop-blur-sm">
-                <div className="w-8 h-8 rounded-lg shrink-0 bg-primary/10 border border-primary/20 flex items-center justify-center text-primary">
-                  <Icon size={16} />
+              <div key={i} className="flex items-center gap-3 p-3 rounded-xl bg-white/[0.03] border border-white/[0.08] backdrop-blur-md transition-all duration-300 hover:bg-white/[0.05]">
+                <div className="w-9 h-9 rounded-lg shrink-0 bg-primary/10 border border-primary/20 flex items-center justify-center text-primary shadow-[0_0_15px_rgba(0,230,118,0.1)]">
+                  <Icon size={18} />
                 </div>
                 <div className="min-w-0">
-                  <b className="font-display text-[0.75rem] font-bold text-white block leading-none">{title}</b>
-                  <span className="font-sans text-[0.65rem] text-muted-foreground truncate block">{sub}</span>
+                  <b className="font-display text-[0.8rem] sm:text-[0.9rem] font-bold text-white block leading-tight mb-0.5">{title}</b>
+                  <span className="font-sans text-[0.65rem] sm:text-[0.75rem] text-muted-foreground truncate block opacity-80">{sub}</span>
                 </div>
               </div>
             ))}
           </div>
+
 
 
 
