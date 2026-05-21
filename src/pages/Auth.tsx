@@ -351,7 +351,7 @@ const VisaoGeral = () => {
         <div style={{ position: "relative", display: "flex", justifyContent: "center", alignItems: "center", minHeight: 520, transform: "scale(0.85)" }}>
 
           {/* Card flutuante 1 — Receita */}
-          <div style={floatCard("0.2s", { top: "4%", left: "-2%" })}>
+          <div className="hidden sm:block" style={floatCard("0.2s", { top: "4%", left: "-2%" })}>
             <div style={{ display: "flex", alignItems: "center", gap: 7, marginBottom: 7 }}>
               <div style={iconBox("rgba(0,230,118,0.12)")}><TrendUpIcon size={14} /></div>
               <span style={{ fontSize: "0.7rem", color: "#777", fontFamily: "'Inter',sans-serif" }}>Receita no mês</span>
@@ -361,7 +361,7 @@ const VisaoGeral = () => {
           </div>
 
           {/* Card flutuante 2 — Meta */}
-          <div style={floatCard("0.4s", { bottom: "28%", left: "-4%" })}>
+          <div className="hidden sm:block" style={floatCard("0.4s", { bottom: "28%", left: "-4%" })}>
             <div style={{ display: "flex", alignItems: "center", gap: 7, marginBottom: 8 }}>
               <div style={iconBox("rgba(155,107,255,0.15)")}><TargetIcon size={14} color="#9b6bff" /></div>
               <span style={{ fontSize: "0.7rem", color: "#777", fontFamily: "'Inter',sans-serif" }}>Meta de economia</span>
@@ -374,7 +374,7 @@ const VisaoGeral = () => {
           </div>
 
           {/* Card flutuante 3 — Alerta */}
-          <div style={floatCard("0.6s", { top: "14%", right: "-2%" })}>
+          <div className="hidden sm:block" style={floatCard("0.6s", { top: "14%", right: "-2%" })}>
             <div style={{ display: "flex", alignItems: "center", gap: 7, marginBottom: 7 }}>
               <div style={iconBox("rgba(0,230,118,0.12)")}><BellIconSvg size={14} /></div>
               <span style={{ fontSize: "0.7rem", color: "#00e676", fontFamily: "'Inter',sans-serif", fontWeight: 600 }}>Alerta de gasto</span>
@@ -385,7 +385,7 @@ const VisaoGeral = () => {
           </div>
 
           {/* Card flutuante 4 — Saldo */}
-          <div style={floatCard("0.8s", { bottom: "8%", right: "-2%" })}>
+          <div className="hidden sm:block" style={floatCard("0.8s", { bottom: "8%", right: "-2%" })}>
             <div style={{ display: "flex", alignItems: "center", gap: 7, marginBottom: 7 }}>
               <div style={iconBox("rgba(0,230,118,0.12)")}><CardIcon size={14} /></div>
               <span style={{ fontSize: "0.7rem", color: "#777", fontFamily: "'Inter',sans-serif" }}>Saldo atual</span>
@@ -393,6 +393,7 @@ const VisaoGeral = () => {
             <div style={{ fontFamily: "'Sora',sans-serif", fontWeight: 800, fontSize: "1.1rem", color: "#00e676" }}>R$ 494,76</div>
             <div style={{ fontSize: "0.62rem", color: "#555", marginTop: 3, fontFamily: "'Inter',sans-serif" }}>Atualizado agora</div>
           </div>
+
 
           {/* ── IPHONE ── */}
           <div style={{
