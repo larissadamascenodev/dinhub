@@ -45,7 +45,7 @@ const Hero = () => {
           transition={{ delay: 0.2, duration: 0.8 }}
           className="text-white/60 text-lg md:text-xl max-w-2xl mx-auto mb-10 leading-relaxed font-inter"
         >
-          O assistente financeiro inteligente que organiza sua vida inteira — só conversando.
+          O assistente financeiro que te ajuda organizar sua vida inteira.
         </motion.p>
       </div>
 
