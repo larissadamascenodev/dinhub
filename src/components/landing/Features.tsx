@@ -172,7 +172,7 @@ const Features = () => {
               <div className="absolute inset-0 bg-blue-500/10 blur-[100px] rounded-full group-hover:bg-blue-500/20 transition-all duration-1000" />
               <div className="relative bg-[#0f0f0f] border border-white/10 rounded-[32px] p-6 md:p-10 shadow-2xl backdrop-blur-xl text-center">
                 <div className="inline-block relative mb-6">
-                  <svg className="w-40 h-40 transform -rotate-90">
+                  <svg className="w-32 h-32 md:w-40 md:h-40 transform -rotate-90">
                     <circle cx="80" cy="80" r="70" stroke="currentColor" strokeWidth="8" fill="transparent" className="text-white/5" />
                     <circle cx="80" cy="80" r="70" stroke="currentColor" strokeWidth="8" fill="transparent" 
                             strokeDasharray="440" strokeDashoffset="88" className="text-[#00e676]" />
