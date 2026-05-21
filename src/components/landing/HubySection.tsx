@@ -306,7 +306,7 @@ const HubySection = () => {
                             if (element) element.scrollIntoView({ behavior: 'smooth', block: 'start' });
                             setTimeout(() => setStatus('idle'), 1000);
                         }}
-                        className="whitespace-nowrap px-4 py-2 rounded-full border border-[#1a1a1a] bg-[#0a0a0a] text-[#a0a0a0] text-xs hover:border-[#00e676]/30 hover:text-white transition-all"
+                        className="whitespace-nowrap px-6 py-3 rounded-xl border border-white/[0.05] bg-white/[0.02] text-white/40 text-[10px] font-bold uppercase tracking-widest hover:border-[#00e676]/30 hover:text-white transition-all duration-500 hover:-translate-y-1"
                     >
                         {s.label}
                     </button>
