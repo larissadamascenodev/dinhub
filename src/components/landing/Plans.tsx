@@ -27,9 +27,9 @@ const Plans = () => {
           >
             <span className="text-[10px] font-black tracking-[0.3em] text-[#00e676] uppercase">Elite Membership</span>
           </motion.div>
-          <h2 className="font-sora font-extrabold text-white text-3xl md:text-6xl tracking-tighter leading-tight">
+          <h2 className="font-sora font-extrabold text-white text-3xl md:text-7xl tracking-tighter leading-[1.05]">
             O investimento no seu<br />
-            <span className="bg-gradient-to-r from-[#00e676] to-[#00ff88] bg-clip-text text-transparent italic">sucesso financeiro.</span>
+            <span className="bg-gradient-to-r from-[#00e676] to-[#00ff88] bg-clip-text text-transparent italic font-light">sucesso financeiro.</span>
           </h2>
 
           {/* Toggle */}
