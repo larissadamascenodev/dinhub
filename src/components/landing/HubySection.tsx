@@ -267,10 +267,10 @@ const HubySection = () => {
                                 )}
                             </div>
                             
-                            <div className={`p-4 max-w-[85%] ${
+                            <div className={`p-6 max-w-[85%] shadow-2xl ${
                                 msg.role === 'user' 
-                                    ? "bg-[#1a1a1a] rounded-[18px_18px_4px_18px] text-white" 
-                                    : "bg-[#00e676]/8 rounded-[4px_18px_18px_18px] text-white border border-[#00e676]/10"
+                                    ? "bg-white/[0.03] border border-white/10 rounded-[24px_24px_4px_24px] text-white/90" 
+                                    : "bg-white/[0.05] rounded-[4px_24px_24px_24px] text-white border border-white/10 backdrop-blur-xl"
                             }`}>
                                 <p className="text-sm leading-relaxed">
                                     {msg.text}
