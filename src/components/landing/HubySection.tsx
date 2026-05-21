@@ -234,10 +234,10 @@ const HubySection = () => {
         {/* Esfera */}
         <div className="relative mb-12">
             <ParticleSphere state={status} />
-            <div className="absolute -bottom-4 left-1/2 -translate-x-1/2 flex items-center gap-2 whitespace-nowrap">
-                <div className={`w-2 h-2 rounded-full ${status === 'responding' ? 'bg-[#00e676] animate-pulse' : 'bg-[#777]'}`} />
-                <span className="text-[10px] font-bold text-[#a0a0a0] uppercase tracking-widest">
-                    {status === 'responding' ? 'Huby está analisando...' : 'Huby online'}
+            <div className="absolute -bottom-8 left-1/2 -translate-x-1/2 flex items-center gap-3 whitespace-nowrap bg-white/[0.03] px-4 py-2 rounded-xl border border-white/[0.05] backdrop-blur-xl">
+                <div className={`w-2 h-2 rounded-full ${status === 'responding' ? 'bg-[#00e676] animate-pulse shadow-[0_0_10px_#00e676]' : 'bg-white/20'}`} />
+                <span className="text-[9px] font-black text-white/40 uppercase tracking-[0.2em]">
+                    {status === 'responding' ? 'Huby está processando...' : 'Huby Neural Core Active'}
                 </span>
             </div>
         </div>
