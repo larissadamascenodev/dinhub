@@ -1014,6 +1014,7 @@ const VisaoGeral = () => {
   );
 
   return (
+
     <div className="dark min-h-screen bg-background flex flex-col relative overflow-hidden">
 
       {/* Ambient glow */}
