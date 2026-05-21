@@ -118,7 +118,7 @@ const Features = () => {
           {/* CARD 4 - PEQUENO */}
           <motion.div 
             variants={itemVariants}
-            className="md:col-span-1 bg-[#0f0f0f] border border-[#1a1a1a] rounded-[24px] p-6 group hover:border-[#00e676]/40 transition-all flex flex-col justify-center gap-4"
+            className="md:col-span-4 bg-[#0f0f0f] border border-white/[0.05] rounded-[32px] p-8 group hover:border-[#00e676]/30 transition-all duration-700 flex flex-col justify-center gap-4 shadow-2xl"
           >
             <div className="flex items-center gap-4">
                 <div className="relative w-10 h-10 flex items-center justify-center">
