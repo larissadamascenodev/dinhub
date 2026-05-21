@@ -348,7 +348,7 @@ const VisaoGeral = () => {
         </div>
 
         {/* ── MOCKUP IPHONE ── */}
-        <div style={{ position: "relative", display: "flex", justifyContent: "center", alignItems: "center", minHeight: 640 }}>
+        <div style={{ position: "relative", display: "flex", justifyContent: "center", alignItems: "center", minHeight: 520, transform: "scale(0.85)" }}>
 
           {/* Card flutuante 1 — Receita */}
           <div style={floatCard("0.2s", { top: "4%", left: "-2%" })}>
