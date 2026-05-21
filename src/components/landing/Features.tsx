@@ -510,16 +510,25 @@ const HubyInsightsPanel: React.FC = () => {
       </AnimatePresence>
 
       {/* Dots moved to bottom */}
-      <div className="flex items-center justify-center gap-2 mt-auto pt-6">
+      <div className="flex items-center justify-center gap-3 mt-auto pt-8 pb-2">
         {RADAR_SLIDES.map((_, i) => (
           <button
             key={i}
-            onClick={() => setIdx(i)}
-            className={`h-1.5 rounded-full transition-all duration-500 cursor-pointer ${
-              i === idx ? 'w-8 bg-[#00e676]' : 'w-2 bg-white/10 hover:bg-white/20'
-            }`}
+            onClick={() => handleDotClick(i)}
+            className={`group/dot relative h-1.5 transition-all duration-500 cursor-pointer overflow-hidden ${
+              i === idx ? 'w-10 bg-[#00e676]' : 'w-2 bg-white/10 hover:bg-white/30'
+            } rounded-full`}
             aria-label={`Ir para slide ${i + 1}`}
-          />
+          >
+            {i === idx && (
+              <motion.div 
+                initial={{ left: '-100%' }}
+                animate={{ left: '0%' }}
+                transition={{ duration: 5, ease: "linear" }}
+                className="absolute top-0 bottom-0 w-full bg-white/40"
+              />
+            )}
+          </button>
         ))}
       </div>
     </div>
