@@ -6,73 +6,81 @@ import {
   TrendingDown, Zap, ArrowRight, Wallet, PieChart,
   ArrowUpRight, BarChart3, FileText, Repeat,
   AlertOctagon, Coins, ChevronRight, Utensils,
-  ShoppingBag, Car, Home, Plane, Heart
+  ShoppingBag, Car, Home, Plane, Heart,
+  Info, ArrowDownRight, Clock
 } from 'lucide-react';
 
-const HUBY_INSIGHTS = [
+const RADAR_SLIDES = [
   {
-    icon: ArrowUpRight,
-    iconColor: 'text-orange-400',
-    iconBg: 'bg-orange-500/10',
-    text: <>Você gastou <span className="text-orange-400 font-semibold">18% a mais com delivery</span> do que no mês passado.</>,
-    tag: 'Alimentação',
+    insight: {
+      icon: ArrowUpRight,
+      iconColor: 'text-orange-400',
+      iconBg: 'bg-orange-500/10',
+      text: <>Você gastou <span className="text-orange-400 font-semibold">18% a mais com delivery</span> do que no mês passado.</>,
+      tag: 'Alimentação',
+    },
+    actions: [
+      { icon: ShoppingBag, iconColor: 'text-[#00e676]', iconBg: 'bg-[#00e676]/10', title: 'Reduzir gastos com delivery', sub: 'Meta sugerida: R$ 250,00/mês', value: 'R$ 180,00', valueColor: 'text-[#00e676]' },
+      { icon: Utensils, iconColor: 'text-orange-400', iconBg: 'bg-orange-500/10', title: 'Cozinhar em casa (FDS)', sub: 'Economia estimada p/ semana', value: 'R$ 85,00', valueColor: 'text-orange-400' },
+      { icon: PieChart, iconColor: 'text-white/40', iconBg: 'bg-white/5', title: 'Ver relatório de categorias', sub: 'Análise detalhada de consumo', value: 'Ver mais', valueColor: 'text-white/60' },
+    ]
   },
   {
-    icon: AlertOctagon,
-    iconColor: 'text-yellow-400',
-    iconBg: 'bg-yellow-500/10',
-    text: <>3 assinaturas somam <span className="text-yellow-400 font-semibold">R$ 79,90/mês</span> e quase não são usadas.</>,
-    tag: 'Assinaturas',
+    insight: {
+      icon: AlertOctagon,
+      iconColor: 'text-yellow-400',
+      iconBg: 'bg-yellow-500/10',
+      text: <>3 assinaturas somam <span className="text-yellow-400 font-semibold">R$ 79,90/mês</span> e quase não são usadas.</>,
+      tag: 'Assinaturas',
+    },
+    actions: [
+      { icon: FileText, iconColor: 'text-[#00e676]', iconBg: 'bg-[#00e676]/10', title: 'Cancelar assinaturas inativas', sub: 'Economize até R$ 79,90/mês', value: 'R$ 79,90', valueColor: 'text-[#00e676]' },
+      { icon: Repeat, iconColor: 'text-blue-400', iconBg: 'bg-blue-500/10', title: 'Migrar p/ Plano Familiar', sub: 'Compartilhe custos de streaming', value: 'R$ 24,00', valueColor: 'text-blue-400' },
+      { icon: Info, iconColor: 'text-white/40', iconBg: 'bg-white/5', title: 'Revisar termos de uso', sub: 'Verifique multas de cancelamento', value: 'Info', valueColor: 'text-white/60' },
+    ]
   },
   {
-    icon: BarChart3,
-    iconColor: 'text-purple-400',
-    iconBg: 'bg-purple-500/10',
-    text: <>Se investir R$ 300/mês, pode acumular <span className="text-[#00e676] font-semibold">R$ 31.723,41 em 5 anos.</span></>,
-    tag: 'Investimentos',
+    insight: {
+      icon: BarChart3,
+      iconColor: 'text-purple-400',
+      iconBg: 'bg-purple-500/10',
+      text: <>Se investir R$ 300/mês, pode acumular <span className="text-[#00e676] font-semibold">R$ 31.723,41 em 5 anos.</span></>,
+      tag: 'Investimentos',
+    },
+    actions: [
+      { icon: TrendingUp, iconColor: 'text-[#00e676]', iconBg: 'bg-[#00e676]/10', title: 'Investir com recorrência', sub: 'Aporte mensal sugerido', value: 'R$ 300,00', valueColor: 'text-[#00e676]' },
+      { icon: Coins, iconColor: 'text-purple-400', iconBg: 'bg-purple-500/10', title: 'Ativar aporte automático', sub: 'Direto da conta p/ corretora', value: 'Ativar', valueColor: 'text-purple-400' },
+      { icon: Zap, iconColor: 'text-white/40', iconBg: 'bg-white/5', title: 'Simular novos cenários', sub: 'Aumente o aporte p/ 10 anos', value: 'Simular', valueColor: 'text-white/60' },
+    ]
   },
   {
-    icon: CreditCard,
-    iconColor: 'text-red-400',
-    iconBg: 'bg-red-500/10',
-    text: <>Sua fatura do Nubank atingiu <span className="text-red-400 font-semibold">80% do limite</span> antes do fechamento.</>,
-    tag: 'Cartão',
+    insight: {
+      icon: CreditCard,
+      iconColor: 'text-red-400',
+      iconBg: 'bg-red-500/10',
+      text: <>Sua fatura atingiu <span className="text-red-400 font-semibold">80% do limite</span> antes do fechamento.</>,
+      tag: 'Cartão',
+    },
+    actions: [
+      { icon: Wallet, iconColor: 'text-orange-400', iconBg: 'bg-orange-500/10', title: 'Pagar fatura adiantada', sub: 'Libere limite p/ emergências', value: 'Pagar', valueColor: 'text-orange-400' },
+      { icon: ArrowUpRight, iconColor: 'text-[#00e676]', iconBg: 'bg-[#00e676]/10', title: 'Solicitar aumento de limite', sub: 'Baseado no seu score Huby', value: '+R$ 500', valueColor: 'text-[#00e676]' },
+      { icon: Clock, iconColor: 'text-white/40', iconBg: 'bg-white/5', title: 'Histórico de faturas', sub: 'Compare com meses anteriores', value: 'Ver', valueColor: 'text-white/60' },
+    ]
   },
   {
-    icon: TrendingUp,
-    iconColor: 'text-[#00e676]',
-    iconBg: 'bg-[#00e676]/10',
-    text: <>Sua reserva cresceu <span className="text-[#00e676] font-semibold">+12% este mês</span>, melhor ritmo do trimestre.</>,
-    tag: 'Reserva',
-  },
-  {
-    icon: Repeat,
-    iconColor: 'text-blue-400',
-    iconBg: 'bg-blue-500/10',
-    text: <>Detectamos <span className="text-blue-400 font-semibold">cobrança duplicada</span> de R$ 49,90 no seu cartão.</>,
-    tag: 'Alerta',
-  },
-  {
-    icon: Utensils,
-    iconColor: 'text-pink-400',
-    iconBg: 'bg-pink-500/10',
-    text: <>Restaurantes representam <span className="text-pink-400 font-semibold">34% dos seus gastos</span> variáveis.</>,
-    tag: 'Categoria',
-  },
-  {
-    icon: Coins,
-    iconColor: 'text-amber-400',
-    iconBg: 'bg-amber-500/10',
-    text: <>Você pode economizar <span className="text-amber-400 font-semibold">R$ 220/mês</span> renegociando 2 contas fixas.</>,
-    tag: 'Economia',
-  },
-];
-
-const HUBY_ACTIONS = [
-  { icon: FileText, iconColor: 'text-emerald-400', iconBg: 'bg-emerald-500/10', title: 'Cancelar assinaturas não utilizadas', sub: 'Economize até R$ 79,90/mês', value: 'R$ 79,90', valueColor: 'text-[#00e676]' },
-  { icon: ShoppingBag, iconColor: 'text-emerald-400', iconBg: 'bg-emerald-500/10', title: 'Reduzir gastos com delivery', sub: 'Meta sugerida: R$ 250,00/mês', value: 'R$ 180,00', valueColor: 'text-[#00e676]' },
-  { icon: CreditCard, iconColor: 'text-orange-400', iconBg: 'bg-orange-500/10', title: 'Quitar dívida do cartão', sub: 'Reduza juros e libere limite', value: 'R$ 1.247,36', valueColor: 'text-orange-400' },
-  { icon: BarChart3, iconColor: 'text-[#00e676]', iconBg: 'bg-[#00e676]/10', title: 'Investir com recorrência', sub: 'Comece com R$ 300,00/mês', value: 'R$ 300,00', valueColor: 'text-[#00e676]' },
+    insight: {
+      icon: Repeat,
+      iconColor: 'text-blue-400',
+      iconBg: 'bg-blue-500/10',
+      text: <>Detectamos <span className="text-blue-400 font-semibold">cobrança duplicada</span> de R$ 49,90 no seu cartão.</>,
+      tag: 'Alerta',
+    },
+    actions: [
+      { icon: ShieldCheck, iconColor: 'text-[#00e676]', iconBg: 'bg-[#00e676]/10', title: 'Contestar transação no App', sub: 'Reembolso em até 24h', value: 'Reaver', valueColor: 'text-[#00e676]' },
+      { icon: CreditCard, iconColor: 'text-red-400', iconBg: 'bg-red-500/10', title: 'Bloqueio temporário', sub: 'Evite novas cobranças indevidas', value: 'Bloquear', valueColor: 'text-red-400' },
+      { icon: AlertCircle, iconColor: 'text-white/40', iconBg: 'bg-white/5', title: 'Notificar banco emisor', sub: 'Abrir protocolo de segurança', value: 'Abrir', valueColor: 'text-white/60' },
+    ]
+  }
 ];
 
 const Features = () => {
@@ -368,89 +376,110 @@ const Features = () => {
 
 const HubyInsightsPanel: React.FC = () => {
   const [idx, setIdx] = useState(0);
+  
+  // Aumentar o tempo de troca (6 segundos)
   useEffect(() => {
-    const t = setInterval(() => setIdx((p) => (p + 1) % HUBY_INSIGHTS.length), 3500);
+    const t = setInterval(() => setIdx((p) => (p + 1) % RADAR_SLIDES.length), 6000);
     return () => clearInterval(t);
   }, []);
 
-  const current = HUBY_INSIGHTS[idx];
-  const Icon = current.icon;
+  const currentSlide = RADAR_SLIDES[idx];
+  const insight = currentSlide.insight;
+  const InsightIcon = insight.icon;
 
   return (
-    <div className="relative bg-white/[0.02] border border-white/10 rounded-3xl p-6 shadow-2xl backdrop-blur-xl space-y-6">
-      {/* Insights da Huby */}
-      <div className="space-y-3">
-        <div className="flex items-center gap-2">
-          <div className="w-5 h-5 rounded-full bg-[#00e676]/15 flex items-center justify-center">
-            <div className="w-1.5 h-1.5 rounded-full bg-[#00e676]" />
+    <div className="relative bg-white/[0.02] border border-white/10 rounded-[32px] p-6 md:p-8 shadow-2xl backdrop-blur-xl flex flex-col min-h-[500px]">
+      <AnimatePresence mode="wait">
+        <motion.div
+          key={idx}
+          initial={{ opacity: 0, x: 20 }}
+          animate={{ opacity: 1, x: 0 }}
+          exit={{ opacity: 0, x: -20 }}
+          transition={{ duration: 0.6, ease: [0.22, 1, 0.36, 1] }}
+          className="flex-1 flex flex-col space-y-8"
+        >
+          {/* Insights da Huby */}
+          <div className="space-y-4">
+            <div className="flex items-center gap-2">
+              <div className="w-5 h-5 rounded-full bg-[#00e676]/15 flex items-center justify-center">
+                <div className="w-1.5 h-1.5 rounded-full bg-[#00e676]" />
+              </div>
+              <span className="text-sm font-semibold text-white">Insights da Huby</span>
+            </div>
+
+            <div className="flex items-start gap-4 p-5 rounded-2xl bg-white/[0.04] border border-white/10 shadow-inner">
+              <div className={`w-12 h-12 rounded-xl ${insight.iconBg} flex items-center justify-center shrink-0`}>
+                <InsightIcon className={`w-6 h-6 ${insight.iconColor}`} />
+              </div>
+              <div className="flex-1 space-y-2">
+                <div className="flex items-center justify-between">
+                  <span className="text-[10px] font-bold text-white/40 uppercase tracking-widest">Detectado Agora</span>
+                  <span className="text-[10px] text-white/50 px-2.5 py-1 rounded-full border border-white/10 bg-white/[0.03] whitespace-nowrap">
+                    {insight.tag}
+                  </span>
+                </div>
+                <p className="text-base md:text-lg text-white/90 leading-relaxed font-medium">
+                  {insight.text}
+                </p>
+              </div>
+            </div>
           </div>
-          <span className="text-sm font-semibold text-white">Insights da Huby</span>
-        </div>
 
-        <div className="relative h-[88px]">
-          <AnimatePresence mode="wait">
-            <motion.div
-              key={idx}
-              initial={{ opacity: 0, y: 10 }}
-              animate={{ opacity: 1, y: 0 }}
-              exit={{ opacity: 0, y: -10 }}
-              transition={{ duration: 0.4, ease: [0.22, 1, 0.36, 1] }}
-              className="absolute inset-0 flex items-center gap-3 p-4 rounded-2xl bg-white/[0.03] border border-white/5"
-            >
-              <div className={`w-9 h-9 rounded-xl ${current.iconBg} flex items-center justify-center shrink-0`}>
-                <Icon className={`w-4 h-4 ${current.iconColor}`} />
+          {/* Ações sugeridas pela Huby */}
+          <div className="space-y-4 pt-2">
+            <div className="flex items-center justify-between">
+              <div className="flex items-center gap-2">
+                <Zap className="w-4 h-4 text-[#00e676]" />
+                <span className="text-sm font-semibold text-white">Ações sugeridas pela Huby</span>
               </div>
-              <p className="text-[13px] text-white/80 leading-snug flex-1">{current.text}</p>
-              <span className="text-[10px] text-white/50 px-2.5 py-1 rounded-full border border-white/10 bg-white/[0.03] whitespace-nowrap">
-                {current.tag}
-              </span>
-            </motion.div>
-          </AnimatePresence>
-        </div>
+              <span className="text-[11px] text-white/40 hover:text-[#00e676] cursor-pointer transition">Executar todas</span>
+            </div>
 
-        {/* Dots */}
-        <div className="flex items-center justify-center gap-1.5 pt-1">
-          {HUBY_INSIGHTS.map((_, i) => (
-            <div
-              key={i}
-              className={`h-1 rounded-full transition-all duration-500 ${
-                i === idx ? 'w-5 bg-[#00e676]' : 'w-1 bg-white/15'
-              }`}
-            />
-          ))}
-        </div>
-      </div>
+            <div className="grid gap-3">
+              {currentSlide.actions.map((a, i) => {
+                const ActionIcon = a.icon;
+                return (
+                  <motion.div
+                    key={i}
+                    initial={{ opacity: 0, y: 10 }}
+                    animate={{ opacity: 1, y: 0 }}
+                    transition={{ delay: 0.1 * i }}
+                    className="flex items-center gap-4 p-4 rounded-2xl bg-white/[0.03] border border-white/5 hover:border-[#00e676]/30 hover:bg-[#00e676]/5 transition-all duration-300 cursor-pointer group"
+                  >
+                    <div className={`w-10 h-10 rounded-xl ${a.iconBg} flex items-center justify-center shrink-0 transition-transform group-hover:scale-110`}>
+                      <ActionIcon className={`w-5 h-5 ${a.iconColor}`} />
+                    </div>
+                    <div className="flex-1 min-w-0">
+                      <div className="text-[14px] font-semibold text-white group-hover:text-[#00e676] transition-colors">{a.title}</div>
+                      <div className="text-[11px] text-white/40 truncate">{a.sub}</div>
+                    </div>
+                    <div className="flex items-center gap-2 shrink-0">
+                      <div className="text-right">
+                        <div className={`text-[13px] font-bold ${a.valueColor}`}>{a.value}</div>
+                        <div className="text-[9px] text-white/20 font-bold uppercase tracking-tighter">Sugestão</div>
+                      </div>
+                      <ChevronRight className="w-4 h-4 text-white/20 group-hover:text-[#00e676] group-hover:translate-x-1 transition-all" />
+                    </div>
+                  </motion.div>
+                );
+              })}
+            </div>
+          </div>
+        </motion.div>
+      </AnimatePresence>
 
-      {/* Ações sugeridas pela Huby */}
-      <div className="space-y-3 pt-2">
-        <div className="flex items-center justify-between">
-          <span className="text-sm font-semibold text-white">Ações sugeridas pela Huby</span>
-          <span className="text-[11px] text-white/40 hover:text-[#00e676] cursor-pointer transition">Ver todas</span>
-        </div>
-
-        <div className="space-y-2">
-          {HUBY_ACTIONS.map((a, i) => {
-            const AIcon = a.icon;
-            return (
-              <div
-                key={i}
-                className="flex items-center gap-3 p-3 rounded-2xl bg-white/[0.03] border border-white/5 hover:border-white/15 transition"
-              >
-                <div className={`w-9 h-9 rounded-xl ${a.iconBg} flex items-center justify-center shrink-0`}>
-                  <AIcon className={`w-4 h-4 ${a.iconColor}`} />
-                </div>
-                <div className="flex-1 min-w-0">
-                  <div className="text-[13px] font-medium text-white truncate">{a.title}</div>
-                  <div className="text-[11px] text-white/40 truncate">{a.sub}</div>
-                </div>
-                <div className="flex items-center gap-1 shrink-0">
-                  <span className={`text-[13px] font-semibold ${a.valueColor}`}>{a.value}</span>
-                  <ChevronRight className="w-3.5 h-3.5 text-white/30" />
-                </div>
-              </div>
-            );
-          })}
-        </div>
+      {/* Dots moved to bottom */}
+      <div className="flex items-center justify-center gap-2 mt-8">
+        {RADAR_SLIDES.map((_, i) => (
+          <button
+            key={i}
+            onClick={() => setIdx(i)}
+            className={`h-1.5 rounded-full transition-all duration-500 cursor-pointer ${
+              i === idx ? 'w-8 bg-[#00e676]' : 'w-2 bg-white/10 hover:bg-white/20'
+            }`}
+            aria-label={`Ir para slide ${i + 1}`}
+          />
+        ))}
       </div>
     </div>
   );
