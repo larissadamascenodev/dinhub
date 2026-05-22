@@ -146,7 +146,7 @@ const Hero = ({ videoSrc }: HeroProps) => {
     return () => ctx.revert();
   }, []);
 
-  const headlineText = "A próxima evolução da sua inteligência financeira.";
+  const headlineText = "Domine sua realidade.";
   const words = headlineText.split(' ');
 
   return (
@@ -227,15 +227,15 @@ const Hero = ({ videoSrc }: HeroProps) => {
 
         <h1 
           ref={headlineRef}
-          className="text-white font-black leading-[0.9] tracking-tighter text-center mb-10 overflow-hidden uppercase"
+          className="text-white font-black leading-[0.9] tracking-tighter text-center mb-10 overflow-hidden"
           style={{ 
-            fontSize: 'clamp(2.5rem, 10vw, 8rem)',
+            fontSize: 'clamp(3rem, 15vw, 12rem)',
             textWrap: 'balance' as any
           }}
         >
           {words.map((word, i) => (
             <span key={i} className="inline-block mr-[0.25em] last:mr-0 overflow-hidden py-2">
-              <span className="word inline-block">
+              <span className={`word inline-block ${word === "realidade." ? "bg-gradient-to-b from-white via-white to-white/40 bg-clip-text text-transparent italic font-light tracking-tighter" : ""}`}>
                 {word}
               </span>
             </span>
