@@ -42,7 +42,7 @@ const HubySection = () => {
     switch (id) {
       case 'balanco':
         return (
-          <div className="bg-[#0f0f0f]/80 backdrop-blur-xl border border-white/[0.08] p-6 rounded-3xl w-full space-y-5 shadow-2xl">
+          <div className="glass-card p-6 w-full space-y-5">
             <div className="flex justify-between items-center">
               <div className="flex items-center gap-3">
                 <div className="w-10 h-10 rounded-xl bg-[#00e676]/10 flex items-center justify-center border border-[#00e676]/20">
@@ -101,7 +101,7 @@ const HubySection = () => {
         );
       case 'fatura':
         return (
-          <div className="bg-[#0f0f0f]/80 backdrop-blur-xl border border-white/[0.08] p-6 rounded-3xl w-full space-y-5 shadow-2xl">
+          <div className="glass-card p-6 w-full space-y-5">
             <div className="flex justify-between items-start">
               <div className="flex items-center gap-3">
                 <div className="w-10 h-10 rounded-xl bg-purple-500/10 flex items-center justify-center border border-purple-500/20">
@@ -158,7 +158,7 @@ const HubySection = () => {
         );
       case 'parcelas':
         return (
-          <div className="bg-[#0f0f0f]/80 backdrop-blur-xl border border-white/[0.08] p-6 rounded-3xl w-full space-y-6 shadow-2xl">
+          <div className="glass-card p-6 w-full space-y-6">
             <div className="flex justify-between items-center">
               <div className="flex items-center gap-3">
                 <div className="w-10 h-10 rounded-xl bg-orange-500/10 flex items-center justify-center border border-orange-500/20">
@@ -213,7 +213,7 @@ const HubySection = () => {
         );
       case 'projecao':
         return (
-          <div className="bg-[#0f0f0f]/80 backdrop-blur-xl border border-white/[0.08] p-6 rounded-3xl w-full space-y-6 shadow-2xl">
+          <div className="glass-card p-6 w-full space-y-6">
             <div className="flex justify-between items-center">
               <div className="flex items-center gap-3">
                 <div className="w-10 h-10 rounded-xl bg-[#00e676]/10 flex items-center justify-center border border-[#00e676]/20">
@@ -248,7 +248,7 @@ const HubySection = () => {
         );
       case 'categorias':
         return (
-          <div className="bg-[#0f0f0f]/80 backdrop-blur-xl border border-white/[0.08] p-6 rounded-3xl w-full space-y-5 shadow-2xl">
+          <div className="glass-card p-6 w-full space-y-5">
             <div className="flex items-center gap-3 mb-2">
               <div className="w-10 h-10 rounded-xl bg-blue-500/10 flex items-center justify-center border border-blue-500/20">
                 <BarChart3 className="w-5 h-5 text-blue-400" />
