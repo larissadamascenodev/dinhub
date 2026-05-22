@@ -14,14 +14,18 @@ const Navbar = () => {
       <div className="flex items-center justify-between gap-3 sm:gap-12 px-4 sm:px-12 py-2.5 sm:py-5 rounded-full border border-white/[0.08] bg-black/60 backdrop-blur-2xl shadow-2xl">
         {/* Logo */}
         <div className="flex items-center cursor-pointer group shrink-0" onClick={() => window.scrollTo({ top: 0, behavior: 'smooth' })}>
-          <div className="flex items-center space-x-0.5">
+          <div className="flex items-baseline">
             <span className="font-sora font-black text-lg sm:text-xl text-white tracking-tighter">
-              DIN
+              Din
             </span>
-            <span className="font-sora font-extrabold text-lg sm:text-xl text-[#00e676] tracking-tighter">
-              HUBY
+            <span
+              className="font-black text-2xl sm:text-3xl text-white tracking-tight italic leading-none"
+              style={{ fontFamily: "'Instrument Serif', serif" }}
+            >
+              Huby
             </span>
           </div>
+
         </div>
 
         {/* Links - Now visible on mobile too but more compact */}
