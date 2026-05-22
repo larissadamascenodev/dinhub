@@ -219,7 +219,7 @@ const Hero = ({ videoSrc }: HeroProps) => {
       </header>
 
       {/* Content */}
-      <div ref={contentRef} className="relative z-20 flex flex-col items-center max-w-5xl px-6">
+      <div ref={contentRef} className="relative z-20 flex flex-col items-center max-w-7xl px-6 w-full">
         <div className="mb-8 flex items-center gap-3 px-4 py-1.5 rounded-full border border-white/5 bg-white/5 backdrop-blur-md">
           <div className="w-2 h-2 rounded-full bg-[#00e676] animate-pulse" />
           <span className="text-[9px] font-black uppercase tracking-[0.3em] text-white/60">Neural Engine Online</span>
@@ -229,8 +229,9 @@ const Hero = ({ videoSrc }: HeroProps) => {
           ref={headlineRef}
           className="text-white font-black leading-[0.95] tracking-tighter text-center mb-10 overflow-hidden"
           style={{ 
-            fontSize: 'clamp(2rem, 6.5vw, 4.8rem)',
-            maxWidth: '1200px',
+            fontSize: 'clamp(2rem, 7vw, 5.5rem)',
+            width: '100%',
+            maxWidth: 'none',
             textWrap: 'balance' as any
           }}
         >
