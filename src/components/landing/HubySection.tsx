@@ -12,11 +12,11 @@ type ChatMsg = {
 };
 
 const APP_SCREENS = [
-  { id: 'balanco', label: '📊 Meu balanço mensal' },
-  { id: 'fatura', label: '💳 Minha próxima fatura' },
-  { id: 'parcelas', label: '📦 Meus parcelamentos' },
-  { id: 'projecao', label: '📈 Minha projeção' },
-  { id: 'categorias', label: '🗂 Gastos por categoria' },
+  { id: 'balanco', label: 'Meu balanço mensal', icon: PieChart },
+  { id: 'fatura', label: 'Minha próxima fatura', icon: CreditCard },
+  { id: 'parcelas', label: 'Meus parcelamentos', icon: ShoppingBag },
+  { id: 'projecao', label: 'Minha projeção', icon: TrendingUp },
+  { id: 'categorias', label: 'Gastos por categoria', icon: BarChart3 },
 ];
 
 const HubySection = () => {
