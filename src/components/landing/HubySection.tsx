@@ -440,14 +440,14 @@ const HubySection = () => {
           </motion.div>
           
           <h2 className="display-title text-white text-3xl md:text-8xl">
-            Teste a Experiência <br />
+            O Tony Stark tem o Jarvis <br />
             <span className="bg-gradient-to-r from-white/20 via-white to-white/20 bg-clip-text text-transparent italic font-light">
-              interaja com a Huby.
+              e você tem a Huby.
             </span>
           </h2>
           
           <p className="text-white/60 max-w-2xl mx-auto text-lg md:text-xl font-inter font-light leading-relaxed px-2">
-            Clique nos tópicos abaixo para simular uma conversa em tempo real e ver como a Huby processa dados complexos em insights acionáveis instantaneamente.
+            Teste a experiência, interaja com a Huby.
           </p>
         </div>
 
