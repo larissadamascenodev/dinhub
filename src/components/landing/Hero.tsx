@@ -326,7 +326,7 @@ const Hero = ({ videoSrc }: HeroProps) => {
       {/* Scroll Indicator - Animated Mouse */}
       <div
         ref={scrollIndicatorRef}
-        className="absolute bottom-1 sm:bottom-2 left-1/2 -translate-x-1/2 flex flex-col items-center gap-1 sm:gap-1.5 z-20"
+        className="absolute bottom-6 sm:bottom-10 left-1/2 -translate-x-1/2 flex flex-col items-center gap-1 sm:gap-1.5 z-20"
       >
         <div className="w-3.5 h-6 sm:w-4 sm:h-7 rounded-full border-2 border-white/20 flex justify-center p-0.5 sm:p-1">
           <motion.div
