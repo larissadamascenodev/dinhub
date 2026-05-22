@@ -1,6 +1,8 @@
 import React, { useEffect, useRef } from 'react';
 import gsap from 'gsap';
 import { ScrollTrigger } from 'gsap/ScrollTrigger';
+import { Sparkles, ArrowRight, ShieldCheck, Cpu } from 'lucide-react';
+import ParticleSphere from './ParticleSphere';
 
 gsap.registerPlugin(ScrollTrigger);
 
@@ -8,14 +10,16 @@ interface HeroProps {
   videoSrc?: string;
 }
 
-const Hero = ({ videoSrc = "https://cdn.pixabay.com/video/2023/10/20/185731-876356775_large.mp4" }: HeroProps) => {
+const Hero = ({ videoSrc }: HeroProps) => {
   const containerRef = useRef<HTMLDivElement>(null);
   const videoRef = useRef<HTMLVideoElement>(null);
   const overlayRef = useRef<HTMLDivElement>(null);
   const hudRef = useRef<HTMLDivElement>(null);
+  const contentRef = useRef<HTMLDivElement>(null);
   const headlineRef = useRef<HTMLHeadingElement>(null);
   const subHeadlineRef = useRef<HTMLParagraphElement>(null);
   const scrollIndicatorRef = useRef<HTMLDivElement>(null);
+  const sphereRef = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
     if (!containerRef.current) return;
