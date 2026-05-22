@@ -273,17 +273,17 @@ const Features = () => {
           </motion.div>
 
           {/* 4. SCANNER DE COMPROVANTES */}
-          <motion.div variants={itemVariants} className="grid grid-cols-1 md:grid-cols-2 gap-12 md:gap-24 items-center">
-            <div className="order-2 md:order-1 relative group">
-              <div className="relative bg-white border border-black/10 rounded-lg p-6 w-64 mx-auto shadow-2xl rotate-[-2deg] z-10">
+          <motion.div variants={itemVariants} className="grid grid-cols-1 lg:grid-cols-2 gap-12 sm:gap-16 lg:gap-32 items-center">
+            <div className="order-2 lg:order-1 relative group py-8 sm:py-12">
+              <div className="relative bg-white border border-black/10 rounded-lg p-5 sm:p-6 w-56 sm:w-64 mx-auto shadow-2xl rotate-[-2deg] z-10 transition-transform group-hover:rotate-0 duration-500">
                 <div className="text-center border-b border-black/5 pb-4 mb-4">
-                  <div className="text-[10px] font-mono text-black/50">MERCADO CENTRAL LTDA</div>
-                  <div className="text-[8px] font-mono text-black/30">CNPJ: 00.123.456/0001-99</div>
+                  <div className="text-[9px] sm:text-[10px] font-mono text-black/50 uppercase tracking-tight">Mercado Central LTDA</div>
+                  <div className="text-[7px] sm:text-[8px] font-mono text-black/30">CNPJ: 00.123.456/0001-99</div>
                 </div>
-                <div className="space-y-2 font-mono text-[9px] text-black/70">
+                <div className="space-y-2 font-mono text-[8px] sm:text-[9px] text-black/70">
                   <div className="flex justify-between"><span>CERVEJA ARTESANAL</span> <span>R$ 45,00</span></div>
                   <div className="flex justify-between"><span>CARNE BOVINA 1KG</span> <span>R$ 58,90</span></div>
-                  <div className="flex justify-between border-t border-black/5 pt-2 font-bold text-black">
+                  <div className="flex justify-between border-t border-black/5 pt-2 font-bold text-black text-[9px] sm:text-[10px]">
                     <span>TOTAL</span> <span>R$ 103,90</span>
                   </div>
                 </div>
@@ -292,34 +292,34 @@ const Features = () => {
                   initial={{ top: '0%' }}
                   animate={{ top: '100%' }}
                   transition={{ duration: 2, repeat: Infinity, ease: "linear" }}
-                  className="absolute left-0 right-0 h-1 bg-[#00e676] shadow-[0_0_15px_#00e676] z-20"
+                  className="absolute left-0 right-0 h-0.5 sm:h-1 bg-[#00e676] shadow-[0_0_15px_#00e676] z-20"
                 />
               </div>
               <motion.div 
                 initial={{ opacity: 0, scale: 0.8 }}
                 whileInView={{ opacity: 1, scale: 1 }}
-                className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-80 h-40 bg-[#00e676]/5 border border-[#00e676]/20 backdrop-blur-md rounded-2xl z-0 p-6 flex flex-col justify-end"
+                className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-72 sm:w-80 h-36 sm:h-40 bg-[#00e676]/5 border border-[#00e676]/20 backdrop-blur-md rounded-2xl z-0 p-5 sm:p-6 flex flex-col justify-end"
               >
                 <div className="flex items-center gap-3">
-                  <div className="w-8 h-8 rounded-full bg-[#00e676]/20 flex items-center justify-center">
+                  <div className="w-7 h-7 sm:w-8 sm:h-8 rounded-full bg-[#00e676]/20 flex items-center justify-center shrink-0">
                     <CheckCircle2 className="w-4 h-4 text-[#00e676]" />
                   </div>
                   <div>
-                    <div className="text-[10px] text-white/40 uppercase font-bold tracking-widest">Registrado com Sucesso</div>
-                    <div className="text-sm font-bold text-white">Mercado • R$ 103,90</div>
+                    <div className="text-[9px] lg:text-[10px] text-white/40 uppercase font-bold tracking-[0.1em]">Registrado com Sucesso</div>
+                    <div className="text-xs sm:text-sm font-bold text-white">Mercado • R$ 103,90</div>
                   </div>
                 </div>
               </motion.div>
             </div>
-            <div className="order-1 md:order-2 space-y-6">
-              <div className="w-14 h-14 rounded-2xl bg-[#00e676]/10 border border-[#00e676]/20 flex items-center justify-center">
+            <div className="order-1 lg:order-2 space-y-6 text-center lg:text-left">
+              <div className="w-14 h-14 rounded-2xl bg-[#00e676]/10 border border-[#00e676]/20 flex items-center justify-center mx-auto lg:mx-0">
                 <Camera className="w-7 h-7 text-[#00e676]" />
               </div>
-              <h3 className="text-2xl md:text-4xl font-sora font-bold text-white tracking-tight">Scanner Mágico</h3>
-              <p className="text-white/50 text-base md:text-lg leading-relaxed font-light">
+              <h3 className="text-2xl sm:text-3xl lg:text-4xl font-sora font-bold text-white tracking-tight">Scanner Mágico</h3>
+              <p className="text-white/50 text-base sm:text-lg lg:text-xl leading-relaxed font-light px-4 sm:px-0">
                 "Escaneou, registrou. A Huby lê o papel, identifica a categoria e já abate do seu orçamento. Sem esforço. ✨"
               </p>
-              <p className="text-white/40 text-sm">
+              <p className="text-white/40 text-sm px-4 sm:px-0">
                 Nossa IA processa notas fiscais e comprovantes em segundos, extraindo valores e itens automaticamente para você.
               </p>
             </div>
