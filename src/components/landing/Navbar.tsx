@@ -15,10 +15,10 @@ const Navbar = () => {
         {/* Logo */}
         <div className="flex items-center cursor-pointer group shrink-0" onClick={() => window.scrollTo({ top: 0, behavior: 'smooth' })}>
           <div className="flex items-center space-x-0.5">
-            <span className="font-sora font-black text-2xl sm:text-3xl text-white tracking-tighter">
+            <span className="font-sora font-black text-lg sm:text-xl text-white tracking-tighter">
               DIN
             </span>
-            <span className="font-sora font-extrabold text-2xl sm:text-3xl text-[#00e676] tracking-tighter">
+            <span className="font-sora font-extrabold text-lg sm:text-xl text-[#00e676] tracking-tighter">
               HUBY
             </span>
           </div>
