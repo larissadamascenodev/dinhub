@@ -268,17 +268,18 @@ const Hero = ({ videoSrc }: HeroProps) => {
 
         <h1 
           ref={headlineRef}
-          className="text-white font-black leading-[1.1] tracking-tighter text-center mb-6 md:mb-10"
+          className="text-white font-black leading-[1] tracking-tighter text-center mb-6 md:mb-10 py-1"
           style={{ 
             fontSize: 'clamp(1.4rem, 6.5vw, 5.5rem)',
             width: '100%',
             maxWidth: 'none',
-            textWrap: 'balance' as any
+            textWrap: 'balance' as any,
+            letterSpacing: '-0.02em'
           }}
         >
           {words.map((word, i) => (
-            <span key={i} className="inline-block mr-[0.25em] last:mr-0 py-8 -my-8 overflow-visible">
-              <span className={`word inline-block py-2 ${["some", "todo", "mês"].includes(word.toLowerCase().replace(/[?.,]/g, "")) ? "bg-gradient-to-b from-white via-white to-white/40 bg-clip-text text-transparent italic font-light tracking-tighter" : ""}`}>
+            <span key={i} className="inline-block mr-[0.22em] last:mr-0 py-8 -my-8 overflow-visible">
+              <span className={`word inline-block py-2 leading-none ${["some", "todo", "mês"].includes(word.toLowerCase().replace(/[?.,]/g, "")) ? "bg-gradient-to-b from-white via-white to-white/40 bg-clip-text text-transparent italic font-light tracking-tighter" : ""}`}>
                 {word}
               </span>
             </span>
@@ -346,10 +347,10 @@ const Hero = ({ videoSrc }: HeroProps) => {
       <style>{`
         .word {
           display: inline-block;
-          line-height: normal;
-          padding: 0.15em 0.05em;
-          margin: -0.15em -0.05em;
-          vertical-align: middle;
+          line-height: 1;
+          padding: 0.2em 0.1em;
+          margin: -0.2em -0.1em;
+          vertical-align: baseline;
         }
       `}</style>
     </section>
