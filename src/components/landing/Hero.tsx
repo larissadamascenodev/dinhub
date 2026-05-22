@@ -324,25 +324,25 @@ const Hero = ({ videoSrc }: HeroProps) => {
       </div>
 
       {/* Scroll Indicator - Animated Mouse */}
-      <div 
+      <div
         ref={scrollIndicatorRef}
-        className="absolute bottom-3 sm:bottom-4 left-1/2 -translate-x-1/2 flex flex-col items-center gap-1.5 sm:gap-2 z-20"
+        className="absolute bottom-1 sm:bottom-2 left-1/2 -translate-x-1/2 flex flex-col items-center gap-1 sm:gap-1.5 z-20"
       >
-        <div className="w-3.5 h-6 sm:w-6 sm:h-10 rounded-full border-2 border-white/20 flex justify-center p-0.5 sm:p-1.5">
-          <motion.div 
-            animate={{ 
-              y: [0, 6, 0],
+        <div className="w-3.5 h-6 sm:w-4 sm:h-7 rounded-full border-2 border-white/20 flex justify-center p-0.5 sm:p-1">
+          <motion.div
+            animate={{
+              y: [0, 5, 0],
               opacity: [1, 0, 1]
             }}
-            transition={{ 
-              duration: 1.5, 
-              repeat: Infinity, 
-              ease: "easeInOut" 
+            transition={{
+              duration: 1.5,
+              repeat: Infinity,
+              ease: "easeInOut"
             }}
-            className="w-0.5 h-1 sm:w-1 sm:h-2 bg-[#00e676] rounded-full"
+            className="w-0.5 h-1 sm:w-0.5 sm:h-1 bg-[#00e676] rounded-full"
           />
         </div>
-        <span className="text-[7px] sm:text-[9px] font-black uppercase tracking-[0.3em] text-white/30">scroll</span>
+        <span className="text-[7px] sm:text-[8px] font-black uppercase tracking-[0.3em] text-white/30">scroll</span>
       </div>
 
       <style>{`
