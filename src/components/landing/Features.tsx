@@ -191,19 +191,19 @@ const Features = () => {
           </div>
 
           {/* 2. SCORE FINANCEIRO */}
-          <motion.div variants={itemVariants} className="grid grid-cols-1 md:grid-cols-2 gap-12 md:gap-24 items-center">
-            <div className="order-2 md:order-1 relative group">
+          <motion.div variants={itemVariants} className="grid grid-cols-1 lg:grid-cols-2 gap-12 sm:gap-16 lg:gap-32 items-center">
+            <div className="order-2 lg:order-1 relative group w-full max-w-sm mx-auto lg:max-w-none">
               <div className="absolute inset-0 bg-blue-500/10 blur-[100px] rounded-full group-hover:bg-blue-500/20 transition-all duration-1000" />
-              <div className="relative bg-[#0f0f0f] border border-white/10 rounded-[32px] p-6 md:p-10 shadow-2xl backdrop-blur-xl text-center">
+              <div className="relative bg-[#0f0f0f] border border-white/10 rounded-[32px] p-6 sm:p-8 lg:p-10 shadow-2xl backdrop-blur-xl text-center">
                 <div className="inline-block relative mb-6">
-                  <svg className="w-32 h-32 md:w-40 md:h-40 transform -rotate-90">
+                  <svg className="w-28 h-28 sm:w-32 sm:h-32 lg:w-40 lg:h-40 transform -rotate-90">
                     <circle cx="80" cy="80" r="70" stroke="currentColor" strokeWidth="8" fill="transparent" className="text-white/5" />
                     <circle cx="80" cy="80" r="70" stroke="currentColor" strokeWidth="8" fill="transparent" 
                             strokeDasharray="440" strokeDashoffset="88" className="text-[#00e676]" />
                   </svg>
                   <div className="absolute inset-0 flex flex-col items-center justify-center">
-                    <span className="text-4xl font-bold text-white">82</span>
-                    <span className="text-[10px] text-white/40 font-bold uppercase tracking-widest">Score Huby</span>
+                    <span className="text-3xl sm:text-4xl font-bold text-white">82</span>
+                    <span className="text-[9px] lg:text-[10px] text-white/40 font-bold uppercase tracking-widest">Score Huby</span>
                   </div>
                 </div>
                 <div className="space-y-3">
@@ -215,44 +215,44 @@ const Features = () => {
                 </div>
               </div>
             </div>
-            <div className="order-1 md:order-2 space-y-6">
-              <div className="w-14 h-14 rounded-2xl bg-[#00e676]/10 border border-[#00e676]/20 flex items-center justify-center">
+            <div className="order-1 lg:order-2 space-y-6 text-center lg:text-left">
+              <div className="w-14 h-14 rounded-2xl bg-[#00e676]/10 border border-[#00e676]/20 flex items-center justify-center mx-auto lg:mx-0">
                 <ShieldCheck className="w-7 h-7 text-[#00e676]" />
               </div>
-              <h3 className="text-2xl md:text-4xl font-sora font-bold text-white tracking-tight">Score Huby</h3>
-              <p className="text-white/50 text-base md:text-lg leading-relaxed font-light">
+              <h3 className="text-2xl sm:text-3xl lg:text-4xl font-sora font-bold text-white tracking-tight">Score Huby</h3>
+              <p className="text-white/50 text-base sm:text-lg lg:text-xl leading-relaxed font-light px-4 sm:px-0">
                 "Opa, esqueceu de pagar a Vivo? Seu score caiu 3 pontos. Paga logo antes que isso vire uma bola de neve! 📉"
               </p>
-              <p className="text-white/40 text-sm">
+              <p className="text-white/40 text-sm px-4 sm:px-0">
                 Sua pontuação de saúde financeira baseada em hábitos reais, não apenas em crédito. Atrasou? Cai. Guardou? Sobe.
               </p>
             </div>
           </motion.div>
 
           {/* 3. PROJEÇÕES INTELIGENTES */}
-          <motion.div variants={itemVariants} className="grid grid-cols-1 md:grid-cols-2 gap-12 md:gap-24 items-center">
-            <div className="space-y-6">
-              <div className="w-14 h-14 rounded-2xl bg-[#00e676]/10 border border-[#00e676]/20 flex items-center justify-center">
+          <motion.div variants={itemVariants} className="grid grid-cols-1 lg:grid-cols-2 gap-12 sm:gap-16 lg:gap-32 items-center">
+            <div className="space-y-6 text-center lg:text-left">
+              <div className="w-14 h-14 rounded-2xl bg-[#00e676]/10 border border-[#00e676]/20 flex items-center justify-center mx-auto lg:mx-0">
                 <TrendingUp className="w-7 h-7 text-[#00e676]" />
               </div>
-              <h3 className="text-2xl md:text-4xl font-sora font-bold text-white tracking-tight">Projeções de Elite</h3>
-              <p className="text-white/50 text-base md:text-lg leading-relaxed font-light">
+              <h3 className="text-2xl sm:text-3xl lg:text-4xl font-sora font-bold text-white tracking-tight">Projeções de Elite</h3>
+              <p className="text-white/50 text-base sm:text-lg lg:text-xl leading-relaxed font-light px-4 sm:px-0">
                 "No ritmo atual, você chega aos R$ 10k investidos em Outubro. Se cortar o café gourmet, chega em Agosto! 🚀"
               </p>
-              <div className="grid grid-cols-2 gap-4 pt-4">
+              <div className="grid grid-cols-2 gap-4 pt-4 px-4 sm:px-0">
                 <div className="p-4 rounded-2xl border border-white/5 bg-white/[0.02]">
-                  <div className="text-2xl font-bold text-white">6 meses</div>
-                  <div className="text-[10px] text-white/40 uppercase font-bold tracking-widest">Visão de Futuro</div>
+                  <div className="text-xl sm:text-2xl font-bold text-white">6 meses</div>
+                  <div className="text-[9px] lg:text-[10px] text-white/40 uppercase font-bold tracking-widest">Visão de Futuro</div>
                 </div>
                 <div className="p-4 rounded-2xl border border-[#00e676]/20 bg-[#00e676]/5">
-                  <div className="text-2xl font-bold text-[#00e676]">R$ 12.450</div>
-                  <div className="text-[10px] text-[#00e676]/60 uppercase font-bold tracking-widest">Saldo Previsto</div>
+                  <div className="text-xl sm:text-2xl font-bold text-[#00e676]">R$ 12.450</div>
+                  <div className="text-[9px] lg:text-[10px] text-[#00e676]/60 uppercase font-bold tracking-widest">Saldo Previsto</div>
                 </div>
               </div>
             </div>
-            <div className="relative">
-              <div className="bg-[#0f0f0f] border border-white/10 rounded-[32px] p-6 md:p-8 shadow-2xl">
-                <div className="h-48 w-full flex items-end gap-3">
+            <div className="relative w-full max-w-lg mx-auto lg:max-w-none">
+              <div className="bg-[#0f0f0f] border border-white/10 rounded-[32px] p-6 sm:p-8 lg:p-10 shadow-2xl">
+                <div className="h-40 sm:h-48 w-full flex items-end gap-2 sm:gap-3 px-2 sm:px-4">
                   {[30, 45, 35, 65, 85, 100].map((h, i) => (
                     <motion.div 
                       key={i} 
@@ -263,7 +263,7 @@ const Features = () => {
                     />
                   ))}
                 </div>
-                <div className="flex justify-between mt-4 text-[10px] text-white/20 font-bold uppercase tracking-widest">
+                <div className="flex justify-between mt-6 text-[9px] lg:text-[10px] text-white/20 font-bold uppercase tracking-[0.2em]">
                   <span>Hoje</span>
                   <span>Setembro</span>
                   <span>Janeiro</span>
