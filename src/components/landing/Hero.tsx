@@ -1,123 +1,219 @@
-import React from 'react';
-import { motion } from 'framer-motion';
-import { ArrowRight, Play } from 'lucide-react';
+import React, { useEffect, useRef } from 'react';
+import gsap from 'gsap';
+import { ScrollTrigger } from 'gsap/ScrollTrigger';
 
-const Hero = () => {
+gsap.registerPlugin(ScrollTrigger);
+
+interface HeroProps {
+  videoSrc?: string;
+}
+
+const Hero = ({ videoSrc = "https://cdn.pixabay.com/video/2023/10/20/185731-876356775_large.mp4" }: HeroProps) => {
+  const containerRef = useRef<HTMLDivElement>(null);
+  const videoRef = useRef<HTMLVideoElement>(null);
+  const overlayRef = useRef<HTMLDivElement>(null);
+  const hudRef = useRef<HTMLDivElement>(null);
+  const headlineRef = useRef<HTMLHeadingElement>(null);
+  const subHeadlineRef = useRef<HTMLParagraphElement>(null);
+  const scrollIndicatorRef = useRef<HTMLDivElement>(null);
+
+  useEffect(() => {
+    if (!containerRef.current) return;
+
+    const ctx = gsap.context(() => {
+      // 1. Initial State (gsap.set)
+      gsap.set([overlayRef.current, hudRef.current, scrollIndicatorRef.current], {
+        opacity: 0,
+      });
+      gsap.set(subHeadlineRef.current, { opacity: 0, y: 20 });
+      gsap.set(hudRef.current, { y: -30 });
+      
+      const words = headlineRef.current?.querySelectorAll('.word');
+      if (words) {
+        gsap.set(words, { 
+          clipPath: 'inset(100% 0 0 0)',
+          y: 40,
+        });
+      }
+
+      // 2. Timeline
+      const tl = gsap.timeline({
+        delay: 0.4, // 0.4s de silêncio antes da timeline começar
+      });
+
+      // Overlay fade in
+      tl.to(overlayRef.current, {
+        opacity: 1,
+        duration: 0.8,
+        ease: 'power3.out',
+      });
+
+      // HUD superior
+      tl.to(hudRef.current, {
+        opacity: 1,
+        y: 0,
+        duration: 0.7,
+        ease: 'power3.out',
+      }, "-=0.3"); // delay 0.3s (starts 0.3s before previous ends or relative) -> the prompt said "delay 0.3s" after HUD start? 
+      // Re-reading: "HUD superior desce de -30px... delay 0.3s" - usually means offset from previous or absolute. 
+      // Let's use absolute labels for clarity.
+
+      // Headline reveal
+      if (words) {
+        tl.to(words, {
+          clipPath: 'inset(0% 0 0 0)',
+          y: 0,
+          duration: 0.9,
+          stagger: 0.08,
+          ease: 'power3.out',
+        }, ">-0.2"); // Começa um pouco antes do HUD terminar
+      }
+
+      // Sub-headline fade up
+      tl.to(subHeadlineRef.current, {
+        opacity: 1,
+        y: 0,
+        duration: 0.8,
+        ease: 'power3.out',
+      }, ">0.2"); // delay 0.2s depois da headline
+
+      // Scroll indicator
+      tl.to(scrollIndicatorRef.current, {
+        opacity: 1,
+        duration: 0.8,
+        onComplete: () => {
+          // Pulse animation
+          gsap.to(scrollIndicatorRef.current, {
+            opacity: 0.4,
+            duration: 1,
+            repeat: -1,
+            yoyo: true,
+            ease: 'sine.inOut',
+          });
+        }
+      });
+
+      // ScrollTrigger for scroll indicator fade out
+      gsap.to(scrollIndicatorRef.current, {
+        scrollTrigger: {
+          trigger: containerRef.current,
+          start: 'top top',
+          end: '+=100',
+          scrub: 1,
+        },
+        opacity: 0,
+        y: 20,
+        ease: 'none',
+      });
+
+    }, containerRef);
+
+    return () => ctx.revert();
+  }, []);
+
+  const headlineText = "Domine sua realidade financeira com precisão.";
+  const words = headlineText.split(' ');
+
   return (
-    <section className="relative min-h-[90vh] flex flex-col items-center justify-center pt-32 pb-20 px-5 overflow-hidden bg-[#050505]">
-      {/* Dynamic Background Elements */}
-      <div className="absolute inset-0 z-0">
-        {/* Animated Mesh Grid */}
-        <div className="absolute inset-0 opacity-[0.08]" 
-             style={{ backgroundImage: 'radial-gradient(circle at 1px 1px, rgba(255,255,255,0.15) 1px, transparent 0)', backgroundSize: '48px 48px' }} />
-        
-        {/* Deep Cinematic Glows */}
-        <div className="absolute top-[-10%] left-1/2 -translate-x-1/2 w-[120%] aspect-square max-w-[1400px] rounded-full bg-gradient-to-b from-[#00e676]/[0.08] via-transparent to-transparent blur-[160px] pointer-events-none z-0" />
-        <div className="absolute top-1/4 -left-1/4 w-[60%] aspect-square bg-blue-600/[0.04] blur-[180px] pointer-events-none z-0 rounded-full animate-pulse" />
-        <div className="absolute bottom-0 -right-1/4 w-[50%] aspect-square bg-purple-600/[0.03] blur-[150px] pointer-events-none z-0 rounded-full" />
-        
-        {/* Horizontal Beam Line */}
-        <div className="absolute top-[20%] left-0 w-full h-[1px] bg-gradient-to-r from-transparent via-white/[0.05] to-transparent" />
-      </div>
+    <section 
+      ref={containerRef}
+      className="relative w-full h-[100svh] bg-[#030303] overflow-hidden flex flex-col items-center justify-center"
+    >
+      {/* Background Video */}
+      <video
+        ref={videoRef}
+        src={videoSrc}
+        className="absolute inset-0 w-full h-full object-cover z-0"
+        autoPlay
+        muted
+        loop
+        playsInline
+      />
 
-      {/* Badge */}
-      <motion.div 
-        initial={{ opacity: 0, y: -20 }}
-        animate={{ opacity: 1, y: 0 }}
-        className="relative z-10 inline-flex items-center gap-3 px-6 py-2 rounded-full border border-white/[0.1] bg-black/40 backdrop-blur-2xl mb-12 shadow-[0_0_40px_-10px_rgba(0,0,0,0.5)] group hover:border-[#00e676]/30 transition-colors duration-500"
+      {/* Dark Overlay */}
+      <div 
+        ref={overlayRef}
+        className="absolute inset-0 bg-black/55 z-10 pointer-events-none" 
+      />
+
+      {/* HUD Superior */}
+      <header 
+        ref={hudRef}
+        className="absolute top-0 left-0 w-full p-6 md:p-10 flex justify-between items-center z-30"
       >
-        <span className="relative flex h-2 w-2">
-          <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-[#00e676] opacity-75"></span>
-          <span className="relative inline-flex rounded-full h-2 w-2 bg-[#00e676]"></span>
-        </span>
-        <span className="text-[9px] font-black text-white/40 tracking-[0.3em] uppercase">
-          Neural Core <span className="text-white/70 mx-1">v2.4.0</span> Online
-        </span>
-      </motion.div>
-
-      {/* Headline */}
-      <div className="relative z-10 text-center w-full fluid-container px-4">
-        <motion.h1 
-          initial={{ opacity: 0, scale: 0.95, filter: 'blur(10px)' }}
-          animate={{ opacity: 1, scale: 1, filter: 'blur(0px)' }}
-          transition={{ duration: 1.2, ease: [0.16, 1, 0.3, 1] }}
-          className="display-title mb-8 sm:mb-10 text-white text-center"
-          style={{ fontSize: "clamp(2.5rem, 10vw, 8rem)" }}
-        >
-          Domine sua<br />
-          <span className="relative inline-block">
-            <span className="absolute -inset-2 bg-[#00e676]/10 blur-2xl rounded-full opacity-50" />
-            <span className="bg-gradient-to-b from-white via-white to-white/40 bg-clip-text text-transparent italic font-light tracking-tighter">
-              realidade.
-            </span>
-          </span>
-        </motion.h1>
-
-        <motion.p 
-          initial={{ opacity: 0, y: 20 }}
-          animate={{ opacity: 1, y: 0 }}
-          transition={{ delay: 0.3, duration: 1.2, ease: [0.16, 1, 0.3, 1] }}
-          className="text-white/30 text-base sm:text-xl md:text-2xl lg:text-3xl max-w-3xl mx-auto mb-12 sm:mb-16 leading-tight font-inter font-light tracking-tight"
-        >
-          Organize sua vida inteira com <span className="text-white/90 font-medium tracking-normal">precisão absoluta</span> através da inteligência financeira de elite.
-        </motion.p>
-      </div>
-
-      {/* CTAs */}
-      <motion.div
-        initial={{ opacity: 0, y: 30 }}
-        animate={{ opacity: 1, y: 0 }}
-        transition={{ delay: 0.5, duration: 1.2, ease: [0.16, 1, 0.3, 1] }}
-        className="relative z-10 flex flex-col sm:flex-row items-center gap-6 sm:gap-8 mb-16 sm:mb-24 w-full px-4 sm:px-0 sm:w-auto"
-      >
-        <a 
-          href="/auth"
-          className="relative group w-full sm:w-auto px-10 sm:px-14 py-5 sm:py-6 rounded-full bg-white text-[#0a0a0a] font-sora font-black text-lg sm:text-xl hover:scale-105 transition-all duration-500 overflow-hidden shadow-[0_20px_60px_-15px_rgba(255,255,255,0.3)] touch-target !min-h-0"
-        >
-          <span className="relative z-10 flex items-center justify-center gap-4">
-            Iniciar Ascensão
-            <ArrowRight className="w-5 h-5 sm:w-6 sm:h-6 group-hover:translate-x-1.5 transition-transform duration-500" />
-          </span>
-          <div className="absolute inset-0 bg-gradient-to-r from-[#00e676] to-[#00ff88] opacity-0 group-hover:opacity-100 transition-opacity duration-500" />
-        </a>
+        <div className="flex items-center gap-2">
+          <div className="w-8 h-8 bg-white rounded-sm flex items-center justify-center">
+            <div className="w-4 h-4 bg-black rounded-full" />
+          </div>
+          <span className="font-sora font-bold text-xl tracking-tighter text-white uppercase">Huby</span>
+        </div>
         
-        <button 
-          onClick={() => document.getElementById('radar-header')?.scrollIntoView({ behavior: 'smooth' })}
-          className="group relative w-full sm:w-auto px-10 sm:px-14 py-5 sm:py-6 rounded-full border border-white/10 bg-white/[0.03] backdrop-blur-3xl text-white font-sora font-black text-lg sm:text-xl hover:bg-white/[0.08] hover:border-white/20 transition-all duration-500 touch-target !min-h-0"
-        >
-          <span className="flex items-center justify-center gap-4">
-            <div className="w-6 h-6 sm:w-8 sm:h-8 rounded-full bg-white/10 flex items-center justify-center group-hover:scale-110 transition-transform duration-500">
-              <Play className="w-2.5 h-2.5 sm:w-3 sm:h-3 fill-current ml-1" />
-            </div>
-            Ver Terminal
-          </span>
+        <nav className="hidden md:flex items-center gap-8">
+          {['Home', 'Sobre', 'Projetos', 'Contato'].map((item) => (
+            <a 
+              key={item} 
+              href={`#${item.toLowerCase()}`}
+              className="text-[10px] font-black uppercase tracking-[0.2em] text-white/50 hover:text-white transition-colors duration-300"
+            >
+              {item}
+            </a>
+          ))}
+        </nav>
+
+        <button className="md:hidden text-white">
+          <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+            <line x1="3" y1="12" x2="21" y2="12" />
+            <line x1="3" y1="6" x2="21" y2="6" />
+            <line x1="3" y1="18" x2="21" y2="18" />
+          </svg>
         </button>
-      </motion.div>
+      </header>
 
-      {/* Futuristic Telemetry Data */}
-      <motion.div 
-        initial={{ opacity: 0 }}
-        animate={{ opacity: 1 }}
-        transition={{ delay: 0.8, duration: 1.5 }}
-        className="relative z-10 grid grid-cols-2 md:grid-cols-4 gap-6 sm:gap-12 text-[8px] sm:text-[9px] font-black text-white/20 uppercase tracking-[0.2em] sm:tracking-[0.4em] px-4 w-full sm:w-auto"
+      {/* Content */}
+      <div className="relative z-20 flex flex-col items-center max-w-5xl px-6">
+        <h1 
+          ref={headlineRef}
+          className="text-white font-sora font-bold leading-[1.1] tracking-tighter text-center mb-6 overflow-hidden"
+          style={{ 
+            fontSize: 'clamp(2.8rem, 7vw, 5.5rem)',
+            textWrap: 'balance' as any
+          }}
+        >
+          {words.map((word, i) => (
+            <span key={i} className="inline-block mr-[0.3em] last:mr-0 overflow-hidden py-2">
+              <span className="word inline-block">
+                {word}
+              </span>
+            </span>
+          ))}
+        </h1>
+        
+        <p 
+          ref={subHeadlineRef}
+          className="font-inter font-light tracking-tight text-center max-w-2xl"
+          style={{ 
+            fontSize: 'clamp(0.9rem, 2vw, 1.15rem)',
+            color: 'rgba(255,255,255,0.55)'
+          }}
+        >
+          A inteligência financeira de elite para quem busca o controle absoluto do amanhã. Organize, analise e evolua com tecnologia de ponta.
+        </p>
+      </div>
+
+      {/* Scroll Indicator */}
+      <div 
+        ref={scrollIndicatorRef}
+        className="absolute bottom-12 left-1/2 -translate-x-1/2 flex flex-col items-center gap-4 z-20"
       >
-        <div className="flex flex-col gap-1.5 sm:gap-2 text-center sm:text-left">
-          <span className="text-[#00e676]/60">Latency</span>
-          <span className="text-white/40">12ms</span>
-        </div>
-        <div className="flex flex-col gap-1.5 sm:gap-2 border-l border-white/5 pl-6 sm:pl-12 text-center sm:text-left">
-          <span className="text-[#00e676]/60">Encryption</span>
-          <span className="text-white/40">AES-256</span>
-        </div>
-        <div className="flex flex-col gap-1.5 sm:gap-2 border-l border-white/5 pl-6 sm:pl-12 text-center sm:text-left">
-          <span className="text-[#00e676]/60">Uptime</span>
-          <span className="text-white/40">99.9%</span>
-        </div>
-        <div className="flex flex-col gap-1.5 sm:gap-2 border-l border-white/5 pl-6 sm:pl-12 text-center sm:text-left">
-          <span className="text-[#00e676]/60">Nodes</span>
-          <span className="text-white/40">14.8k</span>
-        </div>
-      </motion.div>
+        <span className="text-[10px] font-black uppercase tracking-[0.3em] text-white/40">scroll</span>
+        <div className="w-[1px] h-12 bg-gradient-to-b from-white/40 to-transparent" />
+      </div>
+
+      <style>{`
+        .word {
+          display: inline-block;
+        }
+      `}</style>
     </section>
   );
 };

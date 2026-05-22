@@ -12,10 +12,10 @@ import Footer from "@/components/landing/Footer";
 const Auth = () => {
   return (
     <div className="bg-[#0a0a0a] min-h-screen text-white font-inter overflow-x-hidden selection:bg-[#00e676]/30">
-      <Navbar />
+      {/* Navbar removido para não conflitar com o HUD do Hero solicitado */}
       
       <main>
-        <Hero />
+        <Hero videoSrc="https://cdn.pixabay.com/video/2020/09/20/50456-462102146_large.mp4" />
         <HubySection />
         <Features />
         <BeforeAfter />
