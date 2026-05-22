@@ -353,19 +353,23 @@ const HubySection = () => {
 
         {/* Screens (former bottom row, now main entry point) */}
         <div className="w-full flex overflow-x-auto no-scrollbar gap-3 pb-8 md:justify-center mb-4">
-          {APP_SCREENS.map((s) => (
-            <button
-              key={s.id}
-              onClick={() => handleScreenClick(s.id)}
-              className={`whitespace-nowrap px-5 py-2.5 rounded-xl border text-[11px] font-bold uppercase tracking-widest transition-all duration-500 hover:-translate-y-0.5 ${
-                activeScreen === s.id
-                  ? 'bg-[#00e676]/10 border-[#00e676]/40 text-[#00e676] shadow-[0_0_20px_rgba(0,230,118,0.2)]'
-                  : 'bg-white/[0.02] border-white/[0.05] text-white/50 hover:border-[#00e676]/30 hover:text-white'
-              }`}
-            >
-              {s.label}
-            </button>
-          ))}
+          {APP_SCREENS.map((s) => {
+            const Icon = s.icon;
+            return (
+              <button
+                key={s.id}
+                onClick={() => handleScreenClick(s.id)}
+                className={`flex items-center gap-2.5 whitespace-nowrap px-6 py-3.5 rounded-2xl border text-[11px] font-bold uppercase tracking-[0.1em] transition-all duration-500 hover:-translate-y-1 ${
+                  activeScreen === s.id
+                    ? 'bg-[#00e676]/10 border-[#00e676]/40 text-[#00e676] shadow-[0_10px_30px_-10px_rgba(0,230,118,0.3)]'
+                    : 'bg-white/[0.02] border-white/[0.05] text-white/50 hover:border-[#00e676]/30 hover:text-white hover:bg-white/[0.05]'
+                }`}
+              >
+                <Icon className={`w-4 h-4 ${activeScreen === s.id ? 'text-[#00e676]' : 'text-white/30'}`} />
+                {s.label}
+              </button>
+            );
+          })}
         </div>
 
         {/* Sphere */}
