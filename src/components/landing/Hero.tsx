@@ -260,13 +260,13 @@ const Hero = ({ videoSrc }: HeroProps) => {
           </div>
 
           {/* Micro-info labels */}
-          <div className="flex flex-col sm:flex-row items-center gap-4 sm:gap-8 text-[9px] md:text-[10px] font-black uppercase tracking-[0.2em] text-white/30">
-            <div className="flex items-center gap-2">
-              <Calendar className="w-3 h-3 text-[#00e676]/60" />
+          <div className="flex flex-row items-center justify-center gap-3 sm:gap-8 text-[7px] md:text-[10px] font-black uppercase tracking-[0.1em] sm:tracking-[0.2em] text-white/30 whitespace-nowrap">
+            <div className="flex items-center gap-1.5 sm:gap-2">
+              <Calendar className="w-2 sm:w-3 h-2 sm:h-3 text-[#00e676]/60" />
               Teste 3 dias grátis
             </div>
-            <div className="flex items-center gap-2">
-              <XCircle className="w-3 h-3 text-[#00e676]/60" />
+            <div className="flex items-center gap-1.5 sm:gap-2">
+              <XCircle className="w-2 sm:w-3 h-2 sm:h-3 text-[#00e676]/60" />
               Cancele quando quiser
             </div>
           </div>
@@ -278,10 +278,10 @@ const Hero = ({ videoSrc }: HeroProps) => {
         ref={scrollIndicatorRef}
         className="absolute bottom-8 sm:bottom-10 left-1/2 -translate-x-1/2 flex flex-col items-center gap-2 sm:gap-3 z-20"
       >
-        <div className="w-4 h-7 sm:w-6 sm:h-10 rounded-full border-2 border-white/20 flex justify-center p-1 sm:p-1.5">
+        <div className="w-3.5 h-6 sm:w-6 sm:h-10 rounded-full border-2 border-white/20 flex justify-center p-0.5 sm:p-1.5">
           <motion.div 
             animate={{ 
-              y: [0, 8, 0],
+              y: [0, 6, 0],
               opacity: [1, 0, 1]
             }}
             transition={{ 
@@ -289,10 +289,10 @@ const Hero = ({ videoSrc }: HeroProps) => {
               repeat: Infinity, 
               ease: "easeInOut" 
             }}
-            className="w-0.5 h-1.5 sm:w-1 sm:h-2 bg-[#00e676] rounded-full"
+            className="w-0.5 h-1 sm:w-1 sm:h-2 bg-[#00e676] rounded-full"
           />
         </div>
-        <span className="text-[8px] sm:text-[9px] font-black uppercase tracking-[0.3em] text-white/30">scroll</span>
+        <span className="text-[7px] sm:text-[9px] font-black uppercase tracking-[0.3em] text-white/30">scroll</span>
       </div>
 
       <style>{`

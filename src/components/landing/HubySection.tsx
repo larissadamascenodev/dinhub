@@ -429,14 +429,14 @@ const HubySection = () => {
       </div>
 
       <div className="w-full max-w-5xl flex flex-col items-center relative z-10">
-        <div className="text-center mb-24 md:mb-40 space-y-8">
+        <div className="text-center mb-16 md:mb-40 space-y-6 md:space-y-8">
           <motion.div 
             initial={{ opacity: 0, scale: 0.9 }}
             whileInView={{ opacity: 1, scale: 1 }}
-            className="inline-flex items-center gap-2.5 px-5 py-2 rounded-full border border-white/[0.08] bg-white/[0.03] backdrop-blur-xl"
+            className="inline-flex items-center gap-2 px-4 md:px-5 py-1.5 md:py-2 rounded-full border border-white/[0.08] bg-white/[0.03] backdrop-blur-xl"
           >
-            <Sparkles className="w-3.5 h-3.5 text-[#00e676]" />
-            <span className="text-[10px] font-black tracking-[0.3em] text-white/50 uppercase">Interface Neural</span>
+            <Sparkles className="w-3 md:w-3.5 h-3 md:h-3.5 text-[#00e676]" />
+            <span className="text-[8px] md:text-[10px] font-black tracking-[0.2em] md:tracking-[0.3em] text-white/50 uppercase">Interface Neural</span>
           </motion.div>
           
           <h2 className="display-title text-white text-3xl sm:text-5xl md:text-7xl leading-[1.1] md:leading-[1.1]">
@@ -446,7 +446,7 @@ const HubySection = () => {
             </span>
           </h2>
           
-          <p className="text-white/60 max-w-2xl mx-auto text-lg md:text-xl font-inter font-light leading-relaxed px-2">
+          <p className="text-white/60 max-w-2xl mx-auto text-sm md:text-xl font-inter font-light leading-relaxed px-2 whitespace-nowrap">
             Teste a experiência, interaja com a Huby.
           </p>
         </div>
