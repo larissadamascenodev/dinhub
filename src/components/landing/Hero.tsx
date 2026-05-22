@@ -176,11 +176,12 @@ const Hero = ({ videoSrc }: HeroProps) => {
         <ParticleSphere state="idle" />
       </div>
 
-      {/* Dark Overlay with Gradient */}
+      {/* Dark Overlay with Gradient and Transition to Next Section */}
       <div 
         ref={overlayRef}
-        className="absolute inset-0 bg-gradient-to-b from-black/80 via-black/40 to-black z-10 pointer-events-none" 
+        className="absolute inset-0 bg-gradient-to-b from-black/80 via-black/40 to-[#0a0a0a] z-10 pointer-events-none" 
       />
+      <div className="absolute bottom-0 left-0 w-full h-64 bg-gradient-to-t from-[#0a0a0a] to-transparent z-10 pointer-events-none" />
 
       {/* HUD Superior Removido em favor da Navbar Global */}
 
