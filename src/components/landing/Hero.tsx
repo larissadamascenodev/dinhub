@@ -246,8 +246,8 @@ const Hero = ({ videoSrc }: HeroProps) => {
           O DinHub analisa cada centavo, te avisa antes de virar problema e mostra o que fazer.
         </p>
 
-        <div className="flex flex-col items-center gap-8">
-          <button className="group flex items-center gap-4 px-10 py-5 rounded-2xl bg-[#00e676] text-black font-black text-sm uppercase tracking-widest hover:scale-105 hover:shadow-[0_0_40px_rgba(0,230,118,0.3)] transition-all duration-500">
+        <div className="flex flex-col items-center gap-6 md:gap-8 w-full max-w-[280px] sm:max-w-none">
+          <button className="group flex items-center justify-center gap-4 w-full sm:w-auto px-8 md:px-10 py-4 md:py-5 rounded-2xl bg-[#00e676] text-black font-black text-xs md:text-sm uppercase tracking-widest hover:scale-105 hover:shadow-[0_0_40px_rgba(0,230,118,0.3)] transition-all duration-500">
             Iniciar Sincronização
             <ArrowRight className="w-5 h-5 group-hover:translate-x-1.5 transition-transform" />
           </button>
