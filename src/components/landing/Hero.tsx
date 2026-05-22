@@ -248,14 +248,14 @@ const Hero = ({ videoSrc }: HeroProps) => {
         </p>
 
         <div className="flex flex-col items-center gap-6 w-full">
-          <div className="flex flex-col sm:flex-row items-center justify-center gap-4 md:gap-6 w-full max-w-[320px] sm:max-w-none">
-            <button className="group relative flex items-center justify-center gap-3 w-full sm:w-auto px-8 md:px-12 py-4 md:py-5 rounded-2xl bg-white text-black font-black text-xs md:text-sm uppercase tracking-widest hover:scale-105 transition-all duration-500 shadow-[0_20px_50px_rgba(255,255,255,0.1)]">
+          <div className="flex flex-row items-center justify-center gap-2.5 sm:gap-6 w-full max-w-[350px] sm:max-w-none px-2 sm:px-0">
+            <button className="group relative flex-1 sm:flex-none flex items-center justify-center gap-2 sm:gap-3 px-4 sm:px-12 py-3.5 sm:py-5 rounded-xl sm:rounded-2xl bg-white text-black font-black text-[9px] sm:text-sm uppercase tracking-widest hover:scale-105 transition-all duration-500 shadow-[0_20px_50px_rgba(255,255,255,0.1)] whitespace-nowrap">
               Começar Grátis
-              <ArrowRight className="w-4 h-4 md:w-5 md:h-5 group-hover:translate-x-1.5 transition-transform" />
+              <ArrowRight className="w-3 h-3 sm:w-5 sm:h-5 group-hover:translate-x-1.5 transition-transform" />
             </button>
             
-            <button className="group relative flex items-center justify-center gap-3 w-full sm:w-auto px-8 md:px-12 py-4 md:py-5 rounded-2xl border border-white/20 bg-transparent text-white font-black text-xs md:text-sm uppercase tracking-widest hover:bg-white/5 hover:border-white/40 transition-all duration-500">
-              Ver Demonstração
+            <button className="group relative flex-1 sm:flex-none flex items-center justify-center gap-2 sm:gap-3 px-4 sm:px-12 py-3.5 sm:py-5 rounded-xl sm:rounded-2xl border border-white/20 bg-transparent text-white font-black text-[9px] sm:text-sm uppercase tracking-widest hover:bg-white/5 hover:border-white/40 transition-all duration-500 whitespace-nowrap">
+              Demonstração
             </button>
           </div>
 
@@ -276,12 +276,12 @@ const Hero = ({ videoSrc }: HeroProps) => {
       {/* Scroll Indicator - Animated Mouse */}
       <div 
         ref={scrollIndicatorRef}
-        className="absolute bottom-10 left-1/2 -translate-x-1/2 flex flex-col items-center gap-3 z-20"
+        className="absolute bottom-8 sm:bottom-10 left-1/2 -translate-x-1/2 flex flex-col items-center gap-2 sm:gap-3 z-20"
       >
-        <div className="w-6 h-10 rounded-full border-2 border-white/20 flex justify-center p-1.5">
+        <div className="w-4 h-7 sm:w-6 sm:h-10 rounded-full border-2 border-white/20 flex justify-center p-1 sm:p-1.5">
           <motion.div 
             animate={{ 
-              y: [0, 12, 0],
+              y: [0, 8, 0],
               opacity: [1, 0, 1]
             }}
             transition={{ 
@@ -289,10 +289,10 @@ const Hero = ({ videoSrc }: HeroProps) => {
               repeat: Infinity, 
               ease: "easeInOut" 
             }}
-            className="w-1 h-2 bg-[#00e676] rounded-full"
+            className="w-0.5 h-1.5 sm:w-1 sm:h-2 bg-[#00e676] rounded-full"
           />
         </div>
-        <span className="text-[9px] font-black uppercase tracking-[0.3em] text-white/30">scroll</span>
+        <span className="text-[8px] sm:text-[9px] font-black uppercase tracking-[0.3em] text-white/30">scroll</span>
       </div>
 
       <style>{`
