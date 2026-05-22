@@ -3,7 +3,7 @@ import gsap from 'gsap';
 import { ScrollTrigger } from 'gsap/ScrollTrigger';
 import { motion } from 'framer-motion';
 import { Sparkles, ArrowRight, ShieldCheck, Cpu } from 'lucide-react';
-import ParticleSphere from './ParticleSphere';
+import SubtleParticles from './SubtleParticles';
 
 gsap.registerPlugin(ScrollTrigger);
 
@@ -168,12 +168,12 @@ const Hero = ({ videoSrc }: HeroProps) => {
         />
       )}
 
-      {/* Particle Sphere Background */}
+      {/* Subtle Particles Background */}
       <div 
         ref={sphereRef}
-        className="absolute inset-0 z-0 flex items-center justify-center pointer-events-none opacity-60"
+        className="absolute inset-0 z-0 pointer-events-none"
       >
-        <ParticleSphere state="idle" />
+        <SubtleParticles />
       </div>
 
       {/* Dark Overlay with Gradient and Transition to Next Section */}
