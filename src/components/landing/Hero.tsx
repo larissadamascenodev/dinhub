@@ -99,21 +99,21 @@ const Hero = () => {
         initial={{ opacity: 0 }}
         animate={{ opacity: 1 }}
         transition={{ delay: 0.8, duration: 1.5 }}
-        className="relative z-10 grid grid-cols-2 md:grid-cols-4 gap-12 text-[9px] font-black text-white/20 uppercase tracking-[0.4em]"
+        className="relative z-10 grid grid-cols-2 md:grid-cols-4 gap-6 sm:gap-12 text-[8px] sm:text-[9px] font-black text-white/20 uppercase tracking-[0.2em] sm:tracking-[0.4em] px-4 w-full sm:w-auto"
       >
-        <div className="flex flex-col gap-2">
+        <div className="flex flex-col gap-1.5 sm:gap-2 text-center sm:text-left">
           <span className="text-[#00e676]/60">Latency</span>
           <span className="text-white/40">12ms</span>
         </div>
-        <div className="flex flex-col gap-2 border-l border-white/5 pl-12">
+        <div className="flex flex-col gap-1.5 sm:gap-2 border-l border-white/5 pl-6 sm:pl-12 text-center sm:text-left">
           <span className="text-[#00e676]/60">Encryption</span>
           <span className="text-white/40">AES-256</span>
         </div>
-        <div className="flex flex-col gap-2 border-l border-white/5 pl-12 hidden md:flex">
+        <div className="flex flex-col gap-1.5 sm:gap-2 border-l border-white/5 pl-6 sm:pl-12 text-center sm:text-left">
           <span className="text-[#00e676]/60">Uptime</span>
           <span className="text-white/40">99.9%</span>
         </div>
-        <div className="flex flex-col gap-2 border-l border-white/5 pl-12 hidden md:flex">
+        <div className="flex flex-col gap-1.5 sm:gap-2 border-l border-white/5 pl-6 sm:pl-12 text-center sm:text-left">
           <span className="text-[#00e676]/60">Nodes</span>
           <span className="text-white/40">14.8k</span>
         </div>
