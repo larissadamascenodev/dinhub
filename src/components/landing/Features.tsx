@@ -439,10 +439,10 @@ const HubyInsightsPanel: React.FC = () => {
   };
 
   return (
-    <div className="relative bg-[#0a0a0a]/40 border border-white/10 rounded-[40px] p-4 md:p-8 shadow-[0_0_50px_-12px_rgba(0,230,118,0.2)] backdrop-blur-2xl flex flex-col min-h-[540px] md:min-h-[520px] overflow-hidden group/panel transition-all duration-500 hover:border-[#00e676]/30">
+    <div className="relative bg-[#0a0a0a]/60 border border-white/5 rounded-[40px] p-4 md:p-8 shadow-2xl backdrop-blur-3xl flex flex-col min-h-[540px] md:min-h-[520px] overflow-hidden group/panel transition-all duration-500 hover:border-[#00e676]/20">
       {/* Glow effect decorative elements */}
-      <div className="absolute -top-20 -right-20 w-40 h-40 bg-[#00e676]/10 blur-[80px] rounded-full pointer-events-none" />
-      <div className="absolute -bottom-20 -left-20 w-40 h-40 bg-blue-500/10 blur-[80px] rounded-full pointer-events-none" />
+      <div className="absolute -top-20 -right-20 w-40 h-40 bg-[#00e676]/5 blur-[80px] rounded-full pointer-events-none" />
+      <div className="absolute -bottom-20 -left-20 w-40 h-40 bg-blue-500/5 blur-[80px] rounded-full pointer-events-none" />
       
       <AnimatePresence mode="wait" custom={direction} initial={false}>
         <motion.div
