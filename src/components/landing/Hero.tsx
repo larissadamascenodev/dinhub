@@ -237,10 +237,10 @@ const Hero = ({ videoSrc }: HeroProps) => {
       <div ref={contentRef} className="relative z-20 flex flex-col items-center max-w-7xl px-4 sm:px-6 w-full text-center">
         <div className="flex flex-col items-center gap-4 md:gap-6 mb-8 md:mb-12">
           {/* Social Proof / Users Info */}
-          <div ref={badgeRef} className="flex flex-row items-center gap-3 sm:gap-6 py-2 px-4 sm:px-6 rounded-2xl border border-white/5 bg-white/[0.02] backdrop-blur-sm">
-            <div className="flex -space-x-1.5 sm:-space-x-3 shrink-0">
+          <div ref={badgeRef} className="flex flex-row items-center gap-2.5 sm:gap-4 py-1.5 px-3 sm:px-5 rounded-2xl border border-white/5 bg-white/[0.02] backdrop-blur-sm w-fit">
+            <div className="flex -space-x-1 sm:-space-x-2 shrink-0">
               {[1, 2, 3, 4].map((i) => (
-                <div key={i} className="w-5 h-5 sm:w-8 sm:h-8 rounded-full border border-[#030303] overflow-hidden">
+                <div key={i} className="w-4 h-4 sm:w-6 sm:h-6 rounded-full border border-[#030303] overflow-hidden">
                   <img 
                     src={`https://i.pravatar.cc/150?u=user${i + 10}`} 
                     alt="User" 
@@ -248,19 +248,19 @@ const Hero = ({ videoSrc }: HeroProps) => {
                   />
                 </div>
               ))}
-              <div className="w-5 h-5 sm:w-8 sm:h-8 rounded-full border border-[#030303] bg-[#111] flex items-center justify-center">
-                <span className="text-[7px] sm:text-[10px] font-bold text-[#00e676]">+2k</span>
+              <div className="w-4 h-4 sm:w-6 sm:h-6 rounded-full border border-[#030303] bg-[#111] flex items-center justify-center">
+                <span className="text-[6px] sm:text-[8px] font-bold text-[#00e676]">+2k</span>
               </div>
             </div>
             <div className="flex flex-col items-start">
               <div className="flex items-center gap-1">
                 {[1, 2, 3, 4, 5].map((s) => (
-                  <Sparkles key={s} className="w-1.5 h-1.5 sm:w-2.5 sm:h-2.5 text-[#00e676] fill-[#00e676]" />
+                  <Sparkles key={s} className="w-1.5 h-1.5 text-[#00e676] fill-[#00e676]" />
                 ))}
-                <span className="text-[8px] sm:text-[10px] font-bold text-white ml-1">4.9/5</span>
+                <span className="text-[7px] sm:text-[9px] font-bold text-white ml-0.5">4.9/5</span>
               </div>
-              <p className="text-[7px] sm:text-[10px] font-black uppercase tracking-[0.05em] sm:tracking-widest text-white/20 whitespace-nowrap">
-                Mais de <span className="text-white/40">2.800 usuários</span> economizando hoje
+              <p className="text-[6.5px] sm:text-[9px] font-black uppercase tracking-[0.05em] text-white/20 whitespace-nowrap">
+                <span className="text-white/40">+2.800 usuários</span> economizando hoje
               </p>
             </div>
           </div>
