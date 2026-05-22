@@ -19,6 +19,7 @@ const SubtleParticles: React.FC = () => {
       size: number;
       opacity: number;
       targetOpacity: number;
+      isStable: boolean;
     }[] = [];
 
     const handleMouseMove = (e: MouseEvent) => {
