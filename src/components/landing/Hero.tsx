@@ -153,7 +153,7 @@ const Hero = ({ videoSrc }: HeroProps) => {
   return (
     <section 
       ref={containerRef}
-      className="relative w-full h-[100svh] bg-[#030303] overflow-hidden flex flex-col items-center justify-center font-sora"
+      className="relative w-full h-[100svh] min-h-[600px] bg-[#030303] overflow-hidden flex flex-col items-center justify-center font-sora py-20"
     >
       {/* Background Video */}
       {videoSrc && (
@@ -185,13 +185,13 @@ const Hero = ({ videoSrc }: HeroProps) => {
       {/* HUD Superior Removido em favor da Navbar Global */}
 
       {/* Content */}
-      <div ref={contentRef} className="relative z-20 flex flex-col items-center max-w-7xl px-6 w-full">
-        <div className="flex flex-col items-center gap-6 mb-12">
+      <div ref={contentRef} className="relative z-20 flex flex-col items-center max-w-7xl px-4 sm:px-6 w-full text-center">
+        <div className="flex flex-col items-center gap-4 md:gap-6 mb-8 md:mb-12">
           {/* Social Proof / Users Info */}
-          <div className="flex flex-col sm:flex-row items-center gap-4 sm:gap-6 py-2 px-6 rounded-2xl border border-white/5 bg-white/[0.02] backdrop-blur-sm">
-            <div className="flex -space-x-3">
+          <div className="flex flex-row items-center gap-3 sm:gap-6 py-2 px-4 sm:px-6 rounded-2xl border border-white/5 bg-white/[0.02] backdrop-blur-sm">
+            <div className="flex -space-x-2 sm:-space-x-3 shrink-0">
               {[1, 2, 3, 4].map((i) => (
-                <div key={i} className="w-8 h-8 rounded-full border-2 border-[#030303] overflow-hidden">
+                <div key={i} className="w-6 h-6 sm:w-8 sm:h-8 rounded-full border-2 border-[#030303] overflow-hidden">
                   <img 
                     src={`https://i.pravatar.cc/150?u=user${i + 10}`} 
                     alt="User" 
@@ -199,18 +199,18 @@ const Hero = ({ videoSrc }: HeroProps) => {
                   />
                 </div>
               ))}
-              <div className="w-8 h-8 rounded-full border-2 border-[#030303] bg-[#111] flex items-center justify-center">
-                <span className="text-[10px] font-bold text-[#00e676]">+2k</span>
+              <div className="w-6 h-6 sm:w-8 sm:h-8 rounded-full border-2 border-[#030303] bg-[#111] flex items-center justify-center">
+                <span className="text-[8px] sm:text-[10px] font-bold text-[#00e676]">+2k</span>
               </div>
             </div>
-            <div className="flex flex-col items-center sm:items-start">
+            <div className="flex flex-col items-start">
               <div className="flex items-center gap-1">
                 {[1, 2, 3, 4, 5].map((s) => (
-                  <Sparkles key={s} className="w-2.5 h-2.5 text-[#00e676] fill-[#00e676]" />
+                  <Sparkles key={s} className="w-2 h-2 sm:w-2.5 sm:h-2.5 text-[#00e676] fill-[#00e676]" />
                 ))}
-                <span className="text-[10px] font-bold text-white ml-1">4.9/5</span>
+                <span className="text-[9px] sm:text-[10px] font-bold text-white ml-1">4.9/5</span>
               </div>
-              <p className="text-[10px] font-black uppercase tracking-widest text-white/30">
+              <p className="text-[8px] sm:text-[10px] font-black uppercase tracking-[0.1em] sm:tracking-widest text-white/30 whitespace-nowrap">
                 Mais de <span className="text-white/60">2.800 usuários</span> economizando hoje
               </p>
             </div>
@@ -219,9 +219,9 @@ const Hero = ({ videoSrc }: HeroProps) => {
 
         <h1 
           ref={headlineRef}
-          className="text-white font-black leading-[0.95] tracking-tighter text-center mb-10 overflow-hidden"
+          className="text-white font-black leading-[0.95] tracking-tighter text-center mb-6 md:mb-10 overflow-hidden"
           style={{ 
-            fontSize: 'clamp(2rem, 7vw, 5.5rem)',
+            fontSize: 'clamp(1.75rem, 8vw, 5.5rem)',
             width: '100%',
             maxWidth: 'none',
             textWrap: 'balance' as any
@@ -238,16 +238,16 @@ const Hero = ({ videoSrc }: HeroProps) => {
         
         <p 
           ref={subHeadlineRef}
-          className="font-inter font-light tracking-tight text-center max-w-3xl mb-14 leading-tight opacity-40"
+          className="font-inter font-light tracking-tight text-center max-w-3xl mb-10 md:mb-14 leading-tight opacity-40 px-2 sm:px-0"
           style={{ 
-            fontSize: 'clamp(1rem, 2.5vw, 1.6rem)',
+            fontSize: 'clamp(0.85rem, 2.5vw, 1.6rem)',
           }}
         >
           O DinHub analisa cada centavo, te avisa antes de virar problema e mostra o que fazer.
         </p>
 
-        <div className="flex flex-col items-center gap-8">
-          <button className="group flex items-center gap-4 px-10 py-5 rounded-2xl bg-[#00e676] text-black font-black text-sm uppercase tracking-widest hover:scale-105 hover:shadow-[0_0_40px_rgba(0,230,118,0.3)] transition-all duration-500">
+        <div className="flex flex-col items-center gap-6 md:gap-8 w-full max-w-[280px] sm:max-w-none">
+          <button className="group flex items-center justify-center gap-4 w-full sm:w-auto px-8 md:px-10 py-4 md:py-5 rounded-2xl bg-[#00e676] text-black font-black text-xs md:text-sm uppercase tracking-widest hover:scale-105 hover:shadow-[0_0_40px_rgba(0,230,118,0.3)] transition-all duration-500">
             Iniciar Sincronização
             <ArrowRight className="w-5 h-5 group-hover:translate-x-1.5 transition-transform" />
           </button>
