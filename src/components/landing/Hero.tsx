@@ -308,7 +308,7 @@ const Hero = ({ videoSrc }: HeroProps) => {
           </div>
 
           {/* Micro-info labels */}
-          <div className="flex flex-row items-center justify-center gap-3 sm:gap-8 text-[7px] md:text-[10px] font-black uppercase tracking-[0.1em] sm:tracking-[0.2em] text-white/30 whitespace-nowrap">
+          <div ref={labelsRef} className="flex flex-row items-center justify-center gap-3 sm:gap-8 text-[7px] md:text-[10px] font-black uppercase tracking-[0.1em] sm:tracking-[0.2em] text-white/30 whitespace-nowrap">
             <div className="flex items-center gap-1.5 sm:gap-2">
               <Calendar className="w-2 sm:w-3 h-2 sm:h-3 text-[#00e676]/60" />
               Teste 3 dias grátis
