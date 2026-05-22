@@ -18,36 +18,36 @@ const Hero = () => {
       <motion.div 
         initial={{ opacity: 0, y: -20 }}
         animate={{ opacity: 1, y: 0 }}
-        className="relative z-10 inline-flex items-center gap-2 px-4 py-2 rounded-xl border border-white/5 bg-white/[0.03] backdrop-blur-xl mb-12 shadow-2xl shadow-black"
+        className="relative z-10 inline-flex items-center gap-2.5 px-5 py-2 rounded-full border border-white/[0.08] bg-white/[0.03] backdrop-blur-xl mb-10 shadow-2xl shadow-black/50"
       >
-        <span className="w-1.5 h-1.5 rounded-full bg-[#00e676] animate-pulse" />
-        <span className="text-[11px] font-bold text-white/60 tracking-widest uppercase">
-          +2.847 pessoas no controle da própria vida
+        <span className="w-1.5 h-1.5 rounded-full bg-[#00e676] shadow-[0_0_8px_#00e676]" />
+        <span className="text-[10px] font-bold text-white/50 tracking-[0.15em] uppercase">
+          +2.847 vidas transformadas pela tecnologia
         </span>
       </motion.div>
 
-      {/* Headline - Nectar Style with DinHub Identity */}
+      {/* Headline */}
       <div className="relative z-10 text-center max-w-5xl px-4">
         <motion.h1 
-          initial={{ opacity: 0, y: 20 }}
+          initial={{ opacity: 0, y: 30 }}
           animate={{ opacity: 1, y: 0 }}
-          transition={{ duration: 0.8, ease: [0.22, 1, 0.36, 1] }}
-          className="font-sora font-bold leading-[1.1] mb-6 text-white text-center"
-          style={{ fontSize: "clamp(2rem, 10vw, 5.5rem)" }}
+          transition={{ duration: 1, ease: [0.16, 1, 0.3, 1] }}
+          className="display-title mb-8 text-white text-center"
+          style={{ fontSize: "clamp(2.5rem, 10vw, 6.5rem)" }}
         >
-          Tony Stark tem o Jarvis.<br />
-          <span className="bg-gradient-to-r from-[#00e676] to-[#00ff88] bg-clip-text text-transparent">
-            Você tem a Huby.
+          Seu Jarvis<br />
+          <span className="bg-gradient-to-r from-[#00e676] via-[#00ff88] to-[#00e676] bg-clip-text text-transparent bg-[length:200%_auto] animate-gradient-x italic font-light">
+            financeiro.
           </span>
         </motion.h1>
 
         <motion.p 
           initial={{ opacity: 0, y: 20 }}
           animate={{ opacity: 1, y: 0 }}
-          transition={{ delay: 0.2, duration: 0.8 }}
-          className="text-white/50 text-lg md:text-2xl max-w-2xl mx-auto mb-12 leading-relaxed font-inter font-light tracking-tight"
+          transition={{ delay: 0.2, duration: 1, ease: [0.16, 1, 0.3, 1] }}
+          className="text-white/40 text-lg md:text-2xl max-w-2xl mx-auto mb-14 leading-relaxed font-inter font-light tracking-tight"
         >
-          O assistente financeiro de elite que organiza sua vida inteira — <span className="text-white/80 font-medium">com precisão absoluta.</span>
+          O assistente de elite que organiza sua vida inteira — <span className="text-white/80 font-medium tracking-normal">com precisão absoluta.</span>
         </motion.p>
       </div>
 
@@ -55,23 +55,27 @@ const Hero = () => {
       <motion.div
         initial={{ opacity: 0, y: 20 }}
         animate={{ opacity: 1, y: 0 }}
-        transition={{ delay: 0.4 }}
-        className="relative z-10 flex flex-col sm:flex-row items-center gap-6 mb-8"
+        transition={{ delay: 0.4, duration: 1, ease: [0.16, 1, 0.3, 1] }}
+        className="relative z-10 flex flex-col sm:flex-row items-center gap-6 mb-12"
       >
         <a 
           href="/auth"
-          className="group relative flex items-center gap-3 px-12 py-5 rounded-2xl bg-[#00e676]/10 border border-[#00e676]/20 text-[#00e676] backdrop-blur-md font-sora font-extrabold text-lg hover:bg-[#00e676]/20 hover:shadow-[0_0_30px_rgba(0,230,118,0.1)] transition-all duration-500 hover:-translate-y-1"
+          className="premium-button-primary group"
         >
-          Eleve suas finanças
-          <ArrowRight className="w-5 h-5 group-hover:translate-x-1.5 transition-transform duration-500" />
+          <span className="relative z-10 flex items-center gap-3">
+            Começar Ascensão
+            <ArrowRight className="w-5 h-5 group-hover:translate-x-1 transition-transform duration-500" />
+          </span>
         </a>
         
         <button 
           onClick={() => document.getElementById('radar-header')?.scrollIntoView({ behavior: 'smooth' })}
-          className="flex items-center gap-3 px-12 py-5 rounded-2xl border border-white/5 bg-white/[0.03] backdrop-blur-xl text-white font-sora font-extrabold text-lg hover:bg-white/[0.08] transition-all duration-500 group border-b-white/10"
+          className="premium-button-secondary group"
         >
-          <Play className="w-4 h-4 fill-current group-hover:scale-110 transition-transform duration-500" />
-          Ver Experiência
+          <span className="relative z-10 flex items-center gap-3">
+            <Play className="w-4 h-4 fill-current group-hover:scale-110 transition-transform duration-500" />
+            Experiência Huby
+          </span>
         </button>
       </motion.div>
 
@@ -79,18 +83,18 @@ const Hero = () => {
       <motion.div 
         initial={{ opacity: 0 }}
         animate={{ opacity: 1 }}
-        transition={{ delay: 0.6 }}
-        className="relative z-10 flex items-center gap-6 text-[11px] font-bold text-white/40 uppercase tracking-widest"
+        transition={{ delay: 0.6, duration: 1 }}
+        className="relative z-10 flex items-center gap-8 text-[9px] font-black text-white/20 uppercase tracking-[0.25em]"
       >
-        <div className="flex items-center gap-2">
-          <div className="w-4 h-4 rounded-full border border-[#00e676]/30 flex items-center justify-center">
-            <div className="w-1.5 h-1.5 rounded-full bg-[#00e676]" />
+        <div className="flex items-center gap-2.5">
+          <div className="w-3.5 h-3.5 rounded-full border border-white/10 flex items-center justify-center">
+            <div className="w-1 h-1 rounded-full bg-[#00e676]" />
           </div>
-          3 dias de teste grátis
+          3 dias trial
         </div>
-        <div className="flex items-center gap-2">
-          <div className="w-4 h-4 rounded-full border border-[#00e676]/30 flex items-center justify-center">
-            <div className="w-1.5 h-1.5 rounded-full bg-[#00e676]" />
+        <div className="flex items-center gap-2.5">
+          <div className="w-3.5 h-3.5 rounded-full border border-white/10 flex items-center justify-center">
+            <div className="w-1 h-1 rounded-full bg-[#00e676]" />
           </div>
           Multiplataforma
         </div>
