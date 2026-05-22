@@ -248,14 +248,14 @@ const Hero = ({ videoSrc }: HeroProps) => {
         </p>
 
         <div className="flex flex-col items-center gap-6 w-full">
-          <div className="flex flex-col sm:flex-row items-center justify-center gap-4 md:gap-6 w-full max-w-[320px] sm:max-w-none">
-            <button className="group relative flex items-center justify-center gap-3 w-full sm:w-auto px-8 md:px-12 py-4 md:py-5 rounded-2xl bg-white text-black font-black text-xs md:text-sm uppercase tracking-widest hover:scale-105 transition-all duration-500 shadow-[0_20px_50px_rgba(255,255,255,0.1)]">
+          <div className="flex flex-row items-center justify-center gap-2.5 sm:gap-6 w-full max-w-[350px] sm:max-w-none px-2 sm:px-0">
+            <button className="group relative flex-1 sm:flex-none flex items-center justify-center gap-2 sm:gap-3 px-4 sm:px-12 py-3.5 sm:py-5 rounded-xl sm:rounded-2xl bg-white text-black font-black text-[9px] sm:text-sm uppercase tracking-widest hover:scale-105 transition-all duration-500 shadow-[0_20px_50px_rgba(255,255,255,0.1)] whitespace-nowrap">
               Começar Grátis
-              <ArrowRight className="w-4 h-4 md:w-5 md:h-5 group-hover:translate-x-1.5 transition-transform" />
+              <ArrowRight className="w-3 h-3 sm:w-5 sm:h-5 group-hover:translate-x-1.5 transition-transform" />
             </button>
             
-            <button className="group relative flex items-center justify-center gap-3 w-full sm:w-auto px-8 md:px-12 py-4 md:py-5 rounded-2xl border border-white/20 bg-transparent text-white font-black text-xs md:text-sm uppercase tracking-widest hover:bg-white/5 hover:border-white/40 transition-all duration-500">
-              Ver Demonstração
+            <button className="group relative flex-1 sm:flex-none flex items-center justify-center gap-2 sm:gap-3 px-4 sm:px-12 py-3.5 sm:py-5 rounded-xl sm:rounded-2xl border border-white/20 bg-transparent text-white font-black text-[9px] sm:text-sm uppercase tracking-widest hover:bg-white/5 hover:border-white/40 transition-all duration-500 whitespace-nowrap">
+              Demonstração
             </button>
           </div>
 
