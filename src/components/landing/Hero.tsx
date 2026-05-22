@@ -293,7 +293,7 @@ const Hero = ({ videoSrc }: HeroProps) => {
           </div>
 
           {/* Social Proof / Users Info - Moved to Bottom */}
-          <div ref={badgeRef} className="flex flex-row items-center gap-2.5 sm:gap-4 py-1.5 px-3 sm:px-5 rounded-2xl border border-white/5 bg-white/[0.02] backdrop-blur-sm w-fit mt-4">
+          <div ref={badgeRef} className="flex flex-row items-center gap-2.5 sm:gap-4 py-1.5 px-3 sm:px-5 rounded-2xl border border-white/5 bg-white/[0.02] backdrop-blur-sm w-fit mt-2 -translate-y-6 sm:-translate-y-14">
             <div className="flex -space-x-1 sm:-space-x-2 shrink-0">
               {[1, 2, 3, 4].map((i) => (
                 <div key={i} className="w-4 h-4 sm:w-6 sm:h-6 rounded-full border border-[#030303] overflow-hidden">
