@@ -10,8 +10,8 @@ const Navbar = () => {
   };
 
   return (
-    <nav className="fixed top-4 sm:top-6 left-1/2 -translate-x-1/2 z-[100] w-[92%] sm:w-auto min-w-[320px] max-w-[95%]">
-      <div className="flex items-center justify-between gap-3 sm:gap-8 px-4 sm:px-10 py-2.5 sm:py-4 rounded-full border border-white/[0.08] bg-black/60 backdrop-blur-2xl shadow-2xl">
+    <nav className="fixed top-4 sm:top-6 left-1/2 -translate-x-1/2 z-[100] w-[92%] sm:w-auto min-w-[320px] md:min-w-[650px] max-w-[95%] transition-all duration-500">
+      <div className="flex items-center justify-between gap-3 sm:gap-12 px-4 sm:px-12 py-2.5 sm:py-5 rounded-full border border-white/[0.08] bg-black/60 backdrop-blur-2xl shadow-2xl">
         {/* Logo */}
         <div className="flex items-center cursor-pointer group shrink-0" onClick={() => window.scrollTo({ top: 0, behavior: 'smooth' })}>
           <div className="flex items-center space-x-0.5">
