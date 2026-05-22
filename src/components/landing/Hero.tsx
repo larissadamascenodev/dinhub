@@ -22,9 +22,10 @@ const Hero = ({ videoSrc = "https://cdn.pixabay.com/video/2023/10/20/185731-8763
 
     const ctx = gsap.context(() => {
       // 1. Initial State (gsap.set)
-      gsap.set([overlayRef.current, hudRef.current, subHeadlineRef.current, scrollIndicatorRef.current], {
+      gsap.set([overlayRef.current, hudRef.current, scrollIndicatorRef.current], {
         opacity: 0,
       });
+      gsap.set(subHeadlineRef.current, { opacity: 0, y: 20 });
       gsap.set(hudRef.current, { y: -30 });
       
       const words = headlineRef.current?.querySelectorAll('.word');
