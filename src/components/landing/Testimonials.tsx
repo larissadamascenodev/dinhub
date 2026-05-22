@@ -51,55 +51,65 @@ const Testimonials = () => {
   }, []);
 
   return (
-    <section className="py-32 px-5 bg-[#0a0a0a]">
-      <div className="max-w-7xl mx-auto">
-        <div className="text-center mb-20 space-y-4">
-          <span className="text-[10px] font-bold tracking-[0.2em] text-[#00e676] uppercase">Depoimentos</span>
-          <h2 className="font-sora font-extrabold text-white text-4xl md:text-5xl">
-            O que acontece quando você finalmente vê para onde vai o seu dinheiro.
+    <section className="section-padding px-4 sm:px-6 bg-[#0a0a0a]">
+      <div className="fluid-container">
+        <div className="text-center mb-16 md:mb-24 lg:mb-32 space-y-6 md:space-y-8">
+          <motion.div 
+            initial={{ opacity: 0, scale: 0.9 }}
+            whileInView={{ opacity: 1, scale: 1 }}
+            className="inline-flex items-center gap-2 px-5 py-2 rounded-full border border-white/[0.08] bg-white/[0.03] backdrop-blur-md"
+          >
+            <span className="text-[9px] md:text-[10px] font-black tracking-[0.2em] md:tracking-[0.3em] text-[#00e676] uppercase">Depoimentos</span>
+          </motion.div>
+          
+          <h2 className="display-title text-white text-3xl sm:text-4xl md:text-5xl lg:text-7xl">
+            O que acontece quando você finalmente vê<br className="hidden lg:block" /> para onde vai o seu dinheiro.
           </h2>
-          <div className="pt-8">
-            <span className="inline-flex items-center px-4 py-2 rounded-full bg-[#111] border border-[#1a1a1a] text-[#a0a0a0] text-xs font-medium">
+          <div className="pt-6 sm:pt-8">
+            <span className="inline-flex items-center px-4 py-2 rounded-full bg-[#111] border border-white/5 text-white/40 text-[10px] sm:text-xs font-black uppercase tracking-widest">
                 4.9 ★ — mais de 2.800 usuários satisfeitos
             </span>
           </div>
         </div>
 
-        <div className="relative overflow-hidden h-[350px] md:h-[400px] flex items-center justify-center">
+        <div className="relative overflow-hidden h-[380px] sm:h-[400px] flex items-center justify-center">
             <div 
-                className="flex gap-6 transition-all duration-700 ease-in-out" 
+                className="flex gap-4 sm:gap-6 transition-all duration-700 ease-in-out" 
                 style={{ 
-                    transform: `translateX(calc(-${index * 100}% - ${index * 24}px))` 
+                    transform: `translateX(calc(-${index * 100}% - ${index * (window.innerWidth < 640 ? 16 : 24)}px))` 
                 }}
             >
                 {testimonials.map((t, i) => (
                     <div 
                         key={i} 
-                        className={`shrink-0 w-[calc(100vw-40px)] md:w-[400px] p-8 bg-[#0f0f0f] border rounded-[24px] transition-all duration-500 ${
-                            index === i ? 'border-[#00e676] scale-100 md:scale-105 shadow-[0_0_30px_rgba(0,230,118,0.1)]' : 'border-[#1a1a1a] scale-95 opacity-40'
+                        className={`shrink-0 w-[calc(100vw-32px)] sm:w-[350px] md:w-[400px] p-6 sm:p-8 glass-card transition-all duration-500 border-white/5 ${
+                            index === i ? 'border-[#00e676]/30 scale-100 opacity-100 shadow-[0_0_50px_rgba(0,230,118,0.1)]' : 'scale-90 opacity-20'
                         }`}
                     >
                         <div className="flex items-center gap-4 mb-6">
-                            <img src={t.image} alt={t.name} className="w-12 h-12 rounded-full object-cover border border-[#1a1a1a]" />
+                            <img src={t.image} alt={t.name} className="w-10 h-10 sm:w-12 sm:h-12 rounded-full object-cover border border-white/10" />
                             <div>
-                                <h4 className="text-white font-bold text-sm">{t.name}</h4>
-                                <p className="text-[#444] text-[10px] font-bold uppercase tracking-widest">{t.role}</p>
+                                <h4 className="text-white font-bold text-sm sm:text-base">{t.name}</h4>
+                                <p className="text-white/20 text-[9px] sm:text-[10px] font-black uppercase tracking-widest">{t.role}</p>
                             </div>
                         </div>
-                        <p className="text-[#a0a0a0] leading-relaxed italic text-sm md:text-base">"{t.text}"</p>
+                        <p className="text-white/50 leading-relaxed italic text-sm sm:text-base">"{t.text}"</p>
                     </div>
                 ))}
             </div>
         </div>
 
         {/* Dots */}
-        <div className="flex justify-center gap-2 mt-10">
+        <div className="flex justify-center gap-3 mt-12">
             {testimonials.map((_, i) => (
                 <button 
                     key={i} 
                     onClick={() => setIndex(i)}
-                    className={`w-1.5 h-1.5 rounded-full transition-all ${index === i ? 'bg-[#00e676] w-6' : 'bg-[#1a1a1a]'}`} 
-                />
+                    aria-label={`Go to testimonial ${i + 1}`}
+                    className={`touch-target transition-all duration-500 group`} 
+                >
+                    <div className={`h-1 rounded-full transition-all duration-500 ${index === i ? 'bg-[#00e676] w-8' : 'bg-white/10 w-4 group-hover:bg-white/20'}`} />
+                </button>
             ))}
         </div>
       </div>

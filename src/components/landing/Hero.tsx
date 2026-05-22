@@ -36,13 +36,13 @@ const Hero = () => {
       </motion.div>
 
       {/* Headline */}
-      <div className="relative z-10 text-center max-w-6xl px-4">
+      <div className="relative z-10 text-center w-full fluid-container px-4">
         <motion.h1 
           initial={{ opacity: 0, scale: 0.95, filter: 'blur(10px)' }}
           animate={{ opacity: 1, scale: 1, filter: 'blur(0px)' }}
           transition={{ duration: 1.2, ease: [0.16, 1, 0.3, 1] }}
-          className="display-title mb-10 text-white text-center"
-          style={{ fontSize: "clamp(3rem, 12vw, 8rem)" }}
+          className="display-title mb-8 sm:mb-10 text-white text-center"
+          style={{ fontSize: "clamp(2.5rem, 10vw, 8rem)" }}
         >
           Domine sua<br />
           <span className="relative inline-block">
@@ -57,7 +57,7 @@ const Hero = () => {
           initial={{ opacity: 0, y: 20 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ delay: 0.3, duration: 1.2, ease: [0.16, 1, 0.3, 1] }}
-          className="text-white/30 text-lg md:text-3xl max-w-3xl mx-auto mb-16 leading-tight font-inter font-light tracking-tight"
+          className="text-white/30 text-base sm:text-xl md:text-2xl lg:text-3xl max-w-3xl mx-auto mb-12 sm:mb-16 leading-tight font-inter font-light tracking-tight"
         >
           Organize sua vida inteira com <span className="text-white/90 font-medium tracking-normal">precisão absoluta</span> através da inteligência financeira de elite.
         </motion.p>
@@ -68,26 +68,26 @@ const Hero = () => {
         initial={{ opacity: 0, y: 30 }}
         animate={{ opacity: 1, y: 0 }}
         transition={{ delay: 0.5, duration: 1.2, ease: [0.16, 1, 0.3, 1] }}
-        className="relative z-10 flex flex-col sm:flex-row items-center gap-8 mb-24"
+        className="relative z-10 flex flex-col sm:flex-row items-center gap-6 sm:gap-8 mb-16 sm:mb-24 w-full px-4 sm:px-0 sm:w-auto"
       >
         <a 
           href="/auth"
-          className="relative group px-14 py-6 rounded-full bg-white text-[#0a0a0a] font-sora font-black text-xl hover:scale-105 transition-all duration-500 overflow-hidden shadow-[0_20px_60px_-15px_rgba(255,255,255,0.3)]"
+          className="relative group w-full sm:w-auto px-10 sm:px-14 py-5 sm:py-6 rounded-full bg-white text-[#0a0a0a] font-sora font-black text-lg sm:text-xl hover:scale-105 transition-all duration-500 overflow-hidden shadow-[0_20px_60px_-15px_rgba(255,255,255,0.3)] touch-target !min-h-0"
         >
-          <span className="relative z-10 flex items-center gap-4">
+          <span className="relative z-10 flex items-center justify-center gap-4">
             Iniciar Ascensão
-            <ArrowRight className="w-6 h-6 group-hover:translate-x-1.5 transition-transform duration-500" />
+            <ArrowRight className="w-5 h-5 sm:w-6 sm:h-6 group-hover:translate-x-1.5 transition-transform duration-500" />
           </span>
           <div className="absolute inset-0 bg-gradient-to-r from-[#00e676] to-[#00ff88] opacity-0 group-hover:opacity-100 transition-opacity duration-500" />
         </a>
         
         <button 
           onClick={() => document.getElementById('radar-header')?.scrollIntoView({ behavior: 'smooth' })}
-          className="group relative px-14 py-6 rounded-full border border-white/10 bg-white/[0.03] backdrop-blur-3xl text-white font-sora font-black text-xl hover:bg-white/[0.08] hover:border-white/20 transition-all duration-500"
+          className="group relative w-full sm:w-auto px-10 sm:px-14 py-5 sm:py-6 rounded-full border border-white/10 bg-white/[0.03] backdrop-blur-3xl text-white font-sora font-black text-lg sm:text-xl hover:bg-white/[0.08] hover:border-white/20 transition-all duration-500 touch-target !min-h-0"
         >
-          <span className="flex items-center gap-4">
-            <div className="w-8 h-8 rounded-full bg-white/10 flex items-center justify-center group-hover:scale-110 transition-transform duration-500">
-              <Play className="w-3 h-3 fill-current ml-1" />
+          <span className="flex items-center justify-center gap-4">
+            <div className="w-6 h-6 sm:w-8 sm:h-8 rounded-full bg-white/10 flex items-center justify-center group-hover:scale-110 transition-transform duration-500">
+              <Play className="w-2.5 h-2.5 sm:w-3 sm:h-3 fill-current ml-1" />
             </div>
             Ver Terminal
           </span>
@@ -99,21 +99,21 @@ const Hero = () => {
         initial={{ opacity: 0 }}
         animate={{ opacity: 1 }}
         transition={{ delay: 0.8, duration: 1.5 }}
-        className="relative z-10 grid grid-cols-2 md:grid-cols-4 gap-12 text-[9px] font-black text-white/20 uppercase tracking-[0.4em]"
+        className="relative z-10 grid grid-cols-2 md:grid-cols-4 gap-6 sm:gap-12 text-[8px] sm:text-[9px] font-black text-white/20 uppercase tracking-[0.2em] sm:tracking-[0.4em] px-4 w-full sm:w-auto"
       >
-        <div className="flex flex-col gap-2">
+        <div className="flex flex-col gap-1.5 sm:gap-2 text-center sm:text-left">
           <span className="text-[#00e676]/60">Latency</span>
           <span className="text-white/40">12ms</span>
         </div>
-        <div className="flex flex-col gap-2 border-l border-white/5 pl-12">
+        <div className="flex flex-col gap-1.5 sm:gap-2 border-l border-white/5 pl-6 sm:pl-12 text-center sm:text-left">
           <span className="text-[#00e676]/60">Encryption</span>
           <span className="text-white/40">AES-256</span>
         </div>
-        <div className="flex flex-col gap-2 border-l border-white/5 pl-12 hidden md:flex">
+        <div className="flex flex-col gap-1.5 sm:gap-2 border-l border-white/5 pl-6 sm:pl-12 text-center sm:text-left">
           <span className="text-[#00e676]/60">Uptime</span>
           <span className="text-white/40">99.9%</span>
         </div>
-        <div className="flex flex-col gap-2 border-l border-white/5 pl-12 hidden md:flex">
+        <div className="flex flex-col gap-1.5 sm:gap-2 border-l border-white/5 pl-6 sm:pl-12 text-center sm:text-left">
           <span className="text-[#00e676]/60">Nodes</span>
           <span className="text-white/40">14.8k</span>
         </div>

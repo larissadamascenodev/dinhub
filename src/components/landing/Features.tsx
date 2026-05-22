@@ -110,29 +110,29 @@ const Features = () => {
   };
 
   return (
-    <section id="radar" className="section-padding px-5 bg-[#0a0a0a] relative overflow-hidden">
+    <section id="radar" className="section-padding px-4 sm:px-6 bg-[#0a0a0a] relative overflow-hidden">
       {/* Background decoration */}
       <div className="absolute inset-0 opacity-[0.03] pointer-events-none" 
            style={{ backgroundImage: 'radial-gradient(circle at center, rgba(0,230,118,0.4) 0%, transparent 70%)' }} />
 
-      <div className="max-w-6xl mx-auto relative z-10">
-        <div id="radar-header" className="text-center mb-24 md:mb-40 space-y-8">
+      <div className="fluid-container relative z-10">
+        <div id="radar-header" className="text-center mb-16 md:mb-32 lg:mb-40 space-y-6 md:space-y-8">
           <motion.div 
             initial={{ opacity: 0, scale: 0.9 }}
             whileInView={{ opacity: 1, scale: 1 }}
-            className="inline-flex items-center gap-2 px-5 py-2 rounded-full border border-white/[0.08] bg-white/[0.03] backdrop-blur-md"
+            className="inline-flex items-center gap-2 px-4 md:px-5 py-2 rounded-full border border-white/[0.08] bg-white/[0.03] backdrop-blur-md"
           >
-            <span className="text-[10px] font-black tracking-[0.3em] text-[#00e676] uppercase">The Architecture of Control</span>
+            <span className="text-[9px] md:text-[10px] font-black tracking-[0.2em] md:tracking-[0.3em] text-[#00e676] uppercase text-center">The Architecture of Control</span>
           </motion.div>
           
-          <h2 className="display-title text-white text-3xl md:text-8xl">
-            Enquanto você vive,<br />
+          <h2 className="display-title text-white text-3xl sm:text-4xl md:text-6xl lg:text-8xl">
+            Enquanto você vive,<br className="hidden sm:block" />
             <span className="bg-gradient-to-r from-white/20 via-white to-white/20 bg-clip-text text-transparent italic font-light">
               a Huby organiza.
             </span>
           </h2>
           
-          <p className="text-white/40 max-w-2xl mx-auto text-lg md:text-2xl font-inter font-light leading-relaxed px-2">
+          <p className="text-white/40 max-w-2xl mx-auto text-base sm:text-lg md:text-xl lg:text-2xl font-inter font-light leading-relaxed">
             Esqueça as planilhas. A Huby é sua inteligência de elite que <span className="text-white font-medium">antecipa movimentos</span> e blinda seu patrimônio com precisão cirúrgica.
           </p>
         </div>
@@ -146,16 +146,16 @@ const Features = () => {
         >
           {/* 1. RADAR FINANCEIRO */}
           <div id="radar-section" className="relative">
-            <motion.div variants={itemVariants} className="grid grid-cols-1 md:grid-cols-2 gap-16 md:gap-32 items-center">
-              <div className="space-y-10">
-                <div className="space-y-8">
-                  <div className="flex items-center gap-5">
-                    <div className="w-16 h-16 rounded-[24px] bg-[#00e676]/5 border border-[#00e676]/10 flex items-center justify-center shrink-0 shadow-2xl">
-                      <Radar className="w-8 h-8 text-[#00e676]" />
+            <motion.div variants={itemVariants} className="grid grid-cols-1 lg:grid-cols-2 gap-12 sm:gap-16 lg:gap-32 items-center">
+              <div className="space-y-8 sm:space-y-10">
+                <div className="space-y-6 sm:space-y-8 text-center lg:text-left">
+                  <div className="flex flex-col lg:flex-row items-center gap-4 sm:gap-5">
+                    <div className="w-14 h-14 sm:w-16 sm:h-16 rounded-[20px] sm:rounded-[24px] bg-[#00e676]/5 border border-[#00e676]/10 flex items-center justify-center shrink-0 shadow-2xl">
+                      <Radar className="w-7 h-7 sm:w-8 sm:h-8 text-[#00e676]" />
                     </div>
-                    <h3 className="text-3xl md:text-6xl font-sora font-extrabold text-white tracking-tighter">Radar</h3>
+                    <h3 className="text-2xl sm:text-3xl md:text-4xl lg:text-6xl font-sora font-extrabold text-white tracking-tighter">Radar</h3>
                   </div>
-                  <p className="text-white/50 text-lg md:text-xl leading-relaxed font-light">
+                  <p className="text-white/50 text-base sm:text-lg md:text-xl leading-relaxed font-light px-2 sm:px-0">
                     O Radar identifica padrões perigosos e indica exatamente o que você deve fazer. <span className="text-white/80 font-medium">Tudo visual, direto e automático.</span>
                   </p>
                   <ul className="space-y-5 pt-4">
@@ -164,7 +164,7 @@ const Features = () => {
                       'Indicação de ações corretivas imediatas',
                       'Monitoramento de padrões de consumo'
                     ].map((item, i) => (
-                      <li key={i} className="flex items-center gap-4 text-sm font-medium text-white/50 hover:text-white transition-colors duration-300">
+                      <li key={i} className="flex items-center justify-center lg:justify-start gap-4 text-sm font-medium text-white/50 hover:text-white transition-colors duration-300">
                         <div className="w-5 h-5 rounded-full border border-[#00e676]/20 flex items-center justify-center shrink-0">
                           <CheckCircle2 className="w-3 h-3 text-[#00e676]" />
                         </div>
@@ -174,8 +174,8 @@ const Features = () => {
                   </ul>
                 </div>
 
-                <div className="pt-10 border-t border-white/[0.05]">
-                  <p className="text-white/30 text-lg md:text-xl font-light italic">
+                <div className="pt-8 sm:pt-10 border-t border-white/[0.05] text-center lg:text-left">
+                  <p className="text-white/30 text-base sm:text-lg md:text-xl font-light italic px-4 sm:px-0">
                     "Identificamos padrões, alertamos riscos e sugerimos ações imediatas antes mesmo de você abrir o banco."
                   </p>
                 </div>
@@ -191,19 +191,19 @@ const Features = () => {
           </div>
 
           {/* 2. SCORE FINANCEIRO */}
-          <motion.div variants={itemVariants} className="grid grid-cols-1 md:grid-cols-2 gap-12 md:gap-24 items-center">
-            <div className="order-2 md:order-1 relative group">
+          <motion.div variants={itemVariants} className="grid grid-cols-1 lg:grid-cols-2 gap-12 sm:gap-16 lg:gap-32 items-center">
+            <div className="order-2 lg:order-1 relative group w-full max-w-sm mx-auto lg:max-w-none">
               <div className="absolute inset-0 bg-blue-500/10 blur-[100px] rounded-full group-hover:bg-blue-500/20 transition-all duration-1000" />
-              <div className="relative bg-[#0f0f0f] border border-white/10 rounded-[32px] p-6 md:p-10 shadow-2xl backdrop-blur-xl text-center">
+              <div className="relative bg-[#0f0f0f] border border-white/10 rounded-[32px] p-6 sm:p-8 lg:p-10 shadow-2xl backdrop-blur-xl text-center">
                 <div className="inline-block relative mb-6">
-                  <svg className="w-32 h-32 md:w-40 md:h-40 transform -rotate-90">
+                  <svg className="w-28 h-28 sm:w-32 sm:h-32 lg:w-40 lg:h-40 transform -rotate-90">
                     <circle cx="80" cy="80" r="70" stroke="currentColor" strokeWidth="8" fill="transparent" className="text-white/5" />
                     <circle cx="80" cy="80" r="70" stroke="currentColor" strokeWidth="8" fill="transparent" 
                             strokeDasharray="440" strokeDashoffset="88" className="text-[#00e676]" />
                   </svg>
                   <div className="absolute inset-0 flex flex-col items-center justify-center">
-                    <span className="text-4xl font-bold text-white">82</span>
-                    <span className="text-[10px] text-white/40 font-bold uppercase tracking-widest">Score Huby</span>
+                    <span className="text-3xl sm:text-4xl font-bold text-white">82</span>
+                    <span className="text-[9px] lg:text-[10px] text-white/40 font-bold uppercase tracking-widest">Score Huby</span>
                   </div>
                 </div>
                 <div className="space-y-3">
@@ -215,44 +215,44 @@ const Features = () => {
                 </div>
               </div>
             </div>
-            <div className="order-1 md:order-2 space-y-6">
-              <div className="w-14 h-14 rounded-2xl bg-[#00e676]/10 border border-[#00e676]/20 flex items-center justify-center">
+            <div className="order-1 lg:order-2 space-y-6 text-center lg:text-left">
+              <div className="w-14 h-14 rounded-2xl bg-[#00e676]/10 border border-[#00e676]/20 flex items-center justify-center mx-auto lg:mx-0">
                 <ShieldCheck className="w-7 h-7 text-[#00e676]" />
               </div>
-              <h3 className="text-2xl md:text-4xl font-sora font-bold text-white tracking-tight">Score Huby</h3>
-              <p className="text-white/50 text-base md:text-lg leading-relaxed font-light">
+              <h3 className="text-2xl sm:text-3xl lg:text-4xl font-sora font-bold text-white tracking-tight">Score Huby</h3>
+              <p className="text-white/50 text-base sm:text-lg lg:text-xl leading-relaxed font-light px-4 sm:px-0">
                 "Opa, esqueceu de pagar a Vivo? Seu score caiu 3 pontos. Paga logo antes que isso vire uma bola de neve! 📉"
               </p>
-              <p className="text-white/40 text-sm">
+              <p className="text-white/40 text-sm px-4 sm:px-0">
                 Sua pontuação de saúde financeira baseada em hábitos reais, não apenas em crédito. Atrasou? Cai. Guardou? Sobe.
               </p>
             </div>
           </motion.div>
 
           {/* 3. PROJEÇÕES INTELIGENTES */}
-          <motion.div variants={itemVariants} className="grid grid-cols-1 md:grid-cols-2 gap-12 md:gap-24 items-center">
-            <div className="space-y-6">
-              <div className="w-14 h-14 rounded-2xl bg-[#00e676]/10 border border-[#00e676]/20 flex items-center justify-center">
+          <motion.div variants={itemVariants} className="grid grid-cols-1 lg:grid-cols-2 gap-12 sm:gap-16 lg:gap-32 items-center">
+            <div className="space-y-6 text-center lg:text-left">
+              <div className="w-14 h-14 rounded-2xl bg-[#00e676]/10 border border-[#00e676]/20 flex items-center justify-center mx-auto lg:mx-0">
                 <TrendingUp className="w-7 h-7 text-[#00e676]" />
               </div>
-              <h3 className="text-2xl md:text-4xl font-sora font-bold text-white tracking-tight">Projeções de Elite</h3>
-              <p className="text-white/50 text-base md:text-lg leading-relaxed font-light">
+              <h3 className="text-2xl sm:text-3xl lg:text-4xl font-sora font-bold text-white tracking-tight">Projeções de Elite</h3>
+              <p className="text-white/50 text-base sm:text-lg lg:text-xl leading-relaxed font-light px-4 sm:px-0">
                 "No ritmo atual, você chega aos R$ 10k investidos em Outubro. Se cortar o café gourmet, chega em Agosto! 🚀"
               </p>
-              <div className="grid grid-cols-2 gap-4 pt-4">
+              <div className="grid grid-cols-2 gap-4 pt-4 px-4 sm:px-0">
                 <div className="p-4 rounded-2xl border border-white/5 bg-white/[0.02]">
-                  <div className="text-2xl font-bold text-white">6 meses</div>
-                  <div className="text-[10px] text-white/40 uppercase font-bold tracking-widest">Visão de Futuro</div>
+                  <div className="text-xl sm:text-2xl font-bold text-white">6 meses</div>
+                  <div className="text-[9px] lg:text-[10px] text-white/40 uppercase font-bold tracking-widest">Visão de Futuro</div>
                 </div>
                 <div className="p-4 rounded-2xl border border-[#00e676]/20 bg-[#00e676]/5">
-                  <div className="text-2xl font-bold text-[#00e676]">R$ 12.450</div>
-                  <div className="text-[10px] text-[#00e676]/60 uppercase font-bold tracking-widest">Saldo Previsto</div>
+                  <div className="text-xl sm:text-2xl font-bold text-[#00e676]">R$ 12.450</div>
+                  <div className="text-[9px] lg:text-[10px] text-[#00e676]/60 uppercase font-bold tracking-widest">Saldo Previsto</div>
                 </div>
               </div>
             </div>
-            <div className="relative">
-              <div className="bg-[#0f0f0f] border border-white/10 rounded-[32px] p-6 md:p-8 shadow-2xl">
-                <div className="h-48 w-full flex items-end gap-3">
+            <div className="relative w-full max-w-lg mx-auto lg:max-w-none">
+              <div className="bg-[#0f0f0f] border border-white/10 rounded-[32px] p-6 sm:p-8 lg:p-10 shadow-2xl">
+                <div className="h-40 sm:h-48 w-full flex items-end gap-2 sm:gap-3 px-2 sm:px-4">
                   {[30, 45, 35, 65, 85, 100].map((h, i) => (
                     <motion.div 
                       key={i} 
@@ -263,7 +263,7 @@ const Features = () => {
                     />
                   ))}
                 </div>
-                <div className="flex justify-between mt-4 text-[10px] text-white/20 font-bold uppercase tracking-widest">
+                <div className="flex justify-between mt-6 text-[9px] lg:text-[10px] text-white/20 font-bold uppercase tracking-[0.2em]">
                   <span>Hoje</span>
                   <span>Setembro</span>
                   <span>Janeiro</span>
@@ -273,17 +273,17 @@ const Features = () => {
           </motion.div>
 
           {/* 4. SCANNER DE COMPROVANTES */}
-          <motion.div variants={itemVariants} className="grid grid-cols-1 md:grid-cols-2 gap-12 md:gap-24 items-center">
-            <div className="order-2 md:order-1 relative group">
-              <div className="relative bg-white border border-black/10 rounded-lg p-6 w-64 mx-auto shadow-2xl rotate-[-2deg] z-10">
+          <motion.div variants={itemVariants} className="grid grid-cols-1 lg:grid-cols-2 gap-12 sm:gap-16 lg:gap-32 items-center">
+            <div className="order-2 lg:order-1 relative group py-8 sm:py-12">
+              <div className="relative bg-white border border-black/10 rounded-lg p-5 sm:p-6 w-56 sm:w-64 mx-auto shadow-2xl rotate-[-2deg] z-10 transition-transform group-hover:rotate-0 duration-500">
                 <div className="text-center border-b border-black/5 pb-4 mb-4">
-                  <div className="text-[10px] font-mono text-black/50">MERCADO CENTRAL LTDA</div>
-                  <div className="text-[8px] font-mono text-black/30">CNPJ: 00.123.456/0001-99</div>
+                  <div className="text-[9px] sm:text-[10px] font-mono text-black/50 uppercase tracking-tight">Mercado Central LTDA</div>
+                  <div className="text-[7px] sm:text-[8px] font-mono text-black/30">CNPJ: 00.123.456/0001-99</div>
                 </div>
-                <div className="space-y-2 font-mono text-[9px] text-black/70">
+                <div className="space-y-2 font-mono text-[8px] sm:text-[9px] text-black/70">
                   <div className="flex justify-between"><span>CERVEJA ARTESANAL</span> <span>R$ 45,00</span></div>
                   <div className="flex justify-between"><span>CARNE BOVINA 1KG</span> <span>R$ 58,90</span></div>
-                  <div className="flex justify-between border-t border-black/5 pt-2 font-bold text-black">
+                  <div className="flex justify-between border-t border-black/5 pt-2 font-bold text-black text-[9px] sm:text-[10px]">
                     <span>TOTAL</span> <span>R$ 103,90</span>
                   </div>
                 </div>
@@ -292,34 +292,34 @@ const Features = () => {
                   initial={{ top: '0%' }}
                   animate={{ top: '100%' }}
                   transition={{ duration: 2, repeat: Infinity, ease: "linear" }}
-                  className="absolute left-0 right-0 h-1 bg-[#00e676] shadow-[0_0_15px_#00e676] z-20"
+                  className="absolute left-0 right-0 h-0.5 sm:h-1 bg-[#00e676] shadow-[0_0_15px_#00e676] z-20"
                 />
               </div>
               <motion.div 
                 initial={{ opacity: 0, scale: 0.8 }}
                 whileInView={{ opacity: 1, scale: 1 }}
-                className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-80 h-40 bg-[#00e676]/5 border border-[#00e676]/20 backdrop-blur-md rounded-2xl z-0 p-6 flex flex-col justify-end"
+                className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-72 sm:w-80 h-36 sm:h-40 bg-[#00e676]/5 border border-[#00e676]/20 backdrop-blur-md rounded-2xl z-0 p-5 sm:p-6 flex flex-col justify-end"
               >
                 <div className="flex items-center gap-3">
-                  <div className="w-8 h-8 rounded-full bg-[#00e676]/20 flex items-center justify-center">
+                  <div className="w-7 h-7 sm:w-8 sm:h-8 rounded-full bg-[#00e676]/20 flex items-center justify-center shrink-0">
                     <CheckCircle2 className="w-4 h-4 text-[#00e676]" />
                   </div>
                   <div>
-                    <div className="text-[10px] text-white/40 uppercase font-bold tracking-widest">Registrado com Sucesso</div>
-                    <div className="text-sm font-bold text-white">Mercado • R$ 103,90</div>
+                    <div className="text-[9px] lg:text-[10px] text-white/40 uppercase font-bold tracking-[0.1em]">Registrado com Sucesso</div>
+                    <div className="text-xs sm:text-sm font-bold text-white">Mercado • R$ 103,90</div>
                   </div>
                 </div>
               </motion.div>
             </div>
-            <div className="order-1 md:order-2 space-y-6">
-              <div className="w-14 h-14 rounded-2xl bg-[#00e676]/10 border border-[#00e676]/20 flex items-center justify-center">
+            <div className="order-1 lg:order-2 space-y-6 text-center lg:text-left">
+              <div className="w-14 h-14 rounded-2xl bg-[#00e676]/10 border border-[#00e676]/20 flex items-center justify-center mx-auto lg:mx-0">
                 <Camera className="w-7 h-7 text-[#00e676]" />
               </div>
-              <h3 className="text-2xl md:text-4xl font-sora font-bold text-white tracking-tight">Scanner Mágico</h3>
-              <p className="text-white/50 text-base md:text-lg leading-relaxed font-light">
+              <h3 className="text-2xl sm:text-3xl lg:text-4xl font-sora font-bold text-white tracking-tight">Scanner Mágico</h3>
+              <p className="text-white/50 text-base sm:text-lg lg:text-xl leading-relaxed font-light px-4 sm:px-0">
                 "Escaneou, registrou. A Huby lê o papel, identifica a categoria e já abate do seu orçamento. Sem esforço. ✨"
               </p>
-              <p className="text-white/40 text-sm">
+              <p className="text-white/40 text-sm px-4 sm:px-0">
                 Nossa IA processa notas fiscais e comprovantes em segundos, extraindo valores e itens automaticamente para você.
               </p>
             </div>

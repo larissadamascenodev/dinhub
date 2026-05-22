@@ -176,12 +176,13 @@
   .scrollbar-none::-webkit-scrollbar {
     display: none;
   }
-  .scrollbar-hide {
-    -ms-overflow-style: none;
-    scrollbar-width: none;
+  
+  .touch-target {
+    @apply min-w-[44px] min-h-[44px] flex items-center justify-center;
   }
-  .scrollbar-hide::-webkit-scrollbar {
-    display: none;
+
+  .fluid-container {
+    @apply w-full max-w-7xl mx-auto px-4 sm:px-6 lg:px-8;
   }
 
   /* Hide number input spinners */
