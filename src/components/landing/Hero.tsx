@@ -182,42 +182,7 @@ const Hero = ({ videoSrc }: HeroProps) => {
         className="absolute inset-0 bg-gradient-to-b from-black/80 via-black/40 to-black z-10 pointer-events-none" 
       />
 
-      {/* HUD Superior */}
-      <header 
-        ref={hudRef}
-        className="absolute top-0 left-0 w-full p-6 md:p-10 flex justify-between items-center z-30"
-      >
-        <div className="flex items-center gap-3 cursor-pointer group">
-          <div className="w-10 h-10 rounded-xl bg-[#00e676]/10 flex items-center justify-center border border-[#00e676]/20 group-hover:border-[#00e676]/50 transition-colors">
-            <Sparkles className="w-5 h-5 text-[#00e676]" />
-          </div>
-          <span className="font-bold text-xl tracking-tighter text-white uppercase italic">Huby</span>
-        </div>
-        
-        <nav className="hidden md:flex items-center gap-10">
-          {[
-            { label: 'Terminal', icon: Cpu },
-            { label: 'Segurança', icon: ShieldCheck },
-            { label: 'Membro', icon: Sparkles }
-          ].map((item) => (
-            <a 
-              key={item.label} 
-              href={`#${item.label.toLowerCase()}`}
-              className="group flex items-center gap-2 text-[10px] font-black uppercase tracking-[0.25em] text-white/40 hover:text-white transition-all duration-300"
-            >
-              <item.icon className="w-3 h-3 text-[#00e676]/50 group-hover:text-[#00e676] transition-colors" />
-              {item.label}
-            </a>
-          ))}
-        </nav>
-
-        <a 
-          href="/auth"
-          className="relative px-8 py-3 rounded-full bg-white text-black font-black text-[10px] uppercase tracking-widest hover:bg-[#00e676] hover:scale-105 transition-all duration-500 shadow-[0_0_30px_rgba(255,255,255,0.1)]"
-        >
-          Acessar Terminal
-        </a>
-      </header>
+      {/* HUD Superior Removido em favor da Navbar Global */}
 
       {/* Content */}
       <div ref={contentRef} className="relative z-20 flex flex-col items-center max-w-7xl px-6 w-full">
