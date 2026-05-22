@@ -42,110 +42,168 @@ const HubySection = () => {
     switch (id) {
       case 'balanco':
         return (
-          <div className="bg-[#0f0f0f] border border-white/[0.06] p-5 rounded-2xl w-full space-y-4">
-            <div className="flex justify-between">
-              <div>
-                <div className="text-[10px] text-white/40 uppercase tracking-wider">Receitas</div>
-                <div className="text-[#00e676] font-bold text-base">R$ 2.131,02</div>
+          <div className="bg-[#0f0f0f]/80 backdrop-blur-xl border border-white/[0.08] p-6 rounded-3xl w-full space-y-5 shadow-2xl">
+            <div className="flex justify-between items-center">
+              <div className="flex items-center gap-3">
+                <div className="w-10 h-10 rounded-xl bg-[#00e676]/10 flex items-center justify-center border border-[#00e676]/20">
+                  <PieChart className="w-5 h-5 text-[#00e676]" />
+                </div>
+                <span className="text-sm font-bold text-white/90">Fluxo Mensal</span>
               </div>
-              <div className="text-right">
-                <div className="text-[10px] text-white/40 uppercase tracking-wider">Despesas</div>
-                <div className="text-red-500 font-bold text-base">R$ 1.961,14</div>
+              <span className="text-[10px] text-white/30 uppercase tracking-widest font-bold">Junho 2024</span>
+            </div>
+            
+            <div className="grid grid-cols-2 gap-4">
+              <div className="bg-white/[0.02] border border-white/[0.05] p-4 rounded-2xl">
+                <div className="text-[10px] text-white/40 uppercase tracking-wider mb-1 flex items-center gap-1.5">
+                  <ArrowUpRight className="w-3 h-3 text-[#00e676]" /> Receitas
+                </div>
+                <div className="text-[#00e676] font-bold text-lg">R$ 2.131,02</div>
+              </div>
+              <div className="bg-white/[0.02] border border-white/[0.05] p-4 rounded-2xl">
+                <div className="text-[10px] text-white/40 uppercase tracking-wider mb-1 flex items-center gap-1.5">
+                  <ArrowDownRight className="w-3 h-3 text-red-500" /> Despesas
+                </div>
+                <div className="text-red-500 font-bold text-lg">R$ 1.961,14</div>
               </div>
             </div>
-            <div className="pt-3 border-t border-white/[0.06]">
-              <div className="text-[10px] text-white/40 uppercase tracking-wider">Saldo Atual</div>
-              <div className="text-white font-bold text-2xl">R$ 494,76</div>
-            </div>
-            <div className="space-y-1.5">
-              <div className="text-[10px] text-white/60">Previsto fim do mês: R$ 334,88</div>
-              <div className="flex h-1.5 rounded-full overflow-hidden bg-[#1a1a1a]">
-                <div className="bg-[#00e676] w-[60%]" />
-                <div className="bg-red-500 w-[40%]" />
+
+            <div className="pt-4 border-t border-white/5">
+              <div className="flex justify-between items-end mb-4">
+                <div>
+                  <div className="text-[10px] text-white/40 uppercase tracking-wider mb-1">Saldo em Conta</div>
+                  <div className="text-white font-bold text-3xl tracking-tight">R$ 494,76</div>
+                </div>
+                <div className="text-right">
+                  <div className="text-[10px] text-[#00e676] font-bold uppercase mb-1">Status</div>
+                  <div className="text-xs text-white/80 font-medium">No azul </div>
+                </div>
+              </div>
+              
+              <div className="space-y-2">
+                <div className="flex justify-between text-[10px]">
+                  <span className="text-white/40 uppercase tracking-wider">Meta de economia</span>
+                  <span className="text-[#00e676] font-bold">60%</span>
+                </div>
+                <div className="flex h-1.5 rounded-full overflow-hidden bg-white/5">
+                  <motion.div 
+                    initial={{ width: 0 }}
+                    animate={{ width: '60%' }}
+                    className="bg-[#00e676] shadow-[0_0_10px_rgba(0,230,118,0.5)]" 
+                  />
+                </div>
+                <div className="text-[10px] text-white/30 italic text-center pt-1">
+                  Previsto fim do mês: <span className="text-white/60 font-medium">R$ 334,88</span>
+                </div>
               </div>
             </div>
           </div>
         );
       case 'fatura':
         return (
-          <div className="bg-[#0f0f0f] border border-white/[0.06] p-5 rounded-2xl w-full space-y-4">
+          <div className="bg-[#0f0f0f]/80 backdrop-blur-xl border border-white/[0.08] p-6 rounded-3xl w-full space-y-5 shadow-2xl">
             <div className="flex justify-between items-start">
-              <div>
-                <div className="text-white text-sm font-bold">Nubank PJ •••• 3426</div>
-                <div className="text-[10px] text-[#00e676] uppercase tracking-wider">Fatura aberta</div>
+              <div className="flex items-center gap-3">
+                <div className="w-10 h-10 rounded-xl bg-purple-500/10 flex items-center justify-center border border-purple-500/20">
+                  <CreditCard className="w-5 h-5 text-purple-400" />
+                </div>
+                <div>
+                  <div className="text-sm font-bold text-white">Nubank PJ</div>
+                  <div className="text-[9px] text-white/30 tracking-widest uppercase font-bold">•••• 3426</div>
+                </div>
               </div>
-              <span className="text-[9px] text-orange-400 font-bold uppercase tracking-wider">76% do limite</span>
+              <div className="px-3 py-1 rounded-full border border-orange-500/20 bg-orange-500/10">
+                <span className="text-[9px] text-orange-400 font-bold uppercase tracking-wider">76% do limite</span>
+              </div>
             </div>
+
             <div>
-              <div className="text-[10px] text-white/40 uppercase tracking-wider">Fatura de Junho</div>
-              <div className="text-white font-bold text-2xl">R$ 631,57</div>
-            </div>
-            <div className="space-y-1.5">
-              <div className="flex justify-between text-[10px] text-white/60">
-                <span>Vence em 27 dias</span>
-                <span>Limite R$ 2.500</span>
+              <div className="text-[10px] text-white/40 uppercase tracking-wider mb-1 flex items-center gap-2">
+                <Clock className="w-3 h-3" /> Fatura Aberta • Vence em 27 dias
               </div>
-              <div className="h-1.5 bg-[#1a1a1a] rounded-full overflow-hidden">
-                <div className="h-full bg-gradient-to-r from-[#00e676] via-yellow-400 to-orange-500 w-[76%]" />
+              <div className="text-white font-bold text-4xl tracking-tighter">R$ 631,57</div>
+            </div>
+
+            <div className="space-y-3 pt-2">
+              <div className="h-2 bg-white/5 rounded-full overflow-hidden">
+                <motion.div 
+                  initial={{ width: 0 }}
+                  animate={{ width: '76%' }}
+                  className="h-full bg-gradient-to-r from-[#00e676] via-yellow-400 to-orange-500" 
+                />
+              </div>
+              <div className="flex justify-between text-[10px] text-white/30 uppercase font-bold tracking-widest">
+                <span>R$ 631,57 usados</span>
+                <span>LMT R$ 2.500</span>
               </div>
             </div>
+
             <div className="grid grid-cols-3 gap-2 pt-2">
               {[
-                { l: 'Mercado', v: 'R$ 312' },
-                { l: 'Apps', v: 'R$ 187' },
-                { l: 'Outros', v: 'R$ 132' },
-              ].map((c) => (
-                <div key={c.l} className="bg-white/[0.02] border border-white/[0.05] rounded-lg p-2">
-                  <div className="text-[9px] text-white/40 uppercase">{c.l}</div>
-                  <div className="text-[11px] text-white font-bold">{c.v}</div>
-                </div>
-              ))}
+                { l: 'Mercado', v: 'R$ 312', icon: ShoppingBag, color: 'text-[#00e676]' },
+                { l: 'Lazer', v: 'R$ 187', icon: Tag, color: 'text-purple-400' },
+                { l: 'Outros', v: 'R$ 132', icon: Receipt, color: 'text-white/40' },
+              ].map((c) => {
+                const CIcon = c.icon;
+                return (
+                  <div key={c.l} className="bg-white/[0.02] border border-white/[0.05] rounded-2xl p-3 hover:bg-white/[0.05] transition-colors">
+                    <CIcon className={`w-3 h-3 ${c.color} mb-1.5`} />
+                    <div className="text-[9px] text-white/30 uppercase font-bold mb-0.5">{c.l}</div>
+                    <div className="text-[11px] text-white font-bold">{c.v}</div>
+                  </div>
+                );
+              })}
             </div>
           </div>
         );
       case 'parcelas':
         return (
-          <div className="bg-[#0f0f0f] border border-white/[0.06] p-5 rounded-2xl w-full space-y-4">
-            <div className="flex justify-between items-end">
-              <div>
-                <div className="text-[10px] text-white/40 uppercase tracking-wider">Comprometido / mês</div>
-                <div className="text-orange-400 font-bold text-2xl">R$ 1.279,47</div>
+          <div className="bg-[#0f0f0f]/80 backdrop-blur-xl border border-white/[0.08] p-6 rounded-3xl w-full space-y-6 shadow-2xl">
+            <div className="flex justify-between items-center">
+              <div className="flex items-center gap-3">
+                <div className="w-10 h-10 rounded-xl bg-orange-500/10 flex items-center justify-center border border-orange-500/20">
+                  <Receipt className="w-5 h-5 text-orange-400" />
+                </div>
+                <span className="text-sm font-bold text-white">Comprometimento</span>
               </div>
               <div className="text-right">
-                <div className="text-[10px] text-white/40 uppercase tracking-wider">Restante total</div>
-                <div className="text-white font-bold text-sm">R$ 8.594,01</div>
+                <div className="text-[10px] text-white/30 uppercase tracking-widest">Saldo Restante</div>
+                <div className="text-white font-bold text-xs">R$ 8.594,01</div>
               </div>
             </div>
-            <div className="space-y-3 pt-2">
+
+            <div className="text-center py-2">
+              <div className="text-[10px] text-white/40 uppercase tracking-widest mb-1">Total Mensal</div>
+              <div className="text-orange-400 font-bold text-4xl tracking-tighter">R$ 1.279,47</div>
+            </div>
+
+            <div className="space-y-4">
               {[
                 { name: 'PlayStation 5', paid: 3, total: 10, value: 'R$ 449,90', color: '#00e676' },
                 { name: 'Notebook Dell', paid: 5, total: 12, value: 'R$ 389,00', color: '#7c3aed' },
-                { name: 'Sofá retrátil', paid: 4, total: 18, value: 'R$ 220,57', color: '#3b82f6' },
-                { name: 'Seguro carro', paid: 7, total: 12, value: 'R$ 220,00', color: '#f97316' },
+                { name: 'Seguro Carro', paid: 7, total: 12, value: 'R$ 220,00', color: '#f97316' },
               ].map((p) => {
                 const pct = (p.paid / p.total) * 100;
                 return (
-                  <div key={p.name} className="space-y-1.5">
+                  <div key={p.name} className="space-y-2">
                     <div className="flex justify-between items-center">
                       <div className="flex items-center gap-2">
                         <div className="w-1.5 h-1.5 rounded-full" style={{ backgroundColor: p.color }} />
                         <span className="text-[11px] text-white font-medium">{p.name}</span>
                       </div>
-                      <div className="text-[10px] text-white/60">
-                        <span className="text-white font-bold">{p.paid}</span>
-                        <span className="text-white/40">/{p.total}</span>
-                        <span className="ml-2 text-white/80">{p.value}</span>
-                      </div>
+                      <div className="text-[10px] font-mono text-white/70">{p.value}</div>
                     </div>
-                    <div className="h-1 bg-[#1a1a1a] rounded-full overflow-hidden">
-                      <div
-                        className="h-full rounded-full transition-all duration-1000"
-                        style={{ width: `${pct}%`, backgroundColor: p.color }}
+                    <div className="relative h-1 bg-white/5 rounded-full overflow-hidden">
+                      <motion.div
+                        initial={{ width: 0 }}
+                        animate={{ width: `${pct}%` }}
+                        className="h-full rounded-full"
+                        style={{ backgroundColor: p.color }}
                       />
                     </div>
-                    <div className="flex justify-between text-[9px] text-white/30">
-                      <span>{Math.round(pct)}% pago</span>
-                      <span>Faltam {p.total - p.paid}x</span>
+                    <div className="flex justify-between text-[9px] text-white/20 uppercase font-bold tracking-tighter">
+                      <span>{p.paid}/{p.total} parcelas</span>
+                      <span>{Math.round(pct)}% completo</span>
                     </div>
                   </div>
                 );
@@ -155,20 +213,34 @@ const HubySection = () => {
         );
       case 'projecao':
         return (
-          <div className="bg-[#0f0f0f] border border-white/[0.06] p-5 rounded-2xl w-full space-y-4">
-            <div>
-              <div className="text-[10px] text-white/40 uppercase tracking-wider">Projeção 5 meses</div>
-              <div className="text-white font-bold text-2xl">R$ 8.750,00</div>
-              <div className="text-[10px] text-[#00e676]">+23% vs. abril</div>
+          <div className="bg-[#0f0f0f]/80 backdrop-blur-xl border border-white/[0.08] p-6 rounded-3xl w-full space-y-6 shadow-2xl">
+            <div className="flex justify-between items-center">
+              <div className="flex items-center gap-3">
+                <div className="w-10 h-10 rounded-xl bg-[#00e676]/10 flex items-center justify-center border border-[#00e676]/20">
+                  <Target className="w-5 h-5 text-[#00e676]" />
+                </div>
+                <span className="text-sm font-bold text-white">Objetivo Setembro</span>
+              </div>
+              <div className="px-2 py-0.5 rounded-md bg-[#00e676]/10 text-[#00e676] text-[10px] font-bold">+23%</div>
             </div>
-            <div className="h-32 w-full flex items-end gap-1.5">
+
+            <div>
+              <div className="text-[10px] text-white/40 uppercase tracking-wider mb-1">Previsão de Patrimônio</div>
+              <div className="text-white font-bold text-4xl tracking-tighter">R$ 8.750,00</div>
+            </div>
+
+            <div className="h-32 w-full flex items-end gap-2.5 pt-4 px-2">
               {[30, 45, 60, 80, 100].map((h, i) => (
-                <div key={i} className="flex-1 flex flex-col items-center gap-1">
-                  <div
-                    className="w-full bg-gradient-to-t from-[#00e676]/10 to-[#00e676]/40 border-t-2 border-[#00e676] rounded-t-md"
-                    style={{ height: `${h}%` }}
-                  />
-                  <span className="text-[9px] text-white/40">{['Mai', 'Jun', 'Jul', 'Ago', 'Set'][i]}</span>
+                <div key={i} className="flex-1 flex flex-col items-center gap-2 group">
+                  <div className="relative w-full">
+                    <motion.div
+                      initial={{ height: 0 }}
+                      animate={{ height: `${h}%` }}
+                      transition={{ delay: i * 0.1, duration: 1 }}
+                      className="w-full bg-gradient-to-t from-[#00e676]/5 to-[#00e676]/30 border-t-2 border-[#00e676] rounded-t-lg group-hover:from-[#00e676]/20 transition-all"
+                    />
+                  </div>
+                  <span className="text-[9px] text-white/20 font-bold uppercase tracking-widest">{['Mai', 'Jun', 'Jul', 'Ago', 'Set'][i]}</span>
                 </div>
               ))}
             </div>
@@ -176,24 +248,48 @@ const HubySection = () => {
         );
       case 'categorias':
         return (
-          <div className="bg-[#0f0f0f] border border-white/[0.06] p-5 rounded-2xl w-full space-y-3">
-            <div className="text-[10px] text-white/40 uppercase tracking-wider font-bold">Top categorias</div>
-            {[
-              { name: 'Mercado', value: 'R$ 842,90', pct: 82, color: '#00e676' },
-              { name: 'Delivery', value: 'R$ 487,00', pct: 47, color: '#ef4444' },
-              { name: 'Transporte', value: 'R$ 312,00', pct: 30, color: '#3b82f6' },
-              { name: 'Lazer', value: 'R$ 219,80', pct: 22, color: '#a855f7' },
-            ].map((c) => (
-              <div key={c.name} className="space-y-1">
-                <div className="flex justify-between text-[11px]">
-                  <span className="text-white">{c.name}</span>
-                  <span className="text-white/70 font-bold">{c.value}</span>
-                </div>
-                <div className="h-1 bg-[#1a1a1a] rounded-full overflow-hidden">
-                  <div className="h-full rounded-full" style={{ width: `${c.pct}%`, backgroundColor: c.color }} />
-                </div>
+          <div className="bg-[#0f0f0f]/80 backdrop-blur-xl border border-white/[0.08] p-6 rounded-3xl w-full space-y-5 shadow-2xl">
+            <div className="flex items-center gap-3 mb-2">
+              <div className="w-10 h-10 rounded-xl bg-blue-500/10 flex items-center justify-center border border-blue-500/20">
+                <BarChart3 className="w-5 h-5 text-blue-400" />
               </div>
-            ))}
+              <span className="text-sm font-bold text-white">Distribuição de Gastos</span>
+            </div>
+            
+            <div className="space-y-4">
+              {[
+                { name: 'Mercado', value: 'R$ 842,90', pct: 82, color: '#00e676', icon: ShoppingBag },
+                { name: 'Delivery', value: 'R$ 487,00', pct: 47, color: '#ef4444', icon: Receipt },
+                { name: 'Transporte', value: 'R$ 312,00', pct: 30, color: '#3b82f6', icon: Tag },
+                { name: 'Lazer', value: 'R$ 219,80', pct: 22, color: '#a855f7', icon: Calendar },
+              ].map((c) => {
+                const CIcon = c.icon;
+                return (
+                  <div key={c.name} className="group">
+                    <div className="flex justify-between text-[11px] mb-2">
+                      <div className="flex items-center gap-2">
+                        <CIcon className="w-3.5 h-3.5 text-white/30" />
+                        <span className="text-white font-medium">{c.name}</span>
+                      </div>
+                      <span className="text-white/70 font-mono">{c.value}</span>
+                    </div>
+                    <div className="h-1.5 bg-white/5 rounded-full overflow-hidden">
+                      <motion.div 
+                        initial={{ width: 0 }}
+                        animate={{ width: `${c.pct}%` }}
+                        className="h-full rounded-full transition-all duration-1000" 
+                        style={{ backgroundColor: c.color }} 
+                      />
+                    </div>
+                  </div>
+                );
+              })}
+            </div>
+            
+            <div className="pt-4 mt-2 border-t border-white/5 flex justify-between items-center">
+              <div className="text-[10px] text-white/30 uppercase font-bold tracking-widest">Destaque</div>
+              <div className="text-[11px] text-red-400 font-medium">Delivery +12% esse mês</div>
+            </div>
           </div>
         );
       default:
