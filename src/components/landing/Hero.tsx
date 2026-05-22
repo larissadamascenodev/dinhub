@@ -33,10 +33,22 @@ const Hero = ({ videoSrc }: HeroProps) => {
       gsap.set([overlayRef.current, hudRef.current, scrollIndicatorRef.current, sphereRef.current], {
         opacity: 0,
       });
-      gsap.set(subHeadlineRef.current, { opacity: 0, y: 20 });
       gsap.set(hudRef.current, { y: -30 });
       gsap.set(sphereRef.current, { scale: 0.8 });
       
+      const revealElements = [
+        badgeRef.current,
+        subHeadlineRef.current,
+        buttonsRef.current,
+        labelsRef.current
+      ];
+
+      gsap.set(revealElements, { 
+        opacity: 0,
+        y: 20,
+        clipPath: 'inset(100% 0 0 0)',
+      });
+
       const words = headlineRef.current?.querySelectorAll('.word');
       if (words) {
         gsap.set(words, { 
@@ -47,15 +59,20 @@ const Hero = ({ videoSrc }: HeroProps) => {
 
       // 2. Timeline
       const tl = gsap.timeline({
-        delay: 0.4,
+        scrollTrigger: {
+          trigger: containerRef.current,
+          start: 'top 80%',
+          toggleActions: "play none none reverse", // Plays on enter, reverses on leave (so it can play again)
+        },
+        delay: 0.2,
       });
 
-      // Overlay fade in
+      // Overlay fade in (only on first load or manual)
       tl.to(overlayRef.current, {
         opacity: 1,
         duration: 1.2,
         ease: 'power3.inOut',
-      });
+      }, 0);
 
       // Sphere reveal
       tl.to(sphereRef.current, {
@@ -63,7 +80,7 @@ const Hero = ({ videoSrc }: HeroProps) => {
         scale: 1,
         duration: 1.5,
         ease: 'expo.out',
-      }, "-=0.6");
+      }, 0.2);
 
       // HUD superior
       tl.to(hudRef.current, {
@@ -71,7 +88,16 @@ const Hero = ({ videoSrc }: HeroProps) => {
         y: 0,
         duration: 0.7,
         ease: 'power3.out',
-      }, "-=1");
+      }, 0.5);
+
+      // Social Proof Badge
+      tl.to(badgeRef.current, {
+        opacity: 1,
+        y: 0,
+        clipPath: 'inset(0% 0 0 0)',
+        duration: 0.8,
+        ease: 'power3.out',
+      }, 0.6);
 
       // Headline reveal
       if (words) {
@@ -81,16 +107,35 @@ const Hero = ({ videoSrc }: HeroProps) => {
           duration: 1.1,
           stagger: 0.08,
           ease: 'expo.out',
-        }, "-=0.8");
+        }, 0.7);
       }
 
-      // Sub-headline fade up
+      // Sub-headline reveal
       tl.to(subHeadlineRef.current, {
         opacity: 1,
         y: 0,
-        duration: 1,
+        clipPath: 'inset(0% 0 0 0)',
+        duration: 0.9,
         ease: 'power3.out',
-      }, "-=0.4");
+      }, 0.9);
+
+      // Buttons reveal
+      tl.to(buttonsRef.current, {
+        opacity: 1,
+        y: 0,
+        clipPath: 'inset(0% 0 0 0)',
+        duration: 0.8,
+        ease: 'power3.out',
+      }, 1.1);
+
+      // Labels reveal
+      tl.to(labelsRef.current, {
+        opacity: 1,
+        y: 0,
+        clipPath: 'inset(0% 0 0 0)',
+        duration: 0.8,
+        ease: 'power3.out',
+      }, 1.2);
 
       // Scroll indicator
       tl.to(scrollIndicatorRef.current, {
@@ -105,7 +150,7 @@ const Hero = ({ videoSrc }: HeroProps) => {
             ease: 'sine.inOut',
           });
         }
-      }, "-=0.2");
+      }, 1.4);
 
       // ScrollTrigger for parallax and fade
       gsap.to(contentRef.current, {
