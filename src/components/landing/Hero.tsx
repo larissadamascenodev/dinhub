@@ -227,9 +227,9 @@ const Hero = ({ videoSrc }: HeroProps) => {
 
         <h1 
           ref={headlineRef}
-          className="text-white font-bold leading-[1] tracking-tighter text-center mb-8 overflow-hidden"
+          className="text-white font-black leading-[0.9] tracking-tighter text-center mb-10 overflow-hidden uppercase"
           style={{ 
-            fontSize: 'clamp(2.5rem, 8vw, 6.5rem)',
+            fontSize: 'clamp(2.5rem, 10vw, 8rem)',
             textWrap: 'balance' as any
           }}
         >
@@ -244,13 +244,12 @@ const Hero = ({ videoSrc }: HeroProps) => {
         
         <p 
           ref={subHeadlineRef}
-          className="font-inter font-light tracking-tight text-center max-w-2xl mb-12"
+          className="font-inter font-light tracking-tight text-center max-w-3xl mb-14 leading-tight opacity-40"
           style={{ 
-            fontSize: 'clamp(1rem, 2vw, 1.25rem)',
-            color: 'rgba(255,255,255,0.6)'
+            fontSize: 'clamp(1rem, 2.5vw, 1.6rem)',
           }}
         >
-          Transforme dados brutos em poder de decisão. Huby utiliza algoritmos de elite para orquestrar sua vida financeira com precisão absoluta.
+          Organize sua vida inteira com <span className="text-white font-medium opacity-100">precisão absoluta</span> através da inteligência financeira de elite.
         </p>
 
         <div className="flex flex-wrap justify-center gap-6">
