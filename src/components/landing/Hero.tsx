@@ -2,7 +2,7 @@ import React, { useEffect, useRef } from 'react';
 import gsap from 'gsap';
 import { ScrollTrigger } from 'gsap/ScrollTrigger';
 import { motion } from 'framer-motion';
-import { Sparkles, ArrowRight, ShieldCheck, Cpu } from 'lucide-react';
+import { Sparkles, ArrowRight, ShieldCheck, Cpu, Calendar, XCircle } from 'lucide-react';
 import SubtleParticles from './SubtleParticles';
 
 gsap.registerPlugin(ScrollTrigger);
@@ -260,14 +260,14 @@ const Hero = ({ videoSrc }: HeroProps) => {
           </div>
 
           {/* Micro-info labels */}
-          <div className="flex items-center gap-6 text-[9px] md:text-[10px] font-black uppercase tracking-[0.2em] text-white/30">
+          <div className="flex flex-col sm:flex-row items-center gap-4 sm:gap-8 text-[9px] md:text-[10px] font-black uppercase tracking-[0.2em] text-white/30">
             <div className="flex items-center gap-2">
-              <div className="w-1 h-1 rounded-full bg-[#00e676]" />
+              <Calendar className="w-3 h-3 text-[#00e676]/60" />
               Teste 3 dias grátis
             </div>
             <div className="flex items-center gap-2">
-              <div className="w-1 h-1 rounded-full bg-[#00e676]" />
-              Multiplataforma
+              <XCircle className="w-3 h-3 text-[#00e676]/60" />
+              Cancele quando quiser
             </div>
           </div>
         </div>
