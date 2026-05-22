@@ -110,10 +110,10 @@ const Features = () => {
   };
 
   return (
-    <section id="radar" className="py-20 md:py-48 px-5 bg-[#0a0a0a] relative overflow-hidden">
+    <section id="radar" className="py-20 md:py-32 px-5 bg-[#0a0a0a] relative overflow-hidden">
       {/* Background decoration */}
-      <div className="absolute top-0 left-1/2 -translate-x-1/2 w-full h-full opacity-20 pointer-events-none" 
-           style={{ backgroundImage: 'radial-gradient(circle at center, rgba(0,230,118,0.08) 0%, transparent 70%)' }} />
+      <div className="absolute top-0 left-1/2 -translate-x-1/2 w-full h-full opacity-10 pointer-events-none" 
+           style={{ backgroundImage: 'radial-gradient(circle at center, rgba(0,230,118,0.05) 0%, transparent 70%)' }} />
 
       <div className="max-w-6xl mx-auto relative z-10">
         <div id="radar-header" className="text-center mb-16 md:mb-40 space-y-6 md:space-y-8">
@@ -179,8 +179,8 @@ const Features = () => {
                 </div>
               </div>
               
-              <div className="relative group">
-                <div className="absolute inset-0 bg-[#00e676]/10 blur-[100px] rounded-full group-hover:bg-[#00e676]/20 transition-all duration-1000" />
+              <div className="relative group p-1 rounded-[42px] bg-gradient-to-tr from-[#00e676]/20 via-transparent to-blue-500/20">
+                <div className="absolute inset-0 bg-[#0a0a0a] rounded-[41px] -z-10" />
                 <HubyInsightsPanel />
               </div>
             </motion.div>
@@ -439,10 +439,10 @@ const HubyInsightsPanel: React.FC = () => {
   };
 
   return (
-    <div className="relative bg-[#0a0a0a]/40 border border-white/10 rounded-[40px] p-4 md:p-8 shadow-[0_0_50px_-12px_rgba(0,230,118,0.2)] backdrop-blur-2xl flex flex-col min-h-[540px] md:min-h-[520px] overflow-hidden group/panel transition-all duration-500 hover:border-[#00e676]/30">
+    <div className="relative bg-[#0a0a0a]/60 border border-white/5 rounded-[40px] p-4 md:p-8 shadow-2xl backdrop-blur-3xl flex flex-col min-h-[540px] md:min-h-[520px] overflow-hidden group/panel transition-all duration-500 hover:border-[#00e676]/20">
       {/* Glow effect decorative elements */}
-      <div className="absolute -top-20 -right-20 w-40 h-40 bg-[#00e676]/10 blur-[80px] rounded-full pointer-events-none" />
-      <div className="absolute -bottom-20 -left-20 w-40 h-40 bg-blue-500/10 blur-[80px] rounded-full pointer-events-none" />
+      <div className="absolute -top-20 -right-20 w-40 h-40 bg-[#00e676]/5 blur-[80px] rounded-full pointer-events-none" />
+      <div className="absolute -bottom-20 -left-20 w-40 h-40 bg-blue-500/5 blur-[80px] rounded-full pointer-events-none" />
       
       <AnimatePresence mode="wait" custom={direction} initial={false}>
         <motion.div
