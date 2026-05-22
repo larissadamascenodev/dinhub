@@ -4,14 +4,15 @@ import { ArrowRight, Play } from 'lucide-react';
 
 const Hero = () => {
   return (
-    <section className="relative min-h-[70vh] flex flex-col items-center justify-start pt-20 md:pt-28 pb-8 px-5 overflow-hidden border-b border-white/[0.02]">
-      {/* Background Mesh Grid - Inspired by Nectar */}
-      <div className="absolute inset-0 z-0 opacity-20" 
-           style={{ backgroundImage: 'radial-gradient(circle at 1px 1px, rgba(255,255,255,0.05) 1px, transparent 0)', backgroundSize: '40px 40px' }} />
+    <section className="relative flex flex-col items-center justify-start pt-20 md:pt-28 pb-4 md:pb-6 px-5 overflow-hidden">
+      {/* Cinematic mesh grid */}
+      <div className="absolute inset-0 z-0 opacity-[0.12]" 
+           style={{ backgroundImage: 'radial-gradient(circle at 1px 1px, rgba(255,255,255,0.06) 1px, transparent 0)', backgroundSize: '40px 40px' }} />
       
-      {/* Background Glows */}
-      <div className="absolute top-[-10%] left-1/2 -translate-x-1/2 w-[120%] aspect-square max-w-[1000px] rounded-full bg-[#00e676]/10 blur-[150px] pointer-events-none z-0" />
-      <div className="absolute bottom-[-10%] left-0 w-[50%] aspect-square bg-[#00e676]/5 blur-[120px] pointer-events-none z-0" />
+      {/* Subtle cinematic glows */}
+      <div className="absolute top-[-20%] left-1/2 -translate-x-1/2 w-[140%] aspect-square max-w-[1200px] rounded-full bg-[#00e676]/[0.04] blur-[180px] pointer-events-none z-0" />
+      <div className="absolute bottom-0 left-1/4 w-[50%] aspect-square bg-blue-500/[0.03] blur-[150px] pointer-events-none z-0 rounded-full" />
+      <div className="absolute bottom-[10%] right-0 w-[35%] aspect-square bg-purple-500/[0.03] blur-[140px] pointer-events-none z-0 rounded-full" />
 
       {/* Badge */}
       <motion.div 

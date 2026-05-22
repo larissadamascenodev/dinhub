@@ -421,11 +421,16 @@ const HubySection = () => {
 
   // ---------- RENDER ----------
   return (
-    <section className="py-32 md:py-40 px-5 flex flex-col items-center relative overflow-hidden">
-      <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-full max-w-[1000px] aspect-square bg-[#00e676]/5 blur-[150px] pointer-events-none rounded-full" />
+    <section className="pt-8 pb-24 md:pt-12 md:pb-32 px-5 flex flex-col items-center relative overflow-hidden">
+      {/* Cinematic background */}
+      <div className="absolute inset-0 pointer-events-none">
+        <div className="absolute top-0 left-1/2 -translate-x-1/2 w-[80%] h-[400px] bg-gradient-to-b from-[#00e676]/[0.04] via-transparent to-transparent blur-[100px]" />
+        <div className="absolute bottom-0 right-0 w-[40%] h-[400px] bg-blue-500/[0.03] blur-[120px] rounded-full" />
+        <div className="absolute top-1/3 left-0 w-[30%] h-[300px] bg-purple-500/[0.03] blur-[120px] rounded-full" />
+      </div>
 
       <div className="w-full max-w-5xl flex flex-col items-center relative z-10">
-        <div className="text-center mb-16 md:mb-24 space-y-6">
+        <div className="text-center mb-12 md:mb-16 space-y-6">
           <motion.div 
             initial={{ opacity: 0, scale: 0.9 }}
             whileInView={{ opacity: 1, scale: 1 }}
