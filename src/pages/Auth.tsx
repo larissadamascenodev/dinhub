@@ -15,7 +15,7 @@ const Auth = () => {
       <Navbar />
       
       <main>
-        <Hero />
+        <Hero videoSrc="https://cdn.pixabay.com/video/2020/09/20/50456-462102146_large.mp4" />
         <HubySection />
         <Features />
         <BeforeAfter />
