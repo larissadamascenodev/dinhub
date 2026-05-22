@@ -268,7 +268,7 @@ const Hero = ({ videoSrc }: HeroProps) => {
 
         <h1 
           ref={headlineRef}
-          className="text-white font-black leading-[0.95] tracking-tighter text-center mb-6 md:mb-10 overflow-hidden"
+          className="text-white font-black leading-[1.1] tracking-tighter text-center mb-6 md:mb-10"
           style={{ 
             fontSize: 'clamp(1.4rem, 6.5vw, 5.5rem)',
             width: '100%',
@@ -277,7 +277,7 @@ const Hero = ({ videoSrc }: HeroProps) => {
           }}
         >
           {words.map((word, i) => (
-            <span key={i} className="inline-block mr-[0.25em] last:mr-0 overflow-hidden py-2">
+            <span key={i} className="inline-block mr-[0.25em] last:mr-0 py-4 -my-4">
               <span className={`word inline-block ${["some", "todo", "mês"].includes(word.toLowerCase().replace(/[?.,]/g, "")) ? "bg-gradient-to-b from-white via-white to-white/40 bg-clip-text text-transparent italic font-light tracking-tighter" : ""}`}>
                 {word}
               </span>
@@ -346,6 +346,11 @@ const Hero = ({ videoSrc }: HeroProps) => {
       <style>{`
         .word {
           display: inline-block;
+          line-height: 1.2;
+          padding-top: 0.1em;
+          padding-bottom: 0.1em;
+          margin-top: -0.1em;
+          margin-bottom: -0.1em;
         }
       `}</style>
     </section>
