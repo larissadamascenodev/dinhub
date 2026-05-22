@@ -26,11 +26,12 @@ const Hero = ({ videoSrc }: HeroProps) => {
 
     const ctx = gsap.context(() => {
       // 1. Initial State (gsap.set)
-      gsap.set([overlayRef.current, hudRef.current, scrollIndicatorRef.current], {
+      gsap.set([overlayRef.current, hudRef.current, scrollIndicatorRef.current, sphereRef.current], {
         opacity: 0,
       });
       gsap.set(subHeadlineRef.current, { opacity: 0, y: 20 });
       gsap.set(hudRef.current, { y: -30 });
+      gsap.set(sphereRef.current, { scale: 0.8 });
       
       const words = headlineRef.current?.querySelectorAll('.word');
       if (words) {
@@ -42,15 +43,23 @@ const Hero = ({ videoSrc }: HeroProps) => {
 
       // 2. Timeline
       const tl = gsap.timeline({
-        delay: 0.4, // 0.4s de silêncio antes da timeline começar
+        delay: 0.4,
       });
 
       // Overlay fade in
       tl.to(overlayRef.current, {
         opacity: 1,
-        duration: 0.8,
-        ease: 'power3.out',
+        duration: 1.2,
+        ease: 'power3.inOut',
       });
+
+      // Sphere reveal
+      tl.to(sphereRef.current, {
+        opacity: 1,
+        scale: 1,
+        duration: 1.5,
+        ease: 'expo.out',
+      }, "-=0.6");
 
       // HUD superior
       tl.to(hudRef.current, {
@@ -58,55 +67,77 @@ const Hero = ({ videoSrc }: HeroProps) => {
         y: 0,
         duration: 0.7,
         ease: 'power3.out',
-      }, "-=0.3"); // delay 0.3s (starts 0.3s before previous ends or relative) -> the prompt said "delay 0.3s" after HUD start? 
-      // Re-reading: "HUD superior desce de -30px... delay 0.3s" - usually means offset from previous or absolute. 
-      // Let's use absolute labels for clarity.
+      }, "-=1");
 
       // Headline reveal
       if (words) {
         tl.to(words, {
           clipPath: 'inset(0% 0 0 0)',
           y: 0,
-          duration: 0.9,
+          duration: 1.1,
           stagger: 0.08,
-          ease: 'power3.out',
-        }, ">-0.2"); // Começa um pouco antes do HUD terminar
+          ease: 'expo.out',
+        }, "-=0.8");
       }
 
       // Sub-headline fade up
       tl.to(subHeadlineRef.current, {
         opacity: 1,
         y: 0,
-        duration: 0.8,
+        duration: 1,
         ease: 'power3.out',
-      }, ">0.2"); // delay 0.2s depois da headline
+      }, "-=0.4");
 
       // Scroll indicator
       tl.to(scrollIndicatorRef.current, {
         opacity: 1,
         duration: 0.8,
         onComplete: () => {
-          // Pulse animation
           gsap.to(scrollIndicatorRef.current, {
             opacity: 0.4,
-            duration: 1,
+            duration: 1.5,
             repeat: -1,
             yoyo: true,
             ease: 'sine.inOut',
           });
         }
+      }, "-=0.2");
+
+      // ScrollTrigger for parallax and fade
+      gsap.to(contentRef.current, {
+        scrollTrigger: {
+          trigger: containerRef.current,
+          start: 'top top',
+          end: 'bottom top',
+          scrub: true,
+        },
+        y: 100,
+        opacity: 0,
+        ease: 'none',
       });
 
-      // ScrollTrigger for scroll indicator fade out
+      gsap.to(sphereRef.current, {
+        scrollTrigger: {
+          trigger: containerRef.current,
+          start: 'top top',
+          end: 'bottom top',
+          scrub: true,
+        },
+        y: -50,
+        scale: 1.2,
+        opacity: 0,
+        ease: 'none',
+      });
+
       gsap.to(scrollIndicatorRef.current, {
         scrollTrigger: {
           trigger: containerRef.current,
           start: 'top top',
-          end: '+=100',
+          end: '+=200',
           scrub: 1,
         },
         opacity: 0,
-        y: 20,
+        y: 30,
         ease: 'none',
       });
 
