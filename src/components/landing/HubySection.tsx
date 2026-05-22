@@ -1,6 +1,11 @@
 import React, { useState } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
-import { Sparkles, ArrowRight } from 'lucide-react';
+import { 
+  Sparkles, ArrowRight, PieChart, CreditCard, 
+  ShoppingBag, TrendingUp, BarChart3, Wallet,
+  ArrowUpRight, ArrowDownRight, Clock, Target,
+  Receipt, Tag, Calendar
+} from 'lucide-react';
 import ParticleSphere from './ParticleSphere';
 
 type Role = 'user' | 'huby';
