@@ -110,13 +110,13 @@ const Features = () => {
   };
 
   return (
-    <section id="radar" className="py-20 md:py-32 px-5 bg-[#0a0a0a] relative overflow-hidden">
+    <section id="radar" className="py-12 md:py-20 px-5 bg-[#0a0a0a] relative overflow-hidden">
       {/* Background decoration */}
       <div className="absolute top-0 left-1/2 -translate-x-1/2 w-full h-full opacity-10 pointer-events-none" 
            style={{ backgroundImage: 'radial-gradient(circle at center, rgba(0,230,118,0.05) 0%, transparent 70%)' }} />
 
       <div className="max-w-6xl mx-auto relative z-10">
-        <div id="radar-header" className="text-center mb-16 md:mb-40 space-y-6 md:space-y-8">
+        <div id="radar-header" className="text-center mb-12 md:mb-24 space-y-6 md:space-y-8">
           <motion.div 
             initial={{ opacity: 0, scale: 0.9 }}
             whileInView={{ opacity: 1, scale: 1 }}

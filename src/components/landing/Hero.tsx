@@ -4,7 +4,7 @@ import { ArrowRight, Play } from 'lucide-react';
 
 const Hero = () => {
   return (
-    <section className="relative min-h-[85vh] flex flex-col items-center justify-start pt-24 md:pt-32 pb-12 px-5 overflow-hidden border-b border-white/[0.02]">
+    <section className="relative min-h-[70vh] flex flex-col items-center justify-start pt-20 md:pt-28 pb-8 px-5 overflow-hidden border-b border-white/[0.02]">
       {/* Background Mesh Grid - Inspired by Nectar */}
       <div className="absolute inset-0 z-0 opacity-20" 
            style={{ backgroundImage: 'radial-gradient(circle at 1px 1px, rgba(255,255,255,0.05) 1px, transparent 0)', backgroundSize: '40px 40px' }} />
@@ -55,7 +55,7 @@ const Hero = () => {
         initial={{ opacity: 0, y: 20 }}
         animate={{ opacity: 1, y: 0 }}
         transition={{ delay: 0.4 }}
-        className="relative z-10 flex flex-col sm:flex-row items-center gap-6 mb-12"
+        className="relative z-10 flex flex-col sm:flex-row items-center gap-6 mb-8"
       >
         <a 
           href="/auth"
