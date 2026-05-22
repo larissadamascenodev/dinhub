@@ -14,15 +14,13 @@ const Navbar = () => {
       <div className="flex items-center justify-between gap-3 sm:gap-8 px-4 sm:px-10 py-2.5 sm:py-4 rounded-full border border-white/[0.08] bg-black/60 backdrop-blur-2xl shadow-2xl">
         {/* Logo */}
         <div className="flex items-center cursor-pointer group shrink-0" onClick={() => window.scrollTo({ top: 0, behavior: 'smooth' })}>
-          <div className="relative flex items-center group">
-            <span className="font-sora font-black text-2xl sm:text-3xl text-white tracking-tighter leading-none">
-              D
+          <div className="flex items-center space-x-0.5">
+            <span className="font-sora font-black text-2xl sm:text-3xl text-white tracking-tighter">
+              DIN
             </span>
-            <div className="w-[1px] h-6 bg-white/20 mx-2 rotate-[25deg] group-hover:rotate-[15deg] transition-transform duration-500" />
-            <span className="font-sora font-light text-lg sm:text-xl text-white/90 tracking-[0.2em] uppercase italic leading-none">
-              Huby
+            <span className="font-sora font-extrabold text-2xl sm:text-3xl text-[#00e676] tracking-tighter">
+              HUBY
             </span>
-            <div className="absolute -right-3 -top-1 w-1.5 h-1.5 rounded-full bg-[#00e676] shadow-[0_0_10px_#00e676] animate-pulse" />
           </div>
         </div>
 
