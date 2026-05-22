@@ -277,7 +277,7 @@ const Hero = ({ videoSrc }: HeroProps) => {
           }}
         >
           {words.map((word, i) => (
-            <span key={i} className="inline-block mr-[0.25em] last:mr-0 overflow-hidden py-2">
+            <span key={i} className="inline-block mr-[0.25em] last:mr-0 py-4 -my-4">
               <span className={`word inline-block ${["some", "todo", "mês"].includes(word.toLowerCase().replace(/[?.,]/g, "")) ? "bg-gradient-to-b from-white via-white to-white/40 bg-clip-text text-transparent italic font-light tracking-tighter" : ""}`}>
                 {word}
               </span>
