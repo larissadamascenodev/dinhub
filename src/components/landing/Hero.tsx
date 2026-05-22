@@ -146,7 +146,7 @@ const Hero = ({ videoSrc }: HeroProps) => {
     return () => ctx.revert();
   }, []);
 
-  const headlineText = "A próxima evolução da sua inteligência financeira.";
+  const headlineText = "Domine sua realidade.";
   const words = headlineText.split(' ');
 
   return (
