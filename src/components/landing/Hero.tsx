@@ -238,9 +238,9 @@ const Hero = ({ videoSrc }: HeroProps) => {
         
         <p 
           ref={subHeadlineRef}
-          className="font-inter font-light tracking-tight text-center max-w-3xl mb-14 leading-tight opacity-40"
+          className="font-inter font-light tracking-tight text-center max-w-3xl mb-10 md:mb-14 leading-tight opacity-40 px-2 sm:px-0"
           style={{ 
-            fontSize: 'clamp(1rem, 2.5vw, 1.6rem)',
+            fontSize: 'clamp(0.85rem, 2.5vw, 1.6rem)',
           }}
         >
           O DinHub analisa cada centavo, te avisa antes de virar problema e mostra o que fazer.
