@@ -334,14 +334,14 @@ const HubySection = () => {
             <span className="text-[10px] font-black tracking-[0.2em] text-[#00e676] uppercase">Interface Neural</span>
           </motion.div>
           
-          <h2 className="font-sora font-extrabold text-white text-3xl md:text-6xl tracking-tighter leading-tight">
+          <h2 className="font-sora font-extrabold text-white text-3xl md:text-7xl tracking-tighter leading-[1.1] md:leading-[1.05]">
             Teste a Experiência <br />
-            <span className="bg-gradient-to-r from-[#00e676] to-[#00ff88] bg-clip-text text-transparent">
-              Interaja com a Huby
+            <span className="bg-gradient-to-r from-white/20 to-white bg-clip-text text-transparent italic font-light">
+              interaja com a Huby.
             </span>
           </h2>
           
-          <p className="text-white/50 max-w-2xl mx-auto text-base md:text-lg font-light leading-relaxed">
+          <p className="text-white/60 max-w-2xl mx-auto text-lg md:text-xl font-inter font-light leading-relaxed px-2">
             Clique nos tópicos abaixo para simular uma conversa em tempo real e ver como a Huby processa dados complexos em insights acionáveis instantaneamente.
           </p>
         </div>
