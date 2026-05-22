@@ -421,7 +421,7 @@ const HubySection = () => {
 
   // ---------- RENDER ----------
   return (
-    <section className="pt-8 pb-24 md:pt-12 md:pb-32 px-5 flex flex-col items-center relative overflow-hidden">
+    <section className="pt-2 pb-24 md:pt-4 md:pb-32 px-5 flex flex-col items-center relative overflow-hidden">
       {/* Cinematic background */}
       <div className="absolute inset-0 pointer-events-none">
         <div className="absolute top-0 left-1/2 -translate-x-1/2 w-[80%] h-[400px] bg-gradient-to-b from-[#00e676]/[0.04] via-transparent to-transparent blur-[100px]" />
@@ -430,11 +430,11 @@ const HubySection = () => {
       </div>
 
       <div className="w-full max-w-5xl flex flex-col items-center relative z-10">
-        <div className="text-center mb-12 md:mb-16 space-y-6">
+        <div className="text-center mb-10 md:mb-14 space-y-4">
           <motion.div 
             initial={{ opacity: 0, scale: 0.9 }}
             whileInView={{ opacity: 1, scale: 1 }}
-            className="inline-flex items-center gap-2 px-3 py-1 rounded-full border border-[#00e676]/20 bg-[#00e676]/5 backdrop-blur-md"
+            className="inline-flex items-center gap-2 px-3 py-1 rounded-full border border-[#00e676]/20 bg-[#00e676]/5 backdrop-blur-md mt-2 mb-2"
           >
             <Sparkles className="w-3 h-3 text-[#00e676]" />
             <span className="text-[10px] font-black tracking-[0.2em] text-[#00e676] uppercase">Interface Neural</span>
