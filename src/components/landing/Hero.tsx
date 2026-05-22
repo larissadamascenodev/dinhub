@@ -146,7 +146,7 @@ const Hero = ({ videoSrc }: HeroProps) => {
     return () => ctx.revert();
   }, []);
 
-  const headlineText = "Domine sua realidade.";
+  const headlineText = "Seu dinheiro some todo mês e você não sabe porque?";
   const words = headlineText.split(' ');
 
   return (
@@ -235,7 +235,7 @@ const Hero = ({ videoSrc }: HeroProps) => {
         >
           {words.map((word, i) => (
             <span key={i} className="inline-block mr-[0.25em] last:mr-0 overflow-hidden py-2">
-              <span className={`word inline-block ${word === "realidade." ? "bg-gradient-to-b from-white via-white to-white/40 bg-clip-text text-transparent italic font-light tracking-tighter" : ""}`}>
+              <span className={`word inline-block ${["some", "todo", "mês"].includes(word.toLowerCase().replace(/[?.,]/g, "")) ? "bg-gradient-to-b from-white via-white to-white/40 bg-clip-text text-transparent italic font-light tracking-tighter" : ""}`}>
                 {word}
               </span>
             </span>
@@ -249,7 +249,7 @@ const Hero = ({ videoSrc }: HeroProps) => {
             fontSize: 'clamp(1rem, 2.5vw, 1.6rem)',
           }}
         >
-          Organize sua vida inteira com <span className="text-white font-medium opacity-100">precisão absoluta</span> através da inteligência financeira de elite.
+          O DinHub analisa cada centavo, te avisa antes de virar problema e mostra o que fazer.
         </p>
 
         <div className="flex flex-wrap justify-center gap-6">
