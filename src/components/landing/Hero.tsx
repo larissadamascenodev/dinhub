@@ -118,19 +118,6 @@ const Hero = () => {
           <span className="text-white/40">14.8k</span>
         </div>
       </motion.div>
-        <div className="flex items-center gap-2.5">
-          <div className="w-3.5 h-3.5 rounded-full border border-white/10 flex items-center justify-center">
-            <div className="w-1 h-1 rounded-full bg-[#00e676]" />
-          </div>
-          3 dias trial
-        </div>
-        <div className="flex items-center gap-2.5">
-          <div className="w-3.5 h-3.5 rounded-full border border-white/10 flex items-center justify-center">
-            <div className="w-1 h-1 rounded-full bg-[#00e676]" />
-          </div>
-          Multiplataforma
-        </div>
-      </motion.div>
     </section>
   );
 };
