@@ -237,7 +237,7 @@ const Hero = ({ videoSrc }: HeroProps) => {
       <div ref={contentRef} className="relative z-20 flex flex-col items-center max-w-7xl px-4 sm:px-6 w-full text-center">
         <div className="flex flex-col items-center gap-4 md:gap-6 mb-8 md:mb-12">
           {/* Social Proof / Users Info */}
-          <div className="flex flex-row items-center gap-3 sm:gap-6 py-2 px-4 sm:px-6 rounded-2xl border border-white/5 bg-white/[0.02] backdrop-blur-sm">
+          <div ref={badgeRef} className="flex flex-row items-center gap-3 sm:gap-6 py-2 px-4 sm:px-6 rounded-2xl border border-white/5 bg-white/[0.02] backdrop-blur-sm">
             <div className="flex -space-x-1.5 sm:-space-x-3 shrink-0">
               {[1, 2, 3, 4].map((i) => (
                 <div key={i} className="w-5 h-5 sm:w-8 sm:h-8 rounded-full border border-[#030303] overflow-hidden">
