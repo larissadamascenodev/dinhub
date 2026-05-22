@@ -110,29 +110,29 @@ const Features = () => {
   };
 
   return (
-    <section id="radar" className="section-padding px-5 bg-[#0a0a0a] relative overflow-hidden">
+    <section id="radar" className="section-padding px-4 sm:px-6 bg-[#0a0a0a] relative overflow-hidden">
       {/* Background decoration */}
       <div className="absolute inset-0 opacity-[0.03] pointer-events-none" 
            style={{ backgroundImage: 'radial-gradient(circle at center, rgba(0,230,118,0.4) 0%, transparent 70%)' }} />
 
-      <div className="max-w-6xl mx-auto relative z-10">
-        <div id="radar-header" className="text-center mb-24 md:mb-40 space-y-8">
+      <div className="fluid-container relative z-10">
+        <div id="radar-header" className="text-center mb-16 md:mb-32 lg:mb-40 space-y-6 md:space-y-8">
           <motion.div 
             initial={{ opacity: 0, scale: 0.9 }}
             whileInView={{ opacity: 1, scale: 1 }}
-            className="inline-flex items-center gap-2 px-5 py-2 rounded-full border border-white/[0.08] bg-white/[0.03] backdrop-blur-md"
+            className="inline-flex items-center gap-2 px-4 md:px-5 py-2 rounded-full border border-white/[0.08] bg-white/[0.03] backdrop-blur-md"
           >
-            <span className="text-[10px] font-black tracking-[0.3em] text-[#00e676] uppercase">The Architecture of Control</span>
+            <span className="text-[9px] md:text-[10px] font-black tracking-[0.2em] md:tracking-[0.3em] text-[#00e676] uppercase text-center">The Architecture of Control</span>
           </motion.div>
           
-          <h2 className="display-title text-white text-3xl md:text-8xl">
-            Enquanto você vive,<br />
+          <h2 className="display-title text-white text-3xl sm:text-4xl md:text-6xl lg:text-8xl">
+            Enquanto você vive,<br className="hidden sm:block" />
             <span className="bg-gradient-to-r from-white/20 via-white to-white/20 bg-clip-text text-transparent italic font-light">
               a Huby organiza.
             </span>
           </h2>
           
-          <p className="text-white/40 max-w-2xl mx-auto text-lg md:text-2xl font-inter font-light leading-relaxed px-2">
+          <p className="text-white/40 max-w-2xl mx-auto text-base sm:text-lg md:text-xl lg:text-2xl font-inter font-light leading-relaxed">
             Esqueça as planilhas. A Huby é sua inteligência de elite que <span className="text-white font-medium">antecipa movimentos</span> e blinda seu patrimônio com precisão cirúrgica.
           </p>
         </div>
@@ -146,16 +146,16 @@ const Features = () => {
         >
           {/* 1. RADAR FINANCEIRO */}
           <div id="radar-section" className="relative">
-            <motion.div variants={itemVariants} className="grid grid-cols-1 md:grid-cols-2 gap-16 md:gap-32 items-center">
-              <div className="space-y-10">
-                <div className="space-y-8">
-                  <div className="flex items-center gap-5">
-                    <div className="w-16 h-16 rounded-[24px] bg-[#00e676]/5 border border-[#00e676]/10 flex items-center justify-center shrink-0 shadow-2xl">
-                      <Radar className="w-8 h-8 text-[#00e676]" />
+            <motion.div variants={itemVariants} className="grid grid-cols-1 lg:grid-cols-2 gap-12 sm:gap-16 lg:gap-32 items-center">
+              <div className="space-y-8 sm:space-y-10">
+                <div className="space-y-6 sm:space-y-8 text-center lg:text-left">
+                  <div className="flex flex-col lg:flex-row items-center gap-4 sm:gap-5">
+                    <div className="w-14 h-14 sm:w-16 sm:h-16 rounded-[20px] sm:rounded-[24px] bg-[#00e676]/5 border border-[#00e676]/10 flex items-center justify-center shrink-0 shadow-2xl">
+                      <Radar className="w-7 h-7 sm:w-8 sm:h-8 text-[#00e676]" />
                     </div>
-                    <h3 className="text-3xl md:text-6xl font-sora font-extrabold text-white tracking-tighter">Radar</h3>
+                    <h3 className="text-2xl sm:text-3xl md:text-4xl lg:text-6xl font-sora font-extrabold text-white tracking-tighter">Radar</h3>
                   </div>
-                  <p className="text-white/50 text-lg md:text-xl leading-relaxed font-light">
+                  <p className="text-white/50 text-base sm:text-lg md:text-xl leading-relaxed font-light px-2 sm:px-0">
                     O Radar identifica padrões perigosos e indica exatamente o que você deve fazer. <span className="text-white/80 font-medium">Tudo visual, direto e automático.</span>
                   </p>
                   <ul className="space-y-5 pt-4">
@@ -164,7 +164,7 @@ const Features = () => {
                       'Indicação de ações corretivas imediatas',
                       'Monitoramento de padrões de consumo'
                     ].map((item, i) => (
-                      <li key={i} className="flex items-center gap-4 text-sm font-medium text-white/50 hover:text-white transition-colors duration-300">
+                      <li key={i} className="flex items-center justify-center lg:justify-start gap-4 text-sm font-medium text-white/50 hover:text-white transition-colors duration-300">
                         <div className="w-5 h-5 rounded-full border border-[#00e676]/20 flex items-center justify-center shrink-0">
                           <CheckCircle2 className="w-3 h-3 text-[#00e676]" />
                         </div>
@@ -174,8 +174,8 @@ const Features = () => {
                   </ul>
                 </div>
 
-                <div className="pt-10 border-t border-white/[0.05]">
-                  <p className="text-white/30 text-lg md:text-xl font-light italic">
+                <div className="pt-8 sm:pt-10 border-t border-white/[0.05] text-center lg:text-left">
+                  <p className="text-white/30 text-base sm:text-lg md:text-xl font-light italic px-4 sm:px-0">
                     "Identificamos padrões, alertamos riscos e sugerimos ações imediatas antes mesmo de você abrir o banco."
                   </p>
                 </div>
