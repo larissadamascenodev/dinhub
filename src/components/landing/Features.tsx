@@ -110,29 +110,29 @@ const Features = () => {
   };
 
   return (
-    <section id="radar" className="py-12 md:py-20 px-5 bg-[#0a0a0a] relative overflow-hidden">
+    <section id="radar" className="section-padding px-5 bg-[#0a0a0a] relative overflow-hidden">
       {/* Background decoration */}
-      <div className="absolute top-0 left-1/2 -translate-x-1/2 w-full h-full opacity-10 pointer-events-none" 
-           style={{ backgroundImage: 'radial-gradient(circle at center, rgba(0,230,118,0.05) 0%, transparent 70%)' }} />
+      <div className="absolute inset-0 opacity-[0.03] pointer-events-none" 
+           style={{ backgroundImage: 'radial-gradient(circle at center, rgba(0,230,118,0.4) 0%, transparent 70%)' }} />
 
       <div className="max-w-6xl mx-auto relative z-10">
-        <div id="radar-header" className="text-center mb-12 md:mb-24 space-y-6 md:space-y-8">
+        <div id="radar-header" className="text-center mb-24 md:mb-40 space-y-8">
           <motion.div 
             initial={{ opacity: 0, scale: 0.9 }}
             whileInView={{ opacity: 1, scale: 1 }}
-            className="inline-flex items-center gap-2 px-4 py-2 rounded-xl border border-white/5 bg-white/[0.03] backdrop-blur-md"
+            className="inline-flex items-center gap-2 px-5 py-2 rounded-full border border-white/[0.08] bg-white/[0.03] backdrop-blur-md"
           >
             <span className="text-[10px] font-black tracking-[0.3em] text-[#00e676] uppercase">The Architecture of Control</span>
           </motion.div>
           
-          <h2 className="font-sora font-extrabold text-white text-3xl md:text-7xl tracking-tighter leading-[1.1] md:leading-[1.05]">
+          <h2 className="display-title text-white text-3xl md:text-8xl">
             Enquanto você vive,<br />
-            <span className="bg-gradient-to-r from-white/20 to-white bg-clip-text text-transparent italic font-light">
+            <span className="bg-gradient-to-r from-white/20 via-white to-white/20 bg-clip-text text-transparent italic font-light">
               a Huby organiza.
             </span>
           </h2>
           
-          <p className="text-white/60 max-w-2xl mx-auto text-lg md:text-xl font-inter font-light leading-relaxed px-2">
+          <p className="text-white/40 max-w-2xl mx-auto text-lg md:text-2xl font-inter font-light leading-relaxed px-2">
             Esqueça as planilhas. A Huby é sua inteligência de elite que <span className="text-white font-medium">antecipa movimentos</span> e blinda seu patrimônio com precisão cirúrgica.
           </p>
         </div>
@@ -142,46 +142,50 @@ const Features = () => {
           initial="hidden"
           whileInView="visible"
           viewport={{ once: true, margin: "-100px" }}
-          className="space-y-20 md:space-y-48"
+          className="space-y-32 md:space-y-64"
         >
-          {/* 1. RADAR FINANCEIRO - STATIC HUB INSIGHTS PANEL */}
-          <div id="radar-section" className="space-y-12 md:space-y-16">
-            <motion.div variants={itemVariants} className="grid grid-cols-1 md:grid-cols-2 gap-12 md:gap-24 items-center">
-              <div className="space-y-8">
-                <div className="space-y-6">
-                  <div className="flex items-center gap-4">
-                    <div className="w-14 h-14 rounded-2xl bg-[#00e676]/10 border border-[#00e676]/20 flex items-center justify-center shrink-0">
-                      <Radar className="w-7 h-7 text-[#00e676]" />
+          {/* 1. RADAR FINANCEIRO */}
+          <div id="radar-section" className="relative">
+            <motion.div variants={itemVariants} className="grid grid-cols-1 md:grid-cols-2 gap-16 md:gap-32 items-center">
+              <div className="space-y-10">
+                <div className="space-y-8">
+                  <div className="flex items-center gap-5">
+                    <div className="w-16 h-16 rounded-[24px] bg-[#00e676]/5 border border-[#00e676]/10 flex items-center justify-center shrink-0 shadow-2xl">
+                      <Radar className="w-8 h-8 text-[#00e676]" />
                     </div>
-                    <h3 className="text-3xl md:text-5xl font-sora font-bold text-white tracking-tight">Radar Financeiro</h3>
+                    <h3 className="text-3xl md:text-6xl font-sora font-extrabold text-white tracking-tighter">Radar</h3>
                   </div>
-                  <p className="text-white/50 text-base md:text-lg leading-relaxed font-light">
-                    O Radar identifica padrões perigosos e indica exatamente o que você deve fazer. Tudo visual, direto e automático.
+                  <p className="text-white/50 text-lg md:text-xl leading-relaxed font-light">
+                    O Radar identifica padrões perigosos e indica exatamente o que você deve fazer. <span className="text-white/80 font-medium">Tudo visual, direto e automático.</span>
                   </p>
-                  <ul className="space-y-4 pt-4">
+                  <ul className="space-y-5 pt-4">
                     {[
                       'Insights preditivos de inteligência',
                       'Indicação de ações corretivas imediatas',
                       'Monitoramento de padrões de consumo'
                     ].map((item, i) => (
-                      <li key={i} className="flex items-center gap-3 text-sm text-white/70">
-                        <CheckCircle2 className="w-4 h-4 text-[#00e676]" />
+                      <li key={i} className="flex items-center gap-4 text-sm font-medium text-white/50 hover:text-white transition-colors duration-300">
+                        <div className="w-5 h-5 rounded-full border border-[#00e676]/20 flex items-center justify-center shrink-0">
+                          <CheckCircle2 className="w-3 h-3 text-[#00e676]" />
+                        </div>
                         {item}
                       </li>
                     ))}
                   </ul>
                 </div>
 
-                <div className="pt-8 border-t border-white/5">
-                  <p className="text-white/50 text-lg md:text-xl font-light leading-relaxed">
-                    Uma visão 360° do seu dinheiro em tempo real. Identificamos padrões, alertamos riscos e sugerimos ações imediatas.
+                <div className="pt-10 border-t border-white/[0.05]">
+                  <p className="text-white/30 text-lg md:text-xl font-light italic">
+                    "Identificamos padrões, alertamos riscos e sugerimos ações imediatas antes mesmo de você abrir o banco."
                   </p>
                 </div>
               </div>
               
-              <div className="relative group p-1 rounded-[42px] bg-gradient-to-tr from-[#00e676]/20 via-transparent to-blue-500/20">
-                <div className="absolute inset-0 bg-[#0a0a0a] rounded-[41px] -z-10" />
-                <HubyInsightsPanel />
+              <div className="relative group">
+                <div className="absolute -inset-4 bg-[#00e676]/5 blur-3xl rounded-full opacity-0 group-hover:opacity-100 transition-opacity duration-1000" />
+                <div className="relative glass-card p-1">
+                  <HubyInsightsPanel />
+                </div>
               </div>
             </motion.div>
           </div>

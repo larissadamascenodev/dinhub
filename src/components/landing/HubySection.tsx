@@ -42,7 +42,7 @@ const HubySection = () => {
     switch (id) {
       case 'balanco':
         return (
-          <div className="bg-[#0f0f0f]/80 backdrop-blur-xl border border-white/[0.08] p-6 rounded-3xl w-full space-y-5 shadow-2xl">
+          <div className="glass-card p-6 w-full space-y-5">
             <div className="flex justify-between items-center">
               <div className="flex items-center gap-3">
                 <div className="w-10 h-10 rounded-xl bg-[#00e676]/10 flex items-center justify-center border border-[#00e676]/20">
@@ -101,7 +101,7 @@ const HubySection = () => {
         );
       case 'fatura':
         return (
-          <div className="bg-[#0f0f0f]/80 backdrop-blur-xl border border-white/[0.08] p-6 rounded-3xl w-full space-y-5 shadow-2xl">
+          <div className="glass-card p-6 w-full space-y-5">
             <div className="flex justify-between items-start">
               <div className="flex items-center gap-3">
                 <div className="w-10 h-10 rounded-xl bg-purple-500/10 flex items-center justify-center border border-purple-500/20">
@@ -158,7 +158,7 @@ const HubySection = () => {
         );
       case 'parcelas':
         return (
-          <div className="bg-[#0f0f0f]/80 backdrop-blur-xl border border-white/[0.08] p-6 rounded-3xl w-full space-y-6 shadow-2xl">
+          <div className="glass-card p-6 w-full space-y-6">
             <div className="flex justify-between items-center">
               <div className="flex items-center gap-3">
                 <div className="w-10 h-10 rounded-xl bg-orange-500/10 flex items-center justify-center border border-orange-500/20">
@@ -213,7 +213,7 @@ const HubySection = () => {
         );
       case 'projecao':
         return (
-          <div className="bg-[#0f0f0f]/80 backdrop-blur-xl border border-white/[0.08] p-6 rounded-3xl w-full space-y-6 shadow-2xl">
+          <div className="glass-card p-6 w-full space-y-6">
             <div className="flex justify-between items-center">
               <div className="flex items-center gap-3">
                 <div className="w-10 h-10 rounded-xl bg-[#00e676]/10 flex items-center justify-center border border-[#00e676]/20">
@@ -248,7 +248,7 @@ const HubySection = () => {
         );
       case 'categorias':
         return (
-          <div className="bg-[#0f0f0f]/80 backdrop-blur-xl border border-white/[0.08] p-6 rounded-3xl w-full space-y-5 shadow-2xl">
+          <div className="glass-card p-6 w-full space-y-5">
             <div className="flex items-center gap-3 mb-2">
               <div className="w-10 h-10 rounded-xl bg-blue-500/10 flex items-center justify-center border border-blue-500/20">
                 <BarChart3 className="w-5 h-5 text-blue-400" />
@@ -421,28 +421,27 @@ const HubySection = () => {
 
   // ---------- RENDER ----------
   return (
-    <section className="pt-2 pb-24 md:pt-4 md:pb-32 px-5 flex flex-col items-center relative overflow-hidden">
+    <section id="experiencia" className="section-padding px-5 flex flex-col items-center relative overflow-hidden bg-[#0a0a0a]">
       {/* Cinematic background */}
       <div className="absolute inset-0 pointer-events-none">
-        <div className="absolute top-0 left-1/2 -translate-x-1/2 w-[80%] h-[400px] bg-gradient-to-b from-[#00e676]/[0.04] via-transparent to-transparent blur-[100px]" />
-        <div className="absolute bottom-0 right-0 w-[40%] h-[400px] bg-blue-500/[0.03] blur-[120px] rounded-full" />
-        <div className="absolute top-1/3 left-0 w-[30%] h-[300px] bg-purple-500/[0.03] blur-[120px] rounded-full" />
+        <div className="absolute top-0 left-1/2 -translate-x-1/2 w-[80%] h-[400px] bg-gradient-to-b from-[#00e676]/[0.05] via-transparent to-transparent blur-[120px]" />
+        <div className="absolute bottom-0 right-0 w-[40%] h-[400px] bg-blue-500/[0.02] blur-[150px] rounded-full" />
       </div>
 
       <div className="w-full max-w-5xl flex flex-col items-center relative z-10">
-        <div className="text-center mb-10 md:mb-14 space-y-4">
+        <div className="text-center mb-24 md:mb-40 space-y-8">
           <motion.div 
             initial={{ opacity: 0, scale: 0.9 }}
             whileInView={{ opacity: 1, scale: 1 }}
-            className="inline-flex items-center gap-2 px-3 py-1 rounded-full border border-[#00e676]/20 bg-[#00e676]/5 backdrop-blur-md mt-2 mb-2"
+            className="inline-flex items-center gap-2.5 px-5 py-2 rounded-full border border-white/[0.08] bg-white/[0.03] backdrop-blur-xl"
           >
-            <Sparkles className="w-3 h-3 text-[#00e676]" />
-            <span className="text-[10px] font-black tracking-[0.2em] text-[#00e676] uppercase">Interface Neural</span>
+            <Sparkles className="w-3.5 h-3.5 text-[#00e676]" />
+            <span className="text-[10px] font-black tracking-[0.3em] text-white/50 uppercase">Interface Neural</span>
           </motion.div>
           
-          <h2 className="font-sora font-extrabold text-white text-3xl md:text-7xl tracking-tighter leading-[1.1] md:leading-[1.05]">
+          <h2 className="display-title text-white text-3xl md:text-8xl">
             Teste a Experiência <br />
-            <span className="bg-gradient-to-r from-white/20 to-white bg-clip-text text-transparent italic font-light">
+            <span className="bg-gradient-to-r from-white/20 via-white to-white/20 bg-clip-text text-transparent italic font-light">
               interaja com a Huby.
             </span>
           </h2>

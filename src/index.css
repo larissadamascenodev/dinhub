@@ -1,4 +1,4 @@
-@import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap');
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=Plus+Jakarta+Sans:wght@400;500;600;700;800&family=Sora:wght@300;400;500;600;700;800&display=swap');
 
 #lovable-badge {
   display: none !important;
@@ -108,17 +108,49 @@
 
 @layer components {
   .glass-card {
-    @apply rounded-2xl;
-    background: var(--gradient-card);
-    box-shadow: var(--shadow-card);
-    border: 1px solid hsl(225 14% 16% / 0.5);
+    @apply rounded-[32px] overflow-hidden;
+    background: linear-gradient(145deg, rgba(15, 15, 15, 0.8) 0%, rgba(10, 10, 10, 0.9) 100%);
+    box-shadow: 0 8px 32px -4px rgba(0, 0, 0, 0.5), inset 0 1px 0 0 rgba(255, 255, 255, 0.03);
+    border: 1px solid rgba(255, 255, 255, 0.05);
+    backdrop-filter: blur(20px);
+    transition: all 0.5s cubic-bezier(0.16, 1, 0.3, 1);
   }
 
-  .glass-card-lg {
-    @apply rounded-2xl;
-    background: var(--gradient-card);
-    box-shadow: var(--shadow-card-lg);
-    border: 1px solid hsl(225 14% 18% / 0.5);
+  .glass-card:hover {
+    border-color: rgba(255, 255, 255, 0.1);
+    box-shadow: 0 12px 48px -8px rgba(0, 0, 0, 0.6), inset 0 1px 0 0 rgba(255, 255, 255, 0.05);
+    transform: translateY(-2px);
+  }
+
+  .premium-button-primary {
+    @apply relative px-10 py-5 rounded-2xl bg-[#00e676] text-[#0a0a0a] font-sora font-extrabold text-lg 
+           transition-all duration-500 overflow-hidden z-10;
+    box-shadow: 0 10px 30px -10px rgba(0, 230, 118, 0.3);
+  }
+
+  .premium-button-primary:hover {
+    @apply shadow-[0_15px_40px_-10px_rgba(0,230,118,0.5)] -translate-y-1;
+  }
+
+  .premium-button-secondary {
+    @apply relative px-10 py-5 rounded-2xl border border-white/10 bg-white/[0.03] backdrop-blur-xl 
+           text-white font-sora font-extrabold text-lg transition-all duration-500 overflow-hidden;
+  }
+
+  .premium-button-secondary:hover {
+    @apply bg-white/[0.08] border-white/20 -translate-y-1 shadow-[0_10px_30px_-10px_rgba(255,255,255,0.1)];
+  }
+
+  .text-glow {
+    text-shadow: 0 0 20px rgba(0, 230, 118, 0.3);
+  }
+
+  .section-padding {
+    @apply py-24 md:py-40;
+  }
+
+  .display-title {
+    @apply font-sora font-extrabold tracking-tight leading-[1.05];
   }
 
   .premium-border {
