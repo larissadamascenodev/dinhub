@@ -235,7 +235,7 @@ const Hero = ({ videoSrc }: HeroProps) => {
 
       {/* Content */}
       <div ref={contentRef} className="relative z-20 flex flex-col items-center max-w-7xl px-4 sm:px-6 w-full text-center">
-        <div className="flex flex-col items-center gap-4 md:gap-6 mb-8 md:mb-10">
+        <div className="flex flex-col items-center gap-4 md:gap-6 mb-4 md:mb-6">
         </div>
 
         <h1 
