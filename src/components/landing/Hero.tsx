@@ -92,17 +92,17 @@ const Hero = ({ videoSrc = "https://cdn.pixabay.com/video/2023/10/20/185731-8763
         }
       });
 
-      // ScrollTrigger for scroll indicator
-      ScrollTrigger.create({
-        trigger: containerRef.current,
-        start: 'top top',
-        end: '+=100',
-        onLeave: () => {
-          gsap.to(scrollIndicatorRef.current, { opacity: 0, duration: 0.5 });
+      // ScrollTrigger for scroll indicator fade out
+      gsap.to(scrollIndicatorRef.current, {
+        scrollTrigger: {
+          trigger: containerRef.current,
+          start: 'top top',
+          end: '+=100',
+          scrub: 1,
         },
-        onEnterBack: () => {
-          gsap.to(scrollIndicatorRef.current, { opacity: 1, duration: 0.5 });
-        },
+        opacity: 0,
+        y: 20,
+        ease: 'none',
       });
 
     }, containerRef);
