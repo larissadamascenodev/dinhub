@@ -324,6 +324,27 @@ const HubySection = () => {
       <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-full max-w-[1000px] aspect-square bg-[#00e676]/5 blur-[150px] pointer-events-none rounded-full" />
 
       <div className="w-full max-w-5xl flex flex-col items-center relative z-10">
+        <div className="text-center mb-16 md:mb-24 space-y-6">
+          <motion.div 
+            initial={{ opacity: 0, scale: 0.9 }}
+            whileInView={{ opacity: 1, scale: 1 }}
+            className="inline-flex items-center gap-2 px-3 py-1 rounded-full border border-[#00e676]/20 bg-[#00e676]/5 backdrop-blur-md"
+          >
+            <Sparkles className="w-3 h-3 text-[#00e676]" />
+            <span className="text-[10px] font-black tracking-[0.2em] text-[#00e676] uppercase">Interface Neural</span>
+          </motion.div>
+          
+          <h2 className="font-sora font-extrabold text-white text-3xl md:text-6xl tracking-tighter leading-tight">
+            Teste a Experiência <br />
+            <span className="bg-gradient-to-r from-[#00e676] to-[#00ff88] bg-clip-text text-transparent">
+              Interaja com a Huby
+            </span>
+          </h2>
+          
+          <p className="text-white/50 max-w-2xl mx-auto text-base md:text-lg font-light leading-relaxed">
+            Clique nos tópicos abaixo para simular uma conversa em tempo real e ver como a Huby processa dados complexos em insights acionáveis instantaneamente.
+          </p>
+        </div>
 
         {/* Screens (former bottom row, now main entry point) */}
         <div className="w-full flex overflow-x-auto no-scrollbar gap-3 pb-8 md:justify-center mb-4">
