@@ -346,6 +346,11 @@ const Hero = ({ videoSrc }: HeroProps) => {
       <style>{`
         .word {
           display: inline-block;
+          line-height: 1.2;
+          padding-top: 0.1em;
+          padding-bottom: 0.1em;
+          margin-top: -0.1em;
+          margin-bottom: -0.1em;
         }
       `}</style>
     </section>
