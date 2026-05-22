@@ -254,11 +254,40 @@ const Hero = ({ videoSrc }: HeroProps) => {
           O DinHub analisa cada centavo, te avisa antes de virar problema e mostra o que fazer.
         </p>
 
-        <div className="flex flex-wrap justify-center gap-6">
+        <div className="flex flex-col items-center gap-8">
           <button className="group flex items-center gap-4 px-10 py-5 rounded-2xl bg-[#00e676] text-black font-black text-sm uppercase tracking-widest hover:scale-105 hover:shadow-[0_0_40px_rgba(0,230,118,0.3)] transition-all duration-500">
             Iniciar Sincronização
             <ArrowRight className="w-5 h-5 group-hover:translate-x-1.5 transition-transform" />
           </button>
+
+          {/* Social Proof / Users Info */}
+          <div className="flex flex-col sm:flex-row items-center gap-4 sm:gap-6 py-2 px-6 rounded-2xl border border-white/5 bg-white/[0.02] backdrop-blur-sm">
+            <div className="flex -space-x-3">
+              {[1, 2, 3, 4].map((i) => (
+                <div key={i} className="w-8 h-8 rounded-full border-2 border-[#030303] overflow-hidden">
+                  <img 
+                    src={`https://i.pravatar.cc/150?u=user${i + 10}`} 
+                    alt="User" 
+                    className="w-full h-full object-cover"
+                  />
+                </div>
+              ))}
+              <div className="w-8 h-8 rounded-full border-2 border-[#030303] bg-[#111] flex items-center justify-center">
+                <span className="text-[10px] font-bold text-[#00e676]">+2k</span>
+              </div>
+            </div>
+            <div className="flex flex-col items-center sm:items-start">
+              <div className="flex items-center gap-1">
+                {[1, 2, 3, 4, 5].map((s) => (
+                  <Sparkles key={s} className="w-2.5 h-2.5 text-[#00e676] fill-[#00e676]" />
+                ))}
+                <span className="text-[10px] font-bold text-white ml-1">4.9/5</span>
+              </div>
+              <p className="text-[10px] font-black uppercase tracking-widest text-white/30">
+                Mais de <span className="text-white/60">2.800 usuários</span> economizando hoje
+              </p>
+            </div>
+          </div>
         </div>
       </div>
 
