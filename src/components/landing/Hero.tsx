@@ -215,11 +215,6 @@ const Hero = ({ videoSrc }: HeroProps) => {
               </p>
             </div>
           </div>
-
-          <div className="flex items-center gap-3 px-4 py-1.5 rounded-full border border-white/5 bg-white/5 backdrop-blur-md">
-            <div className="w-2 h-2 rounded-full bg-[#00e676] animate-pulse" />
-            <span className="text-[9px] font-black uppercase tracking-[0.3em] text-white/60">Neural Engine Online</span>
-          </div>
         </div>
 
         <h1 
