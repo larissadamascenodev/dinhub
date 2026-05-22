@@ -19,6 +19,7 @@ const SubtleParticles: React.FC = () => {
       size: number;
       opacity: number;
       targetOpacity: number;
+      isStable: boolean;
     }[] = [];
 
     const handleMouseMove = (e: MouseEvent) => {
@@ -45,6 +46,7 @@ const SubtleParticles: React.FC = () => {
           size: Math.random() * 1.8 + 0.6,
           opacity: opacity,
           targetOpacity: opacity,
+          isStable: Math.random() > 0.3 // 70% das partículas serão totalmente estáveis
         });
       }
     };
@@ -75,11 +77,13 @@ const SubtleParticles: React.FC = () => {
         if (p.y < 0) p.y = canvas.height;
         if (p.y > canvas.height) p.y = 0;
 
-        // Subtle twinkle
-        if (Math.random() > 0.98) {
-          p.targetOpacity = Math.random() * 0.5 + 0.1;
+        // Subtle twinkle - only for non-stable particles
+        if (!p.isStable && Math.random() > 0.99) {
+          p.targetOpacity = Math.random() * 0.4 + 0.2;
         }
-        p.opacity += (p.targetOpacity - p.opacity) * 0.02;
+        if (!p.isStable) {
+          p.opacity += (p.targetOpacity - p.opacity) * 0.01;
+        }
 
         // Draw particle
         ctx.beginPath();
