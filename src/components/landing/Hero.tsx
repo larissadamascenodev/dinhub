@@ -17,8 +17,11 @@ const Hero = ({ videoSrc }: HeroProps) => {
   const overlayRef = useRef<HTMLDivElement>(null);
   const hudRef = useRef<HTMLDivElement>(null);
   const contentRef = useRef<HTMLDivElement>(null);
+  const badgeRef = useRef<HTMLDivElement>(null);
   const headlineRef = useRef<HTMLHeadingElement>(null);
   const subHeadlineRef = useRef<HTMLParagraphElement>(null);
+  const buttonsRef = useRef<HTMLDivElement>(null);
+  const labelsRef = useRef<HTMLDivElement>(null);
   const scrollIndicatorRef = useRef<HTMLDivElement>(null);
   const sphereRef = useRef<HTMLDivElement>(null);
 
@@ -30,10 +33,22 @@ const Hero = ({ videoSrc }: HeroProps) => {
       gsap.set([overlayRef.current, hudRef.current, scrollIndicatorRef.current, sphereRef.current], {
         opacity: 0,
       });
-      gsap.set(subHeadlineRef.current, { opacity: 0, y: 20 });
       gsap.set(hudRef.current, { y: -30 });
       gsap.set(sphereRef.current, { scale: 0.8 });
       
+      const revealElements = [
+        badgeRef.current,
+        subHeadlineRef.current,
+        buttonsRef.current,
+        labelsRef.current
+      ];
+
+      gsap.set(revealElements, { 
+        opacity: 0,
+        y: 20,
+        clipPath: 'inset(100% 0 0 0)',
+      });
+
       const words = headlineRef.current?.querySelectorAll('.word');
       if (words) {
         gsap.set(words, { 
@@ -42,52 +57,85 @@ const Hero = ({ videoSrc }: HeroProps) => {
         });
       }
 
-      // 2. Timeline
-      const tl = gsap.timeline({
-        delay: 0.4,
-      });
-
-      // Overlay fade in
-      tl.to(overlayRef.current, {
+      // 2. Initial background intro (first load only)
+      gsap.to(overlayRef.current, {
         opacity: 1,
-        duration: 1.2,
+        duration: 1.5,
         ease: 'power3.inOut',
       });
 
-      // Sphere reveal
-      tl.to(sphereRef.current, {
+      gsap.to(sphereRef.current, {
         opacity: 1,
         scale: 1,
-        duration: 1.5,
+        duration: 2,
         ease: 'expo.out',
-      }, "-=0.6");
+      });
+
+      // 3. Content Timeline (triggers on mount and on return)
+      const tl = gsap.timeline({
+        scrollTrigger: {
+          trigger: containerRef.current,
+          start: 'top 90%',
+          end: 'bottom 10%',
+          toggleActions: "play none none reverse", 
+        },
+        delay: 0.1,
+      });
 
       // HUD superior
       tl.to(hudRef.current, {
         opacity: 1,
         y: 0,
-        duration: 0.7,
+        duration: 0.8,
         ease: 'power3.out',
-      }, "-=1");
+      }, 0.2);
+
+      // Social Proof Badge
+      tl.to(badgeRef.current, {
+        opacity: 1,
+        y: 0,
+        clipPath: 'inset(0% 0 0 0)',
+        duration: 0.9,
+        ease: 'power4.out',
+      }, 0.4);
 
       // Headline reveal
       if (words) {
         tl.to(words, {
           clipPath: 'inset(0% 0 0 0)',
           y: 0,
-          duration: 1.1,
+          duration: 1.2,
           stagger: 0.08,
-          ease: 'expo.out',
-        }, "-=0.8");
+          ease: 'power4.out',
+        }, 0.5);
       }
 
-      // Sub-headline fade up
+      // Sub-headline reveal
       tl.to(subHeadlineRef.current, {
         opacity: 1,
         y: 0,
+        clipPath: 'inset(0% 0 0 0)',
         duration: 1,
-        ease: 'power3.out',
-      }, "-=0.4");
+        ease: 'power4.out',
+      }, 0.7);
+
+      // Buttons reveal
+      tl.to(buttonsRef.current, {
+        opacity: 1,
+        y: 0,
+        clipPath: 'inset(0% 0 0 0)',
+        duration: 1,
+        ease: 'power4.out',
+      }, 0.9);
+
+      // Labels reveal
+      tl.to(labelsRef.current, {
+        opacity: 1,
+        y: 0,
+        clipPath: 'inset(0% 0 0 0)',
+        duration: 1,
+        ease: 'power4.out',
+      }, 1.1);
 
       // Scroll indicator
       tl.to(scrollIndicatorRef.current, {
@@ -102,7 +150,7 @@ const Hero = ({ videoSrc }: HeroProps) => {
             ease: 'sine.inOut',
           });
         }
-      }, "-=0.2");
+      }, 1.3);
 
       // ScrollTrigger for parallax and fade
       gsap.to(contentRef.current, {
@@ -189,7 +237,7 @@ const Hero = ({ videoSrc }: HeroProps) => {
       <div ref={contentRef} className="relative z-20 flex flex-col items-center max-w-7xl px-4 sm:px-6 w-full text-center">
         <div className="flex flex-col items-center gap-4 md:gap-6 mb-8 md:mb-12">
           {/* Social Proof / Users Info */}
-          <div className="flex flex-row items-center gap-3 sm:gap-6 py-2 px-4 sm:px-6 rounded-2xl border border-white/5 bg-white/[0.02] backdrop-blur-sm">
+          <div ref={badgeRef} className="flex flex-row items-center gap-3 sm:gap-6 py-2 px-4 sm:px-6 rounded-2xl border border-white/5 bg-white/[0.02] backdrop-blur-sm">
             <div className="flex -space-x-1.5 sm:-space-x-3 shrink-0">
               {[1, 2, 3, 4].map((i) => (
                 <div key={i} className="w-5 h-5 sm:w-8 sm:h-8 rounded-full border border-[#030303] overflow-hidden">
@@ -248,7 +296,7 @@ const Hero = ({ videoSrc }: HeroProps) => {
         </p>
 
         <div className="flex flex-col items-center gap-6 w-full">
-          <div className="flex flex-row items-center justify-center gap-2.5 sm:gap-6 w-full max-w-[350px] sm:max-w-none px-2 sm:px-0">
+          <div ref={buttonsRef} className="flex flex-row items-center justify-center gap-2.5 sm:gap-6 w-full max-w-[350px] sm:max-w-none px-2 sm:px-0">
             <button className="group relative flex-1 sm:flex-none flex items-center justify-center gap-2 sm:gap-3 px-4 sm:px-12 py-3.5 sm:py-5 rounded-xl sm:rounded-2xl bg-white text-black font-black text-[9px] sm:text-sm uppercase tracking-widest hover:scale-105 transition-all duration-500 shadow-[0_20px_50px_rgba(255,255,255,0.1)] whitespace-nowrap">
               Começar Grátis
               <ArrowRight className="w-3 h-3 sm:w-5 sm:h-5 group-hover:translate-x-1.5 transition-transform" />
@@ -260,7 +308,7 @@ const Hero = ({ videoSrc }: HeroProps) => {
           </div>
 
           {/* Micro-info labels */}
-          <div className="flex flex-row items-center justify-center gap-3 sm:gap-8 text-[7px] md:text-[10px] font-black uppercase tracking-[0.1em] sm:tracking-[0.2em] text-white/30 whitespace-nowrap">
+          <div ref={labelsRef} className="flex flex-row items-center justify-center gap-3 sm:gap-8 text-[7px] md:text-[10px] font-black uppercase tracking-[0.1em] sm:tracking-[0.2em] text-white/30 whitespace-nowrap">
             <div className="flex items-center gap-1.5 sm:gap-2">
               <Calendar className="w-2 sm:w-3 h-2 sm:h-3 text-[#00e676]/60" />
               Teste 3 dias grátis
