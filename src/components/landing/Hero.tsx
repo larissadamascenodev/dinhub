@@ -268,7 +268,7 @@ const Hero = ({ videoSrc }: HeroProps) => {
 
         <h1 
           ref={headlineRef}
-          className="text-white font-black leading-[0.95] tracking-tighter text-center mb-6 md:mb-10 overflow-hidden"
+          className="text-white font-black leading-[1.1] tracking-tighter text-center mb-6 md:mb-10"
           style={{ 
             fontSize: 'clamp(1.4rem, 6.5vw, 5.5rem)',
             width: '100%',
