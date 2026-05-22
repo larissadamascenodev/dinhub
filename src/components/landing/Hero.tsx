@@ -201,7 +201,7 @@ const Hero = ({ videoSrc }: HeroProps) => {
   return (
     <section 
       ref={containerRef}
-      className="relative w-full h-[100svh] min-h-[600px] bg-[#030303] overflow-hidden flex flex-col items-center justify-center font-sora py-20"
+      className="relative w-full h-[100svh] min-h-[600px] bg-[#030303] overflow-hidden flex flex-col items-center justify-center font-sora pt-10 pb-20"
     >
       {/* Background Video */}
       {videoSrc && (
@@ -235,35 +235,7 @@ const Hero = ({ videoSrc }: HeroProps) => {
 
       {/* Content */}
       <div ref={contentRef} className="relative z-20 flex flex-col items-center max-w-7xl px-4 sm:px-6 w-full text-center">
-        <div className="flex flex-col items-center gap-4 md:gap-6 mb-8 md:mb-12">
-          {/* Social Proof / Users Info */}
-          <div ref={badgeRef} className="flex flex-row items-center gap-2.5 sm:gap-4 py-1.5 px-3 sm:px-5 rounded-2xl border border-white/5 bg-white/[0.02] backdrop-blur-sm w-fit">
-            <div className="flex -space-x-1 sm:-space-x-2 shrink-0">
-              {[1, 2, 3, 4].map((i) => (
-                <div key={i} className="w-4 h-4 sm:w-6 sm:h-6 rounded-full border border-[#030303] overflow-hidden">
-                  <img 
-                    src={`https://i.pravatar.cc/150?u=user${i + 10}`} 
-                    alt="User" 
-                    className="w-full h-full object-cover"
-                  />
-                </div>
-              ))}
-              <div className="w-4 h-4 sm:w-6 sm:h-6 rounded-full border border-[#030303] bg-[#111] flex items-center justify-center">
-                <span className="text-[6px] sm:text-[8px] font-bold text-[#00e676]">+2k</span>
-              </div>
-            </div>
-            <div className="flex flex-col items-start">
-              <div className="flex items-center gap-1">
-                {[1, 2, 3, 4, 5].map((s) => (
-                  <Sparkles key={s} className="w-1.5 h-1.5 text-[#00e676] fill-[#00e676]" />
-                ))}
-                <span className="text-[7px] sm:text-[9px] font-bold text-white ml-0.5">4.9/5</span>
-              </div>
-              <p className="text-[6.5px] sm:text-[9px] font-black uppercase tracking-[0.05em] text-white/20 whitespace-nowrap">
-                <span className="text-white/40">+2.800 usuários</span> economizando hoje
-              </p>
-            </div>
-          </div>
+        <div className="flex flex-col items-center gap-4 md:gap-6 mb-8 md:mb-10">
         </div>
 
         <h1 
@@ -317,6 +289,35 @@ const Hero = ({ videoSrc }: HeroProps) => {
             <div className="flex items-center gap-1.5 sm:gap-2">
               <XCircle className="w-2 sm:w-3 h-2 sm:h-3 text-[#00e676]/60" />
               Cancele quando quiser
+            </div>
+          </div>
+
+          {/* Social Proof / Users Info - Moved to Bottom */}
+          <div ref={badgeRef} className="flex flex-row items-center gap-2.5 sm:gap-4 py-1.5 px-3 sm:px-5 rounded-2xl border border-white/5 bg-white/[0.02] backdrop-blur-sm w-fit mt-4">
+            <div className="flex -space-x-1 sm:-space-x-2 shrink-0">
+              {[1, 2, 3, 4].map((i) => (
+                <div key={i} className="w-4 h-4 sm:w-6 sm:h-6 rounded-full border border-[#030303] overflow-hidden">
+                  <img 
+                    src={`https://i.pravatar.cc/150?u=user${i + 10}`} 
+                    alt="User" 
+                    className="w-full h-full object-cover"
+                  />
+                </div>
+              ))}
+              <div className="w-4 h-4 sm:w-6 sm:h-6 rounded-full border border-[#030303] bg-[#111] flex items-center justify-center">
+                <span className="text-[6px] sm:text-[8px] font-bold text-[#00e676]">+2k</span>
+              </div>
+            </div>
+            <div className="flex flex-col items-start">
+              <div className="flex items-center gap-1">
+                {[1, 2, 3, 4, 5].map((s) => (
+                  <Sparkles key={s} className="w-1.5 h-1.5 text-[#00e676] fill-[#00e676]" />
+                ))}
+                <span className="text-[7px] sm:text-[9px] font-bold text-white ml-0.5">4.9/5</span>
+              </div>
+              <p className="text-[6.5px] sm:text-[9px] font-black uppercase tracking-[0.05em] text-white/20 whitespace-nowrap">
+                <span className="text-white/40">+2.800 usuários</span> economizando hoje
+              </p>
             </div>
           </div>
         </div>
