@@ -344,6 +344,10 @@ const HubySection = () => {
 
         {/* Sphere */}
         <div className="relative mb-12">
+          <div className="absolute -top-16 left-1/2 -translate-x-1/2 text-center w-full">
+            <h3 className="text-white/40 text-[10px] font-black uppercase tracking-[0.4em] mb-2">Inteligência Neural</h3>
+            <div className="h-[1px] w-12 bg-gradient-to-r from-transparent via-[#00e676]/30 to-transparent mx-auto" />
+          </div>
           <ParticleSphere state={status} />
           <div className="absolute -bottom-8 left-1/2 -translate-x-1/2 flex items-center gap-3 whitespace-nowrap bg-white/[0.03] px-4 py-2 rounded-xl border border-white/[0.05] backdrop-blur-xl">
             <div
