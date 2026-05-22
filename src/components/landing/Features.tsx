@@ -179,8 +179,8 @@ const Features = () => {
                 </div>
               </div>
               
-              <div className="relative group">
-                <div className="absolute inset-0 bg-[#00e676]/10 blur-[100px] rounded-full group-hover:bg-[#00e676]/20 transition-all duration-1000" />
+              <div className="relative group p-1 rounded-[42px] bg-gradient-to-tr from-[#00e676]/20 via-transparent to-blue-500/20">
+                <div className="absolute inset-0 bg-[#0a0a0a] rounded-[41px] -z-10" />
                 <HubyInsightsPanel />
               </div>
             </motion.div>
