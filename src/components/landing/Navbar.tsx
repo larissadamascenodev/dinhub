@@ -14,9 +14,17 @@ const Navbar = () => {
       <div className="flex items-center justify-between gap-3 sm:gap-8 px-4 sm:px-10 py-2.5 sm:py-4 rounded-full border border-white/[0.08] bg-black/60 backdrop-blur-2xl shadow-2xl">
         {/* Logo */}
         <div className="flex items-center cursor-pointer group shrink-0" onClick={() => window.scrollTo({ top: 0, behavior: 'smooth' })}>
-          <span className="font-sora font-black text-lg sm:text-3xl text-white tracking-tighter flex items-center">
-            DIN<span className="inline-block bg-white text-black px-1.5 ml-0.5 rounded-sm transform -skew-x-12 italic text-[0.8em]">HUBY</span>
-          </span>
+          <div className="flex items-center gap-0.5">
+            <span className="font-sora font-black text-xl sm:text-2xl text-white tracking-tighter uppercase">
+              Din
+            </span>
+            <div className="relative">
+              <span className="font-sora font-light text-xl sm:text-2xl text-[#00e676] tracking-widest uppercase italic ml-1">
+                Huby
+              </span>
+              <div className="absolute -bottom-1 left-1 w-full h-[2px] bg-gradient-to-r from-[#00e676] to-transparent opacity-50" />
+            </div>
+          </div>
         </div>
 
         {/* Links - Now visible on mobile too but more compact */}
