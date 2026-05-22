@@ -439,7 +439,7 @@ const HubySection = () => {
             <span className="text-[8px] md:text-[10px] font-black tracking-[0.2em] md:tracking-[0.3em] text-white/50 uppercase">Interface Neural</span>
           </motion.div>
           
-          <h2 className="display-title text-white text-3xl sm:text-5xl md:text-7xl leading-[1.1] md:leading-[1.1]">
+          <h2 className="display-title text-white text-[1.45rem] sm:text-5xl md:text-7xl leading-[1.15] md:leading-[1.1] tracking-tighter">
             O Tony Stark tem o Jarvis <br className="block" />
             <span className="bg-gradient-to-r from-white/20 via-white to-white/20 bg-clip-text text-transparent italic font-light">
               e você tem a Huby.
