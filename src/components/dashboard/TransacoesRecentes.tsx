@@ -50,8 +50,8 @@ const FaturaCard = ({ tx, onClick }: { tx: Transaction; onClick: () => void }) =
         <CreditCard className="w-4 h-4 md:w-[18px] md:h-[18px]" style={{ color: `hsl(${cardColor})` }} />
       </div>
       <div className="flex-1 min-w-0">
-        <p className="text-xs md:text-[13px] font-bold text-foreground truncate">{tx.name}</p>
-        <p className="text-[9px] md:text-[10px] mt-0.5 text-muted-foreground/50">
+        <p className="text-[13px] font-bold text-white truncate tracking-tight">{tx.name}</p>
+        <p className="text-[10px] mt-0.5 text-white/30 font-medium uppercase tracking-wider">
           {tx.faturaItemCount} lançamento{tx.faturaItemCount !== 1 ? "s" : ""} · Fatura
         </p>
       </div>
