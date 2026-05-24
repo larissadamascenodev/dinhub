@@ -248,12 +248,12 @@ export default function RadarFinanceiro() {
     <div className="space-y-4 pb-6">
       {/* ── Back + Title ── */}
       <motion.div initial={{ opacity: 0, y: 8 }} animate={{ opacity: 1, y: 0 }} className="space-y-2">
-        <button onClick={() => navigate(-1)} className="w-9 h-9 rounded-xl bg-secondary/50 border border-border/5 flex items-center justify-center hover:bg-secondary/70 active:scale-95 transition-all">
-          <ArrowLeft className="w-4 h-4 text-foreground" />
+        <button onClick={() => navigate(-1)} className="w-10 h-10 rounded-2xl bg-white/5 border border-white/10 flex items-center justify-center hover:bg-white/10 active:scale-95 transition-all shadow-lg backdrop-blur-md">
+          <ArrowLeft className="w-5 h-5 text-white" />
         </button>
-        <div>
-          <h1 className="text-[24px] font-extrabold text-foreground tracking-tight leading-none">Radar Financeiro</h1>
-          <p className="text-[11px] text-muted-foreground/60 mt-1 font-medium">Diagnóstico completo da sua vida financeira</p>
+        <div className="pt-2">
+          <h1 className="text-[32px] font-black text-white tracking-tighter leading-tight drop-shadow-sm">Radar <span className="text-primary">Financeiro</span></h1>
+          <p className="text-[12px] text-white/40 font-bold uppercase tracking-[0.2em]">Inteligência de Dados e Diagnóstico</p>
         </div>
       </motion.div>
 
