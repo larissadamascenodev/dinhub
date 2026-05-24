@@ -143,11 +143,11 @@ function ScoreRing({ value, size = 72, stroke = 6, color }: { value: number; siz
 
 // ─── Stat block ─────────────────────────────────────────────────────
 
-function StatBlock({ label, value, sub, color = "text-foreground" }: { label: string; value: string; sub?: string; color?: string }) {
+function StatBlock({ label, value, sub, color = "text-white" }: { label: string; value: string; sub?: string; color?: string }) {
   return (
-    <div className="rounded-[14px] bg-secondary/15 border border-border/5 p-3.5">
-      <p className="text-[9px] font-semibold tracking-[0.8px] text-muted-foreground/60 uppercase">{label}</p>
-      <p className={`text-[18px] font-extrabold tabular-nums mt-1 tracking-tight ${color}`}>{value}</p>
+    <div className="rounded-[20px] bg-white/5 border border-white/5 p-4 backdrop-blur-sm">
+      <p className="text-[10px] font-black tracking-widest text-white/30 uppercase">{label}</p>
+      <p className={`text-[20px] font-black tabular-nums mt-1 tracking-tight ${color}`}>{value}</p>
       {sub && <p className="text-[9px] text-muted-foreground/50 mt-0.5 font-medium">{sub}</p>}
     </div>
   );
