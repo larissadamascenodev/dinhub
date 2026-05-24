@@ -2,7 +2,7 @@ import React from 'react';
 
 const Navbar = () => {
   return (
-    <nav className="fixed top-4 sm:top-6 left-1/2 -translate-x-1/2 z-[100] w-[92%] sm:w-auto min-w-[280px] md:min-w-[600px] lg:min-w-[800px] max-w-[95%] transition-all duration-500">
+    <nav className="fixed top-4 sm:top-6 left-1/2 -translate-x-1/2 z-[100] w-[92%] sm:w-auto min-w-[280px] md:min-w-[600px] lg:min-w-[850px] max-w-[95%] transition-all duration-500">
       <div className="flex items-center justify-between gap-6 sm:gap-24 px-8 sm:px-16 py-3 sm:py-6 rounded-full border border-white/[0.08] bg-black/60 backdrop-blur-2xl shadow-2xl">
         {/* Logo */}
         <div 
@@ -14,6 +14,22 @@ const Navbar = () => {
               DinHub
             </span>
           </div>
+        </div>
+
+        {/* Desktop Navigation */}
+        <div className="hidden md:flex items-center gap-12">
+          <button 
+            onClick={() => document.getElementById('features')?.scrollIntoView({ behavior: 'smooth' })}
+            className="text-white/70 hover:text-white font-sora text-sm font-medium transition-colors"
+          >
+            Funcionalidades
+          </button>
+          <button 
+            onClick={() => document.getElementById('plans')?.scrollIntoView({ behavior: 'smooth' })}
+            className="text-white/70 hover:text-white font-sora text-sm font-medium transition-colors"
+          >
+            Planos
+          </button>
         </div>
 
         {/* CTA Button */}
