@@ -114,12 +114,17 @@ const ProximosEventos = memo(({ events, selectedMonth, selectedYear, onVerTodos,
   };
 
   return (
-    <div className="rounded-2xl bg-card/90 backdrop-blur-xl border border-border/30 shadow-lg shadow-black/20 overflow-hidden">
+    <div className="rounded-[32px] bg-white/[0.02] border border-white/[0.05] shadow-[0_8px_30px_-5px_rgba(0,0,0,0.5)] overflow-hidden">
       {/* Header */}
-      <div className="flex items-center justify-between px-4 pt-3.5 pb-2">
-        <div className="flex items-center gap-2">
-          <CalendarDays className="w-4 h-4 text-primary" />
-          <h2 className="text-sm font-bold text-foreground">Próximos Eventos</h2>
+      <div className="flex items-center justify-between px-6 pt-6 pb-4">
+        <div className="flex items-center gap-3">
+          <div className="w-10 h-10 rounded-2xl bg-white/[0.03] flex items-center justify-center border border-white/[0.05]">
+            <CalendarDays className="w-5 h-5 text-primary" />
+          </div>
+          <div>
+            <h2 className="text-sm font-bold text-white uppercase tracking-[0.2em]">Compromissos</h2>
+            <p className="text-[10px] text-white/30 font-medium uppercase tracking-wider mt-0.5">Calendário mensal</p>
+          </div>
         </div>
       </div>
 
