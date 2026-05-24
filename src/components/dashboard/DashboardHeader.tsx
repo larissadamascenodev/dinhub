@@ -171,13 +171,12 @@ const DashboardHeader = memo(({ profile, streak = 0, streakDates = [] }: { profi
       </AnimatePresence>
 
       {/* Desktop Top Bar */}
-      <div className="hidden md:flex items-center justify-between sticky top-0 z-50 bg-background/70 backdrop-blur-2xl px-6 py-3 border-b border-border/10 -mx-4 md:-mx-6 mb-4">
+      <div className="hidden md:flex items-center justify-between sticky top-0 z-50 bg-background/50 backdrop-blur-[32px] px-8 py-4 border-b border-white/[0.04] -mx-4 md:-mx-8 mb-8">
         {/* Logo */}
-        <div className="flex items-center gap-2 flex-shrink-0 cursor-pointer" onClick={() => navigate("/")}>
-          {/* Icon removed by user request */}
-          <span className="font-display font-bold text-2xl">
-            <span className="text-foreground">Din</span>
-            <span className="text-primary">Hub</span>
+        <div className="flex items-center gap-2 flex-shrink-0 cursor-pointer group" onClick={() => navigate("/")}>
+          <span className="font-display font-extrabold text-2xl tracking-tighter">
+            <span className="text-white group-hover:text-primary transition-colors duration-500">Din</span>
+            <span className="text-primary group-hover:text-white transition-colors duration-500">Hub</span>
           </span>
         </div>
 
