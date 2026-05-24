@@ -2,8 +2,8 @@ import React from 'react';
 
 const Navbar = () => {
   return (
-    <nav className="fixed top-4 sm:top-6 left-1/2 -translate-x-1/2 z-[100] w-[92%] sm:w-auto min-w-[280px] md:min-w-[450px] max-w-[95%] transition-all duration-500">
-      <div className="flex items-center justify-between gap-6 sm:gap-24 px-6 sm:px-14 py-2.5 sm:py-5 rounded-full border border-white/[0.08] bg-black/60 backdrop-blur-2xl shadow-2xl">
+    <nav className="fixed top-4 sm:top-6 left-1/2 -translate-x-1/2 z-[100] w-[92%] sm:w-auto min-w-[280px] md:min-w-[600px] lg:min-w-[800px] max-w-[95%] transition-all duration-500">
+      <div className="flex items-center justify-between gap-6 sm:gap-24 px-8 sm:px-16 py-3 sm:py-6 rounded-full border border-white/[0.08] bg-black/60 backdrop-blur-2xl shadow-2xl">
         {/* Logo */}
         <div 
           className="flex items-center cursor-pointer group shrink-0" 
