@@ -194,11 +194,11 @@ const GastosPorCategoria = memo(({ categories, selectedMonth, onVerAnalise }: Pr
           return (
             <motion.div
               key={cat.name}
-              initial={{ opacity: 0 }}
-              animate={{ opacity: 1 }}
-              transition={{ delay: index * 0.03 }}
-              className="flex items-center gap-3 cursor-pointer transition-opacity duration-200"
-              style={{ opacity: hasSel && !isSelected ? 0.35 : 1 }}
+              initial={{ opacity: 0, x: -10 }}
+              animate={{ opacity: 1, x: 0 }}
+              transition={{ delay: index * 0.05, type: "spring", stiffness: 300, damping: 25 }}
+              className="flex items-center gap-4 cursor-pointer group/item transition-all duration-300 hover:bg-white/[0.02] p-2 -mx-2 rounded-2xl"
+              style={{ opacity: hasSel && !isSelected ? 0.3 : 1 }}
               onClick={() => handleBarClick(cat.name)}
             >
               <div className="w-5 h-5 flex items-center justify-center shrink-0">
