@@ -187,10 +187,7 @@ const Features = () => {
               <div className="space-y-8 sm:space-y-10">
                 <div className="space-y-6 sm:space-y-8 text-center lg:text-left">
                   <div className="flex flex-col lg:flex-row items-center gap-4 sm:gap-5">
-                    <div className="w-14 h-14 sm:w-16 sm:h-16 rounded-[20px] sm:rounded-[24px] bg-[#00e676]/5 border border-[#00e676]/10 flex items-center justify-center shrink-0 shadow-2xl">
-                      <Radar className="w-7 h-7 sm:w-8 sm:h-8 text-[#00e676]" />
-                    </div>
-                    <h3 className="text-2xl sm:text-3xl md:text-4xl lg:text-6xl font-sora font-extrabold text-white tracking-tighter">Radar</h3>
+                    <h3 className="text-2xl sm:text-3xl md:text-4xl lg:text-6xl font-sora font-extrabold text-white tracking-tighter text-center lg:text-left">Radar Financeiro</h3>
                   </div>
                   <p className="text-white/50 text-base sm:text-lg md:text-xl leading-relaxed font-light px-2 sm:px-0">
                     O Radar identifica padrões perigosos e indica exatamente o que você deve fazer. <span className="text-white/80 font-medium">Tudo visual, direto e automático.</span>
@@ -231,9 +228,6 @@ const Features = () => {
           <motion.div variants={itemVariants} className="flex flex-col gap-16 md:gap-24 items-center">
             <div className="w-full max-w-4xl mx-auto text-center space-y-8 sm:space-y-10">
               <div className="flex flex-col items-center gap-5">
-                <div className="w-14 h-14 sm:w-16 sm:h-16 rounded-[20px] bg-[#00e676]/5 border border-[#00e676]/10 flex items-center justify-center shrink-0 shadow-2xl">
-                  <ShieldCheck className="w-7 h-7 sm:w-8 sm:h-8 text-[#00e676]" />
-                </div>
                 <h3 className="text-3xl sm:text-4xl md:text-5xl lg:text-7xl font-sora font-extrabold text-white tracking-tighter">Score Huby</h3>
               </div>
               
