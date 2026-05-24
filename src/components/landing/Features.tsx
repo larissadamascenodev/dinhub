@@ -477,10 +477,10 @@ const HubyInsightsPanel: React.FC = () => {
   };
 
   return (
-    <div className="relative bg-[#0a0a0a]/60 border border-white/5 rounded-[40px] p-4 md:p-8 shadow-2xl backdrop-blur-3xl flex flex-col min-h-[540px] md:min-h-[520px] overflow-hidden group/panel transition-all duration-500 hover:border-[#00e676]/20">
+    <div className="relative w-full max-w-6xl mx-auto flex flex-col lg:flex-row gap-12 lg:gap-24 items-center">
       {/* Glow effect decorative elements */}
-      <div className="absolute -top-20 -right-20 w-40 h-40 bg-[#00e676]/5 blur-[80px] rounded-full pointer-events-none" />
-      <div className="absolute -bottom-20 -left-20 w-40 h-40 bg-blue-500/5 blur-[80px] rounded-full pointer-events-none" />
+      <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[150%] h-[150%] bg-[#00e676]/5 blur-[120px] rounded-full pointer-events-none opacity-50" />
+      <div className="absolute inset-0 bg-[url('https://grainy-gradients.vercel.app/noise.svg')] opacity-10 pointer-events-none mix-blend-overlay" />
       
       <AnimatePresence mode="wait" custom={direction} initial={false}>
         <motion.div
