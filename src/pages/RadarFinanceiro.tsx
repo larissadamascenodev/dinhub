@@ -377,19 +377,24 @@ export default function RadarFinanceiro() {
                   const c = cm[action.tipo];
                   return (
                     <button key={`${action.titulo}-${i}`} onClick={() => navigate(action.path)}
-                      className="w-full flex items-center gap-3.5 rounded-[14px] bg-secondary/10 border border-border/5 p-3.5 hover:bg-secondary/20 active:scale-[0.98] transition-all text-left group">
-                      <div className="w-9 h-9 rounded-xl bg-primary/6 border border-primary/8 flex items-center justify-center flex-shrink-0">
+                  return (
+                    <button key={`${action.titulo}-${i}`} onClick={() => navigate(action.path)}
+                      className="w-full flex items-center gap-4 rounded-[20px] bg-white/5 border border-white/5 p-4 hover:bg-white/10 active:scale-[0.98] transition-all text-left group">
+                      <div className="w-11 h-11 rounded-2xl bg-white/5 border border-white/5 flex items-center justify-center flex-shrink-0 group-hover:bg-white/10 transition-colors">
                         <span className={c.text}>{c.icon}</span>
                       </div>
                       <div className="flex-1 min-w-0">
-                        <h4 className="text-[12px] font-bold text-foreground">{action.titulo}</h4>
-                        <p className="text-[10px] text-muted-foreground/60 leading-[1.5] mt-0.5 line-clamp-2">{action.descricao}</p>
+                        <h4 className="text-[13px] font-bold text-white tracking-tight">{action.titulo}</h4>
+                        <p className="text-[11px] text-white/40 leading-relaxed mt-0.5 line-clamp-1 font-medium">{action.descricao}</p>
                       </div>
                       <div className="flex flex-col items-end gap-1 flex-shrink-0">
-                        <span className={`text-[12px] font-extrabold tabular-nums ${c.text}`}>{fmt(action.impacto_estimado)}</span>
-                        <ChevronRight className="w-3.5 h-3.5 text-muted-foreground/20 group-hover:text-muted-foreground/50 transition-colors" />
+                        <span className={`text-[13px] font-black tabular-nums ${c.text}`}>{fmt(action.impacto_estimado)}</span>
+                        <div className="w-6 h-6 rounded-full bg-white/5 flex items-center justify-center border border-white/5 group-hover:bg-white/10 group-hover:border-white/20 transition-all">
+                          <ChevronRight className="w-3 h-3 text-white/30 group-hover:text-white/80" />
+                        </div>
                       </div>
                     </button>
+                  );
                   );
                 })}
               </div>
