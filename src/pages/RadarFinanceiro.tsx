@@ -341,19 +341,20 @@ export default function RadarFinanceiro() {
               };
               const c = cm[insight.tipo];
               return (
-                <div key={insight.id} className={`rounded-[16px] ${c.bg} border ${c.border} p-4`}>
-                  <div className="flex items-start gap-3">
-                    <div className={`w-9 h-9 rounded-xl flex items-center justify-center flex-shrink-0 ${c.bg} border ${c.border}`}>
+                <div key={insight.id} className={`rounded-[22px] ${c.bg} border ${c.border} p-5 backdrop-blur-md relative overflow-hidden group hover:scale-[1.01] transition-transform duration-300`}>
+                  <div className={`absolute top-0 right-0 w-24 h-24 ${c.bg} opacity-50 rounded-full blur-3xl -mr-12 -mt-12 pointer-events-none`} />
+                  <div className="flex items-start gap-4 relative z-10">
+                    <div className={`w-11 h-11 rounded-2xl flex items-center justify-center flex-shrink-0 ${c.bg} border ${c.border} shadow-sm group-hover:shadow-md transition-shadow`}>
                       <span className={c.text}>{c.icon}</span>
                     </div>
                     <div className="flex-1 min-w-0">
-                      <h4 className="text-[13px] font-bold text-foreground">{insight.titulo}</h4>
-                      <p className="text-[11px] text-muted-foreground/70 leading-[1.6] mt-1">{insight.descricao}</p>
-                      <div className="mt-2.5">
-                        <span className={`text-[12px] font-extrabold tabular-nums ${c.text}`}>
+                      <h4 className="text-[14px] font-bold text-white tracking-tight">{insight.titulo}</h4>
+                      <p className="text-[11px] text-white/50 leading-relaxed mt-1 font-medium">{insight.descricao}</p>
+                      <div className="mt-3 flex items-center gap-2">
+                        <span className={`text-[13px] font-black tabular-nums ${c.text}`}>
                           {fmt(insight.impacto_valor)}
                         </span>
-                        <span className="text-[9px] text-muted-foreground/40 ml-1.5 font-medium">impacto</span>
+                        <span className="text-[9px] text-white/20 font-bold uppercase tracking-widest">Impacto Estimado</span>
                       </div>
                     </div>
                   </div>
