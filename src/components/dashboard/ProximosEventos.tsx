@@ -129,7 +129,7 @@ const ProximosEventos = memo(({ events, selectedMonth, selectedYear, onVerTodos,
       </div>
 
       {/* Events list */}
-      <div className="px-3 pb-2 space-y-1.5">
+      <div className="px-5 pb-4 space-y-2">
         <AnimatePresence mode="popLayout">
           {displayEvents.length > 0 ? (
             displayEvents.map((ev, idx) => renderEvent(ev, idx))
