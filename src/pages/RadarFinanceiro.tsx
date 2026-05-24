@@ -229,9 +229,9 @@ export default function RadarFinanceiro() {
   const expenseChange = prevDespesas > 0 ? Math.round(((despesas - prevDespesas) / prevDespesas) * 100) : 0;
 
   const statusConfig = {
-    verde: { bg: "rgba(74,222,128,0.04)", border: "rgba(74,222,128,0.12)", text: "text-primary", ringColor: "hsl(var(--primary))", icon: <ShieldCheck className="w-5 h-5" />, label: "Sob controle" },
-    amarelo: { bg: "rgba(245,158,11,0.04)", border: "rgba(245,158,11,0.12)", text: "text-warning", ringColor: "hsl(var(--warning))", icon: <AlertTriangle className="w-5 h-5" />, label: "Atenção" },
-    vermelho: { bg: "rgba(239,68,68,0.04)", border: "rgba(239,68,68,0.12)", text: "text-destructive", ringColor: "hsl(var(--destructive))", icon: <Flame className="w-5 h-5" />, label: "Crítico" },
+    verde: { bg: "bg-primary/5", border: "border-primary/20", text: "text-primary", ringColor: "hsl(var(--primary))", icon: <ShieldCheck className="w-6 h-6" />, label: "Excelência Financeira" },
+    amarelo: { bg: "bg-warning/5", border: "border-warning/20", text: "text-warning", ringColor: "hsl(var(--warning))", icon: <AlertTriangle className="w-6 h-6" />, label: "Ajuste de Rota" },
+    vermelho: { bg: "bg-destructive/5", border: "border-destructive/20", text: "text-destructive", ringColor: "hsl(var(--destructive))", icon: <Flame className="w-6 h-6" />, label: "Emergência Financeira" },
   };
   const sc = statusConfig[status.level];
 
