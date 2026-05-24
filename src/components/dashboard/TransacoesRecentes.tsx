@@ -40,7 +40,7 @@ const FaturaCard = ({ tx, onClick }: { tx: Transaction; onClick: () => void }) =
   const isPaid = tx.status === "pago";
   return (
     <div
-      className="group relative flex items-center gap-2.5 px-3 py-2.5 md:gap-3 md:px-4 md:py-3.5 rounded-xl bg-card/95 border border-primary/10 cursor-pointer hover:border-primary/25 transition-colors"
+      className="group relative flex items-center gap-3 px-4 py-4 rounded-[20px] bg-white/[0.02] border border-white/[0.03] cursor-pointer hover:bg-white/[0.04] transition-all duration-300"
       onClick={onClick}
     >
       <div
