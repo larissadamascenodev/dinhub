@@ -529,9 +529,11 @@ export default function RadarFinanceiro() {
           />
 
           <button onClick={() => navigate("/gestao")}
-            className="w-full flex items-center justify-between rounded-[14px] bg-primary/6 border border-primary/10 px-4 py-3 hover:bg-primary/10 active:scale-[0.98] transition-all">
-            <span className="text-[11px] font-bold text-primary">Analisar faturas</span>
-            <ChevronRight className="w-4 h-4 text-primary/60" />
+            className="w-full flex items-center justify-between rounded-[20px] bg-primary/10 border border-primary/20 px-5 py-4 hover:bg-primary/20 active:scale-[0.98] transition-all group shadow-lg shadow-primary/5">
+            <span className="text-[13px] font-black text-primary tracking-tight">Detalhamento de Faturas</span>
+            <div className="w-8 h-8 rounded-full bg-primary/20 flex items-center justify-center group-hover:bg-primary/30 transition-all">
+              <ChevronRight className="w-4 h-4 text-primary" />
+            </div>
           </button>
         </Section>
       )}
