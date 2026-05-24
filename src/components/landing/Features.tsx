@@ -229,40 +229,44 @@ const Features = () => {
 
           {/* 2. SCORE FINANCEIRO */}
           <motion.div variants={itemVariants} className="grid grid-cols-1 lg:grid-cols-2 gap-12 sm:gap-16 lg:gap-32 items-center">
-            <div className="order-2 lg:order-1 relative group w-full max-w-sm mx-auto lg:max-w-none">
-              <div className="absolute inset-0 bg-blue-500/10 blur-[100px] rounded-full group-hover:bg-blue-500/20 transition-all duration-1000" />
-              <div className="relative bg-[#0f0f0f] border border-white/10 rounded-[32px] p-6 sm:p-8 lg:p-10 shadow-2xl backdrop-blur-xl text-center">
-                <div className="inline-block relative mb-6">
-                  <svg className="w-28 h-28 sm:w-32 sm:h-32 lg:w-40 lg:h-40 transform -rotate-90">
-                    <circle cx="80" cy="80" r="70" stroke="currentColor" strokeWidth="8" fill="transparent" className="text-white/5" />
-                    <circle cx="80" cy="80" r="70" stroke="currentColor" strokeWidth="8" fill="transparent" 
-                            strokeDasharray="440" strokeDashoffset="88" className="text-[#00e676]" />
-                  </svg>
-                  <div className="absolute inset-0 flex flex-col items-center justify-center">
-                    <span className="text-3xl sm:text-4xl font-bold text-white">82</span>
-                    <span className="text-[9px] lg:text-[10px] text-white/40 font-bold uppercase tracking-widest">Score Huby</span>
-                  </div>
-                </div>
-                <div className="space-y-3">
-                  <div className="text-sm font-medium text-[#00e676]">Status: Excelente</div>
-                  <div className="flex items-center gap-2 justify-center bg-red-500/10 border border-red-500/20 p-3 rounded-xl">
-                    <AlertCircle className="w-4 h-4 text-red-500" />
-                    <span className="text-[10px] text-white/80">Atraso na Internet (-3 pts)</span>
-                  </div>
-                </div>
+            <div className="order-2 lg:order-1 relative group w-full">
+              <div className="absolute -inset-4 bg-blue-500/5 blur-3xl rounded-full opacity-0 group-hover:opacity-100 transition-opacity duration-1000" />
+              <div className="relative glass-card p-1">
+                <HubyScorePanel />
               </div>
             </div>
-            <div className="order-1 lg:order-2 space-y-6 text-center lg:text-left">
-              <div className="w-14 h-14 rounded-2xl bg-[#00e676]/10 border border-[#00e676]/20 flex items-center justify-center mx-auto lg:mx-0">
-                <ShieldCheck className="w-7 h-7 text-[#00e676]" />
+            <div className="order-1 lg:order-2 space-y-8 sm:space-y-10 text-center lg:text-left">
+              <div className="space-y-6 sm:space-y-8">
+                <div className="flex flex-col lg:flex-row items-center gap-4 sm:gap-5">
+                  <div className="w-14 h-14 sm:w-16 sm:h-16 rounded-[20px] bg-[#00e676]/5 border border-[#00e676]/10 flex items-center justify-center shrink-0 shadow-2xl">
+                    <ShieldCheck className="w-7 h-7 sm:w-8 sm:h-8 text-[#00e676]" />
+                  </div>
+                  <h3 className="text-2xl sm:text-3xl md:text-4xl lg:text-6xl font-sora font-extrabold text-white tracking-tighter">Score Huby</h3>
+                </div>
+                <p className="text-white/50 text-base sm:text-lg md:text-xl leading-relaxed font-light px-2 sm:px-0">
+                  Sua pontuação de saúde financeira baseada em hábitos reais. Guardou? Sobe. Esqueceu um boleto? A Huby avisa e seu score reflete na hora. <span className="text-white/80 font-medium">Controle total da sua reputação financeira.</span>
+                </p>
+                <ul className="space-y-5 pt-4">
+                  {[
+                    'Cálculo baseado em comportamento real',
+                    'Feedback imediato sobre ganhos e perdas',
+                    'Dicas práticas para subir sua pontuação'
+                  ].map((item, i) => (
+                    <li key={i} className="flex items-center justify-center lg:justify-start gap-4 text-sm font-medium text-white/50 hover:text-white transition-colors duration-300">
+                      <div className="w-5 h-5 rounded-full border border-[#00e676]/20 flex items-center justify-center shrink-0">
+                        <CheckCircle2 className="w-3 h-3 text-[#00e676]" />
+                      </div>
+                      {item}
+                    </li>
+                  ))}
+                </ul>
               </div>
-              <h3 className="text-2xl sm:text-3xl lg:text-4xl font-sora font-bold text-white tracking-tight">Score Huby</h3>
-              <p className="text-white/50 text-base sm:text-lg lg:text-xl leading-relaxed font-light px-4 sm:px-0">
-                "Opa, esqueceu de pagar a Vivo? Seu score caiu 3 pontos. Paga logo antes que isso vire uma bola de neve! 📉"
-              </p>
-              <p className="text-white/40 text-sm px-4 sm:px-0">
-                Sua pontuação de saúde financeira baseada em hábitos reais, não apenas em crédito. Atrasou? Cai. Guardou? Sobe.
-              </p>
+
+              <div className="pt-8 sm:pt-10 border-t border-white/[0.05]">
+                <p className="text-white/30 text-base sm:text-lg md:text-xl font-light italic px-4 sm:px-0">
+                  "O score que realmente importa: aquele que mede sua disciplina e liberdade, não apenas sua dívida."
+                </p>
+              </div>
             </div>
           </motion.div>
 
