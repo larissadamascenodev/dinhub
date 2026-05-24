@@ -40,37 +40,42 @@ function Section({
 }) {
   const [open, setOpen] = useState(defaultOpen);
   const badgeStyles = {
-    success: "bg-primary/12 text-primary",
-    warning: "bg-warning/12 text-warning",
-    danger: "bg-destructive/12 text-destructive",
-    neutral: "bg-muted/20 text-muted-foreground",
+    success: "bg-primary/10 text-primary border border-primary/20",
+    warning: "bg-warning/10 text-warning border border-warning/20",
+    danger: "bg-destructive/10 text-destructive border border-destructive/20",
+    neutral: "bg-white/5 text-muted-foreground border border-white/10",
   };
 
   return (
     <motion.div
       initial={{ opacity: 0, y: 14 }}
       animate={{ opacity: 1, y: 0 }}
-      transition={{ delay, duration: 0.4 }}
-      className="rounded-[20px] border border-border/8 bg-card/50 backdrop-blur-2xl overflow-hidden"
-      style={{ boxShadow: "0 4px 24px -6px rgba(0,0,0,0.25)" }}
+      transition={{ delay, duration: 0.5, ease: [0.23, 1, 0.32, 1] }}
+      className="rounded-[28px] border border-white/10 bg-[#111111]/40 backdrop-blur-3xl overflow-hidden shadow-[0_8px_32px_rgba(0,0,0,0.4)]"
     >
       <button
         onClick={() => setOpen(!open)}
-        className="w-full flex items-center justify-between px-5 py-4 hover:bg-card/70 transition-colors"
+        className="w-full flex items-center justify-between px-6 py-5 hover:bg-white/5 transition-all duration-300"
       >
-        <div className="flex items-center gap-3">
-          <div className="w-8 h-8 rounded-xl bg-primary/8 flex items-center justify-center flex-shrink-0 border border-primary/10">
-            <span className="text-primary">{icon}</span>
+        <div className="flex items-center gap-4">
+          <div className="w-10 h-10 rounded-2xl bg-gradient-to-br from-white/10 to-white/5 flex items-center justify-center flex-shrink-0 border border-white/10 shadow-inner">
+            <span className="text-primary/90">{icon}</span>
           </div>
-          <span className="text-[14px] font-bold text-foreground tracking-tight">{title}</span>
-          {badge && (
-            <span className={`text-[9px] font-extrabold px-2 py-0.5 rounded-full tracking-wide ${badgeStyles[badgeVariant]}`}>
-              {badge}
-            </span>
-          )}
+          <div className="flex flex-col items-start gap-1">
+            <span className="text-[15px] font-bold text-white tracking-tight leading-none">{title}</span>
+            {badge && (
+              <span className={`text-[9px] font-bold px-2 py-0.5 rounded-full tracking-wider uppercase ${badgeStyles[badgeVariant]}`}>
+                {badge}
+              </span>
+            )}
+          </div>
         </div>
-        <motion.div animate={{ rotate: open ? 180 : 0 }} transition={{ duration: 0.2 }}>
-          <ChevronDown className="w-4 h-4 text-muted-foreground/50" />
+        <motion.div 
+          animate={{ rotate: open ? 180 : 0, scale: open ? 1.1 : 1 }} 
+          transition={{ type: "spring", stiffness: 300, damping: 20 }}
+          className="w-8 h-8 rounded-full bg-white/5 flex items-center justify-center border border-white/5"
+        >
+          <ChevronDown className="w-4 h-4 text-white/40" />
         </motion.div>
       </button>
       <AnimatePresence initial={false}>
@@ -79,10 +84,10 @@ function Section({
             initial={{ height: 0, opacity: 0 }}
             animate={{ height: "auto", opacity: 1 }}
             exit={{ height: 0, opacity: 0 }}
-            transition={{ duration: 0.3, ease: "easeInOut" }}
+            transition={{ duration: 0.4, ease: [0.23, 1, 0.32, 1] }}
             className="overflow-hidden"
           >
-            <div className="px-5 pb-5 space-y-4">{children}</div>
+            <div className="px-6 pb-6 pt-1 space-y-5">{children}</div>
           </motion.div>
         )}
       </AnimatePresence>
