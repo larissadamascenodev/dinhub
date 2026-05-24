@@ -1,7 +1,6 @@
 import React from 'react';
-import { Sparkles } from 'lucide-react';
 
-
+const Navbar = () => {
   return (
     <nav className="fixed top-4 sm:top-6 left-1/2 -translate-x-1/2 z-[100] w-[92%] sm:w-auto min-w-[280px] md:min-w-[450px] max-w-[95%] transition-all duration-500">
       <div className="flex items-center justify-between gap-6 sm:gap-24 px-6 sm:px-14 py-2.5 sm:py-5 rounded-full border border-white/[0.08] bg-black/60 backdrop-blur-2xl shadow-2xl">
@@ -19,7 +18,6 @@ import { Sparkles } from 'lucide-react';
             </span>
           </div>
         </div>
-
 
         {/* CTA Button */}
         <a 
