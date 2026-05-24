@@ -608,38 +608,33 @@ const HubyInsightsPanel: React.FC = () => {
             </div>
           </motion.div>
 
-          {/* Secondary Stats Row */}
-          <div className="grid grid-cols-1 md:grid-cols-3 gap-5">
-            {[
-              { label: 'Precisão Neural', value: '98.4%', icon: TrendingUp },
-              { label: 'Processamento', value: '12ms', type: 'chart' },
-              { label: 'Otimizar Sistema', value: 'Executar Tudo', type: 'action' }
-            ].map((stat, i) => (
-              <div 
-                key={i} 
-                className={`p-6 rounded-[32px] border transition-all duration-500 flex flex-col justify-between group cursor-pointer ${
-                  stat.type === 'action' 
-                  ? 'bg-[#00e676]/5 border-[#00e676]/10 hover:bg-[#00e676]/10' 
-                  : 'bg-white/[0.01] border-white/5 hover:bg-white/[0.03]'
-                }`}
-              >
-                <span className={`text-[9px] font-black uppercase tracking-[0.2em] ${stat.type === 'action' ? 'text-[#00e676]' : 'text-white/20'}`}>
-                  {stat.label}
-                </span>
-                <div className="mt-5 flex items-end justify-between">
-                  <span className="text-xl font-bold text-white tracking-tighter">{stat.value}</span>
-                  {stat.type === 'chart' ? (
-                    <div className="flex gap-1 h-5 items-end">
-                      {[4, 8, 5, 10, 6].map((h, j) => <div key={j} className="w-1 bg-white/10 rounded-full" style={{ height: `${h * 10}%` }} />)}
-                    </div>
-                  ) : stat.type === 'action' ? (
-                    <ArrowRight className="w-5 h-5 text-[#00e676] group-hover:translate-x-1 transition-transform" />
-                  ) : (
-                    <stat.icon className="w-5 h-5 text-white/10" />
-                  )}
+          {/* Secondary Action Row */}
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-5">
+            <div className="p-8 rounded-[32px] bg-white/[0.02] border border-white/10 hover:border-[#00e676]/30 hover:bg-[#00e676]/5 transition-all duration-500 group cursor-pointer flex items-center justify-between">
+              <div className="flex items-center gap-5">
+                <div className="w-12 h-12 rounded-2xl bg-white/5 flex items-center justify-center border border-white/5">
+                  <ShieldCheck className="w-6 h-6 text-white/40 group-hover:text-[#00e676] transition-colors" />
+                </div>
+                <div>
+                  <div className="text-sm font-bold text-white uppercase tracking-widest">Ativar Proteção Total</div>
+                  <div className="text-[10px] text-white/30 font-medium mt-1">BLINDAGEM PATRIMONIAL ATIVA</div>
                 </div>
               </div>
-            ))}
+              <ChevronRight className="w-5 h-5 text-white/10 group-hover:text-[#00e676] group-hover:translate-x-1 transition-all" />
+            </div>
+            
+            <div className="p-8 rounded-[32px] bg-[#00e676]/5 border border-[#00e676]/10 hover:bg-[#00e676]/10 transition-all duration-500 group cursor-pointer flex items-center justify-between">
+              <div className="flex items-center gap-5">
+                <div className="w-12 h-12 rounded-2xl bg-[#00e676]/10 flex items-center justify-center border border-[#00e676]/10">
+                  <Zap className="w-6 h-6 text-[#00e676]" />
+                </div>
+                <div>
+                  <div className="text-sm font-bold text-white uppercase tracking-widest">Otimizar Tudo Agora</div>
+                  <div className="text-[10px] text-[#00e676]/60 font-medium mt-1">EXECUÇÃO DE PROTOCOLOS (5)</div>
+                </div>
+              </div>
+              <ArrowRight className="w-5 h-5 text-[#00e676] group-hover:translate-x-2 transition-transform" />
+            </div>
           </div>
         </div>
       </div>
