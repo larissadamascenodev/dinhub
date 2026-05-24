@@ -201,7 +201,7 @@ const Hero = ({ videoSrc }: HeroProps) => {
   return (
     <section 
       ref={containerRef}
-      className="relative w-full h-[100svh] min-h-[600px] bg-[#030303] overflow-hidden flex flex-col items-center justify-center font-sora pt-28 sm:pt-32 pb-20"
+      className="relative w-full h-[100svh] min-h-[600px] bg-[#030303] overflow-hidden flex flex-col items-center justify-center font-sora pt-20 sm:pt-24 pb-20"
     >
       {/* Background Video */}
       {videoSrc && (
