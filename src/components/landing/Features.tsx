@@ -612,11 +612,10 @@ const HubyScorePanel: React.FC = () => {
   const InsightIcon = insight.icon;
 
   return (
-    <div className="relative bg-[#050505] border border-white/10 rounded-[48px] p-6 md:p-10 shadow-[0_0_50px_rgba(0,0,0,1)] overflow-hidden transition-all duration-500 hover:border-[#00e676]/30 flex flex-col md:flex-row gap-8 lg:gap-12">
+    <div className="relative w-full max-w-6xl mx-auto flex flex-col lg:flex-row gap-12 lg:gap-24 items-center">
       {/* Futuristic Background Accents */}
-      <div className="absolute top-0 right-0 w-64 h-64 bg-[#00e676]/5 blur-[100px] rounded-full pointer-events-none" />
-      <div className="absolute bottom-0 left-0 w-64 h-64 bg-blue-500/5 blur-[100px] rounded-full pointer-events-none" />
-      <div className="absolute inset-0 bg-[url('https://grainy-gradients.vercel.app/noise.svg')] opacity-20 pointer-events-none mix-blend-overlay" />
+      <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[150%] h-[150%] bg-[#00e676]/5 blur-[120px] rounded-full pointer-events-none opacity-50" />
+      <div className="absolute inset-0 bg-[url('https://grainy-gradients.vercel.app/noise.svg')] opacity-10 pointer-events-none mix-blend-overlay" />
       
       {/* Left Column: Visual Data */}
       <div className="flex-1 flex flex-col items-center justify-center relative space-y-8">
