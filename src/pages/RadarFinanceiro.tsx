@@ -261,53 +261,66 @@ export default function RadarFinanceiro() {
       <motion.div
         initial={{ opacity: 0, y: 14 }}
         animate={{ opacity: 1, y: 0 }}
-        transition={{ delay: 0.05 }}
-        className="rounded-[22px] p-5 relative overflow-hidden"
-        style={{ background: sc.bg, border: `1px solid ${sc.border}` }}
+        transition={{ delay: 0.1 }}
+        className={`rounded-[32px] p-7 relative overflow-hidden border ${sc.border} ${sc.bg} backdrop-blur-xl shadow-2xl shadow-black/40`}
       >
+        <div className="absolute top-0 right-0 w-32 h-32 bg-primary/10 rounded-full blur-[80px] -mr-16 -mt-16 pointer-events-none" />
+        <div className="absolute bottom-0 left-0 w-24 h-24 bg-primary/5 rounded-full blur-[60px] -ml-12 -mb-12 pointer-events-none" />
+        
         <div className="flex items-center justify-between relative z-[1]">
           <div className="flex-1 min-w-0">
-            <div className="flex items-center gap-2.5 mb-2">
-              <span className={sc.text}>{sc.icon}</span>
-              <h2 className={`text-[16px] font-extrabold tracking-tight ${sc.text}`}>{sc.label}</h2>
+            <div className="flex items-center gap-3 mb-3">
+              <div className={`p-2 rounded-2xl ${sc.bg} border ${sc.border}`}>
+                <span className={sc.text}>{sc.icon}</span>
+              </div>
+              <h2 className={`text-[18px] font-black tracking-tight leading-none ${sc.text}`}>{sc.label}</h2>
             </div>
-            <p className="text-[12px] text-muted-foreground/70 leading-relaxed max-w-[220px]">
+            <p className="text-[13px] text-white/60 leading-relaxed max-w-[240px] font-medium">
               {comprometimentoPct < 60
-                ? "Financeiro equilibrado — margem confortável este mês."
+                ? "Sua saúde financeira está sólida. Você tem autonomia total sobre seus fluxos."
                 : comprometimentoPct <= 80
-                  ? "Pontos de atenção — ajustes preventivos ajudam."
-                  : "Situação apertada — ações imediatas recomendadas."}
+                  ? "Sinal de alerta moderado. Pequenos ajustes agora evitarão problemas futuros."
+                  : "Nível crítico de comprometimento. É hora de reestruturar prioridades."}
             </p>
           </div>
-          <div className="relative flex-shrink-0">
-            <ScoreRing value={health.score} size={72} stroke={6} color={sc.ringColor} />
+          <div className="relative flex-shrink-0 group">
+            <div className="absolute inset-0 bg-primary/20 rounded-full blur-2xl opacity-0 group-hover:opacity-100 transition-opacity duration-500" />
+            <ScoreRing value={health.score} size={84} stroke={8} color={sc.ringColor} />
             <div className="absolute inset-0 flex flex-col items-center justify-center">
-              <span className={`text-[20px] font-black tabular-nums leading-none ${sc.text}`}>{health.score}</span>
-              <span className="text-[8px] text-muted-foreground/40 font-semibold mt-0.5">SCORE</span>
+              <span className={`text-[24px] font-black tabular-nums leading-none ${sc.text}`}>{health.score}</span>
+              <span className="text-[9px] text-white/30 font-bold mt-1 tracking-widest uppercase">Score</span>
             </div>
           </div>
         </div>
       </motion.div>
 
-      {/* ── Huby ── */}
+      {/* ── Huby AI ── */}
       <motion.div
         initial={{ opacity: 0, y: 14 }}
         animate={{ opacity: 1, y: 0 }}
-        transition={{ delay: 0.1 }}
-        className="rounded-[20px] p-4 relative overflow-hidden border border-primary/10"
-        style={{ background: "linear-gradient(145deg, hsl(150 30% 8% / 0.8) 0%, hsl(var(--card) / 0.6) 100%)" }}
+        transition={{ delay: 0.15 }}
+        className="rounded-[28px] p-6 relative overflow-hidden border border-white/10 shadow-xl"
+        style={{ background: "linear-gradient(145deg, rgba(255,255,255,0.05) 0%, rgba(255,255,255,0.02) 100%)" }}
       >
-        <div className="flex items-start gap-3 relative z-[1]">
+        <div className="absolute top-0 left-0 w-full h-full bg-[radial-gradient(circle_at_20%_20%,rgba(74,222,128,0.05),transparent_50%)]" />
+        <div className="flex items-start gap-4 relative z-[1]">
           <div
-            className="w-10 h-10 rounded-xl flex items-center justify-center flex-shrink-0"
-            style={{ background: "linear-gradient(135deg, hsl(var(--primary)), hsl(150 70% 30%))", boxShadow: "0 0 16px rgba(74,222,128,0.15)" }}
+            className="w-12 h-12 rounded-2xl flex items-center justify-center flex-shrink-0 border border-white/10 shadow-lg"
+            style={{ background: "linear-gradient(135deg, #10b981, #064e3b)", boxShadow: "0 0 20px rgba(16,185,129,0.3)" }}
           >
-            <Bot className="w-[18px] h-[18px] text-primary-foreground" />
+            <Bot className="w-6 h-6 text-white" />
           </div>
           <div className="flex-1 min-w-0">
-            <h5 className="text-[11px] font-extrabold text-primary tracking-wide mb-1">HUBY DIZ</h5>
-            <p className="text-[12px] text-muted-foreground/80 leading-[1.65] italic">{hubyMsg.main}</p>
-            {hubyMsg.secondary && <p className="text-[10px] text-muted-foreground/40 mt-1.5 italic">{hubyMsg.secondary}</p>}
+            <div className="flex items-center gap-2 mb-2">
+              <h5 className="text-[10px] font-black text-primary tracking-[0.2em] uppercase">Huby AI Intelligence</h5>
+              <div className="h-px flex-1 bg-white/5" />
+            </div>
+            <p className="text-[13px] text-white/80 leading-relaxed font-medium italic">"{hubyMsg.main}"</p>
+            {hubyMsg.secondary && (
+              <div className="mt-3 pt-3 border-t border-white/5">
+                <p className="text-[11px] text-white/40 font-medium italic">{hubyMsg.secondary}</p>
+              </div>
+            )}
           </div>
         </div>
       </motion.div>
