@@ -56,7 +56,7 @@ const FaturaCard = ({ tx, onClick }: { tx: Transaction; onClick: () => void }) =
         </p>
       </div>
       <div className="text-right shrink-0">
-        <p className="text-xs md:text-sm font-bold tabular-nums text-destructive">
+        <p className="text-sm font-bold tabular-nums text-destructive tracking-tight">
           −{fmt(tx.amount)}
         </p>
         <span className={`block mt-1 text-[9px] font-bold uppercase tracking-[0.1em] ${isPaid ? "text-primary/60" : "text-white/20"}`}>
