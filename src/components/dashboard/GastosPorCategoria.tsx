@@ -234,7 +234,7 @@ const GastosPorCategoria = memo(({ categories, selectedMonth, onVerAnalise }: Pr
               <div className="text-right shrink-0">
                 <p className="text-[13px] font-bold text-white tabular-nums tracking-tight">{fmt(cat.amount)}</p>
                 {hasLimit ? (
-                  <p className="text-[9px] text-muted-foreground/50 tabular-nums">
+                  <p className="text-[10px] text-white/30 tabular-nums font-medium mt-0.5 tracking-wider uppercase">
                     / {fmt(limit)}
                   </p>
                 ) : (
