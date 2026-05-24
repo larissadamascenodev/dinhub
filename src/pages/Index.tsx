@@ -128,8 +128,8 @@ const Index = () => {
           <div className="space-y-4">
             <WalletSummaryCard />
             {isCurrentMonth && <GastosSemanaisCard />}
-            <BotFinanceTools layout="grid" />
             <ProximosEventos events={data.events} selectedMonth={selectedMonth} selectedYear={selectedYear} onEventClick={handleEventClick} />
+            <BotFinanceTools layout="grid" />
             <AssinaturasCard />
             <MetasResumoCard />
           </div>
