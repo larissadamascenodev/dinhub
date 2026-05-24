@@ -91,24 +91,24 @@ const GastosPorCategoria = memo(({ categories, selectedMonth, onVerAnalise }: Pr
 
   return (
     <div
-      className="rounded-2xl border border-border/20 bg-card/60 backdrop-blur-xl overflow-hidden"
-      style={{ boxShadow: "0 4px 24px -4px rgba(0,0,0,0.3)" }}
+      className="rounded-[32px] border border-white/[0.05] bg-gradient-to-b from-white/[0.03] to-transparent backdrop-blur-3xl overflow-hidden p-6 lg:p-8"
+      style={{ boxShadow: "0 10px 40px -10px rgba(0,0,0,0.5)" }}
     >
       {/* Header */}
-      <div className="flex items-start justify-between px-4 pt-4 pb-3">
+      <div className="flex items-start justify-between mb-8">
         <div>
-          <p className="text-[11px] text-muted-foreground/60 font-medium">
+          <p className="text-[11px] text-white/30 font-bold uppercase tracking-[0.2em]">
             Gastos por categoria · {monthLabel}
           </p>
-          <p className="text-xl font-bold text-foreground tabular-nums mt-0.5">
+          <p className="text-3xl lg:text-4xl font-extrabold text-white tabular-nums mt-2 tracking-tight">
             {fmt(totalExpenses)}
           </p>
         </div>
         <button
           onClick={() => navigate("/analytics/categorias")}
-          className="text-[10px] text-primary/70 hover:text-primary transition-colors font-medium flex items-center gap-0.5 mt-1"
+          className="w-10 h-10 rounded-full bg-white/[0.03] flex items-center justify-center border border-white/[0.05] hover:bg-primary hover:text-black transition-all duration-300 group"
         >
-          Análise completa <ChevronRight className="w-3 h-3" />
+          <ChevronRight className="w-5 h-5 transition-transform group-hover:translate-x-0.5" />
         </button>
       </div>
 
