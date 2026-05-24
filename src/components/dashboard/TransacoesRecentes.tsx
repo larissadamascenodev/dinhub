@@ -152,17 +152,22 @@ const TransacoesRecentes = memo(({ transactions, onDelete }: Props) => {
   const stackCount = Math.min(restTx.length, STACK_COUNT);
 
   return (
-    <div>
+    <div className="bg-white/[0.02] border border-white/[0.05] rounded-[32px] p-6 lg:p-8 shadow-[0_8px_30px_-5px_rgba(0,0,0,0.5)]">
       {/* Header */}
-      <div className="flex items-center justify-between mb-2.5">
-        <div className="flex items-center gap-2">
-          <Layers className="w-3.5 h-3.5 text-muted-foreground/50" />
-          <h3 className="text-[11px] font-semibold text-muted-foreground/60 uppercase tracking-widest">
-            Transações Recentes
-          </h3>
+      <div className="flex items-center justify-between mb-8">
+        <div className="flex items-center gap-3">
+          <div className="w-10 h-10 rounded-2xl bg-primary/10 flex items-center justify-center border border-primary/20">
+            <Layers className="w-5 h-5 text-primary" />
+          </div>
+          <div>
+            <h3 className="text-sm font-bold text-white uppercase tracking-[0.2em]">
+              Recentes
+            </h3>
+            <p className="text-[10px] text-white/30 font-medium uppercase tracking-wider mt-0.5">Últimas movimentações</p>
+          </div>
         </div>
-        <span className="text-[10px] text-muted-foreground/40 font-medium">
-          {expanded ? `${transactions.length} itens` : restTx.length > 0 ? `+${restTx.length} transações` : `${transactions.length} itens`}
+        <span className="px-3 py-1 rounded-full bg-white/[0.03] border border-white/[0.05] text-[10px] text-white/40 font-bold uppercase tracking-widest">
+          {transactions.length} itens
         </span>
       </div>
 
