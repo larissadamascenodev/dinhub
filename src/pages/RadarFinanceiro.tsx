@@ -499,17 +499,22 @@ export default function RadarFinanceiro() {
           </div>
 
           {totalParcelado > 0 && (
-            <div className="rounded-[14px] bg-secondary/12 border border-border/5 p-3.5">
-              <div className="flex items-center justify-between">
-                <div className="flex items-center gap-2">
-                  <Package className="w-3.5 h-3.5 text-warning" />
-                  <span className="text-[10px] text-muted-foreground/60 font-semibold">Parcelas no cartão</span>
+            <div className="rounded-[20px] bg-white/5 border border-white/5 p-5 relative overflow-hidden group">
+              <div className="absolute top-0 right-0 w-24 h-24 bg-warning/5 rounded-full blur-2xl pointer-events-none" />
+              <div className="flex items-center justify-between relative z-10">
+                <div className="flex items-center gap-3">
+                  <div className="w-10 h-10 rounded-xl bg-warning/10 flex items-center justify-center border border-warning/20">
+                    <Package className="w-5 h-5 text-warning" />
+                  </div>
+                  <div className="flex flex-col">
+                    <span className="text-[11px] text-white/50 font-bold uppercase tracking-wider">Parcelas ativas</span>
+                    <p className="text-[10px] text-white/30 font-medium">
+                      Comprometem <span className="font-bold text-warning">{parceladoPct}%</span> da renda
+                    </p>
+                  </div>
                 </div>
-                <span className="text-[13px] font-extrabold text-warning tabular-nums">{fmt(totalParcelado)}</span>
+                <span className="text-[18px] font-black text-warning tabular-nums tracking-tight">{fmt(totalParcelado)}</span>
               </div>
-              <p className="text-[10px] text-muted-foreground/50 mt-1 font-medium">
-                Comprometem <span className="font-bold text-warning">{parceladoPct}%</span> da renda mensal
-              </p>
             </div>
           )}
 
