@@ -477,45 +477,73 @@ const HubyInsightsPanel: React.FC = () => {
     <div className="relative w-full max-w-7xl mx-auto min-h-[600px] flex items-center justify-center">
       {/* Dynamic Background */}
       <div className="absolute inset-0 pointer-events-none">
-        <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[120%] h-[120%] bg-gradient-to-br from-[#00e676]/10 via-transparent to-blue-500/10 blur-[120px] opacity-40" />
-        <div className="absolute inset-0 bg-[url('https://grainy-gradients.vercel.app/noise.svg')] opacity-20 mix-blend-overlay" />
+        <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[120%] h-[120%] bg-gradient-to-br from-white/5 via-transparent to-white/5 blur-[120px] opacity-20" />
+        <div className="absolute inset-0 bg-[url('https://grainy-gradients.vercel.app/noise.svg')] opacity-10 mix-blend-overlay" />
       </div>
 
       <div className="relative w-full grid grid-cols-1 lg:grid-cols-12 gap-8 lg:gap-12 items-stretch">
         {/* Left Section: The "Scanner/Radar" Core */}
-        <div className="lg:col-span-5 flex flex-col justify-center items-center lg:items-start space-y-8 order-2 lg:order-1">
+        <div className="lg:col-span-5 flex flex-col justify-center items-center lg:items-start space-y-12 order-2 lg:order-1">
           <div className="relative group">
             <motion.div 
               animate={{ rotate: 360 }}
-              transition={{ duration: 20, repeat: Infinity, ease: "linear" }}
-              className="absolute -inset-12 border border-white/5 rounded-full"
+              transition={{ duration: 30, repeat: Infinity, ease: "linear" }}
+              className="absolute -inset-16 border border-white/[0.03] rounded-full"
             />
             <motion.div 
               animate={{ rotate: -360 }}
-              transition={{ duration: 15, repeat: Infinity, ease: "linear" }}
-              className="absolute -inset-8 border border-[#00e676]/10 rounded-full"
+              transition={{ duration: 25, repeat: Infinity, ease: "linear" }}
+              className="absolute -inset-10 border border-white/[0.05] rounded-full"
             />
             
-            <div className="relative w-48 h-48 md:w-64 md:h-64 flex items-center justify-center">
-              <div className="absolute inset-0 rounded-full bg-[#00e676]/5 border border-[#00e676]/20 backdrop-blur-sm" />
-              <Radar className="w-16 h-16 md:w-24 md:h-24 text-[#00e676] drop-shadow-[0_0_20px_rgba(0,230,118,0.4)]" />
+            <div className="relative w-56 h-56 md:w-72 md:h-72 flex items-center justify-center">
+              <div className="absolute inset-0 rounded-full bg-white/[0.02] border border-white/10 backdrop-blur-sm" />
+              <div className="absolute inset-[15%] rounded-full border border-white/[0.05] flex items-center justify-center">
+                <Radar className="w-12 h-12 md:w-16 md:h-16 text-white/20" />
+              </div>
               
+              {/* Minimalist Radar Sweeper */}
               <motion.div 
                 animate={{ rotate: 360 }}
-                transition={{ duration: 4, repeat: Infinity, ease: "linear" }}
-                className="absolute inset-0 rounded-full bg-gradient-to-r from-transparent via-transparent to-[#00e676]/20"
-                style={{ clipPath: 'polygon(50% 50%, 100% 0, 100% 100%)' }}
+                transition={{ duration: 5, repeat: Infinity, ease: "linear" }}
+                className="absolute inset-0 rounded-full"
+                style={{ 
+                  background: 'conic-gradient(from 0deg, transparent 0%, rgba(255,255,255,0.05) 50%, transparent 100%)',
+                }}
               />
+
+              {/* Neural Nodes dots */}
+              {[...Array(6)].map((_, i) => (
+                <motion.div
+                  key={i}
+                  animate={{ 
+                    opacity: [0.2, 0.5, 0.2],
+                    scale: [1, 1.2, 1]
+                  }}
+                  transition={{ 
+                    duration: 3 + i, 
+                    repeat: Infinity,
+                    delay: i * 0.5
+                  }}
+                  className="absolute w-1.5 h-1.5 rounded-full bg-[#00e676]/30 shadow-[0_0_8px_rgba(0,230,118,0.4)]"
+                  style={{
+                    top: `${30 + Math.sin(i * 60) * 30}%`,
+                    left: `${50 + Math.cos(i * 60) * 30}%`,
+                  }}
+                />
+              ))}
             </div>
           </div>
 
-          <div className="space-y-4 text-center lg:text-left">
-            <div className="inline-flex items-center gap-2 px-4 py-1.5 rounded-full bg-[#00e676]/10 border border-[#00e676]/20">
-              <span className="w-1.5 h-1.5 rounded-full bg-[#00e676] animate-pulse" />
-              <span className="text-[10px] font-black text-[#00e676] uppercase tracking-[0.2em]">Neural Processing Active</span>
+          <div className="space-y-6 text-center lg:text-left">
+            <div className="inline-flex items-center gap-2 px-4 py-1.5 rounded-full bg-white/[0.03] border border-white/10">
+              <span className="w-1.5 h-1.5 rounded-full bg-[#00e676]" />
+              <span className="text-[10px] font-bold text-white/60 uppercase tracking-[0.2em]">Sincronização Ativa</span>
             </div>
-            <h4 className="text-xl md:text-2xl font-bold text-white tracking-tight">Scanner de Padrões v4.0</h4>
-            <p className="text-white/40 text-sm max-w-sm font-medium italic">"Analisando milhões de variáveis financeiras para proteger seu patrimônio em tempo real."</p>
+            <div className="space-y-2">
+              <h4 className="text-xl md:text-2xl font-bold text-white tracking-tight">Análise em Tempo Real</h4>
+              <p className="text-white/30 text-sm max-w-sm font-light">Monitoramento neural de padrões financeiros para proteção e otimização imediata.</p>
+            </div>
           </div>
         </div>
 
@@ -525,32 +553,36 @@ const HubyInsightsPanel: React.FC = () => {
           <motion.div 
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
-            className="p-8 rounded-[40px] bg-white/[0.02] border border-white/10 backdrop-blur-2xl relative overflow-hidden group hover:border-[#00e676]/30 transition-all duration-500"
+            className="p-8 md:p-10 rounded-[48px] bg-white/[0.01] border border-white/10 backdrop-blur-3xl relative overflow-hidden group hover:border-white/20 transition-all duration-700"
           >
-            <div className="absolute top-0 right-0 p-6">
-              <div className="px-3 py-1 rounded-lg bg-white/5 border border-white/10 text-[10px] text-white/40 font-bold uppercase tracking-widest flex items-center gap-2">
-                <Clock className="w-3 h-3" /> 14:42:01
+            {/* Minimalist Glass Accents */}
+            <div className="absolute -top-24 -right-24 w-48 h-48 bg-white/5 blur-[60px] rounded-full" />
+            
+            <div className="absolute top-0 right-0 p-8">
+              <div className="px-3 py-1.5 rounded-full bg-white/5 border border-white/10 text-[9px] text-white/40 font-black uppercase tracking-[0.2em] flex items-center gap-2">
+                <div className="w-1 h-1 rounded-full bg-[#00e676]" /> {new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}
               </div>
             </div>
 
-            <div className="space-y-8">
-              <div className="flex flex-col gap-4">
-                <span className="text-[10px] font-black text-[#00e676] uppercase tracking-[0.3em]">{insight.tag}</span>
-                <div className="flex items-start gap-6">
-                  <div className={`w-16 h-16 rounded-2xl ${insight.iconBg} flex items-center justify-center shrink-0 border border-white/5 shadow-2xl group-hover:scale-110 transition-transform`}>
-                    <InsightIcon className={`w-8 h-8 ${insight.iconColor}`} />
+            <div className="space-y-10">
+              <div className="space-y-6">
+                <span className="inline-block px-3 py-1 rounded-md bg-[#00e676]/5 text-[10px] font-black text-[#00e676] uppercase tracking-[0.3em] border border-[#00e676]/10">{insight.tag}</span>
+                <div className="flex flex-col md:flex-row items-start gap-8">
+                  <div className={`w-20 h-20 rounded-[28px] ${insight.iconBg} flex items-center justify-center shrink-0 border border-white/5 shadow-2xl group-hover:scale-105 transition-all duration-500`}>
+                    <InsightIcon className={`w-10 h-10 ${insight.iconColor} opacity-80`} />
                   </div>
-                  <p className="text-white/90 text-2xl md:text-3xl leading-[1.2] font-semibold tracking-tight">
+                  <p className="text-white/90 text-2xl md:text-4xl leading-[1.15] font-semibold tracking-tight">
                     {insight.text}
                   </p>
                 </div>
               </div>
 
               {/* Action Grid */}
-              <div className="space-y-4">
+              <div className="space-y-5">
                 <div className="flex items-center gap-3">
-                  <Zap className="w-5 h-5 text-[#00e676]" />
-                  <h5 className="text-xs font-black text-white/40 uppercase tracking-widest">Protocolos Sugeridos</h5>
+                  <div className="h-px flex-1 bg-white/5" />
+                  <h5 className="text-[10px] font-black text-white/30 uppercase tracking-[0.4em]">Protocolos Recomendados</h5>
+                  <div className="h-px flex-1 bg-white/5" />
                 </div>
                 
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
@@ -559,14 +591,14 @@ const HubyInsightsPanel: React.FC = () => {
                     return (
                       <div 
                         key={i}
-                        className="flex items-center gap-4 p-5 rounded-3xl bg-white/[0.03] border border-white/5 hover:bg-[#00e676]/10 hover:border-[#00e676]/30 transition-all duration-300 group/item cursor-pointer"
+                        className="flex items-center gap-5 p-6 rounded-[32px] bg-white/[0.02] border border-white/5 hover:bg-white/[0.04] hover:border-white/20 transition-all duration-500 group/item cursor-pointer"
                       >
-                        <div className={`w-12 h-12 rounded-2xl ${a.iconBg} flex items-center justify-center shrink-0 border border-white/5 group-hover/item:scale-110 transition-transform`}>
-                          <ActionIcon className={`w-6 h-6 ${a.iconColor}`} />
+                        <div className={`w-14 h-14 rounded-2xl ${a.iconBg} flex items-center justify-center shrink-0 border border-white/5 group-hover/item:scale-110 transition-transform duration-500`}>
+                          <ActionIcon className={`w-7 h-7 ${a.iconColor} opacity-70`} />
                         </div>
                         <div className="flex-1 min-w-0">
-                          <div className="text-sm font-bold text-white group-hover/item:text-[#00e676] transition-colors">{a.title}</div>
-                          <div className="text-[10px] text-white/30 font-medium mt-1 uppercase tracking-wider">{a.value}</div>
+                          <div className="text-base font-bold text-white group-hover/item:text-[#00e676] transition-colors">{a.title}</div>
+                          <div className="text-[11px] text-white/30 font-bold mt-1.5 uppercase tracking-widest">{a.value}</div>
                         </div>
                       </div>
                     );
@@ -577,30 +609,37 @@ const HubyInsightsPanel: React.FC = () => {
           </motion.div>
 
           {/* Secondary Stats Row */}
-          <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
-            <div className="p-6 rounded-[32px] bg-white/[0.01] border border-white/5 flex flex-col justify-between group hover:bg-white/[0.03] transition-all">
-              <span className="text-[9px] font-black text-white/20 uppercase tracking-widest">Confiança da IA</span>
-              <div className="mt-4 flex items-end justify-between">
-                <span className="text-2xl font-bold text-white tracking-tighter">98.4%</span>
-                <TrendingUp className="w-5 h-5 text-[#00e676]" />
-              </div>
-            </div>
-            <div className="p-6 rounded-[32px] bg-white/[0.01] border border-white/5 flex flex-col justify-between group hover:bg-white/[0.03] transition-all">
-              <span className="text-[9px] font-black text-white/20 uppercase tracking-widest">Latência de Rede</span>
-              <div className="mt-4 flex items-end justify-between">
-                <span className="text-2xl font-bold text-white tracking-tighter">12ms</span>
-                <div className="flex gap-1 h-5 items-end">
-                  {[4, 8, 5, 10, 6].map((h, i) => <div key={i} className="w-1 bg-[#00e676]/40 rounded-full" style={{ height: `${h * 10}%` }} />)}
+          <div className="grid grid-cols-1 md:grid-cols-3 gap-5">
+            {[
+              { label: 'Precisão Neural', value: '98.4%', icon: TrendingUp },
+              { label: 'Processamento', value: '12ms', type: 'chart' },
+              { label: 'Otimizar Sistema', value: 'Executar Tudo', type: 'action' }
+            ].map((stat, i) => (
+              <div 
+                key={i} 
+                className={`p-6 rounded-[32px] border transition-all duration-500 flex flex-col justify-between group cursor-pointer ${
+                  stat.type === 'action' 
+                  ? 'bg-[#00e676]/5 border-[#00e676]/10 hover:bg-[#00e676]/10' 
+                  : 'bg-white/[0.01] border-white/5 hover:bg-white/[0.03]'
+                }`}
+              >
+                <span className={`text-[9px] font-black uppercase tracking-[0.2em] ${stat.type === 'action' ? 'text-[#00e676]' : 'text-white/20'}`}>
+                  {stat.label}
+                </span>
+                <div className="mt-5 flex items-end justify-between">
+                  <span className="text-xl font-bold text-white tracking-tighter">{stat.value}</span>
+                  {stat.type === 'chart' ? (
+                    <div className="flex gap-1 h-5 items-end">
+                      {[4, 8, 5, 10, 6].map((h, j) => <div key={j} className="w-1 bg-white/10 rounded-full" style={{ height: `${h * 10}%` }} />)}
+                    </div>
+                  ) : stat.type === 'action' ? (
+                    <ArrowRight className="w-5 h-5 text-[#00e676] group-hover:translate-x-1 transition-transform" />
+                  ) : (
+                    <stat.icon className="w-5 h-5 text-white/10" />
+                  )}
                 </div>
               </div>
-            </div>
-            <div className="p-6 rounded-[32px] bg-[#00e676]/5 border border-[#00e676]/10 flex flex-col justify-between group hover:bg-[#00e676]/10 transition-all cursor-pointer">
-              <span className="text-[9px] font-black text-[#00e676] uppercase tracking-widest">Otimizar Agora</span>
-              <div className="mt-4 flex items-center justify-between">
-                <span className="text-sm font-bold text-white">Executar Tudo</span>
-                <ArrowRight className="w-5 h-5 text-[#00e676] group-hover:translate-x-1 transition-transform" />
-              </div>
-            </div>
+            ))}
           </div>
         </div>
       </div>
