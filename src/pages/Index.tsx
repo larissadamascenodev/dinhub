@@ -174,16 +174,29 @@ const Index = () => {
         </div>
 
         {/* MOBILE LAYOUT */}
-        <div className="md:hidden space-y-3">
+        <div className="md:hidden space-y-6">
           <div className="flex items-center justify-between">
-            <div className="pl-0.5">
-              <h1 className="font-display text-base font-bold leading-tight mx-[2px]">
+            <motion.div 
+              initial={{ opacity: 0, x: -10 }}
+              animate={{ opacity: 1, x: 0 }}
+              className="pl-0.5"
+            >
+              <h1 className="font-display text-xl font-extrabold tracking-tight text-white leading-tight">
                 {greeting}, <span className="text-primary">{userName}</span>
               </h1>
-              <p className="text-[10px] text-muted-foreground my-0 mx-[2px]">{dateStr}</p>
-            </div>
+              <p className="text-[10px] font-medium text-white/30 uppercase tracking-[0.2em] mt-1">{dateStr}</p>
+            </motion.div>
             <MonthSelector selectedMonth={selectedMonth} selectedYear={selectedYear} onMonthChange={handleMonthChange} />
           </div>
+
+          <motion.div
+            initial={{ opacity: 0, scale: 0.95 }}
+            animate={{ opacity: 1, scale: 1 }}
+            transition={{ type: "spring", stiffness: 300, damping: 25 }}
+          >
+            <WalletSummaryCard />
+          </motion.div>
+
           {profile && !isOnboardingComplete && (
             <OnboardingCard
               profile={profile}
@@ -193,19 +206,25 @@ const Index = () => {
             />
           )}
           
-          {/* MicroInteracoesCard temporarily disabled */}
           {isCurrentMonth && <GastosSemanaisCard />}
-          <div className="-mt-1">
+          
+          <div className="space-y-4">
+            <p className="text-[10px] font-bold text-white/20 uppercase tracking-[0.2em] ml-1">Próximos compromissos</p>
             <ProximosEventos events={data.events} selectedMonth={selectedMonth} selectedYear={selectedYear} onEventClick={handleEventClick} />
           </div>
-          <BotFinanceTools layout="carousel" />
+
+          <div className="space-y-4">
+            <p className="text-[10px] font-bold text-white/20 uppercase tracking-[0.2em] ml-1">Atalhos rápidos</p>
+            <BotFinanceTools layout="carousel" />
+          </div>
+
           {data.categories.length > 0 && (
             <GastosPorCategoria categories={data.categories} selectedMonth={selectedMonth} onVerAnalise={() => navigate("/transacoes")} />
           )}
+          
           <TransacoesRecentes transactions={data.transactions} onDelete={refetch} />
           <AssinaturasCard />
           <ParcelamentosAtivosCard />
-          
           <MetasResumoCard />
         </div>
       <PagarEditarModal
