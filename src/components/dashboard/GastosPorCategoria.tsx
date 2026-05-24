@@ -238,7 +238,7 @@ const GastosPorCategoria = memo(({ categories, selectedMonth, onVerAnalise }: Pr
                     / {fmt(limit)}
                   </p>
                 ) : (
-                  <p className="text-[9px] text-muted-foreground/50">{pct}%</p>
+                  <p className="text-[10px] text-white/30 font-medium mt-0.5 uppercase tracking-wider">{pct}%</p>
                 )}
               </div>
             </motion.div>
