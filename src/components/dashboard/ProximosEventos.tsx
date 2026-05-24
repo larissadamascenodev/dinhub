@@ -78,10 +78,10 @@ const ProximosEventos = memo(({ events, selectedMonth, selectedYear, onVerTodos,
         animate={{ opacity: 1, y: 0 }}
         exit={{ opacity: 0, y: -4 }}
         transition={{ delay: idx * 0.03, type: "spring", stiffness: 500, damping: 35 }}
-        className={`flex items-center gap-3 px-3 py-2.5 rounded-xl border transition-all ${isClickable ? "cursor-pointer hover:scale-[1.01] active:scale-[0.99]" : ""}`}
+        className={`flex items-center gap-4 px-5 py-4 rounded-[20px] border transition-all duration-300 ${isClickable ? "cursor-pointer hover:bg-white/[0.04] hover:scale-[1.01] active:scale-[0.98]" : ""}`}
         style={{
-          background: isPaid ? `hsl(150 100% 45% / 0.06)` : `hsl(${a} / 0.05)`,
-          borderColor: isPaid ? `hsl(150 100% 45% / 0.15)` : `hsl(${a} / 0.12)`,
+          background: isPaid ? "rgba(255, 255, 255, 0.02)" : `hsl(${a} / 0.04)`,
+          borderColor: isPaid ? "rgba(255, 255, 255, 0.04)" : `hsl(${a} / 0.1)`,
         }}
         onClick={() => {
           if (isClickable && onEventClick) onEventClick(ev);
@@ -89,7 +89,7 @@ const ProximosEventos = memo(({ events, selectedMonth, selectedYear, onVerTodos,
       >
         {/* Content */}
         <div className="flex-1 min-w-0">
-          <p className={`text-[12px] font-semibold truncate ${isPaid ? "text-foreground/50" : "text-foreground/90"}`}>
+          <p className={`text-[13px] font-bold truncate tracking-tight ${isPaid ? "text-white/40" : "text-white"}`}>
             {ev.name}
           </p>
           <div className="flex items-center gap-1.5 mt-0.5">
@@ -102,10 +102,10 @@ const ProximosEventos = memo(({ events, selectedMonth, selectedYear, onVerTodos,
 
         {/* Amount + date */}
         <div className="text-right shrink-0">
-          <p className={`text-[12px] font-bold tabular-nums`} style={{ color: `hsl(${a})` }}>
+          <p className="text-[13px] font-bold tabular-nums tracking-tight" style={{ color: `hsl(${a})` }}>
             {fmt(ev.amount)}
           </p>
-          <p className="text-[9px] text-muted-foreground/50 mt-0.5">
+          <p className="text-[10px] text-white/30 font-medium uppercase tracking-wider mt-1">
             {fmtDate(ev._date)}
           </p>
         </div>
@@ -114,17 +114,22 @@ const ProximosEventos = memo(({ events, selectedMonth, selectedYear, onVerTodos,
   };
 
   return (
-    <div className="rounded-2xl bg-card/90 backdrop-blur-xl border border-border/30 shadow-lg shadow-black/20 overflow-hidden">
+    <div className="rounded-[32px] bg-white/[0.02] border border-white/[0.05] shadow-[0_8px_30px_-5px_rgba(0,0,0,0.5)] overflow-hidden">
       {/* Header */}
-      <div className="flex items-center justify-between px-4 pt-3.5 pb-2">
-        <div className="flex items-center gap-2">
-          <CalendarDays className="w-4 h-4 text-primary" />
-          <h2 className="text-sm font-bold text-foreground">Próximos Eventos</h2>
+      <div className="flex items-center justify-between px-6 pt-6 pb-4">
+        <div className="flex items-center gap-3">
+          <div className="w-10 h-10 rounded-2xl bg-white/[0.03] flex items-center justify-center border border-white/[0.05]">
+            <CalendarDays className="w-5 h-5 text-primary" />
+          </div>
+          <div>
+            <h2 className="text-sm font-bold text-white uppercase tracking-[0.2em]">Compromissos</h2>
+            <p className="text-[10px] text-white/30 font-medium uppercase tracking-wider mt-0.5">Calendário mensal</p>
+          </div>
         </div>
       </div>
 
       {/* Events list */}
-      <div className="px-3 pb-2 space-y-1.5">
+      <div className="px-5 pb-4 space-y-2">
         <AnimatePresence mode="popLayout">
           {displayEvents.length > 0 ? (
             displayEvents.map((ev, idx) => renderEvent(ev, idx))

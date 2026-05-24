@@ -55,80 +55,51 @@ const WalletSummaryCard = () => {
   const patrimonio = totalBalance + totalReservado;
 
   return (
-    <motion.div
-      initial={{ opacity: 0, y: 10 }}
-      animate={{ opacity: 1, y: 0 }}
-      transition={{ delay: 0.1 }}
-      className="relative overflow-hidden rounded-2xl border border-primary/10 bg-primary/[0.04] backdrop-blur-xl p-4 md:p-5 space-y-3 md:space-y-4 group cursor-pointer"
-      onClick={() => navigate("/gestao")}
-    >
-      {/* Glassmorphism decorative elements */}
-      <div className="absolute -right-8 -top-8 w-24 h-24 rounded-full bg-primary/[0.06] blur-xl" />
-      <div className="absolute -left-4 -bottom-4 w-16 h-16 rounded-full bg-primary/[0.04] blur-lg" />
-
-      {/* Header + Patrimônio inline on mobile */}
-      <div className="relative flex items-center justify-between">
-        <div className="flex items-center gap-2.5">
-          <div className="w-9 h-9 md:w-10 md:h-10 rounded-xl bg-primary/15 flex items-center justify-center backdrop-blur-sm">
-            <Wallet className="w-4.5 h-4.5 md:w-5 md:h-5 text-primary" />
+      <motion.div
+        initial={{ opacity: 0, y: 10 }}
+        animate={{ opacity: 1, y: 0 }}
+        transition={{ delay: 0.1, type: "spring", stiffness: 300, damping: 25 }}
+        className="relative overflow-hidden rounded-[24px] border border-white/[0.08] bg-gradient-to-br from-[#1a1a1a] to-[#0f0f0f] p-5 md:p-6 shadow-[0_8px_30px_-5px_rgba(0,0,0,0.5)] group cursor-pointer backdrop-blur-2xl"
+        onClick={() => navigate("/gestao")}
+      >
+        {/* Subtle decorative glow */}
+        <div className="absolute -right-16 -top-16 w-48 h-48 rounded-full bg-primary/[0.07] blur-[64px]" />
+        
+        <div className="relative flex items-center justify-between">
+          <div className="flex items-center gap-3">
+            <div className="w-12 h-12 rounded-2xl bg-white/[0.03] flex items-center justify-center border border-white/[0.05]">
+              <Wallet className="w-6 h-6 text-primary" />
+            </div>
+            <div>
+              <h3 className="text-base font-bold font-display text-white">Minha Carteira</h3>
+              <p className="text-[11px] text-white/40 uppercase tracking-[0.2em] mt-0.5">Patrimônio Total</p>
+            </div>
           </div>
-          <div>
-            <h3 className="text-sm font-semibold font-display text-primary leading-none">Minha Carteira</h3>
-            <p className="text-[10px] text-muted-foreground uppercase tracking-wider mt-1 md:hidden">Patrimônio Total</p>
-          </div>
+          <ChevronRight className="w-6 h-6 text-white/20 group-hover:text-primary transition-colors duration-300" />
         </div>
-        <div className="flex items-center gap-2">
-          <p className={cn("text-lg font-bold tabular-nums md:hidden", patrimonio >= 0 ? "text-primary" : "text-destructive")}>
+
+        <div className="mt-8 space-y-1">
+          <p className="text-[11px] text-white/40 uppercase tracking-[0.2em]">Saldo Total</p>
+          <p className={cn("text-4xl font-extrabold tracking-tight tabular-nums font-display", patrimonio >= 0 ? "text-white" : "text-destructive")}>
             {formatCurrency(patrimonio)}
           </p>
-          <ChevronRight className="w-4 h-4 text-primary/30 group-hover:text-primary transition-colors" />
         </div>
-      </div>
 
-      {/* Patrimônio total - desktop only */}
-      <div className="relative text-center py-2 hidden md:block">
-        <p className="text-[10px] text-muted-foreground uppercase tracking-widest mb-1">Patrimônio Total</p>
-        <p className={cn("text-xl font-bold tabular-nums", patrimonio >= 0 ? "text-primary" : "text-destructive")}>
-          {formatCurrency(patrimonio)}
-        </p>
-      </div>
-
-      {/* Stats row */}
-      <div className="relative grid grid-cols-2 gap-2">
-        <div className="bg-background/40 backdrop-blur-sm rounded-xl p-3 text-center border border-border/10">
-          <Landmark className="w-4 h-4 text-primary/60 mx-auto mb-1" />
-          <p className="text-[10px] text-muted-foreground leading-tight">Contas</p>
-          <p className={cn("text-xs md:text-sm font-bold tabular-nums mt-1", totalBalance >= 0 ? "text-primary" : "text-destructive")}>
-            {formatCurrency(totalBalance)}
-          </p>
+        <div className="grid grid-cols-2 gap-3 mt-8">
+          <div className="bg-white/[0.02] rounded-2xl p-4 border border-white/[0.05]">
+            <p className="text-[10px] text-white/40 uppercase tracking-widest mb-1">Contas</p>
+            <p className={cn("text-sm font-bold tabular-nums text-white")}>
+              {formatCurrency(totalBalance)}
+            </p>
+          </div>
+          <div className="bg-white/[0.02] rounded-2xl p-4 border border-white/[0.05]">
+            <p className="text-[10px] text-white/40 uppercase tracking-widest mb-1">Reservado</p>
+            <p className="text-sm font-bold tabular-nums text-white">
+              {totalReservado > 0 ? formatCurrency(totalReservado) : "R$ 0,00"}
+            </p>
+          </div>
         </div>
-        <div className="bg-background/40 backdrop-blur-sm rounded-xl p-3 text-center border border-border/10">
-          <PiggyBank className="w-4 h-4 text-primary/60 mx-auto mb-1" />
-          <p className="text-[10px] text-muted-foreground leading-tight">Reservado</p>
-          <p className={cn("text-xs md:text-sm font-bold tabular-nums mt-1", totalReservado > 0 ? "text-foreground" : "text-muted-foreground")}>
-            {totalReservado > 0 ? formatCurrency(totalReservado) : "R$ 0,00"}
-          </p>
-        </div>
-      </div>
-
-      {/* Quick actions */}
-      <div className="relative flex items-center justify-center gap-4 pt-0.5">
-        <button
-          onClick={(e) => {
-            e.stopPropagation();
-            navigate("/gestao");
-          }}
-          className="flex items-center gap-1.5 text-xs text-primary/70 hover:text-primary transition-colors"
-        >
-          <ArrowRightLeft className="w-3.5 h-3.5" />
-          <span>Transferir</span>
-        </button>
-        <span className="w-px h-4 bg-primary/10" />
-        <span className="text-xs text-muted-foreground group-hover:text-primary transition-colors">
-          Gerenciar carteira
-        </span>
-      </div>
-    </motion.div>
+      </motion.div>
   );
 };
 

@@ -171,18 +171,17 @@ const DashboardHeader = memo(({ profile, streak = 0, streakDates = [] }: { profi
       </AnimatePresence>
 
       {/* Desktop Top Bar */}
-      <div className="hidden md:flex items-center justify-between sticky top-0 z-50 bg-background/70 backdrop-blur-2xl px-6 py-3 border-b border-border/10 -mx-4 md:-mx-6 mb-4">
+      <div className="hidden md:flex items-center justify-between sticky top-0 z-50 bg-background/50 backdrop-blur-[32px] px-8 py-4 border-b border-white/[0.04] -mx-4 md:-mx-8 mb-8">
         {/* Logo */}
-        <div className="flex items-center gap-2 flex-shrink-0 cursor-pointer" onClick={() => navigate("/")}>
-          {/* Icon removed by user request */}
-          <span className="font-display font-bold text-2xl">
-            <span className="text-foreground">Din</span>
-            <span className="text-primary">Hub</span>
+        <div className="flex items-center gap-2 flex-shrink-0 cursor-pointer group" onClick={() => navigate("/")}>
+          <span className="font-display font-extrabold text-2xl tracking-tighter">
+            <span className="text-white group-hover:text-primary transition-colors duration-500">Din</span>
+            <span className="text-primary group-hover:text-white transition-colors duration-500">Hub</span>
           </span>
         </div>
 
         {/* Center: Floating nav pill */}
-        <nav className="flex items-center gap-1 bg-card/80 backdrop-blur-xl border border-border/20 rounded-2xl px-1.5 py-1 shadow-lg shadow-black/10">
+        <nav className="flex items-center gap-2 bg-white/[0.03] backdrop-blur-2xl border border-white/[0.05] rounded-full px-2 py-1.5 shadow-2xl shadow-black/40">
           {NAV_ITEMS.map((item) => {
             const Icon = item.icon;
             const isActive = location.pathname === item.path;
@@ -193,13 +192,10 @@ const DashboardHeader = memo(({ profile, streak = 0, streakDates = [] }: { profi
                 <div key={item.label} className="relative" ref={transacaoRef}>
                   <button
                     onClick={() => setTransacaoMenuOpen((v) => !v)}
-                    className="relative -my-1 mx-1 flex items-center gap-1.5 px-4 py-2.5 rounded-xl text-xs font-bold transition-all bg-primary/15 border border-primary/30 text-primary hover:bg-primary/25"
-                    style={{
-                      boxShadow: "0 2px 12px -2px hsl(150 100% 45% / 0.3)",
-                    }}
+                    className="relative flex items-center gap-2 px-5 py-2.5 rounded-full text-[13px] font-bold transition-all bg-primary text-black hover:bg-primary/90 shadow-[0_8px_20px_-6px_rgba(0,230,118,0.5)]"
                   >
-                    <Icon className="w-4 h-4" />
-                    <span>{item.label}</span>
+                    <Plus className="w-4 h-4 stroke-[3]" />
+                    <span>Novo</span>
                   </button>
 
                   <AnimatePresence>
@@ -235,11 +231,11 @@ const DashboardHeader = memo(({ profile, streak = 0, streakDates = [] }: { profi
               <button
                 key={item.label}
                 onClick={() => navigate(item.path)}
-                className={`relative flex items-center gap-1.5 px-4 py-2 rounded-xl text-xs font-medium transition-all duration-300 ${
-                  isActive ? "text-primary" : "text-muted-foreground hover:text-foreground"
+                className={`relative flex items-center gap-2 px-5 py-2.5 rounded-full text-[13px] font-bold transition-all duration-300 ${
+                  isActive ? "text-white bg-white/[0.05]" : "text-white/40 hover:text-white hover:bg-white/[0.02]"
                 }`}
               >
-                <Icon className="w-3.5 h-3.5" />
+                <Icon className="w-4 h-4" />
                 <span>{item.label}</span>
               </button>
             );
