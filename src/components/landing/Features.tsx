@@ -607,184 +607,140 @@ const HubyInsightsPanel: React.FC = () => {
 };
 
 const HubyScorePanel: React.FC = () => {
-  const [idx, setIdx] = useState(0);
-  const [direction, setDirection] = useState(0);
-  
-  useEffect(() => {
-    const t = setInterval(() => {
-      setDirection(1);
-      setIdx((p) => (p + 1) % SCORE_INSIGHTS.length);
-    }, 6000);
-    return () => clearInterval(t);
-  }, []);
-
-  const handleDotClick = (newIdx: number) => {
-    setDirection(newIdx > idx ? 1 : -1);
-    setIdx(newIdx);
-  };
-
-  const currentSlide = SCORE_INSIGHTS[idx];
+  const currentSlide = SCORE_INSIGHTS[0]; // Fixado na primeira tela (Excelente)
   const insight = currentSlide.insight;
   const InsightIcon = insight.icon;
 
-  const slideVariants = {
-    enter: (direction: number) => ({
-      x: direction > 0 ? 500 : -500,
-      opacity: 0,
-      scale: 0.95,
-      filter: 'blur(10px)',
-    }),
-    center: {
-      zIndex: 1,
-      x: 0,
-      opacity: 1,
-      scale: 1,
-      filter: 'blur(0px)',
-    },
-    exit: (direction: number) => ({
-      zIndex: 0,
-      x: direction < 0 ? 500 : -500,
-      opacity: 0,
-      scale: 0.95,
-      filter: 'blur(10px)',
-    })
-  };
-
   return (
-    <div className="relative bg-[#0a0a0a]/60 border border-white/5 rounded-[40px] p-4 md:p-8 shadow-2xl backdrop-blur-3xl flex flex-col min-h-[580px] md:min-h-[560px] overflow-hidden group/panel transition-all duration-500 hover:border-[#00e676]/20">
-      <div className="absolute -top-20 -left-20 w-40 h-40 bg-blue-500/5 blur-[80px] rounded-full pointer-events-none" />
+    <div className="relative bg-[#050505] border border-white/10 rounded-[48px] p-6 md:p-10 shadow-[0_0_50px_rgba(0,0,0,1)] overflow-hidden transition-all duration-500 hover:border-[#00e676]/30 flex flex-col md:flex-row gap-8 lg:gap-12">
+      {/* Futuristic Background Accents */}
+      <div className="absolute top-0 right-0 w-64 h-64 bg-[#00e676]/5 blur-[100px] rounded-full pointer-events-none" />
+      <div className="absolute bottom-0 left-0 w-64 h-64 bg-blue-500/5 blur-[100px] rounded-full pointer-events-none" />
+      <div className="absolute inset-0 bg-[url('https://grainy-gradients.vercel.app/noise.svg')] opacity-20 pointer-events-none mix-blend-overlay" />
       
-      <AnimatePresence mode="wait" custom={direction} initial={false}>
-        <motion.div
-          key={idx}
-          custom={direction}
-          variants={slideVariants}
-          initial="enter"
-          animate="center"
-          exit="exit"
-          transition={{
-            x: { type: "spring", stiffness: 300, damping: 30 },
-            opacity: { duration: 0.4 }
-          }}
-          className="flex-1 flex flex-col space-y-6 md:space-y-8"
-        >
-          {/* Cabeçalho */}
-          <div className="flex items-center justify-center gap-2 mb-2">
-            <ShieldCheck className="w-5 h-5 text-[#00e676]" />
-            <span className="text-xs font-black tracking-[0.2em] text-[#00e676] uppercase">Score Huby</span>
-          </div>
-
-          {/* Visual Score Gauge */}
-          <div className="relative flex flex-col items-center justify-center py-4">
-            <div className="relative w-32 h-32 md:w-40 md:h-40">
-              <svg className="w-full h-full transform -rotate-90">
-                <circle cx="50%" cy="50%" r="45%" stroke="currentColor" strokeWidth="8" fill="transparent" className="text-white/5" />
-                <motion.circle 
-                  cx="50%" cy="50%" r="45%" 
-                  stroke="currentColor" strokeWidth="8" fill="transparent" 
-                  strokeDasharray="283" 
-                  initial={{ strokeDashoffset: 283 }}
-                  animate={{ strokeDashoffset: 283 - (283 * (currentSlide.score / 100)) }}
-                  transition={{ duration: 1.5, ease: "easeOut" }}
-                  className="text-[#00e676]" 
-                />
-              </svg>
-              <div className="absolute inset-0 flex flex-col items-center justify-center">
-                <motion.span 
-                  initial={{ opacity: 0, scale: 0.5 }}
-                  animate={{ opacity: 1, scale: 1 }}
-                  key={currentSlide.score}
-                  className="text-3xl md:text-5xl font-bold text-white"
-                >
-                  {currentSlide.score}
-                </motion.span>
-                <span className="text-[9px] text-white/40 font-bold uppercase tracking-widest mt-1">Pontos</span>
-              </div>
-            </div>
-            <div className="mt-4 px-4 py-1.5 rounded-full bg-white/[0.03] border border-white/10">
-              <span className="text-xs font-bold text-[#00e676]">Status: {currentSlide.status}</span>
-            </div>
-          </div>
-
-          {/* Insights */}
-          <div className="space-y-4">
-            <div className="flex items-center gap-2">
-              <div className="w-5 h-5 rounded-full bg-[#00e676]/15 flex items-center justify-center">
-                <div className="w-1.5 h-1.5 rounded-full bg-[#00e676]" />
-              </div>
-              <span className="text-sm font-semibold text-white">Análise de Score</span>
-            </div>
-
-            <div className="flex items-start gap-3 md:gap-4 p-3 md:p-5 rounded-2xl bg-white/[0.04] border border-white/10 shadow-inner">
-              <div className={`w-10 h-10 md:w-12 md:h-12 rounded-xl ${insight.iconBg} flex items-center justify-center shrink-0`}>
-                <InsightIcon className={`w-5 h-5 md:w-6 md:h-6 ${insight.iconColor}`} />
-              </div>
-              <div className="flex-1 space-y-2">
-                <div className="flex items-center justify-between">
-                  <span className="text-[10px] font-bold text-white/40 uppercase tracking-widest">Atualização Recente</span>
-                  <span className="text-[10px] text-white/50 px-2.5 py-1 rounded-full border border-white/10 bg-white/[0.03] whitespace-nowrap">
-                    {insight.tag}
-                  </span>
-                </div>
-                <p className="text-sm md:text-base text-white/90 leading-relaxed font-medium">
-                  {insight.text}
-                </p>
-              </div>
-            </div>
-          </div>
-
-          {/* Ações */}
-          <div className="space-y-4 pt-2">
-            <div className="flex items-center justify-between">
-              <div className="flex items-center gap-2">
-                <Zap className="w-4 h-4 text-[#00e676]" />
-                <span className="text-sm font-semibold text-white">Próximos passos sugeridos</span>
-              </div>
-            </div>
-
-            <div className="grid gap-3">
-              {currentSlide.actions.map((a, i) => {
-                const ActionIcon = a.icon;
-                return (
-                  <motion.div
-                    key={i}
-                    initial={{ opacity: 0, y: 10 }}
-                    animate={{ opacity: 1, y: 0 }}
-                    transition={{ delay: 0.1 * i }}
-                    className="flex items-center gap-3 md:gap-4 p-3 md:p-4 rounded-2xl bg-white/[0.03] border border-white/5 hover:border-[#00e676]/30 hover:bg-[#00e676]/5 transition-all duration-300 cursor-pointer group"
-                  >
-                    <div className={`w-9 h-9 md:w-10 md:h-10 rounded-xl ${a.iconBg} flex items-center justify-center shrink-0`}>
-                      <ActionIcon className={`w-4 h-4 md:w-5 md:h-5 ${a.iconColor}`} />
-                    </div>
-                    <div className="flex-1 min-w-0 pr-1">
-                      <div className="text-[12px] md:text-[14px] font-semibold text-white group-hover:text-[#00e676] transition-colors leading-tight">{a.title}</div>
-                      <div className="text-[10px] md:text-[11px] text-white/40 truncate mt-0.5">{a.sub}</div>
-                    </div>
-                    <div className="flex items-center gap-2 shrink-0">
-                      <div className="text-right">
-                        <div className={`text-[11px] md:text-[13px] font-bold ${a.valueColor}`}>{a.value}</div>
-                      </div>
-                      <ChevronRight className="w-4 h-4 text-white/20 group-hover:text-[#00e676] group-hover:translate-x-1 transition-all" />
-                    </div>
-                  </motion.div>
-                );
-              })}
-            </div>
-          </div>
-        </motion.div>
-      </AnimatePresence>
-
-      {/* Dots */}
-      <div className="flex items-center justify-center gap-3 mt-auto pt-8 pb-2">
-        {SCORE_INSIGHTS.map((_, i) => (
-          <button
-            key={i}
-            onClick={() => handleDotClick(i)}
-            className={`group/dot relative h-1.5 transition-all duration-500 cursor-pointer overflow-hidden ${
-              i === idx ? 'w-10 bg-[#00e676]' : 'w-2 bg-white/10 hover:bg-white/30'
-            } rounded-full`}
+      {/* Left Column: Visual Data */}
+      <div className="flex-1 flex flex-col items-center justify-center relative space-y-8">
+        <div className="relative">
+          {/* Animated Glow Rings */}
+          <motion.div 
+            animate={{ scale: [1, 1.05, 1], opacity: [0.3, 0.5, 0.3] }}
+            transition={{ duration: 4, repeat: Infinity }}
+            className="absolute inset-0 rounded-full border-2 border-[#00e676]/20 blur-sm"
           />
-        ))}
+          <motion.div 
+            animate={{ scale: [1.1, 1, 1.1], opacity: [0.1, 0.2, 0.1] }}
+            transition={{ duration: 6, repeat: Infinity }}
+            className="absolute -inset-4 rounded-full border border-blue-500/10"
+          />
+
+          <div className="relative w-48 h-48 md:w-64 md:h-64">
+            <svg className="w-full h-full transform -rotate-90 drop-shadow-[0_0_15px_rgba(0,230,118,0.2)]">
+              <circle cx="50%" cy="50%" r="45%" stroke="currentColor" strokeWidth="12" fill="transparent" className="text-white/[0.03]" />
+              <motion.circle 
+                cx="50%" cy="50%" r="45%" 
+                stroke="url(#scoreGradient)" strokeWidth="12" fill="transparent" 
+                strokeDasharray="283" 
+                initial={{ strokeDashoffset: 283 }}
+                animate={{ strokeDashoffset: 283 - (283 * (currentSlide.score / 100)) }}
+                transition={{ duration: 2, ease: "circOut" }}
+                strokeLinecap="round"
+              />
+              <defs>
+                <linearGradient id="scoreGradient" x1="0%" y1="0%" x2="100%" y2="0%">
+                  <stop offset="0%" stopColor="#00e676" />
+                  <stop offset="100%" stopColor="#3b82f6" />
+                </linearGradient>
+              </defs>
+            </svg>
+            <div className="absolute inset-0 flex flex-col items-center justify-center">
+              <motion.div
+                initial={{ opacity: 0, y: 10 }}
+                animate={{ opacity: 1, y: 0 }}
+                className="text-center"
+              >
+                <span className="text-6xl md:text-8xl font-black text-white tracking-tighter block leading-none">
+                  {currentSlide.score}
+                </span>
+                <span className="text-[10px] md:text-xs text-white/40 font-black uppercase tracking-[0.4em] mt-2 block">
+                  Neural Score
+                </span>
+              </motion.div>
+            </div>
+          </div>
+        </div>
+
+        <div className="flex flex-col items-center space-y-2">
+          <div className="px-6 py-2 rounded-full bg-[#00e676]/10 border border-[#00e676]/20 backdrop-blur-md">
+            <span className="text-xs font-black text-[#00e676] uppercase tracking-widest flex items-center gap-2">
+              <div className="w-1.5 h-1.5 rounded-full bg-[#00e676] animate-pulse" />
+              Status: {currentSlide.status}
+            </span>
+          </div>
+          <span className="text-[10px] text-white/20 font-medium italic">Sincronizado via Huby Core v2.4</span>
+        </div>
+      </div>
+
+      {/* Right Column: Intelligence & Actions */}
+      <div className="flex-1 flex flex-col justify-center space-y-8 relative z-10">
+        <div className="space-y-4">
+          <div className="flex items-center gap-3">
+            <div className="w-8 h-8 rounded-lg bg-blue-500/10 border border-blue-500/20 flex items-center justify-center">
+              <Sparkles className="w-4 h-4 text-blue-400" />
+            </div>
+            <h4 className="text-lg font-bold text-white tracking-tight">Análise Preditiva</h4>
+          </div>
+
+          <div className="p-6 rounded-[32px] bg-white/[0.03] border border-white/10 backdrop-blur-xl relative overflow-hidden group">
+            <div className="absolute top-0 left-0 w-1 h-full bg-[#00e676]" />
+            <div className="space-y-3">
+              <div className="flex items-center justify-between">
+                <span className="text-[10px] font-black text-[#00e676] uppercase tracking-widest">{insight.tag}</span>
+                <div className="flex items-center gap-1.5 text-[10px] text-white/30 font-bold">
+                  <Clock className="w-3 h-3" /> ATUALIZADO AGORA
+                </div>
+              </div>
+              <p className="text-white/90 text-lg leading-relaxed font-medium">
+                {insight.text}
+              </p>
+            </div>
+          </div>
+        </div>
+
+        <div className="space-y-4">
+          <div className="flex items-center gap-3">
+            <Zap className="w-5 h-5 text-[#00e676]" />
+            <h4 className="text-sm font-bold text-white/60 uppercase tracking-widest">Ações de Otimização</h4>
+          </div>
+
+          <div className="grid gap-3">
+            {currentSlide.actions.map((a, i) => {
+              const ActionIcon = a.icon;
+              return (
+                <motion.div
+                  key={i}
+                  initial={{ opacity: 0, x: 20 }}
+                  animate={{ opacity: 1, x: 0 }}
+                  transition={{ delay: 0.1 * i }}
+                  className="flex items-center gap-4 p-4 rounded-2xl bg-white/[0.02] border border-white/5 hover:border-[#00e676]/40 hover:bg-[#00e676]/10 transition-all duration-300 group cursor-pointer"
+                >
+                  <div className={`w-10 h-10 rounded-xl ${a.iconBg} flex items-center justify-center shrink-0 border border-white/5 group-hover:border-[#00e676]/20 transition-all`}>
+                    <ActionIcon className={`w-5 h-5 ${a.iconColor}`} />
+                  </div>
+                  <div className="flex-1 min-w-0">
+                    <div className="text-sm font-bold text-white group-hover:text-[#00e676] transition-colors">{a.title}</div>
+                    <div className="text-[11px] text-white/30 truncate mt-0.5">{a.sub}</div>
+                  </div>
+                  <div className="flex items-center gap-3">
+                    <div className={`text-xs font-black ${a.valueColor} bg-white/[0.03] px-3 py-1 rounded-lg border border-white/5`}>
+                      {a.value}
+                    </div>
+                    <ChevronRight className="w-4 h-4 text-white/10 group-hover:text-[#00e676] group-hover:translate-x-1 transition-all" />
+                  </div>
+                </motion.div>
+              );
+            })}
+          </div>
+        </div>
       </div>
     </div>
   );
