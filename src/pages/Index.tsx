@@ -195,14 +195,14 @@ const Index = () => {
           
           {/* MicroInteracoesCard temporarily disabled */}
           {isCurrentMonth && <GastosSemanaisCard />}
+          <div className="-mt-1">
+            <ProximosEventos events={data.events} selectedMonth={selectedMonth} selectedYear={selectedYear} onEventClick={handleEventClick} />
+          </div>
           <BotFinanceTools layout="carousel" />
           {data.categories.length > 0 && (
             <GastosPorCategoria categories={data.categories} selectedMonth={selectedMonth} onVerAnalise={() => navigate("/transacoes")} />
           )}
           <TransacoesRecentes transactions={data.transactions} onDelete={refetch} />
-          <div className="-mt-3">
-            <ProximosEventos events={data.events} selectedMonth={selectedMonth} selectedYear={selectedYear} onEventClick={handleEventClick} />
-          </div>
           <AssinaturasCard />
           <ParcelamentosAtivosCard />
           
