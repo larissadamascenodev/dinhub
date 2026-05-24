@@ -78,10 +78,10 @@ const ProximosEventos = memo(({ events, selectedMonth, selectedYear, onVerTodos,
         animate={{ opacity: 1, y: 0 }}
         exit={{ opacity: 0, y: -4 }}
         transition={{ delay: idx * 0.03, type: "spring", stiffness: 500, damping: 35 }}
-        className={`flex items-center gap-3 px-3 py-2.5 rounded-xl border transition-all ${isClickable ? "cursor-pointer hover:scale-[1.01] active:scale-[0.99]" : ""}`}
+        className={`flex items-center gap-4 px-5 py-4 rounded-[20px] border transition-all duration-300 ${isClickable ? "cursor-pointer hover:bg-white/[0.04] hover:scale-[1.01] active:scale-[0.98]" : ""}`}
         style={{
-          background: isPaid ? `hsl(150 100% 45% / 0.06)` : `hsl(${a} / 0.05)`,
-          borderColor: isPaid ? `hsl(150 100% 45% / 0.15)` : `hsl(${a} / 0.12)`,
+          background: isPaid ? "rgba(255, 255, 255, 0.02)" : `hsl(${a} / 0.04)`,
+          borderColor: isPaid ? "rgba(255, 255, 255, 0.04)" : `hsl(${a} / 0.1)`,
         }}
         onClick={() => {
           if (isClickable && onEventClick) onEventClick(ev);
