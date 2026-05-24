@@ -206,7 +206,7 @@ const GastosPorCategoria = memo(({ categories, selectedMonth, onVerAnalise }: Pr
               </div>
               <div className="flex-1 min-w-0">
                 <div className="flex items-center justify-between">
-                  <p className="text-xs font-semibold text-foreground truncate">{cat.name}</p>
+                  <p className="text-[13px] font-bold text-white truncate tracking-tight">{cat.name}</p>
                   {hasLimit && limitLabel && (
                     <p className={`text-[8px] font-medium ${limitRatio > 1 ? "text-destructive" : "text-warning"}`}>
                       {limitLabel}
