@@ -553,11 +553,11 @@ export default function RadarFinanceiro() {
                 <div className="flex items-center justify-between">
                   <div className="flex items-center gap-2.5">
                     <div className="w-3 h-3 rounded-full flex-shrink-0" style={{ backgroundColor: cat.color }} />
-                    <span className="text-[12px] font-bold text-foreground">{cat.name}</span>
+                    <span className="text-[14px] font-black text-white tracking-tight">{cat.name}</span>
                   </div>
-                  <div className="flex items-center gap-2.5">
-                    <span className="text-[12px] font-extrabold text-foreground tabular-nums">{fmt(cat.amount)}</span>
-                    <span className="text-[10px] text-muted-foreground/40 tabular-nums font-medium">{catPctVal}%</span>
+                  <div className="flex items-center gap-3">
+                    <span className="text-[14px] font-black text-white tabular-nums tracking-tight">{fmt(cat.amount)}</span>
+                    <span className="text-[11px] text-white/30 tabular-nums font-bold">{catPctVal}%</span>
                     {change !== null && change !== 0 && (
                       <span className={`text-[9px] font-bold flex items-center gap-0.5 ${change > 0 ? "text-destructive" : "text-primary"}`}>
                         {change > 0 ? <ArrowUpRight className="w-2.5 h-2.5" /> : <ArrowDownRight className="w-2.5 h-2.5" />}
