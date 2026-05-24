@@ -201,8 +201,8 @@ const GastosPorCategoria = memo(({ categories, selectedMonth, onVerAnalise }: Pr
               style={{ opacity: hasSel && !isSelected ? 0.3 : 1 }}
               onClick={() => handleBarClick(cat.name)}
             >
-              <div className="w-5 h-5 flex items-center justify-center shrink-0">
-                <IconComponent className="w-4 h-4" style={{ color: `hsl(${color})` }} />
+              <div className="w-10 h-10 rounded-2xl bg-white/[0.03] flex items-center justify-center shrink-0 border border-white/[0.05]">
+                <IconComponent className="w-5 h-5 transition-transform duration-500 group-hover/item:scale-110" style={{ color: `hsl(${color})` }} />
               </div>
               <div className="flex-1 min-w-0">
                 <div className="flex items-center justify-between">
