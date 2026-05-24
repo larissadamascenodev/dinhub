@@ -164,7 +164,7 @@ const GastosPorCategoria = memo(({ categories, selectedMonth, onVerAnalise }: Pr
       </div>
 
       {/* Category list */}
-      <div className="px-4 pb-3 pt-3 space-y-2.5">
+      <div className="pb-3 pt-8 space-y-4">
         {visible.map((cat, index) => {
           const pct = totalExpenses > 0 ? Math.round((cat.amount / totalExpenses) * 100) : 0;
           const color = getCatColor(cat.name, sorted.indexOf(cat), customCats);
