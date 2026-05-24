@@ -428,22 +428,26 @@ export default function RadarFinanceiro() {
         </div>
 
         {/* Composição */}
-        <div className="grid grid-cols-2 gap-3">
-          <div className="rounded-[14px] bg-secondary/12 border border-border/5 p-3.5">
-            <div className="flex items-center gap-2 mb-2">
-              <RefreshCw className="w-3.5 h-3.5 text-chart-2" />
-              <span className="text-[10px] text-muted-foreground/60 font-semibold">Fixos</span>
+        <div className="grid grid-cols-2 gap-4">
+          <div className="rounded-[20px] bg-white/5 border border-white/5 p-4 group hover:bg-white/10 transition-colors">
+            <div className="flex items-center gap-2 mb-3">
+              <div className="w-7 h-7 rounded-lg bg-chart-2/10 flex items-center justify-center border border-chart-2/20">
+                <RefreshCw className="w-3.5 h-3.5 text-chart-2" />
+              </div>
+              <span className="text-[11px] text-white/50 font-bold uppercase tracking-wider">Fixos</span>
             </div>
-            <p className="text-[18px] font-extrabold tabular-nums text-foreground leading-none">{fixoPct}%</p>
-            <p className="text-[9px] text-muted-foreground/40 mt-1 font-medium">{fmt(recDespesas)}</p>
+            <p className="text-[22px] font-black tabular-nums text-white leading-none tracking-tight">{fixoPct}%</p>
+            <p className="text-[10px] text-white/30 mt-2 font-bold tabular-nums">{fmt(recDespesas)}</p>
           </div>
-          <div className="rounded-[14px] bg-secondary/12 border border-border/5 p-3.5">
-            <div className="flex items-center gap-2 mb-2">
-              <Zap className="w-3.5 h-3.5 text-chart-3" />
-              <span className="text-[10px] text-muted-foreground/60 font-semibold">Variáveis</span>
+          <div className="rounded-[20px] bg-white/5 border border-white/5 p-4 group hover:bg-white/10 transition-colors">
+            <div className="flex items-center gap-2 mb-3">
+              <div className="w-7 h-7 rounded-lg bg-chart-3/10 flex items-center justify-center border border-chart-3/20">
+                <Zap className="w-3.5 h-3.5 text-chart-3" />
+              </div>
+              <span className="text-[11px] text-white/50 font-bold uppercase tracking-wider">Variáveis</span>
             </div>
-            <p className="text-[18px] font-extrabold tabular-nums text-foreground leading-none">{variavelPct}%</p>
-            <p className="text-[9px] text-muted-foreground/40 mt-1 font-medium">{fmt(variavelDespesas)}</p>
+            <p className="text-[22px] font-black tabular-nums text-white leading-none tracking-tight">{variavelPct}%</p>
+            <p className="text-[10px] text-white/30 mt-2 font-bold tabular-nums">{fmt(variavelDespesas)}</p>
           </div>
         </div>
 
