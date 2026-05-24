@@ -228,45 +228,45 @@ const Features = () => {
           </div>
 
           {/* 2. SCORE FINANCEIRO */}
-          <motion.div variants={itemVariants} className="grid grid-cols-1 lg:grid-cols-2 gap-12 sm:gap-16 lg:gap-32 items-center">
-            <div className="order-2 lg:order-1 relative group w-full">
-              <div className="absolute -inset-4 bg-blue-500/5 blur-3xl rounded-full opacity-0 group-hover:opacity-100 transition-opacity duration-1000" />
-              <div className="relative glass-card p-1">
-                <HubyScorePanel />
-              </div>
-            </div>
-            <div className="order-1 lg:order-2 space-y-8 sm:space-y-10 text-center lg:text-left">
-              <div className="space-y-6 sm:space-y-8">
-                <div className="flex flex-col lg:flex-row items-center gap-4 sm:gap-5">
-                  <div className="w-14 h-14 sm:w-16 sm:h-16 rounded-[20px] bg-[#00e676]/5 border border-[#00e676]/10 flex items-center justify-center shrink-0 shadow-2xl">
-                    <ShieldCheck className="w-7 h-7 sm:w-8 sm:h-8 text-[#00e676]" />
-                  </div>
-                  <h3 className="text-2xl sm:text-3xl md:text-4xl lg:text-6xl font-sora font-extrabold text-white tracking-tighter">Score Huby</h3>
+          <motion.div variants={itemVariants} className="flex flex-col gap-16 md:gap-24 items-center">
+            <div className="w-full max-w-4xl mx-auto text-center space-y-8 sm:space-y-10">
+              <div className="flex flex-col items-center gap-5">
+                <div className="w-14 h-14 sm:w-16 sm:h-16 rounded-[20px] bg-[#00e676]/5 border border-[#00e676]/10 flex items-center justify-center shrink-0 shadow-2xl">
+                  <ShieldCheck className="w-7 h-7 sm:w-8 sm:h-8 text-[#00e676]" />
                 </div>
-                <p className="text-white/50 text-base sm:text-lg md:text-xl leading-relaxed font-light px-2 sm:px-0">
+                <h3 className="text-3xl sm:text-4xl md:text-5xl lg:text-7xl font-sora font-extrabold text-white tracking-tighter">Score Huby</h3>
+              </div>
+              
+              <div className="space-y-8">
+                <p className="text-white/50 text-lg sm:text-xl md:text-2xl leading-relaxed font-light max-w-3xl mx-auto px-4 sm:px-0">
                   Sua pontuação de saúde financeira baseada em hábitos reais. Guardou? Sobe. Esqueceu um boleto? A Huby avisa e seu score reflete na hora. <span className="text-white/80 font-medium">Controle total da sua reputação financeira.</span>
                 </p>
-                <ul className="space-y-5 pt-4">
+                
+                <div className="flex flex-wrap justify-center gap-4 sm:gap-10 px-4">
                   {[
                     'Cálculo baseado em comportamento real',
                     'Feedback imediato sobre ganhos e perdas',
                     'Dicas práticas para subir sua pontuação'
                   ].map((item, i) => (
-                    <li key={i} className="flex items-center justify-center lg:justify-start gap-4 text-sm font-medium text-white/50 hover:text-white transition-colors duration-300">
+                    <div key={i} className="flex items-center gap-3 text-xs sm:text-sm font-medium text-white/50 hover:text-white transition-colors duration-300">
                       <div className="w-5 h-5 rounded-full border border-[#00e676]/20 flex items-center justify-center shrink-0">
                         <CheckCircle2 className="w-3 h-3 text-[#00e676]" />
                       </div>
                       {item}
-                    </li>
+                    </div>
                   ))}
-                </ul>
+                </div>
               </div>
 
-              <div className="pt-8 sm:pt-10 border-t border-white/[0.05]">
+              <div className="pt-8 sm:pt-10 border-t border-white/[0.05] max-w-2xl mx-auto">
                 <p className="text-white/30 text-base sm:text-lg md:text-xl font-light italic px-4 sm:px-0">
                   "O score que realmente importa: aquele que mede sua disciplina e liberdade, não apenas sua dívida."
                 </p>
               </div>
+            </div>
+            
+            <div className="w-full relative px-4">
+              <HubyScorePanel />
             </div>
           </motion.div>
 
@@ -612,11 +612,10 @@ const HubyScorePanel: React.FC = () => {
   const InsightIcon = insight.icon;
 
   return (
-    <div className="relative bg-[#050505] border border-white/10 rounded-[48px] p-6 md:p-10 shadow-[0_0_50px_rgba(0,0,0,1)] overflow-hidden transition-all duration-500 hover:border-[#00e676]/30 flex flex-col md:flex-row gap-8 lg:gap-12">
+    <div className="relative w-full max-w-6xl mx-auto flex flex-col lg:flex-row gap-12 lg:gap-24 items-center">
       {/* Futuristic Background Accents */}
-      <div className="absolute top-0 right-0 w-64 h-64 bg-[#00e676]/5 blur-[100px] rounded-full pointer-events-none" />
-      <div className="absolute bottom-0 left-0 w-64 h-64 bg-blue-500/5 blur-[100px] rounded-full pointer-events-none" />
-      <div className="absolute inset-0 bg-[url('https://grainy-gradients.vercel.app/noise.svg')] opacity-20 pointer-events-none mix-blend-overlay" />
+      <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[150%] h-[150%] bg-[#00e676]/5 blur-[120px] rounded-full pointer-events-none opacity-50" />
+      <div className="absolute inset-0 bg-[url('https://grainy-gradients.vercel.app/noise.svg')] opacity-10 pointer-events-none mix-blend-overlay" />
       
       {/* Left Column: Visual Data */}
       <div className="flex-1 flex flex-col items-center justify-center relative space-y-8">
