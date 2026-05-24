@@ -88,18 +88,31 @@ const Index = () => {
   return (
     <>
 
-        {/* DESKTOP LAYOUT */}
-        <div className="hidden lg:grid lg:grid-cols-[1fr_340px] gap-5">
-          <div className="space-y-4">
-            <div className="flex items-center justify-between mb-3">
-              <div className="pl-0.5">
-                <h1 className="font-display text-lg font-bold leading-tight">
-                   {greeting}, <span className="text-primary">{userName}</span>
+        {/* DESKTOP/TABLET LAYOUT - Bento Grid */}
+        <div className="hidden md:grid md:grid-cols-12 gap-6 lg:gap-8">
+          {/* Left Column: Summary & Insights */}
+          <div className="md:col-span-12 lg:col-span-8 space-y-6 lg:space-y-8">
+            <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
+              <motion.div 
+                initial={{ opacity: 0, x: -20 }}
+                animate={{ opacity: 1, x: 0 }}
+                transition={{ duration: 0.6, ease: [0.16, 1, 0.3, 1] }}
+                className="pl-0.5"
+              >
+                <h1 className="font-display text-3xl lg:text-4xl font-extrabold tracking-tight text-white leading-tight">
+                   {greeting}, <span className="text-primary/90">{userName}</span>
                 </h1>
-                <p className="text-[10px] text-muted-foreground">{dateStr}</p>
-              </div>
-              <MonthSelector selectedMonth={selectedMonth} selectedYear={selectedYear} onMonthChange={handleMonthChange} />
+                <p className="text-xs lg:text-sm font-medium text-white/30 uppercase tracking-[0.2em] mt-2">{dateStr}</p>
+              </motion.div>
+              <motion.div
+                initial={{ opacity: 0, x: 20 }}
+                animate={{ opacity: 1, x: 0 }}
+                transition={{ duration: 0.6, ease: [0.16, 1, 0.3, 1] }}
+              >
+                <MonthSelector selectedMonth={selectedMonth} selectedYear={selectedYear} onMonthChange={handleMonthChange} />
+              </motion.div>
             </div>
+
             {profile && !isOnboardingComplete && (
               <OnboardingCard
                 profile={profile}
@@ -108,57 +121,56 @@ const Index = () => {
                 onCreateTransaction={handleNovaTransacao}
               />
             )}
-            {/* MicroInteracoesCard temporarily disabled */}
-            {data.categories.length > 0 && (
-              <GastosPorCategoria
-                categories={data.categories}
-                selectedMonth={selectedMonth}
-                onVerAnalise={() => navigate("/transacoes")}
-              />
-            )}
-            <TransacoesRecentes transactions={data.transactions} onDelete={refetch} />
-            <ParcelamentosAtivosCard />
-          </div>
-          <div className="space-y-4">
-            <WalletSummaryCard />
-            {isCurrentMonth && <GastosSemanaisCard />}
-            <ProximosEventos events={data.events} selectedMonth={selectedMonth} selectedYear={selectedYear} onEventClick={handleEventClick} />
-            <BotFinanceTools layout="grid" />
-            <AssinaturasCard />
-            <MetasResumoCard />
-          </div>
-        </div>
 
-        {/* TABLET LAYOUT */}
-        <div className="hidden md:block lg:hidden space-y-4">
-          <div className="flex items-center justify-between mb-3">
-            <div className="pl-0.5">
-              <h1 className="font-display text-lg font-bold leading-tight">
-                {greeting}, <span className="text-primary">{userName}</span>
-              </h1>
-              <p className="text-[10px] text-muted-foreground">{dateStr}</p>
+            <div className="grid grid-cols-1 lg:grid-cols-2 gap-6 lg:gap-8">
+               <motion.div
+                 initial={{ opacity: 0, y: 20 }}
+                 animate={{ opacity: 1, y: 0 }}
+                 transition={{ delay: 0.1 }}
+               >
+                  {data.categories.length > 0 && (
+                    <GastosPorCategoria
+                      categories={data.categories}
+                      selectedMonth={selectedMonth}
+                      onVerAnalise={() => navigate("/transacoes")}
+                    />
+                  )}
+               </motion.div>
+               <motion.div
+                 initial={{ opacity: 0, y: 20 }}
+                 animate={{ opacity: 1, y: 0 }}
+                 transition={{ delay: 0.2 }}
+               >
+                 <TransacoesRecentes transactions={data.transactions} onDelete={refetch} />
+               </motion.div>
             </div>
-            <MonthSelector selectedMonth={selectedMonth} selectedYear={selectedYear} onMonthChange={handleMonthChange} />
+            
+            <motion.div
+              initial={{ opacity: 0, y: 20 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ delay: 0.3 }}
+            >
+              <ParcelamentosAtivosCard />
+            </motion.div>
           </div>
-          {profile && !isOnboardingComplete && (
-            <OnboardingCard
-              profile={profile}
-              onUpdateName={updateDisplayName}
-              onGoToAccounts={() => navigate("/gestao")}
-              onCreateTransaction={handleNovaTransacao}
-            />
-          )}
-          {/* MicroInteracoesCard temporarily disabled */}
-          {isCurrentMonth && <GastosSemanaisCard />}
-          <ProximosEventos events={data.events} selectedMonth={selectedMonth} selectedYear={selectedYear} onEventClick={handleEventClick} />
-          <BotFinanceTools layout="carousel" />
-          {data.categories.length > 0 && (
-            <GastosPorCategoria categories={data.categories} selectedMonth={selectedMonth} onVerAnalise={() => navigate("/transacoes")} />
-          )}
-          <TransacoesRecentes transactions={data.transactions} onDelete={refetch} />
-          <AssinaturasCard />
-           <ParcelamentosAtivosCard />
-           <MetasResumoCard />
+
+          {/* Right Column: Actions & Stats */}
+          <div className="md:col-span-12 lg:col-span-4 space-y-6 lg:space-y-8">
+            <motion.div initial={{ opacity: 0, scale: 0.95 }} animate={{ opacity: 1, scale: 1 }} transition={{ delay: 0.15 }}>
+              <WalletSummaryCard />
+            </motion.div>
+            
+            <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.25 }} className="space-y-6">
+              {isCurrentMonth && <GastosSemanaisCard />}
+              <ProximosEventos events={data.events} selectedMonth={selectedMonth} selectedYear={selectedYear} onEventClick={handleEventClick} />
+              <div className="bg-white/[0.02] border border-white/[0.05] rounded-[32px] p-6">
+                <p className="text-[11px] font-bold text-white/20 uppercase tracking-[0.2em] mb-4 ml-1">Ferramentas</p>
+                <BotFinanceTools layout="grid" />
+              </div>
+              <AssinaturasCard />
+              <MetasResumoCard />
+            </motion.div>
+          </div>
         </div>
 
         {/* MOBILE LAYOUT */}
