@@ -40,37 +40,42 @@ function Section({
 }) {
   const [open, setOpen] = useState(defaultOpen);
   const badgeStyles = {
-    success: "bg-primary/12 text-primary",
-    warning: "bg-warning/12 text-warning",
-    danger: "bg-destructive/12 text-destructive",
-    neutral: "bg-muted/20 text-muted-foreground",
+    success: "bg-primary/10 text-primary border border-primary/20",
+    warning: "bg-warning/10 text-warning border border-warning/20",
+    danger: "bg-destructive/10 text-destructive border border-destructive/20",
+    neutral: "bg-white/5 text-muted-foreground border border-white/10",
   };
 
   return (
     <motion.div
       initial={{ opacity: 0, y: 14 }}
       animate={{ opacity: 1, y: 0 }}
-      transition={{ delay, duration: 0.4 }}
-      className="rounded-[20px] border border-border/8 bg-card/50 backdrop-blur-2xl overflow-hidden"
-      style={{ boxShadow: "0 4px 24px -6px rgba(0,0,0,0.25)" }}
+      transition={{ delay, duration: 0.5, ease: [0.23, 1, 0.32, 1] }}
+      className="rounded-[28px] border border-white/10 bg-[#111111]/40 backdrop-blur-3xl overflow-hidden shadow-[0_8px_32px_rgba(0,0,0,0.4)]"
     >
       <button
         onClick={() => setOpen(!open)}
-        className="w-full flex items-center justify-between px-5 py-4 hover:bg-card/70 transition-colors"
+        className="w-full flex items-center justify-between px-6 py-5 hover:bg-white/5 transition-all duration-300"
       >
-        <div className="flex items-center gap-3">
-          <div className="w-8 h-8 rounded-xl bg-primary/8 flex items-center justify-center flex-shrink-0 border border-primary/10">
-            <span className="text-primary">{icon}</span>
+        <div className="flex items-center gap-4">
+          <div className="w-10 h-10 rounded-2xl bg-gradient-to-br from-white/10 to-white/5 flex items-center justify-center flex-shrink-0 border border-white/10 shadow-inner">
+            <span className="text-primary/90">{icon}</span>
           </div>
-          <span className="text-[14px] font-bold text-foreground tracking-tight">{title}</span>
-          {badge && (
-            <span className={`text-[9px] font-extrabold px-2 py-0.5 rounded-full tracking-wide ${badgeStyles[badgeVariant]}`}>
-              {badge}
-            </span>
-          )}
+          <div className="flex flex-col items-start gap-1">
+            <span className="text-[15px] font-bold text-white tracking-tight leading-none">{title}</span>
+            {badge && (
+              <span className={`text-[9px] font-bold px-2 py-0.5 rounded-full tracking-wider uppercase ${badgeStyles[badgeVariant]}`}>
+                {badge}
+              </span>
+            )}
+          </div>
         </div>
-        <motion.div animate={{ rotate: open ? 180 : 0 }} transition={{ duration: 0.2 }}>
-          <ChevronDown className="w-4 h-4 text-muted-foreground/50" />
+        <motion.div 
+          animate={{ rotate: open ? 180 : 0, scale: open ? 1.1 : 1 }} 
+          transition={{ type: "spring", stiffness: 300, damping: 20 }}
+          className="w-8 h-8 rounded-full bg-white/5 flex items-center justify-center border border-white/5"
+        >
+          <ChevronDown className="w-4 h-4 text-white/40" />
         </motion.div>
       </button>
       <AnimatePresence initial={false}>
@@ -79,10 +84,10 @@ function Section({
             initial={{ height: 0, opacity: 0 }}
             animate={{ height: "auto", opacity: 1 }}
             exit={{ height: 0, opacity: 0 }}
-            transition={{ duration: 0.3, ease: "easeInOut" }}
+            transition={{ duration: 0.4, ease: [0.23, 1, 0.32, 1] }}
             className="overflow-hidden"
           >
-            <div className="px-5 pb-5 space-y-4">{children}</div>
+            <div className="px-6 pb-6 pt-1 space-y-5">{children}</div>
           </motion.div>
         )}
       </AnimatePresence>
@@ -138,11 +143,11 @@ function ScoreRing({ value, size = 72, stroke = 6, color }: { value: number; siz
 
 // ─── Stat block ─────────────────────────────────────────────────────
 
-function StatBlock({ label, value, sub, color = "text-foreground" }: { label: string; value: string; sub?: string; color?: string }) {
+function StatBlock({ label, value, sub, color = "text-white" }: { label: string; value: string; sub?: string; color?: string }) {
   return (
-    <div className="rounded-[14px] bg-secondary/15 border border-border/5 p-3.5">
-      <p className="text-[9px] font-semibold tracking-[0.8px] text-muted-foreground/60 uppercase">{label}</p>
-      <p className={`text-[18px] font-extrabold tabular-nums mt-1 tracking-tight ${color}`}>{value}</p>
+    <div className="rounded-[20px] bg-white/5 border border-white/5 p-4 backdrop-blur-sm">
+      <p className="text-[10px] font-black tracking-widest text-white/30 uppercase">{label}</p>
+      <p className={`text-[20px] font-black tabular-nums mt-1 tracking-tight ${color}`}>{value}</p>
       {sub && <p className="text-[9px] text-muted-foreground/50 mt-0.5 font-medium">{sub}</p>}
     </div>
   );
@@ -224,9 +229,9 @@ export default function RadarFinanceiro() {
   const expenseChange = prevDespesas > 0 ? Math.round(((despesas - prevDespesas) / prevDespesas) * 100) : 0;
 
   const statusConfig = {
-    verde: { bg: "rgba(74,222,128,0.04)", border: "rgba(74,222,128,0.12)", text: "text-primary", ringColor: "hsl(var(--primary))", icon: <ShieldCheck className="w-5 h-5" />, label: "Sob controle" },
-    amarelo: { bg: "rgba(245,158,11,0.04)", border: "rgba(245,158,11,0.12)", text: "text-warning", ringColor: "hsl(var(--warning))", icon: <AlertTriangle className="w-5 h-5" />, label: "Atenção" },
-    vermelho: { bg: "rgba(239,68,68,0.04)", border: "rgba(239,68,68,0.12)", text: "text-destructive", ringColor: "hsl(var(--destructive))", icon: <Flame className="w-5 h-5" />, label: "Crítico" },
+    verde: { bg: "bg-primary/5", border: "border-primary/20", text: "text-primary", ringColor: "hsl(var(--primary))", icon: <ShieldCheck className="w-6 h-6" />, label: "Excelência Financeira" },
+    amarelo: { bg: "bg-warning/5", border: "border-warning/20", text: "text-warning", ringColor: "hsl(var(--warning))", icon: <AlertTriangle className="w-6 h-6" />, label: "Ajuste de Rota" },
+    vermelho: { bg: "bg-destructive/5", border: "border-destructive/20", text: "text-destructive", ringColor: "hsl(var(--destructive))", icon: <Flame className="w-6 h-6" />, label: "Emergência Financeira" },
   };
   const sc = statusConfig[status.level];
 
@@ -243,12 +248,12 @@ export default function RadarFinanceiro() {
     <div className="space-y-4 pb-6">
       {/* ── Back + Title ── */}
       <motion.div initial={{ opacity: 0, y: 8 }} animate={{ opacity: 1, y: 0 }} className="space-y-2">
-        <button onClick={() => navigate(-1)} className="w-9 h-9 rounded-xl bg-secondary/50 border border-border/5 flex items-center justify-center hover:bg-secondary/70 active:scale-95 transition-all">
-          <ArrowLeft className="w-4 h-4 text-foreground" />
+        <button onClick={() => navigate(-1)} className="w-10 h-10 rounded-2xl bg-white/5 border border-white/10 flex items-center justify-center hover:bg-white/10 active:scale-95 transition-all shadow-lg backdrop-blur-md">
+          <ArrowLeft className="w-5 h-5 text-white" />
         </button>
-        <div>
-          <h1 className="text-[24px] font-extrabold text-foreground tracking-tight leading-none">Radar Financeiro</h1>
-          <p className="text-[11px] text-muted-foreground/60 mt-1 font-medium">Diagnóstico completo da sua vida financeira</p>
+        <div className="pt-2">
+          <h1 className="text-[32px] font-black text-white tracking-tighter leading-tight drop-shadow-sm">Radar <span className="text-primary">Financeiro</span></h1>
+          <p className="text-[12px] text-white/40 font-bold uppercase tracking-[0.2em]">Inteligência de Dados e Diagnóstico</p>
         </div>
       </motion.div>
 
@@ -256,53 +261,66 @@ export default function RadarFinanceiro() {
       <motion.div
         initial={{ opacity: 0, y: 14 }}
         animate={{ opacity: 1, y: 0 }}
-        transition={{ delay: 0.05 }}
-        className="rounded-[22px] p-5 relative overflow-hidden"
-        style={{ background: sc.bg, border: `1px solid ${sc.border}` }}
+        transition={{ delay: 0.1 }}
+        className={`rounded-[32px] p-7 relative overflow-hidden border ${sc.border} ${sc.bg} backdrop-blur-xl shadow-2xl shadow-black/40`}
       >
+        <div className="absolute top-0 right-0 w-32 h-32 bg-primary/10 rounded-full blur-[80px] -mr-16 -mt-16 pointer-events-none" />
+        <div className="absolute bottom-0 left-0 w-24 h-24 bg-primary/5 rounded-full blur-[60px] -ml-12 -mb-12 pointer-events-none" />
+        
         <div className="flex items-center justify-between relative z-[1]">
           <div className="flex-1 min-w-0">
-            <div className="flex items-center gap-2.5 mb-2">
-              <span className={sc.text}>{sc.icon}</span>
-              <h2 className={`text-[16px] font-extrabold tracking-tight ${sc.text}`}>{sc.label}</h2>
+            <div className="flex items-center gap-3 mb-3">
+              <div className={`p-2 rounded-2xl ${sc.bg} border ${sc.border}`}>
+                <span className={sc.text}>{sc.icon}</span>
+              </div>
+              <h2 className={`text-[18px] font-black tracking-tight leading-none ${sc.text}`}>{sc.label}</h2>
             </div>
-            <p className="text-[12px] text-muted-foreground/70 leading-relaxed max-w-[220px]">
+            <p className="text-[13px] text-white/60 leading-relaxed max-w-[240px] font-medium">
               {comprometimentoPct < 60
-                ? "Financeiro equilibrado — margem confortável este mês."
+                ? "Sua saúde financeira está sólida. Você tem autonomia total sobre seus fluxos."
                 : comprometimentoPct <= 80
-                  ? "Pontos de atenção — ajustes preventivos ajudam."
-                  : "Situação apertada — ações imediatas recomendadas."}
+                  ? "Sinal de alerta moderado. Pequenos ajustes agora evitarão problemas futuros."
+                  : "Nível crítico de comprometimento. É hora de reestruturar prioridades."}
             </p>
           </div>
-          <div className="relative flex-shrink-0">
-            <ScoreRing value={health.score} size={72} stroke={6} color={sc.ringColor} />
+          <div className="relative flex-shrink-0 group">
+            <div className="absolute inset-0 bg-primary/20 rounded-full blur-2xl opacity-0 group-hover:opacity-100 transition-opacity duration-500" />
+            <ScoreRing value={health.score} size={84} stroke={8} color={sc.ringColor} />
             <div className="absolute inset-0 flex flex-col items-center justify-center">
-              <span className={`text-[20px] font-black tabular-nums leading-none ${sc.text}`}>{health.score}</span>
-              <span className="text-[8px] text-muted-foreground/40 font-semibold mt-0.5">SCORE</span>
+              <span className={`text-[24px] font-black tabular-nums leading-none ${sc.text}`}>{health.score}</span>
+              <span className="text-[9px] text-white/30 font-bold mt-1 tracking-widest uppercase">Score</span>
             </div>
           </div>
         </div>
       </motion.div>
 
-      {/* ── Huby ── */}
+      {/* ── Huby AI ── */}
       <motion.div
         initial={{ opacity: 0, y: 14 }}
         animate={{ opacity: 1, y: 0 }}
-        transition={{ delay: 0.1 }}
-        className="rounded-[20px] p-4 relative overflow-hidden border border-primary/10"
-        style={{ background: "linear-gradient(145deg, hsl(150 30% 8% / 0.8) 0%, hsl(var(--card) / 0.6) 100%)" }}
+        transition={{ delay: 0.15 }}
+        className="rounded-[28px] p-6 relative overflow-hidden border border-white/10 shadow-xl"
+        style={{ background: "linear-gradient(145deg, rgba(255,255,255,0.05) 0%, rgba(255,255,255,0.02) 100%)" }}
       >
-        <div className="flex items-start gap-3 relative z-[1]">
+        <div className="absolute top-0 left-0 w-full h-full bg-[radial-gradient(circle_at_20%_20%,rgba(74,222,128,0.05),transparent_50%)]" />
+        <div className="flex items-start gap-4 relative z-[1]">
           <div
-            className="w-10 h-10 rounded-xl flex items-center justify-center flex-shrink-0"
-            style={{ background: "linear-gradient(135deg, hsl(var(--primary)), hsl(150 70% 30%))", boxShadow: "0 0 16px rgba(74,222,128,0.15)" }}
+            className="w-12 h-12 rounded-2xl flex items-center justify-center flex-shrink-0 border border-white/10 shadow-lg"
+            style={{ background: "linear-gradient(135deg, #10b981, #064e3b)", boxShadow: "0 0 20px rgba(16,185,129,0.3)" }}
           >
-            <Bot className="w-[18px] h-[18px] text-primary-foreground" />
+            <Bot className="w-6 h-6 text-white" />
           </div>
           <div className="flex-1 min-w-0">
-            <h5 className="text-[11px] font-extrabold text-primary tracking-wide mb-1">HUBY DIZ</h5>
-            <p className="text-[12px] text-muted-foreground/80 leading-[1.65] italic">{hubyMsg.main}</p>
-            {hubyMsg.secondary && <p className="text-[10px] text-muted-foreground/40 mt-1.5 italic">{hubyMsg.secondary}</p>}
+            <div className="flex items-center gap-2 mb-2">
+              <h5 className="text-[10px] font-black text-primary tracking-[0.2em] uppercase">Huby AI Intelligence</h5>
+              <div className="h-px flex-1 bg-white/5" />
+            </div>
+            <p className="text-[13px] text-white/80 leading-relaxed font-medium italic">"{hubyMsg.main}"</p>
+            {hubyMsg.secondary && (
+              <div className="mt-3 pt-3 border-t border-white/5">
+                <p className="text-[11px] text-white/40 font-medium italic">{hubyMsg.secondary}</p>
+              </div>
+            )}
           </div>
         </div>
       </motion.div>
@@ -323,19 +341,20 @@ export default function RadarFinanceiro() {
               };
               const c = cm[insight.tipo];
               return (
-                <div key={insight.id} className={`rounded-[16px] ${c.bg} border ${c.border} p-4`}>
-                  <div className="flex items-start gap-3">
-                    <div className={`w-9 h-9 rounded-xl flex items-center justify-center flex-shrink-0 ${c.bg} border ${c.border}`}>
+                <div key={insight.id} className={`rounded-[22px] ${c.bg} border ${c.border} p-5 backdrop-blur-md relative overflow-hidden group hover:scale-[1.01] transition-transform duration-300`}>
+                  <div className={`absolute top-0 right-0 w-24 h-24 ${c.bg} opacity-50 rounded-full blur-3xl -mr-12 -mt-12 pointer-events-none`} />
+                  <div className="flex items-start gap-4 relative z-10">
+                    <div className={`w-11 h-11 rounded-2xl flex items-center justify-center flex-shrink-0 ${c.bg} border ${c.border} shadow-sm group-hover:shadow-md transition-shadow`}>
                       <span className={c.text}>{c.icon}</span>
                     </div>
                     <div className="flex-1 min-w-0">
-                      <h4 className="text-[13px] font-bold text-foreground">{insight.titulo}</h4>
-                      <p className="text-[11px] text-muted-foreground/70 leading-[1.6] mt-1">{insight.descricao}</p>
-                      <div className="mt-2.5">
-                        <span className={`text-[12px] font-extrabold tabular-nums ${c.text}`}>
+                      <h4 className="text-[14px] font-bold text-white tracking-tight">{insight.titulo}</h4>
+                      <p className="text-[11px] text-white/50 leading-relaxed mt-1 font-medium">{insight.descricao}</p>
+                      <div className="mt-3 flex items-center gap-2">
+                        <span className={`text-[13px] font-black tabular-nums ${c.text}`}>
                           {fmt(insight.impacto_valor)}
                         </span>
-                        <span className="text-[9px] text-muted-foreground/40 ml-1.5 font-medium">impacto</span>
+                        <span className="text-[9px] text-white/20 font-bold uppercase tracking-widest">Impacto Estimado</span>
                       </div>
                     </div>
                   </div>
@@ -358,17 +377,19 @@ export default function RadarFinanceiro() {
                   const c = cm[action.tipo];
                   return (
                     <button key={`${action.titulo}-${i}`} onClick={() => navigate(action.path)}
-                      className="w-full flex items-center gap-3.5 rounded-[14px] bg-secondary/10 border border-border/5 p-3.5 hover:bg-secondary/20 active:scale-[0.98] transition-all text-left group">
-                      <div className="w-9 h-9 rounded-xl bg-primary/6 border border-primary/8 flex items-center justify-center flex-shrink-0">
+                      className="w-full flex items-center gap-4 rounded-[20px] bg-white/5 border border-white/5 p-4 hover:bg-white/10 active:scale-[0.98] transition-all text-left group">
+                      <div className="w-11 h-11 rounded-2xl bg-white/5 border border-white/5 flex items-center justify-center flex-shrink-0 group-hover:bg-white/10 transition-colors">
                         <span className={c.text}>{c.icon}</span>
                       </div>
                       <div className="flex-1 min-w-0">
-                        <h4 className="text-[12px] font-bold text-foreground">{action.titulo}</h4>
-                        <p className="text-[10px] text-muted-foreground/60 leading-[1.5] mt-0.5 line-clamp-2">{action.descricao}</p>
+                        <h4 className="text-[13px] font-bold text-white tracking-tight">{action.titulo}</h4>
+                        <p className="text-[11px] text-white/40 leading-relaxed mt-0.5 line-clamp-1 font-medium">{action.descricao}</p>
                       </div>
                       <div className="flex flex-col items-end gap-1 flex-shrink-0">
-                        <span className={`text-[12px] font-extrabold tabular-nums ${c.text}`}>{fmt(action.impacto_estimado)}</span>
-                        <ChevronRight className="w-3.5 h-3.5 text-muted-foreground/20 group-hover:text-muted-foreground/50 transition-colors" />
+                        <span className={`text-[13px] font-black tabular-nums ${c.text}`}>{fmt(action.impacto_estimado)}</span>
+                        <div className="w-6 h-6 rounded-full bg-white/5 flex items-center justify-center border border-white/5 group-hover:bg-white/10 group-hover:border-white/20 transition-all">
+                          <ChevronRight className="w-3 h-3 text-white/30 group-hover:text-white/80" />
+                        </div>
                       </div>
                     </button>
                   );
@@ -384,44 +405,49 @@ export default function RadarFinanceiro() {
         badge={`${comprometimentoPct}%`}
         badgeVariant={comprometimentoPct < 60 ? "success" : comprometimentoPct <= 80 ? "warning" : "danger"}
       >
-        <div className="flex items-center gap-5">
+        <div className="flex items-center gap-6 p-6 rounded-[24px] bg-white/5 border border-white/5 relative overflow-hidden group">
+          <div className="absolute inset-0 bg-gradient-to-br from-primary/5 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-500" />
           <div className="relative flex-shrink-0">
-            <ScoreRing value={comprometimentoPct} size={80} stroke={7} color={comprometimentoRing} />
+            <ScoreRing value={comprometimentoPct} size={88} stroke={8} color={comprometimentoRing} />
             <div className="absolute inset-0 flex flex-col items-center justify-center">
-              <span className={`text-[20px] font-black tabular-nums leading-none ${comprometimentoColor}`}>{comprometimentoPct}%</span>
-              <span className="text-[7px] text-muted-foreground/30 font-bold mt-0.5">USADO</span>
+              <span className={`text-[22px] font-black tabular-nums leading-none ${comprometimentoColor}`}>{comprometimentoPct}%</span>
+              <span className="text-[8px] text-white/20 font-bold mt-1 tracking-widest uppercase">Usage</span>
             </div>
           </div>
-          <div className="flex-1 space-y-2.5">
+          <div className="flex-1 space-y-3 relative z-10">
             <div className="flex justify-between items-center">
-              <span className="text-[11px] text-muted-foreground/60 font-medium">Comprometido</span>
-              <span className="text-[13px] font-extrabold text-destructive tabular-nums">{fmt(despesas)}</span>
+              <span className="text-[12px] text-white/50 font-semibold tracking-tight">Comprometido</span>
+              <span className="text-[15px] font-black text-white tabular-nums">{fmt(despesas)}</span>
             </div>
-            <div className="h-px bg-border/5" />
+            <div className="h-px bg-white/5" />
             <div className="flex justify-between items-center">
-              <span className="text-[11px] text-muted-foreground/60 font-medium">Disponível</span>
-              <span className={`text-[13px] font-extrabold tabular-nums ${livre > 0 ? "text-primary" : "text-destructive"}`}>{fmt(livre)}</span>
+              <span className="text-[12px] text-white/50 font-semibold tracking-tight">Disponível</span>
+              <span className={`text-[15px] font-black tabular-nums ${livre > 0 ? "text-primary" : "text-destructive"}`}>{fmt(livre)}</span>
             </div>
           </div>
         </div>
 
         {/* Composição */}
-        <div className="grid grid-cols-2 gap-3">
-          <div className="rounded-[14px] bg-secondary/12 border border-border/5 p-3.5">
-            <div className="flex items-center gap-2 mb-2">
-              <RefreshCw className="w-3.5 h-3.5 text-chart-2" />
-              <span className="text-[10px] text-muted-foreground/60 font-semibold">Fixos</span>
+        <div className="grid grid-cols-2 gap-4">
+          <div className="rounded-[20px] bg-white/5 border border-white/5 p-4 group hover:bg-white/10 transition-colors">
+            <div className="flex items-center gap-2 mb-3">
+              <div className="w-7 h-7 rounded-lg bg-chart-2/10 flex items-center justify-center border border-chart-2/20">
+                <RefreshCw className="w-3.5 h-3.5 text-chart-2" />
+              </div>
+              <span className="text-[11px] text-white/50 font-bold uppercase tracking-wider">Fixos</span>
             </div>
-            <p className="text-[18px] font-extrabold tabular-nums text-foreground leading-none">{fixoPct}%</p>
-            <p className="text-[9px] text-muted-foreground/40 mt-1 font-medium">{fmt(recDespesas)}</p>
+            <p className="text-[22px] font-black tabular-nums text-white leading-none tracking-tight">{fixoPct}%</p>
+            <p className="text-[10px] text-white/30 mt-2 font-bold tabular-nums">{fmt(recDespesas)}</p>
           </div>
-          <div className="rounded-[14px] bg-secondary/12 border border-border/5 p-3.5">
-            <div className="flex items-center gap-2 mb-2">
-              <Zap className="w-3.5 h-3.5 text-chart-3" />
-              <span className="text-[10px] text-muted-foreground/60 font-semibold">Variáveis</span>
+          <div className="rounded-[20px] bg-white/5 border border-white/5 p-4 group hover:bg-white/10 transition-colors">
+            <div className="flex items-center gap-2 mb-3">
+              <div className="w-7 h-7 rounded-lg bg-chart-3/10 flex items-center justify-center border border-chart-3/20">
+                <Zap className="w-3.5 h-3.5 text-chart-3" />
+              </div>
+              <span className="text-[11px] text-white/50 font-bold uppercase tracking-wider">Variáveis</span>
             </div>
-            <p className="text-[18px] font-extrabold tabular-nums text-foreground leading-none">{variavelPct}%</p>
-            <p className="text-[9px] text-muted-foreground/40 mt-1 font-medium">{fmt(variavelDespesas)}</p>
+            <p className="text-[22px] font-black tabular-nums text-white leading-none tracking-tight">{variavelPct}%</p>
+            <p className="text-[10px] text-white/30 mt-2 font-bold tabular-nums">{fmt(variavelDespesas)}</p>
           </div>
         </div>
 
@@ -473,17 +499,22 @@ export default function RadarFinanceiro() {
           </div>
 
           {totalParcelado > 0 && (
-            <div className="rounded-[14px] bg-secondary/12 border border-border/5 p-3.5">
-              <div className="flex items-center justify-between">
-                <div className="flex items-center gap-2">
-                  <Package className="w-3.5 h-3.5 text-warning" />
-                  <span className="text-[10px] text-muted-foreground/60 font-semibold">Parcelas no cartão</span>
+            <div className="rounded-[20px] bg-white/5 border border-white/5 p-5 relative overflow-hidden group">
+              <div className="absolute top-0 right-0 w-24 h-24 bg-warning/5 rounded-full blur-2xl pointer-events-none" />
+              <div className="flex items-center justify-between relative z-10">
+                <div className="flex items-center gap-3">
+                  <div className="w-10 h-10 rounded-xl bg-warning/10 flex items-center justify-center border border-warning/20">
+                    <Package className="w-5 h-5 text-warning" />
+                  </div>
+                  <div className="flex flex-col">
+                    <span className="text-[11px] text-white/50 font-bold uppercase tracking-wider">Parcelas ativas</span>
+                    <p className="text-[10px] text-white/30 font-medium">
+                      Comprometem <span className="font-bold text-warning">{parceladoPct}%</span> da renda
+                    </p>
+                  </div>
                 </div>
-                <span className="text-[13px] font-extrabold text-warning tabular-nums">{fmt(totalParcelado)}</span>
+                <span className="text-[18px] font-black text-warning tabular-nums tracking-tight">{fmt(totalParcelado)}</span>
               </div>
-              <p className="text-[10px] text-muted-foreground/50 mt-1 font-medium">
-                Comprometem <span className="font-bold text-warning">{parceladoPct}%</span> da renda mensal
-              </p>
             </div>
           )}
 
@@ -498,9 +529,11 @@ export default function RadarFinanceiro() {
           />
 
           <button onClick={() => navigate("/gestao")}
-            className="w-full flex items-center justify-between rounded-[14px] bg-primary/6 border border-primary/10 px-4 py-3 hover:bg-primary/10 active:scale-[0.98] transition-all">
-            <span className="text-[11px] font-bold text-primary">Analisar faturas</span>
-            <ChevronRight className="w-4 h-4 text-primary/60" />
+            className="w-full flex items-center justify-between rounded-[20px] bg-primary/10 border border-primary/20 px-5 py-4 hover:bg-primary/20 active:scale-[0.98] transition-all group shadow-lg shadow-primary/5">
+            <span className="text-[13px] font-black text-primary tracking-tight">Detalhamento de Faturas</span>
+            <div className="w-8 h-8 rounded-full bg-primary/20 flex items-center justify-center group-hover:bg-primary/30 transition-all">
+              <ChevronRight className="w-4 h-4 text-primary" />
+            </div>
           </button>
         </Section>
       )}
@@ -520,11 +553,11 @@ export default function RadarFinanceiro() {
                 <div className="flex items-center justify-between">
                   <div className="flex items-center gap-2.5">
                     <div className="w-3 h-3 rounded-full flex-shrink-0" style={{ backgroundColor: cat.color }} />
-                    <span className="text-[12px] font-bold text-foreground">{cat.name}</span>
+                    <span className="text-[14px] font-black text-white tracking-tight">{cat.name}</span>
                   </div>
-                  <div className="flex items-center gap-2.5">
-                    <span className="text-[12px] font-extrabold text-foreground tabular-nums">{fmt(cat.amount)}</span>
-                    <span className="text-[10px] text-muted-foreground/40 tabular-nums font-medium">{catPctVal}%</span>
+                  <div className="flex items-center gap-3">
+                    <span className="text-[14px] font-black text-white tabular-nums tracking-tight">{fmt(cat.amount)}</span>
+                    <span className="text-[11px] text-white/30 tabular-nums font-bold">{catPctVal}%</span>
                     {change !== null && change !== 0 && (
                       <span className={`text-[9px] font-bold flex items-center gap-0.5 ${change > 0 ? "text-destructive" : "text-primary"}`}>
                         {change > 0 ? <ArrowUpRight className="w-2.5 h-2.5" /> : <ArrowDownRight className="w-2.5 h-2.5" />}
@@ -559,9 +592,11 @@ export default function RadarFinanceiro() {
         )}
 
         <button onClick={() => navigate("/analytics/categorias")}
-          className="w-full flex items-center justify-between rounded-[14px] bg-primary/6 border border-primary/10 px-4 py-3 hover:bg-primary/10 active:scale-[0.98] transition-all">
-          <span className="text-[11px] font-bold text-primary">Explorar categorias</span>
-          <ChevronRight className="w-4 h-4 text-primary/60" />
+          className="w-full flex items-center justify-between rounded-[20px] bg-primary/10 border border-primary/20 px-5 py-4 hover:bg-primary/20 active:scale-[0.98] transition-all group shadow-lg shadow-primary/5">
+          <span className="text-[13px] font-black text-primary tracking-tight">Visão Analítica Completa</span>
+          <div className="w-8 h-8 rounded-full bg-primary/20 flex items-center justify-center group-hover:bg-primary/30 transition-all">
+            <ChevronRight className="w-4 h-4 text-primary" />
+          </div>
         </button>
       </Section>
     </div>
