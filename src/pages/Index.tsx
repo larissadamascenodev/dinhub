@@ -128,8 +128,8 @@ const Index = () => {
           <div className="space-y-4">
             <WalletSummaryCard />
             {isCurrentMonth && <GastosSemanaisCard />}
-            <BotFinanceTools layout="grid" />
             <ProximosEventos events={data.events} selectedMonth={selectedMonth} selectedYear={selectedYear} onEventClick={handleEventClick} />
+            <BotFinanceTools layout="grid" />
             <AssinaturasCard />
             <MetasResumoCard />
           </div>
@@ -158,12 +158,12 @@ const Index = () => {
           <ReceitasDespesasCards receitas={receitas} receitasRecebidas={data.receitasRecebidas} receitasPendentes={data.receitasPendentes} despesas={despesas} despesasPagas={data.despesasPagas} despesasPendentes={data.despesasPendentes} compact />
           {/* MicroInteracoesCard temporarily disabled */}
           {isCurrentMonth && <GastosSemanaisCard />}
+          <ProximosEventos events={data.events} selectedMonth={selectedMonth} selectedYear={selectedYear} onEventClick={handleEventClick} />
           <BotFinanceTools layout="carousel" />
           {data.categories.length > 0 && (
             <GastosPorCategoria categories={data.categories} selectedMonth={selectedMonth} onVerAnalise={() => navigate("/transacoes")} />
           )}
           <TransacoesRecentes transactions={data.transactions} onDelete={refetch} />
-          <ProximosEventos events={data.events} selectedMonth={selectedMonth} selectedYear={selectedYear} onEventClick={handleEventClick} />
           <AssinaturasCard />
            <ParcelamentosAtivosCard />
            <MetasResumoCard />
@@ -195,14 +195,14 @@ const Index = () => {
           
           {/* MicroInteracoesCard temporarily disabled */}
           {isCurrentMonth && <GastosSemanaisCard />}
+          <div className="-mt-1">
+            <ProximosEventos events={data.events} selectedMonth={selectedMonth} selectedYear={selectedYear} onEventClick={handleEventClick} />
+          </div>
           <BotFinanceTools layout="carousel" />
           {data.categories.length > 0 && (
             <GastosPorCategoria categories={data.categories} selectedMonth={selectedMonth} onVerAnalise={() => navigate("/transacoes")} />
           )}
           <TransacoesRecentes transactions={data.transactions} onDelete={refetch} />
-          <div className="-mt-3">
-            <ProximosEventos events={data.events} selectedMonth={selectedMonth} selectedYear={selectedYear} onEventClick={handleEventClick} />
-          </div>
           <AssinaturasCard />
           <ParcelamentosAtivosCard />
           
