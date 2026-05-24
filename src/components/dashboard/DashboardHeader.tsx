@@ -231,11 +231,11 @@ const DashboardHeader = memo(({ profile, streak = 0, streakDates = [] }: { profi
               <button
                 key={item.label}
                 onClick={() => navigate(item.path)}
-                className={`relative flex items-center gap-1.5 px-4 py-2 rounded-xl text-xs font-medium transition-all duration-300 ${
-                  isActive ? "text-primary" : "text-muted-foreground hover:text-foreground"
+                className={`relative flex items-center gap-2 px-5 py-2.5 rounded-full text-[13px] font-bold transition-all duration-300 ${
+                  isActive ? "text-white bg-white/[0.05]" : "text-white/40 hover:text-white hover:bg-white/[0.02]"
                 }`}
               >
-                <Icon className="w-3.5 h-3.5" />
+                <Icon className="w-4 h-4" />
                 <span>{item.label}</span>
               </button>
             );
