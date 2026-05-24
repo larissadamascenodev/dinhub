@@ -377,8 +377,6 @@ export default function RadarFinanceiro() {
                   const c = cm[action.tipo];
                   return (
                     <button key={`${action.titulo}-${i}`} onClick={() => navigate(action.path)}
-                  return (
-                    <button key={`${action.titulo}-${i}`} onClick={() => navigate(action.path)}
                       className="w-full flex items-center gap-4 rounded-[20px] bg-white/5 border border-white/5 p-4 hover:bg-white/10 active:scale-[0.98] transition-all text-left group">
                       <div className="w-11 h-11 rounded-2xl bg-white/5 border border-white/5 flex items-center justify-center flex-shrink-0 group-hover:bg-white/10 transition-colors">
                         <span className={c.text}>{c.icon}</span>
@@ -394,7 +392,6 @@ export default function RadarFinanceiro() {
                         </div>
                       </div>
                     </button>
-                  );
                   );
                 })}
               </div>
