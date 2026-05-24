@@ -495,79 +495,117 @@ const HubyInsightsPanel: React.FC = () => {
             opacity: { duration: 0.4 },
             filter: { duration: 0.4 }
           }}
-          className="flex-1 flex flex-col space-y-6 md:space-y-8"
+          className="flex-1 w-full grid grid-cols-1 lg:grid-cols-2 gap-12 lg:gap-24 items-center"
         >
-          {/* Cabeçalho Radar Financeiro dentro do quadro */}
-          <div className="flex items-center justify-center gap-2 mb-2">
-            <Radar className="w-5 h-5 text-[#00e676]" />
-            <span className="text-xs font-black tracking-[0.2em] text-[#00e676] uppercase">Radar Financeiro</span>
-          </div>
+          {/* Coluna Esquerda: Visual do Radar */}
+          <div className="flex flex-col items-center justify-center relative order-2 lg:order-1">
+            <div className="relative w-64 h-64 md:w-80 md:h-80">
+              <motion.div 
+                animate={{ scale: [1, 1.2, 1], opacity: [0.3, 0.1, 0.3] }}
+                transition={{ duration: 3, repeat: Infinity }}
+                className="absolute inset-0 rounded-full border border-[#00e676]/30 blur-sm"
+              />
+              <motion.div 
+                animate={{ scale: [1.1, 1.3, 1.1], opacity: [0.15, 0.05, 0.15] }}
+                transition={{ duration: 4, repeat: Infinity, delay: 0.5 }}
+                className="absolute -inset-8 rounded-full border border-blue-500/20"
+              />
+              
+              <motion.div 
+                animate={{ rotate: 360 }}
+                transition={{ duration: 4, repeat: Infinity, ease: "linear" }}
+                className="absolute inset-0 rounded-full border border-white/5 bg-gradient-to-r from-transparent via-transparent to-[#00e676]/20"
+                style={{ clipPath: 'polygon(50% 50%, 100% 0, 100% 100%)' }}
+              />
 
-          {/* Insights da Huby */}
-          <div className="space-y-4">
-            <div className="flex items-center gap-2">
-              <div className="w-5 h-5 rounded-full bg-[#00e676]/15 flex items-center justify-center">
-                <div className="w-1.5 h-1.5 rounded-full bg-[#00e676]" />
-              </div>
-              <span className="text-sm font-semibold text-white">Insights da Huby</span>
-            </div>
-
-            <div className="flex items-start gap-3 md:gap-4 p-3 md:p-5 rounded-2xl bg-white/[0.04] border border-white/10 shadow-inner">
-              <div className={`w-10 h-10 md:w-12 md:h-12 rounded-xl ${insight.iconBg} flex items-center justify-center shrink-0`}>
-                <InsightIcon className={`w-5 h-5 md:w-6 md:h-6 ${insight.iconColor}`} />
-              </div>
-              <div className="flex-1 space-y-2">
-                <div className="flex items-center justify-between">
-                  <span className="text-[10px] font-bold text-white/40 uppercase tracking-widest">Detectado Agora</span>
-                  <span className="text-[10px] text-white/50 px-2.5 py-1 rounded-full border border-white/10 bg-white/[0.03] whitespace-nowrap">
-                    {insight.tag}
-                  </span>
+              <div className="absolute inset-0 flex items-center justify-center">
+                <div className="relative">
+                  <Radar className="w-16 h-16 md:w-20 md:h-20 text-[#00e676] drop-shadow-[0_0_15px_rgba(0,230,118,0.5)]" />
+                  <motion.div 
+                    animate={{ scale: [1, 1.5, 1], opacity: [0.5, 0, 0.5] }}
+                    transition={{ duration: 2, repeat: Infinity }}
+                    className="absolute inset-0 bg-[#00e676] blur-xl rounded-full -z-10"
+                  />
                 </div>
-                <p className="text-sm md:text-lg text-white/90 leading-relaxed font-medium">
-                  {insight.text}
-                </p>
               </div>
+            </div>
+            
+            <div className="mt-12 flex flex-col items-center space-y-3">
+              <div className="px-6 py-2 rounded-full bg-[#00e676]/10 border border-[#00e676]/20 backdrop-blur-md">
+                <span className="text-xs font-black text-[#00e676] uppercase tracking-widest flex items-center gap-2">
+                  <div className="w-1.5 h-1.5 rounded-full bg-[#00e676] animate-pulse" />
+                  Escaneando Padrões Financeiros
+                </span>
+              </div>
+              <span className="text-[10px] text-white/20 font-medium italic">Monitoramento Neural Ativo</span>
             </div>
           </div>
 
-          {/* Ações sugeridas pela Huby */}
-          <div className="space-y-4 pt-2">
-            <div className="flex items-center justify-between">
-              <div className="flex items-center gap-2">
-                <Zap className="w-4 h-4 text-[#00e676]" />
-                <span className="text-sm font-semibold text-white">Ações sugeridas pela Huby</span>
+          {/* Coluna Direita: Insights e Ações */}
+          <div className="flex-1 flex flex-col justify-center space-y-8 relative z-10 order-1 lg:order-2">
+            <div className="space-y-4">
+              <div className="flex items-center gap-3">
+                <div className="w-8 h-8 rounded-lg bg-blue-500/10 border border-blue-500/20 flex items-center justify-center">
+                  <Sparkles className="w-4 h-4 text-blue-400" />
+                </div>
+                <h4 className="text-lg font-bold text-white tracking-tight">Análise da Huby</h4>
               </div>
-              <span className="text-[11px] text-white/40 hover:text-[#00e676] cursor-pointer transition">Executar todas</span>
+
+              <div className="p-6 md:p-8 rounded-[32px] bg-white/[0.03] border border-white/10 backdrop-blur-xl relative overflow-hidden group">
+                <div className="absolute top-0 left-0 w-1 h-full bg-[#00e676]" />
+                <div className="space-y-4">
+                  <div className="flex items-center justify-between">
+                    <span className="text-[10px] font-black text-[#00e676] uppercase tracking-widest">{insight.tag}</span>
+                    <div className="flex items-center gap-1.5 text-[10px] text-white/30 font-bold">
+                      <Clock className="w-3 h-3" /> ATUALIZADO AGORA
+                    </div>
+                  </div>
+                  <div className="flex items-start gap-4">
+                    <div className={`w-12 h-12 rounded-xl ${insight.iconBg} flex items-center justify-center shrink-0 border border-white/5`}>
+                      <InsightIcon className={`w-6 h-6 ${insight.iconColor}`} />
+                    </div>
+                    <p className="text-white/90 text-lg md:text-xl leading-relaxed font-medium">
+                      {insight.text}
+                    </p>
+                  </div>
+                </div>
+              </div>
             </div>
 
-            <div className="grid gap-3">
-              {currentSlide.actions.map((a, i) => {
-                const ActionIcon = a.icon;
-                return (
-                  <motion.div
-                    key={i}
-                    initial={{ opacity: 0, y: 10 }}
-                    animate={{ opacity: 1, y: 0 }}
-                    transition={{ delay: 0.1 * i }}
-                    className="flex items-center gap-3 md:gap-4 p-3 md:p-4 rounded-2xl bg-white/[0.03] border border-white/5 hover:border-[#00e676]/30 hover:bg-[#00e676]/5 transition-all duration-300 cursor-pointer group"
-                  >
-                    <div className={`w-9 h-9 md:w-10 md:h-10 rounded-xl ${a.iconBg} flex items-center justify-center shrink-0 transition-transform group-hover:scale-110`}>
-                      <ActionIcon className={`w-4 h-4 md:w-5 md:h-5 ${a.iconColor}`} />
-                    </div>
-                    <div className="flex-1 min-w-0 pr-1">
-                      <div className="text-[12px] md:text-[14px] font-semibold text-white group-hover:text-[#00e676] transition-colors leading-tight">{a.title}</div>
-                      <div className="text-[10px] md:text-[11px] text-white/40 truncate mt-0.5">{a.sub}</div>
-                    </div>
-                    <div className="flex items-center gap-2 shrink-0">
-                      <div className="text-right">
-                        <div className={`text-[11px] md:text-[13px] font-bold ${a.valueColor} whitespace-nowrap`}>{a.value}</div>
-                        <div className="text-[8px] md:text-[9px] text-white/20 font-bold uppercase tracking-tighter">Sugestão</div>
+            <div className="space-y-4">
+              <div className="flex items-center gap-3">
+                <Zap className="w-5 h-5 text-[#00e676]" />
+                <h4 className="text-sm font-bold text-white/60 uppercase tracking-widest">Ações Sugeridas</h4>
+              </div>
+
+              <div className="grid gap-3">
+                {currentSlide.actions.map((a, i) => {
+                  const ActionIcon = a.icon;
+                  return (
+                    <motion.div
+                      key={i}
+                      initial={{ opacity: 0, x: 20 }}
+                      animate={{ opacity: 1, x: 0 }}
+                      transition={{ delay: 0.1 * i }}
+                      className="flex items-center gap-4 p-4 rounded-2xl bg-white/[0.02] border border-white/5 hover:border-[#00e676]/40 hover:bg-[#00e676]/10 transition-all duration-300 group cursor-pointer"
+                    >
+                      <div className={`w-10 h-10 rounded-xl ${a.iconBg} flex items-center justify-center shrink-0 border border-white/5 group-hover:border-[#00e676]/20 transition-all`}>
+                        <ActionIcon className={`w-5 h-5 ${a.iconColor}`} />
                       </div>
-                      <ChevronRight className="w-4 h-4 text-white/20 group-hover:text-[#00e676] group-hover:translate-x-1 transition-all" />
-                    </div>
-                  </motion.div>
-                );
-              })}
+                      <div className="flex-1 min-w-0">
+                        <div className="text-sm font-bold text-white group-hover:text-[#00e676] transition-colors">{a.title}</div>
+                        <div className="text-[11px] text-white/30 truncate mt-0.5">{a.sub}</div>
+                      </div>
+                      <div className="flex items-center gap-3">
+                        <div className={`text-xs font-black ${a.valueColor} bg-white/[0.03] px-3 py-1 rounded-lg border border-white/5`}>
+                          {a.value}
+                        </div>
+                        <ChevronRight className="w-4 h-4 text-white/10 group-hover:text-[#00e676] group-hover:translate-x-1 transition-all" />
+                      </div>
+                    </motion.div>
+                  );
+                })}
+              </div>
             </div>
           </div>
         </motion.div>
