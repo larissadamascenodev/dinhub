@@ -105,7 +105,7 @@ const ProximosEventos = memo(({ events, selectedMonth, selectedYear, onVerTodos,
           <p className="text-[13px] font-bold tabular-nums tracking-tight" style={{ color: `hsl(${a})` }}>
             {fmt(ev.amount)}
           </p>
-          <p className="text-[9px] text-muted-foreground/50 mt-0.5">
+          <p className="text-[10px] text-white/30 font-medium uppercase tracking-wider mt-1">
             {fmtDate(ev._date)}
           </p>
         </div>
