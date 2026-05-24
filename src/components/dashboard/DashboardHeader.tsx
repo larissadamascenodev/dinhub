@@ -181,7 +181,7 @@ const DashboardHeader = memo(({ profile, streak = 0, streakDates = [] }: { profi
         </div>
 
         {/* Center: Floating nav pill */}
-        <nav className="flex items-center gap-1 bg-card/80 backdrop-blur-xl border border-border/20 rounded-2xl px-1.5 py-1 shadow-lg shadow-black/10">
+        <nav className="flex items-center gap-2 bg-white/[0.03] backdrop-blur-2xl border border-white/[0.05] rounded-full px-2 py-1.5 shadow-2xl shadow-black/40">
           {NAV_ITEMS.map((item) => {
             const Icon = item.icon;
             const isActive = location.pathname === item.path;
@@ -192,13 +192,10 @@ const DashboardHeader = memo(({ profile, streak = 0, streakDates = [] }: { profi
                 <div key={item.label} className="relative" ref={transacaoRef}>
                   <button
                     onClick={() => setTransacaoMenuOpen((v) => !v)}
-                    className="relative -my-1 mx-1 flex items-center gap-1.5 px-4 py-2.5 rounded-xl text-xs font-bold transition-all bg-primary/15 border border-primary/30 text-primary hover:bg-primary/25"
-                    style={{
-                      boxShadow: "0 2px 12px -2px hsl(150 100% 45% / 0.3)",
-                    }}
+                    className="relative flex items-center gap-2 px-5 py-2.5 rounded-full text-[13px] font-bold transition-all bg-primary text-black hover:bg-primary/90 shadow-[0_8px_20px_-6px_rgba(0,230,118,0.5)]"
                   >
-                    <Icon className="w-4 h-4" />
-                    <span>{item.label}</span>
+                    <Plus className="w-4 h-4 stroke-[3]" />
+                    <span>Novo</span>
                   </button>
 
                   <AnimatePresence>
