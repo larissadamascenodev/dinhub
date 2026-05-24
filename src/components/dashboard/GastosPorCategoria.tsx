@@ -114,7 +114,7 @@ const GastosPorCategoria = memo(({ categories, selectedMonth, onVerAnalise }: Pr
 
       {/* Stacked color bar */}
       <div className="px-1">
-        <div className="flex h-2.5 gap-[3px]">
+        <div className="flex h-3 gap-1 rounded-full overflow-hidden">
           {visible.map((cat) => {
             const idx = sorted.indexOf(cat);
             const visibleTotal = visible.reduce((s, c) => s + c.amount, 0);
