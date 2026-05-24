@@ -96,8 +96,8 @@ const TxCard = ({ tx, onClick, customCategories }: { tx: Transaction; onClick: (
 
       {/* Info */}
       <div className="flex-1 min-w-0">
-        <p className="text-xs md:text-[13px] font-bold text-foreground truncate">{tx.name}</p>
-        <p className="text-[9px] md:text-[10px] mt-0.5 text-muted-foreground/50">
+        <p className="text-[13px] font-bold text-white truncate tracking-tight">{tx.name}</p>
+        <p className="text-[10px] mt-1 text-white/30 font-medium uppercase tracking-wider">
           {tx.category}
           {tx.time ? ` · ${tx.time}` : ""}
           {` · ${tx.date}`}
