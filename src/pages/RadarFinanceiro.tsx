@@ -405,23 +405,24 @@ export default function RadarFinanceiro() {
         badge={`${comprometimentoPct}%`}
         badgeVariant={comprometimentoPct < 60 ? "success" : comprometimentoPct <= 80 ? "warning" : "danger"}
       >
-        <div className="flex items-center gap-5">
+        <div className="flex items-center gap-6 p-6 rounded-[24px] bg-white/5 border border-white/5 relative overflow-hidden group">
+          <div className="absolute inset-0 bg-gradient-to-br from-primary/5 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-500" />
           <div className="relative flex-shrink-0">
-            <ScoreRing value={comprometimentoPct} size={80} stroke={7} color={comprometimentoRing} />
+            <ScoreRing value={comprometimentoPct} size={88} stroke={8} color={comprometimentoRing} />
             <div className="absolute inset-0 flex flex-col items-center justify-center">
-              <span className={`text-[20px] font-black tabular-nums leading-none ${comprometimentoColor}`}>{comprometimentoPct}%</span>
-              <span className="text-[7px] text-muted-foreground/30 font-bold mt-0.5">USADO</span>
+              <span className={`text-[22px] font-black tabular-nums leading-none ${comprometimentoColor}`}>{comprometimentoPct}%</span>
+              <span className="text-[8px] text-white/20 font-bold mt-1 tracking-widest uppercase">Usage</span>
             </div>
           </div>
-          <div className="flex-1 space-y-2.5">
+          <div className="flex-1 space-y-3 relative z-10">
             <div className="flex justify-between items-center">
-              <span className="text-[11px] text-muted-foreground/60 font-medium">Comprometido</span>
-              <span className="text-[13px] font-extrabold text-destructive tabular-nums">{fmt(despesas)}</span>
+              <span className="text-[12px] text-white/50 font-semibold tracking-tight">Comprometido</span>
+              <span className="text-[15px] font-black text-white tabular-nums">{fmt(despesas)}</span>
             </div>
-            <div className="h-px bg-border/5" />
+            <div className="h-px bg-white/5" />
             <div className="flex justify-between items-center">
-              <span className="text-[11px] text-muted-foreground/60 font-medium">Disponível</span>
-              <span className={`text-[13px] font-extrabold tabular-nums ${livre > 0 ? "text-primary" : "text-destructive"}`}>{fmt(livre)}</span>
+              <span className="text-[12px] text-white/50 font-semibold tracking-tight">Disponível</span>
+              <span className={`text-[15px] font-black tabular-nums ${livre > 0 ? "text-primary" : "text-destructive"}`}>{fmt(livre)}</span>
             </div>
           </div>
         </div>
