@@ -9,12 +9,12 @@ const Navbar = () => {
           className="flex items-center cursor-pointer group shrink-0" 
           onClick={() => window.scrollTo({ top: 0, behavior: 'smooth' })}
         >
-          <div className="flex items-center space-x-0.5">
-            <span className="font-sora font-black text-lg sm:text-xl text-white tracking-tighter">
-              DIN
-            </span>
-            <span className="font-sora font-extrabold text-lg sm:text-xl text-[#00e676] tracking-tighter">
-              HUBY
+          <div className="flex items-center space-x-1">
+            <div className="w-8 h-8 rounded-lg bg-gradient-to-br from-[#00e676] to-[#00c853] flex items-center justify-center shadow-[0_0_15px_rgba(0,230,118,0.3)] group-hover:scale-110 transition-transform duration-300">
+              <span className="font-sora font-black text-black text-sm">D</span>
+            </div>
+            <span className="font-sora font-bold text-xl text-white tracking-tight ml-1">
+              Din<span className="text-[#00e676]">Hub</span>
             </span>
           </div>
         </div>
