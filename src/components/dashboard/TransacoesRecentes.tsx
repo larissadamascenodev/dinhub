@@ -112,7 +112,7 @@ const TxCard = ({ tx, onClick, customCategories }: { tx: Transaction; onClick: (
         >
           {isReceita ? "+" : "−"}{fmt(tx.amount)}
         </p>
-        <span className="block mt-0.5 text-[8px] md:text-[9px] font-bold uppercase tracking-wide text-muted-foreground/40">
+        <span className="block mt-1 text-[9px] font-bold uppercase tracking-[0.1em] text-white/20">
           {isPaid ? (isReceita ? "Recebido" : "Pago") : (isReceita ? "A Receber" : "Pendente")}
         </span>
       </div>
