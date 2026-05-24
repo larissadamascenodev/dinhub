@@ -474,161 +474,135 @@ const HubyInsightsPanel: React.FC = () => {
   };
 
   return (
-    <div className="relative w-full max-w-6xl mx-auto flex flex-col lg:flex-row gap-12 lg:gap-24 items-center">
-      {/* Glow effect decorative elements */}
-      <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[150%] h-[150%] bg-[#00e676]/5 blur-[120px] rounded-full pointer-events-none opacity-50" />
-      <div className="absolute inset-0 bg-[url('https://grainy-gradients.vercel.app/noise.svg')] opacity-10 pointer-events-none mix-blend-overlay" />
-      
-      <AnimatePresence mode="wait" custom={direction} initial={false}>
-        <motion.div
-          key={idx}
-          custom={direction}
-          variants={slideVariants}
-          initial="enter"
-          animate="center"
-          exit="exit"
-          transition={{
-            x: { type: "spring", stiffness: 300, damping: 30 },
-            opacity: { duration: 0.4 },
-            filter: { duration: 0.4 }
-          }}
-          className="flex-1 w-full grid grid-cols-1 lg:grid-cols-2 gap-12 lg:gap-24 items-center"
-        >
-          {/* Coluna Esquerda: Visual do Radar */}
-          <div className="flex flex-col items-center justify-center relative order-2 lg:order-1">
-            <div className="relative w-64 h-64 md:w-80 md:h-80">
-              <motion.div 
-                animate={{ scale: [1, 1.2, 1], opacity: [0.3, 0.1, 0.3] }}
-                transition={{ duration: 3, repeat: Infinity }}
-                className="absolute inset-0 rounded-full border border-[#00e676]/30 blur-sm"
-              />
-              <motion.div 
-                animate={{ scale: [1.1, 1.3, 1.1], opacity: [0.15, 0.05, 0.15] }}
-                transition={{ duration: 4, repeat: Infinity, delay: 0.5 }}
-                className="absolute -inset-8 rounded-full border border-blue-500/20"
-              />
+    <div className="relative w-full max-w-7xl mx-auto min-h-[600px] flex items-center justify-center">
+      {/* Dynamic Background */}
+      <div className="absolute inset-0 pointer-events-none">
+        <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[120%] h-[120%] bg-gradient-to-br from-[#00e676]/10 via-transparent to-blue-500/10 blur-[120px] opacity-40" />
+        <div className="absolute inset-0 bg-[url('https://grainy-gradients.vercel.app/noise.svg')] opacity-20 mix-blend-overlay" />
+      </div>
+
+      <div className="relative w-full grid grid-cols-1 lg:grid-cols-12 gap-8 lg:gap-12 items-stretch">
+        {/* Left Section: The "Scanner/Radar" Core */}
+        <div className="lg:col-span-5 flex flex-col justify-center items-center lg:items-start space-y-8 order-2 lg:order-1">
+          <div className="relative group">
+            <motion.div 
+              animate={{ rotate: 360 }}
+              transition={{ duration: 20, repeat: Infinity, ease: "linear" }}
+              className="absolute -inset-12 border border-white/5 rounded-full"
+            />
+            <motion.div 
+              animate={{ rotate: -360 }}
+              transition={{ duration: 15, repeat: Infinity, ease: "linear" }}
+              className="absolute -inset-8 border border-[#00e676]/10 rounded-full"
+            />
+            
+            <div className="relative w-48 h-48 md:w-64 md:h-64 flex items-center justify-center">
+              <div className="absolute inset-0 rounded-full bg-[#00e676]/5 border border-[#00e676]/20 backdrop-blur-sm" />
+              <Radar className="w-16 h-16 md:w-24 md:h-24 text-[#00e676] drop-shadow-[0_0_20px_rgba(0,230,118,0.4)]" />
               
               <motion.div 
                 animate={{ rotate: 360 }}
                 transition={{ duration: 4, repeat: Infinity, ease: "linear" }}
-                className="absolute inset-0 rounded-full border border-white/5 bg-gradient-to-r from-transparent via-transparent to-[#00e676]/20"
+                className="absolute inset-0 rounded-full bg-gradient-to-r from-transparent via-transparent to-[#00e676]/20"
                 style={{ clipPath: 'polygon(50% 50%, 100% 0, 100% 100%)' }}
               />
-
-              <div className="absolute inset-0 flex items-center justify-center">
-                <div className="relative">
-                  <Radar className="w-16 h-16 md:w-20 md:h-20 text-[#00e676] drop-shadow-[0_0_15px_rgba(0,230,118,0.5)]" />
-                  <motion.div 
-                    animate={{ scale: [1, 1.5, 1], opacity: [0.5, 0, 0.5] }}
-                    transition={{ duration: 2, repeat: Infinity }}
-                    className="absolute inset-0 bg-[#00e676] blur-xl rounded-full -z-10"
-                  />
-                </div>
-              </div>
-            </div>
-            
-            <div className="mt-12 flex flex-col items-center space-y-3">
-              <div className="px-6 py-2 rounded-full bg-[#00e676]/10 border border-[#00e676]/20 backdrop-blur-md">
-                <span className="text-xs font-black text-[#00e676] uppercase tracking-widest flex items-center gap-2">
-                  <div className="w-1.5 h-1.5 rounded-full bg-[#00e676] animate-pulse" />
-                  Escaneando Padrões Financeiros
-                </span>
-              </div>
-              <span className="text-[10px] text-white/20 font-medium italic">Monitoramento Neural Ativo</span>
             </div>
           </div>
 
-          {/* Coluna Direita: Insights e Ações */}
-          <div className="flex-1 flex flex-col justify-center space-y-8 relative z-10 order-1 lg:order-2">
-            <div className="space-y-4">
-              <div className="flex items-center gap-3">
-                <div className="w-8 h-8 rounded-lg bg-blue-500/10 border border-blue-500/20 flex items-center justify-center">
-                  <Sparkles className="w-4 h-4 text-blue-400" />
-                </div>
-                <h4 className="text-lg font-bold text-white tracking-tight">Análise da Huby</h4>
-              </div>
-
-              <div className="p-6 md:p-8 rounded-[32px] bg-white/[0.03] border border-white/10 backdrop-blur-xl relative overflow-hidden group">
-                <div className="absolute top-0 left-0 w-1 h-full bg-[#00e676]" />
-                <div className="space-y-4">
-                  <div className="flex items-center justify-between">
-                    <span className="text-[10px] font-black text-[#00e676] uppercase tracking-widest">{insight.tag}</span>
-                    <div className="flex items-center gap-1.5 text-[10px] text-white/30 font-bold">
-                      <Clock className="w-3 h-3" /> ATUALIZADO AGORA
-                    </div>
-                  </div>
-                  <div className="flex items-start gap-4">
-                    <div className={`w-12 h-12 rounded-xl ${insight.iconBg} flex items-center justify-center shrink-0 border border-white/5`}>
-                      <InsightIcon className={`w-6 h-6 ${insight.iconColor}`} />
-                    </div>
-                    <p className="text-white/90 text-lg md:text-xl leading-relaxed font-medium">
-                      {insight.text}
-                    </p>
-                  </div>
-                </div>
-              </div>
+          <div className="space-y-4 text-center lg:text-left">
+            <div className="inline-flex items-center gap-2 px-4 py-1.5 rounded-full bg-[#00e676]/10 border border-[#00e676]/20">
+              <span className="w-1.5 h-1.5 rounded-full bg-[#00e676] animate-pulse" />
+              <span className="text-[10px] font-black text-[#00e676] uppercase tracking-[0.2em]">Neural Processing Active</span>
             </div>
-
-            <div className="space-y-4">
-              <div className="flex items-center gap-3">
-                <Zap className="w-5 h-5 text-[#00e676]" />
-                <h4 className="text-sm font-bold text-white/60 uppercase tracking-widest">Ações Sugeridas</h4>
-              </div>
-
-              <div className="grid gap-3">
-                {currentSlide.actions.map((a, i) => {
-                  const ActionIcon = a.icon;
-                  return (
-                    <motion.div
-                      key={i}
-                      initial={{ opacity: 0, x: 20 }}
-                      animate={{ opacity: 1, x: 0 }}
-                      transition={{ delay: 0.1 * i }}
-                      className="flex items-center gap-4 p-4 rounded-2xl bg-white/[0.02] border border-white/5 hover:border-[#00e676]/40 hover:bg-[#00e676]/10 transition-all duration-300 group cursor-pointer"
-                    >
-                      <div className={`w-10 h-10 rounded-xl ${a.iconBg} flex items-center justify-center shrink-0 border border-white/5 group-hover:border-[#00e676]/20 transition-all`}>
-                        <ActionIcon className={`w-5 h-5 ${a.iconColor}`} />
-                      </div>
-                      <div className="flex-1 min-w-0">
-                        <div className="text-sm font-bold text-white group-hover:text-[#00e676] transition-colors">{a.title}</div>
-                        <div className="text-[11px] text-white/30 truncate mt-0.5">{a.sub}</div>
-                      </div>
-                      <div className="flex items-center gap-3">
-                        <div className={`text-xs font-black ${a.valueColor} bg-white/[0.03] px-3 py-1 rounded-lg border border-white/5`}>
-                          {a.value}
-                        </div>
-                        <ChevronRight className="w-4 h-4 text-white/10 group-hover:text-[#00e676] group-hover:translate-x-1 transition-all" />
-                      </div>
-                    </motion.div>
-                  );
-                })}
-              </div>
-            </div>
+            <h4 className="text-xl md:text-2xl font-bold text-white tracking-tight">Scanner de Padrões v4.0</h4>
+            <p className="text-white/40 text-sm max-w-sm font-medium italic">"Analisando milhões de variáveis financeiras para proteger seu patrimônio em tempo real."</p>
           </div>
-        </motion.div>
-      </AnimatePresence>
+        </div>
 
-      {/* Dots moved to bottom */}
-      <div className="flex items-center justify-center gap-3 mt-auto pt-8 pb-2">
-        {RADAR_SLIDES.map((_, i) => (
-          <button
-            key={i}
-            onClick={() => handleDotClick(i)}
-            className={`group/dot relative h-1.5 transition-all duration-500 cursor-pointer overflow-hidden ${
-              i === idx ? 'w-10 bg-[#00e676]' : 'w-2 bg-white/10 hover:bg-white/30'
-            } rounded-full`}
-            aria-label={`Ir para slide ${i + 1}`}
+        {/* Right Section: Intelligence Display */}
+        <div className="lg:col-span-7 space-y-6 order-1 lg:order-2">
+          {/* Main Insight Card */}
+          <motion.div 
+            initial={{ opacity: 0, y: 20 }}
+            animate={{ opacity: 1, y: 0 }}
+            className="p-8 rounded-[40px] bg-white/[0.02] border border-white/10 backdrop-blur-2xl relative overflow-hidden group hover:border-[#00e676]/30 transition-all duration-500"
           >
-            {i === idx && (
-              <motion.div 
-                initial={{ left: '-100%' }}
-                animate={{ left: '0%' }}
-                transition={{ duration: 5, ease: "linear" }}
-                className="absolute top-0 bottom-0 w-full bg-white/40"
-              />
-            )}
-          </button>
-        ))}
+            <div className="absolute top-0 right-0 p-6">
+              <div className="px-3 py-1 rounded-lg bg-white/5 border border-white/10 text-[10px] text-white/40 font-bold uppercase tracking-widest flex items-center gap-2">
+                <Clock className="w-3 h-3" /> 14:42:01
+              </div>
+            </div>
+
+            <div className="space-y-8">
+              <div className="flex flex-col gap-4">
+                <span className="text-[10px] font-black text-[#00e676] uppercase tracking-[0.3em]">{insight.tag}</span>
+                <div className="flex items-start gap-6">
+                  <div className={`w-16 h-16 rounded-2xl ${insight.iconBg} flex items-center justify-center shrink-0 border border-white/5 shadow-2xl group-hover:scale-110 transition-transform`}>
+                    <InsightIcon className={`w-8 h-8 ${insight.iconColor}`} />
+                  </div>
+                  <p className="text-white/90 text-2xl md:text-3xl leading-[1.2] font-semibold tracking-tight">
+                    {insight.text}
+                  </p>
+                </div>
+              </div>
+
+              {/* Action Grid */}
+              <div className="space-y-4">
+                <div className="flex items-center gap-3">
+                  <Zap className="w-5 h-5 text-[#00e676]" />
+                  <h5 className="text-xs font-black text-white/40 uppercase tracking-widest">Protocolos Sugeridos</h5>
+                </div>
+                
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                  {currentSlide.actions.slice(0, 2).map((a, i) => {
+                    const ActionIcon = a.icon;
+                    return (
+                      <div 
+                        key={i}
+                        className="flex items-center gap-4 p-5 rounded-3xl bg-white/[0.03] border border-white/5 hover:bg-[#00e676]/10 hover:border-[#00e676]/30 transition-all duration-300 group/item cursor-pointer"
+                      >
+                        <div className={`w-12 h-12 rounded-2xl ${a.iconBg} flex items-center justify-center shrink-0 border border-white/5 group-hover/item:scale-110 transition-transform`}>
+                          <ActionIcon className={`w-6 h-6 ${a.iconColor}`} />
+                        </div>
+                        <div className="flex-1 min-w-0">
+                          <div className="text-sm font-bold text-white group-hover/item:text-[#00e676] transition-colors">{a.title}</div>
+                          <div className="text-[10px] text-white/30 font-medium mt-1 uppercase tracking-wider">{a.value}</div>
+                        </div>
+                      </div>
+                    );
+                  })}
+                </div>
+              </div>
+            </div>
+          </motion.div>
+
+          {/* Secondary Stats Row */}
+          <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+            <div className="p-6 rounded-[32px] bg-white/[0.01] border border-white/5 flex flex-col justify-between group hover:bg-white/[0.03] transition-all">
+              <span className="text-[9px] font-black text-white/20 uppercase tracking-widest">Confiança da IA</span>
+              <div className="mt-4 flex items-end justify-between">
+                <span className="text-2xl font-bold text-white tracking-tighter">98.4%</span>
+                <TrendingUp className="w-5 h-5 text-[#00e676]" />
+              </div>
+            </div>
+            <div className="p-6 rounded-[32px] bg-white/[0.01] border border-white/5 flex flex-col justify-between group hover:bg-white/[0.03] transition-all">
+              <span className="text-[9px] font-black text-white/20 uppercase tracking-widest">Latência de Rede</span>
+              <div className="mt-4 flex items-end justify-between">
+                <span className="text-2xl font-bold text-white tracking-tighter">12ms</span>
+                <div className="flex gap-1 h-5 items-end">
+                  {[4, 8, 5, 10, 6].map((h, i) => <div key={i} className="w-1 bg-[#00e676]/40 rounded-full" style={{ height: `${h * 10}%` }} />)}
+                </div>
+              </div>
+            </div>
+            <div className="p-6 rounded-[32px] bg-[#00e676]/5 border border-[#00e676]/10 flex flex-col justify-between group hover:bg-[#00e676]/10 transition-all cursor-pointer">
+              <span className="text-[9px] font-black text-[#00e676] uppercase tracking-widest">Otimizar Agora</span>
+              <div className="mt-4 flex items-center justify-between">
+                <span className="text-sm font-bold text-white">Executar Tudo</span>
+                <ArrowRight className="w-5 h-5 text-[#00e676] group-hover:translate-x-1 transition-transform" />
+              </div>
+            </div>
+          </div>
+        </div>
       </div>
     </div>
   );
