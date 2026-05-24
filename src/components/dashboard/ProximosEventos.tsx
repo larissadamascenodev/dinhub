@@ -89,7 +89,7 @@ const ProximosEventos = memo(({ events, selectedMonth, selectedYear, onVerTodos,
       >
         {/* Content */}
         <div className="flex-1 min-w-0">
-          <p className={`text-[12px] font-semibold truncate ${isPaid ? "text-foreground/50" : "text-foreground/90"}`}>
+          <p className={`text-[13px] font-bold truncate tracking-tight ${isPaid ? "text-white/40" : "text-white"}`}>
             {ev.name}
           </p>
           <div className="flex items-center gap-1.5 mt-0.5">
