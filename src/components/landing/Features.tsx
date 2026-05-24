@@ -83,6 +83,43 @@ const RADAR_SLIDES = [
   }
 ];
 
+const SCORE_INSIGHTS = [
+  {
+    score: 82,
+    status: 'Excelente',
+    color: '#00e676',
+    insight: {
+      icon: TrendingUp,
+      iconColor: 'text-[#00e676]',
+      iconBg: 'bg-[#00e676]/10',
+      text: <>Seu score subiu <span className="text-[#00e676] font-semibold">12 pontos</span> este mês após você aumentar sua reserva.</>,
+      tag: 'Saúde Financeira',
+    },
+    actions: [
+      { icon: ShieldCheck, iconColor: 'text-[#00e676]', iconBg: 'bg-[#00e676]/10', title: 'Manter hábito de poupança', sub: 'Projeção: +5 pts no próximo mês', value: '+5 pts', valueColor: 'text-[#00e676]' },
+      { icon: Zap, iconColor: 'text-blue-400', iconBg: 'bg-blue-500/10', title: 'Aporte em Renda Fixa', sub: 'Aumente sua blindagem patrimonial', value: 'Investir', valueColor: 'text-blue-400' },
+      { icon: Info, iconColor: 'text-white/40', iconBg: 'bg-white/5', title: 'Ver detalhes do cálculo', sub: 'Entenda como sua nota é formada', value: 'Ver', valueColor: 'text-white/60' },
+    ]
+  },
+  {
+    score: 79,
+    status: 'Bom',
+    color: '#facc15',
+    insight: {
+      icon: AlertCircle,
+      iconColor: 'text-red-400',
+      iconBg: 'bg-red-500/10',
+      text: <>Seu score caiu <span className="text-red-400 font-semibold">3 pontos</span>. Detectamos um atraso na fatura da Vivo.</>,
+      tag: 'Alerta',
+    },
+    actions: [
+      { icon: CreditCard, iconColor: 'text-[#00e676]', iconBg: 'bg-[#00e676]/10', title: 'Pagar conta pendente', sub: 'Recupere seus pontos imediatamente', value: 'Pagar', valueColor: 'text-[#00e676]' },
+      { icon: Clock, iconColor: 'text-yellow-400', iconBg: 'bg-yellow-500/10', title: 'Ativar débito automático', sub: 'Evite novas quedas por esquecimento', value: 'Ativar', valueColor: 'text-yellow-400' },
+      { icon: ShieldCheck, iconColor: 'text-white/40', iconBg: 'bg-white/5', title: 'Proteger Score Huby', sub: 'Blindagem contra pequenos atrasos', value: 'Ativar', valueColor: 'text-white/60' },
+    ]
+  }
+];
+
 const Features = () => {
   const containerVariants = {
     hidden: { opacity: 0 },
