@@ -81,10 +81,9 @@ const TxCard = ({ tx, onClick, customCategories }: { tx: Transaction; onClick: (
 
   return (
     <div
-      className={`group relative flex items-center gap-2.5 px-3 py-2.5 md:gap-3 md:px-4 md:py-3.5 rounded-xl backdrop-blur-xl cursor-pointer ${
-        isPending ? "border border-[hsl(40_80%_50%_/_0.15)]" : "bg-card/95"
+      className={`group relative flex items-center gap-3 px-4 py-4 rounded-[20px] backdrop-blur-xl cursor-pointer transition-all duration-300 hover:bg-white/[0.04] hover:scale-[1.01] ${
+        isPending ? "border border-warning/10 bg-warning/[0.03]" : "bg-white/[0.02] border border-white/[0.03]"
       }`}
-      style={isPending ? { background: "hsl(40 80% 50% / 0.06)" } : undefined}
       onClick={onClick}
     >
       {/* Category icon */}
