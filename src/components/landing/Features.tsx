@@ -437,11 +437,8 @@ const HubyInsightsPanel: React.FC = () => {
   const [direction, setDirection] = useState(0);
   
   useEffect(() => {
-    const t = setInterval(() => {
-      setDirection(1);
-      setIdx((p) => (p + 1) % RADAR_SLIDES.length);
-    }, 5000); // 5 segundos como solicitado
-    return () => clearInterval(t);
+    // Tela fixa conforme solicitado
+    return () => {};
   }, []);
 
   const handleDotClick = (newIdx: number) => {
