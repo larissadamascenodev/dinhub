@@ -500,7 +500,6 @@ const HubyInsightsPanel: React.FC = () => {
               <div className="absolute inset-0 rounded-full bg-[#00e676]/5 border border-[#00e676]/20 backdrop-blur-sm" />
               <Radar className="w-16 h-16 md:w-24 md:h-24 text-[#00e676] drop-shadow-[0_0_20px_rgba(0,230,118,0.4)]" />
               
-              {/* Spinning Scan Line */}
               <motion.div 
                 animate={{ rotate: 360 }}
                 transition={{ duration: 4, repeat: Infinity, ease: "linear" }}
@@ -604,32 +603,6 @@ const HubyInsightsPanel: React.FC = () => {
             </div>
           </div>
         </div>
-      </div>
-    </div>
-        </motion.div>
-      </AnimatePresence>
-
-      {/* Dots moved to bottom */}
-      <div className="flex items-center justify-center gap-3 mt-auto pt-8 pb-2">
-        {RADAR_SLIDES.map((_, i) => (
-          <button
-            key={i}
-            onClick={() => handleDotClick(i)}
-            className={`group/dot relative h-1.5 transition-all duration-500 cursor-pointer overflow-hidden ${
-              i === idx ? 'w-10 bg-[#00e676]' : 'w-2 bg-white/10 hover:bg-white/30'
-            } rounded-full`}
-            aria-label={`Ir para slide ${i + 1}`}
-          >
-            {i === idx && (
-              <motion.div 
-                initial={{ left: '-100%' }}
-                animate={{ left: '0%' }}
-                transition={{ duration: 5, ease: "linear" }}
-                className="absolute top-0 bottom-0 w-full bg-white/40"
-              />
-            )}
-          </button>
-        ))}
       </div>
     </div>
   );
