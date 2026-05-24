@@ -83,6 +83,43 @@ const RADAR_SLIDES = [
   }
 ];
 
+const SCORE_INSIGHTS = [
+  {
+    score: 82,
+    status: 'Excelente',
+    color: '#00e676',
+    insight: {
+      icon: TrendingUp,
+      iconColor: 'text-[#00e676]',
+      iconBg: 'bg-[#00e676]/10',
+      text: <>Seu score subiu <span className="text-[#00e676] font-semibold">12 pontos</span> este mês após você aumentar sua reserva.</>,
+      tag: 'Saúde Financeira',
+    },
+    actions: [
+      { icon: ShieldCheck, iconColor: 'text-[#00e676]', iconBg: 'bg-[#00e676]/10', title: 'Manter hábito de poupança', sub: 'Projeção: +5 pts no próximo mês', value: '+5 pts', valueColor: 'text-[#00e676]' },
+      { icon: Zap, iconColor: 'text-blue-400', iconBg: 'bg-blue-500/10', title: 'Aporte em Renda Fixa', sub: 'Aumente sua blindagem patrimonial', value: 'Investir', valueColor: 'text-blue-400' },
+      { icon: Info, iconColor: 'text-white/40', iconBg: 'bg-white/5', title: 'Ver detalhes do cálculo', sub: 'Entenda como sua nota é formada', value: 'Ver', valueColor: 'text-white/60' },
+    ]
+  },
+  {
+    score: 79,
+    status: 'Bom',
+    color: '#facc15',
+    insight: {
+      icon: AlertCircle,
+      iconColor: 'text-red-400',
+      iconBg: 'bg-red-500/10',
+      text: <>Seu score caiu <span className="text-red-400 font-semibold">3 pontos</span>. Detectamos um atraso na fatura da Vivo.</>,
+      tag: 'Alerta',
+    },
+    actions: [
+      { icon: CreditCard, iconColor: 'text-[#00e676]', iconBg: 'bg-[#00e676]/10', title: 'Pagar conta pendente', sub: 'Recupere seus pontos imediatamente', value: 'Pagar', valueColor: 'text-[#00e676]' },
+      { icon: Clock, iconColor: 'text-yellow-400', iconBg: 'bg-yellow-500/10', title: 'Ativar débito automático', sub: 'Evite novas quedas por esquecimento', value: 'Ativar', valueColor: 'text-yellow-400' },
+      { icon: ShieldCheck, iconColor: 'text-white/40', iconBg: 'bg-white/5', title: 'Proteger Score Huby', sub: 'Blindagem contra pequenos atrasos', value: 'Ativar', valueColor: 'text-white/60' },
+    ]
+  }
+];
+
 const Features = () => {
   const containerVariants = {
     hidden: { opacity: 0 },
@@ -192,40 +229,44 @@ const Features = () => {
 
           {/* 2. SCORE FINANCEIRO */}
           <motion.div variants={itemVariants} className="grid grid-cols-1 lg:grid-cols-2 gap-12 sm:gap-16 lg:gap-32 items-center">
-            <div className="order-2 lg:order-1 relative group w-full max-w-sm mx-auto lg:max-w-none">
-              <div className="absolute inset-0 bg-blue-500/10 blur-[100px] rounded-full group-hover:bg-blue-500/20 transition-all duration-1000" />
-              <div className="relative bg-[#0f0f0f] border border-white/10 rounded-[32px] p-6 sm:p-8 lg:p-10 shadow-2xl backdrop-blur-xl text-center">
-                <div className="inline-block relative mb-6">
-                  <svg className="w-28 h-28 sm:w-32 sm:h-32 lg:w-40 lg:h-40 transform -rotate-90">
-                    <circle cx="80" cy="80" r="70" stroke="currentColor" strokeWidth="8" fill="transparent" className="text-white/5" />
-                    <circle cx="80" cy="80" r="70" stroke="currentColor" strokeWidth="8" fill="transparent" 
-                            strokeDasharray="440" strokeDashoffset="88" className="text-[#00e676]" />
-                  </svg>
-                  <div className="absolute inset-0 flex flex-col items-center justify-center">
-                    <span className="text-3xl sm:text-4xl font-bold text-white">82</span>
-                    <span className="text-[9px] lg:text-[10px] text-white/40 font-bold uppercase tracking-widest">Score Huby</span>
-                  </div>
-                </div>
-                <div className="space-y-3">
-                  <div className="text-sm font-medium text-[#00e676]">Status: Excelente</div>
-                  <div className="flex items-center gap-2 justify-center bg-red-500/10 border border-red-500/20 p-3 rounded-xl">
-                    <AlertCircle className="w-4 h-4 text-red-500" />
-                    <span className="text-[10px] text-white/80">Atraso na Internet (-3 pts)</span>
-                  </div>
-                </div>
+            <div className="order-2 lg:order-1 relative group w-full">
+              <div className="absolute -inset-4 bg-blue-500/5 blur-3xl rounded-full opacity-0 group-hover:opacity-100 transition-opacity duration-1000" />
+              <div className="relative glass-card p-1">
+                <HubyScorePanel />
               </div>
             </div>
-            <div className="order-1 lg:order-2 space-y-6 text-center lg:text-left">
-              <div className="w-14 h-14 rounded-2xl bg-[#00e676]/10 border border-[#00e676]/20 flex items-center justify-center mx-auto lg:mx-0">
-                <ShieldCheck className="w-7 h-7 text-[#00e676]" />
+            <div className="order-1 lg:order-2 space-y-8 sm:space-y-10 text-center lg:text-left">
+              <div className="space-y-6 sm:space-y-8">
+                <div className="flex flex-col lg:flex-row items-center gap-4 sm:gap-5">
+                  <div className="w-14 h-14 sm:w-16 sm:h-16 rounded-[20px] bg-[#00e676]/5 border border-[#00e676]/10 flex items-center justify-center shrink-0 shadow-2xl">
+                    <ShieldCheck className="w-7 h-7 sm:w-8 sm:h-8 text-[#00e676]" />
+                  </div>
+                  <h3 className="text-2xl sm:text-3xl md:text-4xl lg:text-6xl font-sora font-extrabold text-white tracking-tighter">Score Huby</h3>
+                </div>
+                <p className="text-white/50 text-base sm:text-lg md:text-xl leading-relaxed font-light px-2 sm:px-0">
+                  Sua pontuação de saúde financeira baseada em hábitos reais. Guardou? Sobe. Esqueceu um boleto? A Huby avisa e seu score reflete na hora. <span className="text-white/80 font-medium">Controle total da sua reputação financeira.</span>
+                </p>
+                <ul className="space-y-5 pt-4">
+                  {[
+                    'Cálculo baseado em comportamento real',
+                    'Feedback imediato sobre ganhos e perdas',
+                    'Dicas práticas para subir sua pontuação'
+                  ].map((item, i) => (
+                    <li key={i} className="flex items-center justify-center lg:justify-start gap-4 text-sm font-medium text-white/50 hover:text-white transition-colors duration-300">
+                      <div className="w-5 h-5 rounded-full border border-[#00e676]/20 flex items-center justify-center shrink-0">
+                        <CheckCircle2 className="w-3 h-3 text-[#00e676]" />
+                      </div>
+                      {item}
+                    </li>
+                  ))}
+                </ul>
               </div>
-              <h3 className="text-2xl sm:text-3xl lg:text-4xl font-sora font-bold text-white tracking-tight">Score Huby</h3>
-              <p className="text-white/50 text-base sm:text-lg lg:text-xl leading-relaxed font-light px-4 sm:px-0">
-                "Opa, esqueceu de pagar a Vivo? Seu score caiu 3 pontos. Paga logo antes que isso vire uma bola de neve! 📉"
-              </p>
-              <p className="text-white/40 text-sm px-4 sm:px-0">
-                Sua pontuação de saúde financeira baseada em hábitos reais, não apenas em crédito. Atrasou? Cai. Guardou? Sobe.
-              </p>
+
+              <div className="pt-8 sm:pt-10 border-t border-white/[0.05]">
+                <p className="text-white/30 text-base sm:text-lg md:text-xl font-light italic px-4 sm:px-0">
+                  "O score que realmente importa: aquele que mede sua disciplina e liberdade, não apenas sua dívida."
+                </p>
+              </div>
             </div>
           </motion.div>
 
@@ -559,6 +600,190 @@ const HubyInsightsPanel: React.FC = () => {
               />
             )}
           </button>
+        ))}
+      </div>
+    </div>
+  );
+};
+
+const HubyScorePanel: React.FC = () => {
+  const [idx, setIdx] = useState(0);
+  const [direction, setDirection] = useState(0);
+  
+  useEffect(() => {
+    const t = setInterval(() => {
+      setDirection(1);
+      setIdx((p) => (p + 1) % SCORE_INSIGHTS.length);
+    }, 6000);
+    return () => clearInterval(t);
+  }, []);
+
+  const handleDotClick = (newIdx: number) => {
+    setDirection(newIdx > idx ? 1 : -1);
+    setIdx(newIdx);
+  };
+
+  const currentSlide = SCORE_INSIGHTS[idx];
+  const insight = currentSlide.insight;
+  const InsightIcon = insight.icon;
+
+  const slideVariants = {
+    enter: (direction: number) => ({
+      x: direction > 0 ? 500 : -500,
+      opacity: 0,
+      scale: 0.95,
+      filter: 'blur(10px)',
+    }),
+    center: {
+      zIndex: 1,
+      x: 0,
+      opacity: 1,
+      scale: 1,
+      filter: 'blur(0px)',
+    },
+    exit: (direction: number) => ({
+      zIndex: 0,
+      x: direction < 0 ? 500 : -500,
+      opacity: 0,
+      scale: 0.95,
+      filter: 'blur(10px)',
+    })
+  };
+
+  return (
+    <div className="relative bg-[#0a0a0a]/60 border border-white/5 rounded-[40px] p-4 md:p-8 shadow-2xl backdrop-blur-3xl flex flex-col min-h-[580px] md:min-h-[560px] overflow-hidden group/panel transition-all duration-500 hover:border-[#00e676]/20">
+      <div className="absolute -top-20 -left-20 w-40 h-40 bg-blue-500/5 blur-[80px] rounded-full pointer-events-none" />
+      
+      <AnimatePresence mode="wait" custom={direction} initial={false}>
+        <motion.div
+          key={idx}
+          custom={direction}
+          variants={slideVariants}
+          initial="enter"
+          animate="center"
+          exit="exit"
+          transition={{
+            x: { type: "spring", stiffness: 300, damping: 30 },
+            opacity: { duration: 0.4 }
+          }}
+          className="flex-1 flex flex-col space-y-6 md:space-y-8"
+        >
+          {/* Cabeçalho */}
+          <div className="flex items-center justify-center gap-2 mb-2">
+            <ShieldCheck className="w-5 h-5 text-[#00e676]" />
+            <span className="text-xs font-black tracking-[0.2em] text-[#00e676] uppercase">Score Huby</span>
+          </div>
+
+          {/* Visual Score Gauge */}
+          <div className="relative flex flex-col items-center justify-center py-4">
+            <div className="relative w-32 h-32 md:w-40 md:h-40">
+              <svg className="w-full h-full transform -rotate-90">
+                <circle cx="50%" cy="50%" r="45%" stroke="currentColor" strokeWidth="8" fill="transparent" className="text-white/5" />
+                <motion.circle 
+                  cx="50%" cy="50%" r="45%" 
+                  stroke="currentColor" strokeWidth="8" fill="transparent" 
+                  strokeDasharray="283" 
+                  initial={{ strokeDashoffset: 283 }}
+                  animate={{ strokeDashoffset: 283 - (283 * (currentSlide.score / 100)) }}
+                  transition={{ duration: 1.5, ease: "easeOut" }}
+                  className="text-[#00e676]" 
+                />
+              </svg>
+              <div className="absolute inset-0 flex flex-col items-center justify-center">
+                <motion.span 
+                  initial={{ opacity: 0, scale: 0.5 }}
+                  animate={{ opacity: 1, scale: 1 }}
+                  key={currentSlide.score}
+                  className="text-3xl md:text-5xl font-bold text-white"
+                >
+                  {currentSlide.score}
+                </motion.span>
+                <span className="text-[9px] text-white/40 font-bold uppercase tracking-widest mt-1">Pontos</span>
+              </div>
+            </div>
+            <div className="mt-4 px-4 py-1.5 rounded-full bg-white/[0.03] border border-white/10">
+              <span className="text-xs font-bold text-[#00e676]">Status: {currentSlide.status}</span>
+            </div>
+          </div>
+
+          {/* Insights */}
+          <div className="space-y-4">
+            <div className="flex items-center gap-2">
+              <div className="w-5 h-5 rounded-full bg-[#00e676]/15 flex items-center justify-center">
+                <div className="w-1.5 h-1.5 rounded-full bg-[#00e676]" />
+              </div>
+              <span className="text-sm font-semibold text-white">Análise de Score</span>
+            </div>
+
+            <div className="flex items-start gap-3 md:gap-4 p-3 md:p-5 rounded-2xl bg-white/[0.04] border border-white/10 shadow-inner">
+              <div className={`w-10 h-10 md:w-12 md:h-12 rounded-xl ${insight.iconBg} flex items-center justify-center shrink-0`}>
+                <InsightIcon className={`w-5 h-5 md:w-6 md:h-6 ${insight.iconColor}`} />
+              </div>
+              <div className="flex-1 space-y-2">
+                <div className="flex items-center justify-between">
+                  <span className="text-[10px] font-bold text-white/40 uppercase tracking-widest">Atualização Recente</span>
+                  <span className="text-[10px] text-white/50 px-2.5 py-1 rounded-full border border-white/10 bg-white/[0.03] whitespace-nowrap">
+                    {insight.tag}
+                  </span>
+                </div>
+                <p className="text-sm md:text-base text-white/90 leading-relaxed font-medium">
+                  {insight.text}
+                </p>
+              </div>
+            </div>
+          </div>
+
+          {/* Ações */}
+          <div className="space-y-4 pt-2">
+            <div className="flex items-center justify-between">
+              <div className="flex items-center gap-2">
+                <Zap className="w-4 h-4 text-[#00e676]" />
+                <span className="text-sm font-semibold text-white">Próximos passos sugeridos</span>
+              </div>
+            </div>
+
+            <div className="grid gap-3">
+              {currentSlide.actions.map((a, i) => {
+                const ActionIcon = a.icon;
+                return (
+                  <motion.div
+                    key={i}
+                    initial={{ opacity: 0, y: 10 }}
+                    animate={{ opacity: 1, y: 0 }}
+                    transition={{ delay: 0.1 * i }}
+                    className="flex items-center gap-3 md:gap-4 p-3 md:p-4 rounded-2xl bg-white/[0.03] border border-white/5 hover:border-[#00e676]/30 hover:bg-[#00e676]/5 transition-all duration-300 cursor-pointer group"
+                  >
+                    <div className={`w-9 h-9 md:w-10 md:h-10 rounded-xl ${a.iconBg} flex items-center justify-center shrink-0`}>
+                      <ActionIcon className={`w-4 h-4 md:w-5 md:h-5 ${a.iconColor}`} />
+                    </div>
+                    <div className="flex-1 min-w-0 pr-1">
+                      <div className="text-[12px] md:text-[14px] font-semibold text-white group-hover:text-[#00e676] transition-colors leading-tight">{a.title}</div>
+                      <div className="text-[10px] md:text-[11px] text-white/40 truncate mt-0.5">{a.sub}</div>
+                    </div>
+                    <div className="flex items-center gap-2 shrink-0">
+                      <div className="text-right">
+                        <div className={`text-[11px] md:text-[13px] font-bold ${a.valueColor}`}>{a.value}</div>
+                      </div>
+                      <ChevronRight className="w-4 h-4 text-white/20 group-hover:text-[#00e676] group-hover:translate-x-1 transition-all" />
+                    </div>
+                  </motion.div>
+                );
+              })}
+            </div>
+          </div>
+        </motion.div>
+      </AnimatePresence>
+
+      {/* Dots */}
+      <div className="flex items-center justify-center gap-3 mt-auto pt-8 pb-2">
+        {SCORE_INSIGHTS.map((_, i) => (
+          <button
+            key={i}
+            onClick={() => handleDotClick(i)}
+            className={`group/dot relative h-1.5 transition-all duration-500 cursor-pointer overflow-hidden ${
+              i === idx ? 'w-10 bg-[#00e676]' : 'w-2 bg-white/10 hover:bg-white/30'
+            } rounded-full`}
+          />
         ))}
       </div>
     </div>
