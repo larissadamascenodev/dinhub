@@ -1,31 +1,9 @@
 import React from 'react';
-import { Sparkles } from 'lucide-react';
-
-const NavLink = ({ onClick, children }: { onClick: () => void, children: React.ReactNode }) => (
-  <button 
-    onClick={onClick}
-    className="text-[8px] sm:text-[11px] font-black tracking-[0.2em] sm:tracking-[0.3em] text-white/40 hover:text-white transition-all duration-300 uppercase touch-target"
-  >
-    {children}
-  </button>
-);
 
 const Navbar = () => {
-  const scrollTo = (id: string) => {
-    const element = document.getElementById(id);
-    if (element) {
-      element.scrollIntoView({ behavior: 'smooth' });
-    }
-  };
-
-  const navItems = [
-    { label: 'Func.', id: 'radar-header' },
-    { label: 'Planos', id: 'planos' },
-  ];
-
   return (
-    <nav className="fixed top-4 sm:top-6 left-1/2 -translate-x-1/2 z-[100] w-[92%] sm:w-auto min-w-[320px] md:min-w-[650px] max-w-[95%] transition-all duration-500">
-      <div className="flex items-center justify-between gap-3 sm:gap-12 px-4 sm:px-12 py-2.5 sm:py-5 rounded-full border border-white/[0.08] bg-black/60 backdrop-blur-2xl shadow-2xl">
+    <nav className="fixed top-4 sm:top-6 left-1/2 -translate-x-1/2 z-[100] w-[92%] sm:w-auto min-w-[280px] md:min-w-[450px] max-w-[95%] transition-all duration-500">
+      <div className="flex items-center justify-between gap-6 sm:gap-24 px-6 sm:px-14 py-2.5 sm:py-5 rounded-full border border-white/[0.08] bg-black/60 backdrop-blur-2xl shadow-2xl">
         {/* Logo */}
         <div 
           className="flex items-center cursor-pointer group shrink-0" 
@@ -39,15 +17,6 @@ const Navbar = () => {
               HUBY
             </span>
           </div>
-        </div>
-
-        {/* Navigation Links */}
-        <div className="flex items-center gap-4 sm:gap-14">
-          {navItems.map((item) => (
-            <NavLink key={item.id} onClick={() => scrollTo(item.id)}>
-              {item.label}
-            </NavLink>
-          ))}
         </div>
 
         {/* CTA Button */}
