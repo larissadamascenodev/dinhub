@@ -192,9 +192,10 @@ const AuthModal = ({ open, mode, onOpenChange, onModeChange }: AuthModalProps) =
               {isSignup ? "Fazer login" : "Criar conta"}
             </button>
           </p>
-        </div>
-      </DialogContent>
-    </Dialog>
+          </div>
+        </DialogPrimitive.Content>
+      </DialogPrimitive.Portal>
+    </DialogPrimitive.Root>
   );
 };
 
