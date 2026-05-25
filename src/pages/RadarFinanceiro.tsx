@@ -376,7 +376,7 @@ export default function RadarFinanceiro() {
                   <div className="pt-6 grid grid-cols-1 gap-3">
                     {health.factors.slice(0, 3).map((f, i) => (
                       <div key={i} className="flex items-center gap-3 text-[11px] text-left p-3 rounded-2xl bg-white/[0.02] border border-white/5">
-                        <div className={`w-2 h-2 rounded-full shrink-0 ${f.impact === 'positivo' ? 'bg-primary' : 'bg-destructive'}`} />
+                        <div className={`w-2 h-2 rounded-full shrink-0 ${f.status === 'saudavel' ? 'bg-primary' : 'bg-destructive'}`} />
                         <span className="text-white/60 font-medium">{f.label}</span>
                       </div>
                     ))}
