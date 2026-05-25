@@ -77,7 +77,7 @@ const Plans = () => {
             </ul>
 
             <a 
-              href="/login?mode=signup"
+              href="/auth?modal=signup"
               className="block w-full text-center py-5 rounded-2xl border border-white/10 text-white font-sora font-bold hover:bg-white/[0.05] hover:border-white/20 transition-all text-lg"
             >
               Começar grátis
@@ -119,7 +119,7 @@ const Plans = () => {
             </ul>
 
             <a 
-              href="/login?mode=signup"
+              href="/auth?modal=signup"
               className="block w-full text-center py-5 rounded-2xl bg-[#00e676] text-[#0a0a0a] font-sora font-black hover:brightness-110 transition-all shadow-[0_15px_35px_-10px_rgba(0,230,118,0.4)] text-lg"
             >
               Começar grátis
