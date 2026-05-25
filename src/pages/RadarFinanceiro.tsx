@@ -75,36 +75,6 @@ function BentoCard({
   );
 }
 
-// --- Diagnostic pill ---
-function DiagPill({
-  icon,
-  text,
-  variant = "neutral",
-}: {
-  icon: React.ReactNode;
-  text: string;
-  variant?: "success" | "warning" | "danger" | "neutral";
-}) {
-  const styles = {
-    success: "border-primary/10 bg-primary/5",
-    warning: "border-warning/10 bg-warning/5",
-    danger: "border-destructive/10 bg-destructive/5",
-    neutral: "border-white/5 bg-white/[0.02]",
-  };
-  const textStyles = {
-    success: "text-primary/90",
-    warning: "text-warning/90",
-    danger: "text-destructive/90",
-    neutral: "text-white/40",
-  };
-  return (
-    <div className={`flex items-start gap-3 rounded-2xl border px-4 py-3.5 ${styles[variant]} backdrop-blur-md`}>
-      <span className={`flex-shrink-0 mt-0.5 ${textStyles[variant]}`}>{icon}</span>
-      <span className={`text-[11px] font-medium leading-[1.6] ${textStyles[variant]}`}>{text}</span>
-    </div>
-  );
-}
-
 // --- Progress ring ---
 function ScoreRing({ value, size = 80, stroke = 8, color }: { value: number; size?: number; stroke?: number; color: string }) {
   const radius = (size - stroke) / 2;
@@ -124,7 +94,7 @@ function ScoreRing({ value, size = 80, stroke = 8, color }: { value: number; siz
 
 function RadarVisual({ topCats, customCats }: { topCats: any[], customCats: CustomCategory[] }) {
   return (
-    <div className="relative group w-full aspect-square max-w-[400px] mx-auto">
+    <div className="relative group w-full aspect-square max-w-[420px] mx-auto">
       {/* Decorative Outer Rings */}
       <motion.div 
         animate={{ rotate: 360 }}
@@ -155,53 +125,51 @@ function RadarVisual({ topCats, customCats }: { topCats: any[], customCats: Cust
         <motion.div 
           animate={{ rotate: 360 }}
           transition={{ duration: 5, repeat: Infinity, ease: "linear" }}
-          className="absolute inset-0 rounded-full overflow-hidden"
+          className="absolute inset-0 rounded-full overflow-hidden pointer-events-none"
           style={{ 
             background: 'conic-gradient(from 0deg, transparent 0%, rgba(34, 197, 94, 0.12) 50%, transparent 100%)',
           }}
         >
           {/* Subtle Green Line at the edge of the sweep */}
-          <div className="absolute top-1/2 left-1/2 w-1/2 h-[1px] bg-gradient-to-r from-transparent to-primary/30 origin-left" style={{ transform: 'rotate(180deg)' }} />
+          <div className="absolute top-1/2 left-1/2 w-1/2 h-[1px] bg-gradient-to-r from-transparent to-primary/40 origin-left" style={{ transform: 'rotate(180deg)' }} />
         </motion.div>
 
-        {/* Category "Blips" with Icons */}
+        {/* Category Icons as "Blips" */}
         {topCats.map((cat, i) => {
           const Icon = getCategoryIcon(cat.name, customCats);
           const color = getCategoryColor(cat.name, customCats);
           // Distribute icons around the radar
-          const angle = (i * (360 / Math.max(topCats.length, 1))) + 15;
-          const distance = 32 + (i * 4); // distance from center in %
+          const angle = (i * (360 / Math.max(topCats.length, 1))) + 25;
+          const distance = 35 + (i * 3); // distance from center in %
           
           return (
             <motion.div
               key={cat.name}
               initial={{ scale: 0, opacity: 0 }}
               animate={{ 
-                scale: [0.9, 1.15, 0.9],
-                opacity: [0.3, 0.7, 0.3],
+                scale: [0.95, 1.1, 0.95],
+                opacity: [0.4, 0.8, 0.4],
                 boxShadow: [
                   `0 0 0px hsl(${color} / 0)`,
-                  `0 0 20px hsl(${color} / 0.2)`,
+                  `0 0 25px hsl(${color} / 0.15)`,
                   `0 0 0px hsl(${color} / 0)`
                 ]
               }}
               transition={{ 
                 duration: 4 + i, 
                 repeat: Infinity,
-                delay: i * 0.5
+                delay: i * 0.4
               }}
-              className="absolute w-12 h-12 rounded-2xl bg-black/40 border border-white/10 flex items-center justify-center backdrop-blur-xl shadow-lg z-20"
+              className="absolute w-14 h-14 rounded-2xl bg-black/40 border border-white/10 flex items-center justify-center backdrop-blur-xl shadow-2xl z-20 group/blip"
               style={{
                 top: `${50 + Math.sin(angle * Math.PI / 180) * distance}%`,
                 left: `${50 + Math.cos(angle * Math.PI / 180) * distance}%`,
                 transform: 'translate(-50%, -50%)'
               }}
             >
-              <Icon className="w-6 h-6" style={{ color: `hsl(${color})` }} />
-              
-              {/* Tooltip-like label (optional, hidden but accessible) */}
-              <div className="absolute -bottom-6 left-1/2 -translate-x-1/2 opacity-0 group-hover:opacity-100 transition-opacity">
-                <span className="text-[8px] font-bold text-white/40 uppercase whitespace-nowrap tracking-widest">{cat.name}</span>
+              <Icon className="w-7 h-7" style={{ color: `hsl(${color})` }} />
+              <div className="absolute -bottom-8 left-1/2 -translate-x-1/2 opacity-0 group-hover/blip:opacity-100 transition-opacity whitespace-nowrap bg-black/80 px-2 py-1 rounded border border-white/10 pointer-events-none">
+                <span className="text-[9px] font-bold text-white uppercase tracking-widest">{cat.name}</span>
               </div>
             </motion.div>
           );
@@ -233,8 +201,6 @@ export default function RadarFinanceiro() {
     () => (data && !loading ? generateHubyActions(data, insights, health, prevData ?? undefined) : []),
     [data, insights, health, prevData, loading]
   );
-
-  const despesas = data?.despesas ?? 0;
 
   const topCats = useMemo(() => {
     const cats = (data?.categories ?? []).slice(0, 5);
@@ -286,125 +252,164 @@ export default function RadarFinanceiro() {
         </motion.div>
       </header>
 
-      {/* BENTO GRID LAYOUT */}
-      <div className="grid grid-cols-1 md:grid-cols-12 gap-6 lg:gap-8">
+      {/* REFORMULATED BENTO GRID */}
+      <div className="grid grid-cols-1 md:grid-cols-12 gap-8">
         
-        {/* Main Highlight Card - Expanded Height and Radar Visual */}
-        <div className="md:col-span-8">
+        {/* Expanded Main Intelligence Card */}
+        <div className="md:col-span-12">
           <BentoCard 
-            title="Huby AI Intelligence" 
-            icon={<Bot className="w-5 h-5" />}
-            badge="Premium Insight"
+            title="Sua Inteligência Huby" 
+            icon={<Bot className="w-5 h-5 text-primary" />}
+            badge="Scanner Ativo"
             badgeVariant="success"
-            className="relative overflow-hidden min-h-[580px]"
+            className="relative overflow-hidden min-h-[750px] border-white/5"
           >
-            <div className="absolute top-0 right-0 w-96 h-96 bg-primary/10 rounded-full blur-[120px] -mr-32 -mt-32 pointer-events-none" />
+            {/* Artistic Background elements */}
+            <div className="absolute top-0 right-0 w-[500px] h-[500px] bg-primary/10 rounded-full blur-[140px] -mr-48 -mt-48 pointer-events-none opacity-40" />
+            <div className="absolute bottom-0 left-0 w-[300px] h-[300px] bg-blue-500/5 rounded-full blur-[100px] -ml-24 -mb-24 pointer-events-none opacity-20" />
             
-            <div className="relative z-10 flex flex-col lg:flex-row gap-12 h-full pt-4">
-              <div className="flex-1 flex flex-col justify-between">
-                <div className="space-y-8">
-                  <div className="space-y-4">
-                    <span className="inline-block px-3 py-1 rounded-md bg-primary/5 text-[10px] font-black text-primary uppercase tracking-[0.3em] border border-primary/10">
-                      Insight de Hoje
-                    </span>
-                    <p className="text-2xl lg:text-4xl font-display font-medium text-white/95 leading-[1.2] tracking-tight whitespace-pre-line">
-                      "{hubyMsg.main}"
-                    </p>
-                  </div>
-                  
-                  {hubyMsg.secondary && (
-                    <div className="flex items-start gap-4 p-5 rounded-[32px] bg-white/[0.02] border border-white/5">
-                      <Sparkles className="w-5 h-5 text-primary shrink-0" />
-                      <p className="text-[13px] text-white/50 font-medium leading-relaxed italic">
-                        {hubyMsg.secondary}
+            <div className="relative z-10 flex flex-col lg:flex-row gap-16 h-full">
+              {/* Left Column: Messages & Actions */}
+              <div className="flex-1 flex flex-col justify-between py-4">
+                <div className="space-y-12">
+                  <div className="space-y-6">
+                    <div className="inline-flex items-center gap-2 px-3 py-1.5 rounded-full bg-primary/10 border border-primary/20">
+                      <Sparkles className="w-3.5 h-3.5 text-primary" />
+                      <span className="text-[10px] font-black text-primary uppercase tracking-[0.2em]">Insight do Momento</span>
+                    </div>
+                    
+                    <div className="space-y-4">
+                      <p className="text-3xl lg:text-5xl font-display font-medium text-white leading-[1.1] tracking-tight whitespace-pre-line">
+                        {hubyMsg.main.split('\n')[0]}
+                      </p>
+                      <p className="text-lg lg:text-xl text-white/50 font-medium leading-relaxed max-w-2xl">
+                        {hubyMsg.main.split('\n').slice(1).join(' ') || hubyMsg.secondary}
                       </p>
                     </div>
-                  )}
-                </div>
 
-                <div className="mt-auto pt-10">
-                  <div className="flex items-center gap-3 mb-6">
-                    <div className="h-px flex-1 bg-white/5" />
-                    <h5 className="text-[10px] font-black text-white/20 uppercase tracking-[0.4em]">Ações Sugeridas</h5>
-                    <div className="h-px flex-1 bg-white/5" />
+                    {/* Descontraída / Informal Add-on */}
+                    <motion.div 
+                      initial={{ opacity: 0, y: 10 }}
+                      animate={{ opacity: 1, y: 0 }}
+                      transition={{ delay: 0.5 }}
+                      className="p-7 rounded-[40px] bg-white/[0.03] border border-white/5 backdrop-blur-sm"
+                    >
+                      <div className="flex items-center gap-3 mb-3">
+                        <div className="w-8 h-8 rounded-xl bg-warning/20 flex items-center justify-center">
+                          <Zap className="w-4 h-4 text-warning" />
+                        </div>
+                        <span className="text-[11px] font-black text-warning uppercase tracking-[0.2em]">Papo de Elite</span>
+                      </div>
+                      <p className="text-[15px] text-white/80 font-medium italic leading-relaxed">
+                        "Parece que o delivery virou seu melhor amigo esse mês, né? 🍕 Gastar {pct(topCats[0]?.amount || 0, data?.despesas || 1)}% do seu orçamento nisso é puxado. Que tal um desafio de cozinhar em casa esse final de semana e blindar esse patrimônio?"
+                      </p>
+                    </motion.div>
                   </div>
                   
-                  <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-                    {hubyActions.length > 0 ? (
-                      hubyActions.slice(0, 2).map((action, i) => (
-                        <button 
-                          key={i}
-                          onClick={() => navigate(action.path)}
-                          className="group flex items-center gap-5 p-6 rounded-[32px] bg-white/[0.02] border border-white/5 hover:bg-white/[0.05] hover:border-primary/20 transition-all text-left"
+                  {/* Suggested Actions Section */}
+                  <div className="space-y-8">
+                    <div className="flex items-center gap-4">
+                      <h5 className="text-[11px] font-black text-white/30 uppercase tracking-[0.4em] whitespace-nowrap">Ações Sugeridas</h5>
+                      <div className="h-px w-full bg-white/5" />
+                    </div>
+                    
+                    <div className="grid grid-cols-1 sm:grid-cols-2 gap-5">
+                      {hubyActions.length > 0 ? (
+                        hubyActions.slice(0, 2).map((action, i) => (
+                          <motion.button 
+                            key={i}
+                            whileHover={{ scale: 1.02, backgroundColor: "rgba(255,255,255,0.06)" }}
+                            whileTap={{ scale: 0.98 }}
+                            onClick={() => navigate(action.path)}
+                            className="group flex flex-col gap-5 p-8 rounded-[40px] bg-white/[0.03] border border-white/5 transition-all text-left"
+                          >
+                            <div className="w-14 h-14 rounded-3xl bg-primary/10 flex items-center justify-center text-primary group-hover:bg-primary group-hover:text-black transition-all">
+                              {action.titulo.toLowerCase().includes('meta') ? <Target className="w-7 h-7" /> : <Zap className="w-7 h-7" />}
+                            </div>
+                            <div>
+                              <h4 className="text-xl font-bold text-white mb-2 group-hover:text-primary transition-colors">{action.titulo}</h4>
+                              <p className="text-[13px] text-white/40 font-medium leading-relaxed mb-6 line-clamp-2">{action.descricao}</p>
+                              <div className="flex items-center justify-between mt-auto">
+                                <span className="text-[10px] font-black text-primary uppercase tracking-widest bg-primary/10 px-4 py-1.5 rounded-full border border-primary/20">
+                                  Impacto: +{fmt(action.impacto_estimado)}
+                                </span>
+                                <div className="w-8 h-8 rounded-full bg-white/5 flex items-center justify-center group-hover:bg-white/10 transition-all">
+                                  <ChevronRight className="w-4 h-4 text-white/40 group-hover:text-white group-hover:translate-x-0.5 transition-all" />
+                                </div>
+                              </div>
+                            </div>
+                          </motion.button>
+                        ))
+                      ) : (
+                        <div className="col-span-2 py-16 text-center border border-dashed border-white/10 rounded-[40px] bg-white/[0.01]">
+                          <p className="text-sm text-white/20 font-medium uppercase tracking-widest">Radar limpo. Sua rota está impecável.</p>
+                        </div>
+                      )}
+                    </div>
+                  </div>
+                </div>
+
+                {/* Bottom Footer Info */}
+                <div className="mt-12 flex items-center gap-6">
+                  <div className="flex -space-x-3">
+                    {topCats.map((cat, i) => {
+                      const Icon = getCategoryIcon(cat.name, customCats);
+                      const color = getCategoryColor(cat.name, customCats);
+                      return (
+                        <div 
+                          key={i} 
+                          className="w-10 h-10 rounded-full border-2 border-zinc-950 bg-zinc-900 flex items-center justify-center text-white/60 shadow-xl" 
+                          title={cat.name}
+                          style={{ borderColor: i === 0 ? `hsl(${color} / 0.5)` : undefined }}
                         >
-                          <div className="w-12 h-12 rounded-2xl bg-primary/10 flex items-center justify-center text-primary shrink-0 group-hover:scale-110 transition-transform">
-                            <Zap className="w-6 h-6" />
-                          </div>
-                          <div>
-                            <h4 className="text-[14px] font-bold text-white group-hover:text-primary transition-colors">{action.titulo}</h4>
-                            <p className="text-[11px] text-white/30 font-medium mt-1 line-clamp-1">{action.descricao}</p>
-                            <span className="text-[11px] font-black text-primary tabular-nums tracking-tight mt-1 inline-block">
-                              Impacto: +{fmt(action.impacto_estimado)}
-                            </span>
-                          </div>
-                        </button>
-                      ))
-                    ) : (
-                      <div className="col-span-2 py-8 text-center border border-white/5 rounded-[32px] bg-white/[0.01]">
-                        <p className="text-xs text-white/20 font-medium uppercase tracking-widest">Nenhuma ação crítica necessária hoje</p>
-                      </div>
-                    )}
+                          <Icon className="w-4 h-4" />
+                        </div>
+                      );
+                    })}
                   </div>
-                </div>
-              </div>
-
-              {/* RADAR VISUAL COMPONENT */}
-              <div className="lg:w-[320px] flex items-center justify-center">
-                <RadarVisual topCats={topCats} customCats={customCats} />
-              </div>
-            </div>
-          </BentoCard>
-        </div>
-
-        {/* Health Score - Vertical Highlight */}
-        <div className="md:col-span-4">
-          <BentoCard 
-            title="Score Huby" 
-            icon={<Activity className="w-5 h-5" />}
-            className={`border-${status.level === 'vermelho' ? 'destructive' : status.level === 'amarelo' ? 'warning' : 'primary'}/20 h-full`}
-          >
-            <div className="flex flex-col items-center justify-center h-full py-8">
-              <div className="relative mb-10">
-                <div className={`absolute inset-0 rounded-full blur-3xl opacity-20 bg-${status.level === 'vermelho' ? 'destructive' : status.level === 'amarelo' ? 'warning' : 'primary'}`} />
-                <ScoreRing value={health.score} size={180} stroke={14} color={sc.ringColor} />
-                <div className="absolute inset-0 flex flex-col items-center justify-center">
-                  <span className={`text-6xl font-display font-black tracking-tighter tabular-nums ${sc.text}`}>{health.score}</span>
-                  <span className="text-[10px] text-white/20 font-black uppercase tracking-[0.2em] mt-2">Saúde Financeira</span>
-                </div>
-              </div>
-              <div className="text-center px-4">
-                <h3 className={`text-2xl font-display font-extrabold mb-3 ${sc.text}`}>{sc.label}</h3>
-                <div className="space-y-4">
-                  <p className="text-sm text-white/40 font-medium leading-relaxed">
-                    {health.factors.length > 0 ? health.factors[0].description : "Seu desempenho financeiro está sendo analisado."}
+                  <p className="text-[11px] text-white/30 font-bold uppercase tracking-[0.2em]">
+                    Scanner monitorando <span className="text-primary">{topCats.length} categorias</span> críticas
                   </p>
-                  
-                  <div className="pt-6 grid grid-cols-1 gap-3">
-                    {health.factors.slice(0, 3).map((f, i) => (
-                      <div key={i} className="flex items-center gap-3 text-[11px] text-left p-3 rounded-2xl bg-white/[0.02] border border-white/5">
-                        <div className={`w-2 h-2 rounded-full shrink-0 ${f.status === 'saudavel' ? 'bg-primary' : 'bg-destructive'}`} />
-                        <span className="text-white/60 font-medium">{f.label}</span>
-                      </div>
-                    ))}
-                  </div>
                 </div>
+              </div>
+
+              {/* Right Column: Radar Visual & Health Score Floating */}
+              <div className="lg:w-[480px] flex flex-col items-center justify-center relative py-12">
+                <RadarVisual topCats={topCats} customCats={customCats} />
+                
+                {/* Floating Health Score Card - Integrated & Premium */}
+                <motion.div 
+                  initial={{ opacity: 0, y: 20 }}
+                  animate={{ opacity: 1, y: 0 }}
+                  transition={{ delay: 0.8, type: "spring", stiffness: 100 }}
+                  className="absolute bottom-6 right-6 lg:-right-4 lg:bottom-12 p-10 rounded-[48px] glass-card border-white/10 shadow-[0_32px_64px_-16px_rgba(0,0,0,0.6)] z-30 min-w-[280px]"
+                >
+                  <div className="flex flex-col items-center text-center">
+                    <div className="relative mb-6">
+                      <div className={`absolute inset-0 rounded-full blur-2xl opacity-20 bg-${status.level === 'vermelho' ? 'destructive' : status.level === 'amarelo' ? 'warning' : 'primary'}`} />
+                      <ScoreRing value={health.score} size={130} stroke={12} color={sc.ringColor} />
+                      <div className="absolute inset-0 flex flex-col items-center justify-center">
+                        <span className={`text-4xl font-display font-black tracking-tighter tabular-nums ${sc.text}`}>{health.score}</span>
+                      </div>
+                    </div>
+                    <h3 className={`text-xl font-display font-black uppercase tracking-widest mb-2 ${sc.text}`}>{sc.label}</h3>
+                    <p className="text-[10px] text-white/20 font-black uppercase tracking-[0.3em] mb-8">Saúde Financeira</p>
+                    
+                    <div className="w-full space-y-3">
+                      {health.factors.slice(0, 3).map((f, i) => (
+                        <div key={i} className="flex items-center gap-4 text-[11px] text-left p-4 rounded-2xl bg-white/[0.02] border border-white/5">
+                          <div className={`w-2 h-2 rounded-full shrink-0 ${f.status === 'saudavel' ? 'bg-primary shadow-[0_0_8px_rgba(34,197,94,0.4)]' : 'bg-destructive shadow-[0_0_8px_rgba(239,68,68,0.4)]'}`} />
+                          <span className="text-white/60 font-semibold truncate">{f.label}</span>
+                        </div>
+                      ))}
+                    </div>
+                  </div>
+                </motion.div>
               </div>
             </div>
           </BentoCard>
         </div>
-
       </div>
     </div>
   );
 }
-
