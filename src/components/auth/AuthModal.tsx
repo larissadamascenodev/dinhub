@@ -80,9 +80,11 @@ const AuthModal = ({ open, mode, onOpenChange, onModeChange }: AuthModalProps) =
   };
 
   return (
-    <Dialog open={open} onOpenChange={onOpenChange}>
-      <DialogContent className="dark p-0 border-white/[0.08] bg-[#0a0a0a]/90 backdrop-blur-2xl rounded-3xl shadow-[0_20px_80px_-10px_rgba(0,230,118,0.15)] w-[calc(100%-2rem)] sm:max-w-md max-h-[90vh] overflow-y-auto">
-        <div className="p-6 sm:p-8 text-white font-inter">
+    <DialogPrimitive.Root open={open} onOpenChange={onOpenChange}>
+      <DialogPrimitive.Portal>
+        <DialogPrimitive.Overlay className="fixed inset-0 z-50 bg-black/60 backdrop-blur-xl data-[state=open]:animate-in data-[state=closed]:animate-out data-[state=closed]:fade-out-0 data-[state=open]:fade-in-0" />
+        <DialogPrimitive.Content className="fixed left-[50%] top-[50%] z-50 translate-x-[-50%] translate-y-[-50%] w-[calc(100%-2rem)] sm:max-w-md max-h-[90vh] overflow-y-auto p-0 border border-white/[0.08] bg-[#0a0a0a]/90 backdrop-blur-2xl rounded-3xl shadow-[0_20px_80px_-10px_rgba(0,230,118,0.15)] duration-200 data-[state=open]:animate-in data-[state=closed]:animate-out data-[state=closed]:fade-out-0 data-[state=open]:fade-in-0 data-[state=closed]:zoom-out-95 data-[state=open]:zoom-in-95">
+          <DialogPrimitive.Title className="sr-only">{isSignup ? "Criar conta" : "Entrar"}</DialogPrimitive.Title>
           <div className="text-center space-y-3 mb-6">
             <div className="mx-auto w-14 h-14 rounded-2xl flex items-center justify-center bg-[#00e676]/10 border border-[#00e676]/20">
               <PiggyBank className="w-7 h-7 text-[#00e676]" />
