@@ -262,13 +262,13 @@ export default function RadarFinanceiro() {
             icon={<Bot className="w-5 h-5 text-primary" />}
             badge="Scanner Ativo"
             badgeVariant="success"
-            className="relative overflow-hidden min-h-[750px] border-white/5"
+            className="relative overflow-hidden min-h-[850px] border-white/5"
           >
             {/* Artistic Background elements */}
             <div className="absolute top-0 right-0 w-[500px] h-[500px] bg-primary/10 rounded-full blur-[140px] -mr-48 -mt-48 pointer-events-none opacity-40" />
             <div className="absolute bottom-0 left-0 w-[300px] h-[300px] bg-blue-500/5 rounded-full blur-[100px] -ml-24 -mb-24 pointer-events-none opacity-20" />
             
-            <div className="relative z-10 flex flex-col lg:flex-row gap-16 h-full">
+            <div className="relative z-10 flex flex-col xl:flex-row gap-16 h-full">
               {/* Left Column: Messages & Actions */}
               <div className="flex-1 flex flex-col justify-between py-4">
                 <div className="space-y-12">
