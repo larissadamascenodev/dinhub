@@ -40,7 +40,7 @@ const FaturaCard = ({ tx, onClick }: { tx: Transaction; onClick: () => void }) =
   const isPaid = tx.status === "pago";
   return (
     <div
-      className="group relative flex items-center gap-3 px-4 py-4 rounded-[20px] bg-white/[0.02] border border-white/[0.03] cursor-pointer hover:bg-white/[0.04] transition-all duration-300"
+      className="group relative flex items-center gap-2.5 px-3 py-2.5 md:gap-3 md:px-4 md:py-3.5 rounded-xl bg-card/95 border border-primary/10 cursor-pointer hover:border-primary/25 transition-colors"
       onClick={onClick}
     >
       <div
@@ -50,16 +50,16 @@ const FaturaCard = ({ tx, onClick }: { tx: Transaction; onClick: () => void }) =
         <CreditCard className="w-4 h-4 md:w-[18px] md:h-[18px]" style={{ color: `hsl(${cardColor})` }} />
       </div>
       <div className="flex-1 min-w-0">
-        <p className="text-[13px] font-bold text-white truncate tracking-tight">{tx.name}</p>
-        <p className="text-[10px] mt-0.5 text-white/30 font-medium uppercase tracking-wider">
+        <p className="text-xs md:text-[13px] font-bold text-foreground truncate">{tx.name}</p>
+        <p className="text-[9px] md:text-[10px] mt-0.5 text-muted-foreground/50">
           {tx.faturaItemCount} lançamento{tx.faturaItemCount !== 1 ? "s" : ""} · Fatura
         </p>
       </div>
       <div className="text-right shrink-0">
-        <p className="text-sm font-bold tabular-nums text-destructive tracking-tight">
+        <p className="text-xs md:text-sm font-bold tabular-nums text-destructive">
           −{fmt(tx.amount)}
         </p>
-        <span className={`block mt-1 text-[9px] font-bold uppercase tracking-[0.1em] ${isPaid ? "text-primary/60" : "text-white/20"}`}>
+        <span className={`block mt-0.5 text-[8px] md:text-[9px] font-bold uppercase tracking-wide ${isPaid ? "text-emerald-400" : "text-primary/60"}`}>
           {isPaid ? "Pago" : "Fatura"}
         </span>
       </div>
@@ -81,9 +81,10 @@ const TxCard = ({ tx, onClick, customCategories }: { tx: Transaction; onClick: (
 
   return (
     <div
-      className={`group relative flex items-center gap-3 px-4 py-4 rounded-[20px] backdrop-blur-xl cursor-pointer transition-all duration-300 hover:bg-white/[0.04] hover:scale-[1.01] ${
-        isPending ? "border border-warning/10 bg-warning/[0.03]" : "bg-white/[0.02] border border-white/[0.03]"
+      className={`group relative flex items-center gap-2.5 px-3 py-2.5 md:gap-3 md:px-4 md:py-3.5 rounded-xl backdrop-blur-xl cursor-pointer ${
+        isPending ? "border border-[hsl(40_80%_50%_/_0.15)]" : "bg-card/95"
       }`}
+      style={isPending ? { background: "hsl(40 80% 50% / 0.06)" } : undefined}
       onClick={onClick}
     >
       {/* Category icon */}
@@ -96,8 +97,8 @@ const TxCard = ({ tx, onClick, customCategories }: { tx: Transaction; onClick: (
 
       {/* Info */}
       <div className="flex-1 min-w-0">
-        <p className="text-[13px] font-bold text-white truncate tracking-tight">{tx.name}</p>
-        <p className="text-[10px] mt-1 text-white/30 font-medium uppercase tracking-wider">
+        <p className="text-xs md:text-[13px] font-bold text-foreground truncate">{tx.name}</p>
+        <p className="text-[9px] md:text-[10px] mt-0.5 text-muted-foreground/50">
           {tx.category}
           {tx.time ? ` · ${tx.time}` : ""}
           {` · ${tx.date}`}
@@ -107,12 +108,12 @@ const TxCard = ({ tx, onClick, customCategories }: { tx: Transaction; onClick: (
       {/* Amount + status */}
       <div className="text-right shrink-0">
         <p
-          className="text-sm font-bold tabular-nums tracking-tight"
+          className="text-xs md:text-sm font-bold tabular-nums"
           style={{ color: isPending ? "hsl(40 80% 50%)" : isReceita ? "hsl(var(--primary))" : "hsl(var(--destructive))" }}
         >
           {isReceita ? "+" : "−"}{fmt(tx.amount)}
         </p>
-        <span className="block mt-1 text-[9px] font-bold uppercase tracking-[0.1em] text-white/20">
+        <span className="block mt-0.5 text-[8px] md:text-[9px] font-bold uppercase tracking-wide text-muted-foreground/40">
           {isPaid ? (isReceita ? "Recebido" : "Pago") : (isReceita ? "A Receber" : "Pendente")}
         </span>
       </div>
@@ -151,23 +152,18 @@ const TransacoesRecentes = memo(({ transactions, onDelete }: Props) => {
   const stackCount = Math.min(restTx.length, STACK_COUNT);
 
   return (
-    <div className="bg-zinc-950 border border-white/[0.06] rounded-[40px] p-8 lg:p-10 shadow-[0_24px_64px_-16px_rgba(0,0,0,0.7)]">
+    <div>
       {/* Header */}
-      <div className="flex items-center justify-between mb-10">
-        <div className="flex items-center gap-4">
-          <div className="w-12 h-12 rounded-2xl bg-white/[0.03] flex items-center justify-center border border-white/[0.06]">
-            <Layers className="w-6 h-6 text-primary" />
-          </div>
-          <div>
-            <h3 className="text-lg font-bold text-white font-display tracking-tight">
-              Recentes
-            </h3>
-            <p className="text-[10px] text-white/20 font-black uppercase tracking-[0.3em] mt-1">Histórico de Fluxo</p>
-          </div>
+      <div className="flex items-center justify-between mb-2.5">
+        <div className="flex items-center gap-2">
+          <Layers className="w-3.5 h-3.5 text-muted-foreground/50" />
+          <h3 className="text-[11px] font-semibold text-muted-foreground/60 uppercase tracking-widest">
+            Transações Recentes
+          </h3>
         </div>
-        <div className="px-4 py-1.5 rounded-full bg-white/[0.02] border border-white/[0.05] text-[10px] text-white/30 font-black uppercase tracking-widest">
-          {transactions.length} Registros
-        </div>
+        <span className="text-[10px] text-muted-foreground/40 font-medium">
+          {expanded ? `${transactions.length} itens` : restTx.length > 0 ? `+${restTx.length} transações` : `${transactions.length} itens`}
+        </span>
       </div>
 
       {/* Stack container */}

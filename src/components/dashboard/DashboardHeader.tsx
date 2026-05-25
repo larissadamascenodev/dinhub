@@ -171,20 +171,18 @@ const DashboardHeader = memo(({ profile, streak = 0, streakDates = [] }: { profi
       </AnimatePresence>
 
       {/* Desktop Top Bar */}
-      <div className="hidden md:flex items-center justify-between sticky top-0 z-50 bg-background/60 backdrop-blur-[40px] px-10 py-6 border-b border-white/[0.03] -mx-4 md:-mx-12 mb-12">
-        {/* Logo de Elite */}
-        <div className="flex items-center gap-3 flex-shrink-0 cursor-pointer group" onClick={() => navigate("/")}>
-          <div className="w-10 h-10 rounded-2xl bg-primary flex items-center justify-center shadow-[0_0_20px_rgba(0,230,118,0.3)] group-hover:scale-110 transition-transform duration-500">
-            <span className="text-black font-display font-black text-xl">D</span>
-          </div>
-          <span className="font-display font-black text-2xl tracking-tighter">
-            <span className="text-white">Din</span>
-            <span className="text-primary/90">Hub</span>
+      <div className="hidden md:flex items-center justify-between sticky top-0 z-50 bg-background/70 backdrop-blur-2xl px-6 py-3 border-b border-border/10 -mx-4 md:-mx-6 mb-4">
+        {/* Logo */}
+        <div className="flex items-center gap-2 flex-shrink-0 cursor-pointer" onClick={() => navigate("/")}>
+          <PiggyBank className="w-8 h-8 text-primary" />
+          <span className="font-display font-bold text-2xl">
+            <span className="text-foreground">Din</span>
+            <span className="text-primary">Hub</span>
           </span>
         </div>
 
         {/* Center: Floating nav pill */}
-        <nav className="flex items-center gap-2 bg-white/[0.03] backdrop-blur-2xl border border-white/[0.05] rounded-full px-2 py-1.5 shadow-2xl shadow-black/40">
+        <nav className="flex items-center gap-1 bg-card/80 backdrop-blur-xl border border-border/20 rounded-2xl px-1.5 py-1 shadow-lg shadow-black/10">
           {NAV_ITEMS.map((item) => {
             const Icon = item.icon;
             const isActive = location.pathname === item.path;
@@ -195,10 +193,13 @@ const DashboardHeader = memo(({ profile, streak = 0, streakDates = [] }: { profi
                 <div key={item.label} className="relative" ref={transacaoRef}>
                   <button
                     onClick={() => setTransacaoMenuOpen((v) => !v)}
-                    className="relative flex items-center gap-2 px-5 py-2.5 rounded-full text-[13px] font-bold transition-all bg-primary text-black hover:bg-primary/90 shadow-[0_8px_20px_-6px_rgba(0,230,118,0.5)]"
+                    className="relative -my-1 mx-1 flex items-center gap-1.5 px-4 py-2.5 rounded-xl text-xs font-bold transition-all bg-primary/15 border border-primary/30 text-primary hover:bg-primary/25"
+                    style={{
+                      boxShadow: "0 2px 12px -2px hsl(150 100% 45% / 0.3)",
+                    }}
                   >
-                    <Plus className="w-4 h-4 stroke-[3]" />
-                    <span>Novo</span>
+                    <Icon className="w-4 h-4" />
+                    <span>{item.label}</span>
                   </button>
 
                   <AnimatePresence>
@@ -234,11 +235,11 @@ const DashboardHeader = memo(({ profile, streak = 0, streakDates = [] }: { profi
               <button
                 key={item.label}
                 onClick={() => navigate(item.path)}
-                className={`relative flex items-center gap-2 px-5 py-2.5 rounded-full text-[13px] font-bold transition-all duration-300 ${
-                  isActive ? "text-white bg-white/[0.05]" : "text-white/40 hover:text-white hover:bg-white/[0.02]"
+                className={`relative flex items-center gap-1.5 px-4 py-2 rounded-xl text-xs font-medium transition-all duration-300 ${
+                  isActive ? "text-primary" : "text-muted-foreground hover:text-foreground"
                 }`}
               >
-                <Icon className="w-4 h-4" />
+                <Icon className="w-3.5 h-3.5" />
                 <span>{item.label}</span>
               </button>
             );
@@ -314,7 +315,7 @@ const DashboardHeader = memo(({ profile, streak = 0, streakDates = [] }: { profi
       <header className="sticky top-0 z-40 bg-background/80 backdrop-blur-xl px-4 py-3 md:hidden -mx-4 mb-2">
         <div className="flex items-center justify-between">
           <div className="flex items-center gap-1.5">
-            {/* Icon removed by user request */}
+            <PiggyBank className="w-7 h-7 text-primary" />
             <span className="font-display font-bold text-xl">
               <span className="text-foreground">Din</span>
               <span className="text-primary">Hub</span>

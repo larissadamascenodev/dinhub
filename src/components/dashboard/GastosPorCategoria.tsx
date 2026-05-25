@@ -91,29 +91,30 @@ const GastosPorCategoria = memo(({ categories, selectedMonth, onVerAnalise }: Pr
 
   return (
     <div
-      className="rounded-[40px] border border-white/[0.06] bg-zinc-950 p-8 lg:p-10 shadow-[0_24px_64px_-16px_rgba(0,0,0,0.7)] overflow-hidden"
+      className="rounded-2xl border border-border/20 bg-card/60 backdrop-blur-xl overflow-hidden"
+      style={{ boxShadow: "0 4px 24px -4px rgba(0,0,0,0.3)" }}
     >
       {/* Header */}
-      <div className="flex items-start justify-between mb-10">
+      <div className="flex items-start justify-between px-4 pt-4 pb-3">
         <div>
-          <p className="text-[10px] text-white/20 font-black uppercase tracking-[0.4em] mb-3">
-            Fluxo por Categoria · {monthLabel}
+          <p className="text-[11px] text-muted-foreground/60 font-medium">
+            Gastos por categoria · {monthLabel}
           </p>
-          <p className="text-4xl lg:text-5xl font-display font-extrabold text-white tabular-nums tracking-tighter leading-none">
+          <p className="text-xl font-bold text-foreground tabular-nums mt-0.5">
             {fmt(totalExpenses)}
           </p>
         </div>
         <button
           onClick={() => navigate("/analytics/categorias")}
-          className="w-12 h-12 rounded-2xl bg-white/[0.03] flex items-center justify-center border border-white/[0.06] hover:bg-primary transition-all duration-500 group"
+          className="text-[10px] text-primary/70 hover:text-primary transition-colors font-medium flex items-center gap-0.5 mt-1"
         >
-          <ChevronRight className="w-6 h-6 text-white/30 group-hover:text-black transition-transform group-hover:translate-x-0.5" />
+          Análise completa <ChevronRight className="w-3 h-3" />
         </button>
       </div>
 
       {/* Stacked color bar */}
-      <div className="px-1">
-        <div className="flex h-3 gap-1 rounded-full overflow-hidden">
+      <div className="px-4">
+        <div className="flex h-2.5 gap-[3px]">
           {visible.map((cat) => {
             const idx = sorted.indexOf(cat);
             const visibleTotal = visible.reduce((s, c) => s + c.amount, 0);
@@ -163,7 +164,7 @@ const GastosPorCategoria = memo(({ categories, selectedMonth, onVerAnalise }: Pr
       </div>
 
       {/* Category list */}
-      <div className="pb-3 pt-8 space-y-4">
+      <div className="px-4 pb-3 pt-3 space-y-2.5">
         {visible.map((cat, index) => {
           const pct = totalExpenses > 0 ? Math.round((cat.amount / totalExpenses) * 100) : 0;
           const color = getCatColor(cat.name, sorted.indexOf(cat), customCats);
@@ -193,19 +194,19 @@ const GastosPorCategoria = memo(({ categories, selectedMonth, onVerAnalise }: Pr
           return (
             <motion.div
               key={cat.name}
-              initial={{ opacity: 0, x: -10 }}
-              animate={{ opacity: 1, x: 0 }}
-              transition={{ delay: index * 0.05, type: "spring", stiffness: 300, damping: 25 }}
-              className="flex items-center gap-4 cursor-pointer group/item transition-all duration-300 hover:bg-white/[0.02] p-2 -mx-2 rounded-2xl"
-              style={{ opacity: hasSel && !isSelected ? 0.3 : 1 }}
+              initial={{ opacity: 0 }}
+              animate={{ opacity: 1 }}
+              transition={{ delay: index * 0.03 }}
+              className="flex items-center gap-3 cursor-pointer transition-opacity duration-200"
+              style={{ opacity: hasSel && !isSelected ? 0.35 : 1 }}
               onClick={() => handleBarClick(cat.name)}
             >
-              <div className="w-10 h-10 rounded-2xl bg-white/[0.03] flex items-center justify-center shrink-0 border border-white/[0.05]">
-                <IconComponent className="w-5 h-5 transition-transform duration-500 group-hover/item:scale-110" style={{ color: `hsl(${color})` }} />
+              <div className="w-5 h-5 flex items-center justify-center shrink-0">
+                <IconComponent className="w-4 h-4" style={{ color: `hsl(${color})` }} />
               </div>
               <div className="flex-1 min-w-0">
                 <div className="flex items-center justify-between">
-                  <p className="text-[13px] font-bold text-white truncate tracking-tight">{cat.name}</p>
+                  <p className="text-xs font-semibold text-foreground truncate">{cat.name}</p>
                   {hasLimit && limitLabel && (
                     <p className={`text-[8px] font-medium ${limitRatio > 1 ? "text-destructive" : "text-warning"}`}>
                       {limitLabel}
@@ -231,13 +232,13 @@ const GastosPorCategoria = memo(({ categories, selectedMonth, onVerAnalise }: Pr
                 </div>
               </div>
               <div className="text-right shrink-0">
-                <p className="text-[13px] font-bold text-white tabular-nums tracking-tight">{fmt(cat.amount)}</p>
+                <p className="text-xs font-bold text-foreground tabular-nums">{fmt(cat.amount)}</p>
                 {hasLimit ? (
-                  <p className="text-[10px] text-white/30 tabular-nums font-medium mt-0.5 tracking-wider uppercase">
+                  <p className="text-[9px] text-muted-foreground/50 tabular-nums">
                     / {fmt(limit)}
                   </p>
                 ) : (
-                  <p className="text-[10px] text-white/30 font-medium mt-0.5 uppercase tracking-wider">{pct}%</p>
+                  <p className="text-[9px] text-muted-foreground/50">{pct}%</p>
                 )}
               </div>
             </motion.div>

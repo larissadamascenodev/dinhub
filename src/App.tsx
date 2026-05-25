@@ -7,7 +7,6 @@ import { AuthProvider, useAuth } from "@/contexts/AuthContext";
 import DashboardLayout from "@/components/dashboard/DashboardLayout";
 import Index from "./pages/Index.tsx";
 import Auth from "./pages/Auth.tsx";
-import Login from "./pages/Login.tsx";
 import ResetPassword from "./pages/ResetPassword.tsx";
 import GestaoFinanceira from "./pages/GestaoFinanceira.tsx";
 import FaturaCartao from "./pages/FaturaCartao.tsx";
@@ -56,7 +55,6 @@ const App = () => (
         <AuthProvider>
           <Routes>
             <Route path="/auth" element={<Auth />} />
-            <Route path="/login" element={<Login />} />
             <Route path="/reset-password" element={<ResetPassword />} />
             <Route path="/termos-de-uso" element={<TermosDeUso />} />
             <Route path="/politica-privacidade" element={<PoliticaPrivacidade />} />

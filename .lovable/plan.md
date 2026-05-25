@@ -1,25 +1,50 @@
-As an Elite Art Director and Frontend Developer, I will overhaul the dashboard to achieve a "Premium" aesthetic, focusing on depth, rhythm, and motion.
+## Problema
 
-### 1. Visual Identity & Depth (Glassmorphism & Shadows)
-*   **Palette Refinement**: Shift towards a deeper, more sophisticated dark palette with primary accents using more subtle, multi-layered gradients.
-*   **Glassmorphism**: Enhance the `WalletSummaryCard`, `SaldoCard`, and other key containers with a refined glass effect (higher blur, thinner borders, and subtle inner glows).
-*   **Soft Shadows**: Replace harsh shadows with multi-layered, diffused soft shadows to create natural depth.
+Ao escanear comprovantes, a edge function `process-invoice` retorna erro 500:
 
-### 2. Typography & Layout (Bento Grid & 8pt System)
-*   **Typography Engine**: Standardize the typographic hierarchy using a fluid scale. Increase tracking for display titles and optimize line heights for a "magazine" feel.
-*   **Bento Grid**: Restructure the desktop and tablet layouts into a more cohesive Bento Grid, grouping related tools and insights with consistent padding (following the 8pt grid).
-*   **Whitespace Optimization**: Increase padding within cards and sections to allow the design to "breathe," reducing cognitive load.
+```
+TypeError: userClient.auth.getClaims is not a function
+```
 
-### 3. Motion & Micro-interactions
-*   **Staggered Entrances**: Implement `framer-motion` staggered animations for all layout components so they flow in naturally upon load.
-*   **Natural Transitions**: Use custom `cubic-bezier` curves for all hover and active states (e.g., `[0.23, 1, 0.32, 1]`) to mimic high-end OS interactions (like iOS/macOS).
-*   **Feedback**: Add subtle "glow-on-hover" effects to cards using radial gradients that follow the cursor or pulse gently.
+O método `auth.getClaims` não existe na versão do SDK Supabase usada na função. A autenticação do usuário falha antes mesmo da imagem ser processada, e o frontend mostra "Edge Function returned a non-2xx status code".
 
-### 4. Technical Refinement
-*   **Design Tokens**: Consolidate colors and spacing into consistent Tailwind classes.
-*   **Pixel Perfection**: Fix minor misalignments in the mobile and desktop views, ensuring borders are sharp and consistent.
+## Causa raiz
 
-### Technical Details
-*   **Files**: `src/pages/Index.tsx`, `src/components/dashboard/WalletSummaryCard.tsx`, `src/components/dashboard/BotFinanceTools.tsx`, `src/components/dashboard/DashboardHeader.tsx`.
-*   **Libraries**: `framer-motion` for advanced animations, `lucide-react` for iconography.
-*   **System**: Tailwind CSS with custom configuration for `glassmorphism` and `shadows`.
+Em `supabase/functions/process-invoice/index.ts` (linha 174) usamos:
+
+```ts
+const { data: claimsData, error: claimsError } = await userClient.auth.getClaims(...)
+```
+
+Esse método não está disponível. O padrão correto (e usado nas outras edge functions do projeto) é `auth.getUser()`.
+
+## Correção
+
+Substituir o bloco de validação de auth (linhas 169–180) por:
+
+```ts
+const userClient = createClient(
+  Deno.env.get("SUPABASE_URL")!,
+  Deno.env.get("SUPABASE_ANON_KEY")!,
+  { global: { headers: { Authorization: authHeader } } }
+);
+const { data: userData, error: userError } = await userClient.auth.getUser();
+if (userError || !userData?.user) {
+  return new Response(JSON.stringify({ error: "Unauthorized" }), {
+    status: 401,
+    headers: { ...corsHeaders, "Content-Type": "application/json" },
+  });
+}
+```
+
+Se mais abaixo no arquivo o código referenciar `claimsData.claims.sub`, ajustar para `userData.user.id`.
+
+## Validação
+
+1. Edge function é re-deployada automaticamente.
+2. Verificar logs de `process-invoice` após novo upload — não deve aparecer mais o `TypeError`.
+3. Testar fluxo: subir foto de comprovante → modal de revisão deve abrir com dados extraídos.
+
+## Escopo
+
+Apenas a edge function `process-invoice`. Nenhuma alteração de UI ou de outras funções.

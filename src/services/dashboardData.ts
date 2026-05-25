@@ -260,14 +260,12 @@ export async function buildDashboardData(
     .filter((t) => t.type === "despesa")
     .forEach((t) => catMap.set(t.category, (catMap.get(t.category) ?? 0) + Number(t.amount)));
 
-  const categories = Array.from(catMap.entries())
-    .map(([name, amount], i) => ({
-      name,
-      amount,
-      color: CAT_COLORS[i % CAT_COLORS.length],
-      icon: CAT_ICONS[name] ?? "📋",
-    }))
-    .sort((a, b) => b.amount - a.amount);
+  const categories = Array.from(catMap.entries()).map(([name, amount], i) => ({
+    name,
+    amount,
+    color: CAT_COLORS[i % CAT_COLORS.length],
+    icon: CAT_ICONS[name] ?? "📋",
+  }));
 
   const saldoAtual = summary.isFutureMonth
     ? summary.previousMonthEndingBalance

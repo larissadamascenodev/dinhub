@@ -88,30 +88,18 @@ const Index = () => {
   return (
     <>
 
-        {/* DESKTOP/TABLET LAYOUT - Bento Grid de Elite */}
-        <div className="hidden md:grid md:grid-cols-12 gap-8 lg:gap-10">
-          {/* Left Column: Content Pillar */}
-          <div className="md:col-span-12 lg:col-span-8 space-y-10 lg:space-y-12">
-            <div className="flex flex-col sm:flex-row sm:items-end justify-between gap-6 pb-2">
-              <motion.div 
-                initial={{ opacity: 0, y: 20 }}
-                animate={{ opacity: 1, y: 0 }}
-                transition={{ duration: 0.8, ease: [0.16, 1, 0.3, 1] }}
-              >
-                <p className="text-[10px] lg:text-[11px] font-black text-primary/60 uppercase tracking-[0.4em] mb-3 ml-0.5">{dateStr}</p>
-                <h1 className="font-display text-4xl lg:text-5xl font-extrabold tracking-tighter text-white leading-[1.1]">
-                   {greeting}, <span className="text-white/40 italic font-medium">{userName}</span>
+        {/* DESKTOP LAYOUT */}
+        <div className="hidden lg:grid lg:grid-cols-[1fr_340px] gap-5">
+          <div className="space-y-4">
+            <div className="flex items-center justify-between mb-3">
+              <div className="pl-0.5">
+                <h1 className="font-display text-lg font-bold leading-tight">
+                   {greeting}, <span className="text-primary">{userName}</span>
                 </h1>
-              </motion.div>
-              <motion.div
-                initial={{ opacity: 0, scale: 0.95 }}
-                animate={{ opacity: 1, scale: 1 }}
-                transition={{ duration: 0.8, delay: 0.1, ease: [0.16, 1, 0.3, 1] }}
-              >
-                <MonthSelector selectedMonth={selectedMonth} selectedYear={selectedYear} onMonthChange={handleMonthChange} />
-              </motion.div>
+                <p className="text-[10px] text-muted-foreground">{dateStr}</p>
+              </div>
+              <MonthSelector selectedMonth={selectedMonth} selectedYear={selectedYear} onMonthChange={handleMonthChange} />
             </div>
-
             {profile && !isOnboardingComplete && (
               <OnboardingCard
                 profile={profile}
@@ -120,67 +108,44 @@ const Index = () => {
                 onCreateTransaction={handleNovaTransacao}
               />
             )}
-
-            <div className="grid grid-cols-1 lg:grid-cols-2 gap-8 lg:gap-10">
-               <motion.div
-                 initial={{ opacity: 0, y: 30 }}
-                 animate={{ opacity: 1, y: 0 }}
-                 transition={{ duration: 1, delay: 0.2, ease: [0.16, 1, 0.3, 1] }}
-               >
-                  {data.categories.length > 0 && (
-                    <GastosPorCategoria
-                      categories={data.categories}
-                      selectedMonth={selectedMonth}
-                      onVerAnalise={() => navigate("/transacoes")}
-                    />
-                  )}
-               </motion.div>
-               <motion.div
-                 initial={{ opacity: 0, y: 30 }}
-                 animate={{ opacity: 1, y: 0 }}
-                 transition={{ duration: 1, delay: 0.3, ease: [0.16, 1, 0.3, 1] }}
-               >
-                 <TransacoesRecentes transactions={data.transactions} onDelete={refetch} />
-               </motion.div>
+            <div>
+              <motion.div initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }} className="grid grid-cols-[1.4fr_1fr] gap-3">
+                <SaldoCard saldoAtual={saldoMes} saldoPrevisto={saldoPrevisto} isFutureMonth={isFutureMonth} isPastMonth={data.isPastMonth} />
+                <ReceitasDespesasCards receitas={receitas} receitasRecebidas={data.receitasRecebidas} receitasPendentes={data.receitasPendentes} despesas={despesas} despesasPagas={data.despesasPagas} despesasPendentes={data.despesasPendentes} compact />
+              </motion.div>
             </div>
+            {/* MicroInteracoesCard temporarily disabled */}
+            {data.categories.length > 0 && (
+              <GastosPorCategoria
+                categories={data.categories}
+                selectedMonth={selectedMonth}
+                onVerAnalise={() => navigate("/transacoes")}
+              />
+            )}
+            <TransacoesRecentes transactions={data.transactions} onDelete={refetch} />
+            <ParcelamentosAtivosCard />
           </div>
-
-          <div className="md:col-span-12 lg:col-span-4 space-y-6 lg:space-y-8">
-            <motion.div initial={{ opacity: 0, scale: 0.95 }} animate={{ opacity: 1, scale: 1 }} transition={{ delay: 0.15 }}>
-              <WalletSummaryCard />
-            </motion.div>
-            
-            <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.25 }} className="space-y-6">
-              {isCurrentMonth && <GastosSemanaisCard />}
-              <ProximosEventos events={data.events} selectedMonth={selectedMonth} selectedYear={selectedYear} onEventClick={handleEventClick} />
-            </motion.div>
+          <div className="space-y-4">
+            <WalletSummaryCard />
+            {isCurrentMonth && <GastosSemanaisCard />}
+            <BotFinanceTools layout="grid" />
+            <ProximosEventos events={data.events} selectedMonth={selectedMonth} selectedYear={selectedYear} onEventClick={handleEventClick} />
+            <AssinaturasCard />
+            <MetasResumoCard />
           </div>
         </div>
 
-        {/* MOBILE LAYOUT */}
-        <div className="md:hidden space-y-6">
-          <div className="flex items-center justify-between">
-            <motion.div 
-              initial={{ opacity: 0, x: -10 }}
-              animate={{ opacity: 1, x: 0 }}
-              className="pl-0.5"
-            >
-              <h1 className="font-display text-xl font-extrabold tracking-tight text-white leading-tight">
+        {/* TABLET LAYOUT */}
+        <div className="hidden md:block lg:hidden space-y-4">
+          <div className="flex items-center justify-between mb-3">
+            <div className="pl-0.5">
+              <h1 className="font-display text-lg font-bold leading-tight">
                 {greeting}, <span className="text-primary">{userName}</span>
               </h1>
-              <p className="text-[10px] font-medium text-white/30 uppercase tracking-[0.2em] mt-1">{dateStr}</p>
-            </motion.div>
+              <p className="text-[10px] text-muted-foreground">{dateStr}</p>
+            </div>
             <MonthSelector selectedMonth={selectedMonth} selectedYear={selectedYear} onMonthChange={handleMonthChange} />
           </div>
-
-          <motion.div
-            initial={{ opacity: 0, scale: 0.95 }}
-            animate={{ opacity: 1, scale: 1 }}
-            transition={{ type: "spring", stiffness: 300, damping: 25 }}
-          >
-            <WalletSummaryCard />
-          </motion.div>
-
           {profile && !isOnboardingComplete && (
             <OnboardingCard
               profile={profile}
@@ -189,19 +154,59 @@ const Index = () => {
               onCreateTransaction={handleNovaTransacao}
             />
           )}
-          
+          <SaldoWalletCarousel saldoAtual={saldoMes} saldoPrevisto={saldoPrevisto} isFutureMonth={isFutureMonth} isPastMonth={data.isPastMonth} />
+          <ReceitasDespesasCards receitas={receitas} receitasRecebidas={data.receitasRecebidas} receitasPendentes={data.receitasPendentes} despesas={despesas} despesasPagas={data.despesasPagas} despesasPendentes={data.despesasPendentes} compact />
+          {/* MicroInteracoesCard temporarily disabled */}
           {isCurrentMonth && <GastosSemanaisCard />}
-          
-          <div className="space-y-4">
-            <p className="text-[10px] font-bold text-white/20 uppercase tracking-[0.2em] ml-1">Próximos compromissos</p>
-            <ProximosEventos events={data.events} selectedMonth={selectedMonth} selectedYear={selectedYear} onEventClick={handleEventClick} />
-          </div>
-
+          <BotFinanceTools layout="carousel" />
           {data.categories.length > 0 && (
             <GastosPorCategoria categories={data.categories} selectedMonth={selectedMonth} onVerAnalise={() => navigate("/transacoes")} />
           )}
-          
           <TransacoesRecentes transactions={data.transactions} onDelete={refetch} />
+          <ProximosEventos events={data.events} selectedMonth={selectedMonth} selectedYear={selectedYear} onEventClick={handleEventClick} />
+          <AssinaturasCard />
+           <ParcelamentosAtivosCard />
+           <MetasResumoCard />
+        </div>
+
+        {/* MOBILE LAYOUT */}
+        <div className="md:hidden space-y-3">
+          <div className="flex items-center justify-between">
+            <div className="pl-0.5">
+              <h1 className="font-display text-base font-bold leading-tight mx-[2px]">
+                {greeting}, <span className="text-primary">{userName}</span>
+              </h1>
+              <p className="text-[10px] text-muted-foreground my-0 mx-[2px]">{dateStr}</p>
+            </div>
+            <MonthSelector selectedMonth={selectedMonth} selectedYear={selectedYear} onMonthChange={handleMonthChange} />
+          </div>
+          {profile && !isOnboardingComplete && (
+            <OnboardingCard
+              profile={profile}
+              onUpdateName={updateDisplayName}
+              onGoToAccounts={() => navigate("/gestao")}
+              onCreateTransaction={handleNovaTransacao}
+            />
+          )}
+          <motion.div initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }} className="space-y-3">
+            <SaldoWalletCarousel saldoAtual={saldoMes} saldoPrevisto={saldoPrevisto} isFutureMonth={isFutureMonth} isPastMonth={data.isPastMonth} />
+            <ReceitasDespesasCards receitas={receitas} receitasRecebidas={data.receitasRecebidas} receitasPendentes={data.receitasPendentes} despesas={despesas} despesasPagas={data.despesasPagas} despesasPendentes={data.despesasPendentes} mobile compact />
+          </motion.div>
+          
+          {/* MicroInteracoesCard temporarily disabled */}
+          {isCurrentMonth && <GastosSemanaisCard />}
+          <BotFinanceTools layout="carousel" />
+          {data.categories.length > 0 && (
+            <GastosPorCategoria categories={data.categories} selectedMonth={selectedMonth} onVerAnalise={() => navigate("/transacoes")} />
+          )}
+          <TransacoesRecentes transactions={data.transactions} onDelete={refetch} />
+          <div className="-mt-3">
+            <ProximosEventos events={data.events} selectedMonth={selectedMonth} selectedYear={selectedYear} onEventClick={handleEventClick} />
+          </div>
+          <AssinaturasCard />
+          <ParcelamentosAtivosCard />
+          
+          <MetasResumoCard />
         </div>
       <PagarEditarModal
         open={showPayModal}

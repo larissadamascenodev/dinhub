@@ -115,72 +115,47 @@ const ParcelamentosAtivosCard = () => {
     d.toLocaleDateString("pt-BR", { month: "short", year: "numeric" });
 
   return (
-    <div className="glass-card bg-black/40 backdrop-blur-2xl border-white/[0.08] p-5 space-y-5 select-none shadow-[0_20px_50px_rgba(0,0,0,0.3)] overflow-hidden relative group">
-      {/* Premium glow effect */}
-      <div className="absolute -top-24 -right-24 w-48 h-48 bg-primary/10 blur-[100px] rounded-full pointer-events-none" />
-      <div className="absolute -bottom-24 -left-24 w-48 h-48 bg-orange-500/10 blur-[100px] rounded-full pointer-events-none" />
-
+    <div className="glass-card p-4 space-y-3 select-none">
       {/* Header */}
-      <button onClick={() => navigate("/parcelamentos")} className="flex items-center justify-between w-full relative z-10 group/header">
-        <div className="flex items-center gap-4">
-          <div className="w-10 h-10 rounded-2xl bg-gradient-to-br from-orange-500/20 to-orange-600/5 border border-white/10 flex items-center justify-center shadow-2xl transition-transform duration-500 group-hover/header:scale-110">
-            <CalendarClock className="w-5 h-5 text-orange-400 drop-shadow-[0_0_8px_rgba(251,146,60,0.5)]" />
+      <button onClick={() => navigate("/parcelamentos")} className="flex items-center justify-between w-full">
+        <div className="flex items-center gap-2">
+          <div className="w-7 h-7 rounded-lg bg-orange-500/15 flex items-center justify-center">
+            <CalendarClock className="w-3.5 h-3.5 text-orange-400" />
           </div>
-          <div className="text-left">
-            <h3 className="text-base font-black text-white/90 tracking-tight leading-none mb-1">Parcelamentos Ativos</h3>
-            <div className="flex items-center gap-2">
-              <span className="w-1.5 h-1.5 rounded-full bg-primary animate-pulse" />
-              <p className="text-[10px] text-muted-foreground font-bold tracking-widest uppercase opacity-70">Monitoramento Real-time</p>
-            </div>
-          </div>
+          <h3 className="text-sm font-semibold text-foreground">Parcelamentos Ativos</h3>
         </div>
-        <div className="bg-white/[0.03] border border-white/[0.08] px-3 py-1.5 rounded-xl backdrop-blur-md">
-          <span className="text-[10px] font-black text-primary tracking-tighter">
-            {items.length} {items.length === 1 ? "ATIVO" : "ATIVOS"}
-          </span>
-        </div>
+        <span className="text-[10px] font-medium text-muted-foreground bg-muted/50 px-2 py-0.5 rounded-full">
+          {items.length} {items.length === 1 ? "item" : "itens"}
+        </span>
       </button>
 
-      {/* Hero Stats Section */}
+      {/* Summary Cards */}
       {stats && (
-        <div className="grid grid-cols-2 gap-4 relative z-10">
-          <div className="relative group/stat overflow-hidden rounded-3xl bg-gradient-to-b from-white/[0.05] to-transparent border border-white/[0.08] p-4 transition-all duration-500 hover:border-orange-500/30">
-            <div className="absolute inset-0 bg-orange-500/5 opacity-0 group-hover/stat:opacity-100 transition-opacity" />
-            <p className="text-[9px] font-black text-muted-foreground tracking-[0.2em] uppercase mb-1.5 opacity-60">Mensal</p>
-            <p className="text-lg font-black text-orange-400 leading-none tracking-tighter drop-shadow-[0_2px_10px_rgba(251,146,60,0.2)]">
-              {formatCurrency(stats.totalMensal)}
-            </p>
+        <div className="grid grid-cols-2 gap-2">
+          <div className="rounded-xl bg-muted/30 border border-border/30 p-3 space-y-1">
+            <p className="text-[10px] text-muted-foreground">Comprometido/mês</p>
+            <p className="text-sm font-bold text-orange-400">{formatCurrency(stats.totalMensal)}</p>
           </div>
-          <div className="relative group/stat overflow-hidden rounded-3xl bg-gradient-to-b from-white/[0.05] to-transparent border border-white/[0.08] p-4 transition-all duration-500 hover:border-primary/30">
-            <div className="absolute inset-0 bg-primary/5 opacity-0 group-hover/stat:opacity-100 transition-opacity" />
-            <p className="text-[9px] font-black text-muted-foreground tracking-[0.2em] uppercase mb-1.5 opacity-60">Restante</p>
-            <p className="text-lg font-black text-white/90 leading-none tracking-tighter">
-              {formatCurrency(stats.totalRestante)}
-            </p>
+          <div className="rounded-xl bg-muted/30 border border-border/30 p-3 space-y-1">
+            <p className="text-[10px] text-muted-foreground">Total restante</p>
+            <p className="text-sm font-bold text-foreground">{formatCurrency(stats.totalRestante)}</p>
           </div>
         </div>
       )}
 
-      {/* Progress Timeline */}
+      {/* Timeline indicator */}
       {stats && stats.monthsUntilFree > 0 && (
-        <div className="flex items-center justify-between px-2 py-3 bg-white/[0.02] border border-white/[0.05] rounded-2xl relative z-10 overflow-hidden">
-          <div className="absolute inset-0 bg-gradient-to-r from-primary/5 to-transparent" />
-          <div className="flex items-center gap-3 relative z-10">
-            <div className="w-6 h-6 rounded-full bg-primary/20 flex items-center justify-center shadow-[0_0_15px_rgba(0,230,118,0.2)]">
-              <TrendingDown className="w-3.5 h-3.5 text-primary" />
-            </div>
-            <p className="text-[11px] text-white/70 font-bold tracking-tight">
-              Quitação em <span className="text-primary font-black underline decoration-primary/30 underline-offset-4">{stats.monthsUntilFree} {stats.monthsUntilFree === 1 ? "mês" : "meses"}</span>
-            </p>
-          </div>
-          <div className="text-[10px] font-black text-muted-foreground/50 bg-black/20 px-2.5 py-1 rounded-lg border border-white/5 uppercase tracking-widest relative z-10">
-            {formatMonth(stats.lastEndDate)}
-          </div>
+        <div className="flex items-center gap-2 px-1">
+          <TrendingDown className="w-3.5 h-3.5 text-primary flex-shrink-0" />
+          <p className="text-[10px] text-muted-foreground">
+            Livre em <span className="text-primary font-semibold">{stats.monthsUntilFree} {stats.monthsUntilFree === 1 ? "mês" : "meses"}</span>
+            {" "}({formatMonth(stats.lastEndDate)})
+          </p>
         </div>
       )}
 
       {/* Items List */}
-      <div className="space-y-3 relative z-10">
+      <div className="space-y-1.5">
         <AnimatePresence initial={false}>
           {visibleItems.map((item, idx) => {
             const currentInst = item.installment_current;
@@ -193,68 +168,40 @@ const ParcelamentosAtivosCard = () => {
             return (
               <motion.div
                 key={item.id}
-                initial={{ opacity: 0, y: 15 }}
-                animate={{ opacity: 1, y: 0 }}
-                exit={{ opacity: 0, scale: 0.95 }}
-                transition={{ duration: 0.4, delay: idx * 0.1, ease: [0.23, 1, 0.32, 1] }}
-                className="group/item relative overflow-hidden flex items-center gap-4 rounded-[2rem] bg-white/[0.03] border border-white/[0.06] px-5 py-4 transition-all duration-500 hover:bg-white/[0.08] hover:border-white/10 hover:-translate-y-1 shadow-lg hover:shadow-primary/5"
-                style={item.isOverdue ? { borderColor: "rgba(239,68,68,0.3)", background: "rgba(239,68,68,0.05)" } : undefined}
+                initial={{ opacity: 0, height: 0 }}
+                animate={{ opacity: 1, height: "auto" }}
+                exit={{ opacity: 0, height: 0 }}
+                transition={{ duration: 0.2 }}
+                className="flex items-center gap-3 rounded-xl bg-muted/20 border border-border/20 px-3 py-2.5"
+                style={item.isOverdue ? { borderColor: "hsl(0 70% 50% / 0.25)", background: "hsl(0 70% 50% / 0.05)" } : undefined}
               >
-                {/* Item Icon */}
                 <div
-                  className="w-12 h-12 rounded-[1.25rem] flex items-center justify-center flex-shrink-0 shadow-2xl transition-all duration-500 group-hover/item:rotate-[10deg] group-hover/item:scale-110"
-                  style={{ 
-                    background: `linear-gradient(135deg, hsl(${catColor} / 0.25), hsl(${catColor} / 0.05))`,
-                    border: `1px solid hsl(${catColor} / 0.15)`,
-                    boxShadow: `0 10px 20px -5px hsl(${catColor} / 0.2)`
-                  }}
+                  className="w-8 h-8 rounded-lg flex items-center justify-center flex-shrink-0"
+                  style={{ background: `hsl(${catColor} / 0.15)` }}
                 >
-                  {IconComp && <IconComp className="w-5 h-5" style={{ color: `hsl(${catColor})` }} />}
+                  {IconComp && <IconComp className="w-3.5 h-3.5" style={{ color: `hsl(${catColor})` }} />}
                 </div>
 
-                <div className="flex-1 min-w-0 space-y-2.5">
+                <div className="flex-1 min-w-0 space-y-1">
                   <div className="flex items-center justify-between gap-2">
-                    <span className="text-xs font-black text-white/90 truncate uppercase tracking-tighter group-hover/item:text-primary transition-colors">{item.name}</span>
-                    <span className="text-sm font-black text-white tracking-tighter">
+                    <span className="text-xs font-medium text-foreground truncate">{item.name}</span>
+                    <span className="text-xs font-bold text-foreground flex-shrink-0">
                       {formatCurrency(item.amount)}
                     </span>
                   </div>
-                  
-                  <div className="space-y-2">
-                    <div className="h-2 w-full bg-black/40 rounded-full overflow-hidden p-[1px] border border-white/5">
-                      <motion.div 
-                        initial={{ width: 0 }}
-                        animate={{ width: `${progress}%` }}
-                        transition={{ duration: 1.5, delay: 0.2, ease: [0.23, 1, 0.32, 1] }}
-                        className="h-full rounded-full relative shadow-[0_0_15px_rgba(0,230,118,0.4)]"
-                        style={{ background: `linear-gradient(90deg, hsl(${catColor}), hsl(${catColor} / 0.5))` }}
-                      >
-                        <div className="absolute inset-0 bg-white/20 blur-[2px] opacity-30" />
-                      </motion.div>
-                    </div>
-                    
-                    <div className="flex items-center justify-between">
-                      <div className="flex items-center gap-2 bg-white/[0.04] px-2 py-0.5 rounded-lg border border-white/[0.05]">
-                        {item.isOverdue ? (
-                          <AlertTriangle className="w-3 h-3 text-red-500 animate-pulse" />
-                        ) : isCard ? (
-                          <CreditCard className="w-3 h-3 text-primary/70" />
-                        ) : (
-                          <Wallet className="w-3 h-3 text-primary/70" />
-                        )}
-                        <span className="text-[9px] font-black uppercase tracking-[0.1em] text-muted-foreground/80">
-                          {isCard ? "Crédito" : "Débito"}
-                        </span>
-                      </div>
-                      <div className="flex items-center gap-1.5">
-                        <span className={`text-[11px] font-black ${item.isOverdue ? "text-red-500 drop-shadow-[0_0_8px_rgba(239,68,68,0.4)]" : "text-white/80"}`}>
-                          {currentInst}
-                        </span>
-                        <span className="text-[9px] font-black text-muted-foreground/30">/</span>
-                        <span className="text-[10px] font-bold text-muted-foreground/60">
-                          {item.installments}
-                        </span>
-                      </div>
+                  <div className="flex items-center gap-2">
+                    <Progress value={progress} className="h-1 flex-1" />
+                    <div className="flex items-center gap-1 flex-shrink-0">
+                      {item.isOverdue ? (
+                        <AlertTriangle className="w-2.5 h-2.5 text-destructive" />
+                      ) : isCard ? (
+                        <CreditCard className="w-2.5 h-2.5 text-muted-foreground" />
+                      ) : (
+                        <Wallet className="w-2.5 h-2.5 text-muted-foreground" />
+                      )}
+                      <span className={`text-[9px] font-medium ${item.isOverdue ? "text-destructive" : "text-muted-foreground"}`}>
+                        {currentInst}/{item.installments}
+                      </span>
                     </div>
                   </div>
                 </div>
@@ -268,18 +215,11 @@ const ParcelamentosAtivosCard = () => {
       {items.length > 3 && (
         <button
           onClick={() => setExpanded(!expanded)}
-          className="w-full flex items-center justify-center gap-3 py-3 mt-2 transition-all duration-500 hover:bg-white/[0.05] rounded-2xl group/btn relative z-10 border border-transparent hover:border-white/5"
+          className="w-full flex items-center justify-center gap-1 pt-1"
         >
-          <div className="h-[1px] flex-1 bg-gradient-to-r from-transparent to-white/10" />
-          <span className="text-[10px] font-black text-muted-foreground/40 tracking-[0.3em] uppercase group-hover/btn:text-primary group-hover/btn:tracking-[0.4em] transition-all duration-500">
-            {expanded ? "Recolher" : `Ver +${items.length - 3}`}
-          </span>
-          <div className="relative">
-            <ChevronDown
-              className={`w-4 h-4 text-muted-foreground/40 transition-all duration-500 group-hover/btn:text-primary ${expanded ? "rotate-180" : ""}`}
-            />
-          </div>
-          <div className="h-[1px] flex-1 bg-gradient-to-l from-transparent to-white/10" />
+          <ChevronDown
+            className={`w-4 h-4 text-muted-foreground transition-transform duration-200 ${expanded ? "rotate-180" : ""}`}
+          />
         </button>
       )}
     </div>
