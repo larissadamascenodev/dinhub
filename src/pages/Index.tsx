@@ -88,26 +88,25 @@ const Index = () => {
   return (
     <>
 
-        {/* DESKTOP/TABLET LAYOUT - Bento Grid */}
-        <div className="hidden md:grid md:grid-cols-12 gap-6 lg:gap-8">
-          {/* Left Column: Summary & Insights */}
-          <div className="md:col-span-12 lg:col-span-8 space-y-6 lg:space-y-8">
-            <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
+        {/* DESKTOP/TABLET LAYOUT - Bento Grid de Elite */}
+        <div className="hidden md:grid md:grid-cols-12 gap-8 lg:gap-10">
+          {/* Left Column: Content Pillar */}
+          <div className="md:col-span-12 lg:col-span-8 space-y-10 lg:space-y-12">
+            <div className="flex flex-col sm:flex-row sm:items-end justify-between gap-6 pb-2">
               <motion.div 
-                initial={{ opacity: 0, x: -20 }}
-                animate={{ opacity: 1, x: 0 }}
-                transition={{ duration: 0.6, ease: [0.16, 1, 0.3, 1] }}
-                className="pl-0.5"
+                initial={{ opacity: 0, y: 20 }}
+                animate={{ opacity: 1, y: 0 }}
+                transition={{ duration: 0.8, ease: [0.16, 1, 0.3, 1] }}
               >
-                <h1 className="font-display text-3xl lg:text-4xl font-extrabold tracking-tight text-white leading-tight">
-                   {greeting}, <span className="text-primary/90">{userName}</span>
+                <p className="text-[10px] lg:text-[11px] font-black text-primary/60 uppercase tracking-[0.4em] mb-3 ml-0.5">{dateStr}</p>
+                <h1 className="font-display text-4xl lg:text-5xl font-extrabold tracking-tighter text-white leading-[1.1]">
+                   {greeting}, <span className="text-white/40 italic font-medium">{userName}</span>
                 </h1>
-                <p className="text-xs lg:text-sm font-medium text-white/30 uppercase tracking-[0.2em] mt-2">{dateStr}</p>
               </motion.div>
               <motion.div
-                initial={{ opacity: 0, x: 20 }}
-                animate={{ opacity: 1, x: 0 }}
-                transition={{ duration: 0.6, ease: [0.16, 1, 0.3, 1] }}
+                initial={{ opacity: 0, scale: 0.95 }}
+                animate={{ opacity: 1, scale: 1 }}
+                transition={{ duration: 0.8, delay: 0.1, ease: [0.16, 1, 0.3, 1] }}
               >
                 <MonthSelector selectedMonth={selectedMonth} selectedYear={selectedYear} onMonthChange={handleMonthChange} />
               </motion.div>
@@ -122,11 +121,11 @@ const Index = () => {
               />
             )}
 
-            <div className="grid grid-cols-1 lg:grid-cols-2 gap-6 lg:gap-8">
+            <div className="grid grid-cols-1 lg:grid-cols-2 gap-8 lg:gap-10">
                <motion.div
-                 initial={{ opacity: 0, y: 20 }}
+                 initial={{ opacity: 0, y: 30 }}
                  animate={{ opacity: 1, y: 0 }}
-                 transition={{ delay: 0.1 }}
+                 transition={{ duration: 1, delay: 0.2, ease: [0.16, 1, 0.3, 1] }}
                >
                   {data.categories.length > 0 && (
                     <GastosPorCategoria
@@ -137,14 +136,13 @@ const Index = () => {
                   )}
                </motion.div>
                <motion.div
-                 initial={{ opacity: 0, y: 20 }}
+                 initial={{ opacity: 0, y: 30 }}
                  animate={{ opacity: 1, y: 0 }}
-                 transition={{ delay: 0.2 }}
+                 transition={{ duration: 1, delay: 0.3, ease: [0.16, 1, 0.3, 1] }}
                >
                  <TransacoesRecentes transactions={data.transactions} onDelete={refetch} />
                </motion.div>
             </div>
-            
           </div>
 
           <div className="md:col-span-12 lg:col-span-4 space-y-6 lg:space-y-8">
