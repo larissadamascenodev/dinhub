@@ -171,12 +171,15 @@ const DashboardHeader = memo(({ profile, streak = 0, streakDates = [] }: { profi
       </AnimatePresence>
 
       {/* Desktop Top Bar */}
-      <div className="hidden md:flex items-center justify-between sticky top-0 z-50 bg-background/50 backdrop-blur-[32px] px-8 py-4 border-b border-white/[0.04] -mx-4 md:-mx-8 mb-8">
-        {/* Logo */}
-        <div className="flex items-center gap-2 flex-shrink-0 cursor-pointer group" onClick={() => navigate("/")}>
-          <span className="font-display font-extrabold text-2xl tracking-tighter">
-            <span className="text-white group-hover:text-primary transition-colors duration-500">Din</span>
-            <span className="text-primary group-hover:text-white transition-colors duration-500">Hub</span>
+      <div className="hidden md:flex items-center justify-between sticky top-0 z-50 bg-background/60 backdrop-blur-[40px] px-10 py-6 border-b border-white/[0.03] -mx-4 md:-mx-12 mb-12">
+        {/* Logo de Elite */}
+        <div className="flex items-center gap-3 flex-shrink-0 cursor-pointer group" onClick={() => navigate("/")}>
+          <div className="w-10 h-10 rounded-2xl bg-primary flex items-center justify-center shadow-[0_0_20px_rgba(0,230,118,0.3)] group-hover:scale-110 transition-transform duration-500">
+            <span className="text-black font-display font-black text-xl">D</span>
+          </div>
+          <span className="font-display font-black text-2xl tracking-tighter">
+            <span className="text-white">Din</span>
+            <span className="text-primary/90">Hub</span>
           </span>
         </div>
 

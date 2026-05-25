@@ -91,24 +91,23 @@ const GastosPorCategoria = memo(({ categories, selectedMonth, onVerAnalise }: Pr
 
   return (
     <div
-      className="rounded-[32px] border border-white/[0.05] bg-gradient-to-b from-white/[0.03] to-transparent backdrop-blur-3xl overflow-hidden p-6 lg:p-8"
-      style={{ boxShadow: "0 10px 40px -10px rgba(0,0,0,0.5)" }}
+      className="rounded-[40px] border border-white/[0.06] bg-zinc-950 p-8 lg:p-10 shadow-[0_24px_64px_-16px_rgba(0,0,0,0.7)] overflow-hidden"
     >
       {/* Header */}
-      <div className="flex items-start justify-between mb-8">
+      <div className="flex items-start justify-between mb-10">
         <div>
-          <p className="text-[11px] text-white/30 font-bold uppercase tracking-[0.2em]">
-            Gastos por categoria · {monthLabel}
+          <p className="text-[10px] text-white/20 font-black uppercase tracking-[0.4em] mb-3">
+            Fluxo por Categoria · {monthLabel}
           </p>
-          <p className="text-3xl lg:text-4xl font-extrabold text-white tabular-nums mt-2 tracking-tight">
+          <p className="text-4xl lg:text-5xl font-display font-extrabold text-white tabular-nums tracking-tighter leading-none">
             {fmt(totalExpenses)}
           </p>
         </div>
         <button
           onClick={() => navigate("/analytics/categorias")}
-          className="w-10 h-10 rounded-full bg-white/[0.03] flex items-center justify-center border border-white/[0.05] hover:bg-primary hover:text-black transition-all duration-300 group"
+          className="w-12 h-12 rounded-2xl bg-white/[0.03] flex items-center justify-center border border-white/[0.06] hover:bg-primary transition-all duration-500 group"
         >
-          <ChevronRight className="w-5 h-5 transition-transform group-hover:translate-x-0.5" />
+          <ChevronRight className="w-6 h-6 text-white/30 group-hover:text-black transition-transform group-hover:translate-x-0.5" />
         </button>
       </div>
 

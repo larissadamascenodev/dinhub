@@ -151,23 +151,23 @@ const TransacoesRecentes = memo(({ transactions, onDelete }: Props) => {
   const stackCount = Math.min(restTx.length, STACK_COUNT);
 
   return (
-    <div className="bg-white/[0.02] border border-white/[0.05] rounded-[32px] p-6 lg:p-8 shadow-[0_8px_30px_-5px_rgba(0,0,0,0.5)]">
+    <div className="bg-zinc-950 border border-white/[0.06] rounded-[40px] p-8 lg:p-10 shadow-[0_24px_64px_-16px_rgba(0,0,0,0.7)]">
       {/* Header */}
-      <div className="flex items-center justify-between mb-8">
-        <div className="flex items-center gap-3">
-          <div className="w-10 h-10 rounded-2xl bg-primary/10 flex items-center justify-center border border-primary/20">
-            <Layers className="w-5 h-5 text-primary" />
+      <div className="flex items-center justify-between mb-10">
+        <div className="flex items-center gap-4">
+          <div className="w-12 h-12 rounded-2xl bg-white/[0.03] flex items-center justify-center border border-white/[0.06]">
+            <Layers className="w-6 h-6 text-primary" />
           </div>
           <div>
-            <h3 className="text-sm font-bold text-white uppercase tracking-[0.2em]">
+            <h3 className="text-lg font-bold text-white font-display tracking-tight">
               Recentes
             </h3>
-            <p className="text-[10px] text-white/30 font-medium uppercase tracking-wider mt-0.5">Últimas movimentações</p>
+            <p className="text-[10px] text-white/20 font-black uppercase tracking-[0.3em] mt-1">Histórico de Fluxo</p>
           </div>
         </div>
-        <span className="px-3 py-1 rounded-full bg-white/[0.03] border border-white/[0.05] text-[10px] text-white/40 font-bold uppercase tracking-widest">
-          {transactions.length} itens
-        </span>
+        <div className="px-4 py-1.5 rounded-full bg-white/[0.02] border border-white/[0.05] text-[10px] text-white/30 font-black uppercase tracking-widest">
+          {transactions.length} Registros
+        </div>
       </div>
 
       {/* Stack container */}
