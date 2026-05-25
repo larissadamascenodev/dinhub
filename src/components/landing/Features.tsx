@@ -153,26 +153,6 @@ const Features = () => {
            style={{ backgroundImage: 'radial-gradient(circle at center, rgba(0,230,118,0.4) 0%, transparent 70%)' }} />
 
       <div className="fluid-container relative z-10">
-        <div id="radar-header" className="text-center mb-16 md:mb-32 lg:mb-40 space-y-6 md:space-y-8">
-          <motion.div 
-            initial={{ opacity: 0, scale: 0.9 }}
-            whileInView={{ opacity: 1, scale: 1 }}
-            className="inline-flex items-center gap-2 px-4 md:px-5 py-2 rounded-full border border-white/[0.08] bg-white/[0.03] backdrop-blur-md"
-          >
-            <span className="text-[9px] md:text-[10px] font-black tracking-[0.2em] md:tracking-[0.3em] text-[#00e676] uppercase text-center">The Architecture of Control</span>
-          </motion.div>
-          
-          <h2 className="display-title text-white text-3xl sm:text-4xl md:text-6xl lg:text-8xl">
-            Enquanto você vive,<br className="hidden sm:block" />
-            <span className="bg-gradient-to-r from-white/20 via-white to-white/20 bg-clip-text text-transparent italic font-light">
-              a Huby organiza.
-            </span>
-          </h2>
-          
-          <p className="text-white/40 max-w-2xl mx-auto text-base sm:text-lg md:text-xl lg:text-2xl font-inter font-light leading-relaxed">
-            Esqueça as planilhas. A Huby é sua inteligência de elite que <span className="text-white font-medium">antecipa movimentos</span> e blinda seu patrimônio com precisão cirúrgica.
-          </p>
-        </div>
 
         <motion.div 
           variants={containerVariants}
