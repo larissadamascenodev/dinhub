@@ -124,69 +124,85 @@ function ScoreRing({ value, size = 80, stroke = 8, color }: { value: number; siz
 
 function RadarVisual({ topCats, customCats }: { topCats: any[], customCats: CustomCategory[] }) {
   return (
-    <div className="relative group w-full aspect-square max-w-[320px] mx-auto">
+    <div className="relative group w-full aspect-square max-w-[400px] mx-auto">
+      {/* Decorative Outer Rings */}
       <motion.div 
         animate={{ rotate: 360 }}
-        transition={{ duration: 40, repeat: Infinity, ease: "linear" }}
-        className="absolute -inset-8 border border-white/[0.03] rounded-full"
+        transition={{ duration: 60, repeat: Infinity, ease: "linear" }}
+        className="absolute -inset-12 border border-white/[0.02] rounded-full"
       />
       <motion.div 
         animate={{ rotate: -360 }}
-        transition={{ duration: 35, repeat: Infinity, ease: "linear" }}
-        className="absolute -inset-4 border border-white/[0.05] rounded-full"
+        transition={{ duration: 50, repeat: Infinity, ease: "linear" }}
+        className="absolute -inset-6 border border-white/[0.04] rounded-full"
       />
       
       <div className="relative w-full h-full flex items-center justify-center">
-        <div className="absolute inset-0 rounded-full bg-white/[0.01] border border-white/5 backdrop-blur-[2px]" />
+        {/* Main Radar Background - More Transparent */}
+        <div className="absolute inset-0 rounded-full bg-white/[0.005] border border-white/5 backdrop-blur-[1px]" />
         
         {/* Radar concentric circles */}
-        <div className="absolute inset-[20%] rounded-full border border-white/[0.03]" />
-        <div className="absolute inset-[40%] rounded-full border border-white/[0.03]" />
-        <div className="absolute inset-[60%] rounded-full border border-white/[0.03]" />
+        {[20, 40, 60, 80].map((inset) => (
+          <div key={inset} className="absolute rounded-full border border-white/[0.03]" style={{ inset: `${inset}%` }} />
+        ))}
         
-        <div className="absolute inset-[15%] rounded-full border border-white/[0.05] flex items-center justify-center">
-          <Radar className="w-10 h-10 text-white/10" />
+        {/* Central Icon */}
+        <div className="absolute inset-[42%] rounded-full border border-white/[0.05] flex items-center justify-center bg-black/20">
+          <Radar className="w-8 h-8 text-white/5" />
         </div>
         
-        {/* Minimalist Radar Sweeper - Transparent with subtle green */}
+        {/* Modern Radar Sweeper - Subtle Green Detail */}
         <motion.div 
           animate={{ rotate: 360 }}
-          transition={{ duration: 4, repeat: Infinity, ease: "linear" }}
-          className="absolute inset-0 rounded-full"
+          transition={{ duration: 5, repeat: Infinity, ease: "linear" }}
+          className="absolute inset-0 rounded-full overflow-hidden"
           style={{ 
-            background: 'conic-gradient(from 0deg, transparent 0%, rgba(34, 197, 94, 0.08) 50%, transparent 100%)',
+            background: 'conic-gradient(from 0deg, transparent 0%, rgba(34, 197, 94, 0.12) 50%, transparent 100%)',
           }}
-        />
+        >
+          {/* Subtle Green Line at the edge of the sweep */}
+          <div className="absolute top-1/2 left-1/2 w-1/2 h-[1px] bg-gradient-to-r from-transparent to-primary/30 origin-left" style={{ transform: 'rotate(180deg)' }} />
+        </motion.div>
 
-        {/* Category Icons as "Blips" */}
+        {/* Category "Blips" with Icons */}
         {topCats.map((cat, i) => {
           const Icon = getCategoryIcon(cat.name, customCats);
           const color = getCategoryColor(cat.name, customCats);
           // Distribute icons around the radar
-          const angle = (i * 72) + 20; // 5 icons, roughly 72 deg apart
-          const distance = 35 + (i * 5); // varies between 35% and 55% from center
+          const angle = (i * (360 / Math.max(topCats.length, 1))) + 15;
+          const distance = 32 + (i * 4); // distance from center in %
           
           return (
             <motion.div
               key={cat.name}
               initial={{ scale: 0, opacity: 0 }}
               animate={{ 
-                scale: [0.9, 1.1, 0.9],
-                opacity: [0.4, 0.8, 0.4]
+                scale: [0.9, 1.15, 0.9],
+                opacity: [0.3, 0.7, 0.3],
+                boxShadow: [
+                  `0 0 0px hsl(${color} / 0)`,
+                  `0 0 20px hsl(${color} / 0.2)`,
+                  `0 0 0px hsl(${color} / 0)`
+                ]
               }}
               transition={{ 
-                duration: 3 + i, 
+                duration: 4 + i, 
                 repeat: Infinity,
-                delay: i * 0.4
+                delay: i * 0.5
               }}
-              className="absolute w-10 h-10 rounded-xl bg-white/[0.03] border border-white/10 flex items-center justify-center backdrop-blur-md shadow-[0_0_15px_rgba(255,255,255,0.05)]"
+              className="absolute w-12 h-12 rounded-2xl bg-black/40 border border-white/10 flex items-center justify-center backdrop-blur-xl shadow-lg z-20"
               style={{
                 top: `${50 + Math.sin(angle * Math.PI / 180) * distance}%`,
                 left: `${50 + Math.cos(angle * Math.PI / 180) * distance}%`,
                 transform: 'translate(-50%, -50%)'
               }}
             >
-              <Icon className="w-5 h-5" style={{ color: `hsl(${color})` }} />
+              <Icon className="w-6 h-6" style={{ color: `hsl(${color})` }} />
+              
+              {/* Tooltip-like label (optional, hidden but accessible) */}
+              <div className="absolute -bottom-6 left-1/2 -translate-x-1/2 opacity-0 group-hover:opacity-100 transition-opacity">
+                <span className="text-[8px] font-bold text-white/40 uppercase whitespace-nowrap tracking-widest">{cat.name}</span>
+              </div>
             </motion.div>
           );
         })}
