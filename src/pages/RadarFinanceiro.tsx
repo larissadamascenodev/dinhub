@@ -109,7 +109,7 @@ function RadarVisual({ topCats, customCats }: { topCats: any[], customCats: Cust
       
       <div className="relative w-full h-full flex items-center justify-center">
         {/* Main Radar Background - More Transparent */}
-        <div className="absolute inset-0 rounded-full bg-white/[0.005] border border-white/5 backdrop-blur-[1px]" />
+        <div className="absolute inset-0 rounded-full bg-transparent border border-white/[0.03] backdrop-blur-[1px]" />
         
         {/* Radar concentric circles */}
         {[20, 40, 60, 80].map((inset) => (
@@ -118,7 +118,7 @@ function RadarVisual({ topCats, customCats }: { topCats: any[], customCats: Cust
         
         {/* Central Icon */}
         <div className="absolute inset-[42%] rounded-full border border-white/[0.05] flex items-center justify-center bg-black/20">
-          <Radar className="w-8 h-8 text-white/5" />
+          <Radar className="w-8 h-8 text-white/[0.02]" />
         </div>
         
         {/* Modern Radar Sweeper - Subtle Green Detail */}
@@ -301,7 +301,7 @@ export default function RadarFinanceiro() {
                         <span className="text-[11px] font-black text-warning uppercase tracking-[0.2em]">Papo de Elite</span>
                       </div>
                       <p className="text-[15px] text-white/80 font-medium italic leading-relaxed">
-                        "Parece que o delivery virou seu melhor amigo esse mês, né? 🍕 Gastar {pct(topCats[0]?.amount || 0, data?.despesas || 1)}% do seu orçamento nisso é puxado. Que tal um desafio de cozinhar em casa esse final de semana e blindar esse patrimônio?"
+                        "Parece que o delivery virou seu melhor amigo esse mês, né? 🍕 Gastar {pct(topCats[0]?.amount || 0, data?.despesas || 1)}% do seu orçamento nisso é puxado. Que tal um desafio de cozinhar em casa esse final de semana e blindar esse patrimônio? Vamos botar ordem nessa casa! 🚀"
                       </p>
                     </motion.div>
                   </div>
