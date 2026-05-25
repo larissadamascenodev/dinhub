@@ -186,7 +186,7 @@ export default function RadarFinanceiro() {
 
   useEffect(() => {
     getCustomCategories().then(setCustomCats).catch(() => {});
-  }, []);
+  }, [data]);
 
   const totalParcelado = useMemo(
     () => (data?.transactions ?? []).filter((t) => t.type === "despesa" && (t as any).recurrence_type === "parcelado").reduce((s, t) => s + t.amount, 0),
@@ -280,10 +280,12 @@ export default function RadarFinanceiro() {
                     
                     <div className="space-y-4">
                       <p className="text-3xl lg:text-5xl font-display font-medium text-white leading-[1.1] tracking-tight whitespace-pre-line">
-                        {hubyMsg.main.split('\n')[0]}
+                        {hubyMsg.main.includes('\n') ? hubyMsg.main.split('\n')[0] : hubyMsg.main}
                       </p>
                       <p className="text-lg lg:text-xl text-white/50 font-medium leading-relaxed max-w-2xl">
-                        {hubyMsg.main.split('\n').slice(1).join(' ') || hubyMsg.secondary}
+                        {hubyMsg.main.includes('\n') 
+                          ? hubyMsg.main.split('\n').slice(1).join(' ') 
+                          : hubyMsg.secondary || "Continue monitorando seus gastos para manter a saúde financeira."}
                       </p>
                     </div>
 
@@ -301,7 +303,11 @@ export default function RadarFinanceiro() {
                         <span className="text-[11px] font-black text-warning uppercase tracking-[0.2em]">Papo de Elite</span>
                       </div>
                       <p className="text-[15px] text-white/80 font-medium italic leading-relaxed">
-                        "Parece que o delivery virou seu melhor amigo esse mês, né? 🍕 Gastar {pct(topCats[0]?.amount || 0, data?.despesas || 1)}% do seu orçamento nisso é puxado. Que tal um desafio de cozinhar em casa esse final de semana e blindar esse patrimônio? Vamos botar ordem nessa casa! 🚀"
+                        {topCats.length > 0 ? (
+                          `"Parece que ${topCats[0].name.toLowerCase()} virou o foco esse mês, né? Gastar ${pct(topCats[0].amount, (data?.despesas || 1))}% do seu orçamento nisso é um ponto de atenção. Que tal um desafio de reduzir esse valor e blindar esse patrimônio? Vamos botar ordem nessa casa! 🚀"`
+                        ) : (
+                          `"Seu radar está limpo! Continue assim para manter sua liberdade financeira no nível máximo. 💎"`
+                        )}
                       </p>
                     </motion.div>
                   </div>
