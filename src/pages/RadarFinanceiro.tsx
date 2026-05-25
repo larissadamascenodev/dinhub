@@ -298,7 +298,7 @@ export default function RadarFinanceiro() {
               <div className="text-center">
                 <h3 className={`text-xl font-display font-extrabold mb-2 ${sc.text}`}>{sc.label}</h3>
                 <p className="text-xs text-white/40 font-medium px-4">
-                  {health.factors.length > 0 ? health.factors[0].descricao : "Seu desempenho financeiro está sendo analisado."}
+                  {health.factors.length > 0 ? health.factors[0].description : "Seu desempenho financeiro está sendo analisado."}
                 </p>
               </div>
             </div>
