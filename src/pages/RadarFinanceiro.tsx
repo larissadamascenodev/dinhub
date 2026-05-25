@@ -291,7 +291,7 @@ export default function RadarFinanceiro() {
                     <span className="inline-block px-3 py-1 rounded-md bg-primary/5 text-[10px] font-black text-primary uppercase tracking-[0.3em] border border-primary/10">
                       Insight de Hoje
                     </span>
-                    <p className="text-2xl lg:text-4xl font-display font-medium text-white/95 leading-[1.2] tracking-tight">
+                    <p className="text-2xl lg:text-4xl font-display font-medium text-white/95 leading-[1.2] tracking-tight whitespace-pre-line">
                       "{hubyMsg.main}"
                     </p>
                   </div>
