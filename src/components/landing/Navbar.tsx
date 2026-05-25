@@ -32,7 +32,7 @@ const Navbar = () => {
 
         {/* CTA Button */}
         <a 
-          href="/auth"
+          href="/login"
           className="px-6 sm:px-8 py-2 sm:py-3 rounded-full bg-white text-black font-sora font-bold text-[10px] sm:text-xs uppercase tracking-wider hover:bg-[#00e676] hover:scale-105 transition-all duration-500 whitespace-nowrap shadow-[0_0_20px_rgba(255,255,255,0.1)]"
         >
           Entrar
