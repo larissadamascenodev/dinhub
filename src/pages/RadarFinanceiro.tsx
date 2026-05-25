@@ -1,4 +1,4 @@
-import { useMemo, useState } from "react";
+import { useMemo, useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import { motion, AnimatePresence } from "framer-motion";
 import {
@@ -6,12 +6,14 @@ import {
   ShieldCheck, ChevronRight, ChevronDown, ChevronUp, Bot,
   Sparkles, CreditCard, RefreshCw, Package, Activity, Target,
   Gauge, Scissors, PiggyBank, Flame, BarChart3,
-  ArrowUpRight, ArrowDownRight, ScanText, Info,
+  ArrowUpRight, ArrowDownRight, ScanText, Info, Radar,
 } from "lucide-react";
 import { useRadarFinanceiro } from "@/hooks/useRadarFinanceiro";
 import { calculateHealthScore, type HealthScoreV2 } from "@/services/healthScoreService";
 import { generateHubyActions, type HubyAction } from "@/services/hubyActionsService";
 import { generateHubyMessage } from "@/services/hubyMessageService";
+import { getCategoryIcon, getCategoryColor } from "@/lib/categoryUtils";
+import { getCustomCategories, type CustomCategory } from "@/services/categoryService";
 import type { RadarInsight } from "@/services/radarService";
 
 const fmt = (v: number) =>
@@ -120,9 +122,87 @@ function ScoreRing({ value, size = 80, stroke = 8, color }: { value: number; siz
   );
 }
 
+function RadarVisual({ topCats, customCats }: { topCats: any[], customCats: CustomCategory[] }) {
+  return (
+    <div className="relative group w-full aspect-square max-w-[320px] mx-auto">
+      <motion.div 
+        animate={{ rotate: 360 }}
+        transition={{ duration: 40, repeat: Infinity, ease: "linear" }}
+        className="absolute -inset-8 border border-white/[0.03] rounded-full"
+      />
+      <motion.div 
+        animate={{ rotate: -360 }}
+        transition={{ duration: 35, repeat: Infinity, ease: "linear" }}
+        className="absolute -inset-4 border border-white/[0.05] rounded-full"
+      />
+      
+      <div className="relative w-full h-full flex items-center justify-center">
+        <div className="absolute inset-0 rounded-full bg-white/[0.01] border border-white/5 backdrop-blur-[2px]" />
+        
+        {/* Radar concentric circles */}
+        <div className="absolute inset-[20%] rounded-full border border-white/[0.03]" />
+        <div className="absolute inset-[40%] rounded-full border border-white/[0.03]" />
+        <div className="absolute inset-[60%] rounded-full border border-white/[0.03]" />
+        
+        <div className="absolute inset-[15%] rounded-full border border-white/[0.05] flex items-center justify-center">
+          <Radar className="w-10 h-10 text-white/10" />
+        </div>
+        
+        {/* Minimalist Radar Sweeper - Transparent with subtle green */}
+        <motion.div 
+          animate={{ rotate: 360 }}
+          transition={{ duration: 4, repeat: Infinity, ease: "linear" }}
+          className="absolute inset-0 rounded-full"
+          style={{ 
+            background: 'conic-gradient(from 0deg, transparent 0%, rgba(34, 197, 94, 0.08) 50%, transparent 100%)',
+          }}
+        />
+
+        {/* Category Icons as "Blips" */}
+        {topCats.map((cat, i) => {
+          const Icon = getCategoryIcon(cat.name, customCats);
+          const color = getCategoryColor(cat.name, customCats);
+          // Distribute icons around the radar
+          const angle = (i * 72) + 20; // 5 icons, roughly 72 deg apart
+          const distance = 35 + (i * 5); // varies between 35% and 55% from center
+          
+          return (
+            <motion.div
+              key={cat.name}
+              initial={{ scale: 0, opacity: 0 }}
+              animate={{ 
+                scale: [0.9, 1.1, 0.9],
+                opacity: [0.4, 0.8, 0.4]
+              }}
+              transition={{ 
+                duration: 3 + i, 
+                repeat: Infinity,
+                delay: i * 0.4
+              }}
+              className="absolute w-10 h-10 rounded-xl bg-white/[0.03] border border-white/10 flex items-center justify-center backdrop-blur-md shadow-[0_0_15px_rgba(255,255,255,0.05)]"
+              style={{
+                top: `${50 + Math.sin(angle * Math.PI / 180) * distance}%`,
+                left: `${50 + Math.cos(angle * Math.PI / 180) * distance}%`,
+                transform: 'translate(-50%, -50%)'
+              }}
+            >
+              <Icon className="w-5 h-5" style={{ color: `hsl(${color})` }} />
+            </motion.div>
+          );
+        })}
+      </div>
+    </div>
+  );
+}
+
 export default function RadarFinanceiro() {
   const navigate = useNavigate();
   const { insights, status, loading, currentData: data, prevData } = useRadarFinanceiro();
+  const [customCats, setCustomCats] = useState<CustomCategory[]>([]);
+
+  useEffect(() => {
+    getCustomCategories().then(setCustomCats).catch(() => {});
+  }, []);
 
   const totalParcelado = useMemo(
     () => (data?.transactions ?? []).filter((t) => t.type === "despesa" && (t as any).recurrence_type === "parcelado").reduce((s, t) => s + t.amount, 0),
@@ -138,23 +218,7 @@ export default function RadarFinanceiro() {
     [data, insights, health, prevData, loading]
   );
 
-  const receitas = data?.receitas ?? 0;
   const despesas = data?.despesas ?? 0;
-  const prevDespesas = prevData?.despesas ?? 0;
-
-  const cardTotal = useMemo(() => (data?.transactions ?? []).filter((t) => t.type === "despesa" && t.isFatura).reduce((s, t) => s + t.amount, 0), [data]);
-  const cardPct = pct(cardTotal, despesas);
-  const nonCardPct = 100 - cardPct;
-
-  const recDespesas = useMemo(() => (data?.transactions ?? []).filter((t) => t.type === "despesa" && (t as any).recurrence_type === "fixa").reduce((s, t) => s + t.amount, 0), [data]);
-  const fixoPct = pct(recDespesas, receitas);
-  const variavelDespesas = despesas - recDespesas;
-  const variavelPct = pct(variavelDespesas, receitas);
-
-  const comprometimentoPct = pct(despesas, receitas);
-  const comprometimentoColor = comprometimentoPct < 60 ? "text-primary" : comprometimentoPct <= 80 ? "text-warning" : "text-destructive";
-  const comprometimentoRing = comprometimentoPct < 60 ? "hsl(var(--primary))" : comprometimentoPct <= 80 ? "hsl(var(--warning))" : "hsl(var(--destructive))";
-  const livre = Math.max(receitas - despesas, 0);
 
   const topCats = useMemo(() => {
     const cats = (data?.categories ?? []).slice(0, 5);
@@ -162,25 +226,6 @@ export default function RadarFinanceiro() {
     (prevData?.categories ?? []).forEach((c) => { prevMap[c.name] = c.amount; });
     return cats.map((c) => ({ ...c, prev: prevMap[c.name] }));
   }, [data, prevData]);
-
-  const catDiagnostics = useMemo(() => {
-    const diags: { text: string; variant: "warning" | "danger" | "success" }[] = [];
-    if (topCats.length === 0) return diags;
-    const top = topCats[0];
-    const topPctVal = pct(top.amount, despesas);
-    if (topPctVal > 30) diags.push({ text: `${top.name} concentra ${topPctVal}% dos seus gastos — ponto de atenção principal.`, variant: "danger" });
-    topCats.forEach(c => {
-      if (c.prev && c.prev > 0 && c.amount > c.prev * 1.2) {
-        const changePct = Math.round(((c.amount - c.prev) / c.prev) * 100);
-        diags.push({ text: `${c.name} cresceu ${changePct}% vs mês anterior.`, variant: "warning" });
-      }
-    });
-    return diags.slice(0, 3);
-  }, [topCats, despesas, receitas]);
-
-  const installmentCount = useMemo(() => (data?.transactions ?? []).filter((t) => t.type === "despesa" && (t as any).recurrence_type === "parcelado").length, [data]);
-  const parceladoPct = pct(totalParcelado, receitas);
-  const expenseChange = prevDespesas > 0 ? Math.round(((despesas - prevDespesas) / prevDespesas) * 100) : 0;
 
   const statusConfig = {
     verde: { bg: "bg-primary/5", border: "border-primary/20", text: "text-primary", ringColor: "hsl(var(--primary))", icon: <ShieldCheck className="w-6 h-6" />, label: "Consistência de Elite" },
@@ -192,7 +237,7 @@ export default function RadarFinanceiro() {
   if (loading) {
     return (
       <div className="flex items-center justify-center py-20">
-        <div className="animate-pulse text-primary text-lg">Processando diagnóstico...</div>
+        <div className="animate-pulse text-primary text-lg font-display uppercase tracking-widest">Sincronizando Radar...</div>
       </div>
     );
   }
@@ -226,55 +271,81 @@ export default function RadarFinanceiro() {
       </header>
 
       {/* BENTO GRID LAYOUT */}
-      <div className="grid grid-cols-1 md:grid-cols-12 gap-6 lg:gap-8 auto-rows-fr">
+      <div className="grid grid-cols-1 md:grid-cols-12 gap-6 lg:gap-8">
         
-        {/* Huby AI Recommendation - Main Highlight */}
+        {/* Main Highlight Card - Expanded Height and Radar Visual */}
         <div className="md:col-span-8">
           <BentoCard 
             title="Huby AI Intelligence" 
             icon={<Bot className="w-5 h-5" />}
             badge="Premium Insight"
             badgeVariant="success"
-            className="relative overflow-hidden"
+            className="relative overflow-hidden min-h-[580px]"
           >
-            <div className="absolute top-0 right-0 w-64 h-64 bg-primary/10 rounded-full blur-[100px] -mr-32 -mt-32 pointer-events-none" />
+            <div className="absolute top-0 right-0 w-96 h-96 bg-primary/10 rounded-full blur-[120px] -mr-32 -mt-32 pointer-events-none" />
             
-            <div className="relative z-10 flex flex-col justify-between h-full pt-2">
-              <div className="space-y-6">
-                <p className="text-2xl lg:text-3xl font-display font-medium text-white/90 leading-snug">
-                  "{hubyMsg.main}"
-                </p>
-                {hubyMsg.secondary && (
-                  <p className="text-sm text-white/40 font-medium leading-relaxed italic">
-                    {hubyMsg.secondary}
-                  </p>
-                )}
+            <div className="relative z-10 flex flex-col lg:flex-row gap-12 h-full pt-4">
+              <div className="flex-1 flex flex-col justify-between">
+                <div className="space-y-8">
+                  <div className="space-y-4">
+                    <span className="inline-block px-3 py-1 rounded-md bg-primary/5 text-[10px] font-black text-primary uppercase tracking-[0.3em] border border-primary/10">
+                      Insight de Hoje
+                    </span>
+                    <p className="text-2xl lg:text-4xl font-display font-medium text-white/95 leading-[1.2] tracking-tight whitespace-pre-line">
+                      "{hubyMsg.main}"
+                    </p>
+                  </div>
+                  
+                  {hubyMsg.secondary && (
+                    <div className="flex items-start gap-4 p-5 rounded-[32px] bg-white/[0.02] border border-white/5">
+                      <Sparkles className="w-5 h-5 text-primary shrink-0" />
+                      <p className="text-[13px] text-white/50 font-medium leading-relaxed italic">
+                        {hubyMsg.secondary}
+                      </p>
+                    </div>
+                  )}
+                </div>
+
+                <div className="mt-auto pt-10">
+                  <div className="flex items-center gap-3 mb-6">
+                    <div className="h-px flex-1 bg-white/5" />
+                    <h5 className="text-[10px] font-black text-white/20 uppercase tracking-[0.4em]">Ações Sugeridas</h5>
+                    <div className="h-px flex-1 bg-white/5" />
+                  </div>
+                  
+                  <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                    {hubyActions.length > 0 ? (
+                      hubyActions.slice(0, 2).map((action, i) => (
+                        <button 
+                          key={i}
+                          onClick={() => navigate(action.path)}
+                          className="group flex items-center gap-5 p-6 rounded-[32px] bg-white/[0.02] border border-white/5 hover:bg-white/[0.05] hover:border-primary/20 transition-all text-left"
+                        >
+                          <div className="w-12 h-12 rounded-2xl bg-primary/10 flex items-center justify-center text-primary shrink-0 group-hover:scale-110 transition-transform">
+                            <Zap className="w-6 h-6" />
+                          </div>
+                          <div>
+                            <h4 className="text-[14px] font-bold text-white group-hover:text-primary transition-colors">{action.titulo}</h4>
+                            <p className="text-[11px] text-white/30 font-medium mt-1 line-clamp-1">{action.descricao}</p>
+                            <span className="text-[11px] font-black text-primary tabular-nums tracking-tight mt-1 inline-block">
+                              Impacto: +{fmt(action.impacto_estimado)}
+                            </span>
+                          </div>
+                        </button>
+                      ))
+                    ) : (
+                      <div className="col-span-2 py-8 text-center border border-white/5 rounded-[32px] bg-white/[0.01]">
+                        <p className="text-xs text-white/20 font-medium uppercase tracking-widest">Nenhuma ação crítica necessária hoje</p>
+                      </div>
+                    )}
+                  </div>
+                </div>
               </div>
 
-              {hubyActions.length > 0 && (
-                <div className="mt-10 grid grid-cols-1 sm:grid-cols-2 gap-4">
-                  {hubyActions.slice(0, 2).map((action, i) => (
-                    <button 
-                      key={i}
-                      onClick={() => navigate(action.path)}
-                      className="group flex flex-col gap-3 p-5 rounded-3xl bg-white/[0.03] border border-white/5 hover:bg-white/[0.08] hover:border-white/10 transition-all text-left"
-                    >
-                      <div className="flex items-center justify-between">
-                        <div className="w-8 h-8 rounded-xl bg-primary/10 flex items-center justify-center text-primary">
-                          <Zap className="w-4 h-4" />
-                        </div>
-                        <span className="text-[13px] font-black text-primary tabular-nums tracking-tight">
-                          +{fmt(action.impacto_estimado)}
-                        </span>
-                      </div>
-                      <div>
-                        <h4 className="text-[13px] font-bold text-white">{action.titulo}</h4>
-                        <p className="text-[11px] text-white/30 font-medium mt-1 line-clamp-1">{action.descricao}</p>
-                      </div>
-                    </button>
-                  ))}
-                </div>
-              )}
+              {/* RADAR VISUAL COMPONENT */}
+              <div className="lg:w-[320px] flex items-center justify-center">
+                <RadarVisual topCats={topCats} customCats={customCats} />
+              </div>
             </div>
           </BentoCard>
         </div>
@@ -284,118 +355,33 @@ export default function RadarFinanceiro() {
           <BentoCard 
             title="Score Huby" 
             icon={<Activity className="w-5 h-5" />}
-            className={`border-${status.level === 'vermelho' ? 'destructive' : status.level === 'amarelo' ? 'warning' : 'primary'}/20`}
+            className={`border-${status.level === 'vermelho' ? 'destructive' : status.level === 'amarelo' ? 'warning' : 'primary'}/20 h-full`}
           >
-            <div className="flex flex-col items-center justify-center h-full py-4">
-              <div className="relative mb-8">
-                <div className={`absolute inset-0 rounded-full blur-2xl opacity-20 bg-${status.level === 'vermelho' ? 'destructive' : status.level === 'amarelo' ? 'warning' : 'primary'}`} />
-                <ScoreRing value={health.score} size={160} stroke={12} color={sc.ringColor} />
+            <div className="flex flex-col items-center justify-center h-full py-8">
+              <div className="relative mb-10">
+                <div className={`absolute inset-0 rounded-full blur-3xl opacity-20 bg-${status.level === 'vermelho' ? 'destructive' : status.level === 'amarelo' ? 'warning' : 'primary'}`} />
+                <ScoreRing value={health.score} size={180} stroke={14} color={sc.ringColor} />
                 <div className="absolute inset-0 flex flex-col items-center justify-center">
-                  <span className={`text-5xl font-display font-black tracking-tighter tabular-nums ${sc.text}`}>{health.score}</span>
+                  <span className={`text-6xl font-display font-black tracking-tighter tabular-nums ${sc.text}`}>{health.score}</span>
                   <span className="text-[10px] text-white/20 font-black uppercase tracking-[0.2em] mt-2">Saúde Financeira</span>
                 </div>
               </div>
-              <div className="text-center">
-                <h3 className={`text-xl font-display font-extrabold mb-2 ${sc.text}`}>{sc.label}</h3>
-                <p className="text-xs text-white/40 font-medium px-4">
-                  {health.factors.length > 0 ? health.factors[0].description : "Seu desempenho financeiro está sendo analisado."}
-                </p>
-              </div>
-            </div>
-          </BentoCard>
-        </div>
-
-        {/* Projeções e Comprometimento */}
-        <div className="md:col-span-6 lg:col-span-4">
-          <BentoCard title="Comprometimento" icon={<Gauge className="w-5 h-5" />} badge={`${comprometimentoPct}%`}>
-            <div className="space-y-6">
-              <div className="flex items-end justify-between">
-                <div>
-                  <p className="text-[10px] text-white/30 font-black uppercase tracking-widest mb-1">Renda Comprometida</p>
-                  <p className={`text-3xl font-display font-black ${comprometimentoColor}`}>{fmt(despesas)}</p>
-                </div>
-                <div className="text-right">
-                  <p className="text-[10px] text-white/30 font-black uppercase tracking-widest mb-1">Disponível</p>
-                  <p className="text-xl font-display font-black text-white/80">{fmt(livre)}</p>
-                </div>
-              </div>
-              
-              <div className="h-2 w-full rounded-full bg-white/5 overflow-hidden">
-                <motion.div 
-                  initial={{ width: 0 }} 
-                  animate={{ width: `${Math.min(comprometimentoPct, 100)}%` }}
-                  className={`h-full rounded-full bg-gradient-to-r ${comprometimentoPct > 80 ? 'from-destructive to-destructive/60' : 'from-primary to-primary/60'}`}
-                />
-              </div>
-
-              <DiagPill 
-                icon={<Info className="w-4 h-4" />} 
-                text={comprometimentoPct < 60 ? "Margem de segurança ideal para investimentos." : "Atenção ao limite de comprometimento recomendado."}
-                variant={comprometimentoPct < 60 ? "success" : "warning"}
-              />
-            </div>
-          </BentoCard>
-        </div>
-
-        {/* Scanner Mágico - Cards Analysis */}
-        <div className="md:col-span-6 lg:col-span-4">
-          <BentoCard title="Scanner Cartões" icon={<CreditCard className="w-5 h-5" />} badge={`${cardPct}% uso`}>
-            <div className="space-y-6">
-              <div className="grid grid-cols-2 gap-4">
-                <div className="p-4 rounded-2xl bg-white/[0.02] border border-white/5">
-                  <p className="text-[9px] text-white/30 font-black uppercase mb-1">Total Fatura</p>
-                  <p className="text-lg font-display font-black text-white">{fmt(cardTotal)}</p>
-                </div>
-                <div className="p-4 rounded-2xl bg-white/[0.02] border border-white/5">
-                  <p className="text-[9px] text-white/30 font-black uppercase mb-1">Parcelados</p>
-                  <p className="text-lg font-display font-black text-warning">{fmt(totalParcelado)}</p>
-                </div>
-              </div>
-
-              <div className="flex items-center gap-3 p-4 rounded-2xl bg-primary/5 border border-primary/10">
-                <div className="w-8 h-8 rounded-lg bg-primary/10 flex items-center justify-center text-primary">
-                  <TrendingDown className="w-4 h-4" />
-                </div>
-                <p className="text-[11px] font-medium text-primary/80 leading-snug">
-                  Você economizaria <span className="font-bold underline">R$ 42,00</span> em juros este mês antecipando parcelas.
-                </p>
-              </div>
-
-              <button 
-                onClick={() => navigate("/gestao")}
-                className="w-full flex items-center justify-between text-[11px] font-black uppercase tracking-widest text-white/40 hover:text-white transition-colors group"
-              >
-                <span>Analisar faturas</span>
-                <ChevronRight className="w-4 h-4 group-hover:translate-x-1 transition-transform" />
-              </button>
-            </div>
-          </BentoCard>
-        </div>
-
-        {/* Faturas em Tempo Real - Recent Trends */}
-        <div className="md:col-span-12 lg:col-span-4">
-          <BentoCard title="Top Gastos" icon={<BarChart3 className="w-5 h-5" />}>
-            <div className="space-y-4">
-              {topCats.map((cat, i) => (
-                <div key={i} className="flex items-center justify-between">
-                  <div className="flex items-center gap-3">
-                    <div className="w-2 h-2 rounded-full" style={{ backgroundColor: cat.color }} />
-                    <span className="text-[13px] font-bold text-white/80">{cat.name}</span>
-                  </div>
-                  <div className="flex items-center gap-4">
-                    <span className="text-[13px] font-black text-white tabular-nums">{fmt(cat.amount)}</span>
-                    <span className="text-[10px] font-medium text-white/20 tabular-nums w-8 text-right">{pct(cat.amount, despesas)}%</span>
+              <div className="text-center px-4">
+                <h3 className={`text-2xl font-display font-extrabold mb-3 ${sc.text}`}>{sc.label}</h3>
+                <div className="space-y-4">
+                  <p className="text-sm text-white/40 font-medium leading-relaxed">
+                    {health.factors.length > 0 ? health.factors[0].description : "Seu desempenho financeiro está sendo analisado."}
+                  </p>
+                  
+                  <div className="pt-6 grid grid-cols-1 gap-3">
+                    {health.factors.slice(0, 3).map((f, i) => (
+                      <div key={i} className="flex items-center gap-3 text-[11px] text-left p-3 rounded-2xl bg-white/[0.02] border border-white/5">
+                        <div className={`w-2 h-2 rounded-full shrink-0 ${f.status === 'saudavel' ? 'bg-primary' : 'bg-destructive'}`} />
+                        <span className="text-white/60 font-medium">{f.label}</span>
+                      </div>
+                    ))}
                   </div>
                 </div>
-              ))}
-              
-              <div className="pt-4 border-t border-white/5">
-                {catDiagnostics.length > 0 && (
-                  <div className="flex items-start gap-3 text-[11px] text-warning/60 italic leading-relaxed">
-                    <AlertTriangle className="w-3.5 h-3.5 flex-shrink-0 mt-0.5" />
-                    <span>{catDiagnostics[0].text}</span>
-                  </div>
-                )}
               </div>
             </div>
           </BentoCard>
