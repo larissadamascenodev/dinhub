@@ -304,7 +304,7 @@ export default function RadarFinanceiro() {
                       </div>
                       <p className="text-[15px] text-white/80 font-medium italic leading-relaxed">
                         {topCats.length > 0 ? (
-                          `"Parece que ${topCats[0].name.toLowerCase()} virou o foco esse mês, né? Gastar ${pct(topCats[0].amount, (data?.despesas || 1))} % do seu orçamento nisso é um ponto de atenção. Que tal um desafio de reduzir esse valor e blindar esse patrimônio? Vamos botar ordem nessa casa! 🚀"`
+                          `"Parece que ${topCats[0].name.toLowerCase()} virou o foco esse mês, né? Gastar ${pct(topCats[0].amount, (data?.despesas || 1))}% do seu orçamento nisso é um ponto de atenção. Que tal um desafio de reduzir esse valor e blindar esse patrimônio? Vamos botar ordem nessa casa! 🚀"`
                         ) : (
                           `"Seu radar está limpo! Continue assim para manter sua liberdade financeira no nível máximo. 💎"`
                         )}
