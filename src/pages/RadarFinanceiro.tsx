@@ -355,8 +355,8 @@ export default function RadarFinanceiro() {
                   </div>
                 </div>
 
-                {/* Bottom Footer Info */}
-                <div className="mt-12 flex items-center gap-6">
+                {/* Bottom Footer Info - Hidden on smaller screens when side by side */}
+                <div className="mt-12 hidden xl:flex items-center gap-6">
                   <div className="flex -space-x-3">
                     {topCats.map((cat, i) => {
                       const Icon = getCategoryIcon(cat.name, customCats);
@@ -380,7 +380,7 @@ export default function RadarFinanceiro() {
               </div>
 
               {/* Right Column: Radar Visual & Health Score Floating */}
-              <div className="lg:w-[480px] flex flex-col items-center justify-center relative py-12">
+              <div className="flex-1 flex flex-col items-center justify-center relative py-12 xl:py-0">
                 <RadarVisual topCats={topCats} customCats={customCats} />
                 
                 {/* Floating Health Score Card - Integrated & Premium */}
