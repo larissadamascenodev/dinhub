@@ -145,16 +145,8 @@ const Index = () => {
                </motion.div>
             </div>
             
-            <motion.div
-              initial={{ opacity: 0, y: 20 }}
-              animate={{ opacity: 1, y: 0 }}
-              transition={{ delay: 0.3 }}
-            >
-              <ParcelamentosAtivosCard />
-            </motion.div>
           </div>
 
-          {/* Right Column: Actions & Stats */}
           <div className="md:col-span-12 lg:col-span-4 space-y-6 lg:space-y-8">
             <motion.div initial={{ opacity: 0, scale: 0.95 }} animate={{ opacity: 1, scale: 1 }} transition={{ delay: 0.15 }}>
               <WalletSummaryCard />
@@ -163,12 +155,6 @@ const Index = () => {
             <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.25 }} className="space-y-6">
               {isCurrentMonth && <GastosSemanaisCard />}
               <ProximosEventos events={data.events} selectedMonth={selectedMonth} selectedYear={selectedYear} onEventClick={handleEventClick} />
-              <div className="bg-white/[0.02] border border-white/[0.05] rounded-[32px] p-6">
-                <p className="text-[11px] font-bold text-white/20 uppercase tracking-[0.2em] mb-4 ml-1">Ferramentas</p>
-                <BotFinanceTools layout="grid" />
-              </div>
-              <AssinaturasCard />
-              <MetasResumoCard />
             </motion.div>
           </div>
         </div>
@@ -213,19 +199,11 @@ const Index = () => {
             <ProximosEventos events={data.events} selectedMonth={selectedMonth} selectedYear={selectedYear} onEventClick={handleEventClick} />
           </div>
 
-          <div className="space-y-4">
-            <p className="text-[10px] font-bold text-white/20 uppercase tracking-[0.2em] ml-1">Atalhos rápidos</p>
-            <BotFinanceTools layout="carousel" />
-          </div>
-
           {data.categories.length > 0 && (
             <GastosPorCategoria categories={data.categories} selectedMonth={selectedMonth} onVerAnalise={() => navigate("/transacoes")} />
           )}
           
           <TransacoesRecentes transactions={data.transactions} onDelete={refetch} />
-          <AssinaturasCard />
-          <ParcelamentosAtivosCard />
-          <MetasResumoCard />
         </div>
       <PagarEditarModal
         open={showPayModal}
