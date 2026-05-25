@@ -33,7 +33,7 @@ const CTA = () => {
                     transition={{ duration: 0.4 }}
                 >
                     <a 
-                      href="/login?mode=signup"
+                      href="/auth?modal=signup"
                       className="premium-button-primary !px-16 !py-7 !text-2xl shadow-[0_20px_50px_-15px_rgba(0,230,118,0.4)]"
                     >
                       <span className="flex items-center gap-4">
