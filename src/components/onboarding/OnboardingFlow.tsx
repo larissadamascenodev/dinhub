@@ -336,7 +336,7 @@ const OnboardingFlow = ({ onComplete, onRefetch }: OnboardingFlowProps) => {
       {/* Bottom branding */}
       <div className="absolute bottom-8 flex items-center gap-1.5 text-muted-foreground/40">
         <Sparkles className="w-3 h-3" />
-        <span className="text-[10px]">FinanPro</span>
+        <span className="text-[10px]">Willo</span>
       </div>
     </div>
   );
