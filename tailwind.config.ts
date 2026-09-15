@@ -18,6 +18,11 @@ export default {
         display: ['Plus Jakarta Sans', 'sans-serif'],
       },
       colors: {
+        "willo-green": "#C8F36D",
+        "willo-black": "#0B0B0B",
+        "willo-off-white": "#F8F7EE",
+        "willo-caramel": "#B9804F",
+        "willo-brown": "#6B4A2E",
         border: "hsl(var(--border))",
         input: "hsl(var(--input))",
         ring: "hsl(var(--ring))",
