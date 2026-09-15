@@ -2,7 +2,6 @@ import React, { useState } from "react";
 import ContactModal from "@/components/shared/ContactModal";
 import LegalModal from "@/components/shared/LegalModal";
 import { supabase } from "@/integrations/supabase/client";
-import { lovable } from "@/integrations/lovable/index";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { toast } from "sonner";
@@ -245,8 +244,11 @@ const Auth = () => {
             toast.error("Você precisa aceitar os termos para continuar");
             return;
           }
-          const { error } = await lovable.auth.signInWithOAuth("google", {
-            redirect_uri: window.location.origin,
+          const { error } = await supabase.auth.signInWithOAuth({
+            provider: "google",
+            options: {
+              redirectTo: window.location.origin,
+            },
           });
           if (error) toast.error("Erro ao entrar com Google");
         }}
