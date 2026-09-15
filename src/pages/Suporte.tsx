@@ -21,7 +21,7 @@ const Suporte = () => {
 
   const handleSend = () => {
     setClicked(true);
-    const text = encodeURIComponent("Olá! Vim pelo suporte do DinHub.");
+    const text = encodeURIComponent("Olá! Vim pelo suporte do Willo.");
     window.open(`https://wa.me/${WHATSAPP_NUMBER}?text=${text}`, "_blank");
     setTimeout(() => setClicked(false), 1200);
   };

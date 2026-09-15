@@ -115,7 +115,7 @@ const ContactModal = ({ open, onClose }: ContactModalProps) => {
 
             {/* Footer */}
             <div className="px-5 pb-5 pt-1 flex items-center justify-between text-[10px] text-muted-foreground/30">
-              <span>DinHub · Brasil</span>
+              <span>Willo · Brasil</span>
             </div>
           </motion.div>
         </motion.div>

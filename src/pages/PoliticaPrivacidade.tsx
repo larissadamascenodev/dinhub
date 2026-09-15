@@ -24,7 +24,7 @@ const sections: Section[] = [
       "**Dados financeiros:** receitas, despesas, metas e contas que **você mesmo insere**.",
       "**Dados de uso:** como navegação, frequência de acesso e funcionalidades utilizadas.",
     ],
-    warning: "O DinHub não acessa contas bancárias nem dados externos automaticamente.",
+    warning: "O Willo não acessa contas bancárias nem dados externos automaticamente.",
   },
   {
     icon: BarChart3,
@@ -68,7 +68,7 @@ const sections: Section[] = [
     icon: Megaphone,
     title: "Marketing e comunicação",
     content: [
-      "Podemos enviar comunicações sobre **novidades e melhorias** do DinHub.",
+      "Podemos enviar comunicações sobre **novidades e melhorias** do Willo.",
       "Toda comunicação é baseada em dados de uso para ser **relevante** a você.",
       "Você pode **desativar notificações** a qualquer momento nas configurações.",
     ],
@@ -224,7 +224,7 @@ const PoliticaPrivacidade = () => {
               Seus dados são seus. E a gente leva isso a sério.
             </p>
             <p className="text-[12px] md:text-[13px] text-muted-foreground leading-relaxed">
-              Tudo o que você registra no DinHub é protegido e usado apenas para melhorar sua experiência.
+              Tudo o que você registra no Willo é protegido e usado apenas para melhorar sua experiência.
             </p>
           </div>
         </div>
@@ -283,7 +283,7 @@ const PoliticaPrivacidade = () => {
           <div>
             <p className="text-[13px] font-bold text-foreground">Transparência total</p>
             <p className="text-[12px] text-muted-foreground leading-relaxed">
-              Você sempre terá controle sobre seus dados dentro do DinHub.
+              Você sempre terá controle sobre seus dados dentro do Willo.
             </p>
           </div>
         </div>
@@ -313,7 +313,7 @@ const PoliticaPrivacidade = () => {
           <div className="flex items-center justify-center gap-1.5 pt-1">
             <Heart className="w-3.5 h-3.5 text-primary/60" />
             <span className="text-[11px] text-muted-foreground/60">
-              Feito com carinho pela equipe DinHub
+              Feito com carinho pela equipe Willo
             </span>
           </div>
         </div>

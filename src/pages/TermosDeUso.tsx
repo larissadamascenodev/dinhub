@@ -19,15 +19,15 @@ const sections: Section[] = [
     icon: CheckCircle2,
     title: "Aceitação dos Termos",
     content: [
-      "Ao utilizar o DinHub, você concorda com estes Termos de Uso.",
+      "Ao utilizar o Willo, você concorda com estes Termos de Uso.",
       "Nosso objetivo é garantir uma **experiência segura e transparente** para você.",
     ],
   },
   {
     icon: Smartphone,
-    title: "Sobre o DinHub",
+    title: "Sobre o Willo",
     content: [
-      "O DinHub é uma **ferramenta de organização financeira pessoal**.",
+      "O Willo é uma **ferramenta de organização financeira pessoal**.",
       "Permite registrar receitas, despesas, metas e investimentos, tudo em um só lugar.",
       "O app **não realiza movimentações bancárias** nem substitui consultoria financeira profissional.",
     ],
@@ -45,7 +45,7 @@ const sections: Section[] = [
     icon: CreditCard,
     title: "Planos e Acesso",
     content: [
-      "O DinHub oferece um **período de teste gratuito** por tempo limitado, permitindo que você explore as funcionalidades da plataforma antes de contratar um plano.",
+      "O Willo oferece um **período de teste gratuito** por tempo limitado, permitindo que você explore as funcionalidades da plataforma antes de contratar um plano.",
       "Após o término do período de teste, o acesso completo às funcionalidades depende de uma **assinatura ativa**.",
     ],
   },
@@ -79,7 +79,7 @@ const sections: Section[] = [
     icon: Scale,
     title: "Uso Aceitável",
     content: [
-      "Use o DinHub apenas para fins pessoais e legítimos.",
+      "Use o Willo apenas para fins pessoais e legítimos.",
       "É proibido tentar **acessar dados de outros usuários**, fazer engenharia reversa ou usar o app para atividades ilícitas.",
     ],
   },
@@ -87,7 +87,7 @@ const sections: Section[] = [
     icon: AlertTriangle,
     title: "Limitação de Responsabilidade",
     content: [
-      "O DinHub oferece **ferramentas de organização**, não garantias de resultados financeiros.",
+      "O Willo oferece **ferramentas de organização**, não garantias de resultados financeiros.",
       "Decisões financeiras tomadas com base nas análises do app são de **sua responsabilidade**.",
     ],
   },
@@ -95,7 +95,7 @@ const sections: Section[] = [
     icon: Copyright,
     title: "Propriedade Intelectual",
     content: [
-      "Todo o conteúdo, design, código e marca do DinHub são de **propriedade exclusiva** da equipe DinHub.",
+      "Todo o conteúdo, design, código e marca do Willo são de **propriedade exclusiva** da equipe Willo.",
       "É proibida a reprodução sem autorização prévia.",
     ],
   },
@@ -208,7 +208,7 @@ const TermosDeUso = () => {
               Termos de Uso
             </h1>
             <p className="text-[13px] md:text-sm text-muted-foreground leading-relaxed max-w-xs md:max-w-md">
-              Como funciona o uso do DinHub
+              Como funciona o uso do Willo
             </p>
           </div>
 
@@ -217,7 +217,7 @@ const TermosDeUso = () => {
               Transparência acima de tudo.
             </p>
             <p className="text-[12px] md:text-[13px] text-muted-foreground leading-relaxed">
-              Esses termos explicam como você pode usar o DinHub com segurança.
+              Esses termos explicam como você pode usar o Willo com segurança.
             </p>
           </div>
         </div>
@@ -252,7 +252,7 @@ const TermosDeUso = () => {
           </div>
           <p className="text-[13px] md:text-sm text-muted-foreground leading-relaxed">
             <span className="font-semibold text-foreground">Seus dados e sua experiência</span> são
-            prioridade no DinHub.
+            prioridade no Willo.
           </p>
         </div>
       </motion.div>
@@ -282,7 +282,7 @@ const TermosDeUso = () => {
           <div className="flex items-center justify-center gap-1.5 pt-1">
             <Heart className="w-3.5 h-3.5 text-primary/60" />
             <span className="text-[11px] text-muted-foreground/60">
-              Feito com carinho pela equipe DinHub
+              Feito com carinho pela equipe Willo
             </span>
           </div>
         </div>

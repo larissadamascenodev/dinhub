@@ -175,9 +175,8 @@ const DashboardHeader = memo(({ profile, streak = 0, streakDates = [] }: { profi
         {/* Logo */}
         <div className="flex items-center gap-2 flex-shrink-0 cursor-pointer" onClick={() => navigate("/")}>
           <PiggyBank className="w-8 h-8 text-primary" />
-          <span className="font-display font-bold text-2xl">
-            <span className="text-foreground">Din</span>
-            <span className="text-primary">Hub</span>
+          <span className="font-display font-bold text-2xl text-primary">
+            Willo
           </span>
         </div>
 
@@ -316,9 +315,8 @@ const DashboardHeader = memo(({ profile, streak = 0, streakDates = [] }: { profi
         <div className="flex items-center justify-between">
           <div className="flex items-center gap-1.5">
             <PiggyBank className="w-7 h-7 text-primary" />
-            <span className="font-display font-bold text-xl">
-              <span className="text-foreground">Din</span>
-              <span className="text-primary">Hub</span>
+            <span className="font-display font-bold text-xl text-primary">
+              Willo
             </span>
           </div>
           <div className="flex items-center gap-1 bg-card/60 backdrop-blur-xl border border-border/20 rounded-full px-1.5 py-1">
