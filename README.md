@@ -24,3 +24,25 @@ cd <repository-name>
 npm i
 npm run dev
 ```
+
+## Mobile (Capacitor)
+
+O projeto já tem o Capacitor instalado (`@capacitor/core`, `@capacitor/cli`, `@capacitor/ios`) e configurado em [`capacitor.config.ts`](capacitor.config.ts):
+
+- App name: `DinHub`
+- App ID: `com.dinhub.app`
+- Web dir: `dist`
+
+### Plataforma iOS
+
+A pasta `ios/` já existe no repositório com o projeto nativo gerado (`npx cap add ios`), usando Swift Package Manager (`ios/App/CapApp-SPM`) em vez de CocoaPods — esse é o padrão do Capacitor 8. Isso significa que **gerar e sincronizar** o projeto iOS (`cap add ios`, `cap sync ios`) não exige Xcode nem macOS, e já foi feito.
+
+O que **exige macOS com Xcode instalado** é apenas compilar/rodar o app de fato:
+
+```sh
+npm run build     # gera a pasta dist/ com o build web atual
+npx cap sync ios  # copia o build web + plugins pro projeto nativo (rode sempre após mudar o código)
+npx cap open ios  # abre o projeto no Xcode — só funciona em macOS
+```
+
+No Xcode, use "Run" para compilar no simulador ou em um device físico. Pré-requisito no Mac: Xcode instalado via App Store (o Swift Package Manager resolve as dependências nativas automaticamente ao abrir o projeto, sem precisar instalar CocoaPods).
