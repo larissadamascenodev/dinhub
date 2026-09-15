@@ -169,7 +169,7 @@ const Auth = () => {
       <h1 className={`font-display font-bold leading-[1.1] text-foreground ${mobile ? "text-2xl" : "text-4xl xl:text-6xl"}`}>
         Assuma o controle{" "}
         total da sua{" "}
-        <span className="text-transparent bg-clip-text bg-gradient-to-r from-primary to-emerald-300">
+        <span className="text-transparent bg-clip-text bg-gradient-to-r from-primary to-primary/60">
           vida financeira.
         </span>
       </h1>
@@ -399,8 +399,8 @@ const Auth = () => {
         className="flex items-center justify-between px-6 lg:px-10 py-4 relative z-30"
       >
         <div className="flex items-center gap-2">
-          <span className="font-display text-xl font-bold text-foreground tracking-tight">
-            Din<span className="text-primary">Hub</span>
+          <span className="font-display text-xl font-bold text-primary tracking-tight">
+            Willo
           </span>
         </div>
         
@@ -470,7 +470,7 @@ const Auth = () => {
       >
         <span className="flex items-center gap-2">
           <PiggyBank className="w-4 h-4 text-primary/60" />
-          <span>DinHub © {new Date().getFullYear()}</span>
+          <span>Willo © {new Date().getFullYear()}</span>
         </span>
         <div className="flex items-center gap-4 sm:gap-6">
           <button onClick={() => setLegalModal("terms")} className="hover:text-primary transition-colors">Termos de Uso</button>
